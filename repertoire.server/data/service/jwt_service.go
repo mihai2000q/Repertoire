@@ -32,17 +32,50 @@ func (j *JwtService) Authorize(tokenString string) error {
 
 func (j *JwtService) CreateToken(user models.User) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti":   uuid.New().String(),
-		"sub":   user.ID.String(),
-		"email": user.Email,
-		"iss":   j.env.JwtIssuer,
-		"aud":   j.env.JwtAudience,
-		"iat":   time.Now().UTC().Unix(),
-		"exp":   time.Now().UTC().Add(time.Hour).Unix(),
+		"jti": uuid.New().String(),
+		"sub": user.ID.String(),
+		"iss": j.env.JwtIssuer,
+		"aud": j.env.JwtAudience,
+		"iat": time.Now().UTC().Unix(),
+		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
 	token, err := claims.SignedString([]byte(j.env.JwtSecretKey))
 	if err != nil {
 		return "", err
 	}
 	return token, nil
+}
+
+func (j *JwtService) Validate(tokenString string) (uuid.UUID, error) {
+	token, _ := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		return []byte(j.env.JwtSecretKey), nil
+	})
+
+	aud, err := token.Claims.GetAudience()
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	iss, err := token.Claims.GetIssuer()
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	if token.Method != jwt.SigningMethodHS256 ||
+		iss != j.env.JwtIssuer ||
+		aud[0] != j.env.JwtAudience {
+		return uuid.Nil, errors.New("invalid token")
+	}
+
+	sub, err := token.Claims.GetSubject()
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	userId, err := uuid.Parse(sub)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return userId, nil
 }

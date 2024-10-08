@@ -31,6 +31,23 @@ func NewAuthService(
 	}
 }
 
+func (a *AuthService) Refresh(request auth.RefreshRequest) (string, error) {
+	// validate token
+	userId, err := a.jwtService.Validate(request.AccessToken)
+	if err != nil {
+		return "", err
+	}
+
+	// get user
+	var user models.User
+	err = a.userRepository.Get(&user, userId)
+	if err != nil {
+		return "", err
+	}
+
+	return a.jwtService.CreateToken(user)
+}
+
 func (a *AuthService) SignIn(request auth.SignInRequest) (string, error) {
 	var user models.User
 

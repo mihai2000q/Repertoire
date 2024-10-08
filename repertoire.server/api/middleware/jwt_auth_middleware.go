@@ -9,20 +9,14 @@ import (
 
 type JWTAuthMiddleware struct {
 	jwtService service.JwtService
-	// logger  logger.Logger
 }
 
-func NewJWTAuthMiddleware(
-	jwtService service.JwtService,
-	// logger lib.Logger,
-) JWTAuthMiddleware {
+func NewJWTAuthMiddleware(jwtService service.JwtService) JWTAuthMiddleware {
 	return JWTAuthMiddleware{
 		jwtService: jwtService,
-		//logger:  logger,
 	}
 }
 
-// Handler handles middleware functionality
 func (m JWTAuthMiddleware) Handler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")

@@ -17,6 +17,27 @@ func NewAuthHandler(service service.AuthService) *AuthHandler {
 	}
 }
 
+func (a AuthHandler) Refresh(c *gin.Context) {
+	var request auth.RefreshRequest
+	err := c.Bind(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	
+	token, err := a.service.Refresh(request)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
+}
+
 func (a AuthHandler) SignIn(c *gin.Context) {
 	var request auth.SignInRequest
 	err := c.Bind(&request)
@@ -36,14 +57,17 @@ func (a AuthHandler) SignUp(c *gin.Context) {
 	var request auth.SignUpRequest
 	err := c.Bind(&request)
 	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	token, err := a.service.SignUp(request)
-	// TODO: What if the user already exists ? Return Bad Request
 	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
