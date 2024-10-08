@@ -15,6 +15,7 @@ func (u AuthRouter) SetupRoutes() {
 	// u.logger.Debug("Setting up auth routes")
 	api := u.requestHandler.BaseRouter.Group("/auth")
 	{
+		api.PUT("/sign-in", u.handler.SignIn)
 		api.POST("/sign-up", u.handler.SignUp)
 	}
 }

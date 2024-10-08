@@ -17,6 +17,21 @@ func NewAuthHandler(service service.AuthService) *AuthHandler {
 	}
 }
 
+func (a AuthHandler) SignIn(c *gin.Context) {
+	var request auth.SignInRequest
+	err := c.Bind(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token, err := a.service.SignIn(request)
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
+}
+
 func (a AuthHandler) SignUp(c *gin.Context) {
 	var request auth.SignUpRequest
 	err := c.Bind(&request)

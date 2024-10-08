@@ -24,6 +24,24 @@ func NewAuthService(userRepository repository.UserRepository, env config.Env) Au
 		env:            env,
 	}
 }
+func (a *AuthService) SignIn(request auth.SignInRequest) (string, error) {
+	var user models.User
+
+	// get user
+	email := strings.ToLower(request.Email)
+	err := a.userRepository.GetByEmail(&user, email)
+	if err != nil {
+		return "", err
+	}
+
+	// check password
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
+	if err != nil {
+		return "", err
+	}
+
+	return a.createToken(user)
+}
 
 func (a *AuthService) SignUp(request auth.SignUpRequest) (string, error) {
 	var user models.User
@@ -58,7 +76,10 @@ func (a *AuthService) SignUp(request auth.SignUpRequest) (string, error) {
 		return "", err
 	}
 
-	// create, sign and return token
+	return a.createToken(user)
+}
+
+func (a *AuthService) createToken(user models.User) (string, error) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti":   uuid.New().String(),
 		"sub":   user.ID.String(),
