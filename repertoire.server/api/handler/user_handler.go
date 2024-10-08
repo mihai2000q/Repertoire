@@ -28,6 +28,7 @@ func (u UserHandler) GetCurrentUser(c *gin.Context) {
 	token := utils.GetTokenFromContext(c)
 	user, err := u.currentUserProvider.Get(token)
 	if err != nil {
+		// u.logger.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -44,10 +45,18 @@ func (u UserHandler) GetCurrentUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (u UserHandler) GetUserByEmail(c *gin.Context) {
-	email := c.Query("email")
+func (u UserHandler) Get(c *gin.Context) {
+	paramId := c.Param("id")
 
-	user, err := u.service.GetByEmail(email)
+	id, err := uuid.Parse(paramId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	user, err := u.service.Get(id)
 
 	if err != nil {
 		// u.logger.Error(err)

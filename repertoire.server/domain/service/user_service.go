@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"repertoire/data/repository"
 	"repertoire/models"
 )
@@ -15,6 +16,6 @@ func NewUserService(repository repository.UserRepository) UserService {
 	}
 }
 
-func (s *UserService) GetByEmail(email string) (user models.User, err error) {
-	return user, s.repository.GetByEmail(&user, email)
+func (s *UserService) Get(id uuid.UUID) (user models.User, err error) {
+	return user, s.repository.Get(&user, id)
 }

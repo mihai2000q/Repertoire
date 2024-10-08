@@ -14,7 +14,7 @@ func (u UserRouter) RegisterRoutes() {
 	api := u.requestHandler.PrivateRouter.Group("/users")
 	{
 		api.GET("/current", u.handler.GetCurrentUser)
-		api.GET("/", u.handler.GetUserByEmail)
+		api.GET("/:id", u.handler.Get)
 	}
 }
 
