@@ -16,7 +16,6 @@ func (u UserRouter) SetupRoutes() {
 	api := u.requestHandler.BaseRouter.Group("/users")
 	{
 		api.GET("/", u.handler.GetUserByEmail)
-		api.GET("/test", u.handler.Test)
 	}
 }
 

@@ -32,13 +32,8 @@ func (u UserHandler) GetUserByEmail(c *gin.Context) {
 
 	if user.ID == uuid.Nil {
 		c.JSON(http.StatusNotFound, gin.H{})
+		return
 	}
 
 	c.JSON(http.StatusOK, user)
-}
-
-func (UserHandler) Test(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"data": "this is a test",
-	})
 }
