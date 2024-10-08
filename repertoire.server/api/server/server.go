@@ -20,9 +20,6 @@ func NewServer(lc fx.Lifecycle, handler *RequestHandler, env config.Env) *http.S
 		OnStart: func(ctx context.Context) error {
 			return startServer(server)
 		},
-		OnStop: func(ctx context.Context) error {
-			return server.Shutdown(ctx)
-		},
 	})
 
 	return server

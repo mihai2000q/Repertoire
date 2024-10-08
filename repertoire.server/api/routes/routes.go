@@ -9,14 +9,16 @@ import (
 type Routes []Route
 
 type Route interface {
-	SetupRoutes()
+	RegisterRoutes()
 }
 
 func NewRoutes(
 	lc fx.Lifecycle,
+	authRouter router.AuthRouter,
 	userRouter router.UserRouter,
 ) *Routes {
 	routes := &Routes{
+		authRouter,
 		userRouter,
 	}
 
@@ -32,6 +34,6 @@ func NewRoutes(
 
 func (r Routes) setup() {
 	for _, route := range r {
-		route.SetupRoutes()
+		route.RegisterRoutes()
 	}
 }

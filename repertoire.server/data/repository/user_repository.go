@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"repertoire/data/database"
 	"repertoire/models"
 )
@@ -15,8 +16,11 @@ func NewUserRepository(client database.Client) UserRepository {
 	}
 }
 
+func (u UserRepository) Get(user *models.User, id uuid.UUID) error {
+	return u.client.DB.Find(&user, models.User{ID: id}).Error
+}
+
 func (u UserRepository) GetByEmail(user *models.User, email string) error {
-	// return u.client.DB.First(&user, "email = ?", email).Error
 	return u.client.DB.Find(&user, models.User{Email: email}).Error
 }
 

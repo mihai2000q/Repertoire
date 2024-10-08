@@ -6,27 +6,23 @@ import (
 )
 
 type UserRouter struct {
-	// logger      server.Logger
 	requestHandler *server.RequestHandler
 	handler        *handler.UserHandler
 }
 
-func (u UserRouter) SetupRoutes() {
-	// u.logger.Debug("Setting up user routes")
-	api := u.requestHandler.BaseRouter.Group("/users")
+func (u UserRouter) RegisterRoutes() {
+	api := u.requestHandler.PrivateRouter.Group("/users")
 	{
-		api.GET("/", u.handler.GetUserByEmail)
-		api.GET("/test", u.handler.Test)
+		api.GET("/current", u.handler.GetCurrentUser)
+		api.GET("/:id", u.handler.Get)
 	}
 }
 
 func NewUserRouter(
-	//logger server.Logger,
 	requestHandler *server.RequestHandler,
 	handler *handler.UserHandler,
 ) UserRouter {
 	return UserRouter{
-		//logger: 		logger,
 		handler:        handler,
 		requestHandler: requestHandler,
 	}
