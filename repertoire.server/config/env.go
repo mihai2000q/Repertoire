@@ -17,6 +17,9 @@ type Env struct {
 	DatabaseSSLMode  string
 	LogOutput        string
 	LogLevel         string
+	JwtIssuer        string
+	JwtAudience      string
+	JwtSecretKey     string
 }
 
 func NewEnv() Env {
@@ -36,6 +39,9 @@ func NewEnv() Env {
 		DatabaseSSLMode:  os.Getenv("DB_SSL_MODE"),
 		LogOutput:        os.Getenv("LOG_OUTPUT"),
 		LogLevel:         os.Getenv("LOG_LEVEL"),
+		JwtIssuer:        os.Getenv("JWT_ISSUER"),
+		JwtAudience:      os.Getenv("JWT_AUDIENCE"),
+		JwtSecretKey:     os.Getenv("JWT_SECRET_KEY"),
 	}
 	return env
 }
