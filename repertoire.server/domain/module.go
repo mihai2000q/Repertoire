@@ -2,7 +2,12 @@ package domain
 
 import (
 	"go.uber.org/fx"
+	"repertoire/domain/provider"
 	"repertoire/domain/service"
+)
+
+var providers = fx.Options(
+	fx.Provide(provider.NewCurrentUserProvider),
 )
 
 var services = fx.Options(
@@ -11,5 +16,6 @@ var services = fx.Options(
 )
 
 var Module = fx.Options(
+	providers,
 	services,
 )

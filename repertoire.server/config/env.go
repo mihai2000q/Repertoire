@@ -30,7 +30,7 @@ func NewEnv() Env {
 
 	env := Env{
 		ApplicationPort:  os.Getenv("SERVER_PORT"),
-		Environment:      os.Getenv("ENVIRONMENT"),
+		Environment:      os.Getenv("ENV"),
 		DatabaseHost:     os.Getenv("DB_HOST"),
 		DatabaseUser:     os.Getenv("DB_USER"),
 		DatabasePassword: os.Getenv("DB_PASSWORD"),
