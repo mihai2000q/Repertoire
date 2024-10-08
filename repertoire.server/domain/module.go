@@ -6,7 +6,9 @@ import (
 )
 
 var services = fx.Options(
-	fx.Provide(service.NewUserService))
+	fx.Provide(service.NewAuthService),
+	fx.Provide(service.NewUserService),
+)
 
 var Module = fx.Options(
 	services,
