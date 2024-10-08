@@ -10,10 +10,12 @@ import (
 )
 
 var handlers = fx.Options(
+	fx.Provide(handler.NewAuthHandler),
 	fx.Provide(handler.NewUserHandler),
 )
 
 var routers = fx.Options(
+	fx.Provide(router.NewAuthRouter),
 	fx.Provide(router.NewUserRouter),
 )
 

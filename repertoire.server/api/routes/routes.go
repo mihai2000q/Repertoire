@@ -14,9 +14,11 @@ type Route interface {
 
 func NewRoutes(
 	lc fx.Lifecycle,
+	authRouter router.AuthRouter,
 	userRouter router.UserRouter,
 ) *Routes {
 	routes := &Routes{
+		authRouter,
 		userRouter,
 	}
 
