@@ -9,7 +9,7 @@ import (
 type Routes []Route
 
 type Route interface {
-	SetupRoutes()
+	RegisterRoutes()
 }
 
 func NewRoutes(
@@ -34,6 +34,6 @@ func NewRoutes(
 
 func (r Routes) setup() {
 	for _, route := range r {
-		route.SetupRoutes()
+		route.RegisterRoutes()
 	}
 }

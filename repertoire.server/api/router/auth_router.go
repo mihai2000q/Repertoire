@@ -6,14 +6,14 @@ import (
 )
 
 type AuthRouter struct {
-	// logger      server.Logger
+	// logger      logger.Logger
 	requestHandler *server.RequestHandler
 	handler        *handler.AuthHandler
 }
 
-func (u AuthRouter) SetupRoutes() {
-	// u.logger.Debug("Setting up auth routes")
-	api := u.requestHandler.BaseRouter.Group("/auth")
+func (u AuthRouter) RegisterRoutes() {
+	// u.logger.Info("Setting up auth routes")
+	api := u.requestHandler.PublicRouter.Group("/auth")
 	{
 		api.PUT("/sign-in", u.handler.SignIn)
 		api.POST("/sign-up", u.handler.SignUp)
@@ -21,7 +21,7 @@ func (u AuthRouter) SetupRoutes() {
 }
 
 func NewAuthRouter(
-	//logger server.Logger,
+	//logger logger.Logger,
 	requestHandler *server.RequestHandler,
 	handler *handler.AuthHandler,
 ) AuthRouter {

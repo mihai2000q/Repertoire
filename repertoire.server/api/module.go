@@ -4,9 +4,14 @@ import (
 	"go.uber.org/fx"
 	"net/http"
 	"repertoire/api/handler"
+	"repertoire/api/middleware"
 	"repertoire/api/router"
 	"repertoire/api/routes"
 	"repertoire/api/server"
+)
+
+var middlewares = fx.Options(
+	fx.Provide(middleware.NewJWTAuthMiddleware),
 )
 
 var handlers = fx.Options(
@@ -20,6 +25,7 @@ var routers = fx.Options(
 )
 
 var Module = fx.Options(
+	middlewares,
 	fx.Provide(server.NewRequestHandler),
 	handlers,
 	routers,
