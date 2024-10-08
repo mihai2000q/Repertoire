@@ -6,10 +6,10 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"column:id; primary_key; not null" json:"id"`
-	Name      string    `gorm:"column:name" json:"name"`
-	Email     string    `gorm:"column:email" json:"email"`
-	Password  string    `gorm:"column:password;->:false" json:"-"`
-	CreatedAt time.Time `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at"`
+	ID        uuid.UUID `gorm:"type:uuid; <-:create" json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `gorm:"unique" json:"email"`
+	Password  string    `json:"-"`
+	CreatedAt time.Time `gorm:"<-:create" json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
