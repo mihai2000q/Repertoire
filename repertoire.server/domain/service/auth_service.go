@@ -2,12 +2,12 @@ package service
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"repertoire/api/contracts/auth"
 	"repertoire/config"
 	"repertoire/data/repository"
+	"repertoire/data/service"
 	"repertoire/models"
 	"strings"
 	"time"
@@ -15,15 +15,22 @@ import (
 
 type AuthService struct {
 	userRepository repository.UserRepository
+	jwtService     service.JwtService
 	env            config.Env
 }
 
-func NewAuthService(userRepository repository.UserRepository, env config.Env) AuthService {
+func NewAuthService(
+	userRepository repository.UserRepository,
+	jwtService service.JwtService,
+	env config.Env,
+) AuthService {
 	return AuthService{
 		userRepository: userRepository,
+		jwtService:     jwtService,
 		env:            env,
 	}
 }
+
 func (a *AuthService) SignIn(request auth.SignInRequest) (string, error) {
 	var user models.User
 
@@ -40,7 +47,7 @@ func (a *AuthService) SignIn(request auth.SignInRequest) (string, error) {
 		return "", err
 	}
 
-	return a.createToken(user)
+	return a.jwtService.CreateToken(user)
 }
 
 func (a *AuthService) SignUp(request auth.SignUpRequest) (string, error) {
@@ -76,22 +83,5 @@ func (a *AuthService) SignUp(request auth.SignUpRequest) (string, error) {
 		return "", err
 	}
 
-	return a.createToken(user)
-}
-
-func (a *AuthService) createToken(user models.User) (string, error) {
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti":   uuid.New().String(),
-		"sub":   user.ID.String(),
-		"email": user.Email,
-		"iss":   a.env.JwtIssuer,
-		"aud":   a.env.JwtAudience,
-		"iat":   time.Now().UTC().Unix(),
-		"exp":   time.Now().UTC().Add(time.Hour).Unix(),
-	})
-	token, err := claims.SignedString([]byte(a.env.JwtSecretKey))
-	if err != nil {
-		return "", err
-	}
-	return token, nil
+	return a.jwtService.CreateToken(user)
 }
