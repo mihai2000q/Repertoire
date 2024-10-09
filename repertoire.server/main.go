@@ -3,14 +3,14 @@ package main
 import (
 	"go.uber.org/fx"
 	"repertoire/api"
-	"repertoire/config"
 	"repertoire/data"
 	"repertoire/domain"
+	"repertoire/utils"
 )
 
 func main() {
 	fx.New(
-		fx.Provide(config.NewEnv),
+		fx.Provide(utils.NewEnv),
 		data.Module,
 		domain.Module,
 		api.Module,

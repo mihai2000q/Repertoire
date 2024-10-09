@@ -4,8 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"repertoire/api/contracts/auth"
-	"repertoire/config"
+	"repertoire/api/requests/auth"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
@@ -17,13 +16,13 @@ import (
 type AuthService struct {
 	userRepository repository.UserRepository
 	jwtService     service.JwtService
-	env            config.Env
+	env            utils.Env
 }
 
 func NewAuthService(
 	userRepository repository.UserRepository,
 	jwtService service.JwtService,
-	env config.Env,
+	env utils.Env,
 ) AuthService {
 	return AuthService{
 		userRepository: userRepository,

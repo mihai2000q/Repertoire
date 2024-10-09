@@ -8,6 +8,7 @@ import (
 	"repertoire/api/router"
 	"repertoire/api/routes"
 	"repertoire/api/server"
+	"repertoire/api/validation"
 )
 
 var middlewares = fx.Options(
@@ -26,6 +27,7 @@ var routers = fx.Options(
 )
 
 var Module = fx.Options(
+	fx.Provide(validation.NewValidator),
 	middlewares,
 	fx.Provide(server.NewRequestHandler),
 	handlers,

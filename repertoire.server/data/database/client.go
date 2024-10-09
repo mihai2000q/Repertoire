@@ -7,8 +7,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"repertoire/config"
 	"repertoire/models"
+	"repertoire/utils"
 	"time"
 )
 
@@ -16,7 +16,7 @@ type Client struct {
 	DB *gorm.DB
 }
 
-func NewClient(lc fx.Lifecycle, env config.Env) Client {
+func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		env.DatabaseHost,
 		env.DatabaseUser,

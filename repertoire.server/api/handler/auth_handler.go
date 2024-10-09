@@ -3,25 +3,31 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"repertoire/api/contracts/auth"
+	"repertoire/api/requests/auth"
+	"repertoire/api/server"
+	"repertoire/api/validation"
 	"repertoire/domain/service"
 )
 
 type AuthHandler struct {
 	service service.AuthService
+	server.BaseHandler
 }
 
-func NewAuthHandler(service service.AuthService) *AuthHandler {
+func NewAuthHandler(service service.AuthService, validator validation.Validator) *AuthHandler {
 	return &AuthHandler{
 		service: service,
+		BaseHandler: server.BaseHandler{
+			Validator: validator,
+		},
 	}
 }
 
 func (a AuthHandler) Refresh(c *gin.Context) {
 	var request auth.RefreshRequest
-	err := c.Bind(&request)
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
+	errCode := a.BindAndValidate(c, request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
@@ -38,9 +44,9 @@ func (a AuthHandler) Refresh(c *gin.Context) {
 
 func (a AuthHandler) SignIn(c *gin.Context) {
 	var request auth.SignInRequest
-	err := c.Bind(&request)
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
+	errCode := a.BindAndValidate(c, &request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
@@ -57,9 +63,9 @@ func (a AuthHandler) SignIn(c *gin.Context) {
 
 func (a AuthHandler) SignUp(c *gin.Context) {
 	var request auth.SignUpRequest
-	err := c.Bind(&request)
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
+	errCode := a.BindAndValidate(c, &request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
