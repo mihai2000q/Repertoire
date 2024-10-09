@@ -4,17 +4,16 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"repertoire/config"
 	"repertoire/models"
 	"repertoire/utils"
 	"time"
 )
 
 type JwtService struct {
-	env config.Env
+	env utils.Env
 }
 
-func NewJwtService(env config.Env) JwtService {
+func NewJwtService(env utils.Env) JwtService {
 	return JwtService{
 		env: env,
 	}

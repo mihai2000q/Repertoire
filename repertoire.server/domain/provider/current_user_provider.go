@@ -3,7 +3,6 @@ package provider
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/config"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
@@ -13,13 +12,13 @@ import (
 type CurrentUserProvider struct {
 	jwtService     service.JwtService
 	userRepository repository.UserRepository
-	env            config.Env
+	env            utils.Env
 }
 
 func NewCurrentUserProvider(
 	jwtService service.JwtService,
 	userRepository repository.UserRepository,
-	env config.Env,
+	env utils.Env,
 ) CurrentUserProvider {
 	return CurrentUserProvider{
 		jwtService:     jwtService,
