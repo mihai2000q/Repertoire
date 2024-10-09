@@ -9,6 +9,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
+	"repertoire/utils"
 	"strings"
 	"time"
 )
@@ -31,59 +32,59 @@ func NewAuthService(
 	}
 }
 
-func (a *AuthService) Refresh(request auth.RefreshRequest) (string, error) {
+func (a *AuthService) Refresh(request auth.RefreshRequest) (string, *utils.ErrorCode) {
 	// validate token
-	userId, err := a.jwtService.Validate(request.AccessToken)
-	if err != nil {
-		return "", err
+	userId, errCode := a.jwtService.Validate(request.AccessToken)
+	if errCode != nil {
+		return "", errCode
 	}
 
 	// get user
 	var user models.User
-	err = a.userRepository.Get(&user, userId)
+	err := a.userRepository.Get(&user, userId)
 	if err != nil {
-		return "", err
+		return "", utils.InternalServerError(err)
 	}
 
 	return a.jwtService.CreateToken(user)
 }
 
-func (a *AuthService) SignIn(request auth.SignInRequest) (string, error) {
+func (a *AuthService) SignIn(request auth.SignInRequest) (string, *utils.ErrorCode) {
 	var user models.User
 
 	// get user
 	email := strings.ToLower(request.Email)
 	err := a.userRepository.GetByEmail(&user, email)
 	if err != nil {
-		return "", err
+		return "", utils.InternalServerError(err)
 	}
 
 	// check password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
-		return "", err
+		return "", utils.InternalServerError(err)
 	}
 
 	return a.jwtService.CreateToken(user)
 }
 
-func (a *AuthService) SignUp(request auth.SignUpRequest) (string, error) {
+func (a *AuthService) SignUp(request auth.SignUpRequest) (string, *utils.ErrorCode) {
 	var user models.User
 
 	// check if the user already exists
 	email := strings.ToLower(request.Email)
 	err := a.userRepository.GetByEmail(&user, email)
 	if err != nil {
-		return "", err
+		return "", utils.InternalServerError(err)
 	}
 	if user.ID != uuid.Nil {
-		return "", errors.New("user already exists")
+		return "", utils.BadRequestError(errors.New("user already exists"))
 	}
 
 	// hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return "", utils.InternalServerError(err)
 	}
 
 	// create user
@@ -97,7 +98,7 @@ func (a *AuthService) SignUp(request auth.SignUpRequest) (string, error) {
 	}
 	err = a.userRepository.Create(&user)
 	if err != nil {
-		return "", err
+		return "", utils.InternalServerError(err)
 	}
 
 	return a.jwtService.CreateToken(user)
