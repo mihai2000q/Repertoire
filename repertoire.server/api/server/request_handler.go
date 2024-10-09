@@ -11,14 +11,19 @@ type RequestHandler struct {
 	PrivateRouter *gin.RouterGroup
 }
 
-func NewRequestHandler(jwtAuthMiddleware middleware.JWTAuthMiddleware) *RequestHandler {
+func NewRequestHandler(
+	jwtAuthMiddleware middleware.JWTAuthMiddleware,
+	errorHandlerMiddleware middleware.ErrorHandlerMiddleware,
+) *RequestHandler {
 	engine := gin.New()
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
 
 	publicRouter := engine.Group("/api")
+	publicRouter.Use(errorHandlerMiddleware.Handler())
 
 	privateRouter := engine.Group("/api")
+	privateRouter.Use(errorHandlerMiddleware.Handler())
 	privateRouter.Use(jwtAuthMiddleware.Handler())
 
 	return &RequestHandler{

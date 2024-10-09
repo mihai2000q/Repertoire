@@ -1,10 +1,13 @@
 package provider
 
 import (
+	"errors"
+	"github.com/google/uuid"
 	"repertoire/config"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
+	"repertoire/utils"
 )
 
 type CurrentUserProvider struct {
@@ -25,17 +28,19 @@ func NewCurrentUserProvider(
 	}
 }
 
-func (c *CurrentUserProvider) Get(token string) (*models.User, error) {
-	userId, err := c.jwtService.GetUserIdFromJwt(token)
-	if err != nil {
-		return nil, err
+func (c *CurrentUserProvider) Get(token string) (user models.User, e *utils.ErrorCode) {
+	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
+	if errCode != nil {
+		return user, errCode
 	}
 
-	var user models.User
-	err = c.userRepository.Get(&user, userId)
+	err := c.userRepository.Get(&user, userId)
 	if err != nil {
-		return nil, err
+		return user, utils.InternalServerError(err)
+	}
+	if user.ID == uuid.Nil {
+		return user, utils.NotFoundError(errors.New("user not found"))
 	}
 
-	return &user, nil
+	return user, nil
 }

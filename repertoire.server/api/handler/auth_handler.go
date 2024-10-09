@@ -24,12 +24,10 @@ func (a AuthHandler) Refresh(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	
-	token, err := a.service.Refresh(request)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
+
+	token, errCode := a.service.Refresh(request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
@@ -46,7 +44,11 @@ func (a AuthHandler) SignIn(c *gin.Context) {
 		return
 	}
 
-	token, err := a.service.SignIn(request)
+	token, errCode := a.service.SignIn(request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
@@ -57,17 +59,13 @@ func (a AuthHandler) SignUp(c *gin.Context) {
 	var request auth.SignUpRequest
 	err := c.Bind(&request)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	token, err := a.service.SignUp(request)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	token, errCode := a.service.SignUp(request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 

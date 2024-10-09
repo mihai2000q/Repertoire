@@ -26,19 +26,10 @@ func NewUserHandler(
 
 func (u UserHandler) GetCurrentUser(c *gin.Context) {
 	token := utils.GetTokenFromContext(c)
-	user, err := u.currentUserProvider.Get(token)
-	if err != nil {
-		// u.logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
 
-	if user.ID == uuid.Nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "User not found",
-		})
+	user, errorCode := u.currentUserProvider.Get(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
@@ -50,26 +41,13 @@ func (u UserHandler) Get(c *gin.Context) {
 
 	id, err := uuid.Parse(paramId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, err := u.service.Get(id)
-
-	if err != nil {
-		// u.logger.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	if user.ID == uuid.Nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "User not found",
-		})
+	user, errorCode := u.service.Get(id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 

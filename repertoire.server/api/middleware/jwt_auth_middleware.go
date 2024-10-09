@@ -23,11 +23,9 @@ func (m JWTAuthMiddleware) Handler() gin.HandlerFunc {
 		t := strings.Split(authHeader, " ")
 		if len(t) == 2 {
 			authToken := t[1]
-			err := m.jwtService.Authorize(authToken)
-			if err != nil {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-					"error": err.Error(),
-				})
+			errorCode := m.jwtService.Authorize(authToken)
+			if errorCode != nil {
+				_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 				return
 			} else {
 				c.Next()
