@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"repertoire/api/contracts/auth"
+	"repertoire/api/requests/auth"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"

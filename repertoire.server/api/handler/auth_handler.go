@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"repertoire/api/contracts/auth"
+	"repertoire/api/requests/auth"
 	"repertoire/domain/service"
 )
 
