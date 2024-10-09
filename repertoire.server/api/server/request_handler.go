@@ -22,8 +22,8 @@ func NewRequestHandler(
 	publicRouter := engine.Group("/api")
 	publicRouter.Use(errorHandlerMiddleware.Handler())
 
-	privateRouter := engine.Group("/api")
-	privateRouter.Use(errorHandlerMiddleware.Handler())
+	var privateRouter = &gin.RouterGroup{}
+	*privateRouter = *publicRouter
 	privateRouter.Use(jwtAuthMiddleware.Handler())
 
 	return &RequestHandler{

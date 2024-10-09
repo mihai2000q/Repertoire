@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
-	"repertoire/api/utils"
+	"repertoire/api/server"
+	"repertoire/api/validation"
 	"repertoire/domain/provider"
 	"repertoire/domain/service"
 )
@@ -12,20 +13,25 @@ import (
 type UserHandler struct {
 	service             service.UserService
 	currentUserProvider provider.CurrentUserProvider
+	server.BaseHandler
 }
 
 func NewUserHandler(
 	service service.UserService,
 	currentUserProvider provider.CurrentUserProvider,
+	validator validation.Validator,
 ) *UserHandler {
 	return &UserHandler{
 		service:             service,
 		currentUserProvider: currentUserProvider,
+		BaseHandler: server.BaseHandler{
+			Validator: validator,
+		},
 	}
 }
 
 func (u UserHandler) GetCurrentUser(c *gin.Context) {
-	token := utils.GetTokenFromContext(c)
+	token := u.GetTokenFromContext(c)
 
 	user, errorCode := u.currentUserProvider.Get(token)
 	if errorCode != nil {
