@@ -11,6 +11,7 @@ import (
 )
 
 var middlewares = fx.Options(
+	fx.Provide(middleware.NewErrorHandlerMiddleware),
 	fx.Provide(middleware.NewJWTAuthMiddleware),
 )
 
