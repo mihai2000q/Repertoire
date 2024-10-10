@@ -1,12 +1,6 @@
 import { ReactElement } from 'react'
 
-interface TopbarProps {
-  hidden: boolean
-}
-
-function Topbar({ hidden }: TopbarProps): ReactElement {
-  if (hidden) return <></>
-
+function Topbar(): ReactElement {
   return (
     <div>
       <p>This is the top bar</p>

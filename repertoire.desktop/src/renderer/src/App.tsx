@@ -7,6 +7,7 @@ import NotFoundView from '@renderer/views/NotFoundView'
 import UnauthorizedView from '@renderer/views/UnauthorizedView'
 import { ReactElement } from 'react'
 import MainView from '@renderer/views/MainView'
+import SignInView from '@renderer/views/SignInView'
 
 function App(): ReactElement {
   return (
@@ -16,6 +17,7 @@ function App(): ReactElement {
           <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
           <Route element={<IsAlreadyAuthenticated />}>
+            <Route path={'sign-in'} element={<SignInView />} />
             <Route path={'sign-up'} element={<SignUpView />} />
           </Route>
 
