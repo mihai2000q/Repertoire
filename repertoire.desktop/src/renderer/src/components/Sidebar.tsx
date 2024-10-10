@@ -1,12 +1,6 @@
 import { ReactElement } from 'react'
 
-interface SidebarProps {
-  hidden: boolean
-}
-
-function Sidebar({ hidden }: SidebarProps): ReactElement {
-  if (hidden) return <></>
-
+function Sidebar(): ReactElement {
   return (
     <div style={{ width: '200px' }}>
       <p>This is the navigation bar</p>

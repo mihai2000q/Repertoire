@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 
 function IsAlreadyAuthenticated(): ReactElement {
   const isAuthenticated = useAuth()
-
   return isAuthenticated ? <Navigate to={'home'} replace /> : <Outlet />
 }
 
