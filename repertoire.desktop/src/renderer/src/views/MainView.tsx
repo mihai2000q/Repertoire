@@ -3,9 +3,12 @@ import Sidebar from '@renderer/components/Sidebar'
 import Topbar from '@renderer/components/Topbar'
 import useAuth from '@renderer/hooks/useAuth'
 import { Outlet } from 'react-router-dom'
+import useErrorRedirection from '@renderer/hooks/useErrorRedirection'
 
 function MainView(): ReactElement {
   const isLayoutHidden = !useAuth()
+
+  useErrorRedirection()
 
   return (
     <div
