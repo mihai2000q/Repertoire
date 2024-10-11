@@ -8,31 +8,35 @@ import UnauthorizedView from '@renderer/views/UnauthorizedView'
 import { ReactElement } from 'react'
 import MainView from '@renderer/views/MainView'
 import SignInView from '@renderer/views/SignInView'
+import { MantineProvider } from '@mantine/core'
+import { theme } from '@renderer/theme/theme'
 
 function App(): ReactElement {
   return (
     <div className={'app'}>
-      <BrowserRouter>
-        <Routes>
-          <Route path={'/'} element={<Navigate to={'home'} replace />} />
+      <MantineProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
-          <Route element={<IsAlreadyAuthenticated />}>
-            <Route path={'sign-in'} element={<SignInView />} />
-            <Route path={'sign-up'} element={<SignUpView />} />
-          </Route>
-
-          <Route element={<RequireAuthentication />}>
-            <Route element={<MainView />}>
-              <Route path={'home'} element={<HomeView />} />
-
-              {/* Errors */}
-              <Route path={'401'} element={<UnauthorizedView />} />
-              <Route path={'404'} element={<NotFoundView />} />
-              <Route path={'*'} element={<Navigate to={'404'} replace />} />
+            <Route element={<IsAlreadyAuthenticated />}>
+              <Route path={'sign-in'} element={<SignInView />} />
+              <Route path={'sign-up'} element={<SignUpView />} />
             </Route>
-          </Route>
-        </Routes>
-      </BrowserRouter>
+
+            <Route element={<RequireAuthentication />}>
+              <Route element={<MainView />}>
+                <Route path={'home'} element={<HomeView />} />
+
+                {/* Errors */}
+                <Route path={'401'} element={<UnauthorizedView />} />
+                <Route path={'404'} element={<NotFoundView />} />
+                <Route path={'*'} element={<Navigate to={'404'} replace />} />
+              </Route>
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </MantineProvider>
     </div>
   )
 }
