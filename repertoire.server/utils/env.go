@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Env struct {
@@ -45,3 +46,5 @@ func NewEnv() Env {
 	}
 	return env
 }
+
+var DevelopmentEnvironment = "development"
