@@ -32,6 +32,14 @@ func (s *SongService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
 	return song, nil
 }
 
+func (s *SongService) GetAll(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode) {
+	err := s.repository.GetAllByUser(songs, request.UserId)
+	if err != nil {
+		return songs, utils.InternalServerError(err)
+	}
+	return songs, nil
+}
+
 func (s *SongService) Create(request requests.CreateSongRequest) *utils.ErrorCode {
 	song := models.Song{
 		ID:         uuid.New(),
