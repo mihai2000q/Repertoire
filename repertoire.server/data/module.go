@@ -1,13 +1,15 @@
 package data
 
 import (
-	"go.uber.org/fx"
 	"repertoire/data/database"
 	"repertoire/data/repository"
 	"repertoire/data/service"
+
+	"go.uber.org/fx"
 )
 
 var repositories = fx.Options(
+	fx.Provide(repository.NewSongRepository),
 	fx.Provide(repository.NewUserRepository),
 )
 

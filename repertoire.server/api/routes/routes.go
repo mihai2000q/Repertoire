@@ -2,8 +2,9 @@ package routes
 
 import (
 	"context"
-	"go.uber.org/fx"
 	"repertoire/api/router"
+
+	"go.uber.org/fx"
 )
 
 type Routes []Route
@@ -15,10 +16,12 @@ type Route interface {
 func NewRoutes(
 	lc fx.Lifecycle,
 	authRouter router.AuthRouter,
+	songRouter router.SongRouter,
 	userRouter router.UserRouter,
 ) *Routes {
 	routes := &Routes{
 		authRouter,
+		songRouter,
 		userRouter,
 	}
 
