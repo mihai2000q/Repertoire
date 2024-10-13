@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/requests/song"
+	"repertoire/api/requests"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -47,7 +47,7 @@ func (s SongHandler) Get(c *gin.Context) {
 }
 
 func (s SongHandler) Create(c *gin.Context) {
-	var request song.CreateSongRequest
+	var request requests.CreateSongRequest
 	errorCode := s.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -61,6 +61,23 @@ func (s SongHandler) Create(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "song has been created successfully")
+}
+
+func (s SongHandler) Update(c *gin.Context) {
+	var request requests.UpdateSongRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.Update(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song has been updated successfully")
 }
 
 func (s SongHandler) Delete(c *gin.Context) {
