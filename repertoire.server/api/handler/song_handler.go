@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"net/http"
 	"repertoire/api/requests/song"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type SongHandler struct {
@@ -24,6 +26,24 @@ func NewSongHandler(
 			Validator: validator,
 		},
 	}
+}
+
+func (s SongHandler) Get(c *gin.Context) {
+	paramId := c.Param("id")
+
+	id, err := uuid.Parse(paramId)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	user, errorCode := s.service.Get(id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
 
 func (s SongHandler) Create(c *gin.Context) {
