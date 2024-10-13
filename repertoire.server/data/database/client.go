@@ -38,7 +38,10 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			return db.AutoMigrate(&models.User{})
+				return db.AutoMigrate(
+					&models.User{},
+					&models.Song{},
+				)
 		},
 	})
 
