@@ -46,3 +46,21 @@ func (s *SongService) Create(request song.CreateSongRequest) *utils.ErrorCode {
 	}
 	return nil
 }
+
+func (s *SongService) Delete(id uuid.UUID) *utils.ErrorCode {
+	var song models.Song
+	err := s.repository.Get(&song, id)
+	if err != nil {
+		return utils.InternalServerError(err)
+	}
+	if song.ID == uuid.Nil {
+		return utils.NotFoundError(errors.New("song not found"))
+	}
+
+	err = s.repository.Delete(&song)
+	if err != nil {
+		return utils.InternalServerError(err)
+	}
+
+	return nil
+}
