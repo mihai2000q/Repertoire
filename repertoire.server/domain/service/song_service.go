@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"repertoire/api/requests/song"
 	"repertoire/data/repository"
 	"repertoire/models"
@@ -18,6 +19,17 @@ func NewSongService(repository repository.SongRepository) SongService {
 	return SongService{
 		repository: repository,
 	}
+}
+
+func (s *SongService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
+	err := s.repository.Get(&song, id)
+	if err != nil {
+		return song, utils.InternalServerError(err)
+	}
+	if song.ID == uuid.Nil {
+		return song, utils.NotFoundError(errors.New("song not found"))
+	}
+	return song, nil
 }
 
 func (s *SongService) Create(request song.CreateSongRequest) *utils.ErrorCode {
