@@ -1,10 +1,12 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
 	"repertoire/api/validation"
 	"repertoire/utils"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type BaseHandler struct {
@@ -29,4 +31,10 @@ func (h *BaseHandler) BindAndValidate(c *gin.Context, request interface{}) *util
 	}
 
 	return nil
+}
+
+func (*BaseHandler) SendMessage(c *gin.Context, message string) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": message,
+	})
 }
