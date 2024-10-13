@@ -1,4 +1,4 @@
-name: Repertoire
+name: repertoire
 services:
   server:
     build:
