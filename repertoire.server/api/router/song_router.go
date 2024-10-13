@@ -15,6 +15,7 @@ func (s SongRouter) RegisterRoutes() {
 	{
 		api.GET("/:id", s.handler.Get)
 		api.POST("/", s.handler.Create)
+		api.DELETE("/:id", s.handler.Delete)
 	}
 }
 
