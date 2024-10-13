@@ -62,3 +62,21 @@ func (s SongHandler) Create(c *gin.Context) {
 
 	s.SendMessage(c, "song has been created successfully")
 }
+
+func (s SongHandler) Delete(c *gin.Context) {
+	paramId := c.Param("id")
+
+	id, err := uuid.Parse(paramId)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := s.service.Delete(id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song has been deleted successfully")
+}
