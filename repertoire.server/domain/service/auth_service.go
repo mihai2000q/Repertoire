@@ -2,15 +2,16 @@ package service
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
-	"repertoire/api/requests/auth"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
 	"repertoire/utils"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
@@ -31,9 +32,9 @@ func NewAuthService(
 	}
 }
 
-func (a *AuthService) Refresh(request auth.RefreshRequest) (string, *utils.ErrorCode) {
+func (a *AuthService) Refresh(request requests.RefreshRequest) (string, *utils.ErrorCode) {
 	// validate token
-	userId, errCode := a.jwtService.Validate(request.AccessToken)
+	userId, errCode := a.jwtService.Validate(request.Token)
 	if errCode != nil {
 		return "", errCode
 	}
@@ -48,7 +49,7 @@ func (a *AuthService) Refresh(request auth.RefreshRequest) (string, *utils.Error
 	return a.jwtService.CreateToken(user)
 }
 
-func (a *AuthService) SignIn(request auth.SignInRequest) (string, *utils.ErrorCode) {
+func (a *AuthService) SignIn(request requests.SignInRequest) (string, *utils.ErrorCode) {
 	var user models.User
 
 	// get user
@@ -67,7 +68,7 @@ func (a *AuthService) SignIn(request auth.SignInRequest) (string, *utils.ErrorCo
 	return a.jwtService.CreateToken(user)
 }
 
-func (a *AuthService) SignUp(request auth.SignUpRequest) (string, *utils.ErrorCode) {
+func (a *AuthService) SignUp(request requests.SignUpRequest) (string, *utils.ErrorCode) {
 	var user models.User
 
 	// check if the user already exists

@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
-	"repertoire/api/requests/auth"
+	"repertoire/api/requests"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
@@ -24,7 +25,7 @@ func NewAuthHandler(service service.AuthService, validator validation.Validator)
 }
 
 func (a AuthHandler) Refresh(c *gin.Context) {
-	var request auth.RefreshRequest
+	var request requests.RefreshRequest
 	errCode := a.BindAndValidate(c, request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
@@ -43,7 +44,7 @@ func (a AuthHandler) Refresh(c *gin.Context) {
 }
 
 func (a AuthHandler) SignIn(c *gin.Context) {
-	var request auth.SignInRequest
+	var request requests.SignInRequest
 	errCode := a.BindAndValidate(c, &request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
@@ -62,7 +63,7 @@ func (a AuthHandler) SignIn(c *gin.Context) {
 }
 
 func (a AuthHandler) SignUp(c *gin.Context) {
-	var request auth.SignUpRequest
+	var request requests.SignUpRequest
 	errCode := a.BindAndValidate(c, &request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)

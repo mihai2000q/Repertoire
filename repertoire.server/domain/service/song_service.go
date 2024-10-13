@@ -2,7 +2,7 @@ package service
 
 import (
 	"errors"
-	"repertoire/api/requests/song"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
 	"repertoire/utils"
@@ -32,7 +32,7 @@ func (s *SongService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
 	return song, nil
 }
 
-func (s *SongService) Create(request song.CreateSongRequest) *utils.ErrorCode {
+func (s *SongService) Create(request requests.CreateSongRequest) *utils.ErrorCode {
 	song := models.Song{
 		ID:         uuid.New(),
 		Title:      request.Title,
@@ -44,6 +44,28 @@ func (s *SongService) Create(request song.CreateSongRequest) *utils.ErrorCode {
 	if err != nil {
 		return utils.InternalServerError(err)
 	}
+	return nil
+}
+
+func (s *SongService) Update(request requests.UpdateSongRequest) *utils.ErrorCode {
+	var song models.Song
+	err := s.repository.Get(&song, request.Id)
+	if err != nil {
+		return utils.InternalServerError(err)
+	}
+	if song.ID == uuid.Nil {
+		return utils.NotFoundError(errors.New("song not found"))
+	}
+
+	song.Title = request.Title
+	song.IsRecorded = request.IsRecorded
+	song.UpdatedAt = time.Now().UTC()
+
+	err = s.repository.Update(&song)
+	if err != nil {
+		return utils.InternalServerError(err)
+	}
+
 	return nil
 }
 
