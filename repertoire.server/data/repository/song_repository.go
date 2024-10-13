@@ -25,6 +25,10 @@ func (u SongRepository) Create(song *models.Song) error {
 	return u.client.DB.Create(&song).Error
 }
 
+func (u SongRepository) Update(song *models.Song) error {
+	return u.client.DB.Save(&song).Error
+}
+
 func (u SongRepository) Delete(song *models.Song) error {
 	return u.client.DB.Delete(&song).Error
 }
