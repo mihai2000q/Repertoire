@@ -3,13 +3,14 @@ package database
 import (
 	"context"
 	"fmt"
-	"go.uber.org/fx"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"repertoire/models"
 	"repertoire/utils"
 	"time"
+
+	"go.uber.org/fx"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Client struct {
@@ -36,14 +37,16 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 		log.Fatalf("Failed to connect database: %v", err)
 	}
 
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
+	if env.Environment == utils.DevelopmentEnvironment {
+		lc.Append(fx.Hook{
+			OnStart: func(ctx context.Context) error {
 				return db.AutoMigrate(
 					&models.User{},
 					&models.Song{},
 				)
-		},
-	})
+			},
+		})
+	}
 
 	client := Client{
 		DB: db,
