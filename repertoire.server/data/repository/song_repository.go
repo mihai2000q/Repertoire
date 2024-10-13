@@ -24,3 +24,7 @@ func (u SongRepository) Get(song *models.Song, id uuid.UUID) error {
 func (u SongRepository) Create(song *models.Song) error {
 	return u.client.DB.Create(&song).Error
 }
+
+func (u SongRepository) Delete(song *models.Song) error {
+	return u.client.DB.Delete(&song).Error
+}
