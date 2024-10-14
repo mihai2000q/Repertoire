@@ -77,7 +77,9 @@ func (s SongHandler) Create(c *gin.Context) {
 		return
 	}
 
-	errorCode = s.service.Create(request)
+	token := s.GetTokenFromContext(c)
+
+	errorCode = s.service.Create(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
