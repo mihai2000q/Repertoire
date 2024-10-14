@@ -19,9 +19,9 @@ func NewRequestHandler(
 	engine := gin.New()
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
+	engine.Use(corsMiddleware.Handler())
 
 	publicRouter := engine.Group("/api")
-	publicRouter.Use(corsMiddleware.Handler())
 	publicRouter.Use(errorHandlerMiddleware.Handler())
 
 	var privateRouter = &gin.RouterGroup{}
