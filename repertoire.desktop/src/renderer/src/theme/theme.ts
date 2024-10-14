@@ -12,7 +12,7 @@ export const theme = createTheme({
   cursorType: 'pointer',
 
   autoContrast: true,
-  luminanceThreshold: 0.35,
+  luminanceThreshold: 0.4,
 
   fontFamily: 'Open Sans, sans-serif',
   fontSizes: {
