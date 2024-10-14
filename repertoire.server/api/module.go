@@ -13,6 +13,7 @@ import (
 )
 
 var middlewares = fx.Options(
+	fx.Provide(middleware.NewCorsMiddleware),
 	fx.Provide(middleware.NewErrorHandlerMiddleware),
 	fx.Provide(middleware.NewJWTAuthMiddleware),
 )
@@ -38,6 +39,7 @@ var Module = fx.Options(
 	fx.Provide(routes.NewRoutes),
 	fx.Provide(server.NewServer),
 	fx.Invoke(func(*validation.Validator) {}),
+	fx.Invoke(func(*middleware.CorsMiddleware) {}),
 	fx.Invoke(func(*routes.Routes) {}),
 	fx.Invoke(func(*http.Server) {}),
 )
