@@ -34,7 +34,7 @@ func (s *SongService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
 }
 
 func (s *SongService) GetAll(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode) {
-	err := s.repository.GetAllByUser(&songs, request.UserId)
+	err := s.repository.GetAllByUser(&songs, request.UserID)
 	if err != nil {
 		return songs, utils.InternalServerError(err)
 	}
@@ -62,7 +62,7 @@ func (s *SongService) Create(request requests.CreateSongRequest, token string) *
 
 func (s *SongService) Update(request requests.UpdateSongRequest) *utils.ErrorCode {
 	var song models.Song
-	err := s.repository.Get(&song, request.Id)
+	err := s.repository.Get(&song, request.ID)
 	if err != nil {
 		return utils.InternalServerError(err)
 	}
