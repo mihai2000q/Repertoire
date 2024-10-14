@@ -12,4 +12,5 @@ type User struct {
 	Password  string    `gorm:"not null" json:"-"`
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+	Songs     []Song    `json:"-"`
 }
