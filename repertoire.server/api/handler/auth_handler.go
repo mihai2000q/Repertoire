@@ -26,7 +26,7 @@ func NewAuthHandler(service service.AuthService, validator *validation.Validator
 
 func (a AuthHandler) Refresh(c *gin.Context) {
 	var request requests.RefreshRequest
-	errCode := a.BindAndValidate(c, request)
+	errCode := a.BindAndValidate(c, &request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
