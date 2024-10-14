@@ -14,6 +14,7 @@ func (s SongRouter) RegisterRoutes() {
 	api := s.requestHandler.PrivateRouter.Group("/songs")
 	{
 		api.GET("/:id", s.handler.Get)
+		api.GET("/", s.handler.GetAll)
 		api.POST("/", s.handler.Create)
 		api.PUT("/", s.handler.Update)
 		api.DELETE("/:id", s.handler.Delete)

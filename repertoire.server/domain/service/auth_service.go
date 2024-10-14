@@ -2,16 +2,14 @@ package service
 
 import (
 	"errors"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
 	"repertoire/utils"
 	"strings"
-	"time"
-
-	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
@@ -89,12 +87,10 @@ func (a *AuthService) SignUp(request requests.SignUpRequest) (string, *utils.Err
 
 	// create user
 	user = models.User{
-		ID:        uuid.New(),
-		Name:      request.Name,
-		Email:     email,
-		Password:  string(hashedPassword),
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
+		ID:       uuid.New(),
+		Name:     request.Name,
+		Email:    email,
+		Password: string(hashedPassword),
 	}
 	err = a.userRepository.Create(&user)
 	if err != nil {

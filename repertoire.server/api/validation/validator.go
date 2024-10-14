@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"context"
+	"go.uber.org/fx"
 	"repertoire/utils"
 
 	"github.com/go-playground/validator/v10"
@@ -11,10 +13,16 @@ type Validator struct {
 	validate *validator.Validate
 }
 
-func NewValidator() Validator {
+func NewValidator(lc fx.Lifecycle) *Validator {
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	registerCustomValidators(validate)
-	return Validator{
+
+	lc.Append(fx.Hook{
+		OnStart: func(context.Context) error {
+			return registerCustomValidators(validate)
+		},
+	})
+
+	return &Validator{
 		validate: validate,
 	}
 }
@@ -27,6 +35,10 @@ func (v *Validator) Validate(request interface{}) *utils.ErrorCode {
 	return nil
 }
 
-func registerCustomValidators(validate *validator.Validate) {
-	validate.RegisterValidation("notblank", validators.NotBlank)
+func registerCustomValidators(validate *validator.Validate) error {
+	err := validate.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return err
+	}
+	return nil
 }

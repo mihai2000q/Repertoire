@@ -15,7 +15,7 @@ type AuthHandler struct {
 	server.BaseHandler
 }
 
-func NewAuthHandler(service service.AuthService, validator validation.Validator) *AuthHandler {
+func NewAuthHandler(service service.AuthService, validator *validation.Validator) *AuthHandler {
 	return &AuthHandler{
 		service: service,
 		BaseHandler: server.BaseHandler{
