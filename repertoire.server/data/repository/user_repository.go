@@ -6,24 +6,30 @@ import (
 	"repertoire/models"
 )
 
-type UserRepository struct {
+type UserRepository interface {
+	Get(user *models.User, id uuid.UUID) error
+	GetByEmail(user *models.User, email string) error
+	Create(user *models.User) error
+}
+
+type userRepository struct {
 	client database.Client
 }
 
 func NewUserRepository(client database.Client) UserRepository {
-	return UserRepository{
+	return userRepository{
 		client: client,
 	}
 }
 
-func (u UserRepository) Get(user *models.User, id uuid.UUID) error {
+func (u userRepository) Get(user *models.User, id uuid.UUID) error {
 	return u.client.DB.Find(&user, models.User{ID: id}).Error
 }
 
-func (u UserRepository) GetByEmail(user *models.User, email string) error {
+func (u userRepository) GetByEmail(user *models.User, email string) error {
 	return u.client.DB.Find(&user, models.User{Email: email}).Error
 }
 
-func (u UserRepository) Create(user *models.User) error {
+func (u userRepository) Create(user *models.User) error {
 	return u.client.DB.Create(&user).Error
 }

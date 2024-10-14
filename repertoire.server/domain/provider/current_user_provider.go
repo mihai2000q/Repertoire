@@ -9,25 +9,26 @@ import (
 	"repertoire/utils"
 )
 
-type CurrentUserProvider struct {
+type CurrentUserProvider interface {
+	Get(token string) (user models.User, e *utils.ErrorCode)
+}
+
+type currentUserProvider struct {
 	jwtService     service.JwtService
 	userRepository repository.UserRepository
-	env            utils.Env
 }
 
 func NewCurrentUserProvider(
 	jwtService service.JwtService,
 	userRepository repository.UserRepository,
-	env utils.Env,
 ) CurrentUserProvider {
-	return CurrentUserProvider{
+	return &currentUserProvider{
 		jwtService:     jwtService,
 		userRepository: userRepository,
-		env:            env,
 	}
 }
 
-func (c *CurrentUserProvider) Get(token string) (user models.User, e *utils.ErrorCode) {
+func (c *currentUserProvider) Get(token string) (user models.User, e *utils.ErrorCode) {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return user, errCode

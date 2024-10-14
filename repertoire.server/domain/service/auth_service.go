@@ -12,7 +12,13 @@ import (
 	"strings"
 )
 
-type AuthService struct {
+type AuthService interface {
+	Refresh(request requests.RefreshRequest) (string, *utils.ErrorCode)
+	SignIn(request requests.SignInRequest) (string, *utils.ErrorCode)
+	SignUp(request requests.SignUpRequest) (string, *utils.ErrorCode)
+}
+
+type authService struct {
 	userRepository repository.UserRepository
 	jwtService     service.JwtService
 	env            utils.Env
@@ -23,14 +29,14 @@ func NewAuthService(
 	jwtService service.JwtService,
 	env utils.Env,
 ) AuthService {
-	return AuthService{
+	return &authService{
 		userRepository: userRepository,
 		jwtService:     jwtService,
 		env:            env,
 	}
 }
 
-func (a *AuthService) Refresh(request requests.RefreshRequest) (string, *utils.ErrorCode) {
+func (a *authService) Refresh(request requests.RefreshRequest) (string, *utils.ErrorCode) {
 	// validate token
 	userId, errCode := a.jwtService.Validate(request.Token)
 	if errCode != nil {
@@ -47,7 +53,7 @@ func (a *AuthService) Refresh(request requests.RefreshRequest) (string, *utils.E
 	return a.jwtService.CreateToken(user)
 }
 
-func (a *AuthService) SignIn(request requests.SignInRequest) (string, *utils.ErrorCode) {
+func (a *authService) SignIn(request requests.SignInRequest) (string, *utils.ErrorCode) {
 	var user models.User
 
 	// get user
@@ -69,7 +75,7 @@ func (a *AuthService) SignIn(request requests.SignInRequest) (string, *utils.Err
 	return a.jwtService.CreateToken(user)
 }
 
-func (a *AuthService) SignUp(request requests.SignUpRequest) (string, *utils.ErrorCode) {
+func (a *authService) SignUp(request requests.SignUpRequest) (string, *utils.ErrorCode) {
 	var user models.User
 
 	// check if the user already exists

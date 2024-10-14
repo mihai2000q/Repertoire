@@ -10,19 +10,27 @@ import (
 	"repertoire/utils"
 )
 
-type SongService struct {
+type SongService interface {
+	Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode)
+	GetAll(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode)
+	Create(request requests.CreateSongRequest, token string) *utils.ErrorCode
+	Update(request requests.UpdateSongRequest) *utils.ErrorCode
+	Delete(id uuid.UUID) *utils.ErrorCode
+}
+
+type songService struct {
 	repository repository.SongRepository
 	jwtService service.JwtService
 }
 
 func NewSongService(repository repository.SongRepository, jwtService service.JwtService) SongService {
-	return SongService{
+	return &songService{
 		repository: repository,
 		jwtService: jwtService,
 	}
 }
 
-func (s *SongService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
+func (s *songService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
 	err := s.repository.Get(&song, id)
 	if err != nil {
 		return song, utils.InternalServerError(err)
@@ -33,7 +41,7 @@ func (s *SongService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
 	return song, nil
 }
 
-func (s *SongService) GetAll(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode) {
+func (s *songService) GetAll(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode) {
 	err := s.repository.GetAllByUser(&songs, request.UserID)
 	if err != nil {
 		return songs, utils.InternalServerError(err)
@@ -41,7 +49,7 @@ func (s *SongService) GetAll(request requests.GetSongsRequest) (songs []models.S
 	return songs, nil
 }
 
-func (s *SongService) Create(request requests.CreateSongRequest, token string) *utils.ErrorCode {
+func (s *songService) Create(request requests.CreateSongRequest, token string) *utils.ErrorCode {
 	userId, errCode := s.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
@@ -60,7 +68,7 @@ func (s *SongService) Create(request requests.CreateSongRequest, token string) *
 	return nil
 }
 
-func (s *SongService) Update(request requests.UpdateSongRequest) *utils.ErrorCode {
+func (s *songService) Update(request requests.UpdateSongRequest) *utils.ErrorCode {
 	var song models.Song
 	err := s.repository.Get(&song, request.ID)
 	if err != nil {
@@ -81,7 +89,7 @@ func (s *SongService) Update(request requests.UpdateSongRequest) *utils.ErrorCod
 	return nil
 }
 
-func (s *SongService) Delete(id uuid.UUID) *utils.ErrorCode {
+func (s *songService) Delete(id uuid.UUID) *utils.ErrorCode {
 	var song models.Song
 	err := s.repository.Get(&song, id)
 	if err != nil {
