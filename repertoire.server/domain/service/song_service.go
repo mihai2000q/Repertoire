@@ -45,8 +45,6 @@ func (s *SongService) Create(request requests.CreateSongRequest) *utils.ErrorCod
 		ID:         uuid.New(),
 		Title:      request.Title,
 		IsRecorded: request.IsRecorded,
-		CreatedAt:  time.Now().UTC(),
-		UpdatedAt:  time.Now().UTC(),
 	}
 	err := s.repository.Create(&song)
 	if err != nil {
@@ -67,7 +65,6 @@ func (s *SongService) Update(request requests.UpdateSongRequest) *utils.ErrorCod
 
 	song.Title = request.Title
 	song.IsRecorded = request.IsRecorded
-	song.UpdatedAt = time.Now().UTC()
 
 	err = s.repository.Update(&song)
 	if err != nil {
