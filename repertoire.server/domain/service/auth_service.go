@@ -56,11 +56,14 @@ func (a *AuthService) SignIn(request requests.SignInRequest) (string, *utils.Err
 	if err != nil {
 		return "", utils.InternalServerError(err)
 	}
+	if user.ID == uuid.Nil {
+		return "", utils.UnauthorizedError(errors.New("invalid credentials"))
+	}
 
 	// check password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", utils.UnauthorizedError(errors.New("invalid credentials"))
 	}
 
 	return a.jwtService.CreateToken(user)
