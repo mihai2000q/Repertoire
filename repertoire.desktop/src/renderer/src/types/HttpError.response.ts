@@ -4,7 +4,5 @@ export default interface HttpErrorResponse {
 }
 
 type Error = {
-  title: string
-  status: number
-  errors: object
+  error: string
 }
