@@ -18,7 +18,7 @@ type SongHandler struct {
 
 func NewSongHandler(
 	service service.SongService,
-	validator validation.Validator,
+	validator *validation.Validator,
 ) *SongHandler {
 	return &SongHandler{
 		service: service,

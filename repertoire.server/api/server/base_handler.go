@@ -10,7 +10,7 @@ import (
 )
 
 type BaseHandler struct {
-	Validator validation.Validator
+	Validator *validation.Validator
 }
 
 func (*BaseHandler) GetTokenFromContext(c *gin.Context) string {

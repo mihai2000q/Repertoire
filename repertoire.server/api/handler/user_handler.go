@@ -19,7 +19,7 @@ type UserHandler struct {
 func NewUserHandler(
 	service service.UserService,
 	currentUserProvider provider.CurrentUserProvider,
-	validator validation.Validator,
+	validator *validation.Validator,
 ) *UserHandler {
 	return &UserHandler{
 		service:             service,

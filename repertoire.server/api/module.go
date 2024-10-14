@@ -37,6 +37,7 @@ var Module = fx.Options(
 	routers,
 	fx.Provide(routes.NewRoutes),
 	fx.Provide(server.NewServer),
+	fx.Invoke(func(*validation.Validator) {}),
 	fx.Invoke(func(*routes.Routes) {}),
 	fx.Invoke(func(*http.Server) {}),
 )
