@@ -7,8 +7,8 @@ import (
 )
 
 type Song struct {
-	ID         uuid.UUID `gorm:"type:uuid; <-:create" json:"id"`
-	Title      string    `gorm:"not null" json:"title"`
+	ID         uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title      string    `gorm:"size:100; not null" json:"title"`
 	IsRecorded *bool     `json:"isRecorded"`
 	User       User      `gorm:"not null" json:"-"`
 	CreatedAt  time.Time `gorm:"not null; <-:create" json:"created_at"`
