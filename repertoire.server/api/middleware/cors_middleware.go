@@ -18,7 +18,7 @@ func NewCorsMiddleware(env utils.Env) CorsMiddleware {
 }
 
 func (m CorsMiddleware) Handler() gin.HandlerFunc {
-	allowOriginsFunc := func(origin string) bool { return false }
+	var allowOriginsFunc func(origin string) bool = nil
 	if m.env.Environment == utils.DevelopmentEnvironment {
 		allowOriginsFunc = func(origin string) bool {
 			return strings.HasPrefix(origin, "http://localhost:") ||
@@ -26,9 +26,10 @@ func (m CorsMiddleware) Handler() gin.HandlerFunc {
 		}
 	}
 	config := cors.Config{
-		AllowMethods:    []string{"POST", "GET", "PUT", "DELETE"},
-		AllowHeaders:    []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowOriginFunc: allowOriginsFunc,
+		AllowOrigins:    []string{"https://yourdomain.com"},
+		AllowMethods:    []string{"POST", "GET", "PUT", "DELETE"},
+		AllowHeaders:    []string{"*"}, // []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 	}
 
 	return cors.New(config)
