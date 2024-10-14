@@ -4,7 +4,7 @@ import { logout, setToken } from '@renderer/state/authSlice'
 import { setErrorPath } from '@renderer/state/globalSlice'
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 
-const baseQuery = fetchBaseQuery({
+const queryWithAuthorization = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BACKEND_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token
@@ -16,19 +16,19 @@ const baseQuery = fetchBaseQuery({
 })
 
 const mutex = new Mutex()
-const queryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
   extraOptions
 ) => {
   await mutex.waitForUnlock()
-  let result = await baseQuery(args, api, extraOptions)
+  let result = await queryWithAuthorization(args, api, extraOptions)
   if (result?.error?.status === 401 && !isAuthRequest(args)) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire()
       try {
         const authState = (api.getState() as RootState).auth
-        const refreshResult = await baseQuery(
+        const refreshResult = await queryWithAuthorization(
           {
             url: `auth/refresh`,
             method: 'PUT',
@@ -40,7 +40,7 @@ const queryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQ
         const data = refreshResult?.data as { token: string } | undefined
         if (data) {
           api.dispatch(setToken(data.token))
-          result = await baseQuery(args, api, extraOptions)
+          result = await queryWithAuthorization(args, api, extraOptions)
         } else {
           api.dispatch(logout())
         }
@@ -49,7 +49,7 @@ const queryWithRefreshToken: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQ
       }
     } else {
       await mutex.waitForUnlock()
-      result = await baseQuery(args, api, extraOptions)
+      result = await queryWithAuthorization(args, api, extraOptions)
     }
   }
   return result
@@ -65,7 +65,7 @@ export const queryWithRedirection: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const result = await queryWithRefreshToken(args, api, extraOptions)
+  const result = await queryWithRefresh(args, api, extraOptions)
   const error = result?.error as { status: number } | undefined | null
   const errorStatus = error?.status ?? 0
   if (errorCodeToPathname.has(errorStatus)) {

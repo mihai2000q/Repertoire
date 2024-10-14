@@ -10,33 +10,37 @@ import MainView from '@renderer/views/MainView'
 import SignInView from '@renderer/views/SignInView'
 import { MantineProvider } from '@mantine/core'
 import { theme } from '@renderer/theme/theme'
+import { Provider } from 'react-redux'
+import { store } from '@renderer/state/store'
 
 function App(): ReactElement {
   return (
     <div className={'app'}>
-      <MantineProvider theme={theme}>
-        <BrowserRouter>
-          <Routes>
-            <Route path={'/'} element={<Navigate to={'home'} replace />} />
+      <Provider store={store}>
+        <MantineProvider theme={theme}>
+          <BrowserRouter>
+            <Routes>
+              <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
-            <Route element={<IsAlreadyAuthenticated />}>
-              <Route path={'sign-in'} element={<SignInView />} />
-              <Route path={'sign-up'} element={<SignUpView />} />
-            </Route>
-
-            <Route element={<RequireAuthentication />}>
-              <Route element={<MainView />}>
-                <Route path={'home'} element={<HomeView />} />
-
-                {/* Errors */}
-                <Route path={'401'} element={<UnauthorizedView />} />
-                <Route path={'404'} element={<NotFoundView />} />
-                <Route path={'*'} element={<Navigate to={'404'} replace />} />
+              <Route element={<IsAlreadyAuthenticated />}>
+                <Route path={'sign-in'} element={<SignInView />} />
+                <Route path={'sign-up'} element={<SignUpView />} />
               </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </MantineProvider>
+
+              <Route element={<RequireAuthentication />}>
+                <Route element={<MainView />}>
+                  <Route path={'home'} element={<HomeView />} />
+
+                  {/* Errors */}
+                  <Route path={'401'} element={<UnauthorizedView />} />
+                  <Route path={'404'} element={<NotFoundView />} />
+                  <Route path={'*'} element={<Navigate to={'404'} replace />} />
+                </Route>
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </MantineProvider>
+      </Provider>
     </div>
   )
 }
