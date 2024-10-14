@@ -21,8 +21,11 @@ func (s SongRepository) Get(song *models.Song, id uuid.UUID) error {
 	return s.client.DB.Find(&song, models.Song{ID: id}).Error
 }
 
-func (s SongRepository) GetAllByUser(songs []models.Song, userId uuid.UUID) error {
-	return s.client.DB.Model(&models.Song{}).Where(models.Song{ID: userId}).Find(&songs).Error
+func (s SongRepository) GetAllByUser(songs *[]models.Song, userId uuid.UUID) error {
+	return s.client.DB.Model(&models.Song{}).
+		Where(models.Song{UserID: userId}).
+		Find(&songs).
+		Error
 }
 
 func (s SongRepository) Create(song *models.Song) error {
