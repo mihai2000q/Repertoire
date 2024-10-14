@@ -13,6 +13,7 @@ type RequestHandler struct {
 
 func NewRequestHandler(
 	jwtAuthMiddleware middleware.JWTAuthMiddleware,
+	corsMiddleware middleware.CorsMiddleware,
 	errorHandlerMiddleware middleware.ErrorHandlerMiddleware,
 ) *RequestHandler {
 	engine := gin.New()
@@ -20,6 +21,7 @@ func NewRequestHandler(
 	engine.Use(gin.Recovery())
 
 	publicRouter := engine.Group("/api")
+	publicRouter.Use(corsMiddleware.Handler())
 	publicRouter.Use(errorHandlerMiddleware.Handler())
 
 	var privateRouter = &gin.RouterGroup{}
