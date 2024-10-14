@@ -2,22 +2,23 @@ package service
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"repertoire/api/requests"
 	"repertoire/data/repository"
+	"repertoire/data/service"
 	"repertoire/models"
 	"repertoire/utils"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 type SongService struct {
 	repository repository.SongRepository
+	jwtService service.JwtService
 }
 
-func NewSongService(repository repository.SongRepository) SongService {
+func NewSongService(repository repository.SongRepository, jwtService service.JwtService) SongService {
 	return SongService{
 		repository: repository,
+		jwtService: jwtService,
 	}
 }
 
@@ -40,11 +41,17 @@ func (s *SongService) GetAll(request requests.GetSongsRequest) (songs []models.S
 	return songs, nil
 }
 
-func (s *SongService) Create(request requests.CreateSongRequest) *utils.ErrorCode {
+func (s *SongService) Create(request requests.CreateSongRequest, token string) *utils.ErrorCode {
+	userId, errCode := s.jwtService.GetUserIdFromJwt(token)
+	if errCode != nil {
+		return errCode
+	}
+
 	song := models.Song{
 		ID:         uuid.New(),
 		Title:      request.Title,
 		IsRecorded: request.IsRecorded,
+		UserID:     userId,
 	}
 	err := s.repository.Create(&song)
 	if err != nil {
