@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
@@ -21,17 +20,20 @@ type AuthService interface {
 type authService struct {
 	userRepository repository.UserRepository
 	jwtService     service.JwtService
+	bCryptService  service.BCryptService
 	env            utils.Env
 }
 
 func NewAuthService(
 	userRepository repository.UserRepository,
 	jwtService service.JwtService,
+	bCryptService service.BCryptService,
 	env utils.Env,
 ) AuthService {
 	return &authService{
 		userRepository: userRepository,
 		jwtService:     jwtService,
+		bCryptService:  bCryptService,
 		env:            env,
 	}
 }
@@ -49,16 +51,17 @@ func (a *authService) Refresh(request requests.RefreshRequest) (string, *utils.E
 	if err != nil {
 		return "", utils.InternalServerError(err)
 	}
+	if user.ID == uuid.Nil {
+		return "", utils.UnauthorizedError(errors.New("not authorized"))
+	}
 
 	return a.jwtService.CreateToken(user)
 }
 
 func (a *authService) SignIn(request requests.SignInRequest) (string, *utils.ErrorCode) {
-	var user models.User
-
 	// get user
-	email := strings.ToLower(request.Email)
-	err := a.userRepository.GetByEmail(&user, email)
+	var user models.User
+	err := a.userRepository.GetByEmail(&user, strings.ToLower(request.Email))
 	if err != nil {
 		return "", utils.InternalServerError(err)
 	}
@@ -67,7 +70,7 @@ func (a *authService) SignIn(request requests.SignInRequest) (string, *utils.Err
 	}
 
 	// check password
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
+	err = a.bCryptService.CompareHash(user.Password, request.Password)
 	if err != nil {
 		return "", utils.UnauthorizedError(errors.New("invalid credentials"))
 	}
@@ -89,7 +92,7 @@ func (a *authService) SignUp(request requests.SignUpRequest) (string, *utils.Err
 	}
 
 	// hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	hashedPassword, err := a.bCryptService.Hash(request.Password)
 	if err != nil {
 		return "", utils.InternalServerError(err)
 	}
@@ -99,7 +102,7 @@ func (a *authService) SignUp(request requests.SignUpRequest) (string, *utils.Err
 		ID:       uuid.New(),
 		Name:     request.Name,
 		Email:    email,
-		Password: string(hashedPassword),
+		Password: hashedPassword,
 	}
 	err = a.userRepository.Create(&user)
 	if err != nil {
