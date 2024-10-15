@@ -3,6 +3,7 @@ package domain
 import (
 	"repertoire/domain/provider"
 	"repertoire/domain/service"
+	"repertoire/domain/usecases"
 
 	"go.uber.org/fx"
 )
@@ -19,5 +20,6 @@ var services = fx.Options(
 
 var Module = fx.Options(
 	providers,
+	usecases.Module,
 	services,
 )
