@@ -15,4 +15,6 @@ type Song struct {
 	UserID     uuid.UUID `gorm:"not null" json:"-"`
 	AlbumID    uuid.UUID `json:"-"`
 	Album      Album     `json:"-"`
+	ArtistID   uuid.UUID `json:"-"`
+	Artist     Artist    `json:"-"`
 }

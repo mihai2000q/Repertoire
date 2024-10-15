@@ -1,0 +1,114 @@
+package artist
+
+import (
+	"errors"
+	"net/http"
+	"repertoire/api/requests"
+	"repertoire/data/repository"
+	"repertoire/data/service"
+	"repertoire/models"
+	"repertoire/utils"
+	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+)
+
+func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
+	_uut := &CreateArtist{
+		repository: artistRepository,
+		jwtService: jwtService,
+	}
+	request := requests.CreateArtistRequest{
+		Name: "Some Artist",
+	}
+	token := "this is a token"
+
+	unauthorizedError := utils.UnauthorizedError(errors.New("not authorized"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
+
+	// when
+	errCode := _uut.Handle(request, token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, unauthorizedError, errCode)
+
+	jwtService.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
+}
+
+func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
+	_uut := &CreateArtist{
+		repository: artistRepository,
+		jwtService: jwtService,
+	}
+	request := requests.CreateArtistRequest{
+		Name: "Some Artist",
+	}
+	token := "this is a token"
+	userID := uuid.New()
+
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+	internalError := errors.New("internal error")
+	artistRepository.On("Create", mock.IsType(new(models.Artist))).
+		Run(func(args mock.Arguments) {
+			newArtist := args.Get(0).(*models.Artist)
+			assert.Equal(t, request.Name, newArtist.Name)
+			assert.Equal(t, userID, newArtist.UserID)
+		}).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request, token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
+}
+
+func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
+	_uut := &CreateArtist{
+		repository: artistRepository,
+		jwtService: jwtService,
+	}
+	request := requests.CreateArtistRequest{
+		Name: "Some Artist",
+	}
+	token := "this is a token"
+	userID := uuid.New()
+
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+	artistRepository.On("Create", mock.IsType(new(models.Artist))).
+		Run(func(args mock.Arguments) {
+			newArtist := args.Get(0).(*models.Artist)
+			assert.Equal(t, request.Name, newArtist.Name)
+			assert.Equal(t, userID, newArtist.UserID)
+		}).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Nil(t, errCode)
+
+	jwtService.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
+}
