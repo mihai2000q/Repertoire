@@ -90,16 +90,7 @@ func (s *songService) Update(request requests.UpdateSongRequest) *utils.ErrorCod
 }
 
 func (s *songService) Delete(id uuid.UUID) *utils.ErrorCode {
-	var song models.Song
-	err := s.repository.Get(&song, id)
-	if err != nil {
-		return utils.InternalServerError(err)
-	}
-	if song.ID == uuid.Nil {
-		return utils.NotFoundError(errors.New("song not found"))
-	}
-
-	err = s.repository.Delete(&song)
+	err := s.repository.Delete(id)
 	if err != nil {
 		return utils.InternalServerError(err)
 	}

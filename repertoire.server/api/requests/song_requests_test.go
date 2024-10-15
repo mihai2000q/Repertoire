@@ -11,9 +11,8 @@ import (
 func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
-	id, _ := uuid.NewUUID()
 	request := GetSongsRequest{
-		UserID: id,
+		UserID: uuid.New(),
 	}
 
 	errCode := _uut.Validate(request)
@@ -109,9 +108,8 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
-	id, _ := uuid.NewUUID()
 	request := UpdateSongRequest{
-		ID:         id,
+		ID:         uuid.New(),
 		Title:      validSongTitle,
 		IsRecorded: &[]bool{false}[0],
 	}
@@ -122,8 +120,6 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 }
 
 func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
-	id, _ := uuid.NewUUID()
-
 	tests := []struct {
 		name                 string
 		request              UpdateSongRequest
@@ -140,13 +136,13 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Title Test Cases
 		{
 			"Title is invalid because it's required",
-			UpdateSongRequest{ID: id, Title: ""},
+			UpdateSongRequest{ID: uuid.New(), Title: ""},
 			"Title",
 			"required",
 		},
 		{
 			"Title is invalid because it has more than 100 characters",
-			UpdateSongRequest{ID: id, Title: strings.Repeat("a", 101)},
+			UpdateSongRequest{ID: uuid.New(), Title: strings.Repeat("a", 101)},
 			"Title",
 			"max",
 		},

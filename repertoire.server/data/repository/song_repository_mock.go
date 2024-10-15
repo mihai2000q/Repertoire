@@ -41,7 +41,7 @@ func (s *SongRepositoryMock) Update(song *models.Song) error {
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) Delete(song *models.Song) error {
-	args := s.Called(song)
+func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
+	args := s.Called(id)
 	return args.Error(0)
 }

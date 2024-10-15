@@ -12,7 +12,7 @@ type SongRepository interface {
 	GetAllByUser(songs *[]models.Song, userId uuid.UUID) error
 	Create(song *models.Song) error
 	Update(song *models.Song) error
-	Delete(song *models.Song) error
+	Delete(id uuid.UUID) error
 }
 
 type songRepository struct {
@@ -44,6 +44,6 @@ func (s songRepository) Update(song *models.Song) error {
 	return s.client.DB.Save(&song).Error
 }
 
-func (s songRepository) Delete(song *models.Song) error {
-	return s.client.DB.Delete(&song).Error
+func (s songRepository) Delete(id uuid.UUID) error {
+	return s.client.DB.Delete(&models.Song{}, id).Error
 }
