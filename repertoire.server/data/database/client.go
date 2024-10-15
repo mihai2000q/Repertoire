@@ -41,6 +41,7 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 			OnStart: func(ctx context.Context) error {
 				return db.AutoMigrate(
 					&models.User{},
+					&models.Artist{},
 					&models.Album{},
 					&models.Song{},
 				)
