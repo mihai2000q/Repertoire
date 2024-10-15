@@ -41,22 +41,22 @@ func NewPlaylistService(
 	}
 }
 
-func (s *playlistService) Get(id uuid.UUID) (models.Playlist, *utils.ErrorCode) {
-	return s.getPlaylist.Handle(id)
+func (p *playlistService) Get(id uuid.UUID) (models.Playlist, *utils.ErrorCode) {
+	return p.getPlaylist.Handle(id)
 }
 
-func (s *playlistService) GetAll(request requests.GetPlaylistsRequest) ([]models.Playlist, *utils.ErrorCode) {
-	return s.getAllPlaylists.Handle(request)
+func (p *playlistService) GetAll(request requests.GetPlaylistsRequest) ([]models.Playlist, *utils.ErrorCode) {
+	return p.getAllPlaylists.Handle(request)
 }
 
-func (s *playlistService) Create(request requests.CreatePlaylistRequest, token string) *utils.ErrorCode {
-	return s.createPlaylist.Handle(request, token)
+func (p *playlistService) Create(request requests.CreatePlaylistRequest, token string) *utils.ErrorCode {
+	return p.createPlaylist.Handle(request, token)
 }
 
-func (s *playlistService) Update(request requests.UpdatePlaylistRequest) *utils.ErrorCode {
-	return s.updatePlaylist.Handle(request)
+func (p *playlistService) Update(request requests.UpdatePlaylistRequest) *utils.ErrorCode {
+	return p.updatePlaylist.Handle(request)
 }
 
-func (s *playlistService) Delete(id uuid.UUID) *utils.ErrorCode {
-	return s.deletePlaylist.Handle(id)
+func (p *playlistService) Delete(id uuid.UUID) *utils.ErrorCode {
+	return p.deletePlaylist.Handle(id)
 }
