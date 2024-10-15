@@ -28,14 +28,14 @@ func NewArtistHandler(
 	}
 }
 
-func (s ArtistHandler) Get(c *gin.Context) {
+func (a ArtistHandler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := s.service.Get(id)
+	user, errorCode := a.service.Get(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -44,7 +44,7 @@ func (s ArtistHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (s ArtistHandler) GetAll(c *gin.Context) {
+func (a ArtistHandler) GetAll(c *gin.Context) {
 	userId, err := uuid.Parse(c.Query("userId"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
@@ -54,13 +54,13 @@ func (s ArtistHandler) GetAll(c *gin.Context) {
 	request := requests.GetArtistsRequest{
 		UserID: userId,
 	}
-	errorCode := s.Validator.Validate(&request)
+	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	artists, errorCode := s.service.GetAll(request)
+	artists, errorCode := a.service.GetAll(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -69,43 +69,43 @@ func (s ArtistHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, artists)
 }
 
-func (s ArtistHandler) Create(c *gin.Context) {
+func (a ArtistHandler) Create(c *gin.Context) {
 	var request requests.CreateArtistRequest
-	errorCode := s.BindAndValidate(c, &request)
+	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	token := s.GetTokenFromContext(c)
+	token := a.GetTokenFromContext(c)
 
-	errorCode = s.service.Create(request, token)
+	errorCode = a.service.Create(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "artist has been created successfully")
+	a.SendMessage(c, "artist has been created successfully")
 }
 
-func (s ArtistHandler) Update(c *gin.Context) {
+func (a ArtistHandler) Update(c *gin.Context) {
 	var request requests.UpdateArtistRequest
-	errorCode := s.BindAndValidate(c, &request)
+	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = s.service.Update(request)
+	errorCode = a.service.Update(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "artist has been updated successfully")
+	a.SendMessage(c, "artist has been updated successfully")
 }
 
-func (s ArtistHandler) Delete(c *gin.Context) {
+func (a ArtistHandler) Delete(c *gin.Context) {
 	paramId := c.Param("id")
 
 	id, err := uuid.Parse(paramId)
@@ -114,11 +114,11 @@ func (s ArtistHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errorCode := s.service.Delete(id)
+	errorCode := a.service.Delete(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "artist has been deleted successfully")
+	a.SendMessage(c, "artist has been deleted successfully")
 }
