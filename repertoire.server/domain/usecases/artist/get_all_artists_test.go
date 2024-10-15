@@ -51,8 +51,8 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 	}
 
 	expectedArtists := &[]models.Artist{
-		{Title: "Some Artist"},
-		{Title: "Some other Artist"},
+		{Name: "Some Artist"},
+		{Name: "Some other Artist"},
 	}
 
 	artistRepository.On("GetAllByUser", mock.IsType(expectedArtists), request.UserID).

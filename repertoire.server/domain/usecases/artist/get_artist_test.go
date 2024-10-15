@@ -65,8 +65,8 @@ func TestGetArtistQuery_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 	id := uuid.New()
 
 	expectedArtist := &models.Artist{
-		ID:    id,
-		Title: "Some Artist",
+		ID:   id,
+		Name: "Some Artist",
 	}
 
 	artistRepository.On("Get", new(models.Artist), id).Return(nil, expectedArtist).Once()
