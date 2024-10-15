@@ -19,12 +19,14 @@ var middlewares = fx.Options(
 )
 
 var handlers = fx.Options(
+	fx.Provide(handler.NewAlbumHandler),
 	fx.Provide(handler.NewAuthHandler),
 	fx.Provide(handler.NewSongHandler),
 	fx.Provide(handler.NewUserHandler),
 )
 
 var routers = fx.Options(
+	fx.Provide(router.NewAlbumRouter),
 	fx.Provide(router.NewAuthRouter),
 	fx.Provide(router.NewSongRouter),
 	fx.Provide(router.NewUserRouter),
