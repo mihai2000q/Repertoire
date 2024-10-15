@@ -21,8 +21,8 @@ func NewSignIn(
 	jwtService service.JwtService,
 	bCryptService service.BCryptService,
 	userRepository repository.UserRepository,
-) *SignIn {
-	return &SignIn{
+) SignIn {
+	return SignIn{
 		jwtService:     jwtService,
 		bCryptService:  bCryptService,
 		userRepository: userRepository,

@@ -15,8 +15,8 @@ type Refresh struct {
 	userRepository repository.UserRepository
 }
 
-func NewRefresh(jwtService service.JwtService, userRepository repository.UserRepository) *Refresh {
-	return &Refresh{
+func NewRefresh(jwtService service.JwtService, userRepository repository.UserRepository) Refresh {
+	return Refresh{
 		jwtService:     jwtService,
 		userRepository: userRepository,
 	}

@@ -12,8 +12,8 @@ type GetSong struct {
 	repository repository.SongRepository
 }
 
-func NewGetSong(repository repository.SongRepository) *GetSong {
-	return &GetSong{
+func NewGetSong(repository repository.SongRepository) GetSong {
+	return GetSong{
 		repository: repository,
 	}
 }

@@ -10,8 +10,8 @@ type DeleteSong struct {
 	repository repository.SongRepository
 }
 
-func NewDeleteSong(repository repository.SongRepository) *DeleteSong {
-	return &DeleteSong{repository: repository}
+func NewDeleteSong(repository repository.SongRepository) DeleteSong {
+	return DeleteSong{repository: repository}
 }
 
 func (d DeleteSong) Handle(id uuid.UUID) *utils.ErrorCode {

@@ -13,8 +13,8 @@ type UpdateSong struct {
 	repository repository.SongRepository
 }
 
-func NewUpdateSong(repository repository.SongRepository) *UpdateSong {
-	return &UpdateSong{repository: repository}
+func NewUpdateSong(repository repository.SongRepository) UpdateSong {
+	return UpdateSong{repository: repository}
 }
 
 func (u UpdateSong) Handle(request requests.UpdateSongRequest) *utils.ErrorCode {

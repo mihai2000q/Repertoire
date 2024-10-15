@@ -11,8 +11,8 @@ type GetAllSongs struct {
 	repository repository.SongRepository
 }
 
-func NewGetAllSongs(repository repository.SongRepository) *GetAllSongs {
-	return &GetAllSongs{
+func NewGetAllSongs(repository repository.SongRepository) GetAllSongs {
+	return GetAllSongs{
 		repository: repository,
 	}
 }

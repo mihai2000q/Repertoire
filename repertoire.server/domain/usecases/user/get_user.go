@@ -12,10 +12,8 @@ type GetUser struct {
 	repository repository.UserRepository
 }
 
-func NewGetUser(repository repository.UserRepository) *GetUser {
-	return &GetUser{
-		repository: repository,
-	}
+func NewGetUser(repository repository.UserRepository) GetUser {
+	return GetUser{repository: repository}
 }
 
 func (g GetUser) Handle(id uuid.UUID) (user models.User, e *utils.ErrorCode) {
