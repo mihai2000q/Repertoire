@@ -36,6 +36,7 @@ var userUseCases = fx.Options(
 )
 
 var Module = fx.Options(
+	albumUseCases,
 	authUseCases,
 	songUseCases,
 	userUseCases,
