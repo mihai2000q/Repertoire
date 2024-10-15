@@ -52,7 +52,7 @@ func (s SongHandler) GetAll(c *gin.Context) {
 	}
 
 	request := requests.GetSongsRequest{
-		UserId: userId,
+		UserID: userId,
 	}
 	errorCode := s.Validator.Validate(&request)
 	if errorCode != nil {

@@ -8,17 +8,21 @@ import (
 	"repertoire/utils"
 )
 
-type UserService struct {
+type UserService interface {
+	Get(id uuid.UUID) (user models.User, e *utils.ErrorCode)
+}
+
+type userService struct {
 	repository repository.UserRepository
 }
 
 func NewUserService(repository repository.UserRepository) UserService {
-	return UserService{
+	return &userService{
 		repository: repository,
 	}
 }
 
-func (s *UserService) Get(id uuid.UUID) (user models.User, e *utils.ErrorCode) {
+func (s *userService) Get(id uuid.UUID) (user models.User, e *utils.ErrorCode) {
 	err := s.repository.Get(&user, id)
 	if err != nil {
 		return user, utils.InternalServerError(err)

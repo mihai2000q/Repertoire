@@ -7,35 +7,43 @@ import (
 	"github.com/google/uuid"
 )
 
-type SongRepository struct {
+type SongRepository interface {
+	Get(song *models.Song, id uuid.UUID) error
+	GetAllByUser(songs *[]models.Song, userId uuid.UUID) error
+	Create(song *models.Song) error
+	Update(song *models.Song) error
+	Delete(id uuid.UUID) error
+}
+
+type songRepository struct {
 	client database.Client
 }
 
 func NewSongRepository(client database.Client) SongRepository {
-	return SongRepository{
+	return songRepository{
 		client: client,
 	}
 }
 
-func (s SongRepository) Get(song *models.Song, id uuid.UUID) error {
+func (s songRepository) Get(song *models.Song, id uuid.UUID) error {
 	return s.client.DB.Find(&song, models.Song{ID: id}).Error
 }
 
-func (s SongRepository) GetAllByUser(songs *[]models.Song, userId uuid.UUID) error {
+func (s songRepository) GetAllByUser(songs *[]models.Song, userId uuid.UUID) error {
 	return s.client.DB.Model(&models.Song{}).
 		Where(models.Song{UserID: userId}).
 		Find(&songs).
 		Error
 }
 
-func (s SongRepository) Create(song *models.Song) error {
+func (s songRepository) Create(song *models.Song) error {
 	return s.client.DB.Create(&song).Error
 }
 
-func (s SongRepository) Update(song *models.Song) error {
+func (s songRepository) Update(song *models.Song) error {
 	return s.client.DB.Save(&song).Error
 }
 
-func (s SongRepository) Delete(song *models.Song) error {
-	return s.client.DB.Delete(&song).Error
+func (s songRepository) Delete(id uuid.UUID) error {
+	return s.client.DB.Delete(&models.Song{}, id).Error
 }

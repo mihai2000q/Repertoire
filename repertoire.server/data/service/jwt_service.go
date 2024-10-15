@@ -9,17 +9,24 @@ import (
 	"time"
 )
 
-type JwtService struct {
+type JwtService interface {
+	Authorize(tokenString string) *utils.ErrorCode
+	CreateToken(user models.User) (string, *utils.ErrorCode)
+	Validate(tokenString string) (uuid.UUID, *utils.ErrorCode)
+	GetUserIdFromJwt(tokenString string) (uuid.UUID, *utils.ErrorCode)
+}
+
+type jwtService struct {
 	env utils.Env
 }
 
 func NewJwtService(env utils.Env) JwtService {
-	return JwtService{
+	return &jwtService{
 		env: env,
 	}
 }
 
-func (j *JwtService) Authorize(tokenString string) *utils.ErrorCode {
+func (j *jwtService) Authorize(tokenString string) *utils.ErrorCode {
 	token, _ := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtSecretKey), nil
 	})
@@ -31,7 +38,7 @@ func (j *JwtService) Authorize(tokenString string) *utils.ErrorCode {
 	return utils.UnauthorizedError(errors.New("invalid token"))
 }
 
-func (j *JwtService) CreateToken(user models.User) (string, *utils.ErrorCode) {
+func (j *jwtService) CreateToken(user models.User) (string, *utils.ErrorCode) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
@@ -47,7 +54,7 @@ func (j *JwtService) CreateToken(user models.User) (string, *utils.ErrorCode) {
 	return token, nil
 }
 
-func (j *JwtService) Validate(tokenString string) (uuid.UUID, *utils.ErrorCode) {
+func (j *jwtService) Validate(tokenString string) (uuid.UUID, *utils.ErrorCode) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtSecretKey), nil
 	})
@@ -91,7 +98,7 @@ func (j *JwtService) Validate(tokenString string) (uuid.UUID, *utils.ErrorCode) 
 	return userId, nil
 }
 
-func (j *JwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *utils.ErrorCode) {
+func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *utils.ErrorCode) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtSecretKey), nil
 	})

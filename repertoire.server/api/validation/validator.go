@@ -16,11 +16,18 @@ type Validator struct {
 func NewValidator(lc fx.Lifecycle) *Validator {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
-	lc.Append(fx.Hook{
-		OnStart: func(context.Context) error {
-			return registerCustomValidators(validate)
-		},
-	})
+	if lc != nil { // Null on Unit Testing
+		lc.Append(fx.Hook{
+			OnStart: func(context.Context) error {
+				return registerCustomValidators(validate)
+			},
+		})
+	} else {
+		err := registerCustomValidators(validate)
+		if err != nil {
+			return nil
+		}
+	}
 
 	return &Validator{
 		validate: validate,
@@ -36,7 +43,22 @@ func (v *Validator) Validate(request interface{}) *utils.ErrorCode {
 }
 
 func registerCustomValidators(validate *validator.Validate) error {
-	err := validate.RegisterValidation("notblank", validators.NotBlank)
+	err := validate.RegisterValidation("hasUpper", HasUpper)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("hasLower", HasLower)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("hasDigit", HasDigit)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
 	}
