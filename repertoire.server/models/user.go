@@ -14,5 +14,6 @@ type User struct {
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	Albums    []Album   `json:"-"`
+	Artists   []Artist  `json:"-"`
 	Songs     []Song    `json:"-"`
 }
