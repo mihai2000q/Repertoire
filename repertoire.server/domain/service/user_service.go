@@ -1,9 +1,8 @@
 package service
 
 import (
-	"errors"
 	"github.com/google/uuid"
-	"repertoire/data/repository"
+	"repertoire/domain/usecases/user"
 	"repertoire/models"
 	"repertoire/utils"
 )
@@ -13,22 +12,17 @@ type UserService interface {
 }
 
 type userService struct {
-	repository repository.UserRepository
+	getUser user.GetUser
 }
 
-func NewUserService(repository repository.UserRepository) UserService {
+func NewUserService(
+	getUser user.GetUser,
+) UserService {
 	return &userService{
-		repository: repository,
+		getUser: getUser,
 	}
 }
 
-func (s *userService) Get(id uuid.UUID) (user models.User, e *utils.ErrorCode) {
-	err := s.repository.Get(&user, id)
-	if err != nil {
-		return user, utils.InternalServerError(err)
-	}
-	if user.ID == uuid.Nil {
-		return user, utils.NotFoundError(errors.New("user not found"))
-	}
-	return user, nil
+func (s *userService) Get(id uuid.UUID) (models.User, *utils.ErrorCode) {
+	return s.getUser.Handle(id)
 }

@@ -1,11 +1,9 @@
 package service
 
 import (
-	"errors"
 	"github.com/google/uuid"
 	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/data/service"
+	"repertoire/domain/usecases/song"
 	"repertoire/models"
 	"repertoire/utils"
 )
@@ -19,81 +17,45 @@ type SongService interface {
 }
 
 type songService struct {
-	repository repository.SongRepository
-	jwtService service.JwtService
+	getSong     song.GetSong
+	getAllSongs song.GetAllSongs
+	createSong  song.CreateSong
+	updateSong  song.UpdateSong
+	deleteSong  song.DeleteSong
 }
 
-func NewSongService(repository repository.SongRepository, jwtService service.JwtService) SongService {
+func NewSongService(
+	getSong song.GetSong,
+	getAllSongs song.GetAllSongs,
+	createSong song.CreateSong,
+	updateSong song.UpdateSong,
+	deleteSong song.DeleteSong,
+) SongService {
 	return &songService{
-		repository: repository,
-		jwtService: jwtService,
+		getSong:     getSong,
+		getAllSongs: getAllSongs,
+		createSong:  createSong,
+		updateSong:  updateSong,
+		deleteSong:  deleteSong,
 	}
 }
 
-func (s *songService) Get(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
-	err := s.repository.Get(&song, id)
-	if err != nil {
-		return song, utils.InternalServerError(err)
-	}
-	if song.ID == uuid.Nil {
-		return song, utils.NotFoundError(errors.New("song not found"))
-	}
-	return song, nil
+func (s *songService) Get(id uuid.UUID) (models.Song, *utils.ErrorCode) {
+	return s.getSong.Handle(id)
 }
 
 func (s *songService) GetAll(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode) {
-	err := s.repository.GetAllByUser(&songs, request.UserID)
-	if err != nil {
-		return songs, utils.InternalServerError(err)
-	}
-	return songs, nil
+	return s.getAllSongs.Handle(request)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) *utils.ErrorCode {
-	userId, errCode := s.jwtService.GetUserIdFromJwt(token)
-	if errCode != nil {
-		return errCode
-	}
-
-	song := models.Song{
-		ID:         uuid.New(),
-		Title:      request.Title,
-		IsRecorded: request.IsRecorded,
-		UserID:     userId,
-	}
-	err := s.repository.Create(&song)
-	if err != nil {
-		return utils.InternalServerError(err)
-	}
-	return nil
+	return s.createSong.Handle(request, token)
 }
 
 func (s *songService) Update(request requests.UpdateSongRequest) *utils.ErrorCode {
-	var song models.Song
-	err := s.repository.Get(&song, request.ID)
-	if err != nil {
-		return utils.InternalServerError(err)
-	}
-	if song.ID == uuid.Nil {
-		return utils.NotFoundError(errors.New("song not found"))
-	}
-
-	song.Title = request.Title
-	song.IsRecorded = request.IsRecorded
-
-	err = s.repository.Update(&song)
-	if err != nil {
-		return utils.InternalServerError(err)
-	}
-
-	return nil
+	return s.updateSong.Handle(request)
 }
 
 func (s *songService) Delete(id uuid.UUID) *utils.ErrorCode {
-	err := s.repository.Delete(id)
-	if err != nil {
-		return utils.InternalServerError(err)
-	}
-
-	return nil
+	return s.deleteSong.Handle(id)
 }

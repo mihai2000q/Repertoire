@@ -1,4 +1,4 @@
-package service
+package user
 
 import (
 	"errors"
@@ -10,20 +10,19 @@ import (
 	"testing"
 )
 
-// Get
-func TestUserService_Get_WhenUserRepositoryReturnsError_ShouldReturnInternalServerError(t *testing.T) {
+func TestGetUser_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &userService{
+	_uut := &GetUser{
 		repository: userRepository,
 	}
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
-	userRepository.On("Get", &models.User{}, id).Return(internalError).Once()
+	userRepository.On("Get", new(models.User), id).Return(internalError).Once()
 
 	// when
-	user, errCode := _uut.Get(id)
+	user, errCode := _uut.Handle(id)
 
 	// then
 	assert.Empty(t, user)
@@ -34,18 +33,18 @@ func TestUserService_Get_WhenUserRepositoryReturnsError_ShouldReturnInternalServ
 	userRepository.AssertExpectations(t)
 }
 
-func TestUserService_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestGetUser_WhenUserIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &userService{
+	_uut := &GetUser{
 		repository: userRepository,
 	}
 	id := uuid.New()
 
-	userRepository.On("Get", &models.User{}, id).Return(nil).Once()
+	userRepository.On("Get", new(models.User), id).Return(nil).Once()
 
 	// when
-	user, errCode := _uut.Get(id)
+	user, errCode := _uut.Handle(id)
 
 	// then
 	assert.Empty(t, user)
@@ -56,10 +55,10 @@ func TestUserService_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 	userRepository.AssertExpectations(t)
 }
 
-func TestUserService_Get_WhenSuccessful_ShouldReturnUser(t *testing.T) {
+func TestGetUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &userService{
+	_uut := &GetUser{
 		repository: userRepository,
 	}
 	id := uuid.New()
@@ -70,10 +69,10 @@ func TestUserService_Get_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 		Email: "samuel.samuel@gmail.com",
 	}
 
-	userRepository.On("Get", &models.User{}, id).Return(nil, expectedUser).Once()
+	userRepository.On("Get", new(models.User), id).Return(nil, expectedUser).Once()
 
 	// when
-	user, errCode := _uut.Get(id)
+	user, errCode := _uut.Handle(id)
 
 	// then
 	assert.NotEmpty(t, user)
