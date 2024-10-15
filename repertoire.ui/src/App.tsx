@@ -13,6 +13,7 @@ import { theme } from './theme/theme'
 import { Provider } from 'react-redux'
 import { store } from './state/store'
 import './index.css'
+import '@mantine/core/styles.css'
 
 function App(): ReactElement {
   return (
