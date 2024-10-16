@@ -31,7 +31,6 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 		NowFunc: func() time.Time {
 			return time.Now().UTC()
 		},
-		// QueryFields: true,
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect database: %v", err)
@@ -42,6 +41,8 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 			OnStart: func(ctx context.Context) error {
 				return db.AutoMigrate(
 					&models.User{},
+					&models.Artist{},
+					&models.Album{},
 					&models.Song{},
 				)
 			},

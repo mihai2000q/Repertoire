@@ -15,11 +15,15 @@ type Route interface {
 
 func NewRoutes(
 	lc fx.Lifecycle,
+	albumRouter router.AlbumRouter,
+	artistRouter router.ArtistRouter,
 	authRouter router.AuthRouter,
 	songRouter router.SongRouter,
 	userRouter router.UserRouter,
 ) *Routes {
 	routes := &Routes{
+		albumRouter,
+		artistRouter,
 		authRouter,
 		songRouter,
 		userRouter,

@@ -13,4 +13,8 @@ type Song struct {
 	CreatedAt  time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt  time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID     uuid.UUID `gorm:"not null" json:"-"`
+	AlbumID    uuid.UUID `json:"-"`
+	Album      Album     `json:"-"`
+	ArtistID   uuid.UUID `json:"-"`
+	Artist     Artist    `json:"-"`
 }

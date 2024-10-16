@@ -9,6 +9,8 @@ import (
 )
 
 var repositories = fx.Options(
+	fx.Provide(repository.NewAlbumRepository),
+	fx.Provide(repository.NewArtistRepository),
 	fx.Provide(repository.NewSongRepository),
 	fx.Provide(repository.NewUserRepository),
 )

@@ -6,14 +6,13 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
+type Album struct {
 	ID        uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name      string    `gorm:"size:100; not null" json:"name"`
-	Email     string    `gorm:"size:256; unique; not null" json:"email"`
-	Password  string    `gorm:"not null" json:"-"`
+	Title     string    `gorm:"size:100; not null" json:"title"`
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-	Albums    []Album   `json:"-"`
-	Artists   []Artist  `json:"-"`
+	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; not null" json:"-"`
+	ArtistID  uuid.UUID `json:"-"`
+	Artist    Artist    `json:"-"`
 	Songs     []Song    `json:"-"`
 }
