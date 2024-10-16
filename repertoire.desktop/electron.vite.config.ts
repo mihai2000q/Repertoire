@@ -16,7 +16,8 @@ export default defineConfig(({ mode }) => {
     renderer: {
       resolve: {
         alias: {
-          '@renderer': resolve('src/renderer/src')
+          '@renderer': resolve('src/renderer/src'),
+          '@ui': resolve('../repertoire.ui/src')
         }
       },
       plugins: [react()],

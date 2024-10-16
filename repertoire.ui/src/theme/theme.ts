@@ -1,5 +1,5 @@
 import { createTheme, rem } from '@mantine/core'
-import { colors } from '@renderer/theme/colors'
+import { colors } from './colors'
 
 export const theme = createTheme({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

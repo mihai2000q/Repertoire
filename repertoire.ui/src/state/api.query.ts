@@ -1,11 +1,11 @@
 import { Mutex } from 'async-mutex'
-import { RootState } from '@renderer/state/store'
-import { logout, setToken } from '@renderer/state/authSlice'
-import { setErrorPath } from '@renderer/state/globalSlice'
+import { RootState } from './store'
+import { logout, setToken } from './authSlice'
+import { setErrorPath } from './globalSlice'
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 
 const queryWithAuthorization = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_BACKEND_URL,
+  baseUrl: '', // TODO:FIXME
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token
     if (token) {

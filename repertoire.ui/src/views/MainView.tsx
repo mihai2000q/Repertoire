@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
-import Sidebar from '@renderer/components/Sidebar'
-import Topbar from '@renderer/components/Topbar'
+import Sidebar from '../components/Sidebar'
+import Topbar from '../components/Topbar'
 import { Outlet } from 'react-router-dom'
-import useErrorRedirection from '@renderer/hooks/useErrorRedirection'
+import useErrorRedirection from '../hooks/useErrorRedirection'
 
 function MainView(): ReactElement {
   useErrorRedirection()

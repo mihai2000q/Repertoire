@@ -11,10 +11,10 @@ import {
   Title
 } from '@mantine/core'
 import { ReactElement, useState } from 'react'
-import { useSignInMutation } from '@renderer/state/api'
-import { useAppDispatch } from '@renderer/state/store'
-import { setToken } from '@renderer/state/authSlice'
-import HttpErrorResponse from '@renderer/types/HttpError.response'
+import { useSignInMutation } from '../state/api'
+import { useAppDispatch } from '../state/store'
+import { setToken } from '../state/authSlice'
+import HttpErrorResponse from '../types/HttpError.response'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 function SignInView(): ReactElement {
