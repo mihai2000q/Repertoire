@@ -25,25 +25,25 @@ func NewArtistRepository(client database.Client) ArtistRepository {
 	}
 }
 
-func (s artistRepository) Get(artist *models.Artist, id uuid.UUID) error {
-	return s.client.DB.Find(&artist, models.Artist{ID: id}).Error
+func (a artistRepository) Get(artist *models.Artist, id uuid.UUID) error {
+	return a.client.DB.Find(&artist, models.Artist{ID: id}).Error
 }
 
-func (s artistRepository) GetAllByUser(artists *[]models.Artist, userId uuid.UUID) error {
-	return s.client.DB.Model(&models.Artist{}).
+func (a artistRepository) GetAllByUser(artists *[]models.Artist, userId uuid.UUID) error {
+	return a.client.DB.Model(&models.Artist{}).
 		Where(models.Artist{UserID: userId}).
 		Find(&artists).
 		Error
 }
 
-func (s artistRepository) Create(artist *models.Artist) error {
-	return s.client.DB.Create(&artist).Error
+func (a artistRepository) Create(artist *models.Artist) error {
+	return a.client.DB.Create(&artist).Error
 }
 
-func (s artistRepository) Update(artist *models.Artist) error {
-	return s.client.DB.Save(&artist).Error
+func (a artistRepository) Update(artist *models.Artist) error {
+	return a.client.DB.Save(&artist).Error
 }
 
-func (s artistRepository) Delete(id uuid.UUID) error {
-	return s.client.DB.Delete(&models.Artist{}, id).Error
+func (a artistRepository) Delete(id uuid.UUID) error {
+	return a.client.DB.Delete(&models.Artist{}, id).Error
 }

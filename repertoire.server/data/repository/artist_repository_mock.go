@@ -12,8 +12,8 @@ type ArtistRepositoryMock struct {
 	mock.Mock
 }
 
-func (s *ArtistRepositoryMock) Get(artist *models.Artist, id uuid.UUID) error {
-	args := s.Called(artist, id)
+func (a *ArtistRepositoryMock) Get(artist *models.Artist, id uuid.UUID) error {
+	args := a.Called(artist, id)
 
 	if len(args) > 1 {
 		*artist = *args.Get(1).(*models.Artist)
@@ -22,8 +22,8 @@ func (s *ArtistRepositoryMock) Get(artist *models.Artist, id uuid.UUID) error {
 	return args.Error(0)
 }
 
-func (s *ArtistRepositoryMock) GetAllByUser(artists *[]models.Artist, userId uuid.UUID) error {
-	args := s.Called(artists, userId)
+func (a *ArtistRepositoryMock) GetAllByUser(artists *[]models.Artist, userId uuid.UUID) error {
+	args := a.Called(artists, userId)
 
 	if len(args) > 1 {
 		*artists = *args.Get(1).(*[]models.Artist)
@@ -32,17 +32,17 @@ func (s *ArtistRepositoryMock) GetAllByUser(artists *[]models.Artist, userId uui
 	return args.Error(0)
 }
 
-func (s *ArtistRepositoryMock) Create(artist *models.Artist) error {
-	args := s.Called(artist)
+func (a *ArtistRepositoryMock) Create(artist *models.Artist) error {
+	args := a.Called(artist)
 	return args.Error(0)
 }
 
-func (s *ArtistRepositoryMock) Update(artist *models.Artist) error {
-	args := s.Called(artist)
+func (a *ArtistRepositoryMock) Update(artist *models.Artist) error {
+	args := a.Called(artist)
 	return args.Error(0)
 }
 
-func (s *ArtistRepositoryMock) Delete(id uuid.UUID) error {
-	args := s.Called(id)
+func (a *ArtistRepositoryMock) Delete(id uuid.UUID) error {
+	args := a.Called(id)
 	return args.Error(0)
 }

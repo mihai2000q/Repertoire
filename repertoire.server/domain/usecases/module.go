@@ -4,6 +4,7 @@ import (
 	"repertoire/domain/usecases/album"
 	"repertoire/domain/usecases/artist"
 	"repertoire/domain/usecases/auth"
+	"repertoire/domain/usecases/playlist"
 	"repertoire/domain/usecases/song"
 	"repertoire/domain/usecases/user"
 
@@ -32,6 +33,14 @@ var authUseCases = fx.Options(
 	fx.Provide(auth.NewSignUp),
 )
 
+var playlistUseCases = fx.Options(
+	fx.Provide(playlist.NewGetPlaylist),
+	fx.Provide(playlist.NewGetAllPlaylists),
+	fx.Provide(playlist.NewCreatePlaylist),
+	fx.Provide(playlist.NewUpdatePlaylist),
+	fx.Provide(playlist.NewDeletePlaylist),
+)
+
 var songUseCases = fx.Options(
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewGetAllSongs),
@@ -48,6 +57,7 @@ var Module = fx.Options(
 	albumUseCases,
 	artistUseCases,
 	authUseCases,
+	playlistUseCases,
 	songUseCases,
 	userUseCases,
 )

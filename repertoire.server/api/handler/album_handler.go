@@ -28,14 +28,14 @@ func NewAlbumHandler(
 	}
 }
 
-func (s AlbumHandler) Get(c *gin.Context) {
+func (a AlbumHandler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := s.service.Get(id)
+	user, errorCode := a.service.Get(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -44,7 +44,7 @@ func (s AlbumHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (s AlbumHandler) GetAll(c *gin.Context) {
+func (a AlbumHandler) GetAll(c *gin.Context) {
 	userId, err := uuid.Parse(c.Query("userId"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
@@ -54,13 +54,13 @@ func (s AlbumHandler) GetAll(c *gin.Context) {
 	request := requests.GetAlbumsRequest{
 		UserID: userId,
 	}
-	errorCode := s.Validator.Validate(&request)
+	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	albums, errorCode := s.service.GetAll(request)
+	albums, errorCode := a.service.GetAll(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -69,43 +69,43 @@ func (s AlbumHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, albums)
 }
 
-func (s AlbumHandler) Create(c *gin.Context) {
+func (a AlbumHandler) Create(c *gin.Context) {
 	var request requests.CreateAlbumRequest
-	errorCode := s.BindAndValidate(c, &request)
+	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	token := s.GetTokenFromContext(c)
+	token := a.GetTokenFromContext(c)
 
-	errorCode = s.service.Create(request, token)
+	errorCode = a.service.Create(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "album has been created successfully")
+	a.SendMessage(c, "album has been created successfully")
 }
 
-func (s AlbumHandler) Update(c *gin.Context) {
+func (a AlbumHandler) Update(c *gin.Context) {
 	var request requests.UpdateAlbumRequest
-	errorCode := s.BindAndValidate(c, &request)
+	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = s.service.Update(request)
+	errorCode = a.service.Update(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "album has been updated successfully")
+	a.SendMessage(c, "album has been updated successfully")
 }
 
-func (s AlbumHandler) Delete(c *gin.Context) {
+func (a AlbumHandler) Delete(c *gin.Context) {
 	paramId := c.Param("id")
 
 	id, err := uuid.Parse(paramId)
@@ -114,11 +114,11 @@ func (s AlbumHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errorCode := s.service.Delete(id)
+	errorCode := a.service.Delete(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "album has been deleted successfully")
+	a.SendMessage(c, "album has been deleted successfully")
 }
