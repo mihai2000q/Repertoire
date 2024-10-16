@@ -10,14 +10,14 @@ type AlbumRouter struct {
 	handler        *handler.AlbumHandler
 }
 
-func (s AlbumRouter) RegisterRoutes() {
-	api := s.requestHandler.PrivateRouter.Group("/albums")
+func (a AlbumRouter) RegisterRoutes() {
+	api := a.requestHandler.PrivateRouter.Group("/albums")
 	{
-		api.GET("/:id", s.handler.Get)
-		api.GET("/", s.handler.GetAll)
-		api.POST("/", s.handler.Create)
-		api.PUT("/", s.handler.Update)
-		api.DELETE("/:id", s.handler.Delete)
+		api.GET("/:id", a.handler.Get)
+		api.GET("/", a.handler.GetAll)
+		api.POST("/", a.handler.Create)
+		api.PUT("/", a.handler.Update)
+		api.DELETE("/:id", a.handler.Delete)
 	}
 }
 

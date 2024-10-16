@@ -41,22 +41,22 @@ func NewAlbumService(
 	}
 }
 
-func (s *albumService) Get(id uuid.UUID) (models.Album, *utils.ErrorCode) {
-	return s.getAlbum.Handle(id)
+func (a *albumService) Get(id uuid.UUID) (models.Album, *utils.ErrorCode) {
+	return a.getAlbum.Handle(id)
 }
 
-func (s *albumService) GetAll(request requests.GetAlbumsRequest) (albums []models.Album, e *utils.ErrorCode) {
-	return s.getAllAlbums.Handle(request)
+func (a *albumService) GetAll(request requests.GetAlbumsRequest) ([]models.Album, *utils.ErrorCode) {
+	return a.getAllAlbums.Handle(request)
 }
 
-func (s *albumService) Create(request requests.CreateAlbumRequest, token string) *utils.ErrorCode {
-	return s.createAlbum.Handle(request, token)
+func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *utils.ErrorCode {
+	return a.createAlbum.Handle(request, token)
 }
 
-func (s *albumService) Update(request requests.UpdateAlbumRequest) *utils.ErrorCode {
-	return s.updateAlbum.Handle(request)
+func (a *albumService) Update(request requests.UpdateAlbumRequest) *utils.ErrorCode {
+	return a.updateAlbum.Handle(request)
 }
 
-func (s *albumService) Delete(id uuid.UUID) *utils.ErrorCode {
-	return s.deleteAlbum.Handle(id)
+func (a *albumService) Delete(id uuid.UUID) *utils.ErrorCode {
+	return a.deleteAlbum.Handle(id)
 }

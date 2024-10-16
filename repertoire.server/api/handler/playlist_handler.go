@@ -11,16 +11,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type ArtistHandler struct {
-	service service.ArtistService
+type PlaylistHandler struct {
+	service service.PlaylistService
 	server.BaseHandler
 }
 
-func NewArtistHandler(
-	service service.ArtistService,
+func NewPlaylistHandler(
+	service service.PlaylistService,
 	validator *validation.Validator,
-) *ArtistHandler {
-	return &ArtistHandler{
+) *PlaylistHandler {
+	return &PlaylistHandler{
 		service: service,
 		BaseHandler: server.BaseHandler{
 			Validator: validator,
@@ -28,14 +28,14 @@ func NewArtistHandler(
 	}
 }
 
-func (a ArtistHandler) Get(c *gin.Context) {
+func (p PlaylistHandler) Get(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := a.service.Get(id)
+	user, errorCode := p.service.Get(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -44,68 +44,68 @@ func (a ArtistHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (a ArtistHandler) GetAll(c *gin.Context) {
+func (p PlaylistHandler) GetAll(c *gin.Context) {
 	userId, err := uuid.Parse(c.Query("userId"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	request := requests.GetArtistsRequest{
+	request := requests.GetPlaylistsRequest{
 		UserID: userId,
 	}
-	errorCode := a.Validator.Validate(&request)
+	errorCode := p.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	artists, errorCode := a.service.GetAll(request)
+	playlists, errorCode := p.service.GetAll(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, artists)
+	c.JSON(http.StatusOK, playlists)
 }
 
-func (a ArtistHandler) Create(c *gin.Context) {
-	var request requests.CreateArtistRequest
-	errorCode := a.BindAndValidate(c, &request)
+func (p PlaylistHandler) Create(c *gin.Context) {
+	var request requests.CreatePlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	token := a.GetTokenFromContext(c)
+	token := p.GetTokenFromContext(c)
 
-	errorCode = a.service.Create(request, token)
+	errorCode = p.service.Create(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	a.SendMessage(c, "artist has been created successfully")
+	p.SendMessage(c, "playlist has been created successfully")
 }
 
-func (a ArtistHandler) Update(c *gin.Context) {
-	var request requests.UpdateArtistRequest
-	errorCode := a.BindAndValidate(c, &request)
+func (p PlaylistHandler) Update(c *gin.Context) {
+	var request requests.UpdatePlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = a.service.Update(request)
+	errorCode = p.service.Update(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	a.SendMessage(c, "artist has been updated successfully")
+	p.SendMessage(c, "playlist has been updated successfully")
 }
 
-func (a ArtistHandler) Delete(c *gin.Context) {
+func (p PlaylistHandler) Delete(c *gin.Context) {
 	paramId := c.Param("id")
 
 	id, err := uuid.Parse(paramId)
@@ -114,11 +114,11 @@ func (a ArtistHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errorCode := a.service.Delete(id)
+	errorCode := p.service.Delete(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	a.SendMessage(c, "artist has been deleted successfully")
+	p.SendMessage(c, "playlist has been deleted successfully")
 }

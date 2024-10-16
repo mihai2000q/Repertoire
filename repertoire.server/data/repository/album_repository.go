@@ -25,25 +25,25 @@ func NewAlbumRepository(client database.Client) AlbumRepository {
 	}
 }
 
-func (s albumRepository) Get(album *models.Album, id uuid.UUID) error {
-	return s.client.DB.Find(&album, models.Album{ID: id}).Error
+func (a albumRepository) Get(album *models.Album, id uuid.UUID) error {
+	return a.client.DB.Find(&album, models.Album{ID: id}).Error
 }
 
-func (s albumRepository) GetAllByUser(albums *[]models.Album, userId uuid.UUID) error {
-	return s.client.DB.Model(&models.Album{}).
+func (a albumRepository) GetAllByUser(albums *[]models.Album, userId uuid.UUID) error {
+	return a.client.DB.Model(&models.Album{}).
 		Where(models.Album{UserID: userId}).
 		Find(&albums).
 		Error
 }
 
-func (s albumRepository) Create(album *models.Album) error {
-	return s.client.DB.Create(&album).Error
+func (a albumRepository) Create(album *models.Album) error {
+	return a.client.DB.Create(&album).Error
 }
 
-func (s albumRepository) Update(album *models.Album) error {
-	return s.client.DB.Save(&album).Error
+func (a albumRepository) Update(album *models.Album) error {
+	return a.client.DB.Save(&album).Error
 }
 
-func (s albumRepository) Delete(id uuid.UUID) error {
-	return s.client.DB.Delete(&models.Album{}, id).Error
+func (a albumRepository) Delete(id uuid.UUID) error {
+	return a.client.DB.Delete(&models.Album{}, id).Error
 }

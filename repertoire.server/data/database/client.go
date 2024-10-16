@@ -42,6 +42,7 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 				return db.AutoMigrate(
 					&models.User{},
 					&models.Artist{},
+					&models.Playlist{},
 					&models.Album{},
 					&models.Song{},
 				)
