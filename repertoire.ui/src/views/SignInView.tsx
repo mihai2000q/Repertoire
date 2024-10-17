@@ -14,7 +14,7 @@ import { ReactElement, useState } from 'react'
 import { useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
 import { setToken } from '../state/authSlice'
-import HttpErrorResponse from '../types/HttpError.response'
+import HttpErrorResponse from '../types/responses/HttpError.response'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 function SignInView(): ReactElement {
