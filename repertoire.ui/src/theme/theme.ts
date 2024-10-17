@@ -1,5 +1,6 @@
 import { createTheme, rem } from '@mantine/core'
 import { colors } from './colors'
+import {components} from "./components";
 
 export const theme = createTheme({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -54,5 +55,6 @@ export const theme = createTheme({
       h5: { fontSize: rem(24) },
       h6: { fontSize: rem(20) }
     }
-  }
+  },
+  components: components
 })
