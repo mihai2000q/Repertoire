@@ -47,4 +47,5 @@ function App(): ReactElement {
   )
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default App
