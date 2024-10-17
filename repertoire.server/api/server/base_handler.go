@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type BaseHandler struct {
@@ -34,9 +35,16 @@ func (h *BaseHandler) BindAndValidate(c *gin.Context, request interface{}) *util
 	return nil
 }
 
+func (h *BaseHandler) UuidQuery(c *gin.Context, str string) uuid.UUID {
+	result, err := uuid.Parse(c.Query(str))
+	if err != nil {
+		result = uuid.Nil
+	}
+	return result
+}
+
 func (h *BaseHandler) IntQuery(c *gin.Context, str string) int {
-	tempString := c.Query(str)
-	result, err := strconv.Atoi(tempString)
+	result, err := strconv.Atoi(c.Query(str))
 	if err != nil {
 		result = -1
 	}

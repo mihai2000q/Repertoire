@@ -3,7 +3,9 @@ package requests
 import "github.com/google/uuid"
 
 type GetAlbumsRequest struct {
-	UserID uuid.UUID `validate:"required"`
+	UserID      uuid.UUID `validate:"required"`
+	CurrentPage int       `validate:"gt=0"`
+	PageSize    int       `validate:"gt=0"`
 }
 
 type CreateAlbumRequest struct {

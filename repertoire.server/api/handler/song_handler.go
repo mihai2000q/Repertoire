@@ -45,14 +45,8 @@ func (s SongHandler) Get(c *gin.Context) {
 }
 
 func (s SongHandler) GetAll(c *gin.Context) {
-	userId, err := uuid.Parse(c.Query("userId"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
 	request := requests.GetSongsRequest{
-		UserID:      userId,
+		UserID:      s.UuidQuery(c, "userId"),
 		CurrentPage: s.IntQuery(c, "currentPage"),
 		PageSize:    s.IntQuery(c, "pageSize"),
 	}
