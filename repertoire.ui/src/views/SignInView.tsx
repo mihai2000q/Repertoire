@@ -10,25 +10,36 @@ import {
   TextInput,
   Title
 } from '@mantine/core'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
 import { setToken } from '../state/authSlice'
 import HttpErrorResponse from '../types/responses/HttpError.response'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useForm, zodResolver } from '@mantine/form'
+import { SignInForm, signInValidation } from '../validation/signInForm'
 
 function SignInView(): ReactElement {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
   const [signInMutation, { error, isLoading }] = useSignInMutation()
   const loginError = (error as HttpErrorResponse | undefined)?.data?.error
 
-  async function signIn(): Promise<void> {
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+      password: ''
+    } as SignInForm,
+    validateInputOnBlur: true,
+    validateInputOnChange: false,
+    clearInputErrorOnChange: true,
+    validate: zodResolver(signInValidation)
+  })
+
+  async function signIn({ email, password }: SignInForm): Promise<void> {
     try {
       const res = await signInMutation({ email, password }).unwrap()
 
@@ -53,32 +64,37 @@ function SignInView(): ReactElement {
         </Text>
 
         <Paper withBorder shadow="md" p={30} mt={15}>
-          <Stack align={'flex-start'} gap={0} w={200}>
-            <Stack w={'100%'}>
-              <TextInput
-                required
-                label="Email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={loginError}
-              />
-              <PasswordInput
-                required
-                label="Password"
-                placeholder="Your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                error={loginError}
-              />
+          <form onSubmit={form.onSubmit(signIn)}>
+            <Stack align={'flex-start'} gap={0} w={200}>
+              <Stack w={'100%'}>
+                <TextInput
+                  required
+                  label="Email"
+                  placeholder="Your email"
+                  key={form.key('email')}
+                  {...form.getInputProps('email')}
+                  {...(loginError && { error: loginError })}
+                  maxLength={256}
+                  disabled={isLoading}
+                />
+                <PasswordInput
+                  required
+                  label="Password"
+                  placeholder="Your password"
+                  key={form.key('password')}
+                  {...form.getInputProps('password')}
+                  {...(loginError && { error: loginError })}
+                  disabled={isLoading}
+                />
+              </Stack>
+              <Anchor component="button" size="sm" mt={6} style={{ alignSelf: 'flex-end' }}>
+                Forgot password?
+              </Anchor>
+              <Button type={'submit'} fullWidth mt={'sm'} disabled={isLoading}>
+                Sign in
+              </Button>
             </Stack>
-            <Anchor component="button" size="sm" mt={6} style={{ alignSelf: 'flex-end' }}>
-              Forgot password?
-            </Anchor>
-            <Button fullWidth mt={'sm'} disabled={isLoading} onClick={signIn}>
-              Sign in
-            </Button>
-          </Stack>
+          </form>
         </Paper>
       </Flex>
     </Container>
