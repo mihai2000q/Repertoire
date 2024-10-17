@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/models"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/google/uuid"
 )
@@ -21,7 +22,12 @@ func (s *SongRepositoryMock) Get(song *models.Song, id uuid.UUID) error {
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetAllByUser(songs *[]models.Song, userId uuid.UUID) error {
+func (s *SongRepositoryMock) GetAllByUser(
+	songs *[]models.Song,
+	userId uuid.UUID,
+	currentPage int,
+	pageSize int,
+) error {
 	args := s.Called(songs, userId)
 
 	if len(args) > 1 {

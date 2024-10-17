@@ -18,7 +18,7 @@ func NewGetAllSongs(repository repository.SongRepository) GetAllSongs {
 }
 
 func (g GetAllSongs) Handle(request requests.GetSongsRequest) (songs []models.Song, e *utils.ErrorCode) {
-	err := g.repository.GetAllByUser(&songs, request.UserID)
+	err := g.repository.GetAllByUser(&songs, request.UserID, request.CurrentPage, request.PageSize)
 	if err != nil {
 		return songs, utils.InternalServerError(err)
 	}

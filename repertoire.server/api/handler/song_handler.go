@@ -52,7 +52,9 @@ func (s SongHandler) GetAll(c *gin.Context) {
 	}
 
 	request := requests.GetSongsRequest{
-		UserID: userId,
+		UserID:      userId,
+		CurrentPage: s.IntQuery(c, "currentPage"),
+		PageSize:    s.IntQuery(c, "pageSize"),
 	}
 	errorCode := s.Validator.Validate(&request)
 	if errorCode != nil {

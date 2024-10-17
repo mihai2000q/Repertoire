@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"repertoire/api/validation"
 	"repertoire/utils"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -31,6 +32,15 @@ func (h *BaseHandler) BindAndValidate(c *gin.Context, request interface{}) *util
 	}
 
 	return nil
+}
+
+func (h *BaseHandler) IntQuery(c *gin.Context, str string) int {
+	tempString := c.Query(str)
+	result, err := strconv.Atoi(tempString)
+	if err != nil {
+		result = -1
+	}
+	return result
 }
 
 func (*BaseHandler) SendMessage(c *gin.Context, message string) {
