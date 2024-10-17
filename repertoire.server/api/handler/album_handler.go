@@ -47,8 +47,8 @@ func (a AlbumHandler) Get(c *gin.Context) {
 func (a AlbumHandler) GetAll(c *gin.Context) {
 	request := requests.GetAlbumsRequest{
 		UserID:      a.UuidQuery(c, "userId"),
-		CurrentPage: a.IntQuery(c, "currentPage"),
-		PageSize:    a.IntQuery(c, "pageSize"),
+		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
+		PageSize:    a.IntQueryOrNull(c, "pageSize"),
 	}
 	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {

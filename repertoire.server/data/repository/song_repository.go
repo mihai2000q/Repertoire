@@ -9,7 +9,7 @@ import (
 
 type SongRepository interface {
 	Get(song *models.Song, id uuid.UUID) error
-	GetAllByUser(songs *[]models.Song, userId uuid.UUID, currentPage int, pageSize int) error
+	GetAllByUser(songs *[]models.Song, userId uuid.UUID, currentPage *int, pageSize *int) error
 	Create(song *models.Song) error
 	Update(song *models.Song) error
 	Delete(id uuid.UUID) error
@@ -32,13 +32,13 @@ func (s songRepository) Get(song *models.Song, id uuid.UUID) error {
 func (s songRepository) GetAllByUser(
 	songs *[]models.Song,
 	userId uuid.UUID,
-	currentPage int,
-	pageSize int,
+	currentPage *int,
+	pageSize *int,
 ) error {
 	return s.client.DB.Model(&models.Song{}).
 		Where(models.Song{UserID: userId}).
-		Offset((currentPage - 1) * pageSize).
-		Limit(pageSize).
+		Offset((*currentPage - 1) * *pageSize).
+		Limit(*pageSize).
 		Find(&songs).
 		Error
 }

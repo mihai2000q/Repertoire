@@ -25,8 +25,8 @@ func (s *SongRepositoryMock) Get(song *models.Song, id uuid.UUID) error {
 func (s *SongRepositoryMock) GetAllByUser(
 	songs *[]models.Song,
 	userId uuid.UUID,
-	currentPage int,
-	pageSize int,
+	currentPage *int,
+	pageSize *int,
 ) error {
 	args := s.Called(songs, userId, currentPage, pageSize)
 

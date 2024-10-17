@@ -14,8 +14,8 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 
 	request := GetSongsRequest{
 		UserID:      uuid.New(),
-		CurrentPage: 1,
-		PageSize:    1,
+		CurrentPage: &[]int{1}[0],
+		PageSize:    &[]int{1}[0],
 	}
 
 	errCode := _uut.Validate(request)
@@ -40,14 +40,14 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetSongsRequest{UserID: uuid.New(), CurrentPage: 0},
+			GetSongsRequest{UserID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{0}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetSongsRequest{UserID: uuid.New(), PageSize: 0},
+			GetSongsRequest{UserID: uuid.New(), PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},

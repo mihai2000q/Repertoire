@@ -43,12 +43,12 @@ func (h *BaseHandler) UuidQuery(c *gin.Context, str string) uuid.UUID {
 	return result
 }
 
-func (h *BaseHandler) IntQuery(c *gin.Context, str string) int {
+func (h *BaseHandler) IntQueryOrNull(c *gin.Context, str string) *int {
 	result, err := strconv.Atoi(c.Query(str))
 	if err != nil {
-		result = -1
+		return nil
 	}
-	return result
+	return &result
 }
 
 func (*BaseHandler) SendMessage(c *gin.Context, message string) {
