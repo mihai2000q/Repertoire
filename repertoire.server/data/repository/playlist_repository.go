@@ -9,7 +9,7 @@ import (
 
 type PlaylistRepository interface {
 	Get(playlist *models.Playlist, id uuid.UUID) error
-	GetAllByUser(playlists *[]models.Playlist, userId uuid.UUID) error
+	GetAllByUser(playlists *[]models.Playlist, userId uuid.UUID, currentPage *int, pageSize *int) error
 	Create(playlist *models.Playlist) error
 	Update(playlist *models.Playlist) error
 	Delete(id uuid.UUID) error
@@ -29,9 +29,22 @@ func (p playlistRepository) Get(playlist *models.Playlist, id uuid.UUID) error {
 	return p.client.DB.Find(&playlist, models.Playlist{ID: id}).Error
 }
 
-func (p playlistRepository) GetAllByUser(playlists *[]models.Playlist, userId uuid.UUID) error {
+func (p playlistRepository) GetAllByUser(
+	playlists *[]models.Playlist,
+	userId uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+) error {
+	if currentPage == nil {
+		currentPage = &[]int{1}[0]
+	}
+	if pageSize == nil {
+		pageSize = &[]int{1}[0]
+	}
 	return p.client.DB.Model(&models.Playlist{}).
 		Where(models.Playlist{UserID: userId}).
+		Offset((*currentPage - 1) * *pageSize).
+		Limit(*pageSize).
 		Find(&playlists).
 		Error
 }

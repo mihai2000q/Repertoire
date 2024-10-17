@@ -22,8 +22,13 @@ func (p *PlaylistRepositoryMock) Get(playlist *models.Playlist, id uuid.UUID) er
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) GetAllByUser(playlists *[]models.Playlist, userId uuid.UUID) error {
-	args := p.Called(playlists, userId)
+func (p *PlaylistRepositoryMock) GetAllByUser(
+	playlists *[]models.Playlist,
+	userId uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+) error {
+	args := p.Called(playlists, userId, currentPage, pageSize)
 
 	if len(args) > 1 {
 		*playlists = *args.Get(1).(*[]models.Playlist)
