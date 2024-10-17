@@ -5,7 +5,7 @@ import { setErrorPath } from './globalSlice'
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 
 const queryWithAuthorization = fetchBaseQuery({
-  baseUrl: '', // TODO:FIXME
+  baseUrl: import.meta.env.VITE_BACKEND_URL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token
     if (token) {
