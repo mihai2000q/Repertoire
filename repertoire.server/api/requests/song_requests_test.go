@@ -40,7 +40,7 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetSongsRequest{UserID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{0}[0]},
+			GetSongsRequest{UserID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
