@@ -28,7 +28,7 @@ func (s *SongRepositoryMock) GetAllByUser(
 	currentPage int,
 	pageSize int,
 ) error {
-	args := s.Called(songs, userId)
+	args := s.Called(songs, userId, currentPage, pageSize)
 
 	if len(args) > 1 {
 		*songs = *args.Get(1).(*[]models.Song)

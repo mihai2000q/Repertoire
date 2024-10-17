@@ -18,7 +18,7 @@ func NewGetAllAlbums(repository repository.AlbumRepository) GetAllAlbums {
 }
 
 func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest) (albums []models.Album, e *utils.ErrorCode) {
-	err := g.repository.GetAllByUser(&albums, request.UserID)
+	err := g.repository.GetAllByUser(&albums, request.UserID, request.CurrentPage, request.PageSize)
 	if err != nil {
 		return albums, utils.InternalServerError(err)
 	}
