@@ -14,7 +14,7 @@ export const theme = createTheme({
   autoContrast: true,
   luminanceThreshold: 0.4,
 
-  fontFamily: 'Open Sans, sans-serif',
+  fontFamily: 'Poppins, sans-serif',
   fontSizes: {
     xs: rem(10),
     sm: rem(11),
@@ -32,19 +32,19 @@ export const theme = createTheme({
 
   headings: {
     fontWeight: '500',
-    fontFamily: 'Roboto, sans-serif',
+    fontFamily: 'Poppins, sans-serif',
     sizes: {
       h1: {
         fontSize: rem(40),
-        fontWeight: '800'
+        fontWeight: '900'
       },
       h2: {
         fontSize: rem(36),
-        fontWeight: '700'
+        fontWeight: '800'
       },
       h3: {
         fontSize: rem(32),
-        fontWeight: '600'
+        fontWeight: '700'
       },
       h4: {
         fontSize: rem(28),
