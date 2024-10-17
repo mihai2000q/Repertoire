@@ -19,7 +19,7 @@ function App(): ReactElement {
   return (
     <div className={'app'}>
       <Provider store={store}>
-        <MantineProvider theme={theme}>
+        <MantineProvider theme={theme} forceColorScheme={'light'}>
           <BrowserRouter>
             <Routes>
               <Route path={'/'} element={<Navigate to={'home'} replace />} />

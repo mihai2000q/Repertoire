@@ -1,10 +1,11 @@
 import { ReactElement } from 'react'
+import { AppShell } from '@mantine/core'
 
 function Topbar(): ReactElement {
   return (
-    <div>
+    <AppShell.Header px={'md'} withBorder={false}>
       <p>This is the top bar</p>
-    </div>
+    </AppShell.Header>
   )
 }
 

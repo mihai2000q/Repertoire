@@ -3,27 +3,29 @@ import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
+import { AppShell } from '@mantine/core'
 
 function MainView(): ReactElement {
   useErrorRedirection()
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        width: '100%',
-        height: '100%'
+    <AppShell
+      layout={'alt'}
+      header={{ height: 50 }}
+      navbar={{
+        width: 250,
+        breakpoint: 'xs',
+        collapsed: { mobile: true, desktop: false }
       }}
+      px={'xl'}
+      style={{ width: '100%' }}
     >
+      <Topbar />
       <Sidebar />
-      <div style={{ width: '100%' }}>
-        <Topbar />
-        <div>
-          <Outlet />
-        </div>
-      </div>
-    </div>
+      <AppShell.Main>
+        <Outlet />
+      </AppShell.Main>
+    </AppShell>
   )
 }
 
