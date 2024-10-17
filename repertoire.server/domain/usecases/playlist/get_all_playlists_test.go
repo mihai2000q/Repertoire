@@ -24,7 +24,14 @@ func TestGetAll_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.
 	}
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("GetAllByUser", mock.Anything, request.UserID).
+	playlistRepository.
+		On(
+			"GetAllByUser",
+			mock.Anything,
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(internalError).
 		Once()
 
@@ -55,7 +62,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylists(t *testing.T) {
 		{Title: "Some other Playlist"},
 	}
 
-	playlistRepository.On("GetAllByUser", mock.IsType(expectedPlaylists), request.UserID).
+	playlistRepository.
+		On(
+			"GetAllByUser",
+			mock.IsType(expectedPlaylists),
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(nil, expectedPlaylists).
 		Once()
 

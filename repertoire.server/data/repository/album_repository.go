@@ -9,7 +9,7 @@ import (
 
 type AlbumRepository interface {
 	Get(album *models.Album, id uuid.UUID) error
-	GetAllByUser(albums *[]models.Album, userId uuid.UUID) error
+	GetAllByUser(albums *[]models.Album, userId uuid.UUID, currentPage *int, pageSize *int) error
 	Create(album *models.Album) error
 	Update(album *models.Album) error
 	Delete(id uuid.UUID) error
@@ -29,9 +29,22 @@ func (a albumRepository) Get(album *models.Album, id uuid.UUID) error {
 	return a.client.DB.Find(&album, models.Album{ID: id}).Error
 }
 
-func (a albumRepository) GetAllByUser(albums *[]models.Album, userId uuid.UUID) error {
+func (a albumRepository) GetAllByUser(
+	albums *[]models.Album,
+	userId uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+) error {
+	if currentPage == nil {
+		currentPage = &[]int{-1}[0]
+	}
+	if pageSize == nil {
+		pageSize = &[]int{-1}[0]
+	}
 	return a.client.DB.Model(&models.Album{}).
 		Where(models.Album{UserID: userId}).
+		Offset((*currentPage - 1) * *pageSize).
+		Limit(*pageSize).
 		Find(&albums).
 		Error
 }

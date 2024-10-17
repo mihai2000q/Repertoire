@@ -45,14 +45,10 @@ func (p PlaylistHandler) Get(c *gin.Context) {
 }
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
-	userId, err := uuid.Parse(c.Query("userId"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
 	request := requests.GetPlaylistsRequest{
-		UserID: userId,
+		UserID:      p.UuidQuery(c, "userId"),
+		CurrentPage: p.IntQueryOrNull(c, "currentPage"),
+		PageSize:    p.IntQueryOrNull(c, "pageSize"),
 	}
 	errorCode := p.Validator.Validate(&request)
 	if errorCode != nil {

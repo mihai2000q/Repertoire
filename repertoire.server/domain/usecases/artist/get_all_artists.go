@@ -18,7 +18,7 @@ func NewGetAllArtists(repository repository.ArtistRepository) GetAllArtists {
 }
 
 func (g GetAllArtists) Handle(request requests.GetArtistsRequest) (artists []models.Artist, e *utils.ErrorCode) {
-	err := g.repository.GetAllByUser(&artists, request.UserID)
+	err := g.repository.GetAllByUser(&artists, request.UserID, request.CurrentPage, request.PageSize)
 	if err != nil {
 		return artists, utils.InternalServerError(err)
 	}

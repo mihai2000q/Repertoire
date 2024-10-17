@@ -24,7 +24,14 @@ func TestGetAll_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T)
 	}
 
 	internalError := errors.New("internal error")
-	artistRepository.On("GetAllByUser", mock.Anything, request.UserID).
+	artistRepository.
+		On(
+			"GetAllByUser",
+			mock.Anything,
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(internalError).
 		Once()
 
@@ -55,7 +62,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 		{Name: "Some other Artist"},
 	}
 
-	artistRepository.On("GetAllByUser", mock.IsType(expectedArtists), request.UserID).
+	artistRepository.
+		On(
+			"GetAllByUser",
+			mock.IsType(expectedArtists),
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(nil, expectedArtists).
 		Once()
 

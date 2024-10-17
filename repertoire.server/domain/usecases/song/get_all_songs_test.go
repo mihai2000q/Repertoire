@@ -2,14 +2,15 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestGetAll_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -23,7 +24,14 @@ func TestGetAll_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	}
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetAllByUser", mock.Anything, request.UserID).
+	songRepository.
+		On(
+			"GetAllByUser",
+			mock.Anything,
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(internalError).
 		Once()
 
@@ -54,7 +62,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 		{Title: "Some other Song"},
 	}
 
-	songRepository.On("GetAllByUser", mock.IsType(expectedSongs), request.UserID).
+	songRepository.
+		On(
+			"GetAllByUser",
+			mock.IsType(expectedSongs),
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(nil, expectedSongs).
 		Once()
 

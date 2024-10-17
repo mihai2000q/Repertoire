@@ -45,14 +45,10 @@ func (a AlbumHandler) Get(c *gin.Context) {
 }
 
 func (a AlbumHandler) GetAll(c *gin.Context) {
-	userId, err := uuid.Parse(c.Query("userId"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
 	request := requests.GetAlbumsRequest{
-		UserID: userId,
+		UserID:      a.UuidQuery(c, "userId"),
+		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
+		PageSize:    a.IntQueryOrNull(c, "pageSize"),
 	}
 	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {

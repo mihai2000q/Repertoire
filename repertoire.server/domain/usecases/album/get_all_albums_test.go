@@ -24,7 +24,14 @@ func TestGetAll_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) 
 	}
 
 	internalError := errors.New("internal error")
-	albumRepository.On("GetAllByUser", mock.Anything, request.UserID).
+	albumRepository.
+		On(
+			"GetAllByUser",
+			mock.Anything,
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(internalError).
 		Once()
 
@@ -55,7 +62,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
 		{Title: "Some other Album"},
 	}
 
-	albumRepository.On("GetAllByUser", mock.IsType(expectedAlbums), request.UserID).
+	albumRepository.
+		On(
+			"GetAllByUser",
+			mock.Anything,
+			request.UserID,
+			request.CurrentPage,
+			request.PageSize,
+		).
 		Return(nil, expectedAlbums).
 		Once()
 

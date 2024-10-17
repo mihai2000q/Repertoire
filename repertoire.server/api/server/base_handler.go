@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"repertoire/api/validation"
 	"repertoire/utils"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type BaseHandler struct {
@@ -31,6 +33,22 @@ func (h *BaseHandler) BindAndValidate(c *gin.Context, request interface{}) *util
 	}
 
 	return nil
+}
+
+func (h *BaseHandler) UuidQuery(c *gin.Context, str string) uuid.UUID {
+	result, err := uuid.Parse(c.Query(str))
+	if err != nil {
+		result = uuid.Nil
+	}
+	return result
+}
+
+func (h *BaseHandler) IntQueryOrNull(c *gin.Context, str string) *int {
+	result, err := strconv.Atoi(c.Query(str))
+	if err != nil {
+		return nil
+	}
+	return &result
 }
 
 func (*BaseHandler) SendMessage(c *gin.Context, message string) {
