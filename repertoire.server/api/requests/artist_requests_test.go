@@ -13,7 +13,9 @@ func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
 	request := GetArtistsRequest{
-		UserID: uuid.New(),
+		UserID:      uuid.New(),
+		CurrentPage: 1,
+		PageSize:    1,
 	}
 
 	errCode := _uut.Validate(request)
@@ -34,6 +36,20 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			GetArtistsRequest{UserID: uuid.Nil},
 			"UserID",
 			"required",
+		},
+		// Current Page Test Cases
+		{
+			"Current Page is invalid because it should be greater than 0",
+			GetArtistsRequest{UserID: uuid.New(), CurrentPage: 0},
+			"CurrentPage",
+			"gt",
+		},
+		// Page Size Test Cases
+		{
+			"Page Size is invalid because it should be greater than 0",
+			GetArtistsRequest{UserID: uuid.New(), PageSize: 0},
+			"PageSize",
+			"gt",
 		},
 	}
 	for _, tt := range tests {

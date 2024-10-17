@@ -9,7 +9,7 @@ import (
 
 type ArtistRepository interface {
 	Get(artist *models.Artist, id uuid.UUID) error
-	GetAllByUser(artists *[]models.Artist, userId uuid.UUID) error
+	GetAllByUser(artists *[]models.Artist, userId uuid.UUID, currentPage int, pageSize int) error
 	Create(artist *models.Artist) error
 	Update(artist *models.Artist) error
 	Delete(id uuid.UUID) error
@@ -29,9 +29,16 @@ func (a artistRepository) Get(artist *models.Artist, id uuid.UUID) error {
 	return a.client.DB.Find(&artist, models.Artist{ID: id}).Error
 }
 
-func (a artistRepository) GetAllByUser(artists *[]models.Artist, userId uuid.UUID) error {
+func (a artistRepository) GetAllByUser(
+	artists *[]models.Artist,
+	userId uuid.UUID,
+	currentPage int,
+	pageSize int,
+) error {
 	return a.client.DB.Model(&models.Artist{}).
 		Where(models.Artist{UserID: userId}).
+		Offset((currentPage - 1) * pageSize).
+		Limit(pageSize).
 		Find(&artists).
 		Error
 }
