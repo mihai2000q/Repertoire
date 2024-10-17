@@ -4,8 +4,8 @@ import "github.com/google/uuid"
 
 type GetPlaylistsRequest struct {
 	UserID      uuid.UUID `validate:"required"`
-	CurrentPage *int      `validate:"omitempty,required_with=PageSize,gt=0"`
-	PageSize    *int      `validate:"omitempty,required_with=CurrentPage,gt=0"`
+	CurrentPage *int      `validate:"required_with=PageSize,omitempty,gt=0"`
+	PageSize    *int      `validate:"required_with=CurrentPage,omitempty,gt=0"`
 }
 
 type CreatePlaylistRequest struct {

@@ -10,17 +10,38 @@ import (
 )
 
 func TestValidateGetAlbumsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	_uut := validation.NewValidator(nil)
-
-	request := GetAlbumsRequest{
-		UserID:      uuid.New(),
-		CurrentPage: &[]int{1}[0],
-		PageSize:    &[]int{1}[0],
+	tests := []struct {
+		name    string
+		request GetAlbumsRequest
+	}{
+		{
+			"All Null",
+			GetAlbumsRequest{
+				UserID: uuid.New(),
+			},
+		},
+		{
+			"Nothing Null",
+			GetAlbumsRequest{
+				UserID:      uuid.New(),
+				CurrentPage: &[]int{1}[0],
+				PageSize:    &[]int{1}[0],
+			},
+		},
 	}
 
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -48,7 +69,7 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			"Current Page is invalid because page size is null",
 			GetAlbumsRequest{UserID: uuid.New(), PageSize: &[]int{1}[0]},
 			"CurrentPage",
-			"required",
+			"required_with",
 		},
 		// Page Size Test Cases
 		{
@@ -61,7 +82,7 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			"Page Size is invalid because current page is null",
 			GetAlbumsRequest{UserID: uuid.New(), CurrentPage: &[]int{1}[0]},
 			"PageSize",
-			"required",
+			"required_with",
 		},
 	}
 	for _, tt := range tests {
