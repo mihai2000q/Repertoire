@@ -44,12 +44,24 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			"CurrentPage",
 			"gt",
 		},
+		{
+			"Current Page is invalid because page size is null",
+			GetSongsRequest{UserID: uuid.New(), PageSize: &[]int{1}[0]},
+			"CurrentPage",
+			"required",
+		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
 			GetSongsRequest{UserID: uuid.New(), PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
+		},
+		{
+			"Page Size is invalid because current page is null",
+			GetSongsRequest{UserID: uuid.New(), CurrentPage: &[]int{1}[0]},
+			"PageSize",
+			"required",
 		},
 	}
 	for _, tt := range tests {

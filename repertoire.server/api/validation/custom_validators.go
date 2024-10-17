@@ -1,8 +1,9 @@
 package validation
 
 import (
-	"github.com/go-playground/validator/v10"
 	"unicode"
+
+	"github.com/go-playground/validator/v10"
 )
 
 func HasUpper(fl validator.FieldLevel) bool {
