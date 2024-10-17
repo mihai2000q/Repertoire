@@ -7,6 +7,7 @@ export const theme = createTheme({
   colors: colors,
   primaryColor: 'cyan',
   primaryShade: { light: 5, dark: 7 },
+  white: '#f0f0f0',
 
   defaultRadius: 'md',
   cursorType: 'pointer',
