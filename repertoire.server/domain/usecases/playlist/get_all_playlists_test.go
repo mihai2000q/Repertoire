@@ -25,7 +25,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 	token := "This is a token"
 
 	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
-	jwtService.On("GetUserIdFromJwt", token).Return(nil, forbiddenError).Once()
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	playlists, errCode := _uut.Handle(request, token)
