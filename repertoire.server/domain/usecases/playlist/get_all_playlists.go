@@ -26,7 +26,7 @@ func (g GetAllPlaylists) Handle(request requests.GetPlaylistsRequest, token stri
 		return result, errCode
 	}
 
-	err := g.repository.GetAllByUser(&result.Data, userId, request.CurrentPage, request.PageSize)
+	err := g.repository.GetAllByUser(&result.Models, userId, request.CurrentPage, request.PageSize)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}

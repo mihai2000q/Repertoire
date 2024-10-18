@@ -121,7 +121,7 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 	result, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, expectedPlaylists, &result.Data)
+	assert.Equal(t, expectedPlaylists, &result.Models)
 	assert.Empty(t, result.TotalCount)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
@@ -175,7 +175,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	result, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, expectedPlaylists, &result.Data)
+	assert.Equal(t, expectedPlaylists, &result.Models)
 	assert.Equal(t, expectedTotalCount, &result.TotalCount)
 	assert.Nil(t, errCode)
 

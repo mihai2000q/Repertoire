@@ -121,7 +121,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 	res, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, expectedAlbums, &res.Data)
+	assert.Equal(t, expectedAlbums, &res.Models)
 	assert.Empty(t, res.TotalCount)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
@@ -175,7 +175,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	result, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, expectedAlbums, &result.Data)
+	assert.Equal(t, expectedAlbums, &result.Models)
 	assert.Equal(t, expectedTotalCount, &result.TotalCount)
 	assert.Nil(t, errCode)
 

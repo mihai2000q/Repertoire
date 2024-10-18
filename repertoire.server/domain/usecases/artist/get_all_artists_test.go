@@ -121,7 +121,7 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 	result, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, expectedArtists, &result.Data)
+	assert.Equal(t, expectedArtists, &result.Models)
 	assert.Empty(t, result.TotalCount)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
@@ -175,7 +175,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 	result, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, expectedArtists, &result.Data)
+	assert.Equal(t, expectedArtists, &result.Models)
 	assert.Equal(t, expectedTotalCount, &result.TotalCount)
 	assert.Nil(t, errCode)
 
