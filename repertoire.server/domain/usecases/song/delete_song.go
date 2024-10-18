@@ -3,7 +3,7 @@ package song
 import (
 	"github.com/google/uuid"
 	"repertoire/data/repository"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type DeleteSong struct {
@@ -14,10 +14,10 @@ func NewDeleteSong(repository repository.SongRepository) DeleteSong {
 	return DeleteSong{repository: repository}
 }
 
-func (d DeleteSong) Handle(id uuid.UUID) *utils.ErrorCode {
+func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	err := d.repository.Delete(id)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	return nil
 }

@@ -5,7 +5,7 @@ import (
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -18,21 +18,21 @@ func NewUpdateArtist(repository repository.ArtistRepository) UpdateArtist {
 	return UpdateArtist{repository: repository}
 }
 
-func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *utils.ErrorCode {
+func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *wrapper.ErrorCode {
 	var artist models.Artist
 	err := u.repository.Get(&artist, request.ID)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	if artist.ID == uuid.Nil {
-		return utils.NotFoundError(errors.New("artist not found"))
+		return wrapper.NotFoundError(errors.New("artist not found"))
 	}
 
 	artist.Name = request.Name
 
 	err = u.repository.Update(&artist)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

@@ -9,7 +9,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"strings"
 	"testing"
 )
@@ -132,7 +132,7 @@ func TestSignIn_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing.
 
 	bCryptService.On("CompareHash", user.Password, request.Password).Return(nil).Once()
 
-	internalError := utils.InternalServerError(errors.New("something went wrong"))
+	internalError := wrapper.InternalServerError(errors.New("something went wrong"))
 	jwtService.On("CreateToken", *user).Return("", internalError).Once()
 
 	// when

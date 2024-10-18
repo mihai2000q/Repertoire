@@ -5,7 +5,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -22,7 +22,7 @@ func NewCreateAlbum(jwtService service.JwtService, repository repository.AlbumRe
 	}
 }
 
-func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *utils.ErrorCode {
+func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
@@ -35,7 +35,7 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *
 	}
 	err := c.repository.Create(&album)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	return nil
 }

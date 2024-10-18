@@ -7,7 +7,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type Refresh struct {
@@ -22,7 +22,7 @@ func NewRefresh(jwtService service.JwtService, userRepository repository.UserRep
 	}
 }
 
-func (r *Refresh) Handle(request requests.RefreshRequest) (string, *utils.ErrorCode) {
+func (r *Refresh) Handle(request requests.RefreshRequest) (string, *wrapper.ErrorCode) {
 	// validate token
 	userId, errCode := r.jwtService.Validate(request.Token)
 	if errCode != nil {
@@ -33,10 +33,10 @@ func (r *Refresh) Handle(request requests.RefreshRequest) (string, *utils.ErrorC
 	var user models.User
 	err := r.userRepository.Get(&user, userId)
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", wrapper.InternalServerError(err)
 	}
 	if user.ID == uuid.Nil {
-		return "", utils.UnauthorizedError(errors.New("not authorized"))
+		return "", wrapper.UnauthorizedError(errors.New("not authorized"))
 	}
 
 	return r.jwtService.CreateToken(user)

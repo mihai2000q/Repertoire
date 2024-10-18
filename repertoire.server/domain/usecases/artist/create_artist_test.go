@@ -7,7 +7,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"testing"
 
 	"github.com/google/uuid"
@@ -28,7 +28,7 @@ func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t 
 	}
 	token := "this is a token"
 
-	unauthorizedError := utils.UnauthorizedError(errors.New("not authorized"))
+	unauthorizedError := wrapper.UnauthorizedError(errors.New("not authorized"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
 
 	// when

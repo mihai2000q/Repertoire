@@ -4,17 +4,17 @@ import (
 	"repertoire/api/requests"
 	"repertoire/domain/usecases/album"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrappers"
 
 	"github.com/google/uuid"
 )
 
 type AlbumService interface {
-	Get(id uuid.UUID) (album models.Album, e *utils.ErrorCode)
 	GetAll(request requests.GetAlbumsRequest) (albums []models.Album, e *utils.ErrorCode)
-	Create(request requests.CreateAlbumRequest, token string) *utils.ErrorCode
-	Update(request requests.UpdateAlbumRequest) *utils.ErrorCode
-	Delete(id uuid.UUID) *utils.ErrorCode
+	Get(id uuid.UUID) (models.Album, *wrappers.ErrorCode)
+	Create(request requests.CreateAlbumRequest, token string) *wrappers.ErrorCode
+	Update(request requests.UpdateAlbumRequest) *wrappers.ErrorCode
+	Delete(id uuid.UUID) *wrappers.ErrorCode
 }
 
 type albumService struct {
@@ -41,7 +41,7 @@ func NewAlbumService(
 	}
 }
 
-func (a *albumService) Get(id uuid.UUID) (models.Album, *utils.ErrorCode) {
+func (a *albumService) Get(id uuid.UUID) (models.Album, *wrappers.ErrorCode) {
 	return a.getAlbum.Handle(id)
 }
 
@@ -49,14 +49,14 @@ func (a *albumService) GetAll(request requests.GetAlbumsRequest) ([]models.Album
 	return a.getAllAlbums.Handle(request)
 }
 
-func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *utils.ErrorCode {
+func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *wrappers.ErrorCode {
 	return a.createAlbum.Handle(request, token)
 }
 
-func (a *albumService) Update(request requests.UpdateAlbumRequest) *utils.ErrorCode {
+func (a *albumService) Update(request requests.UpdateAlbumRequest) *wrappers.ErrorCode {
 	return a.updateAlbum.Handle(request)
 }
 
-func (a *albumService) Delete(id uuid.UUID) *utils.ErrorCode {
+func (a *albumService) Delete(id uuid.UUID) *wrappers.ErrorCode {
 	return a.deleteAlbum.Handle(id)
 }

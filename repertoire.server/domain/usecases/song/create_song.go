@@ -6,7 +6,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type CreateSong struct {
@@ -21,7 +21,7 @@ func NewCreateSong(jwtService service.JwtService, repository repository.SongRepo
 	}
 }
 
-func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *utils.ErrorCode {
+func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
@@ -35,7 +35,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *ut
 	}
 	err := c.repository.Create(&song)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	return nil
 }

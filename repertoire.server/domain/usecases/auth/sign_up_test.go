@@ -10,7 +10,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"strings"
 	"testing"
 )
@@ -188,7 +188,7 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 		Return(nil).
 		Once()
 
-	internalError := utils.InternalServerError(errors.New("internal error"))
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	jwtService.On("CreateToken", mock.IsType(models.User{})).
 		Run(func(args mock.Arguments) {
 			assert.Equal(t, *user, args.Get(0).(models.User))

@@ -2,7 +2,7 @@ package album
 
 import (
 	"repertoire/data/repository"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -15,10 +15,10 @@ func NewDeleteAlbum(repository repository.AlbumRepository) DeleteAlbum {
 	return DeleteAlbum{repository: repository}
 }
 
-func (d DeleteAlbum) Handle(id uuid.UUID) *utils.ErrorCode {
+func (d DeleteAlbum) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	err := d.repository.Delete(id)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	return nil
 }

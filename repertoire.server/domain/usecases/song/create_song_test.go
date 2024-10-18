@@ -10,7 +10,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"testing"
 )
 
@@ -27,7 +27,7 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *t
 	}
 	token := "this is a token"
 
-	unauthorizedError := utils.UnauthorizedError(errors.New("not authorized"))
+	unauthorizedError := wrapper.UnauthorizedError(errors.New("not authorized"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
 
 	// when

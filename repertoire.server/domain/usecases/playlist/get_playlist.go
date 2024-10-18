@@ -4,7 +4,7 @@ import (
 	"errors"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -19,13 +19,13 @@ func NewGetPlaylist(repository repository.PlaylistRepository) GetPlaylist {
 	}
 }
 
-func (g GetPlaylist) Handle(id uuid.UUID) (playlist models.Playlist, e *utils.ErrorCode) {
+func (g GetPlaylist) Handle(id uuid.UUID) (playlist models.Playlist, e *wrapper.ErrorCode) {
 	err := g.repository.Get(&playlist, id)
 	if err != nil {
-		return playlist, utils.InternalServerError(err)
+		return playlist, wrapper.InternalServerError(err)
 	}
 	if playlist.ID == uuid.Nil {
-		return playlist, utils.NotFoundError(errors.New("playlist not found"))
+		return playlist, wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 	return playlist, nil
 }

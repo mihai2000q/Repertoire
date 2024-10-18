@@ -4,7 +4,7 @@ import (
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type GetAllArtists struct {
@@ -17,10 +17,10 @@ func NewGetAllArtists(repository repository.ArtistRepository) GetAllArtists {
 	}
 }
 
-func (g GetAllArtists) Handle(request requests.GetArtistsRequest) (artists []models.Artist, e *utils.ErrorCode) {
+func (g GetAllArtists) Handle(request requests.GetArtistsRequest) (artists []models.Artist, e *wrapper.ErrorCode) {
 	err := g.repository.GetAllByUser(&artists, request.UserID, request.CurrentPage, request.PageSize)
 	if err != nil {
-		return artists, utils.InternalServerError(err)
+		return artists, wrapper.InternalServerError(err)
 	}
 	return artists, nil
 }

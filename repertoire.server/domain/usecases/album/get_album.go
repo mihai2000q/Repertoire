@@ -4,7 +4,7 @@ import (
 	"errors"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -19,13 +19,13 @@ func NewGetAlbum(repository repository.AlbumRepository) GetAlbum {
 	}
 }
 
-func (g GetAlbum) Handle(id uuid.UUID) (album models.Album, e *utils.ErrorCode) {
+func (g GetAlbum) Handle(id uuid.UUID) (album models.Album, e *wrapper.ErrorCode) {
 	err := g.repository.Get(&album, id)
 	if err != nil {
-		return album, utils.InternalServerError(err)
+		return album, wrapper.InternalServerError(err)
 	}
 	if album.ID == uuid.Nil {
-		return album, utils.NotFoundError(errors.New("album not found"))
+		return album, wrapper.NotFoundError(errors.New("album not found"))
 	}
 	return album, nil
 }

@@ -3,13 +3,13 @@ package service
 import (
 	"repertoire/api/requests"
 	"repertoire/domain/usecases/auth"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type AuthService interface {
-	Refresh(request requests.RefreshRequest) (string, *utils.ErrorCode)
-	SignIn(request requests.SignInRequest) (string, *utils.ErrorCode)
-	SignUp(request requests.SignUpRequest) (string, *utils.ErrorCode)
+	Refresh(request requests.RefreshRequest) (string, *wrapper.ErrorCode)
+	SignIn(request requests.SignInRequest) (string, *wrapper.ErrorCode)
+	SignUp(request requests.SignUpRequest) (string, *wrapper.ErrorCode)
 }
 
 type authService struct {
@@ -30,14 +30,14 @@ func NewAuthService(
 	}
 }
 
-func (a *authService) Refresh(request requests.RefreshRequest) (string, *utils.ErrorCode) {
+func (a *authService) Refresh(request requests.RefreshRequest) (string, *wrapper.ErrorCode) {
 	return a.refresh.Handle(request)
 }
 
-func (a *authService) SignIn(request requests.SignInRequest) (string, *utils.ErrorCode) {
+func (a *authService) SignIn(request requests.SignInRequest) (string, *wrapper.ErrorCode) {
 	return a.signIn.Handle(request)
 }
 
-func (a *authService) SignUp(request requests.SignUpRequest) (string, *utils.ErrorCode) {
+func (a *authService) SignUp(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
 	return a.signUp.Handle(request)
 }

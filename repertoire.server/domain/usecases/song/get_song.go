@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type GetSong struct {
@@ -18,13 +18,13 @@ func NewGetSong(repository repository.SongRepository) GetSong {
 	}
 }
 
-func (g GetSong) Handle(id uuid.UUID) (song models.Song, e *utils.ErrorCode) {
+func (g GetSong) Handle(id uuid.UUID) (song models.Song, e *wrapper.ErrorCode) {
 	err := g.repository.Get(&song, id)
 	if err != nil {
-		return song, utils.InternalServerError(err)
+		return song, wrapper.InternalServerError(err)
 	}
 	if song.ID == uuid.Nil {
-		return song, utils.NotFoundError(errors.New("song not found"))
+		return song, wrapper.NotFoundError(errors.New("song not found"))
 	}
 	return song, nil
 }

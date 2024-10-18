@@ -6,14 +6,15 @@ import (
 	"github.com/google/uuid"
 	"repertoire/models"
 	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"time"
 )
 
 type JwtService interface {
-	Authorize(tokenString string) *utils.ErrorCode
-	CreateToken(user models.User) (string, *utils.ErrorCode)
-	Validate(tokenString string) (uuid.UUID, *utils.ErrorCode)
-	GetUserIdFromJwt(tokenString string) (uuid.UUID, *utils.ErrorCode)
+	Authorize(tokenString string) *wrapper.ErrorCode
+	CreateToken(user models.User) (string, *wrapper.ErrorCode)
+	Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
+	GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 }
 
 type jwtService struct {
@@ -26,7 +27,7 @@ func NewJwtService(env utils.Env) JwtService {
 	}
 }
 
-func (j *jwtService) Authorize(tokenString string) *utils.ErrorCode {
+func (j *jwtService) Authorize(tokenString string) *wrapper.ErrorCode {
 	token, _ := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtSecretKey), nil
 	})
@@ -35,10 +36,10 @@ func (j *jwtService) Authorize(tokenString string) *utils.ErrorCode {
 		return nil
 	}
 
-	return utils.UnauthorizedError(errors.New("invalid token"))
+	return wrapper.UnauthorizedError(errors.New("invalid token"))
 }
 
-func (j *jwtService) CreateToken(user models.User) (string, *utils.ErrorCode) {
+func (j *jwtService) CreateToken(user models.User) (string, *wrapper.ErrorCode) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
@@ -49,71 +50,71 @@ func (j *jwtService) CreateToken(user models.User) (string, *utils.ErrorCode) {
 	})
 	token, err := claims.SignedString([]byte(j.env.JwtSecretKey))
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", wrapper.InternalServerError(err)
 	}
 	return token, nil
 }
 
-func (j *jwtService) Validate(tokenString string) (uuid.UUID, *utils.ErrorCode) {
+func (j *jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtSecretKey), nil
 	})
 	if err != nil && !errors.Is(err, jwt.ErrTokenExpired) {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	aud, err := token.Claims.GetAudience()
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	iss, err := token.Claims.GetIssuer()
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	jtiClaim := token.Claims.(jwt.MapClaims)["jti"].(string)
 	jti, err := uuid.Parse(jtiClaim)
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	if token.Method != jwt.SigningMethodHS256 ||
 		iss != j.env.JwtIssuer ||
 		aud[0] != j.env.JwtAudience ||
 		jti == uuid.Nil {
-		return uuid.Nil, utils.UnauthorizedError(errors.New("invalid token"))
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
 	}
 
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	userId, err := uuid.Parse(sub)
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	return userId, nil
 }
 
-func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *utils.ErrorCode) {
+func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtSecretKey), nil
 	})
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	userId, err := uuid.Parse(sub)
 	if err != nil {
-		return uuid.Nil, utils.UnauthorizedError(err)
+		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	return userId, nil

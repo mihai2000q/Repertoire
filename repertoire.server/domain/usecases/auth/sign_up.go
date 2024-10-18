@@ -7,7 +7,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"strings"
 )
 
@@ -29,23 +29,23 @@ func NewSignUp(
 	}
 }
 
-func (s *SignUp) Handle(request requests.SignUpRequest) (string, *utils.ErrorCode) {
+func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
 	var user models.User
 
 	// check if the user already exists
 	email := strings.ToLower(request.Email)
 	err := s.userRepository.GetByEmail(&user, email)
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", wrapper.InternalServerError(err)
 	}
 	if user.ID != uuid.Nil {
-		return "", utils.BadRequestError(errors.New("user already exists"))
+		return "", wrapper.BadRequestError(errors.New("user already exists"))
 	}
 
 	// hash the password
 	hashedPassword, err := s.bCryptService.Hash(request.Password)
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", wrapper.InternalServerError(err)
 	}
 
 	// create user
@@ -57,7 +57,7 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *utils.ErrorCod
 	}
 	err = s.userRepository.Create(&user)
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", wrapper.InternalServerError(err)
 	}
 
 	return s.jwtService.CreateToken(user)

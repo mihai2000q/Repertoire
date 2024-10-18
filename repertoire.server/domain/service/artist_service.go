@@ -4,17 +4,17 @@ import (
 	"repertoire/api/requests"
 	"repertoire/domain/usecases/artist"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
 
 type ArtistService interface {
-	Get(id uuid.UUID) (artist models.Artist, e *utils.ErrorCode)
-	GetAll(request requests.GetArtistsRequest) (artists []models.Artist, e *utils.ErrorCode)
-	Create(request requests.CreateArtistRequest, token string) *utils.ErrorCode
-	Update(request requests.UpdateArtistRequest) *utils.ErrorCode
-	Delete(id uuid.UUID) *utils.ErrorCode
+	Get(id uuid.UUID) (artist models.Artist, e *wrapper.ErrorCode)
+	GetAll(request requests.GetArtistsRequest) (artists []models.Artist, e *wrapper.ErrorCode)
+	Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode
+	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type artistService struct {
@@ -41,22 +41,22 @@ func NewArtistService(
 	}
 }
 
-func (a *artistService) Get(id uuid.UUID) (models.Artist, *utils.ErrorCode) {
+func (a *artistService) Get(id uuid.UUID) (models.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
 
-func (a *artistService) GetAll(request requests.GetArtistsRequest) ([]models.Artist, *utils.ErrorCode) {
+func (a *artistService) GetAll(request requests.GetArtistsRequest) ([]models.Artist, *wrapper.ErrorCode) {
 	return a.getAllArtists.Handle(request)
 }
 
-func (a *artistService) Create(request requests.CreateArtistRequest, token string) *utils.ErrorCode {
+func (a *artistService) Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
 	return a.createArtist.Handle(request, token)
 }
 
-func (a *artistService) Update(request requests.UpdateArtistRequest) *utils.ErrorCode {
+func (a *artistService) Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode {
 	return a.updateArtist.Handle(request)
 }
 
-func (a *artistService) Delete(id uuid.UUID) *utils.ErrorCode {
+func (a *artistService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return a.deleteArtist.Handle(id)
 }

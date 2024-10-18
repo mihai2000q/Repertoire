@@ -9,7 +9,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"testing"
 )
 
@@ -23,7 +23,7 @@ func TestRefresh_WhenValidateJwtFails_ShouldReturnUnauthorizedError(t *testing.T
 		Token: "This is a token",
 	}
 
-	internalError := utils.InternalServerError(errors.New("internal error"))
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	jwtService.On("Validate", request.Token).Return(uuid.Nil, internalError).Once()
 
 	// when
@@ -115,7 +115,7 @@ func TestRefresh_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing
 	user := &models.User{ID: userID}
 	userRepository.On("Get", new(models.User), userID).Return(nil, user).Once()
 
-	internalError := utils.InternalServerError(errors.New("something went wrong"))
+	internalError := wrapper.InternalServerError(errors.New("something went wrong"))
 	jwtService.On("CreateToken", *user).Return("", internalError).Once()
 
 	// when

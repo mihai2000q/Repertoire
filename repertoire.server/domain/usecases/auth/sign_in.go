@@ -7,7 +7,7 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"strings"
 )
 
@@ -29,21 +29,21 @@ func NewSignIn(
 	}
 }
 
-func (s *SignIn) Handle(request requests.SignInRequest) (string, *utils.ErrorCode) {
+func (s *SignIn) Handle(request requests.SignInRequest) (string, *wrapper.ErrorCode) {
 	// get user
 	var user models.User
 	err := s.userRepository.GetByEmail(&user, strings.ToLower(request.Email))
 	if err != nil {
-		return "", utils.InternalServerError(err)
+		return "", wrapper.InternalServerError(err)
 	}
 	if user.ID == uuid.Nil {
-		return "", utils.UnauthorizedError(errors.New("invalid credentials"))
+		return "", wrapper.UnauthorizedError(errors.New("invalid credentials"))
 	}
 
 	// check password
 	err = s.bCryptService.CompareHash(user.Password, request.Password)
 	if err != nil {
-		return "", utils.UnauthorizedError(errors.New("invalid credentials"))
+		return "", wrapper.UnauthorizedError(errors.New("invalid credentials"))
 	}
 
 	return s.jwtService.CreateToken(user)

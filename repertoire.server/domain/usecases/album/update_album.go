@@ -5,7 +5,7 @@ import (
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -18,21 +18,21 @@ func NewUpdateAlbum(repository repository.AlbumRepository) UpdateAlbum {
 	return UpdateAlbum{repository: repository}
 }
 
-func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *utils.ErrorCode {
+func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
 	var album models.Album
 	err := u.repository.Get(&album, request.ID)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	if album.ID == uuid.Nil {
-		return utils.NotFoundError(errors.New("album not found"))
+		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
 	album.Title = request.Title
 
 	err = u.repository.Update(&album)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

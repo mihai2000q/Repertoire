@@ -5,7 +5,7 @@ import (
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -18,14 +18,14 @@ func NewUpdatePlaylist(repository repository.PlaylistRepository) UpdatePlaylist 
 	return UpdatePlaylist{repository: repository}
 }
 
-func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *utils.ErrorCode {
+func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode {
 	var playlist models.Playlist
 	err := u.repository.Get(&playlist, request.ID)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	if playlist.ID == uuid.Nil {
-		return utils.NotFoundError(errors.New("playlist not found"))
+		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 
 	playlist.Title = request.Title
@@ -33,7 +33,7 @@ func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *utils.Er
 
 	err = u.repository.Update(&playlist)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

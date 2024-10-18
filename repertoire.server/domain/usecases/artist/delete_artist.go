@@ -2,7 +2,7 @@ package artist
 
 import (
 	"repertoire/data/repository"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
@@ -15,10 +15,10 @@ func NewDeleteArtist(repository repository.ArtistRepository) DeleteArtist {
 	return DeleteArtist{repository: repository}
 }
 
-func (d DeleteArtist) Handle(id uuid.UUID) *utils.ErrorCode {
+func (d DeleteArtist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	err := d.repository.Delete(id)
 	if err != nil {
-		return utils.InternalServerError(err)
+		return wrapper.InternalServerError(err)
 	}
 	return nil
 }
