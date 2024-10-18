@@ -46,7 +46,6 @@ func (s SongHandler) Get(c *gin.Context) {
 
 func (s SongHandler) GetAll(c *gin.Context) {
 	request := requests.GetSongsRequest{
-		UserID:      s.UuidQuery(c, "userId"),
 		CurrentPage: s.IntQueryOrNull(c, "currentPage"),
 		PageSize:    s.IntQueryOrNull(c, "pageSize"),
 	}
@@ -55,8 +54,9 @@ func (s SongHandler) GetAll(c *gin.Context) {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+	token := s.GetTokenFromContext(c)
 
-	result, errorCode := s.service.GetAll(request)
+	result, errorCode := s.service.GetAll(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

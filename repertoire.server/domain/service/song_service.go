@@ -10,7 +10,7 @@ import (
 
 type SongService interface {
 	Get(id uuid.UUID) (models.Song, *wrapper.ErrorCode)
-	GetAll(request requests.GetSongsRequest) (wrapper.WithTotalCount[models.Song], *wrapper.ErrorCode)
+	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[models.Song], *wrapper.ErrorCode)
 	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -44,8 +44,8 @@ func (s *songService) Get(id uuid.UUID) (models.Song, *wrapper.ErrorCode) {
 	return s.getSong.Handle(id)
 }
 
-func (s *songService) GetAll(request requests.GetSongsRequest) (wrapper.WithTotalCount[models.Song], *wrapper.ErrorCode) {
-	return s.getAllSongs.Handle(request)
+func (s *songService) GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[models.Song], *wrapper.ErrorCode) {
+	return s.getAllSongs.Handle(request, token)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
