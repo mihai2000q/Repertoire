@@ -4,7 +4,7 @@ import (
 	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 )
 
 type GetAllAlbums struct {
@@ -17,10 +17,14 @@ func NewGetAllAlbums(repository repository.AlbumRepository) GetAllAlbums {
 	}
 }
 
-func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest) (albums []models.Album, e *utils.ErrorCode) {
-	err := g.repository.GetAllByUser(&albums, request.UserID, request.CurrentPage, request.PageSize)
+func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest) (result wrapper.WithTotalCount[models.Album], e *wrapper.ErrorCode) {
+	err := g.repository.GetAllByUser(&result.Data, request.UserID, request.CurrentPage, request.PageSize)
 	if err != nil {
-		return albums, utils.InternalServerError(err)
+		return result, wrapper.InternalServerError(err)
 	}
-	return albums, nil
+	err = g.repository.GetAllByUserCount(&result.TotalCount, request.UserID)
+	if err != nil {
+		return result, wrapper.InternalServerError(err)
+	}
+	return result, nil
 }

@@ -4,17 +4,17 @@ import (
 	"repertoire/api/requests"
 	"repertoire/domain/usecases/album"
 	"repertoire/models"
-	"repertoire/utils/wrappers"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
 
 type AlbumService interface {
-	GetAll(request requests.GetAlbumsRequest) (albums []models.Album, e *utils.ErrorCode)
-	Get(id uuid.UUID) (models.Album, *wrappers.ErrorCode)
-	Create(request requests.CreateAlbumRequest, token string) *wrappers.ErrorCode
-	Update(request requests.UpdateAlbumRequest) *wrappers.ErrorCode
-	Delete(id uuid.UUID) *wrappers.ErrorCode
+	Get(id uuid.UUID) (models.Album, *wrapper.ErrorCode)
+	GetAll(request requests.GetAlbumsRequest) (wrapper.WithTotalCount[models.Album], *wrapper.ErrorCode)
+	Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode
+	Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type albumService struct {
@@ -41,22 +41,22 @@ func NewAlbumService(
 	}
 }
 
-func (a *albumService) Get(id uuid.UUID) (models.Album, *wrappers.ErrorCode) {
+func (a *albumService) Get(id uuid.UUID) (models.Album, *wrapper.ErrorCode) {
 	return a.getAlbum.Handle(id)
 }
 
-func (a *albumService) GetAll(request requests.GetAlbumsRequest) ([]models.Album, *utils.ErrorCode) {
+func (a *albumService) GetAll(request requests.GetAlbumsRequest) (wrapper.WithTotalCount[models.Album], *wrapper.ErrorCode) {
 	return a.getAllAlbums.Handle(request)
 }
 
-func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *wrappers.ErrorCode {
+func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
 	return a.createAlbum.Handle(request, token)
 }
 
-func (a *albumService) Update(request requests.UpdateAlbumRequest) *wrappers.ErrorCode {
+func (a *albumService) Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
 	return a.updateAlbum.Handle(request)
 }
 
-func (a *albumService) Delete(id uuid.UUID) *wrappers.ErrorCode {
+func (a *albumService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return a.deleteAlbum.Handle(id)
 }
