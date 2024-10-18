@@ -56,13 +56,13 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	playlists, errorCode := p.service.GetAll(request)
+	result, errorCode := p.service.GetAll(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, playlists)
+	c.JSON(http.StatusOK, result)
 }
 
 func (p PlaylistHandler) Create(c *gin.Context) {

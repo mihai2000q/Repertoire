@@ -10,8 +10,8 @@ import (
 )
 
 type PlaylistService interface {
-	Get(id uuid.UUID) (playlist models.Playlist, e *wrapper.ErrorCode)
-	GetAll(request requests.GetPlaylistsRequest) (playlists []models.Playlist, e *wrapper.ErrorCode)
+	Get(id uuid.UUID) (models.Playlist, *wrapper.ErrorCode)
+	GetAll(request requests.GetPlaylistsRequest) (wrapper.WithTotalCount[models.Playlist], *wrapper.ErrorCode)
 	Create(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -45,7 +45,7 @@ func (p *playlistService) Get(id uuid.UUID) (models.Playlist, *wrapper.ErrorCode
 	return p.getPlaylist.Handle(id)
 }
 
-func (p *playlistService) GetAll(request requests.GetPlaylistsRequest) ([]models.Playlist, *wrapper.ErrorCode) {
+func (p *playlistService) GetAll(request requests.GetPlaylistsRequest) (wrapper.WithTotalCount[models.Playlist], *wrapper.ErrorCode) {
 	return p.getAllPlaylists.Handle(request)
 }
 

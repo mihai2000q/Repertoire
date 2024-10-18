@@ -137,7 +137,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 
 	// then
 	assert.Equal(t, expectedArtists, &result.Data)
-	assert.Equal(t, expectedTotalCount, result.TotalCount)
+	assert.Equal(t, expectedTotalCount, &result.TotalCount)
 	assert.Nil(t, errCode)
 
 	artistRepository.AssertExpectations(t)
