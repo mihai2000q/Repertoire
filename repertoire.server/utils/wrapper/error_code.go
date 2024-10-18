@@ -21,6 +21,13 @@ func UnauthorizedError(err error) *ErrorCode {
 	}
 }
 
+func ForbiddenError(err error) *ErrorCode {
+	return &ErrorCode{
+		Error: err,
+		Code:  http.StatusForbidden,
+	}
+}
+
 func NotFoundError(err error) *ErrorCode {
 	return &ErrorCode{
 		Error: err,

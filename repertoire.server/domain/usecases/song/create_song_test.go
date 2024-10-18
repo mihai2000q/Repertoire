@@ -14,12 +14,10 @@ import (
 	"testing"
 )
 
-func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
 	_uut := &CreateSong{
-		repository: songRepository,
 		jwtService: jwtService,
 	}
 	request := requests.CreateSongRequest{
@@ -27,18 +25,17 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *t
 	}
 	token := "this is a token"
 
-	unauthorizedError := wrapper.UnauthorizedError(errors.New("not authorized"))
-	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
+	forbiddenError := wrapper.UnauthorizedError(errors.New("forbidden"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	errCode := _uut.Handle(request, token)
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, unauthorizedError, errCode)
+	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
 }
 
 func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {

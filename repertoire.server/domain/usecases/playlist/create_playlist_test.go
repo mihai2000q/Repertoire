@@ -15,12 +15,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
 	_uut := &CreatePlaylist{
-		repository: playlistRepository,
 		jwtService: jwtService,
 	}
 	request := requests.CreatePlaylistRequest{
@@ -28,18 +26,17 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(
 	}
 	token := "this is a token"
 
-	unauthorizedError := wrapper.UnauthorizedError(errors.New("not authorized"))
-	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
+	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	errCode := _uut.Handle(request, token)
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, unauthorizedError, errCode)
+	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
-	playlistRepository.AssertExpectations(t)
 }
 
 func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {

@@ -15,12 +15,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
 	_uut := &CreateArtist{
-		repository: artistRepository,
 		jwtService: jwtService,
 	}
 	request := requests.CreateArtistRequest{
@@ -28,18 +26,17 @@ func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t 
 	}
 	token := "this is a token"
 
-	unauthorizedError := wrapper.UnauthorizedError(errors.New("not authorized"))
-	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
+	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	errCode := _uut.Handle(request, token)
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, unauthorizedError, errCode)
+	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
 }
 
 func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {

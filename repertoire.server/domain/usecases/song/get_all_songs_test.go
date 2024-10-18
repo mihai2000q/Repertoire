@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllSongs{
@@ -24,8 +24,8 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testi
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
-	unauthorizedError := wrapper.UnauthorizedError(errors.New("unauthorized error"))
-	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
+	forbiddenError := wrapper.UnauthorizedError(errors.New("forbidden error"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	result, errCode := _uut.Handle(request, token)
@@ -33,7 +33,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testi
 	// then
 	assert.Empty(t, result)
 	assert.NotNil(t, errCode)
-	assert.Equal(t, unauthorizedError, errCode)
+	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
 }

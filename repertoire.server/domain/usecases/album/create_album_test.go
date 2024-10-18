@@ -15,12 +15,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
 	_uut := &CreateAlbum{
-		repository: albumRepository,
 		jwtService: jwtService,
 	}
 	request := requests.CreateAlbumRequest{
@@ -28,18 +26,17 @@ func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *
 	}
 	token := "this is a token"
 
-	unauthorizedError := wrapper.UnauthorizedError(errors.New("not authorized"))
-	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, unauthorizedError).Once()
+	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	errCode := _uut.Handle(request, token)
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, unauthorizedError, errCode)
+	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
-	albumRepository.AssertExpectations(t)
 }
 
 func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {

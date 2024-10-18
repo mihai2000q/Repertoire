@@ -104,17 +104,17 @@ func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.E
 		return []byte(j.env.JwtSecretKey), nil
 	})
 	if err != nil {
-		return uuid.Nil, wrapper.UnauthorizedError(err)
+		return uuid.Nil, wrapper.ForbiddenError(err)
 	}
 
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
-		return uuid.Nil, wrapper.UnauthorizedError(err)
+		return uuid.Nil, wrapper.ForbiddenError(err)
 	}
 
 	userId, err := uuid.Parse(sub)
 	if err != nil {
-		return uuid.Nil, wrapper.UnauthorizedError(err)
+		return uuid.Nil, wrapper.ForbiddenError(err)
 	}
 
 	return userId, nil

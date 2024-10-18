@@ -7,12 +7,36 @@ import (
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/models"
+	"repertoire/utils/wrapper"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
+
+func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	_uut := &GetAllPlaylists{
+		jwtService: jwtService,
+	}
+	request := requests.GetPlaylistsRequest{}
+	token := "This is a token"
+
+	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
+	jwtService.On("GetUserIdFromJwt", token).Return(nil, forbiddenError).Once()
+
+	// when
+	playlists, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Empty(t, playlists)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, forbiddenError, errCode)
+
+	jwtService.AssertExpectations(t)
+}
 
 func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
@@ -50,6 +74,7 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
+	jwtService.AssertExpectations(t)
 }
 
 func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *testing.T) {
