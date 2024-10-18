@@ -56,13 +56,13 @@ func (s SongHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	songs, errorCode := s.service.GetAll(request)
+	result, errorCode := s.service.GetAll(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, songs)
+	c.JSON(http.StatusOK, result)
 }
 
 func (s SongHandler) Create(c *gin.Context) {

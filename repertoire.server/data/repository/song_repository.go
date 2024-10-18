@@ -10,6 +10,7 @@ import (
 type SongRepository interface {
 	Get(song *models.Song, id uuid.UUID) error
 	GetAllByUser(songs *[]models.Song, userId uuid.UUID, currentPage *int, pageSize *int) error
+	GetAllByUserCount(count *int64, userId uuid.UUID) error
 	Create(song *models.Song) error
 	Update(song *models.Song) error
 	Delete(id uuid.UUID) error
@@ -40,6 +41,13 @@ func (s songRepository) GetAllByUser(
 		Offset((*currentPage - 1) * *pageSize).
 		Limit(*pageSize).
 		Find(&songs).
+		Error
+}
+
+func (s songRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+	return s.client.DB.Model(&models.Song{}).
+		Where(models.Song{UserID: userId}).
+		Find(&count).
 		Error
 }
 

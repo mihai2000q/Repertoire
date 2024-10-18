@@ -37,6 +37,16 @@ func (s *SongRepositoryMock) GetAllByUser(
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+	args := s.Called(count, userId)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) Create(song *models.Song) error {
 	args := s.Called(song)
 	return args.Error(0)
