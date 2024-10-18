@@ -56,13 +56,13 @@ func (a ArtistHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	artists, errorCode := a.service.GetAll(request)
+	result, errorCode := a.service.GetAll(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, artists)
+	c.JSON(http.StatusOK, result)
 }
 
 func (a ArtistHandler) Create(c *gin.Context) {

@@ -17,10 +17,14 @@ func NewGetAllArtists(repository repository.ArtistRepository) GetAllArtists {
 	}
 }
 
-func (g GetAllArtists) Handle(request requests.GetArtistsRequest) (artists []models.Artist, e *wrapper.ErrorCode) {
-	err := g.repository.GetAllByUser(&artists, request.UserID, request.CurrentPage, request.PageSize)
+func (g GetAllArtists) Handle(request requests.GetArtistsRequest) (result wrapper.WithTotalCount[models.Artist], e *wrapper.ErrorCode) {
+	err := g.repository.GetAllByUser(&result.Data, request.UserID, request.CurrentPage, request.PageSize)
 	if err != nil {
-		return artists, wrapper.InternalServerError(err)
+		return result, wrapper.InternalServerError(err)
 	}
-	return artists, nil
+	err = g.repository.GetAllByUserCount(&result.TotalCount, request.UserID)
+	if err != nil {
+		return result, wrapper.InternalServerError(err)
+	}
+	return result, nil
 }
