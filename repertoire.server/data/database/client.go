@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"repertoire/models"
+	"repertoire/model"
 	"repertoire/utils"
 	"time"
 
@@ -40,11 +40,11 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 		lc.Append(fx.Hook{
 			OnStart: func(ctx context.Context) error {
 				return db.AutoMigrate(
-					&models.User{},
-					&models.Artist{},
-					&models.Playlist{},
-					&models.Album{},
-					&models.Song{},
+					&model.User{},
+					&model.Artist{},
+					&model.Playlist{},
+					&model.Album{},
+					&model.Song{},
 				)
 			},
 		})

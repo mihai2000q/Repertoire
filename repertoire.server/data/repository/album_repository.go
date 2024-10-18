@@ -2,17 +2,17 @@ package repository
 
 import (
 	"repertoire/data/database"
-	"repertoire/models"
+	"repertoire/model"
 
 	"github.com/google/uuid"
 )
 
 type AlbumRepository interface {
-	Get(album *models.Album, id uuid.UUID) error
-	GetAllByUser(albums *[]models.Album, userId uuid.UUID, currentPage *int, pageSize *int) error
+	Get(album *model.Album, id uuid.UUID) error
+	GetAllByUser(albums *[]model.Album, userId uuid.UUID, currentPage *int, pageSize *int) error
 	GetAllByUserCount(count *int64, userId uuid.UUID) error
-	Create(album *models.Album) error
-	Update(album *models.Album) error
+	Create(album *model.Album) error
+	Update(album *model.Album) error
 	Delete(id uuid.UUID) error
 }
 
@@ -26,12 +26,12 @@ func NewAlbumRepository(client database.Client) AlbumRepository {
 	}
 }
 
-func (a albumRepository) Get(album *models.Album, id uuid.UUID) error {
-	return a.client.DB.Find(&album, models.Album{ID: id}).Error
+func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
+	return a.client.DB.Find(&album, model.Album{ID: id}).Error
 }
 
 func (a albumRepository) GetAllByUser(
-	albums *[]models.Album,
+	albums *[]model.Album,
 	userId uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -42,8 +42,8 @@ func (a albumRepository) GetAllByUser(
 	} else {
 		offset = (*currentPage - 1) * *pageSize
 	}
-	return a.client.DB.Model(&models.Album{}).
-		Where(models.Album{UserID: userId}).
+	return a.client.DB.Model(&model.Album{}).
+		Where(model.Album{UserID: userId}).
 		Offset(offset).
 		Limit(*pageSize).
 		Find(&albums).
@@ -51,20 +51,20 @@ func (a albumRepository) GetAllByUser(
 }
 
 func (a albumRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
-	return a.client.DB.Model(&models.Album{}).
-		Where(models.Album{UserID: userId}).
+	return a.client.DB.Model(&model.Album{}).
+		Where(model.Album{UserID: userId}).
 		Count(count).
 		Error
 }
 
-func (a albumRepository) Create(album *models.Album) error {
+func (a albumRepository) Create(album *model.Album) error {
 	return a.client.DB.Create(&album).Error
 }
 
-func (a albumRepository) Update(album *models.Album) error {
+func (a albumRepository) Update(album *model.Album) error {
 	return a.client.DB.Save(&album).Error
 }
 
 func (a albumRepository) Delete(id uuid.UUID) error {
-	return a.client.DB.Delete(&models.Album{}, id).Error
+	return a.client.DB.Delete(&model.Album{}, id).Error
 }

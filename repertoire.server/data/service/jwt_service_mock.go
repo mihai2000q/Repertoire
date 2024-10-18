@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"repertoire/models"
+	"repertoire/model"
 	"repertoire/utils/wrapper"
 )
 
@@ -22,7 +22,7 @@ func (m *JwtServiceMock) Authorize(tokenString string) *wrapper.ErrorCode {
 	return errCode
 }
 
-func (m *JwtServiceMock) CreateToken(user models.User) (string, *wrapper.ErrorCode) {
+func (m *JwtServiceMock) CreateToken(user model.User) (string, *wrapper.ErrorCode) {
 	args := m.Called(user)
 
 	var errCode *wrapper.ErrorCode

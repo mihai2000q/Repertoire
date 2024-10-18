@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"repertoire/data/repository"
 	"repertoire/data/service"
-	"repertoire/models"
+	"repertoire/model"
 	"repertoire/utils/wrapper"
 	"testing"
 )
@@ -53,7 +53,7 @@ func TestCurrentUserProvider_Get_WhenUserRepositoryReturnsAnError_ShouldReturnIn
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 	internalError := errors.New("internal error")
-	userRepository.On("Get", new(models.User), userID).Return(internalError).Once()
+	userRepository.On("Get", new(model.User), userID).Return(internalError).Once()
 
 	// when
 	user, errCode := c.Get(token)
@@ -81,7 +81,7 @@ func TestCurrentUserProvider_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *te
 	userID := uuid.New()
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
-	userRepository.On("Get", new(models.User), userID).Return(nil).Once()
+	userRepository.On("Get", new(model.User), userID).Return(nil).Once()
 
 	// when
 	user, errCode := c.Get(token)
@@ -107,14 +107,14 @@ func TestCurrentUserProvider_Get_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 
 	token := "this is a token"
 	userID := uuid.New()
-	expectedUser := &models.User{
+	expectedUser := &model.User{
 		ID:    userID,
 		Name:  "Samuel",
 		Email: "samuel.samuel@gmail.com",
 	}
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
-	userRepository.On("Get", new(models.User), userID).Return(nil, expectedUser).Once()
+	userRepository.On("Get", new(model.User), userID).Return(nil, expectedUser).Once()
 
 	// when
 	user, errCode := c.Get(token)

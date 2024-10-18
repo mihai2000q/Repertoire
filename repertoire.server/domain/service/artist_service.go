@@ -1,19 +1,19 @@
 package service
 
 import (
-	"repertoire/api/requests"
-	"repertoire/domain/usecases/artist"
-	"repertoire/models"
+	"repertoire/api/request"
+	"repertoire/domain/usecase/artist"
+	"repertoire/model"
 	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
 
 type ArtistService interface {
-	Get(id uuid.UUID) (models.Artist, *wrapper.ErrorCode)
-	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[models.Artist], *wrapper.ErrorCode)
-	Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode
-	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
+	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
+	GetAll(request request.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
+	Create(request request.CreateArtistRequest, token string) *wrapper.ErrorCode
+	Update(request request.UpdateArtistRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
@@ -41,19 +41,19 @@ func NewArtistService(
 	}
 }
 
-func (a *artistService) Get(id uuid.UUID) (models.Artist, *wrapper.ErrorCode) {
+func (a *artistService) Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
 
-func (a *artistService) GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[models.Artist], *wrapper.ErrorCode) {
+func (a *artistService) GetAll(request request.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode) {
 	return a.getAllArtists.Handle(request, token)
 }
 
-func (a *artistService) Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
+func (a *artistService) Create(request request.CreateArtistRequest, token string) *wrapper.ErrorCode {
 	return a.createArtist.Handle(request, token)
 }
 
-func (a *artistService) Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode {
+func (a *artistService) Update(request request.UpdateArtistRequest) *wrapper.ErrorCode {
 	return a.updateArtist.Handle(request)
 }
 

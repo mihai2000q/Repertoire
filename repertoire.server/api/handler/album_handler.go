@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/requests"
+	"repertoire/api/request"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -45,7 +45,7 @@ func (a AlbumHandler) Get(c *gin.Context) {
 }
 
 func (a AlbumHandler) GetAll(c *gin.Context) {
-	request := requests.GetAlbumsRequest{
+	request := request.GetAlbumsRequest{
 		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
 		PageSize:    a.IntQueryOrNull(c, "pageSize"),
 	}
@@ -66,7 +66,7 @@ func (a AlbumHandler) GetAll(c *gin.Context) {
 }
 
 func (a AlbumHandler) Create(c *gin.Context) {
-	var request requests.CreateAlbumRequest
+	var request request.CreateAlbumRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -85,7 +85,7 @@ func (a AlbumHandler) Create(c *gin.Context) {
 }
 
 func (a AlbumHandler) Update(c *gin.Context) {
-	var request requests.UpdateAlbumRequest
+	var request request.UpdateAlbumRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)

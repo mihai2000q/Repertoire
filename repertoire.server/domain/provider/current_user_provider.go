@@ -5,12 +5,12 @@ import (
 	"github.com/google/uuid"
 	"repertoire/data/repository"
 	"repertoire/data/service"
-	"repertoire/models"
+	"repertoire/model"
 	"repertoire/utils/wrapper"
 )
 
 type CurrentUserProvider interface {
-	Get(token string) (user models.User, e *wrapper.ErrorCode)
+	Get(token string) (user model.User, e *wrapper.ErrorCode)
 }
 
 type currentUserProvider struct {
@@ -28,7 +28,7 @@ func NewCurrentUserProvider(
 	}
 }
 
-func (c *currentUserProvider) Get(token string) (user models.User, e *wrapper.ErrorCode) {
+func (c *currentUserProvider) Get(token string) (user model.User, e *wrapper.ErrorCode) {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return user, errCode

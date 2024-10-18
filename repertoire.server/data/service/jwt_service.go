@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"repertoire/models"
+	"repertoire/model"
 	"repertoire/utils"
 	"repertoire/utils/wrapper"
 	"time"
@@ -12,7 +12,7 @@ import (
 
 type JwtService interface {
 	Authorize(tokenString string) *wrapper.ErrorCode
-	CreateToken(user models.User) (string, *wrapper.ErrorCode)
+	CreateToken(user model.User) (string, *wrapper.ErrorCode)
 	Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 	GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 }
@@ -39,7 +39,7 @@ func (j *jwtService) Authorize(tokenString string) *wrapper.ErrorCode {
 	return wrapper.UnauthorizedError(errors.New("invalid token"))
 }
 
-func (j *jwtService) CreateToken(user models.User) (string, *wrapper.ErrorCode) {
+func (j *jwtService) CreateToken(user model.User) (string, *wrapper.ErrorCode) {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
