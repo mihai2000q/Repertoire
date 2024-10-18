@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 	"repertoire/api/validation"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 	"strconv"
 	"strings"
 
@@ -21,10 +21,10 @@ func (*BaseHandler) GetTokenFromContext(c *gin.Context) string {
 	return t[1]
 }
 
-func (h *BaseHandler) BindAndValidate(c *gin.Context, request interface{}) *utils.ErrorCode {
+func (h *BaseHandler) BindAndValidate(c *gin.Context, request interface{}) *wrapper.ErrorCode {
 	err := c.Bind(&request)
 	if err != nil {
-		return utils.BadRequestError(err)
+		return wrapper.BadRequestError(err)
 	}
 
 	errCode := h.Validator.Validate(request)

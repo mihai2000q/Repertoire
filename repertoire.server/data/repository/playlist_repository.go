@@ -2,16 +2,17 @@ package repository
 
 import (
 	"repertoire/data/database"
-	"repertoire/models"
+	"repertoire/model"
 
 	"github.com/google/uuid"
 )
 
 type PlaylistRepository interface {
-	Get(playlist *models.Playlist, id uuid.UUID) error
-	GetAllByUser(playlists *[]models.Playlist, userId uuid.UUID, currentPage *int, pageSize *int) error
-	Create(playlist *models.Playlist) error
-	Update(playlist *models.Playlist) error
+	Get(playlist *model.Playlist, id uuid.UUID) error
+	GetAllByUser(playlists *[]model.Playlist, userId uuid.UUID, currentPage *int, pageSize *int) error
+	GetAllByUserCount(count *int64, userId uuid.UUID) error
+	Create(playlist *model.Playlist) error
+	Update(playlist *model.Playlist) error
 	Delete(id uuid.UUID) error
 }
 
@@ -25,38 +26,45 @@ func NewPlaylistRepository(client database.Client) PlaylistRepository {
 	}
 }
 
-func (p playlistRepository) Get(playlist *models.Playlist, id uuid.UUID) error {
-	return p.client.DB.Find(&playlist, models.Playlist{ID: id}).Error
+func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
+	return p.client.DB.Find(&playlist, model.Playlist{ID: id}).Error
 }
 
 func (p playlistRepository) GetAllByUser(
-	playlists *[]models.Playlist,
+	playlists *[]model.Playlist,
 	userId uuid.UUID,
 	currentPage *int,
 	pageSize *int,
 ) error {
-	if currentPage == nil {
-		currentPage = &[]int{1}[0]
-	}
+	offset := -1
 	if pageSize == nil {
-		pageSize = &[]int{1}[0]
+		pageSize = &[]int{-1}[0]
+	} else {
+		offset = (*currentPage - 1) * *pageSize
 	}
-	return p.client.DB.Model(&models.Playlist{}).
-		Where(models.Playlist{UserID: userId}).
-		Offset((*currentPage - 1) * *pageSize).
+	return p.client.DB.Model(&model.Playlist{}).
+		Where(model.Playlist{UserID: userId}).
+		Offset(offset).
 		Limit(*pageSize).
 		Find(&playlists).
 		Error
 }
 
-func (p playlistRepository) Create(playlist *models.Playlist) error {
+func (p playlistRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+	return p.client.DB.Model(&model.Playlist{}).
+		Where(model.Playlist{UserID: userId}).
+		Count(count).
+		Error
+}
+
+func (p playlistRepository) Create(playlist *model.Playlist) error {
 	return p.client.DB.Create(&playlist).Error
 }
 
-func (p playlistRepository) Update(playlist *models.Playlist) error {
+func (p playlistRepository) Update(playlist *model.Playlist) error {
 	return p.client.DB.Save(&playlist).Error
 }
 
 func (p playlistRepository) Delete(id uuid.UUID) error {
-	return p.client.DB.Delete(&models.Playlist{}, id).Error
+	return p.client.DB.Delete(&model.Playlist{}, id).Error
 }

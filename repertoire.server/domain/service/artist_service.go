@@ -1,20 +1,20 @@
 package service
 
 import (
-	"repertoire/api/requests"
-	"repertoire/domain/usecases/artist"
-	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/api/request"
+	"repertoire/domain/usecase/artist"
+	"repertoire/model"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
 
 type ArtistService interface {
-	Get(id uuid.UUID) (artist models.Artist, e *utils.ErrorCode)
-	GetAll(request requests.GetArtistsRequest) (artists []models.Artist, e *utils.ErrorCode)
-	Create(request requests.CreateArtistRequest, token string) *utils.ErrorCode
-	Update(request requests.UpdateArtistRequest) *utils.ErrorCode
-	Delete(id uuid.UUID) *utils.ErrorCode
+	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
+	GetAll(request request.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
+	Create(request request.CreateArtistRequest, token string) *wrapper.ErrorCode
+	Update(request request.UpdateArtistRequest) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type artistService struct {
@@ -41,22 +41,22 @@ func NewArtistService(
 	}
 }
 
-func (a *artistService) Get(id uuid.UUID) (models.Artist, *utils.ErrorCode) {
+func (a *artistService) Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
 
-func (a *artistService) GetAll(request requests.GetArtistsRequest) ([]models.Artist, *utils.ErrorCode) {
-	return a.getAllArtists.Handle(request)
+func (a *artistService) GetAll(request request.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode) {
+	return a.getAllArtists.Handle(request, token)
 }
 
-func (a *artistService) Create(request requests.CreateArtistRequest, token string) *utils.ErrorCode {
+func (a *artistService) Create(request request.CreateArtistRequest, token string) *wrapper.ErrorCode {
 	return a.createArtist.Handle(request, token)
 }
 
-func (a *artistService) Update(request requests.UpdateArtistRequest) *utils.ErrorCode {
+func (a *artistService) Update(request request.UpdateArtistRequest) *wrapper.ErrorCode {
 	return a.updateArtist.Handle(request)
 }
 
-func (a *artistService) Delete(id uuid.UUID) *utils.ErrorCode {
+func (a *artistService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return a.deleteArtist.Handle(id)
 }

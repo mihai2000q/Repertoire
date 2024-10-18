@@ -3,53 +3,53 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/model"
+	"repertoire/utils/wrapper"
 )
 
 type JwtServiceMock struct {
 	mock.Mock
 }
 
-func (m *JwtServiceMock) Authorize(tokenString string) *utils.ErrorCode {
+func (m *JwtServiceMock) Authorize(tokenString string) *wrapper.ErrorCode {
 	args := m.Called(tokenString)
 
-	var errCode *utils.ErrorCode
+	var errCode *wrapper.ErrorCode
 	if a := args.Get(0); a != nil {
-		errCode = a.(*utils.ErrorCode)
+		errCode = a.(*wrapper.ErrorCode)
 	}
 
 	return errCode
 }
 
-func (m *JwtServiceMock) CreateToken(user models.User) (string, *utils.ErrorCode) {
+func (m *JwtServiceMock) CreateToken(user model.User) (string, *wrapper.ErrorCode) {
 	args := m.Called(user)
 
-	var errCode *utils.ErrorCode
+	var errCode *wrapper.ErrorCode
 	if a := args.Get(1); a != nil {
-		errCode = a.(*utils.ErrorCode)
+		errCode = a.(*wrapper.ErrorCode)
 	}
 
 	return args.String(0), errCode
 }
 
-func (m *JwtServiceMock) Validate(tokenString string) (uuid.UUID, *utils.ErrorCode) {
+func (m *JwtServiceMock) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
 	args := m.Called(tokenString)
 
-	var errCode *utils.ErrorCode
+	var errCode *wrapper.ErrorCode
 	if a := args.Get(1); a != nil {
-		errCode = a.(*utils.ErrorCode)
+		errCode = a.(*wrapper.ErrorCode)
 	}
 
 	return args.Get(0).(uuid.UUID), errCode
 }
 
-func (m *JwtServiceMock) GetUserIdFromJwt(token string) (uuid.UUID, *utils.ErrorCode) {
+func (m *JwtServiceMock) GetUserIdFromJwt(token string) (uuid.UUID, *wrapper.ErrorCode) {
 	args := m.Called(token)
 
-	var errCode *utils.ErrorCode
+	var errCode *wrapper.ErrorCode
 	if a := args.Get(1); a != nil {
-		errCode = a.(*utils.ErrorCode)
+		errCode = a.(*wrapper.ErrorCode)
 	}
 
 	return args.Get(0).(uuid.UUID), errCode

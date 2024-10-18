@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/requests"
+	"repertoire/api/request"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -25,7 +25,7 @@ func NewAuthHandler(service service.AuthService, validator *validation.Validator
 }
 
 func (a AuthHandler) Refresh(c *gin.Context) {
-	var request requests.RefreshRequest
+	var request request.RefreshRequest
 	errCode := a.BindAndValidate(c, &request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
@@ -44,7 +44,7 @@ func (a AuthHandler) Refresh(c *gin.Context) {
 }
 
 func (a AuthHandler) SignIn(c *gin.Context) {
-	var request requests.SignInRequest
+	var request request.SignInRequest
 	errCode := a.BindAndValidate(c, &request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
@@ -63,7 +63,7 @@ func (a AuthHandler) SignIn(c *gin.Context) {
 }
 
 func (a AuthHandler) SignUp(c *gin.Context) {
-	var request requests.SignUpRequest
+	var request request.SignUpRequest
 	errCode := a.BindAndValidate(c, &request)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)

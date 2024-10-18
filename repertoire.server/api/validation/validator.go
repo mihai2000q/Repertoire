@@ -3,7 +3,7 @@ package validation
 import (
 	"context"
 	"go.uber.org/fx"
-	"repertoire/utils"
+	"repertoire/utils/wrapper"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
@@ -34,10 +34,10 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 	}
 }
 
-func (v *Validator) Validate(request interface{}) *utils.ErrorCode {
+func (v *Validator) Validate(request interface{}) *wrapper.ErrorCode {
 	err := v.validate.Struct(request)
 	if err != nil {
-		return utils.BadRequestError(err)
+		return wrapper.BadRequestError(err)
 	}
 	return nil
 }
