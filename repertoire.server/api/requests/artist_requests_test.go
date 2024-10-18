@@ -16,14 +16,11 @@ func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	}{
 		{
 			"All Null",
-			GetArtistsRequest{
-				UserID: uuid.New(),
-			},
+			GetArtistsRequest{},
 		},
 		{
 			"Nothing Null",
 			GetArtistsRequest{
-				UserID:      uuid.New(),
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 			},
@@ -51,36 +48,29 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// User ID Test Cases
-		{
-			"User ID is invalid because it's required",
-			GetArtistsRequest{UserID: uuid.Nil},
-			"UserID",
-			"required",
-		},
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetArtistsRequest{UserID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			GetArtistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetArtistsRequest{UserID: uuid.New(), PageSize: &[]int{1}[0]},
+			GetArtistsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetArtistsRequest{UserID: uuid.New(), PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			GetArtistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetArtistsRequest{UserID: uuid.New(), CurrentPage: &[]int{1}[0]},
+			GetArtistsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},

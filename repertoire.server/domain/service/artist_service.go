@@ -11,7 +11,7 @@ import (
 
 type ArtistService interface {
 	Get(id uuid.UUID) (models.Artist, *wrapper.ErrorCode)
-	GetAll(request requests.GetArtistsRequest) (wrapper.WithTotalCount[models.Artist], *wrapper.ErrorCode)
+	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[models.Artist], *wrapper.ErrorCode)
 	Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -45,8 +45,8 @@ func (a *artistService) Get(id uuid.UUID) (models.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
 
-func (a *artistService) GetAll(request requests.GetArtistsRequest) (wrapper.WithTotalCount[models.Artist], *wrapper.ErrorCode) {
-	return a.getAllArtists.Handle(request)
+func (a *artistService) GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[models.Artist], *wrapper.ErrorCode) {
+	return a.getAllArtists.Handle(request, token)
 }
 
 func (a *artistService) Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
