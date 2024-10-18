@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/api/requests"
 	"repertoire/data/repository"
+	"repertoire/data/service"
 	"repertoire/models"
 	"testing"
 
@@ -16,19 +17,23 @@ import (
 func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllPlaylists{
 		repository: playlistRepository,
+		jwtService: jwtService,
 	}
-	request := requests.GetPlaylistsRequest{
-		UserID: uuid.New(),
-	}
+	request := requests.GetPlaylistsRequest{}
+	token := "This is a token"
+
+	userId := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
 
 	internalError := errors.New("internal error")
 	playlistRepository.
 		On(
 			"GetAllByUser",
 			mock.Anything,
-			request.UserID,
+			userId,
 			request.CurrentPage,
 			request.PageSize,
 		).
@@ -36,7 +41,7 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 		Once()
 
 	// when
-	playlists, errCode := _uut.Handle(request)
+	playlists, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, playlists)
@@ -50,23 +55,27 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllPlaylists{
 		repository: playlistRepository,
+		jwtService: jwtService,
 	}
-	request := requests.GetPlaylistsRequest{
-		UserID: uuid.New(),
-	}
+	request := requests.GetPlaylistsRequest{}
+	token := "This is a token"
 
 	expectedPlaylists := &[]models.Playlist{
 		{Title: "Some Playlist"},
 		{Title: "Some other Playlist"},
 	}
 
+	userId := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+
 	playlistRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedPlaylists),
-			request.UserID,
+			userId,
 			request.CurrentPage,
 			request.PageSize,
 		).
@@ -78,13 +87,13 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 		On(
 			"GetAllByUserCount",
 			mock.Anything,
-			request.UserID,
+			userId,
 		).
 		Return(internalError).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(request)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Equal(t, expectedPlaylists, &result.Data)
@@ -94,17 +103,19 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
+	jwtService.AssertExpectations(t)
 }
 
 func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllPlaylists{
 		repository: playlistRepository,
+		jwtService: jwtService,
 	}
-	request := requests.GetPlaylistsRequest{
-		UserID: uuid.New(),
-	}
+	request := requests.GetPlaylistsRequest{}
+	token := "This is a token"
 
 	expectedPlaylists := &[]models.Playlist{
 		{Title: "Some Playlist"},
@@ -112,11 +123,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
+	userId := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+
 	playlistRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedPlaylists),
-			request.UserID,
+			userId,
 			request.CurrentPage,
 			request.PageSize,
 		).
@@ -127,13 +141,13 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 		On(
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
-			request.UserID,
+			userId,
 		).
 		Return(nil, expectedTotalCount).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(request)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Equal(t, expectedPlaylists, &result.Data)
@@ -141,4 +155,5 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	assert.Nil(t, errCode)
 
 	playlistRepository.AssertExpectations(t)
+	jwtService.AssertExpectations(t)
 }

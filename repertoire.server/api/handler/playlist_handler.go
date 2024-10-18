@@ -46,7 +46,6 @@ func (p PlaylistHandler) Get(c *gin.Context) {
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
 	request := requests.GetPlaylistsRequest{
-		UserID:      p.UuidQuery(c, "userId"),
 		CurrentPage: p.IntQueryOrNull(c, "currentPage"),
 		PageSize:    p.IntQueryOrNull(c, "pageSize"),
 	}
@@ -55,8 +54,9 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+	token := p.GetTokenFromContext(c)
 
-	result, errorCode := p.service.GetAll(request)
+	result, errorCode := p.service.GetAll(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

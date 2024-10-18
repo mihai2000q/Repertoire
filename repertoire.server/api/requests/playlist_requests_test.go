@@ -16,14 +16,11 @@ func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	}{
 		{
 			"All Null",
-			GetPlaylistsRequest{
-				UserID: uuid.New(),
-			},
+			GetPlaylistsRequest{},
 		},
 		{
 			"Nothing Null",
 			GetPlaylistsRequest{
-				UserID:      uuid.New(),
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 			},
@@ -51,36 +48,29 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// User ID Test Cases
-		{
-			"User ID is invalid because it's required",
-			GetPlaylistsRequest{UserID: uuid.Nil},
-			"UserID",
-			"required",
-		},
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetPlaylistsRequest{UserID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			GetPlaylistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetPlaylistsRequest{UserID: uuid.New(), PageSize: &[]int{1}[0]},
+			GetPlaylistsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetPlaylistsRequest{UserID: uuid.New(), PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			GetPlaylistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetPlaylistsRequest{UserID: uuid.New(), CurrentPage: &[]int{1}[0]},
+			GetPlaylistsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},
