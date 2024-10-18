@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/requests"
+	"repertoire/api/request"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -45,8 +45,7 @@ func (p PlaylistHandler) Get(c *gin.Context) {
 }
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
-	request := requests.GetPlaylistsRequest{
-		UserID:      p.UuidQuery(c, "userId"),
+	request := request.GetPlaylistsRequest{
 		CurrentPage: p.IntQueryOrNull(c, "currentPage"),
 		PageSize:    p.IntQueryOrNull(c, "pageSize"),
 	}
@@ -55,18 +54,19 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+	token := p.GetTokenFromContext(c)
 
-	playlists, errorCode := p.service.GetAll(request)
+	result, errorCode := p.service.GetAll(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, playlists)
+	c.JSON(http.StatusOK, result)
 }
 
 func (p PlaylistHandler) Create(c *gin.Context) {
-	var request requests.CreatePlaylistRequest
+	var request request.CreatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -85,7 +85,7 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 }
 
 func (p PlaylistHandler) Update(c *gin.Context) {
-	var request requests.UpdatePlaylistRequest
+	var request request.UpdatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)

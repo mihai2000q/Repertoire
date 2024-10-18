@@ -1,20 +1,20 @@
 package service
 
 import (
-	"repertoire/api/requests"
-	"repertoire/domain/usecases/album"
-	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/api/request"
+	"repertoire/domain/usecase/album"
+	"repertoire/model"
+	"repertoire/utils/wrapper"
 
 	"github.com/google/uuid"
 )
 
 type AlbumService interface {
-	Get(id uuid.UUID) (album models.Album, e *utils.ErrorCode)
-	GetAll(request requests.GetAlbumsRequest) (albums []models.Album, e *utils.ErrorCode)
-	Create(request requests.CreateAlbumRequest, token string) *utils.ErrorCode
-	Update(request requests.UpdateAlbumRequest) *utils.ErrorCode
-	Delete(id uuid.UUID) *utils.ErrorCode
+	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
+	GetAll(request request.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
+	Create(request request.CreateAlbumRequest, token string) *wrapper.ErrorCode
+	Update(request request.UpdateAlbumRequest) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type albumService struct {
@@ -41,22 +41,22 @@ func NewAlbumService(
 	}
 }
 
-func (a *albumService) Get(id uuid.UUID) (models.Album, *utils.ErrorCode) {
+func (a *albumService) Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode) {
 	return a.getAlbum.Handle(id)
 }
 
-func (a *albumService) GetAll(request requests.GetAlbumsRequest) ([]models.Album, *utils.ErrorCode) {
-	return a.getAllAlbums.Handle(request)
+func (a *albumService) GetAll(request request.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode) {
+	return a.getAllAlbums.Handle(request, token)
 }
 
-func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *utils.ErrorCode {
+func (a *albumService) Create(request request.CreateAlbumRequest, token string) *wrapper.ErrorCode {
 	return a.createAlbum.Handle(request, token)
 }
 
-func (a *albumService) Update(request requests.UpdateAlbumRequest) *utils.ErrorCode {
+func (a *albumService) Update(request request.UpdateAlbumRequest) *wrapper.ErrorCode {
 	return a.updateAlbum.Handle(request)
 }
 
-func (a *albumService) Delete(id uuid.UUID) *utils.ErrorCode {
+func (a *albumService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return a.deleteAlbum.Handle(id)
 }

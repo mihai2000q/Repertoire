@@ -3,13 +3,13 @@ package repository
 import (
 	"github.com/google/uuid"
 	"repertoire/data/database"
-	"repertoire/models"
+	"repertoire/model"
 )
 
 type UserRepository interface {
-	Get(user *models.User, id uuid.UUID) error
-	GetByEmail(user *models.User, email string) error
-	Create(user *models.User) error
+	Get(user *model.User, id uuid.UUID) error
+	GetByEmail(user *model.User, email string) error
+	Create(user *model.User) error
 }
 
 type userRepository struct {
@@ -22,14 +22,14 @@ func NewUserRepository(client database.Client) UserRepository {
 	}
 }
 
-func (u userRepository) Get(user *models.User, id uuid.UUID) error {
-	return u.client.DB.Find(&user, models.User{ID: id}).Error
+func (u userRepository) Get(user *model.User, id uuid.UUID) error {
+	return u.client.DB.Find(&user, model.User{ID: id}).Error
 }
 
-func (u userRepository) GetByEmail(user *models.User, email string) error {
-	return u.client.DB.Find(&user, models.User{Email: email}).Error
+func (u userRepository) GetByEmail(user *model.User, email string) error {
+	return u.client.DB.Find(&user, model.User{Email: email}).Error
 }
 
-func (u userRepository) Create(user *models.User) error {
+func (u userRepository) Create(user *model.User) error {
 	return u.client.DB.Create(&user).Error
 }

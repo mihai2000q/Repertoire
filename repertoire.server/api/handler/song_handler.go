@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/requests"
+	"repertoire/api/request"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -45,8 +45,7 @@ func (s SongHandler) Get(c *gin.Context) {
 }
 
 func (s SongHandler) GetAll(c *gin.Context) {
-	request := requests.GetSongsRequest{
-		UserID:      s.UuidQuery(c, "userId"),
+	request := request.GetSongsRequest{
 		CurrentPage: s.IntQueryOrNull(c, "currentPage"),
 		PageSize:    s.IntQueryOrNull(c, "pageSize"),
 	}
@@ -55,18 +54,19 @@ func (s SongHandler) GetAll(c *gin.Context) {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+	token := s.GetTokenFromContext(c)
 
-	songs, errorCode := s.service.GetAll(request)
+	result, errorCode := s.service.GetAll(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, songs)
+	c.JSON(http.StatusOK, result)
 }
 
 func (s SongHandler) Create(c *gin.Context) {
-	var request requests.CreateSongRequest
+	var request request.CreateSongRequest
 	errorCode := s.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -85,7 +85,7 @@ func (s SongHandler) Create(c *gin.Context) {
 }
 
 func (s SongHandler) Update(c *gin.Context) {
-	var request requests.UpdateSongRequest
+	var request request.UpdateSongRequest
 	errorCode := s.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)

@@ -2,13 +2,13 @@ package service
 
 import (
 	"github.com/google/uuid"
-	"repertoire/domain/usecases/user"
-	"repertoire/models"
-	"repertoire/utils"
+	"repertoire/domain/usecase/user"
+	"repertoire/model"
+	"repertoire/utils/wrapper"
 )
 
 type UserService interface {
-	Get(id uuid.UUID) (user models.User, e *utils.ErrorCode)
+	Get(id uuid.UUID) (user model.User, e *wrapper.ErrorCode)
 }
 
 type userService struct {
@@ -23,6 +23,6 @@ func NewUserService(
 	}
 }
 
-func (s *userService) Get(id uuid.UUID) (models.User, *utils.ErrorCode) {
+func (s *userService) Get(id uuid.UUID) (model.User, *wrapper.ErrorCode) {
 	return s.getUser.Handle(id)
 }

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"repertoire/models"
+	"repertoire/model"
 
 	"github.com/stretchr/testify/mock"
 
@@ -12,18 +12,18 @@ type ArtistRepositoryMock struct {
 	mock.Mock
 }
 
-func (a *ArtistRepositoryMock) Get(artist *models.Artist, id uuid.UUID) error {
+func (a *ArtistRepositoryMock) Get(artist *model.Artist, id uuid.UUID) error {
 	args := a.Called(artist, id)
 
 	if len(args) > 1 {
-		*artist = *args.Get(1).(*models.Artist)
+		*artist = *args.Get(1).(*model.Artist)
 	}
 
 	return args.Error(0)
 }
 
 func (a *ArtistRepositoryMock) GetAllByUser(
-	artists *[]models.Artist,
+	artists *[]model.Artist,
 	userId uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -31,18 +31,28 @@ func (a *ArtistRepositoryMock) GetAllByUser(
 	args := a.Called(artists, userId, currentPage, pageSize)
 
 	if len(args) > 1 {
-		*artists = *args.Get(1).(*[]models.Artist)
+		*artists = *args.Get(1).(*[]model.Artist)
 	}
 
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) Create(artist *models.Artist) error {
+func (a *ArtistRepositoryMock) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+	args := a.Called(count, userId)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
+func (a *ArtistRepositoryMock) Create(artist *model.Artist) error {
 	args := a.Called(artist)
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) Update(artist *models.Artist) error {
+func (a *ArtistRepositoryMock) Update(artist *model.Artist) error {
 	args := a.Called(artist)
 	return args.Error(0)
 }
