@@ -16,14 +16,11 @@ func TestValidateGetAlbumsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	}{
 		{
 			"All Null",
-			GetAlbumsRequest{
-				UserID: uuid.New(),
-			},
+			GetAlbumsRequest{},
 		},
 		{
 			"Nothing Null",
 			GetAlbumsRequest{
-				UserID:      uuid.New(),
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 			},
@@ -51,36 +48,29 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// User ID Test Cases
-		{
-			"User ID is invalid because it's required",
-			GetAlbumsRequest{UserID: uuid.Nil},
-			"UserID",
-			"required",
-		},
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetAlbumsRequest{UserID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			GetAlbumsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetAlbumsRequest{UserID: uuid.New(), PageSize: &[]int{1}[0]},
+			GetAlbumsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetAlbumsRequest{UserID: uuid.New(), PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			GetAlbumsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetAlbumsRequest{UserID: uuid.New(), CurrentPage: &[]int{1}[0]},
+			GetAlbumsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},

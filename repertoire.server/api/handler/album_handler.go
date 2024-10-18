@@ -46,7 +46,6 @@ func (a AlbumHandler) Get(c *gin.Context) {
 
 func (a AlbumHandler) GetAll(c *gin.Context) {
 	request := requests.GetAlbumsRequest{
-		UserID:      a.UuidQuery(c, "userId"),
 		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
 		PageSize:    a.IntQueryOrNull(c, "pageSize"),
 	}
@@ -55,8 +54,9 @@ func (a AlbumHandler) GetAll(c *gin.Context) {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+	token := a.GetTokenFromContext(c)
 
-	result, errorCode := a.service.GetAll(request)
+	result, errorCode := a.service.GetAll(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

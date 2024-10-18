@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"repertoire/api/requests"
 	"repertoire/data/repository"
+	"repertoire/data/service"
 	"repertoire/models"
+	"repertoire/utils/wrapper"
 	"testing"
 
 	"github.com/google/uuid"
@@ -13,22 +15,49 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	_uut := &GetAllAlbums{
+		jwtService: jwtService,
+	}
+	request := requests.GetAlbumsRequest{}
+	token := "This is a token"
+
+	internalError := wrapper.UnauthorizedError(errors.New("internal error"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
+
+	// when
+	res, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Empty(t, res)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, internalError, errCode)
+
+	jwtService.AssertExpectations(t)
+}
+
 func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllAlbums{
 		repository: albumRepository,
+		jwtService: jwtService,
 	}
-	request := requests.GetAlbumsRequest{
-		UserID: uuid.New(),
-	}
+	request := requests.GetAlbumsRequest{}
+	token := "This is a token"
+
+	userId := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
 
 	internalError := errors.New("internal error")
 	albumRepository.
 		On(
 			"GetAllByUser",
 			mock.Anything,
-			request.UserID,
+			userId,
 			request.CurrentPage,
 			request.PageSize,
 		).
@@ -36,7 +65,7 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 		Once()
 
 	// when
-	res, errCode := _uut.Handle(request)
+	res, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, res)
@@ -45,17 +74,22 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 	assert.Equal(t, internalError, errCode.Error)
 
 	albumRepository.AssertExpectations(t)
+	jwtService.AssertExpectations(t)
 }
 
 func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllAlbums{
 		repository: albumRepository,
+		jwtService: jwtService,
 	}
-	request := requests.GetAlbumsRequest{
-		UserID: uuid.New(),
-	}
+	request := requests.GetAlbumsRequest{}
+	token := "this is a token"
+
+	userId := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
 
 	expectedAlbums := &[]models.Album{
 		{Title: "Some Album"},
@@ -66,7 +100,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedAlbums),
-			request.UserID,
+			userId,
 			request.CurrentPage,
 			request.PageSize,
 		).
@@ -78,13 +112,13 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 		On(
 			"GetAllByUserCount",
 			mock.Anything,
-			request.UserID,
+			userId,
 		).
 		Return(internalError).
 		Once()
 
 	// when
-	res, errCode := _uut.Handle(request)
+	res, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Equal(t, expectedAlbums, &res.Data)
@@ -94,17 +128,19 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 	assert.Equal(t, internalError, errCode.Error)
 
 	albumRepository.AssertExpectations(t)
+	jwtService.AssertExpectations(t)
 }
 
 func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
 	_uut := &GetAllAlbums{
 		repository: albumRepository,
+		jwtService: jwtService,
 	}
-	request := requests.GetAlbumsRequest{
-		UserID: uuid.New(),
-	}
+	request := requests.GetAlbumsRequest{}
+	token := "this is a token"
 
 	expectedAlbums := &[]models.Album{
 		{Title: "Some Album"},
@@ -112,11 +148,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
+	userId := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+
 	albumRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedAlbums),
-			request.UserID,
+			userId,
 			request.CurrentPage,
 			request.PageSize,
 		).
@@ -127,13 +166,13 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 		On(
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
-			request.UserID,
+			userId,
 		).
 		Return(nil, expectedTotalCount).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(request)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Equal(t, expectedAlbums, &result.Data)
@@ -141,4 +180,5 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	albumRepository.AssertExpectations(t)
+	jwtService.AssertExpectations(t)
 }
