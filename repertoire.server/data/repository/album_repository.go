@@ -36,15 +36,15 @@ func (a albumRepository) GetAllByUser(
 	currentPage *int,
 	pageSize *int,
 ) error {
-	if currentPage == nil {
-		currentPage = &[]int{-1}[0]
-	}
+	offset := -1
 	if pageSize == nil {
 		pageSize = &[]int{-1}[0]
+	} else {
+		offset = (*currentPage - 1) * *pageSize
 	}
 	return a.client.DB.Model(&models.Album{}).
 		Where(models.Album{UserID: userId}).
-		Offset((*currentPage - 1) * *pageSize).
+		Offset(offset).
 		Limit(*pageSize).
 		Find(&albums).
 		Error

@@ -36,9 +36,15 @@ func (s songRepository) GetAllByUser(
 	currentPage *int,
 	pageSize *int,
 ) error {
+	offset := -1
+	if pageSize == nil {
+		pageSize = &[]int{-1}[0]
+	} else {
+		offset = (*currentPage - 1) * *pageSize
+	}
 	return s.client.DB.Model(&models.Song{}).
 		Where(models.Song{UserID: userId}).
-		Offset((*currentPage - 1) * *pageSize).
+		Offset(offset).
 		Limit(*pageSize).
 		Find(&songs).
 		Error
@@ -47,7 +53,7 @@ func (s songRepository) GetAllByUser(
 func (s songRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
 	return s.client.DB.Model(&models.Song{}).
 		Where(models.Song{UserID: userId}).
-		Find(&count).
+		Count(count).
 		Error
 }
 
