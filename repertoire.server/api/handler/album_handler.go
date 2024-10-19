@@ -48,6 +48,7 @@ func (a AlbumHandler) GetAll(c *gin.Context) {
 	request := request.GetAlbumsRequest{
 		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
 		PageSize:    a.IntQueryOrNull(c, "pageSize"),
+		OrderBy:     c.Query("orderBy"),
 	}
 	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {
