@@ -48,6 +48,7 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 	request := request.GetPlaylistsRequest{
 		CurrentPage: p.IntQueryOrNull(c, "currentPage"),
 		PageSize:    p.IntQueryOrNull(c, "pageSize"),
+		OrderBy:     c.Query("orderBy"),
 	}
 	errorCode := p.Validator.Validate(&request)
 	if errorCode != nil {

@@ -48,6 +48,7 @@ func (s SongHandler) GetAll(c *gin.Context) {
 	request := request.GetSongsRequest{
 		CurrentPage: s.IntQueryOrNull(c, "currentPage"),
 		PageSize:    s.IntQueryOrNull(c, "pageSize"),
+		OrderBy:     c.Query("orderBy"),
 	}
 	errorCode := s.Validator.Validate(&request)
 	if errorCode != nil {

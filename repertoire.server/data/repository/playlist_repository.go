@@ -9,7 +9,13 @@ import (
 
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
-	GetAllByUser(playlists *[]model.Playlist, userId uuid.UUID, currentPage *int, pageSize *int) error
+	GetAllByUser(
+		playlists *[]model.Playlist,
+		userId uuid.UUID,
+		currentPage *int,
+		pageSize *int,
+		orderBy string,
+	) error
 	GetAllByUserCount(count *int64, userId uuid.UUID) error
 	Create(playlist *model.Playlist) error
 	Update(playlist *model.Playlist) error
@@ -35,6 +41,7 @@ func (p playlistRepository) GetAllByUser(
 	userId uuid.UUID,
 	currentPage *int,
 	pageSize *int,
+	orderBy string,
 ) error {
 	offset := -1
 	if pageSize == nil {
@@ -44,6 +51,7 @@ func (p playlistRepository) GetAllByUser(
 	}
 	return p.client.DB.Model(&model.Playlist{}).
 		Where(model.Playlist{UserID: userId}).
+		Order(orderBy).
 		Offset(offset).
 		Limit(*pageSize).
 		Find(&playlists).

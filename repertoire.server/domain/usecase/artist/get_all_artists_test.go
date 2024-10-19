@@ -60,6 +60,7 @@ func TestGetAll_WhenGetArtistsFails_ShouldReturnInternalServerError(t *testing.T
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(internalError).
 		Once()
@@ -103,6 +104,7 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedArtists).
 		Once()
@@ -158,6 +160,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedArtists).
 		Once()

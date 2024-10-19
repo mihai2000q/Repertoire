@@ -61,6 +61,7 @@ func TestGetAll_WhenGetSongsFails_ShouldReturnInternalServerError(t *testing.T) 
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(internalError).
 		Once()
@@ -104,6 +105,7 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedSongs).
 		Once()
@@ -159,6 +161,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedSongs).
 		Once()
