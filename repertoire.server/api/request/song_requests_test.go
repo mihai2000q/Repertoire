@@ -23,6 +23,7 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			GetSongsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
+				OrderBy:     "title asc, created_at desc",
 			},
 		},
 	}

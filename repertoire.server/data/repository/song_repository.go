@@ -9,7 +9,13 @@ import (
 
 type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
-	GetAllByUser(songs *[]model.Song, userId uuid.UUID, currentPage *int, pageSize *int) error
+	GetAllByUser(
+		songs *[]model.Song,
+		userId uuid.UUID,
+		currentPage *int,
+		pageSize *int,
+		orderBy string,
+	) error
 	GetAllByUserCount(count *int64, userId uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
@@ -35,6 +41,7 @@ func (s songRepository) GetAllByUser(
 	userId uuid.UUID,
 	currentPage *int,
 	pageSize *int,
+	orderBy string,
 ) error {
 	offset := -1
 	if pageSize == nil {
@@ -44,6 +51,7 @@ func (s songRepository) GetAllByUser(
 	}
 	return s.client.DB.Model(&model.Song{}).
 		Where(model.Song{UserID: userId}).
+		Order(orderBy).
 		Offset(offset).
 		Limit(*pageSize).
 		Find(&songs).
