@@ -48,6 +48,7 @@ func (a ArtistHandler) GetAll(c *gin.Context) {
 	request := request.GetArtistsRequest{
 		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
 		PageSize:    a.IntQueryOrNull(c, "pageSize"),
+		OrderBy:     c.Query("orderBy"),
 	}
 	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {

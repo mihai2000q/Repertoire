@@ -26,7 +26,13 @@ func (g GetAllArtists) Handle(request request.GetArtistsRequest, token string) (
 		return result, errCode
 	}
 
-	err := g.repository.GetAllByUser(&result.Models, userId, request.CurrentPage, request.PageSize)
+	err := g.repository.GetAllByUser(
+		&result.Models,
+		userId,
+		request.CurrentPage,
+		request.PageSize,
+		request.OrderBy,
+	)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}
