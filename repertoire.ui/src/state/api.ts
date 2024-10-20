@@ -10,6 +10,7 @@ import TokenResponse from '../types/responses/TokenResponse'
 import SignInRequest from '../types/requests/AuthRequests'
 import User from '../types/models/User'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse'
+import WithTotalCountResponse from "../types/responses/WithTotalCountResponse";
 
 export const api = createApi({
   baseQuery: queryWithRedirection,
@@ -32,20 +33,20 @@ export const api = createApi({
       }),
 
       // Songs
-      getSongs: build.query<{ songs: Song[], totalCount: number }, GetSongsRequest>({
+      getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
         query: (arg) => ({
-          url: 'songs',
+          url: 'songs/',
           params: arg
         }),
         providesTags: ['Songs']
       }),
-      getSong: build.query<Song, { id: string }>({
-        query: (arg) => `songs${arg.id}`,
+      getSong: build.query<Song, string>({
+        query: (arg) => `songs/${arg}`,
         providesTags: ['Songs']
       }),
       createSong: build.mutation<HttpMessageResponse, CreateSongRequest>({
         query: (body) => ({
-          url: 'songs',
+          url: 'songs/',
           method: 'POST',
           params: body
         }),
@@ -53,15 +54,15 @@ export const api = createApi({
       }),
       updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
         query: (body) => ({
-          url: 'songs',
+          url: 'songs/',
           method: 'PUT',
           params: body
         }),
         invalidatesTags: ['Songs']
       }),
-      deleteSong: build.mutation<HttpMessageResponse, { id: string }>({
+      deleteSong: build.mutation<HttpMessageResponse, string>({
         query: (arg) => ({
-          url: `songs${arg.id}`,
+          url: `songs/${arg}`,
           method: 'DELETE'
         }),
         invalidatesTags: ['Songs']
