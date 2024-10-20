@@ -48,7 +48,7 @@ export const api = createApi({
         query: (body) => ({
           url: 'songs/',
           method: 'POST',
-          params: body
+          body: body
         }),
         invalidatesTags: ['Songs']
       }),
@@ -56,7 +56,7 @@ export const api = createApi({
         query: (body) => ({
           url: 'songs/',
           method: 'PUT',
-          params: body
+          body: body
         }),
         invalidatesTags: ['Songs']
       }),

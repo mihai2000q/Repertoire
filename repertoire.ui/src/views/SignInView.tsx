@@ -68,7 +68,6 @@ function SignInView(): ReactElement {
             <Stack align={'flex-start'} gap={0} w={200}>
               <Stack w={'100%'}>
                 <TextInput
-                  required
                   label="Email"
                   placeholder="Your email"
                   key={form.key('email')}
@@ -78,7 +77,6 @@ function SignInView(): ReactElement {
                   disabled={isLoading}
                 />
                 <PasswordInput
-                  required
                   label="Password"
                   placeholder="Your password"
                   key={form.key('password')}

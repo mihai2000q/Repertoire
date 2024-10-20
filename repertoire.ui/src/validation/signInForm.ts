@@ -6,6 +6,6 @@ export interface SignInForm {
 }
 
 export const signInValidation = z.object({
-  email: z.string().email(),
+  email: z.string().min(1).email(),
   password: z.string().min(8)
 })
