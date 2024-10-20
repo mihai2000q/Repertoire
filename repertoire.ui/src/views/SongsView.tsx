@@ -1,7 +1,11 @@
 import { ReactElement, useState } from 'react'
-import { Box, Group, Loader, Pagination, Space, Stack, Title } from '@mantine/core'
+import { Box, Button, Group, Loader, Pagination, Space, Stack, Title } from '@mantine/core'
 import { useGetSongsQuery } from '../state/api'
-import SongCard from '../components/SongCard'
+import SongCard from '../components/song/SongCard'
+import { IconMusicPlus } from '@tabler/icons-react'
+import NewSongCard from '../components/song/NewSongCard'
+import { useDisclosure } from '@mantine/hooks'
+import AddNewSongModal from '../components/song/modal/AddNewSongModal'
 
 function SongsView(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -10,11 +14,29 @@ function SongsView(): ReactElement {
     currentPage: currentPage
   })
 
+  const [opened, { open, close }] = useDisclosure(false)
+
   return (
     <Stack h={'100%'}>
-      <Title order={3}>Songs</Title>
-      <Group>{songs?.models.map((song) => <SongCard key={song.id} song={song} />)}</Group>
+      <AddNewSongModal opened={opened} onClose={close} />
+
+      <Title order={3} fw={800}>
+        Songs
+      </Title>
+
+      <Group>
+        <Button leftSection={<IconMusicPlus size={17} />} onClick={open}>
+          New Song
+        </Button>
+      </Group>
+
+      <Group>
+        {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
+        {songs?.totalCount > 0 && <NewSongCard openModal={open} />}
+      </Group>
+
       <Space flex={1} />
+
       <Box style={{ alignSelf: 'center' }}>
         {!isLoading ? (
           <Pagination
