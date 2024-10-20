@@ -14,7 +14,7 @@ import { ReactElement } from 'react'
 import { useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
 import { setToken } from '../state/authSlice'
-import HttpErrorResponse from '../types/responses/HttpError.response'
+import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
@@ -68,7 +68,6 @@ function SignInView(): ReactElement {
             <Stack align={'flex-start'} gap={0} w={200}>
               <Stack w={'100%'}>
                 <TextInput
-                  required
                   label="Email"
                   placeholder="Your email"
                   key={form.key('email')}
@@ -78,7 +77,6 @@ function SignInView(): ReactElement {
                   disabled={isLoading}
                 />
                 <PasswordInput
-                  required
                   label="Password"
                   placeholder="Your password"
                   key={form.key('password')}

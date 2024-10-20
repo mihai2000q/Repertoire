@@ -14,6 +14,7 @@ import { Provider } from 'react-redux'
 import { store } from './state/store'
 import './index.css'
 import '@mantine/core/styles.css'
+import SongsView from './views/SongsView'
 
 function App(): ReactElement {
   return (
@@ -32,6 +33,7 @@ function App(): ReactElement {
               <Route element={<RequireAuthentication />}>
                 <Route element={<MainView />}>
                   <Route path={'home'} element={<HomeView />} />
+                  <Route path={'songs'} element={<SongsView />} />
 
                   {/* Errors */}
                   <Route path={'401'} element={<UnauthorizedView />} />
