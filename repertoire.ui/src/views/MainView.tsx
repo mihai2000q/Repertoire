@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import Sidebar from '../components/Sidebar'
-import Topbar from '../components/Topbar'
+import Sidebar from '../components/main/Sidebar'
+import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
 import { AppShell } from '@mantine/core'

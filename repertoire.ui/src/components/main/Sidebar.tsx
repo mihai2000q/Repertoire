@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { AppShell, NavLink } from '@mantine/core'
-import { sidebarLinks } from '../data/sidebarLinks'
+import { sidebarLinks } from '../../data/sidebarLinks'
 import {useLocation, useNavigate} from 'react-router-dom'
 
 function Sidebar(): ReactElement {
