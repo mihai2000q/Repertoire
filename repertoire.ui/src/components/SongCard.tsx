@@ -1,5 +1,7 @@
-import React from 'react';
-import Song from "../types/models/Song";
+import Song from '../types/models/Song'
+import demoSong from '../assets/demoSong.jpg'
+import { Card, Group, Image, Text, Tooltip } from '@mantine/core'
+import { IconMicrophoneFilled } from '@tabler/icons-react'
 
 interface SongCardProps {
   song: Song
@@ -7,11 +9,30 @@ interface SongCardProps {
 
 function SongCard({ song }: SongCardProps) {
   return (
-    <div>
-      <h2>{song.title}</h2>
-      <div>{song.isRecorded}</div>
-    </div>
-  );
+    <Card shadow="md" padding="sm" h={253} w={175}>
+      <Card.Section>
+        <Image src={demoSong} height={140} fit={'cover'} alt={song.title} />
+      </Card.Section>
+
+      <Group justify="space-between" mt="sm" mb="xs">
+        <Text fw={500} lineClamp={2}>
+          {song.title}
+        </Text>
+      </Group>
+
+      <Text size="sm" c="dimmed" mb='xs'>
+        With Fjord Tours you can explore more of the
+      </Text>
+
+      <Group>
+        {song.isRecorded && (
+          <Tooltip label={'This song is recorded'} openDelay={200} position="bottom">
+            <IconMicrophoneFilled size={18} />
+          </Tooltip>
+        )}
+      </Group>
+    </Card>
+  )
 }
 
-export default SongCard;
+export default SongCard
