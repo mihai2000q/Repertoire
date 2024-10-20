@@ -5,6 +5,7 @@ import "github.com/google/uuid"
 type GetArtistsRequest struct {
 	CurrentPage *int `validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int `validate:"required_with=CurrentPage,omitempty,gt=0"`
+	OrderBy     string
 }
 
 type CreateArtistRequest struct {

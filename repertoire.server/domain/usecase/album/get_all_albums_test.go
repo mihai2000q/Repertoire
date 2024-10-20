@@ -60,6 +60,7 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(internalError).
 		Once()
@@ -103,6 +104,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedAlbums).
 		Once()
@@ -158,6 +160,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedAlbums).
 		Once()

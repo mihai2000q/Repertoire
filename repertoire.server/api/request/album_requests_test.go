@@ -23,6 +23,7 @@ func TestValidateGetAlbumsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			GetAlbumsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
+				OrderBy:     "title asc, created_at desc",
 			},
 		},
 	}

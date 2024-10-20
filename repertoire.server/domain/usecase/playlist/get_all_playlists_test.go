@@ -60,6 +60,7 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(internalError).
 		Once()
@@ -103,6 +104,7 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedPlaylists).
 		Once()
@@ -158,6 +160,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 			userId,
 			request.CurrentPage,
 			request.PageSize,
+			request.OrderBy,
 		).
 		Return(nil, expectedPlaylists).
 		Once()
