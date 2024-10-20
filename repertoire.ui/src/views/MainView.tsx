@@ -22,7 +22,7 @@ function MainView(): ReactElement {
     >
       <Topbar />
       <Sidebar />
-      <AppShell.Main>
+      <AppShell.Main h={'100%'}>
         <Outlet />
       </AppShell.Main>
     </AppShell>
