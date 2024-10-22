@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-function UnauthorizedView(): ReactElement {
+function Unauthorized(): ReactElement {
   return (
     <div>
       <h1>Unauthorized</h1>
@@ -9,4 +9,4 @@ function UnauthorizedView(): ReactElement {
   )
 }
 
-export default UnauthorizedView
+export default Unauthorized

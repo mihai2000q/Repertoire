@@ -7,7 +7,7 @@ import NewSongCard from '../components/song/NewSongCard'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/song/modal/AddNewSongModal'
 
-function SongsView(): ReactElement {
+function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
@@ -52,4 +52,4 @@ function SongsView(): ReactElement {
   )
 }
 
-export default SongsView
+export default Songs
