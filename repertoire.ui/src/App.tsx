@@ -10,16 +10,17 @@ import MainView from './views/MainView'
 import SignInView from './views/SignInView'
 import { MantineProvider } from '@mantine/core'
 import { theme } from './theme/theme'
-import { Provider } from 'react-redux'
-import { store } from './state/store'
 import './index.css'
 import '@mantine/core/styles.css'
 import SongsView from './views/SongsView'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 function App(): ReactElement {
   return (
     <div className={'app'}>
-      <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
         <MantineProvider theme={theme} forceColorScheme={'light'}>
           <BrowserRouter>
             <Routes>
@@ -44,7 +45,7 @@ function App(): ReactElement {
             </Routes>
           </BrowserRouter>
         </MantineProvider>
-      </Provider>
+      </QueryClientProvider>
     </div>
   )
 }
