@@ -1,0 +1,29 @@
+name: Desktop 🖥️
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    name: Build 🔨
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.18.0'
+
+    - name: Install Depedencies
+      working-directory: repertoire.desktop/
+      run: npm ci
+
+    - name: Build
+      working-directory: repertoire.desktop/
+      run: npm run build
