@@ -1,13 +1,13 @@
 import { ReactElement, useState } from 'react'
 import { Box, Button, Group, Loader, Pagination, Space, Stack, Title } from '@mantine/core'
 import { useGetSongsQuery } from '../state/api'
-import SongCard from '../components/song/SongCard'
+import SongCard from '../components/songs/SongCard'
 import { IconMusicPlus } from '@tabler/icons-react'
-import NewSongCard from '../components/song/NewSongCard'
+import NewSongCard from '../components/songs/NewSongCard'
 import { useDisclosure } from '@mantine/hooks'
-import AddNewSongModal from '../components/song/modal/AddNewSongModal'
+import AddNewSongModal from '../components/songs/modal/AddNewSongModal'
 
-function SongsView(): ReactElement {
+function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
@@ -52,4 +52,4 @@ function SongsView(): ReactElement {
   )
 }
 
-export default SongsView
+export default Songs

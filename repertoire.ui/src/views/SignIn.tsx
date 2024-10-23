@@ -19,7 +19,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
 
-function SignInView(): ReactElement {
+function SignIn(): ReactElement {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
@@ -99,4 +99,4 @@ function SignInView(): ReactElement {
   )
 }
 
-export default SignInView
+export default SignIn

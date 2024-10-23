@@ -1,14 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit'
+import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import authReducer from './authSlice'
 import globalReducer from './globalSlice'
 import { api } from './api'
 import { useDispatch, useSelector } from 'react-redux'
 
-const reducer = {
+export const reducer = combineReducers({
   auth: authReducer,
   global: globalReducer,
   [api.reducerPath]: api.reducer
-}
+})
 
 export const store = configureStore({
   reducer: reducer,

@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
 import { AppShell } from '@mantine/core'
 
-function MainView(): ReactElement {
+function Main(): ReactElement {
   useErrorRedirection()
 
   return (
@@ -29,4 +29,4 @@ function MainView(): ReactElement {
   )
 }
 
-export default MainView
+export default Main

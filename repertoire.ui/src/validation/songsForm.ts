@@ -5,5 +5,5 @@ export interface AddNewSongForm {
 }
 
 export const addNewSongValidation = z.object({
-  title: z.string().min(1)
+  title: z.string().trim().min(1, "Title cannot be blank"),
 })

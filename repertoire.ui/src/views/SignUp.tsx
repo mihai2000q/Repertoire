@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-function SignUpView(): ReactElement {
+function SignUp(): ReactElement {
   return (
     <div>
       <h1>Sign up</h1>
@@ -9,4 +9,4 @@ function SignUpView(): ReactElement {
   )
 }
 
-export default SignUpView
+export default SignUp
