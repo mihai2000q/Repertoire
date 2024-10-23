@@ -7,7 +7,13 @@
     "sourceMap": true,
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "types": [
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ]
   },
-  "lib": ["es2015"]
+  "lib": [
+    "es2015"
+  ]
 }
