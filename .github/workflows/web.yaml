@@ -7,10 +7,10 @@ on:
     branches: [ "develop" ]
 
 jobs:
-  build:
+  typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 3
-    name: Build 🔨
+    name: Typecheck ⌨️
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
@@ -20,14 +20,14 @@ jobs:
       with:
         node-version: '20.18.0'
 
-    - name: Install UI Depedencies
+    - name: Install UI Dependencies
       working-directory: repertoire.ui/
       run: npm ci
 
-    - name: Install Depedencies
+    - name: Install Dependencies
       working-directory: repertoire.web/
       run: npm ci
 
-    - name: Build
+    - name: Typecheck
       working-directory: repertoire.web/
-      run: npm run build
+      run: npm run typecheck
