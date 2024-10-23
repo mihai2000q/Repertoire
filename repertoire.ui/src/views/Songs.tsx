@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { Box, Button, Group, Loader, Pagination, Space, Stack, Title } from '@mantine/core'
-import { useGetSongsQuery } from '../state/api'
+import { useGetSongsQuery } from '../state/songsApi'
 import SongCard from '../components/songs/SongCard'
 import { IconMusicPlus } from '@tabler/icons-react'
 import NewSongCard from '../components/songs/NewSongCard'

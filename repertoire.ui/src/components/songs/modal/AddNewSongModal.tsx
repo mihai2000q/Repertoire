@@ -1,7 +1,7 @@
 import { Button, Modal, Stack, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm'
-import { useCreateSongMutation } from '../../../state/api'
+import { useCreateSongMutation } from '../../../state/songsApi.ts'
 
 interface AddNewSongModalProps {
   opened: boolean
