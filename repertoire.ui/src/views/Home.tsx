@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-function HomeView(): ReactElement {
+function Home(): ReactElement {
   return (
     <div>
       <h1>Home View</h1>
@@ -9,4 +9,4 @@ function HomeView(): ReactElement {
   )
 }
 
-export default HomeView
+export default Home

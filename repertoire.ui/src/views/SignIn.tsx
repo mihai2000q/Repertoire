@@ -16,7 +16,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
 import {useSignInMutation} from "../state/signInApi";
 
-function SignInView(): ReactElement {
+function SignIn(): ReactElement {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -90,4 +90,4 @@ function SignInView(): ReactElement {
   )
 }
 
-export default SignInView
+export default SignIn

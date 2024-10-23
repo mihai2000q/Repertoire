@@ -1,19 +1,19 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import IsAlreadyAuthenticated from './router/IsAlreadyAuthenticated'
-import SignUpView from './views/SignUpView'
 import RequireAuthentication from './router/RequireAuthentication'
-import HomeView from './views/HomeView'
-import NotFoundView from './views/NotFoundView'
-import UnauthorizedView from './views/UnauthorizedView'
 import { ReactElement } from 'react'
-import MainView from './views/MainView'
-import SignInView from './views/SignInView'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MantineProvider } from '@mantine/core'
 import { theme } from './theme/theme'
 import './index.css'
 import '@mantine/core/styles.css'
-import SongsView from './views/SongsView'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import Main from './views/Main'
+import SignIn from './views/SignIn'
+import SignUp from './views/SignUp'
+import Songs from './views/Songs'
+import Home from './views/Home'
+import NotFound from './views/NotFound'
+import Unauthorized from './views/Unauthorized'
 
 const queryClient = new QueryClient()
 
@@ -27,18 +27,18 @@ function App(): ReactElement {
               <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
               <Route element={<IsAlreadyAuthenticated />}>
-                <Route path={'sign-in'} element={<SignInView />} />
-                <Route path={'sign-up'} element={<SignUpView />} />
+                <Route path={'sign-in'} element={<SignIn />} />
+                <Route path={'sign-up'} element={<SignUp />} />
               </Route>
 
               <Route element={<RequireAuthentication />}>
-                <Route element={<MainView />}>
-                  <Route path={'home'} element={<HomeView />} />
-                  <Route path={'songs'} element={<SongsView />} />
+                <Route element={<Main />}>
+                  <Route path={'home'} element={<Home />} />
+                  <Route path={'songs'} element={<Songs />} />
 
                   {/* Errors */}
-                  <Route path={'401'} element={<UnauthorizedView />} />
-                  <Route path={'404'} element={<NotFoundView />} />
+                  <Route path={'401'} element={<Unauthorized />} />
+                  <Route path={'404'} element={<NotFound />} />
                   <Route path={'*'} element={<Navigate to={'404'} replace />} />
                 </Route>
               </Route>

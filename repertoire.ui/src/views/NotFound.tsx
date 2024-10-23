@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-function NotFoundView(): ReactElement {
+function NotFound(): ReactElement {
   return (
     <div>
       <h1>Whoops! Not Found</h1>
@@ -9,4 +9,4 @@ function NotFoundView(): ReactElement {
   )
 }
 
-export default NotFoundView
+export default NotFound

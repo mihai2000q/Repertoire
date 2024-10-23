@@ -4,7 +4,7 @@ import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import { AppShell } from '@mantine/core'
 
-function MainView(): ReactElement {
+function Main(): ReactElement {
   return (
     <AppShell
       layout={'alt'}
@@ -26,4 +26,4 @@ function MainView(): ReactElement {
   )
 }
 
-export default MainView
+export default Main
