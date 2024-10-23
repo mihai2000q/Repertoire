@@ -3,6 +3,7 @@ import jsLint from '@eslint/js'
 import tsLint from 'typescript-eslint'
 import reactLint from 'eslint-plugin-react'
 import prettier from 'eslint-config-prettier'
+import reactQuery from '@tanstack/eslint-plugin-query'
 
 export default [
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
@@ -17,6 +18,7 @@ export default [
   jsLint.configs.recommended,
   ...tsLint.configs.recommended,
   reactLint.configs.flat.recommended,
+  ...reactQuery.configs['flat/recommended'],
   {
     rules: {
       'react/react-in-jsx-scope': 'off',
