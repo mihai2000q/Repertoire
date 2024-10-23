@@ -6,7 +6,9 @@
   "author": "",
   "license": "MIT",
   "scripts": {
+    "format": "prettier --write .",
     "lint": "eslint .",
+    "typecheck": "tsc -b --verbose",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"

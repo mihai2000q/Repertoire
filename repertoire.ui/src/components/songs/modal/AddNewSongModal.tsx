@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, Modal, Stack, TextInput } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm'
