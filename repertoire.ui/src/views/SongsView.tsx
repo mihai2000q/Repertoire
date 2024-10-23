@@ -1,11 +1,11 @@
 import { ReactElement, useState } from 'react'
 import { Box, Button, Group, Loader, Pagination, Space, Stack, Title } from '@mantine/core'
-import { useGetSongsQuery } from '../state/api'
 import SongCard from '../components/song/SongCard'
 import { IconMusicPlus } from '@tabler/icons-react'
 import NewSongCard from '../components/song/NewSongCard'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/song/modal/AddNewSongModal'
+import { useGetSongsQuery } from '../state/songsApi'
 
 function SongsView(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)

@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Modal, TextInput, Stack } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm'
-import { useCreateSongMutation } from '../../../state/api'
+import {useCreateSongMutation} from "../../../state/songsApi";
 
 interface AddNewSongModalProps {
   opened: boolean
@@ -10,7 +10,7 @@ interface AddNewSongModalProps {
 }
 
 function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
-  const [createSongMutation, { isLoading }] = useCreateSongMutation()
+  const { mutate: createSong, isPending } = useCreateSongMutation()
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -24,7 +24,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   })
 
   async function addSong({ title }: AddNewSongForm) {
-    await createSongMutation({ title }).unwrap()
+    createSong({ title })
     onClose()
     form.reset()
   }
@@ -42,7 +42,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
               key={form.key('title')}
               {...form.getInputProps('title')}
             />
-            <Button type={'submit'} style={{ alignSelf: 'end' }} disabled={isLoading}>
+            <Button type={'submit'} style={{ alignSelf: 'end' }} disabled={isPending}>
               Add
             </Button>
           </Stack>

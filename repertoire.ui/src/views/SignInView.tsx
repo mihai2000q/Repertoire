@@ -11,21 +11,17 @@ import {
   Title
 } from '@mantine/core'
 import { ReactElement } from 'react'
-import { useSignInMutation } from '../state/api'
-import { useAppDispatch } from '../state/store'
-import { setToken } from '../state/authSlice'
-import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
+import {useSignInMutation} from "../state/signInApi";
 
 function SignInView(): ReactElement {
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [signInMutation, { error, isLoading }] = useSignInMutation()
-  const loginError = (error as HttpErrorResponse | undefined)?.data?.error
+  const { data: signInResponse, mutate, error, isPending } = useSignInMutation()
+  const signInError = error.message
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -40,14 +36,9 @@ function SignInView(): ReactElement {
   })
 
   async function signIn({ email, password }: SignInForm): Promise<void> {
-    try {
-      const res = await signInMutation({ email, password }).unwrap()
-
-      dispatch(setToken(res.token))
-      navigate(location.state?.from?.pathname ?? 'home')
-    } catch (e) {
-      /*ignored*/
-    }
+    mutate({ email, password })
+    localStorage.setItem('token', signInResponse.data.token)
+    navigate(location.state?.from?.pathname ?? 'home')
   }
 
   return (
@@ -72,23 +63,23 @@ function SignInView(): ReactElement {
                   placeholder="Your email"
                   key={form.key('email')}
                   {...form.getInputProps('email')}
-                  {...(loginError && { error: loginError })}
+                  {...(signInError && { error: signInError })}
                   maxLength={256}
-                  disabled={isLoading}
+                  disabled={isPending}
                 />
                 <PasswordInput
                   label="Password"
                   placeholder="Your password"
                   key={form.key('password')}
                   {...form.getInputProps('password')}
-                  {...(loginError && { error: loginError })}
-                  disabled={isLoading}
+                  {...(signInError && { error: signInError })}
+                  disabled={isPending}
                 />
               </Stack>
               <Anchor component="button" size="sm" mt={6} style={{ alignSelf: 'flex-end' }}>
                 Forgot password?
               </Anchor>
-              <Button type={'submit'} fullWidth mt={'sm'} disabled={isLoading}>
+              <Button type={'submit'} fullWidth mt={'sm'} disabled={isPending}>
                 Sign in
               </Button>
             </Stack>
