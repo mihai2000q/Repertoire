@@ -11,6 +11,7 @@
     "composite": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "allowImportingTsExtensions": true,
     "strict": false,
     "paths": {
       "@renderer/*": [
