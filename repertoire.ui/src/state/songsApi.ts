@@ -1,12 +1,12 @@
-import { api } from './api.ts'
-import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
-import Song from '../types/models/Song.ts'
+import { api } from './api'
+import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
+import Song from '../types/models/Song'
 import {
   CreateSongRequest,
   GetSongsRequest,
   UpdateSongRequest
-} from '../types/requests/SongRequests.ts'
-import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
+} from '../types/requests/SongRequests'
+import HttpMessageResponse from '../types/responses/HttpMessageResponse'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
