@@ -8,11 +8,11 @@ import { userEvent } from '@testing-library/user-event'
 import { CreateSongRequest } from '../../../types/requests/SongRequests'
 
 describe('Add New Song Modal', () => {
-  let createSongRequest: CreateSongRequest | undefined = undefined
+  let capturedCreateSongRequest: CreateSongRequest | undefined
 
   const handlers = [
     http.post('/songs/', async (req) => {
-      createSongRequest = (await req.request.json()) as CreateSongRequest
+      capturedCreateSongRequest = (await req.request.json()) as CreateSongRequest
       return HttpResponse.json('Song created successfully!')
     })
   ]
@@ -22,7 +22,7 @@ describe('Add New Song Modal', () => {
   beforeAll(() => server.listen())
 
   afterEach(() => {
-    createSongRequest = undefined
+    capturedCreateSongRequest = undefined
     server.resetHandlers()
   })
 
@@ -41,7 +41,7 @@ describe('Add New Song Modal', () => {
   it('should render and display error if the title is invalid', async ({ expect }) => {
     // Arrange
     const user = userEvent.setup()
-    const error = /title cannot be blank/i
+    const error = 'Title cannot be blank'
 
     // Act
     reduxRender(<AddNewSongModal opened={true} onClose={vi.fn()} />)
@@ -68,7 +68,7 @@ describe('Add New Song Modal', () => {
     await user.type(screen.getByRole('textbox', { name: /title/i }), title)
     await user.click(screen.getByRole('button', { name: /add/i }))
 
-    expect(createSongRequest).toStrictEqual({
+    expect(capturedCreateSongRequest).toStrictEqual({
       title: title
     })
     expect(onClose).toHaveBeenCalledOnce()
