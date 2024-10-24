@@ -22,6 +22,7 @@ export default [
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'no-console': 'warn',
+      "@typescript-eslint/no-require-imports": "warn"
     }
   },
   prettier

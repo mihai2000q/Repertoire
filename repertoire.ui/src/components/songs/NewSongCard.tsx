@@ -7,7 +7,7 @@ interface NewSongCardProps {
 
 function NewSongCard({ openModal }: NewSongCardProps) {
   return (
-    <Card padding={0} shadow="md" h={253} w={175} onClick={openModal}>
+    <Card data-testid={'new-song-card'} padding={0} shadow="md" h={253} w={175} onClick={openModal}>
       <Center c={'cyan.7'} bg={'gray.1'} h={'100%'}>
         <IconMusicPlus size={35} />
       </Center>

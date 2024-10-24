@@ -1,8 +1,8 @@
 import {
   Anchor,
   Button,
+  Center,
   Container,
-  Flex,
   Paper,
   PasswordInput,
   Stack,
@@ -25,7 +25,7 @@ function SignIn(): ReactElement {
   const location = useLocation()
 
   const [signInMutation, { error, isLoading }] = useSignInMutation()
-  const loginError = (error as HttpErrorResponse | undefined)?.data?.error
+  const signInError = (error as HttpErrorResponse | undefined)?.data?.error
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -42,7 +42,6 @@ function SignIn(): ReactElement {
   async function signIn({ email, password }: SignInForm): Promise<void> {
     try {
       const res = await signInMutation({ email, password }).unwrap()
-
       dispatch(setToken(res.token))
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
@@ -51,8 +50,8 @@ function SignIn(): ReactElement {
   }
 
   return (
-    <Container my={40}>
-      <Flex direction={'column'} align={'center'} justify={'center'} h={'90%'}>
+    <Container>
+      <Center h={'90%'} style={{ flexDirection: 'column' }}>
         <Title ta="center" order={2}>
           Welcome back!
         </Title>
@@ -72,7 +71,7 @@ function SignIn(): ReactElement {
                   placeholder="Your email"
                   key={form.key('email')}
                   {...form.getInputProps('email')}
-                  {...(loginError && { error: loginError })}
+                  {...(signInError && { error: signInError })}
                   maxLength={256}
                   disabled={isLoading}
                 />
@@ -81,7 +80,7 @@ function SignIn(): ReactElement {
                   placeholder="Your password"
                   key={form.key('password')}
                   {...form.getInputProps('password')}
-                  {...(loginError && { error: loginError })}
+                  {...(signInError && { error: signInError })}
                   disabled={isLoading}
                 />
               </Stack>
@@ -94,7 +93,7 @@ function SignIn(): ReactElement {
             </Stack>
           </form>
         </Paper>
-      </Flex>
+      </Center>
     </Container>
   )
 }

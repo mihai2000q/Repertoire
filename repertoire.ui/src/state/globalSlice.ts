@@ -1,14 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface GlobalState {
-  userId: string | undefined
-  errorPath: string | undefined
+  userId?: string | undefined
+  errorPath?: string | undefined
 }
 
-const initialState: GlobalState = {
-  userId: undefined,
-  errorPath: undefined
-}
+const initialState: GlobalState = {}
 
 export const globalSlice = createSlice({
   name: 'global',
