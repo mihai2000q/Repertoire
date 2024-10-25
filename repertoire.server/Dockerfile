@@ -25,8 +25,9 @@ WORKDIR /
 COPY --from=builder /go/main /go/main
 COPY --from=builder /app/.env /go/.env
 
-# Expose default port
-EXPOSE 8080
+# Expose port
+ARG SERVER_PORT
+EXPOSE $SERVER_PORT
 
 # Run
 ENTRYPOINT ["/go/main"]
