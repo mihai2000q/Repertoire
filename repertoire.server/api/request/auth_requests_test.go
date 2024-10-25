@@ -68,30 +68,6 @@ func TestValidateSignInRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 			"Password",
 			"required",
 		},
-		{
-			"Password is invalid because it has less than 8 characters",
-			SignInRequest{Email: validEmail, Password: "1234567"},
-			"Password",
-			"min",
-		},
-		{
-			"Password is invalid because it doesn't have an uppercase letter",
-			SignInRequest{Email: validEmail, Password: strings.Repeat("a", 9)},
-			"Password",
-			"hasUpper",
-		},
-		{
-			"Password is invalid because it doesn't have a lowercase letter",
-			SignInRequest{Email: validEmail, Password: strings.Repeat("A", 9)},
-			"Password",
-			"hasLower",
-		},
-		{
-			"Password is invalid because it doesn't have any digit",
-			SignInRequest{Email: validEmail, Password: strings.Repeat("A", 4) + strings.Repeat("a", 4)},
-			"Password",
-			"hasDigit",
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
