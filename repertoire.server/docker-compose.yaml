@@ -1,14 +1,22 @@
 name: repertoire
 services:
   server:
-    build:
+    build: 
       context: .
-      dockerfile: Dockerfile
+      args:
+        SERVER_PORT: ${SERVER_PORT}
     container_name: Repertoire-Server
+    env_file: ".env"
+    environment:
+      - IS_RUNNING_IN_CONTAINER=true
+      - SERVER_HOST=0.0.0.0
+      - DB_HOST=Repertoire-Database
+      - DB_PORT=5432
     ports:
-      - "${SERVER_PORT}:8080"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
     image: "postgres:17"
@@ -19,3 +27,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
