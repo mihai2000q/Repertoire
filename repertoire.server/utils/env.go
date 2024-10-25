@@ -24,9 +24,11 @@ type Env struct {
 }
 
 func NewEnv() Env {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file:%v", err)
+	if os.Getenv("IS_RUNNING_IN_CONTAINER") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file:%v", err)
+		}
 	}
 
 	env := Env{
