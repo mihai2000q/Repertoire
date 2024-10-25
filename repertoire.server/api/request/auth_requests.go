@@ -6,7 +6,7 @@ type RefreshRequest struct {
 
 type SignInRequest struct {
 	Email    string `validate:"required,max=256,email"`
-	Password string `validate:"required,min=8,hasUpper,hasLower,hasDigit"`
+	Password string `validate:"required"`
 }
 
 type SignUpRequest struct {
