@@ -1,0 +1,26 @@
+# 1. Build Environment
+FROM node:20.18 as build
+
+# Set the working directiory
+WORKDIR /app
+
+# Copy and install the dependencies
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm ci --silent
+
+# Copy and build the app
+COPY . ./
+RUN npm run build
+
+# Step 2: Production Environment
+FROM nginx:stable-alpine
+
+# Copy the app in the prod env
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Expose the port
+ARG VITE_APPLICATION_PORT
+EXPOSE $VITE_APPLICATION_PORT
+
+CMD ["nginx", "-g", "daemon off;"]

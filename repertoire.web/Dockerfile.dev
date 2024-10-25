@@ -1,0 +1,19 @@
+FROM node:20.18
+
+# Set working directory
+WORKDIR /app
+
+# Install app dependencies
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm ci
+
+# Copy the app
+COPY . ./
+
+# Expose the port
+ARG VITE_APPLICATION_PORT
+EXPOSE $VITE_APPLICATION_PORT
+
+# Start app
+CMD ["npm", "start"]

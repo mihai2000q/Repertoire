@@ -1,0 +1,12 @@
+name: repertoire
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: DockerFile.${ENVIRONMENT}
+      args:
+        VITE_APPLICATION_PORT: ${VITE_APPLICATION_PORT}
+    container_name: Repertoire-Web
+    env_file: ".env"
+    ports:
+      - "${VITE_APPLICATION_PORT}:${VITE_APPLICATION_PORT}"
