@@ -160,6 +160,12 @@ When in development mode, the application will run **Auto Migrate** from GORM on
 
 The unit tests normally reside close to the unit under testing.
 
+To run the tests you can run:
+
+```sh
+go test
+```
+
 ## Live Reload
 
 To use live reload in the application, install *Air* on your system, by using the following command:
