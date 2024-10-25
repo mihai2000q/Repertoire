@@ -12,7 +12,7 @@ import (
 
 func NewServer(lc fx.Lifecycle, handler *RequestHandler, env utils.Env) *http.Server {
 	server := &http.Server{
-		Addr:    fmt.Sprintf("localhost:%s", env.ApplicationPort),
+		Addr:    fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort),
 		Handler: handler.Gin,
 	}
 
