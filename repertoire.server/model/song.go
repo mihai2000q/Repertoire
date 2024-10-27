@@ -1,9 +1,8 @@
 package model
 
 import (
-	"time"
-
 	"github.com/google/uuid"
+	"repertoire/utils"
 )
 
 type Song struct {
@@ -23,6 +22,7 @@ type Song struct {
 	GuitarTuningID *uuid.UUID   `json:"-"`
 	GuitarTuning   GuitarTuning `json:"-"`
 	Playlist       []Playlist   `gorm:"many2many:playlist_song" json:"-"`
+	utils.BaseUserModel
 type GuitarTuning struct {
 	ID        uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name      string    `gorm:"size:30; not null" json:"name"`
