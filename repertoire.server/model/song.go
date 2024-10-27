@@ -31,7 +31,7 @@ type Song struct {
 type GuitarTuning struct {
 	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name  string    `gorm:"size:16; not null" json:"name"`
-	Order uint      `json:"-"`
+	Order uint      `gorm:"not null" json:"-"`
 	Songs []Song    `json:"-"`
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
@@ -53,7 +53,7 @@ type SongSection struct {
 type SongSectionType struct {
 	ID       uuid.UUID     `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name     string        `gorm:"size:16" json:"name"`
-	Order    uint          `json:"-"`
+	Order    uint          `gorm:"not null" json:"-"`
 	Sections []SongSection `json:"-"`
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`

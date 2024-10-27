@@ -70,7 +70,7 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error 
 func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
 	return s.client.DB.Model(&model.GuitarTuning{}).
 		Where(model.GuitarTuning{UserID: userID}).
-		Order("order asc").
+		Order("\"order\"").
 		Find(&tunings).
 		Error
 }
