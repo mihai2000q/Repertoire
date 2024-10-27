@@ -24,12 +24,16 @@ Songs can be measured how rehearsed they have been, whether they have been recor
 
 ## Get Started
 
-To get started on the application, you need the server and one of the platforms up and running.
+To get started on the application, you need the server, the UI and one of the platforms up and running.
 
-To take the shortest route, you can fire the following shell script: `run-containers.sh`.
+IF you have Go and Node installed, you can take the shortest route. 
+Fire the following shell script: `startup-web.sh` or `startup-desktop.sh`.
 
 Otherwise, a full setup on each project has to be made 
 (except for Desktop or Web, depending on where you prefer to host the app).
+
+Additionally, if you prefer to run everything in containers and not install GO or Node, 
+you can run the `run-container.sh` script to run all the docker containers.
 
 ### Server
 
