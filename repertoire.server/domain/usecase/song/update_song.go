@@ -2,11 +2,12 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"repertoire/api/request"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
+
+	"github.com/google/uuid"
 )
 
 type UpdateSong struct {
@@ -29,6 +30,9 @@ func (u UpdateSong) Handle(request request.UpdateSongRequest) *wrapper.ErrorCode
 
 	song.Title = request.Title
 	song.IsRecorded = request.IsRecorded
+	song.Reharsals = request.Reharsals
+	song.Bpm = request.Bpm
+	song.SongsterrLink = request.SongsterrLink
 
 	err = u.repository.Update(&song)
 	if err != nil {

@@ -2,14 +2,15 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/api/request"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -84,6 +85,9 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
 			assert.Equal(t, request.IsRecorded, newSong.IsRecorded)
+			assert.Equal(t, request.Reharsals, newSong.Reharsals)
+			assert.Equal(t, request.Bpm, newSong.Bpm)
+			assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
 		}).
 		Return(internalError).
 		Once()
@@ -120,6 +124,9 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
 			assert.Equal(t, request.IsRecorded, newSong.IsRecorded)
+			assert.Equal(t, request.Reharsals, newSong.Reharsals)
+			assert.Equal(t, request.Bpm, newSong.Bpm)
+			assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
 		}).
 		Return(nil).
 		Once()

@@ -60,6 +60,9 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
 			assert.False(t, newSong.IsRecorded)
+			assert.Zero(t, newSong.Reharsals)
+			assert.Equal(t, request.Bpm, newSong.Bpm)
+			assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
 			assert.Equal(t, userID, newSong.UserID)
 		}).
 		Return(internalError).
@@ -97,6 +100,9 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
 			assert.False(t, newSong.IsRecorded)
+			assert.Zero(t, newSong.Reharsals)
+			assert.Equal(t, request.Bpm, newSong.Bpm)
+			assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
 			assert.Equal(t, userID, newSong.UserID)
 		}).
 		Return(nil).
