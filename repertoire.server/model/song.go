@@ -10,7 +10,6 @@ type Song struct {
 	Title         string    `gorm:"size:100; not null" json:"title"`
 	Description   string    `gorm:"not null" json:"description"`
 	IsRecorded    bool      `json:"isRecorded"`
-	Rehearsals    uint      `json:"rehearsals"`
 	Bpm           *uint     `json:"bpm"`
 	SongsterrLink *string   `json:"songsterrLink"`
 
@@ -38,8 +37,9 @@ type GuitarTuning struct {
 }
 
 type SongSection struct {
-	ID   uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name string    `gorm:"size:30" json:"name"`
+	ID         uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name       string    `gorm:"size:30" json:"name"`
+	Rehearsals uint      `json:"rehearsals"`
 
 	SongID            uuid.UUID       `gorm:"not null" json:"-"`
 	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`

@@ -31,7 +31,6 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 	song.Title = request.Title
 	song.Description = request.Description
 	song.IsRecorded = request.IsRecorded
-	song.Rehearsals = request.Rehearsals
 	song.Bpm = request.Bpm
 	song.SongsterrLink = request.SongsterrLink
 	song.GuitarTuningID = request.GuitarTuningID

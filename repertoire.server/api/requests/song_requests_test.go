@@ -202,7 +202,6 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Title:          validSongTitle,
 				Description:    "Something",
 				IsRecorded:     true,
-				Rehearsals:     12,
 				Bpm:            &[]uint{120}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
