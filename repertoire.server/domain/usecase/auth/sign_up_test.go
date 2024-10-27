@@ -141,14 +141,14 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 				assert.NotEmpty(t, guitarTuning.ID)
 				assert.Equal(t, user.ID, guitarTuning.UserID)
 				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
-				assert.Equal(t, i, guitarTuning.Order)
+				assert.Equal(t, uint(i), guitarTuning.Order)
 			}
 
 			for i, songSectionType := range user.SongSectionTypes {
 				assert.NotEmpty(t, songSectionType.ID)
 				assert.Equal(t, user.ID, songSectionType.UserID)
 				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
-				assert.Equal(t, i, songSectionType.Order)
+				assert.Equal(t, uint(i), songSectionType.Order)
 			}
 		}).
 		Return(internalError).
@@ -203,14 +203,14 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 				assert.NotEmpty(t, guitarTuning.ID)
 				assert.Equal(t, user.ID, guitarTuning.UserID)
 				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
-				assert.Equal(t, i, guitarTuning.Order)
+				assert.Equal(t, uint(i), guitarTuning.Order)
 			}
 
 			for i, songSectionType := range user.SongSectionTypes {
 				assert.NotEmpty(t, songSectionType.ID)
 				assert.Equal(t, user.ID, songSectionType.UserID)
 				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
-				assert.Equal(t, i, songSectionType.Order)
+				assert.Equal(t, uint(i), songSectionType.Order)
 			}
 		}).
 		Return(nil).
@@ -273,14 +273,14 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 				assert.NotEmpty(t, guitarTuning.ID)
 				assert.Equal(t, user.ID, guitarTuning.UserID)
 				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
-				assert.Equal(t, i, guitarTuning.Order)
+				assert.Equal(t, uint(i), guitarTuning.Order)
 			}
 
 			for i, songSectionType := range user.SongSectionTypes {
 				assert.NotEmpty(t, songSectionType.ID)
 				assert.Equal(t, user.ID, songSectionType.UserID)
 				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
-				assert.Equal(t, i, songSectionType.Order)
+				assert.Equal(t, uint(i), songSectionType.Order)
 			}
 		}).
 		Return(nil).
