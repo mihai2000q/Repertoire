@@ -23,7 +23,7 @@ func NewCreateAlbum(jwtService service.JwtService, repository repository.AlbumRe
 }
 
 func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
-	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
@@ -31,7 +31,7 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *
 	album := model.Album{
 		ID:     uuid.New(),
 		Title:  request.Title,
-		UserID: userId,
+		UserID: userID,
 	}
 	err := c.repository.Create(&album)
 	if err != nil {

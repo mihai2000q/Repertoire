@@ -21,14 +21,14 @@ func NewGetAllAlbums(repository repository.AlbumRepository, jwtService service.J
 }
 
 func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result wrapper.WithTotalCount[model.Album], e *wrapper.ErrorCode) {
-	userId, errCode := g.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
 	err := g.repository.GetAllByUser(
 		&result.Models,
-		userId,
+		userID,
 		request.CurrentPage,
 		request.PageSize,
 		request.OrderBy,
@@ -37,7 +37,7 @@ func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (r
 		return result, wrapper.InternalServerError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userId)
+	err = g.repository.GetAllByUserCount(&result.TotalCount, userID)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}

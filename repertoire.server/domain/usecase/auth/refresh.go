@@ -24,14 +24,14 @@ func NewRefresh(jwtService service.JwtService, userRepository repository.UserRep
 
 func (r *Refresh) Handle(request requests.RefreshRequest) (string, *wrapper.ErrorCode) {
 	// validate token
-	userId, errCode := r.jwtService.Validate(request.Token)
+	userID, errCode := r.jwtService.Validate(request.Token)
 	if errCode != nil {
 		return "", errCode
 	}
 
 	// get user
 	var user model.User
-	err := r.userRepository.Get(&user, userId)
+	err := r.userRepository.Get(&user, userID)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}

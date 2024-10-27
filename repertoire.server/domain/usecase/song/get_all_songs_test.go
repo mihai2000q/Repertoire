@@ -49,16 +49,16 @@ func TestGetAll_WhenGetSongsFails_ShouldReturnInternalServerError(t *testing.T) 
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
-	userId := uuid.New()
+	userID := uuid.New()
 
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
 	songRepository.
 		On(
 			"GetAllByUser",
 			mock.Anything,
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -90,19 +90,19 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
-	userId := uuid.New()
+	userID := uuid.New()
 	expectedSongs := &[]model.Song{
 		{Title: "Some Song"},
 		{Title: "Some other Song"},
 	}
 
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	songRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedSongs),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -115,7 +115,7 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 		On(
 			"GetAllByUserCount",
 			mock.Anything,
-			userId,
+			userID,
 		).
 		Return(internalError).
 		Once()
@@ -145,20 +145,20 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
-	userId := uuid.New()
+	userID := uuid.New()
 	expectedSongs := &[]model.Song{
 		{Title: "Some Song"},
 		{Title: "Some other Song"},
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	songRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedSongs),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -170,7 +170,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 		On(
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
-			userId,
+			userID,
 		).
 		Return(nil, expectedTotalCount).
 		Once()

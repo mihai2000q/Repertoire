@@ -23,7 +23,7 @@ func NewCreateArtist(jwtService service.JwtService, repository repository.Artist
 }
 
 func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
-	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
@@ -31,7 +31,7 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 	artist := model.Artist{
 		ID:     uuid.New(),
 		Name:   request.Name,
-		UserID: userId,
+		UserID: userID,
 	}
 	err := c.repository.Create(&artist)
 	if err != nil {

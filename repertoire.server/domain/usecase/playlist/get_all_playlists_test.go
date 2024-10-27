@@ -49,15 +49,15 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
 	playlistRepository.
 		On(
 			"GetAllByUser",
 			mock.Anything,
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -94,14 +94,14 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 		{Title: "Some other Playlist"},
 	}
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	playlistRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedPlaylists),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -114,7 +114,7 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 		On(
 			"GetAllByUserCount",
 			mock.Anything,
-			userId,
+			userID,
 		).
 		Return(internalError).
 		Once()
@@ -150,14 +150,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	playlistRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedPlaylists),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -169,7 +169,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 		On(
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
-			userId,
+			userID,
 		).
 		Return(nil, expectedTotalCount).
 		Once()

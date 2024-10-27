@@ -49,15 +49,15 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 	request := requests.GetAlbumsRequest{}
 	token := "This is a token"
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
 	albumRepository.
 		On(
 			"GetAllByUser",
 			mock.Anything,
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -89,8 +89,8 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 	request := requests.GetAlbumsRequest{}
 	token := "this is a token"
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	expectedAlbums := &[]model.Album{
 		{Title: "Some Album"},
@@ -101,7 +101,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedAlbums),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -114,7 +114,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 		On(
 			"GetAllByUserCount",
 			mock.Anything,
-			userId,
+			userID,
 		).
 		Return(internalError).
 		Once()
@@ -150,14 +150,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	albumRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedAlbums),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -169,7 +169,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 		On(
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
-			userId,
+			userID,
 		).
 		Return(nil, expectedTotalCount).
 		Once()

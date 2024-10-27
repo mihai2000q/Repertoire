@@ -23,7 +23,7 @@ func NewCreateSong(jwtService service.JwtService, repository repository.SongRepo
 }
 
 func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
-	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
@@ -35,7 +35,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		Bpm:            request.Bpm,
 		SongsterrLink:  request.SongsterrLink,
 		GuitarTuningID: request.GuitarTuningID,
-		UserID:         userId,
+		UserID:         userID,
 	}
 	err := c.repository.Create(&song)
 	if err != nil {

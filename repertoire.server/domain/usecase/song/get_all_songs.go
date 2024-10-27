@@ -21,14 +21,14 @@ func NewGetAllSongs(repository repository.SongRepository, jwtService service.Jwt
 }
 
 func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (result wrapper.WithTotalCount[model.Song], e *wrapper.ErrorCode) {
-	userId, errCode := g.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
 	err := g.repository.GetAllByUser(
 		&result.Models,
-		userId,
+		userID,
 		request.CurrentPage,
 		request.PageSize,
 		request.OrderBy,
@@ -37,7 +37,7 @@ func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (res
 		return result, wrapper.InternalServerError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userId)
+	err = g.repository.GetAllByUserCount(&result.TotalCount, userID)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}
