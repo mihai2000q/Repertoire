@@ -59,6 +59,7 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
+			assert.Equal(t, request.Description, newSong.Description)
 			assert.False(t, newSong.IsRecorded)
 			assert.Zero(t, newSong.Rehearsals)
 			assert.Equal(t, request.Bpm, newSong.Bpm)
@@ -100,6 +101,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
+			assert.Equal(t, request.Description, newSong.Description)
 			assert.False(t, newSong.IsRecorded)
 			assert.Zero(t, newSong.Rehearsals)
 			assert.Equal(t, request.Bpm, newSong.Bpm)

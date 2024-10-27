@@ -31,6 +31,7 @@ func (c CreateSong) Handle(request request.CreateSongRequest, token string) *wra
 	song := model.Song{
 		ID:             uuid.New(),
 		Title:          request.Title,
+		Description:    request.Description,
 		Bpm:            request.Bpm,
 		SongsterrLink:  request.SongsterrLink,
 		GuitarTuningID: request.GuitarTuningID,

@@ -108,6 +108,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"Nothing Null",
 			CreateSongRequest{
 				Title:          validSongTitle,
+				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
@@ -150,7 +151,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Songsterr Link is invalid because it is not an url",
 			CreateSongRequest{
 				Title:         validSongTitle,
-				SongsterrLink: &[]string{"somethingcom"}[0],
+				SongsterrLink: &[]string{"scom"}[0],
 			},
 			"SongsterrLink",
 			"url",
@@ -199,6 +200,7 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			UpdateSongRequest{
 				ID:             uuid.New(),
 				Title:          validSongTitle,
+				Description:    "Something",
 				IsRecorded:     true,
 				Rehearsals:     12,
 				Bpm:            &[]uint{120}[0],
@@ -251,7 +253,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			UpdateSongRequest{
 				ID:            uuid.New(),
 				Title:         validSongTitle,
-				SongsterrLink: &[]string{"somethingcom"}[0],
+				SongsterrLink: &[]string{"scom"}[0],
 			},
 			"SongsterrLink",
 			"url",

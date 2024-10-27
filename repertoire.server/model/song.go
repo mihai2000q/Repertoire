@@ -7,6 +7,7 @@ import (
 
 type Song struct {
 	Title          string        `gorm:"size:100; not null" json:"title"`
+	Description    string        `gorm:"not null" json:"description"`
 	IsRecorded     bool          `json:"isRecorded"`
 	Rehearsals     uint          `json:"rehearsals"`
 	Bpm            *uint         `json:"bpm"`
