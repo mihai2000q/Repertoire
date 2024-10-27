@@ -2,7 +2,7 @@ package song
 
 import (
 	"errors"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -18,7 +18,7 @@ func NewUpdateSong(repository repository.SongRepository) UpdateSong {
 	return UpdateSong{repository: repository}
 }
 
-func (u UpdateSong) Handle(request request.UpdateSongRequest) *wrapper.ErrorCode {
+func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCode {
 	var song model.Song
 	err := u.repository.Get(&song, request.ID)
 	if err != nil {

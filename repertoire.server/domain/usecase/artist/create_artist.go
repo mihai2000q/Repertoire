@@ -1,7 +1,7 @@
 package artist
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -22,7 +22,7 @@ func NewCreateArtist(jwtService service.JwtService, repository repository.Artist
 	}
 }
 
-func (c CreateArtist) Handle(request request.CreateArtistRequest, token string) *wrapper.ErrorCode {
+func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode

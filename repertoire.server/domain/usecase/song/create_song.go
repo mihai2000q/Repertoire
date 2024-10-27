@@ -1,7 +1,7 @@
 package song
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -22,7 +22,7 @@ func NewCreateSong(jwtService service.JwtService, repository repository.SongRepo
 	}
 }
 
-func (c CreateSong) Handle(request request.CreateSongRequest, token string) *wrapper.ErrorCode {
+func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode

@@ -3,7 +3,7 @@ package song
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"testing"
@@ -19,7 +19,7 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -44,7 +44,7 @@ func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -68,7 +68,7 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -110,7 +110,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}

@@ -3,7 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 	_uut := &GetAllArtists{
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
@@ -46,7 +46,7 @@ func TestGetAll_WhenGetArtistsFails_ShouldReturnInternalServerError(t *testing.T
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	userId := uuid.New()
@@ -86,7 +86,7 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	expectedArtists := &[]model.Artist{
@@ -141,7 +141,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	expectedArtists := &[]model.Artist{

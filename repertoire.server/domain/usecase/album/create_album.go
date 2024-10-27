@@ -1,7 +1,7 @@
 package album
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -22,7 +22,7 @@ func NewCreateAlbum(jwtService service.JwtService, repository repository.AlbumRe
 	}
 }
 
-func (c CreateAlbum) Handle(request request.CreateAlbumRequest, token string) *wrapper.ErrorCode {
+func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode

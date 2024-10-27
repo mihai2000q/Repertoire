@@ -3,7 +3,7 @@ package song
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 	_uut := &CreateSong{
 		jwtService: jwtService,
 	}
-	request := request.CreateSongRequest{
+	request := requests.CreateSongRequest{
 		Title: "Some Song",
 	}
 	token := "this is a token"
@@ -47,7 +47,7 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 		repository: songRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreateSongRequest{
+	request := requests.CreateSongRequest{
 		Title: "Some Song",
 	}
 	token := "this is a token"
@@ -90,7 +90,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		repository: songRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreateSongRequest{
+	request := requests.CreateSongRequest{
 		Title: "Some Song",
 	}
 	token := "this is a token"

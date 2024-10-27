@@ -1,4 +1,4 @@
-package request
+package requests
 
 type RefreshRequest struct {
 	Token string

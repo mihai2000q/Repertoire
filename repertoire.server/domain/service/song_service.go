@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/google/uuid"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/domain/usecase/song"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -10,9 +10,9 @@ import (
 
 type SongService interface {
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
-	GetAll(request request.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
-	Create(request request.CreateSongRequest, token string) *wrapper.ErrorCode
-	Update(request request.UpdateSongRequest) *wrapper.ErrorCode
+	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
+	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
+	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
@@ -44,15 +44,15 @@ func (s *songService) Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode) {
 	return s.getSong.Handle(id)
 }
 
-func (s *songService) GetAll(request request.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode) {
+func (s *songService) GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode) {
 	return s.getAllSongs.Handle(request, token)
 }
 
-func (s *songService) Create(request request.CreateSongRequest, token string) *wrapper.ErrorCode {
+func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
 	return s.createSong.Handle(request, token)
 }
 
-func (s *songService) Update(request request.UpdateSongRequest) *wrapper.ErrorCode {
+func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorCode {
 	return s.updateSong.Handle(request)
 }
 

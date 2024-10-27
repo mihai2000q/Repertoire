@@ -3,7 +3,7 @@ package song
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 	_uut := &GetAllSongs{
 		jwtService: jwtService,
 	}
-	request := request.GetSongsRequest{}
+	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
 	forbiddenError := wrapper.UnauthorizedError(errors.New("forbidden error"))
@@ -46,7 +46,7 @@ func TestGetAll_WhenGetSongsFails_ShouldReturnInternalServerError(t *testing.T) 
 		repository: songRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetSongsRequest{}
+	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
 	userId := uuid.New()
@@ -87,7 +87,7 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 		repository: songRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetSongsRequest{}
+	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
 	userId := uuid.New()
@@ -142,7 +142,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 		repository: songRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetSongsRequest{}
+	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
 	userId := uuid.New()

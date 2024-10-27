@@ -3,7 +3,7 @@ package playlist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"testing"
@@ -19,7 +19,7 @@ func TestUpdatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 	_uut := &UpdatePlaylist{
 		repository: playlistRepository,
 	}
-	request := request.UpdatePlaylistRequest{
+	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
 	}
@@ -44,7 +44,7 @@ func TestUpdatePlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing
 	_uut := &UpdatePlaylist{
 		repository: playlistRepository,
 	}
-	request := request.UpdatePlaylistRequest{
+	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
 	}
@@ -68,7 +68,7 @@ func TestUpdatePlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerError(
 	_uut := &UpdatePlaylist{
 		repository: playlistRepository,
 	}
-	request := request.UpdatePlaylistRequest{
+	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
 	}
@@ -105,7 +105,7 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := &UpdatePlaylist{
 		repository: playlistRepository,
 	}
-	request := request.UpdatePlaylistRequest{
+	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
 	}

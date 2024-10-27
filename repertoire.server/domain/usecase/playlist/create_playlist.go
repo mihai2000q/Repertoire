@@ -1,7 +1,7 @@
 package playlist
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -22,7 +22,7 @@ func NewCreatePlaylist(jwtService service.JwtService, repository repository.Play
 	}
 }
 
-func (c CreatePlaylist) Handle(request request.CreatePlaylistRequest, token string) *wrapper.ErrorCode {
+func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode {
 	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode

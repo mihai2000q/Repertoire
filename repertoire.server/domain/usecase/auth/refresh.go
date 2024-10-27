@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -22,7 +22,7 @@ func NewRefresh(jwtService service.JwtService, userRepository repository.UserRep
 	}
 }
 
-func (r *Refresh) Handle(request request.RefreshRequest) (string, *wrapper.ErrorCode) {
+func (r *Refresh) Handle(request requests.RefreshRequest) (string, *wrapper.ErrorCode) {
 	// validate token
 	userId, errCode := r.jwtService.Validate(request.Token)
 	if errCode != nil {

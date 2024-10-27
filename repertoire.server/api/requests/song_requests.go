@@ -1,4 +1,4 @@
-package request
+package requests
 
 import "github.com/google/uuid"
 
@@ -6,6 +6,11 @@ type GetSongsRequest struct {
 	CurrentPage *int `validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int `validate:"required_with=CurrentPage,omitempty,gt=0"`
 	OrderBy     string
+}
+
+type CreateSongSectionRequest struct {
+	Name   string    `validate:"required,max=50"`
+	TypeId uuid.UUID `validate:"required"`
 }
 
 type CreateSongRequest struct {

@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -29,8 +29,8 @@ func NewSignUp(
 	}
 }
 
-func (s *SignUp) Handle(request request.SignUpRequest) (string, *wrapper.ErrorCode) {
 	var user model.User
+func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
 
 	// check if the user already exists
 	email := strings.ToLower(request.Email)

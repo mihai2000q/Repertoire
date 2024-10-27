@@ -1,7 +1,7 @@
 package playlist
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -20,7 +20,7 @@ func NewGetAllPlaylists(repository repository.PlaylistRepository, jwtService ser
 	}
 }
 
-func (g GetAllPlaylists) Handle(request request.GetPlaylistsRequest, token string) (result wrapper.WithTotalCount[model.Playlist], e *wrapper.ErrorCode) {
+func (g GetAllPlaylists) Handle(request requests.GetPlaylistsRequest, token string) (result wrapper.WithTotalCount[model.Playlist], e *wrapper.ErrorCode) {
 	userId, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode

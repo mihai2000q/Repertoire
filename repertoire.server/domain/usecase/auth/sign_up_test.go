@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalS
 	_uut := &SignUp{
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -50,7 +50,7 @@ func TestAuthService_SignUp_WhenUserIsNotEmpty_ShouldReturnUnauthorizedError(t *
 	_uut := &SignUp{
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -80,7 +80,7 @@ func TestAuthService_SignUp_WhenHashPasswordFails_ShouldReturnInternalServerErro
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -114,7 +114,7 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -163,7 +163,7 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -219,7 +219,7 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",

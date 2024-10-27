@@ -3,7 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 	_uut := &GetAllAlbums{
 		jwtService: jwtService,
 	}
-	request := request.GetAlbumsRequest{}
+	request := requests.GetAlbumsRequest{}
 	token := "This is a token"
 
 	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden"))
@@ -46,7 +46,7 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 		repository: albumRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetAlbumsRequest{}
+	request := requests.GetAlbumsRequest{}
 	token := "This is a token"
 
 	userId := uuid.New()
@@ -86,7 +86,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 		repository: albumRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetAlbumsRequest{}
+	request := requests.GetAlbumsRequest{}
 	token := "this is a token"
 
 	userId := uuid.New()
@@ -141,7 +141,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 		repository: albumRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetAlbumsRequest{}
+	request := requests.GetAlbumsRequest{}
 	token := "this is a token"
 
 	expectedAlbums := &[]model.Album{

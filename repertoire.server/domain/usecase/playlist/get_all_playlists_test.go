@@ -3,7 +3,7 @@ package playlist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 	_uut := &GetAllPlaylists{
 		jwtService: jwtService,
 	}
-	request := request.GetPlaylistsRequest{}
+	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
 	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
@@ -46,7 +46,7 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 		repository: playlistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetPlaylistsRequest{}
+	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
 	userId := uuid.New()
@@ -86,7 +86,7 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 		repository: playlistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetPlaylistsRequest{}
+	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
 	expectedPlaylists := &[]model.Playlist{
@@ -141,7 +141,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 		repository: playlistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetPlaylistsRequest{}
+	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
 	expectedPlaylists := &[]model.Playlist{

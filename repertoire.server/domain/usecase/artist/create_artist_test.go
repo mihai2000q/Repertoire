@@ -3,7 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *te
 	_uut := &CreateArtist{
 		jwtService: jwtService,
 	}
-	request := request.CreateArtistRequest{
+	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
 	}
 	token := "this is a token"
@@ -47,7 +47,7 @@ func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreateArtistRequest{
+	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
 	}
 	token := "this is a token"
@@ -84,7 +84,7 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreateArtistRequest{
+	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
 	}
 	token := "this is a token"
