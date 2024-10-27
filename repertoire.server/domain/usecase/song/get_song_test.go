@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestGetSongQuery_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestGetSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := &GetSong{
@@ -33,7 +33,7 @@ func TestGetSongQuery_WhenGetSongFails_ShouldReturnInternalServerError(t *testin
 	songRepository.AssertExpectations(t)
 }
 
-func TestGetSongQuery_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestGetSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := &GetSong{
@@ -55,7 +55,7 @@ func TestGetSongQuery_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	songRepository.AssertExpectations(t)
 }
 
-func TestGetSongQuery_WhenSuccessful_ShouldReturnSong(t *testing.T) {
+func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := &GetSong{

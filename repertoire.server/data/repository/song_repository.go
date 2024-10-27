@@ -17,6 +17,7 @@ type SongRepository interface {
 		orderBy string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
 	Delete(id uuid.UUID) error
@@ -62,6 +63,13 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error 
 	return s.client.DB.Model(&model.Song{}).
 		Where(model.Song{UserID: userID}).
 		Count(count).
+		Error
+}
+
+func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.GuitarTuning{}).
+		Where(model.GuitarTuning{UserID: userID}).
+		Find(&tunings).
 		Error
 }
 

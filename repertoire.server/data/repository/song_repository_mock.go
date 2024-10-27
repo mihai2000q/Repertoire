@@ -48,6 +48,16 @@ func (s *SongRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID) e
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
+	args := s.Called(tunings, userID)
+
+	if len(args) > 1 {
+		*tunings = *args.Get(1).(*[]model.GuitarTuning)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) Create(song *model.Song) error {
 	args := s.Called(song)
 	return args.Error(0)

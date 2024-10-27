@@ -44,6 +44,7 @@ var playlistUseCases = fx.Options(
 var songUseCases = fx.Options(
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewGetAllSongs),
+	fx.Provide(song.NewGetGuitarTunings),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewUpdateSong),
 	fx.Provide(song.NewDeleteSong),
