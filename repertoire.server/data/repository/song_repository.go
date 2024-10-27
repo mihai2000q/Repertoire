@@ -11,12 +11,14 @@ type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.Song,
-		userId uuid.UUID,
+		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
 		orderBy string,
 	) error
-	GetAllByUserCount(count *int64, userId uuid.UUID) error
+	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
+	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
 	Delete(id uuid.UUID) error
@@ -38,7 +40,7 @@ func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 
 func (s songRepository) GetAllByUser(
 	songs *[]model.Song,
-	userId uuid.UUID,
+	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
 	orderBy string,
@@ -50,7 +52,7 @@ func (s songRepository) GetAllByUser(
 		offset = (*currentPage - 1) * *pageSize
 	}
 	return s.client.DB.Model(&model.Song{}).
-		Where(model.Song{UserID: userId}).
+		Where(model.Song{UserID: userID}).
 		Order(orderBy).
 		Offset(offset).
 		Limit(*pageSize).
@@ -58,10 +60,26 @@ func (s songRepository) GetAllByUser(
 		Error
 }
 
-func (s songRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
 	return s.client.DB.Model(&model.Song{}).
-		Where(model.Song{UserID: userId}).
+		Where(model.Song{UserID: userID}).
 		Count(count).
+		Error
+}
+
+func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.GuitarTuning{}).
+		Where(model.GuitarTuning{UserID: userID}).
+		Order("\"order\"").
+		Find(&tunings).
+		Error
+}
+
+func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.SongSectionType{}).
+		Where(model.SongSectionType{UserID: userID}).
+		Order("\"order\"").
+		Find(&types).
 		Error
 }
 

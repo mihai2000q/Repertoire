@@ -3,7 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *tes
 	_uut := &CreateAlbum{
 		jwtService: jwtService,
 	}
-	request := request.CreateAlbumRequest{
+	request := requests.CreateAlbumRequest{
 		Title: "Some Album",
 	}
 	token := "this is a token"
@@ -47,7 +47,7 @@ func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 		repository: albumRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreateAlbumRequest{
+	request := requests.CreateAlbumRequest{
 		Title: "Some Album",
 	}
 	token := "this is a token"
@@ -84,7 +84,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		repository: albumRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreateAlbumRequest{
+	request := requests.CreateAlbumRequest{
 		Title: "Some Album",
 	}
 	token := "this is a token"

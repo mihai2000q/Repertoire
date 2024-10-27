@@ -2,7 +2,7 @@ package album
 
 import (
 	"errors"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -18,7 +18,7 @@ func NewUpdateAlbum(repository repository.AlbumRepository) UpdateAlbum {
 	return UpdateAlbum{repository: repository}
 }
 
-func (u UpdateAlbum) Handle(request request.UpdateAlbumRequest) *wrapper.ErrorCode {
+func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
 	var album model.Album
 	err := u.repository.Get(&album, request.ID)
 	if err != nil {

@@ -24,12 +24,12 @@ func (a *ArtistRepositoryMock) Get(artist *model.Artist, id uuid.UUID) error {
 
 func (a *ArtistRepositoryMock) GetAllByUser(
 	artists *[]model.Artist,
-	userId uuid.UUID,
+	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
 	orderBy string,
 ) error {
-	args := a.Called(artists, userId, currentPage, pageSize, orderBy)
+	args := a.Called(artists, userID, currentPage, pageSize, orderBy)
 
 	if len(args) > 1 {
 		*artists = *args.Get(1).(*[]model.Artist)
@@ -38,8 +38,8 @@ func (a *ArtistRepositoryMock) GetAllByUser(
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) GetAllByUserCount(count *int64, userId uuid.UUID) error {
-	args := a.Called(count, userId)
+func (a *ArtistRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID) error {
+	args := a.Called(count, userID)
 
 	if len(args) > 1 {
 		*count = *args.Get(1).(*int64)

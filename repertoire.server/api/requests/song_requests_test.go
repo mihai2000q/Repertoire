@@ -1,4 +1,4 @@
-package request
+package requests
 
 import (
 	"repertoire/api/validation"
@@ -96,16 +96,34 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 var validSongTitle = "Justice For All"
 
 func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	_uut := validation.NewValidator(nil)
-
-	request := CreateSongRequest{
-		Title:      validSongTitle,
-		IsRecorded: &[]bool{true}[0],
+	tests := []struct {
+		name    string
+		request CreateSongRequest
+	}{
+		{
+			"All Null",
+			CreateSongRequest{Title: validSongTitle},
+		},
+		{
+			"Nothing Null",
+			CreateSongRequest{
+				Title:          validSongTitle,
+				Description:    "Something",
+				Bpm:            &[]uint{12}[0],
+				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_uut := validation.NewValidator(nil)
 
-	errCode := _uut.Validate(request)
+			errCode := _uut.Validate(tt.request)
 
-	assert.Nil(t, errCode)
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -128,6 +146,25 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Title",
 			"max",
 		},
+		// SongsterrLink Test Cases
+		{
+			"Songsterr Link is invalid because it is not an url",
+			CreateSongRequest{
+				Title:         validSongTitle,
+				SongsterrLink: &[]string{"scom"}[0],
+			},
+			"SongsterrLink",
+			"url",
+		},
+		{
+			"Songsterr Link is invalid because it is not a songsterr link",
+			CreateSongRequest{
+				Title:         validSongTitle,
+				SongsterrLink: &[]string{"http://google.com"}[0],
+			},
+			"SongsterrLink",
+			"contains",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -147,17 +184,39 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 }
 
 func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	_uut := validation.NewValidator(nil)
-
-	request := UpdateSongRequest{
-		ID:         uuid.New(),
-		Title:      validSongTitle,
-		IsRecorded: &[]bool{false}[0],
+	tests := []struct {
+		name    string
+		request UpdateSongRequest
+	}{
+		{
+			"All Null",
+			UpdateSongRequest{
+				ID:    uuid.New(),
+				Title: validSongTitle,
+			},
+		},
+		{
+			"Nothing Null",
+			UpdateSongRequest{
+				ID:             uuid.New(),
+				Title:          validSongTitle,
+				Description:    "Something",
+				IsRecorded:     true,
+				Bpm:            &[]uint{120}[0],
+				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_uut := validation.NewValidator(nil)
 
-	errCode := _uut.Validate(request)
+			errCode := _uut.Validate(tt.request)
 
-	assert.Nil(t, errCode)
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -187,15 +246,39 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Title",
 			"max",
 		},
+		// SongsterrLink Test Cases
+		{
+			"Songsterr Link is invalid because it is not an url",
+			UpdateSongRequest{
+				ID:            uuid.New(),
+				Title:         validSongTitle,
+				SongsterrLink: &[]string{"scom"}[0],
+			},
+			"SongsterrLink",
+			"url",
+		},
+		{
+			"Songsterr Link is invalid because it is not a songsterr link",
+			UpdateSongRequest{
+				ID:            uuid.New(),
+				Title:         validSongTitle,
+				SongsterrLink: &[]string{"http://google.com"}[0],
+			},
+			"SongsterrLink",
+			"contains",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
 			errCode := _uut.Validate(tt.request)
 
+			// when
 			err := errCode.Error.Error()
 
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, err, "UpdateSongRequest."+tt.expectedInvalidField)

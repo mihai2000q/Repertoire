@@ -3,7 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"testing"
@@ -19,7 +19,7 @@ func TestUpdateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 	_uut := &UpdateAlbum{
 		repository: albumRepository,
 	}
-	request := request.UpdateAlbumRequest{
+	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
 	}
@@ -44,7 +44,7 @@ func TestUpdateAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	_uut := &UpdateAlbum{
 		repository: albumRepository,
 	}
-	request := request.UpdateAlbumRequest{
+	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
 	}
@@ -68,7 +68,7 @@ func TestUpdateAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *tes
 	_uut := &UpdateAlbum{
 		repository: albumRepository,
 	}
-	request := request.UpdateAlbumRequest{
+	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
 	}
@@ -104,7 +104,7 @@ func TestUpdateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := &UpdateAlbum{
 		repository: albumRepository,
 	}
-	request := request.UpdateAlbumRequest{
+	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
 	}

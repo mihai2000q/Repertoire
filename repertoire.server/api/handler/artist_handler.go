@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -45,7 +45,7 @@ func (a ArtistHandler) Get(c *gin.Context) {
 }
 
 func (a ArtistHandler) GetAll(c *gin.Context) {
-	request := request.GetArtistsRequest{
+	request := requests.GetArtistsRequest{
 		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
 		PageSize:    a.IntQueryOrNull(c, "pageSize"),
 		OrderBy:     c.Query("orderBy"),
@@ -67,7 +67,7 @@ func (a ArtistHandler) GetAll(c *gin.Context) {
 }
 
 func (a ArtistHandler) Create(c *gin.Context) {
-	var request request.CreateArtistRequest
+	var request requests.CreateArtistRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -86,7 +86,7 @@ func (a ArtistHandler) Create(c *gin.Context) {
 }
 
 func (a ArtistHandler) Update(c *gin.Context) {
-	var request request.UpdateArtistRequest
+	var request requests.UpdateArtistRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)

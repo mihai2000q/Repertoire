@@ -3,7 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 	_uut := &GetAllArtists{
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
@@ -46,18 +46,18 @@ func TestGetAll_WhenGetArtistsFails_ShouldReturnInternalServerError(t *testing.T
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
 	artistRepository.
 		On(
 			"GetAllByUser",
 			mock.Anything,
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -86,7 +86,7 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	expectedArtists := &[]model.Artist{
@@ -94,14 +94,14 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 		{Name: "Some other Artist"},
 	}
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	artistRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedArtists),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -114,7 +114,7 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 		On(
 			"GetAllByUserCount",
 			mock.Anything,
-			userId,
+			userID,
 		).
 		Return(internalError).
 		Once()
@@ -141,7 +141,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 		repository: artistRepository,
 		jwtService: jwtService,
 	}
-	request := request.GetArtistsRequest{}
+	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
 	expectedArtists := &[]model.Artist{
@@ -150,14 +150,14 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
-	userId := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(userId, nil).Once()
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	artistRepository.
 		On(
 			"GetAllByUser",
 			mock.IsType(expectedArtists),
-			userId,
+			userID,
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
@@ -169,7 +169,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 		On(
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
-			userId,
+			userID,
 		).
 		Return(nil, expectedTotalCount).
 		Once()

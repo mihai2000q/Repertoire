@@ -11,12 +11,12 @@ type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.Artist,
-		userId uuid.UUID,
+		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
 		orderBy string,
 	) error
-	GetAllByUserCount(count *int64, userId uuid.UUID) error
+	GetAllByUserCount(count *int64, userID uuid.UUID) error
 	Create(artist *model.Artist) error
 	Update(artist *model.Artist) error
 	Delete(id uuid.UUID) error
@@ -38,7 +38,7 @@ func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
 
 func (a artistRepository) GetAllByUser(
 	artists *[]model.Artist,
-	userId uuid.UUID,
+	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
 	orderBy string,
@@ -50,7 +50,7 @@ func (a artistRepository) GetAllByUser(
 		offset = (*currentPage - 1) * *pageSize
 	}
 	return a.client.DB.Model(&model.Artist{}).
-		Where(model.Artist{UserID: userId}).
+		Where(model.Artist{UserID: userID}).
 		Order(orderBy).
 		Offset(offset).
 		Limit(*pageSize).
@@ -58,9 +58,9 @@ func (a artistRepository) GetAllByUser(
 		Error
 }
 
-func (a artistRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+func (a artistRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
 	return a.client.DB.Model(&model.Artist{}).
-		Where(model.Artist{UserID: userId}).
+		Where(model.Artist{UserID: userID}).
 		Count(count).
 		Error
 }

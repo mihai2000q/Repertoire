@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -29,7 +29,7 @@ func NewSignIn(
 	}
 }
 
-func (s *SignIn) Handle(request request.SignInRequest) (string, *wrapper.ErrorCode) {
+func (s *SignIn) Handle(request requests.SignInRequest) (string, *wrapper.ErrorCode) {
 	// get user
 	var user model.User
 	err := s.userRepository.GetByEmail(&user, strings.ToLower(request.Email))

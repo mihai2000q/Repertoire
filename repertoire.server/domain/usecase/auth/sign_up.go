@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -29,7 +29,7 @@ func NewSignUp(
 	}
 }
 
-func (s *SignUp) Handle(request request.SignUpRequest) (string, *wrapper.ErrorCode) {
+func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
 	var user model.User
 
 	// check if the user already exists
@@ -55,10 +55,37 @@ func (s *SignUp) Handle(request request.SignUpRequest) (string, *wrapper.ErrorCo
 		Email:    email,
 		Password: hashedPassword,
 	}
+	s.createAndAttachDefaultData(&user)
 	err = s.userRepository.Create(&user)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
 
 	return s.jwtService.CreateToken(user)
+}
+
+func (s *SignUp) createAndAttachDefaultData(user *model.User) {
+	var guitarTunings []model.GuitarTuning
+	var songSectionTypes []model.SongSectionType
+
+	for i, guitarTuning := range model.DefaultGuitarTuning {
+		guitarTunings = append(guitarTunings, model.GuitarTuning{
+			ID:     uuid.New(),
+			Name:   guitarTuning,
+			Order:  uint(i),
+			UserID: user.ID,
+		})
+	}
+
+	for i, songSectionType := range model.DefaultSongSectionTypes {
+		songSectionTypes = append(songSectionTypes, model.SongSectionType{
+			ID:     uuid.New(),
+			Name:   songSectionType,
+			Order:  uint(i),
+			UserID: user.ID,
+		})
+	}
+
+	user.GuitarTunings = guitarTunings
+	user.SongSectionTypes = songSectionTypes
 }

@@ -2,7 +2,7 @@ package artist
 
 import (
 	"errors"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -18,7 +18,7 @@ func NewUpdateArtist(repository repository.ArtistRepository) UpdateArtist {
 	return UpdateArtist{repository: repository}
 }
 
-func (u UpdateArtist) Handle(request request.UpdateArtistRequest) *wrapper.ErrorCode {
+func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *wrapper.ErrorCode {
 	var artist model.Artist
 	err := u.repository.Get(&artist, request.ID)
 	if err != nil {

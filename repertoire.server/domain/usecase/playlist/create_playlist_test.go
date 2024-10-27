@@ -3,7 +3,7 @@ package playlist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *
 	_uut := &CreatePlaylist{
 		jwtService: jwtService,
 	}
-	request := request.CreatePlaylistRequest{
+	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
 	}
 	token := "this is a token"
@@ -47,7 +47,7 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 		repository: playlistRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreatePlaylistRequest{
+	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
 	}
 	token := "this is a token"
@@ -85,7 +85,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		repository: playlistRepository,
 		jwtService: jwtService,
 	}
-	request := request.CreatePlaylistRequest{
+	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
 	}
 	token := "this is a token"

@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -19,7 +19,7 @@ func TestRefresh_WhenValidateJwtFails_ShouldReturnUnauthorizedError(t *testing.T
 	_uut := &Refresh{
 		jwtService: jwtService,
 	}
-	request := request.RefreshRequest{
+	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
 
@@ -45,7 +45,7 @@ func TestRefresh_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.T) 
 		jwtService:     jwtService,
 		userRepository: userRepository,
 	}
-	request := request.RefreshRequest{
+	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
 
@@ -76,7 +76,7 @@ func TestRefresh_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 		jwtService:     jwtService,
 		userRepository: userRepository,
 	}
-	request := request.RefreshRequest{
+	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
 
@@ -105,7 +105,7 @@ func TestRefresh_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing
 		jwtService:     jwtService,
 		userRepository: userRepository,
 	}
-	request := request.RefreshRequest{
+	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
 
@@ -138,7 +138,7 @@ func TestRefresh_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 		jwtService:     jwtService,
 		userRepository: userRepository,
 	}
-	request := request.RefreshRequest{
+	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
 

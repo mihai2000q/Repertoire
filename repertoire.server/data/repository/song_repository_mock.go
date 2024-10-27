@@ -24,12 +24,12 @@ func (s *SongRepositoryMock) Get(song *model.Song, id uuid.UUID) error {
 
 func (s *SongRepositoryMock) GetAllByUser(
 	songs *[]model.Song,
-	userId uuid.UUID,
+	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
 	orderBy string,
 ) error {
-	args := s.Called(songs, userId, currentPage, pageSize, orderBy)
+	args := s.Called(songs, userID, currentPage, pageSize, orderBy)
 
 	if len(args) > 1 {
 		*songs = *args.Get(1).(*[]model.Song)
@@ -38,11 +38,31 @@ func (s *SongRepositoryMock) GetAllByUser(
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetAllByUserCount(count *int64, userId uuid.UUID) error {
-	args := s.Called(count, userId)
+func (s *SongRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID) error {
+	args := s.Called(count, userID)
 
 	if len(args) > 1 {
 		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
+	args := s.Called(tunings, userID)
+
+	if len(args) > 1 {
+		*tunings = *args.Get(1).(*[]model.GuitarTuning)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetSectionTypes(tunings *[]model.SongSectionType, userID uuid.UUID) error {
+	args := s.Called(tunings, userID)
+
+	if len(args) > 1 {
+		*tunings = *args.Get(1).(*[]model.SongSectionType)
 	}
 
 	return args.Error(0)

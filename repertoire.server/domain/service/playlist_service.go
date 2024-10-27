@@ -1,7 +1,7 @@
 package service
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/domain/usecase/playlist"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -11,9 +11,9 @@ import (
 
 type PlaylistService interface {
 	Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
-	GetAll(request request.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode)
-	Create(request request.CreatePlaylistRequest, token string) *wrapper.ErrorCode
-	Update(request request.UpdatePlaylistRequest) *wrapper.ErrorCode
+	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode)
+	Create(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode
+	Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
@@ -45,15 +45,15 @@ func (p *playlistService) Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
 	return p.getPlaylist.Handle(id)
 }
 
-func (p *playlistService) GetAll(request request.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode) {
+func (p *playlistService) GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode) {
 	return p.getAllPlaylists.Handle(request, token)
 }
 
-func (p *playlistService) Create(request request.CreatePlaylistRequest, token string) *wrapper.ErrorCode {
+func (p *playlistService) Create(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode {
 	return p.createPlaylist.Handle(request, token)
 }
 
-func (p *playlistService) Update(request request.UpdatePlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode {
 	return p.updatePlaylist.Handle(request)
 }
 
