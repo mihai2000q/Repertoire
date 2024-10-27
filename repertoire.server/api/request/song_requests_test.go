@@ -107,9 +107,10 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		{
 			"Nothing Null",
 			CreateSongRequest{
-				Title:         validSongTitle,
-				Bpm:           &[]uint{12}[0],
-				SongsterrLink: &[]string{"http://songsterr.com/some-song"}[0],
+				Title:          validSongTitle,
+				Bpm:            &[]uint{12}[0],
+				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}
@@ -196,12 +197,13 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		{
 			"Nothing Null",
 			UpdateSongRequest{
-				ID:            uuid.New(),
-				Title:         validSongTitle,
-				IsRecorded:    true,
-				Reharsals:     12,
-				Bpm:           &[]uint{120}[0],
-				SongsterrLink: &[]string{"http://songsterr.com/some-song"}[0],
+				ID:             uuid.New(),
+				Title:          validSongTitle,
+				IsRecorded:     true,
+				Reharsals:      12,
+				Bpm:            &[]uint{120}[0],
+				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}

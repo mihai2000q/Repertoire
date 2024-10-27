@@ -29,11 +29,12 @@ func (c CreateSong) Handle(request request.CreateSongRequest, token string) *wra
 	}
 
 	song := model.Song{
-		ID:            uuid.New(),
-		Title:         request.Title,
-		Bpm:           request.Bpm,
-		SongsterrLink: request.SongsterrLink,
-		UserID:        userId,
+		ID:             uuid.New(),
+		Title:          request.Title,
+		Bpm:            request.Bpm,
+		SongsterrLink:  request.SongsterrLink,
+		GuitarTuningID: request.GuitarTuningID,
+		UserID:         userId,
 	}
 	err := c.repository.Create(&song)
 	if err != nil {

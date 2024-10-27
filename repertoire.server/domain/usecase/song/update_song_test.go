@@ -88,6 +88,7 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 			assert.Equal(t, request.Reharsals, newSong.Reharsals)
 			assert.Equal(t, request.Bpm, newSong.Bpm)
 			assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
+			assert.Equal(t, request.GuitarTuningID, newSong.GuitarTuningID)
 		}).
 		Return(internalError).
 		Once()
@@ -127,6 +128,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			assert.Equal(t, request.Reharsals, newSong.Reharsals)
 			assert.Equal(t, request.Bpm, newSong.Bpm)
 			assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
+			assert.Equal(t, request.GuitarTuningID, newSong.GuitarTuningID)
 		}).
 		Return(nil).
 		Once()

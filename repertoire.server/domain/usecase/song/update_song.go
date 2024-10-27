@@ -33,6 +33,7 @@ func (u UpdateSong) Handle(request request.UpdateSongRequest) *wrapper.ErrorCode
 	song.Reharsals = request.Reharsals
 	song.Bpm = request.Bpm
 	song.SongsterrLink = request.SongsterrLink
+	song.GuitarTuningID = request.GuitarTuningID
 
 	err = u.repository.Update(&song)
 	if err != nil {

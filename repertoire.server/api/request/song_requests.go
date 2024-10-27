@@ -9,16 +9,18 @@ type GetSongsRequest struct {
 }
 
 type CreateSongRequest struct {
-	Title         string `validate:"required,max=100"`
-	Bpm           *uint
-	SongsterrLink *string `validate:"omitempty,url,contains=songsterr.com"`
+	Title          string `validate:"required,max=100"`
+	Bpm            *uint
+	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
+	GuitarTuningID *uuid.UUID
 }
 
 type UpdateSongRequest struct {
-	ID            uuid.UUID `validate:"required"`
-	Title         string    `validate:"required,max=100"`
-	IsRecorded    bool
-	Reharsals     uint
-	Bpm           *uint
-	SongsterrLink *string `validate:"omitempty,url,contains=songsterr.com"`
+	ID             uuid.UUID `validate:"required"`
+	Title          string    `validate:"required,max=100"`
+	IsRecorded     bool
+	Reharsals      uint
+	Bpm            *uint
+	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
+	GuitarTuningID *uuid.UUID
 }
