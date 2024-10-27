@@ -2,9 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/api/request"
 	"repertoire/data/repository"
@@ -12,6 +9,10 @@ import (
 	"repertoire/model"
 	"repertoire/utils/wrapper"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
@@ -47,8 +48,7 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 		jwtService: jwtService,
 	}
 	request := request.CreateSongRequest{
-		Title:      "Some Song",
-		IsRecorded: &[]bool{false}[0],
+		Title: "Some Song",
 	}
 	token := "this is a token"
 	userID := uuid.New()
@@ -59,7 +59,7 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
-			assert.Equal(t, request.IsRecorded, newSong.IsRecorded)
+			assert.False(t, newSong.IsRecorded)
 			assert.Equal(t, userID, newSong.UserID)
 		}).
 		Return(internalError).
@@ -86,8 +86,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		jwtService: jwtService,
 	}
 	request := request.CreateSongRequest{
-		Title:      "Some Song",
-		IsRecorded: &[]bool{true}[0],
+		Title: "Some Song",
 	}
 	token := "this is a token"
 	userID := uuid.New()
@@ -97,7 +96,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Equal(t, request.Title, newSong.Title)
-			assert.Equal(t, request.IsRecorded, newSong.IsRecorded)
+			assert.False(t, newSong.IsRecorded)
 			assert.Equal(t, userID, newSong.UserID)
 		}).
 		Return(nil).

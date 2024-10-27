@@ -1,12 +1,13 @@
 package song
 
 import (
-	"github.com/google/uuid"
 	"repertoire/api/request"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
+
+	"github.com/google/uuid"
 )
 
 type CreateSong struct {
@@ -28,10 +29,9 @@ func (c CreateSong) Handle(request request.CreateSongRequest, token string) *wra
 	}
 
 	song := model.Song{
-		ID:         uuid.New(),
-		Title:      request.Title,
-		IsRecorded: request.IsRecorded,
-		UserID:     userId,
+		ID:     uuid.New(),
+		Title:  request.Title,
+		UserID: userId,
 	}
 	err := c.repository.Create(&song)
 	if err != nil {

@@ -9,12 +9,11 @@ type GetSongsRequest struct {
 }
 
 type CreateSongRequest struct {
-	Title      string `validate:"required,max=100"`
-	IsRecorded *bool
+	Title string `validate:"required,max=100"`
 }
 
 type UpdateSongRequest struct {
 	ID         uuid.UUID `validate:"required"`
 	Title      string    `validate:"required,max=100"`
-	IsRecorded *bool
+	IsRecorded bool
 }

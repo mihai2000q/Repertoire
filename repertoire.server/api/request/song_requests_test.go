@@ -99,8 +99,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
 	request := CreateSongRequest{
-		Title:      validSongTitle,
-		IsRecorded: &[]bool{true}[0],
+		Title: validSongTitle,
 	}
 
 	errCode := _uut.Validate(request)
@@ -152,7 +151,7 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	request := UpdateSongRequest{
 		ID:         uuid.New(),
 		Title:      validSongTitle,
-		IsRecorded: &[]bool{false}[0],
+		IsRecorded: false,
 	}
 
 	errCode := _uut.Validate(request)
