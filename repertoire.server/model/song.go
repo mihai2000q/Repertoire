@@ -6,17 +6,13 @@ import (
 )
 
 type Song struct {
-	ID        uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
-	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-
-	Title         string  `gorm:"size:100; not null" json:"title"`
-	Description   string  `gorm:"not null" json:"description"`
-	IsRecorded    bool    `json:"isRecorded"`
-	Rehearsals    uint    `json:"rehearsals"`
-	Bpm           *uint   `json:"bpm"`
-	SongsterrLink *string `json:"songsterrLink"`
+	ID            uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title         string    `gorm:"size:100; not null" json:"title"`
+	Description   string    `gorm:"not null" json:"description"`
+	IsRecorded    bool      `json:"isRecorded"`
+	Rehearsals    uint      `json:"rehearsals"`
+	Bpm           *uint     `json:"bpm"`
+	SongsterrLink *string   `json:"songsterrLink"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`
@@ -26,36 +22,41 @@ type Song struct {
 	GuitarTuning   GuitarTuning  `json:"-"`
 	Sections       []SongSection `json:"-"`
 	Playlist       []Playlist    `gorm:"many2many:playlist_song" json:"-"`
-}
 
-type GuitarTuning struct {
-	ID        uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+}
 
-	Name  string `gorm:"size:16; not null" json:"name"`
-	Songs []Song `json:"-"`
+type GuitarTuning struct {
+	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name  string    `gorm:"size:16; not null" json:"name"`
+	Songs []Song    `json:"-"`
+
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
 type SongSection struct {
-	ID        uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
-	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+	ID   uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name string    `gorm:"size:30" json:"name"`
 
-	Name              string          `gorm:"size:30" json:"name"`
 	SongID            uuid.UUID       `gorm:"not null" json:"-"`
 	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
 	Song              Song            `json:"-"`
 	SongSectionType   SongSectionType `json:"-"`
+
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
 
 type SongSectionType struct {
-	ID        uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	ID       uuid.UUID     `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name     string        `gorm:"size:16" json:"name"`
+	Sections []SongSection `json:"-"`
+
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-
-	Name     string        `gorm:"size:16" json:"name"`
-	Sections []SongSection `json:"-"`
 }

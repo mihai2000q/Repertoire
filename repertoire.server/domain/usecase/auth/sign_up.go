@@ -38,7 +38,7 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
-	if user.ID == uuid.Nil {
+	if user.ID != uuid.Nil {
 		return "", wrapper.BadRequestError(errors.New("user already exists"))
 	}
 
@@ -55,8 +55,8 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 		Email:    email,
 		Password: hashedPassword,
 	}
-	err = s.userRepository.Create(&user)
 	s.createAndAttachDefaultData(&user)
+	err = s.userRepository.Create(&user)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
