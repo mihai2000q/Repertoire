@@ -1,15 +1,5 @@
 import { ReactElement, useState } from 'react'
-import {
-  Box,
-  Button,
-  Container,
-  Group,
-  Loader,
-  Pagination,
-  Space,
-  Stack,
-  Title
-} from '@mantine/core'
+import { Box, Button, Group, Loader, Pagination, Stack, Text, Title } from '@mantine/core'
 import { useGetSongsQuery } from '../state/songsApi'
 import SongCard from '../components/songs/SongCard'
 import { IconMusicPlus } from '@tabler/icons-react'
@@ -27,41 +17,38 @@ function Songs(): ReactElement {
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
-    <Container>
-      <Stack h={'100%'}>
-        <AddNewSongModal opened={opened} onClose={close} />
+    <Stack h={'100%'}>
+      <AddNewSongModal opened={opened} onClose={close} />
 
-        <Title order={3} fw={800}>
-          Songs
-        </Title>
+      <Title order={3} fw={800}>
+        Songs
+      </Title>
 
-        <Group>
-          <Button leftSection={<IconMusicPlus size={17} />} onClick={open}>
-            New Song
-          </Button>
-        </Group>
+      <Group>
+        <Button leftSection={<IconMusicPlus size={17} />} onClick={open}>
+          New Song
+        </Button>
+      </Group>
 
-        <Group>
-          {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
-          {songs?.totalCount > 0 && <NewSongCard openModal={open} />}
-        </Group>
+      {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
+      <Group flex={1} h={'100%'}>
+        {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
+        {songs?.totalCount > 0 && <NewSongCard openModal={open} />}
+      </Group>
 
-        <Space flex={1} />
-
-        <Box style={{ alignSelf: 'center' }}>
-          {!isLoading ? (
-            <Pagination
-              data-testid={'songs-pagination'}
-              value={currentPage}
-              onChange={setCurrentPage}
-              total={songs?.totalCount / songs?.models.length}
-            />
-          ) : (
-            <Loader size={25} />
-          )}
-        </Box>
-      </Stack>
-    </Container>
+      <Box style={{ alignSelf: 'center' }}>
+        {!isLoading ? (
+          <Pagination
+            data-testid={'songs-pagination'}
+            value={currentPage}
+            onChange={setCurrentPage}
+            total={songs?.totalCount > 0 ? songs?.totalCount / songs?.models.length : 0}
+          />
+        ) : (
+          <Loader size={25} />
+        )}
+      </Box>
+    </Stack>
   )
 }
 
