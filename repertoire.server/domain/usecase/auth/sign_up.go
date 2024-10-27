@@ -30,15 +30,15 @@ func NewSignUp(
 }
 
 func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
-	var user *model.User
+	var user model.User
 
 	// check if the user already exists
 	email := strings.ToLower(request.Email)
-	err := s.userRepository.GetByEmail(user, email)
+	err := s.userRepository.GetByEmail(&user, email)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
-	if &user == nil {
+	if user.ID == uuid.Nil {
 		return "", wrapper.BadRequestError(errors.New("user already exists"))
 	}
 
@@ -49,19 +49,19 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 	}
 
 	// create user
-	user = &model.User{
+	user = model.User{
 		ID:       uuid.New(),
 		Name:     request.Name,
 		Email:    email,
 		Password: hashedPassword,
 	}
-	err = s.userRepository.Create(user)
-	s.createAndAttachDefaultData(user)
+	err = s.userRepository.Create(&user)
+	s.createAndAttachDefaultData(&user)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
 
-	return s.jwtService.CreateToken(*user)
+	return s.jwtService.CreateToken(user)
 }
 
 var defaultGuitarTuning = []string{
@@ -91,5 +91,5 @@ func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 	}
 
 	user.GuitarTunings = guitarTunings
-	user.SongSectionType = songSectionTypes
+	user.SongSectionTypes = songSectionTypes
 }
