@@ -16,4 +16,4 @@ ARG VITE_APPLICATION_PORT
 EXPOSE $VITE_APPLICATION_PORT
 
 # Start app
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
