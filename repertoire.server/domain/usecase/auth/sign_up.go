@@ -29,16 +29,16 @@ func NewSignUp(
 	}
 }
 
-	var user model.User
 func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
+	var user *model.User
 
 	// check if the user already exists
 	email := strings.ToLower(request.Email)
-	err := s.userRepository.GetByEmail(&user, email)
+	err := s.userRepository.GetByEmail(user, email)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
-	if user.ID != uuid.Nil {
+	if &user == nil {
 		return "", wrapper.BadRequestError(errors.New("user already exists"))
 	}
 
@@ -49,16 +49,47 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 	}
 
 	// create user
-	user = model.User{
+	user = &model.User{
 		ID:       uuid.New(),
 		Name:     request.Name,
 		Email:    email,
 		Password: hashedPassword,
 	}
-	err = s.userRepository.Create(&user)
+	err = s.userRepository.Create(user)
+	s.createAndAttachDefaultData(user)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
 
-	return s.jwtService.CreateToken(user)
+	return s.jwtService.CreateToken(*user)
+}
+
+var defaultGuitarTuning = []string{
+	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
+	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
+}
+var defaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}
+
+func (s *SignUp) createAndAttachDefaultData(user *model.User) {
+	var guitarTunings []model.GuitarTuning
+	var songSectionTypes []model.SongSectionType
+
+	for _, guitarTuning := range defaultGuitarTuning {
+		guitarTunings = append(guitarTunings, model.GuitarTuning{
+			ID:     uuid.New(),
+			Name:   guitarTuning,
+			UserID: user.ID,
+		})
+	}
+
+	for _, songSectionType := range defaultSongSectionTypes {
+		songSectionTypes = append(songSectionTypes, model.SongSectionType{
+			ID:     uuid.New(),
+			Name:   songSectionType,
+			UserID: user.ID,
+		})
+	}
+
+	user.GuitarTunings = guitarTunings
+	user.SongSectionType = songSectionTypes
 }

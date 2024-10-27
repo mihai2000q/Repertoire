@@ -18,4 +18,6 @@ type User struct {
 	Artists         []Artist          `json:"-"`
 	Playlists       []Playlist        `json:"-"`
 	Songs           []Song            `json:"-"`
+	SongSectionType []SongSectionType `json:"-"`
+	GuitarTunings   []GuitarTuning    `json:"-"`
 }
