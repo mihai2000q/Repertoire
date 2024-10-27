@@ -12,35 +12,39 @@ type SongService interface {
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
+	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type songService struct {
-	getSong          song.GetSong
-	getAllSongs      song.GetAllSongs
-	getGuitarTunings song.GetGuitarTunings
-	createSong       song.CreateSong
-	updateSong       song.UpdateSong
-	deleteSong       song.DeleteSong
+	getSong             song.GetSong
+	getAllSongs         song.GetAllSongs
+	getGuitarTunings    song.GetGuitarTunings
+	getSongSectionTypes song.GetSongSectionTypes
+	createSong          song.CreateSong
+	updateSong          song.UpdateSong
+	deleteSong          song.DeleteSong
 }
 
 func NewSongService(
 	getSong song.GetSong,
 	getAllSongs song.GetAllSongs,
 	getGuitarTunings song.GetGuitarTunings,
+	getSongSectionTypes song.GetSongSectionTypes,
 	createSong song.CreateSong,
 	updateSong song.UpdateSong,
 	deleteSong song.DeleteSong,
 ) SongService {
 	return &songService{
-		getSong:          getSong,
-		getAllSongs:      getAllSongs,
-		getGuitarTunings: getGuitarTunings,
-		createSong:       createSong,
-		updateSong:       updateSong,
-		deleteSong:       deleteSong,
+		getSong:             getSong,
+		getAllSongs:         getAllSongs,
+		getGuitarTunings:    getGuitarTunings,
+		getSongSectionTypes: getSongSectionTypes,
+		createSong:          createSong,
+		updateSong:          updateSong,
+		deleteSong:          deleteSong,
 	}
 }
 
@@ -54,6 +58,10 @@ func (s *songService) GetAll(request requests.GetSongsRequest, token string) (wr
 
 func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {
 	return s.getGuitarTunings.Handle(token)
+}
+
+func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
+	return s.getSongSectionTypes.Handle(token)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
