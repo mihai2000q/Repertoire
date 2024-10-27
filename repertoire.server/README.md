@@ -8,9 +8,9 @@
   * [Get Started](#get-started)
     * [Docker Containers](#docker-containers)
     * [Restore dependencies](#restore-dependencies)
-    * [Build](#build)
     * [Run](#run)
     * [Quick Test](#quick-test)
+  * [Build Executable](#build-executable)
   * [Architecture](#architecture)
   * [Api](#api)
     * [Authentication](#authentication)
@@ -78,17 +78,9 @@ To restore the dependencies, type the following command in the terminal:
 go mod download
 ```
 
-### Build
-
-To build the application, type the following command in the terminal:
-
-```sh
-go build
-```
-
 ### Run
 
-To tun the application from the CLI, type the following command:
+To run the application from the CLI, type the following command:
 
 ```sh
 go run main.go
@@ -114,6 +106,17 @@ And the body of the request shall be:
 
 It will return an Invalid Credentials Error, however,
 now you know that you have a working connection to the API and to the database.
+
+
+## Build Executable
+
+If you want to build an executable, you can do so by typing the following command in the terminal:
+
+```sh
+go build
+```
+
+Usually, it will detect the system you are on and build an accustomed executable.
 
 ## Architecture
 

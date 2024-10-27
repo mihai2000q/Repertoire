@@ -1,9 +1,9 @@
 name: repertoire
 services:
   web:
-    build: 
+    build:
       context: .
-      dockerfile: DockerFile.${ENVIRONMENT}
+      dockerfile: Dockerfile.${ENVIRONMENT}
       args:
         VITE_APPLICATION_PORT: ${VITE_APPLICATION_PORT}
     container_name: Repertoire-Web
