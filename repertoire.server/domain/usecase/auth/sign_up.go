@@ -68,18 +68,20 @@ func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 	var guitarTunings []model.GuitarTuning
 	var songSectionTypes []model.SongSectionType
 
-	for _, guitarTuning := range model.DefaultGuitarTuning {
+	for i, guitarTuning := range model.DefaultGuitarTuning {
 		guitarTunings = append(guitarTunings, model.GuitarTuning{
 			ID:     uuid.New(),
 			Name:   guitarTuning,
+			Order:  uint(i),
 			UserID: user.ID,
 		})
 	}
 
-	for _, songSectionType := range model.DefaultSongSectionTypes {
+	for i, songSectionType := range model.DefaultSongSectionTypes {
 		songSectionTypes = append(songSectionTypes, model.SongSectionType{
 			ID:     uuid.New(),
 			Name:   songSectionType,
+			Order:  uint(i),
 			UserID: user.ID,
 		})
 	}
