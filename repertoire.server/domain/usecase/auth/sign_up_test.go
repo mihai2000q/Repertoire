@@ -136,6 +136,18 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 			assert.Equal(t, user.Name, request.Name)
 			assert.Equal(t, user.Email, strings.ToLower(request.Email))
 			assert.Equal(t, user.Password, hashedPassword)
+
+			for i, guitarTuning := range user.GuitarTunings {
+				assert.NotEmpty(t, guitarTuning.ID)
+				assert.Equal(t, user.ID, guitarTuning.UserID)
+				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+			}
+
+			for i, songSectionType := range user.SongSectionTypes {
+				assert.NotEmpty(t, songSectionType.ID)
+				assert.Equal(t, user.ID, songSectionType.UserID)
+				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
+			}
 		}).
 		Return(internalError).
 		Once()
@@ -184,6 +196,18 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 			assert.Equal(t, user.Name, request.Name)
 			assert.Equal(t, user.Email, strings.ToLower(request.Email))
 			assert.Equal(t, user.Password, hashedPassword)
+
+			for i, guitarTuning := range user.GuitarTunings {
+				assert.NotEmpty(t, guitarTuning.ID)
+				assert.Equal(t, user.ID, guitarTuning.UserID)
+				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+			}
+
+			for i, songSectionType := range user.SongSectionTypes {
+				assert.NotEmpty(t, songSectionType.ID)
+				assert.Equal(t, user.ID, songSectionType.UserID)
+				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
+			}
 		}).
 		Return(nil).
 		Once()
@@ -240,6 +264,18 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 			assert.Equal(t, user.Name, request.Name)
 			assert.Equal(t, user.Email, strings.ToLower(request.Email))
 			assert.Equal(t, user.Password, hashedPassword)
+
+			for i, guitarTuning := range user.GuitarTunings {
+				assert.NotEmpty(t, guitarTuning.ID)
+				assert.Equal(t, user.ID, guitarTuning.UserID)
+				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+			}
+
+			for i, songSectionType := range user.SongSectionTypes {
+				assert.NotEmpty(t, songSectionType.ID)
+				assert.Equal(t, user.ID, songSectionType.UserID)
+				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
+			}
 		}).
 		Return(nil).
 		Once()
