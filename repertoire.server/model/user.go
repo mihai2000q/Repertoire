@@ -14,10 +14,10 @@ type User struct {
 	Email    string `gorm:"size:256; unique; not null" json:"email"`
 	Password string `gorm:"not null" json:"-"`
 
-	Albums          []Album           `json:"-"`
-	Artists         []Artist          `json:"-"`
-	Playlists       []Playlist        `json:"-"`
-	Songs           []Song            `json:"-"`
-	SongSectionType []SongSectionType `json:"-"`
-	GuitarTunings   []GuitarTuning    `json:"-"`
+	Albums           []Album           `json:"-"`
+	Artists          []Artist          `json:"-"`
+	Playlists        []Playlist        `json:"-"`
+	Songs            []Song            `json:"-"`
+	SongSectionTypes []SongSectionType `json:"-"`
+	GuitarTunings    []GuitarTuning    `json:"-"`
 }

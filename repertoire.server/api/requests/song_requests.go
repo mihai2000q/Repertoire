@@ -9,7 +9,7 @@ type GetSongsRequest struct {
 }
 
 type CreateSongSectionRequest struct {
-	Name   string    `validate:"required,max=50"`
+	Name   string    `validate:"required,max=30"`
 	TypeId uuid.UUID `validate:"required"`
 }
 

@@ -34,7 +34,7 @@ type GuitarTuning struct {
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 
-	Name  string `gorm:"size:30; not null" json:"name"`
+	Name  string `gorm:"size:16; not null" json:"name"`
 	Songs []Song `json:"-"`
 }
 
@@ -43,11 +43,11 @@ type SongSection struct {
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 
-	Name   string          `gorm:"size:50" json:"name"`
-	SongID uuid.UUID       `gorm:"not null" json:"-"`
-	TypeId uuid.UUID       `gorm:"not null" json:"-"`
-	Song   Song            `json:"-"`
-	Type   SongSectionType `json:"-"`
+	Name              string          `gorm:"size:30" json:"name"`
+	SongID            uuid.UUID       `gorm:"not null" json:"-"`
+	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
+	Song              Song            `json:"-"`
+	SongSectionType   SongSectionType `json:"-"`
 }
 
 type SongSectionType struct {
