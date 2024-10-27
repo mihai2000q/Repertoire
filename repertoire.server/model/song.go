@@ -60,3 +60,9 @@ type SongSectionType struct {
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
+
+var DefaultGuitarTuning = []string{
+	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
+	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
+}
+var DefaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}

@@ -64,17 +64,11 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 	return s.jwtService.CreateToken(user)
 }
 
-var defaultGuitarTuning = []string{
-	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
-	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
-}
-var defaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}
-
 func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 	var guitarTunings []model.GuitarTuning
 	var songSectionTypes []model.SongSectionType
 
-	for _, guitarTuning := range defaultGuitarTuning {
+	for _, guitarTuning := range model.DefaultGuitarTuning {
 		guitarTunings = append(guitarTunings, model.GuitarTuning{
 			ID:     uuid.New(),
 			Name:   guitarTuning,
@@ -82,7 +76,7 @@ func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 		})
 	}
 
-	for _, songSectionType := range defaultSongSectionTypes {
+	for _, songSectionType := range model.DefaultSongSectionTypes {
 		songSectionTypes = append(songSectionTypes, model.SongSectionType{
 			ID:     uuid.New(),
 			Name:   songSectionType,
