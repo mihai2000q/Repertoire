@@ -1,12 +1,13 @@
 package service
 
 import (
-	"github.com/google/uuid"
 	"repertoire/api/requests"
 	"repertoire/domain/usecase/song"
 	"repertoire/domain/usecase/song/section"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
+
+	"github.com/google/uuid"
 )
 
 type SongService interface {
@@ -20,6 +21,7 @@ type SongService interface {
 	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
+	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 }
 
 type songService struct {
@@ -32,6 +34,7 @@ type songService struct {
 	getSongSectionTypes section.GetSongSectionTypes
 	createSongSection   section.CreateSongSection
 	updateSongSection   section.UpdateSongSection
+	deleteSongSection   section.DeleteSongSection
 }
 
 func NewSongService(
@@ -44,6 +47,7 @@ func NewSongService(
 	getSongSectionTypes section.GetSongSectionTypes,
 	createSongSection section.CreateSongSection,
 	updateSongSection section.UpdateSongSection,
+	deleteSongSection section.DeleteSongSection,
 ) SongService {
 	return &songService{
 		getSong:             getSong,
@@ -55,6 +59,7 @@ func NewSongService(
 		getSongSectionTypes: getSongSectionTypes,
 		createSongSection:   createSongSection,
 		updateSongSection:   updateSongSection,
+		deleteSongSection:   deleteSongSection,
 	}
 }
 
@@ -94,4 +99,8 @@ func (s *songService) CreateSection(request requests.CreateSongSectionRequest) *
 
 func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
 	return s.updateSongSection.Handle(request)
+}
+
+func (s *songService) DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+	return s.deleteSongSection.Handle(id, songID)
 }
