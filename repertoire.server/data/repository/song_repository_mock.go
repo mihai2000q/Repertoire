@@ -75,6 +75,16 @@ func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
 
 // Sections
 
+func (s *SongRepositoryMock) GetSection(section *model.SongSection, id uuid.UUID) error {
+	args := s.Called(section, id)
+
+	if len(args) > 1 {
+		*section = *args.Get(1).(*model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetSectionTypes(tunings *[]model.SongSectionType, userID uuid.UUID) error {
 	args := s.Called(tunings, userID)
 

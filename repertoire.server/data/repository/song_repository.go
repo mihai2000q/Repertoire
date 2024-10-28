@@ -22,6 +22,7 @@ type SongRepository interface {
 	Update(song *model.Song) error
 	Delete(id uuid.UUID) error
 
+	GetSection(section *model.SongSection, id uuid.UUID) error
 	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
 	CountSectionsBySong(count *int64, songID uuid.UUID) error
 	CreateSection(section *model.SongSection) error
@@ -93,6 +94,10 @@ func (s songRepository) Delete(id uuid.UUID) error {
 }
 
 // Sections
+
+func (s songRepository) GetSection(section *model.SongSection, id uuid.UUID) error {
+	return s.client.DB.Find(&section, model.SongSection{ID: id}).Error
+}
 
 func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
 	return s.client.DB.Model(&model.SongSectionType{}).
