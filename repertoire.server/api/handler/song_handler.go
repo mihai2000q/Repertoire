@@ -146,3 +146,19 @@ func (s SongHandler) GetSectionTypes(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (s SongHandler) CreateSection(c *gin.Context) {
+	var request requests.CreateSongSectionRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.CreateSection(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, "song section has been created successfully!")
+}

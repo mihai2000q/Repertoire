@@ -115,7 +115,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
 				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
-				Sections: []CreateSongSectionRequest{
+				Sections: []CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
 				},
@@ -131,7 +131,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle:     &[]string{"New Album Title"}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
-				Sections: []CreateSongSectionRequest{
+				Sections: []CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
 				},
@@ -218,7 +218,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Sections are invalid because the first element has an empty Name",
 			CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []CreateSongSectionRequest{
+				Sections: []CreateSectionRequest{
 					{Name: "", TypeID: uuid.New()},
 				},
 			},
@@ -230,7 +230,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Sections are invalid because the first element has a Name with too many characters",
 			CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []CreateSongSectionRequest{
+				Sections: []CreateSectionRequest{
 					{Name: strings.Repeat("a", 31), TypeID: uuid.New()},
 				},
 			},
@@ -242,7 +242,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Sections are invalid because the first element has an empty Type ID",
 			CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []CreateSongSectionRequest{
+				Sections: []CreateSectionRequest{
 					{Name: "some Name", TypeID: uuid.Nil},
 				},
 			},
@@ -377,6 +377,95 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, 400, errCode.Code)
+		})
+	}
+}
+
+func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := CreateSongSectionRequest{
+		SongID: uuid.New(),
+		Name:   "Some Section",
+		TypeID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+var validSectionName = "James Solo"
+
+func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              CreateSongSectionRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Song ID Test Cases
+		{
+			"Song ID is invalid because it's required",
+			CreateSongSectionRequest{
+				SongID: uuid.Nil,
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+			},
+			"SongID",
+			"required",
+		},
+		// Name Test Cases
+		{
+			"Name is invalid because it's required",
+			CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   "",
+				TypeID: uuid.New(),
+			},
+			"Name",
+			"required",
+		},
+		// Name Test Cases
+		{
+			"Name is invalid because it has too many characters",
+			CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   strings.Repeat("a", 31),
+				TypeID: uuid.New(),
+			},
+			"Name",
+			"max",
+		},
+		// Type ID Test Cases
+		{
+			"Type ID is invalid because it's required",
+			CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.Nil,
+			},
+			"TypeID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "CreateSongSectionRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
