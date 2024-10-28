@@ -22,6 +22,7 @@ func (s SongRouter) RegisterRoutes() {
 
 		api.GET("/sections/types", s.handler.GetSectionTypes)
 		api.POST("/sections", s.handler.CreateSection)
+		api.PUT("/sections", s.handler.UpdateSection)
 	}
 }
 

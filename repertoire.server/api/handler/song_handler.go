@@ -162,3 +162,20 @@ func (s SongHandler) CreateSection(c *gin.Context) {
 
 	c.JSON(http.StatusOK, "song section has been created successfully!")
 }
+
+func (s SongHandler) UpdateSection(c *gin.Context) {
+	var request requests.UpdateSongSectionRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.UpdateSection(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, "song section has been updated successfully!")
+}
