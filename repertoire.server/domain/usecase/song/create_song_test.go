@@ -58,7 +58,7 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 	songRepository.On("Create", mock.IsType(new(model.Song))).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
-			assertSong(t, request, *newSong, userID)
+			assertCreatedSong(t, request, *newSong, userID)
 		}).
 		Return(internalError).
 		Once()
@@ -109,9 +109,9 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"Create song with sections",
 			requests.CreateSongRequest{
 				Title: "Some Song",
-				Sections: []requests.CreateSongSectionRequest{
-					{Name: "First Section", TypeId: uuid.New()},
-					{Name: "Second Section", TypeId: uuid.New()},
+				Sections: []requests.CreateSectionRequest{
+					{Name: "First Section", TypeID: uuid.New()},
+					{Name: "Second Section", TypeID: uuid.New()},
 				},
 			},
 		},
@@ -134,7 +134,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			songRepository.On("Create", mock.IsType(new(model.Song))).
 				Run(func(args mock.Arguments) {
 					newSong := args.Get(0).(*model.Song)
-					assertSong(t, tt.request, *newSong, userID)
+					assertCreatedSong(t, tt.request, *newSong, userID)
 				}).
 				Return(nil).
 				Once()
@@ -151,30 +151,33 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	}
 }
 
-func assertSong(t *testing.T, request requests.CreateSongRequest, newSong model.Song, userID uuid.UUID) {
-	assert.Equal(t, request.Title, newSong.Title)
-	assert.Equal(t, request.Description, newSong.Description)
-	assert.False(t, newSong.IsRecorded)
-	assert.Equal(t, request.Bpm, newSong.Bpm)
-	assert.Equal(t, request.SongsterrLink, newSong.SongsterrLink)
-	assert.Equal(t, request.GuitarTuningID, newSong.GuitarTuningID)
-	assert.Equal(t, request.AlbumID, newSong.AlbumID)
-	assert.Equal(t, request.ArtistID, newSong.ArtistID)
-	assert.Equal(t, userID, newSong.UserID)
-	assert.Len(t, request.Sections, len(newSong.Sections))
+func assertCreatedSong(t *testing.T, request requests.CreateSongRequest, song model.Song, userID uuid.UUID) {
+	assert.Equal(t, request.Title, song.Title)
+	assert.Equal(t, request.Description, song.Description)
+	assert.False(t, song.IsRecorded)
+	assert.Equal(t, request.Bpm, song.Bpm)
+	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
+	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
+	assert.Equal(t, request.AlbumID, song.AlbumID)
+	assert.Equal(t, request.ArtistID, song.ArtistID)
+	assert.Equal(t, userID, song.UserID)
+	assert.Len(t, request.Sections, len(song.Sections))
 	for i, section := range request.Sections {
-		assert.NotEmpty(t, newSong.Sections[i].ID)
-		assert.Equal(t, section.Name, newSong.Sections[i].Name)
-		assert.Equal(t, section.TypeId, newSong.Sections[i].SongSectionTypeID)
+		assert.NotEmpty(t, song.Sections[i].ID)
+		assert.Equal(t, section.Name, song.Sections[i].Name)
+		assert.Zero(t, song.Sections[i].Rehearsals)
+		assert.Equal(t, uint(i), song.Sections[i].Order)
+		assert.Equal(t, section.TypeID, song.Sections[i].SongSectionTypeID)
+		assert.Equal(t, song.ID, song.Sections[i].SongID)
 	}
 	if request.AlbumTitle != nil {
-		assert.NotNil(t, newSong.Album)
-		assert.NotEmpty(t, newSong.Album.ID)
-		assert.Equal(t, *request.AlbumTitle, newSong.Album.Title)
+		assert.NotNil(t, song.Album)
+		assert.NotEmpty(t, song.Album.ID)
+		assert.Equal(t, *request.AlbumTitle, song.Album.Title)
 	}
 	if request.ArtistName != nil {
-		assert.NotNil(t, newSong.Artist)
-		assert.NotEmpty(t, newSong.Artist.ID)
-		assert.Equal(t, *request.ArtistName, newSong.Artist.Name)
+		assert.NotNil(t, song.Artist)
+		assert.NotEmpty(t, song.Artist.ID)
+		assert.Equal(t, *request.ArtistName, song.Artist.Name)
 	}
 }

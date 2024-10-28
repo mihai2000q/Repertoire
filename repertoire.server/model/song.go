@@ -40,6 +40,7 @@ type SongSection struct {
 	ID         uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name       string    `gorm:"size:30" json:"name"`
 	Rehearsals uint      `json:"rehearsals"`
+	Order      uint      `gorm:"not null" json:"-"`
 
 	SongID            uuid.UUID       `gorm:"not null" json:"-"`
 	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`

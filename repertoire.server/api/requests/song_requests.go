@@ -14,11 +14,11 @@ type CreateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	GuitarTuningID *uuid.UUID
-	Sections       []CreateSongSectionRequest
-	AlbumID        *uuid.UUID `validate:"omitempty,excluded_with=AlbumTitle"`
-	AlbumTitle     *string    `validate:"omitempty,excluded_with=AlbumID,max=100"`
-	ArtistID       *uuid.UUID `validate:"omitempty,excluded_with=ArtistName"`
-	ArtistName     *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
+	Sections       []CreateSectionRequest `validate:"dive"`
+	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle"`
+	AlbumTitle     *string                `validate:"omitempty,excluded_with=AlbumID,max=100"`
+	ArtistID       *uuid.UUID             `validate:"omitempty,excluded_with=ArtistName"`
+	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
 type UpdateSongRequest struct {
@@ -29,9 +29,26 @@ type UpdateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	GuitarTuningID *uuid.UUID
+	AlbumID        *uuid.UUID
+	ArtistID       *uuid.UUID
 }
 
-type CreateSongSectionRequest struct {
+type CreateSectionRequest struct {
 	Name   string    `validate:"required,max=30"`
-	TypeId uuid.UUID `validate:"required"`
+	TypeID uuid.UUID `validate:"required"`
+}
+
+// Sections
+
+type CreateSongSectionRequest struct {
+	SongID uuid.UUID `validate:"required"`
+	Name   string    `validate:"required,max=30"`
+	TypeID uuid.UUID `validate:"required"`
+}
+
+type UpdateSongSectionRequest struct {
+	ID         uuid.UUID `validate:"required"`
+	Name       string    `validate:"required,max=30"`
+	Rehearsals uint
+	TypeID     uuid.UUID `validate:"required"`
 }

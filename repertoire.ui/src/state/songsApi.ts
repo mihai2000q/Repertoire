@@ -12,7 +12,7 @@ const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
       query: (arg) => ({
-        url: 'songs/',
+        url: 'songs',
         params: arg
       }),
       providesTags: ['Songs']
@@ -23,7 +23,7 @@ const songsApi = api.injectEndpoints({
     }),
     createSong: build.mutation<HttpMessageResponse, CreateSongRequest>({
       query: (body) => ({
-        url: 'songs/',
+        url: 'songs',
         method: 'POST',
         body: body
       }),
@@ -31,7 +31,7 @@ const songsApi = api.injectEndpoints({
     }),
     updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
       query: (body) => ({
-        url: 'songs/',
+        url: 'songs',
         method: 'PUT',
         body: body
       }),

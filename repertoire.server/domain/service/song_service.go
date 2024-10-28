@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"repertoire/api/requests"
 	"repertoire/domain/usecase/song"
+	"repertoire/domain/usecase/song/section"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
 )
@@ -12,39 +13,48 @@ type SongService interface {
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
-	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
+
+	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
+	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
+	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 }
 
 type songService struct {
 	getSong             song.GetSong
 	getAllSongs         song.GetAllSongs
 	getGuitarTunings    song.GetGuitarTunings
-	getSongSectionTypes song.GetSongSectionTypes
 	createSong          song.CreateSong
 	updateSong          song.UpdateSong
 	deleteSong          song.DeleteSong
+	getSongSectionTypes section.GetSongSectionTypes
+	createSongSection   section.CreateSongSection
+	updateSongSection   section.UpdateSongSection
 }
 
 func NewSongService(
 	getSong song.GetSong,
 	getAllSongs song.GetAllSongs,
 	getGuitarTunings song.GetGuitarTunings,
-	getSongSectionTypes song.GetSongSectionTypes,
 	createSong song.CreateSong,
 	updateSong song.UpdateSong,
 	deleteSong song.DeleteSong,
+	getSongSectionTypes section.GetSongSectionTypes,
+	createSongSection section.CreateSongSection,
+	updateSongSection section.UpdateSongSection,
 ) SongService {
 	return &songService{
 		getSong:             getSong,
 		getAllSongs:         getAllSongs,
 		getGuitarTunings:    getGuitarTunings,
-		getSongSectionTypes: getSongSectionTypes,
 		createSong:          createSong,
 		updateSong:          updateSong,
 		deleteSong:          deleteSong,
+		getSongSectionTypes: getSongSectionTypes,
+		createSongSection:   createSongSection,
+		updateSongSection:   updateSongSection,
 	}
 }
 
@@ -60,10 +70,6 @@ func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wra
 	return s.getGuitarTunings.Handle(token)
 }
 
-func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
-	return s.getSongSectionTypes.Handle(token)
-}
-
 func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
 	return s.createSong.Handle(request, token)
 }
@@ -74,4 +80,18 @@ func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorC
 
 func (s *songService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return s.deleteSong.Handle(id)
+}
+
+// Sections
+
+func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
+	return s.getSongSectionTypes.Handle(token)
+}
+
+func (s *songService) CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode {
+	return s.createSongSection.Handle(request)
+}
+
+func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
+	return s.updateSongSection.Handle(request)
 }

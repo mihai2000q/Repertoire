@@ -14,9 +14,9 @@ func (a ArtistRouter) RegisterRoutes() {
 	api := a.requestHandler.PrivateRouter.Group("/artists")
 	{
 		api.GET("/:id", a.handler.Get)
-		api.GET("/", a.handler.GetAll)
-		api.POST("/", a.handler.Create)
-		api.PUT("/", a.handler.Update)
+		api.GET("", a.handler.GetAll)
+		api.POST("", a.handler.Create)
+		api.PUT("", a.handler.Update)
 		api.DELETE("/:id", a.handler.Delete)
 	}
 }
