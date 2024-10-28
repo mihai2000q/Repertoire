@@ -77,15 +77,16 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "GetArtistsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "GetArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -95,14 +96,17 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 var validArtistName = "Metallica"
 
 func TestValidateCreateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := CreateArtistRequest{
 		Name: validArtistName,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -129,15 +133,16 @@ func TestValidateCreateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "CreateArtistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "CreateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -145,6 +150,7 @@ func TestValidateCreateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 }
 
 func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := UpdateArtistRequest{
@@ -152,8 +158,10 @@ func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		Name: validArtistName,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -187,15 +195,16 @@ func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "UpdateArtistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "UpdateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})

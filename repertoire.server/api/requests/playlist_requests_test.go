@@ -77,15 +77,16 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "GetPlaylistsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "GetPlaylistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -95,14 +96,17 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 var validPlaylistTitle = "New Playlist"
 
 func TestValidateCreatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := CreatePlaylistRequest{
 		Title: validPlaylistTitle,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -129,15 +133,16 @@ func TestValidateCreatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "CreatePlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "CreatePlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -145,6 +150,7 @@ func TestValidateCreatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 }
 
 func TestValidateUpdatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := UpdatePlaylistRequest{
@@ -152,8 +158,10 @@ func TestValidateUpdatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 		Title: validPlaylistTitle,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -187,15 +195,16 @@ func TestValidateUpdatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "UpdatePlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "UpdatePlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})

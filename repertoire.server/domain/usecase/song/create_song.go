@@ -35,6 +35,11 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		Bpm:            request.Bpm,
 		SongsterrLink:  request.SongsterrLink,
 		GuitarTuningID: request.GuitarTuningID,
+		AlbumID:        request.AlbumID,
+		ArtistID:       request.ArtistID,
+		Album:          c.createAlbum(request),
+		Artist:         c.createArtist(request),
+		Sections:       c.createSections(request.Sections),
 		UserID:         userID,
 	}
 	err := c.repository.Create(&song)
@@ -42,4 +47,38 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		return wrapper.InternalServerError(err)
 	}
 	return nil
+}
+
+func (c CreateSong) createAlbum(request requests.CreateSongRequest) *model.Album {
+	var album *model.Album
+	if request.AlbumTitle != nil {
+		album = &model.Album{
+			ID:    uuid.New(),
+			Title: *request.AlbumTitle,
+		}
+	}
+	return album
+}
+
+func (c CreateSong) createArtist(request requests.CreateSongRequest) *model.Artist {
+	var artist *model.Artist
+	if request.ArtistName != nil {
+		artist = &model.Artist{
+			ID:   uuid.New(),
+			Name: *request.ArtistName,
+		}
+	}
+	return artist
+}
+
+func (c CreateSong) createSections(request []requests.CreateSongSectionRequest) []model.SongSection {
+	var sections []model.SongSection
+	for _, sectionRequest := range request {
+		sections = append(sections, model.SongSection{
+			ID:                uuid.New(),
+			Name:              sectionRequest.Name,
+			SongSectionTypeID: sectionRequest.TypeId,
+		})
+	}
+	return sections
 }
