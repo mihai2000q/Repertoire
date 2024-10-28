@@ -74,11 +74,12 @@ func (c CreateSong) createArtist(request requests.CreateSongRequest) *model.Arti
 
 func (c CreateSong) createSections(request []requests.CreateSectionRequest, songID uuid.UUID) []model.SongSection {
 	var sections []model.SongSection
-	for _, sectionRequest := range request {
+	for i, sectionRequest := range request {
 		sections = append(sections, model.SongSection{
 			ID:                uuid.New(),
 			Name:              sectionRequest.Name,
 			SongSectionTypeID: sectionRequest.TypeID,
+			Order:             uint(i),
 			SongID:            songID,
 		})
 	}
