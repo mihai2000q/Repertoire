@@ -17,7 +17,7 @@ function Songs(): ReactElement {
   const [opened, { open, close }] = useDisclosure(false)
 
   return (
-    <Stack h={'100%'}>
+    <Stack h={'100%'} pt={'xs'}>
       <AddNewSongModal opened={opened} onClose={close} />
 
       <Title order={3} fw={800}>
