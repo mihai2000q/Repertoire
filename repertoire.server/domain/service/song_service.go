@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"repertoire/api/requests"
 	"repertoire/domain/usecase/song"
+	"repertoire/domain/usecase/song/section"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
 )
@@ -22,7 +23,7 @@ type songService struct {
 	getSong             song.GetSong
 	getAllSongs         song.GetAllSongs
 	getGuitarTunings    song.GetGuitarTunings
-	getSongSectionTypes song.GetSongSectionTypes
+	getSongSectionTypes section.GetSongSectionTypes
 	createSong          song.CreateSong
 	updateSong          song.UpdateSong
 	deleteSong          song.DeleteSong
@@ -32,7 +33,7 @@ func NewSongService(
 	getSong song.GetSong,
 	getAllSongs song.GetAllSongs,
 	getGuitarTunings song.GetGuitarTunings,
-	getSongSectionTypes song.GetSongSectionTypes,
+	getSongSectionTypes section.GetSongSectionTypes,
 	createSong song.CreateSong,
 	updateSong song.UpdateSong,
 	deleteSong song.DeleteSong,

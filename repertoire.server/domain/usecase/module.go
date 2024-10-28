@@ -6,6 +6,7 @@ import (
 	"repertoire/domain/usecase/auth"
 	"repertoire/domain/usecase/playlist"
 	"repertoire/domain/usecase/song"
+	"repertoire/domain/usecase/song/section"
 	"repertoire/domain/usecase/user"
 
 	"go.uber.org/fx"
@@ -45,7 +46,7 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewGetAllSongs),
 	fx.Provide(song.NewGetGuitarTunings),
-	fx.Provide(song.NewGetSongSectionTypes),
+	fx.Provide(section.NewGetSongSectionTypes),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewUpdateSong),
 	fx.Provide(song.NewDeleteSong),

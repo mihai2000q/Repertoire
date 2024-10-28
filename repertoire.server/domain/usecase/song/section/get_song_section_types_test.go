@@ -1,4 +1,4 @@
-package song
+package section
 
 import (
 	"errors"
