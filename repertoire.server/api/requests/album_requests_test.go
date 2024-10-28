@@ -78,15 +78,16 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "GetAlbumsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "GetAlbumsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -96,14 +97,17 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 var validAlbumTitle = "Justice For All"
 
 func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := CreateAlbumRequest{
 		Title: validAlbumTitle,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -130,15 +134,16 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "CreateAlbumRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "CreateAlbumRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -146,6 +151,7 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 }
 
 func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := UpdateAlbumRequest{
@@ -153,8 +159,10 @@ func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		Title: validAlbumTitle,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -188,15 +196,16 @@ func TestValidateUpdateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "UpdateAlbumRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "UpdateAlbumRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
