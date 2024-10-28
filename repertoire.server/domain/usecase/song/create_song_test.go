@@ -109,7 +109,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"Create song with sections",
 			requests.CreateSongRequest{
 				Title: "Some Song",
-				Sections: []requests.CreateSongSectionRequest{
+				Sections: []requests.CreateSectionRequest{
 					{Name: "First Section", TypeID: uuid.New()},
 					{Name: "Second Section", TypeID: uuid.New()},
 				},
@@ -166,6 +166,7 @@ func assertCreatedSong(t *testing.T, request requests.CreateSongRequest, song mo
 		assert.NotEmpty(t, song.Sections[i].ID)
 		assert.Equal(t, section.Name, song.Sections[i].Name)
 		assert.Equal(t, section.TypeID, song.Sections[i].SongSectionTypeID)
+		assert.Equal(t, song.ID, song.Sections[i].SongID)
 	}
 	if request.AlbumTitle != nil {
 		assert.NotNil(t, song.Album)

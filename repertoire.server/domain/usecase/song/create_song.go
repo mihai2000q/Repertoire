@@ -28,8 +28,9 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		return errCode
 	}
 
+	songID := uuid.New()
 	song := model.Song{
-		ID:             uuid.New(),
+		ID:             songID,
 		Title:          request.Title,
 		Description:    request.Description,
 		Bpm:            request.Bpm,
@@ -39,7 +40,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		ArtistID:       request.ArtistID,
 		Album:          c.createAlbum(request),
 		Artist:         c.createArtist(request),
-		Sections:       c.createSections(request.Sections),
+		Sections:       c.createSections(request.Sections, songID),
 		UserID:         userID,
 	}
 	err := c.repository.Create(&song)
@@ -71,13 +72,14 @@ func (c CreateSong) createArtist(request requests.CreateSongRequest) *model.Arti
 	return artist
 }
 
-func (c CreateSong) createSections(request []requests.CreateSongSectionRequest) []model.SongSection {
+func (c CreateSong) createSections(request []requests.CreateSectionRequest, songID uuid.UUID) []model.SongSection {
 	var sections []model.SongSection
 	for _, sectionRequest := range request {
 		sections = append(sections, model.SongSection{
 			ID:                uuid.New(),
 			Name:              sectionRequest.Name,
 			SongSectionTypeID: sectionRequest.TypeID,
+			SongID:            songID,
 		})
 	}
 	return sections

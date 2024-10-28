@@ -46,6 +46,7 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewGetAllSongs),
 	fx.Provide(song.NewGetGuitarTunings),
+	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewGetSongSectionTypes),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewUpdateSong),
