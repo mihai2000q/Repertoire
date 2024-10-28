@@ -115,9 +115,7 @@ func (s SongHandler) Update(c *gin.Context) {
 }
 
 func (s SongHandler) Delete(c *gin.Context) {
-	paramId := c.Param("id")
-
-	id, err := uuid.Parse(paramId)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -178,4 +176,26 @@ func (s SongHandler) UpdateSection(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "song section has been updated successfully!")
+}
+
+func (s SongHandler) DeleteSection(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	songID, err := uuid.Parse(c.Param("songID"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode = s.service.DeleteSection(id, songID)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, "song section has been deleted successfully!")
 }

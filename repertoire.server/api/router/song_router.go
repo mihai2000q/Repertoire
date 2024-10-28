@@ -19,10 +19,14 @@ func (s SongRouter) RegisterRoutes() {
 		api.POST("", s.handler.Create)
 		api.PUT("", s.handler.Update)
 		api.DELETE("/:id", s.handler.Delete)
+	}
 
-		api.GET("/sections/types", s.handler.GetSectionTypes)
-		api.POST("/sections", s.handler.CreateSection)
-		api.PUT("/sections", s.handler.UpdateSection)
+	sectionsApi := api.Group("/sections")
+	{
+		sectionsApi.GET("/types", s.handler.GetSectionTypes)
+		sectionsApi.POST("", s.handler.CreateSection)
+		sectionsApi.PUT("", s.handler.UpdateSection)
+		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
 	}
 }
 
