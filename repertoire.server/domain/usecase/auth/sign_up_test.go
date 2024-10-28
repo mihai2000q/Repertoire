@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -21,7 +21,7 @@ func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalS
 	_uut := &SignUp{
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -50,7 +50,7 @@ func TestAuthService_SignUp_WhenUserIsNotEmpty_ShouldReturnUnauthorizedError(t *
 	_uut := &SignUp{
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -80,7 +80,7 @@ func TestAuthService_SignUp_WhenHashPasswordFails_ShouldReturnInternalServerErro
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -114,7 +114,7 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -136,6 +136,20 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 			assert.Equal(t, user.Name, request.Name)
 			assert.Equal(t, user.Email, strings.ToLower(request.Email))
 			assert.Equal(t, user.Password, hashedPassword)
+
+			for i, guitarTuning := range user.GuitarTunings {
+				assert.NotEmpty(t, guitarTuning.ID)
+				assert.Equal(t, user.ID, guitarTuning.UserID)
+				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+				assert.Equal(t, uint(i), guitarTuning.Order)
+			}
+
+			for i, songSectionType := range user.SongSectionTypes {
+				assert.NotEmpty(t, songSectionType.ID)
+				assert.Equal(t, user.ID, songSectionType.UserID)
+				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
+				assert.Equal(t, uint(i), songSectionType.Order)
+			}
 		}).
 		Return(internalError).
 		Once()
@@ -163,7 +177,7 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -184,6 +198,20 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 			assert.Equal(t, user.Name, request.Name)
 			assert.Equal(t, user.Email, strings.ToLower(request.Email))
 			assert.Equal(t, user.Password, hashedPassword)
+
+			for i, guitarTuning := range user.GuitarTunings {
+				assert.NotEmpty(t, guitarTuning.ID)
+				assert.Equal(t, user.ID, guitarTuning.UserID)
+				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+				assert.Equal(t, uint(i), guitarTuning.Order)
+			}
+
+			for i, songSectionType := range user.SongSectionTypes {
+				assert.NotEmpty(t, songSectionType.ID)
+				assert.Equal(t, user.ID, songSectionType.UserID)
+				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
+				assert.Equal(t, uint(i), songSectionType.Order)
+			}
 		}).
 		Return(nil).
 		Once()
@@ -219,7 +247,7 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -240,6 +268,20 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 			assert.Equal(t, user.Name, request.Name)
 			assert.Equal(t, user.Email, strings.ToLower(request.Email))
 			assert.Equal(t, user.Password, hashedPassword)
+
+			for i, guitarTuning := range user.GuitarTunings {
+				assert.NotEmpty(t, guitarTuning.ID)
+				assert.Equal(t, user.ID, guitarTuning.UserID)
+				assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+				assert.Equal(t, uint(i), guitarTuning.Order)
+			}
+
+			for i, songSectionType := range user.SongSectionTypes {
+				assert.NotEmpty(t, songSectionType.ID)
+				assert.Equal(t, user.ID, songSectionType.UserID)
+				assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
+				assert.Equal(t, uint(i), songSectionType.Order)
+			}
 		}).
 		Return(nil).
 		Once()

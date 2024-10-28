@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/api/server"
 	"repertoire/api/validation"
 	"repertoire/domain/service"
@@ -45,7 +45,7 @@ func (p PlaylistHandler) Get(c *gin.Context) {
 }
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
-	request := request.GetPlaylistsRequest{
+	request := requests.GetPlaylistsRequest{
 		CurrentPage: p.IntQueryOrNull(c, "currentPage"),
 		PageSize:    p.IntQueryOrNull(c, "pageSize"),
 		OrderBy:     c.Query("orderBy"),
@@ -67,7 +67,7 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 }
 
 func (p PlaylistHandler) Create(c *gin.Context) {
-	var request request.CreatePlaylistRequest
+	var request requests.CreatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -86,7 +86,7 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 }
 
 func (p PlaylistHandler) Update(c *gin.Context) {
-	var request request.UpdatePlaylistRequest
+	var request requests.UpdatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)

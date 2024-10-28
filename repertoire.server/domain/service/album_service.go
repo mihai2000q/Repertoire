@@ -1,7 +1,7 @@
 package service
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/domain/usecase/album"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -11,9 +11,9 @@ import (
 
 type AlbumService interface {
 	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
-	GetAll(request request.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
-	Create(request request.CreateAlbumRequest, token string) *wrapper.ErrorCode
-	Update(request request.UpdateAlbumRequest) *wrapper.ErrorCode
+	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
+	Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode
+	Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
@@ -45,15 +45,15 @@ func (a *albumService) Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode) {
 	return a.getAlbum.Handle(id)
 }
 
-func (a *albumService) GetAll(request request.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode) {
+func (a *albumService) GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode) {
 	return a.getAllAlbums.Handle(request, token)
 }
 
-func (a *albumService) Create(request request.CreateAlbumRequest, token string) *wrapper.ErrorCode {
+func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
 	return a.createAlbum.Handle(request, token)
 }
 
-func (a *albumService) Update(request request.UpdateAlbumRequest) *wrapper.ErrorCode {
+func (a *albumService) Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
 	return a.updateAlbum.Handle(request)
 }
 

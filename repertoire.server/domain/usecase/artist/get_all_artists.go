@@ -1,7 +1,7 @@
 package artist
 
 import (
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -20,15 +20,15 @@ func NewGetAllArtists(repository repository.ArtistRepository, jwtService service
 	}
 }
 
-func (g GetAllArtists) Handle(request request.GetArtistsRequest, token string) (result wrapper.WithTotalCount[model.Artist], e *wrapper.ErrorCode) {
-	userId, errCode := g.jwtService.GetUserIdFromJwt(token)
+func (g GetAllArtists) Handle(request requests.GetArtistsRequest, token string) (result wrapper.WithTotalCount[model.Artist], e *wrapper.ErrorCode) {
+	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
 	err := g.repository.GetAllByUser(
 		&result.Models,
-		userId,
+		userID,
 		request.CurrentPage,
 		request.PageSize,
 		request.OrderBy,
@@ -37,7 +37,7 @@ func (g GetAllArtists) Handle(request request.GetArtistsRequest, token string) (
 		return result, wrapper.InternalServerError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userId)
+	err = g.repository.GetAllByUserCount(&result.TotalCount, userID)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}

@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 type ErrorHandlerMiddleware struct {
@@ -18,7 +17,6 @@ func (m ErrorHandlerMiddleware) Handler() gin.HandlerFunc {
 
 		var errors []string
 		for _, err := range c.Errors {
-			log.Printf("Error: %+v\n", err)
 			errors = append(errors, err.Error())
 		}
 

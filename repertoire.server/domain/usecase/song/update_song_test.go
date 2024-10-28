@@ -2,14 +2,15 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -18,7 +19,7 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -43,7 +44,7 @@ func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -67,7 +68,7 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -82,8 +83,7 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	songRepository.On("Update", mock.IsType(song)).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
-			assert.Equal(t, request.Title, newSong.Title)
-			assert.Equal(t, request.IsRecorded, newSong.IsRecorded)
+			assertUpdatedSong(t, request, newSong)
 		}).
 		Return(internalError).
 		Once()
@@ -104,7 +104,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := &UpdateSong{
 		repository: songRepository,
 	}
-	request := request.UpdateSongRequest{
+	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
@@ -118,8 +118,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	songRepository.On("Update", mock.IsType(song)).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
-			assert.Equal(t, request.Title, newSong.Title)
-			assert.Equal(t, request.IsRecorded, newSong.IsRecorded)
+			assertUpdatedSong(t, request, newSong)
 		}).
 		Return(nil).
 		Once()
@@ -131,4 +130,15 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	songRepository.AssertExpectations(t)
+}
+
+func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song *model.Song) {
+	assert.Equal(t, request.Title, song.Title)
+	assert.Equal(t, request.Description, song.Description)
+	assert.Equal(t, request.IsRecorded, song.IsRecorded)
+	assert.Equal(t, request.Bpm, song.Bpm)
+	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
+	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
+	assert.Equal(t, request.ArtistID, song.ArtistID)
+	assert.Equal(t, request.AlbumID, song.AlbumID)
 }

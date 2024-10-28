@@ -91,12 +91,12 @@ func (j *jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
-	userId, err := uuid.Parse(sub)
+	userID, err := uuid.Parse(sub)
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
-	return userId, nil
+	return userID, nil
 }
 
 func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
@@ -112,10 +112,10 @@ func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.E
 		return uuid.Nil, wrapper.ForbiddenError(err)
 	}
 
-	userId, err := uuid.Parse(sub)
+	userID, err := uuid.Parse(sub)
 	if err != nil {
 		return uuid.Nil, wrapper.ForbiddenError(err)
 	}
 
-	return userId, nil
+	return userID, nil
 }

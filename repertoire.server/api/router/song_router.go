@@ -14,10 +14,15 @@ func (s SongRouter) RegisterRoutes() {
 	api := s.requestHandler.PrivateRouter.Group("/songs")
 	{
 		api.GET("/:id", s.handler.Get)
-		api.GET("/", s.handler.GetAll)
-		api.POST("/", s.handler.Create)
-		api.PUT("/", s.handler.Update)
+		api.GET("", s.handler.GetAll)
+		api.GET("/guitar-tunings", s.handler.GetGuitarTunings)
+		api.POST("", s.handler.Create)
+		api.PUT("", s.handler.Update)
 		api.DELETE("/:id", s.handler.Delete)
+
+		api.GET("/sections/types", s.handler.GetSectionTypes)
+		api.POST("/sections", s.handler.CreateSection)
+		api.PUT("/sections", s.handler.UpdateSection)
 	}
 }
 

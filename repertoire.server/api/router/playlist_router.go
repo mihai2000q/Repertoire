@@ -14,9 +14,9 @@ func (p PlaylistRouter) RegisterRoutes() {
 	api := p.requestHandler.PrivateRouter.Group("/playlists")
 	{
 		api.GET("/:id", p.handler.Get)
-		api.GET("/", p.handler.GetAll)
-		api.POST("/", p.handler.Create)
-		api.PUT("/", p.handler.Update)
+		api.GET("", p.handler.GetAll)
+		api.POST("", p.handler.Create)
+		api.PUT("", p.handler.Update)
 		api.DELETE("/:id", p.handler.Delete)
 	}
 }

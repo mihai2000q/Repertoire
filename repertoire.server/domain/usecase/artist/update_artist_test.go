@@ -3,7 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"testing"
@@ -19,7 +19,7 @@ func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 	_uut := &UpdateArtist{
 		repository: artistRepository,
 	}
-	request := request.UpdateArtistRequest{
+	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
 	}
@@ -44,7 +44,7 @@ func TestUpdateArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 	_uut := &UpdateArtist{
 		repository: artistRepository,
 	}
-	request := request.UpdateArtistRequest{
+	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
 	}
@@ -68,7 +68,7 @@ func TestUpdateArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *t
 	_uut := &UpdateArtist{
 		repository: artistRepository,
 	}
-	request := request.UpdateArtistRequest{
+	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
 	}
@@ -104,7 +104,7 @@ func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := &UpdateArtist{
 		repository: artistRepository,
 	}
-	request := request.UpdateArtistRequest{
+	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
 	}

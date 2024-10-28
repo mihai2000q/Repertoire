@@ -1,4 +1,4 @@
-package request
+package requests
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -11,6 +11,7 @@ var validEmail = "someone@yahoo.com"
 var validPassword = "Password123"
 
 func TestValidateSignInRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := SignInRequest{
@@ -18,8 +19,10 @@ func TestValidateSignInRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		Password: validPassword,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -71,15 +74,16 @@ func TestValidateSignInRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "SignInRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "SignInRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
@@ -89,6 +93,7 @@ func TestValidateSignInRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 var validName = "Samuel"
 
 func TestValidateSignUpRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
 	request := SignUpRequest{
@@ -97,8 +102,10 @@ func TestValidateSignUpRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		Password: validPassword,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
@@ -181,15 +188,16 @@ func TestValidateSignUpRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "SignUpRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "SignUpRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})

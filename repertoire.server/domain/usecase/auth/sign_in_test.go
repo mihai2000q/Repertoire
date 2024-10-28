@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/data/service"
 	"repertoire/model"
@@ -20,7 +20,7 @@ func TestSignIn_WhenGetUserByEmailFails_ShouldReturnInternalServerError(t *testi
 	_uut := &SignIn{
 		userRepository: userRepository,
 	}
-	request := request.SignInRequest{
+	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
 	}
@@ -48,7 +48,7 @@ func TestSignIn_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	_uut := &SignIn{
 		userRepository: userRepository,
 	}
-	request := request.SignInRequest{
+	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
 	}
@@ -77,7 +77,7 @@ func TestSignIn_WhenPasswordsAreNotTheSame_ShouldReturnUnauthorizedError(t *test
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignInRequest{
+	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
 	}
@@ -116,7 +116,7 @@ func TestSignIn_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing.
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignInRequest{
+	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
 	}
@@ -158,7 +158,7 @@ func TestSignIn_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
-	request := request.SignInRequest{
+	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
 	}

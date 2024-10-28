@@ -22,7 +22,7 @@ describe('Songs', () => {
   ]
 
   const handlers = [
-    http.get('/songs/', async () => {
+    http.get('/songs', async () => {
       const response: WithTotalCountResponse<Song> = {
         models: songs,
         totalCount: 3
@@ -84,7 +84,7 @@ describe('Songs', () => {
     reduxRender(<Songs />)
 
     server.use(
-      http.get('/songs/', async () => {
+      http.get('/songs', async () => {
         const response: WithTotalCountResponse<Song> = { models: [], totalCount: 0 }
         return HttpResponse.json(response)
       })

@@ -45,6 +45,9 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 					&model.Playlist{},
 					&model.Album{},
 					&model.Song{},
+					&model.GuitarTuning{},
+					&model.SongSectionType{},
+					&model.SongSection{},
 				)
 			},
 		})

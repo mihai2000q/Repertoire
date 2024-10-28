@@ -11,12 +11,12 @@ type AlbumRepository interface {
 	Get(album *model.Album, id uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.Album,
-		userId uuid.UUID,
+		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
 		orderBy string,
 	) error
-	GetAllByUserCount(count *int64, userId uuid.UUID) error
+	GetAllByUserCount(count *int64, userID uuid.UUID) error
 	Create(album *model.Album) error
 	Update(album *model.Album) error
 	Delete(id uuid.UUID) error
@@ -38,7 +38,7 @@ func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
 
 func (a albumRepository) GetAllByUser(
 	albums *[]model.Album,
-	userId uuid.UUID,
+	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
 	orderBy string,
@@ -50,7 +50,7 @@ func (a albumRepository) GetAllByUser(
 		offset = (*currentPage - 1) * *pageSize
 	}
 	return a.client.DB.Model(&model.Album{}).
-		Where(model.Album{UserID: userId}).
+		Where(model.Album{UserID: userID}).
 		Order(orderBy).
 		Offset(offset).
 		Limit(*pageSize).
@@ -58,9 +58,9 @@ func (a albumRepository) GetAllByUser(
 		Error
 }
 
-func (a albumRepository) GetAllByUserCount(count *int64, userId uuid.UUID) error {
+func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
 	return a.client.DB.Model(&model.Album{}).
-		Where(model.Album{UserID: userId}).
+		Where(model.Album{UserID: userID}).
 		Count(count).
 		Error
 }

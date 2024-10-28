@@ -11,7 +11,7 @@ describe('Add New Song Modal', () => {
   let capturedCreateSongRequest: CreateSongRequest | undefined
 
   const handlers = [
-    http.post('/songs/', async (req) => {
+    http.post('/songs', async (req) => {
       capturedCreateSongRequest = (await req.request.json()) as CreateSongRequest
       return HttpResponse.json('Song created successfully!')
     })

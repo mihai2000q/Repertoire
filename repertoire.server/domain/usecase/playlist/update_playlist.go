@@ -2,7 +2,7 @@ package playlist
 
 import (
 	"errors"
-	"repertoire/api/request"
+	"repertoire/api/requests"
 	"repertoire/data/repository"
 	"repertoire/model"
 	"repertoire/utils/wrapper"
@@ -18,7 +18,7 @@ func NewUpdatePlaylist(repository repository.PlaylistRepository) UpdatePlaylist 
 	return UpdatePlaylist{repository: repository}
 }
 
-func (u UpdatePlaylist) Handle(request request.UpdatePlaylistRequest) *wrapper.ErrorCode {
+func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode {
 	var playlist model.Playlist
 	err := u.repository.Get(&playlist, request.ID)
 	if err != nil {

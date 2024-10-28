@@ -29,12 +29,12 @@ func NewCurrentUserProvider(
 }
 
 func (c *currentUserProvider) Get(token string) (user model.User, e *wrapper.ErrorCode) {
-	userId, errCode := c.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return user, errCode
 	}
 
-	err := c.userRepository.Get(&user, userId)
+	err := c.userRepository.Get(&user, userID)
 	if err != nil {
 		return user, wrapper.InternalServerError(err)
 	}

@@ -1,4 +1,4 @@
-package request
+package requests
 
 import (
 	"repertoire/api/validation"
@@ -9,18 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request GetPlaylistsRequest
+		request GetArtistsRequest
 	}{
 		{
 			"All Null",
-			GetPlaylistsRequest{},
+			GetArtistsRequest{},
 		},
 		{
 			"Nothing Null",
-			GetPlaylistsRequest{
+			GetArtistsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 			},
@@ -41,161 +41,170 @@ func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	}
 }
 
-func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              GetPlaylistsRequest
+		request              GetArtistsRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetPlaylistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			GetArtistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetPlaylistsRequest{PageSize: &[]int{1}[0]},
+			GetArtistsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetPlaylistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			GetArtistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetPlaylistsRequest{CurrentPage: &[]int{1}[0]},
+			GetArtistsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "GetPlaylistsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "GetArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
 	}
 }
 
-var validPlaylistTitle = "New Playlist"
+var validArtistName = "Metallica"
 
-func TestValidateCreatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+func TestValidateCreateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
-	request := CreatePlaylistRequest{
-		Title: validPlaylistTitle,
+	request := CreateArtistRequest{
+		Name: validArtistName,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
-func TestValidateCreatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+func TestValidateCreateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              CreatePlaylistRequest
+		request              CreateArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// Title Test Cases
+		// Name Test Cases
 		{
-			"Title is invalid because it's required",
-			CreatePlaylistRequest{Title: ""},
-			"Title",
+			"Name is invalid because it's required",
+			CreateArtistRequest{Name: ""},
+			"Name",
 			"required",
 		},
 		{
-			"Title is invalid because it has more than 100 characters",
-			CreatePlaylistRequest{Title: strings.Repeat("a", 101)},
-			"Title",
+			"Name is invalid because it has more than 100 characters",
+			CreateArtistRequest{Name: strings.Repeat("a", 101)},
+			"Name",
 			"max",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "CreatePlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "CreateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
 	}
 }
 
-func TestValidateUpdatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
 	_uut := validation.NewValidator(nil)
 
-	request := UpdatePlaylistRequest{
-		ID:    uuid.New(),
-		Title: validPlaylistTitle,
+	request := UpdateArtistRequest{
+		ID:   uuid.New(),
+		Name: validArtistName,
 	}
 
+	// when
 	errCode := _uut.Validate(request)
 
+	// then
 	assert.Nil(t, errCode)
 }
 
-func TestValidateUpdatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              UpdatePlaylistRequest
+		request              UpdateArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			UpdatePlaylistRequest{ID: uuid.Nil, Title: validPlaylistTitle},
+			UpdateArtistRequest{ID: uuid.Nil, Name: validArtistName},
 			"ID",
 			"required",
 		},
-		// Title Test Cases
+		// Name Test Cases
 		{
-			"Title is invalid because it's required",
-			UpdatePlaylistRequest{ID: uuid.New(), Title: ""},
-			"Title",
+			"Name is invalid because it's required",
+			UpdateArtistRequest{ID: uuid.New(), Name: ""},
+			"Name",
 			"required",
 		},
 		{
-			"Title is invalid because it has more than 100 characters",
-			UpdatePlaylistRequest{ID: uuid.New(), Title: strings.Repeat("a", 101)},
-			"Title",
+			"Name is invalid because it has more than 100 characters",
+			UpdateArtistRequest{ID: uuid.New(), Name: strings.Repeat("a", 101)},
+			"Name",
 			"max",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// given
 			_uut := validation.NewValidator(nil)
 
+			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
+			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, err, "UpdatePlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "UpdateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})
