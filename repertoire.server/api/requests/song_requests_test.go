@@ -297,6 +297,8 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Bpm:            &[]uint{120}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
+				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
+				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}

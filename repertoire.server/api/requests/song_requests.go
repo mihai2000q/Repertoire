@@ -29,6 +29,8 @@ type UpdateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	GuitarTuningID *uuid.UUID
+	AlbumID        *uuid.UUID
+	ArtistID       *uuid.UUID
 }
 
 type CreateSongSectionRequest struct {
