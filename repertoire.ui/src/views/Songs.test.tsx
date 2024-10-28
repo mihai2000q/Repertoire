@@ -90,9 +90,9 @@ describe('Songs', () => {
       })
     )
 
-    expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
-    expect(screen.getByTestId('songs-pagination')).toHaveTextContent('1')
+    expect(await screen.findByText(/no songs/)).toBeInTheDocument()
     expect(screen.queryByTestId('new-song-card')).not.toBeInTheDocument()
     expect(screen.queryAllByTestId(/song-card-/)).toHaveLength(0)
+    expect(screen.queryByTestId('songs-pagination')).not.toBeInTheDocument()
   })
 })
