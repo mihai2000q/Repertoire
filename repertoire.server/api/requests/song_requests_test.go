@@ -116,8 +116,8 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
 				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
 				Sections: []CreateSongSectionRequest{
-					{Name: "A section", TypeId: uuid.New()},
-					{Name: "A Second Section", TypeId: uuid.New()},
+					{Name: "A section", TypeID: uuid.New()},
+					{Name: "A Second Section", TypeID: uuid.New()},
 				},
 			},
 		},
@@ -132,8 +132,8 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				AlbumTitle:     &[]string{"New Album Title"}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
 				Sections: []CreateSongSectionRequest{
-					{Name: "A section", TypeId: uuid.New()},
-					{Name: "A Second Section", TypeId: uuid.New()},
+					{Name: "A section", TypeID: uuid.New()},
+					{Name: "A Second Section", TypeID: uuid.New()},
 				},
 			},
 		},
@@ -212,6 +212,42 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			[]string{"ArtistID", "ArtistName"},
 			[]string{"excluded_with", "excluded_with"},
+		},
+		// Sections - Name Test Cases
+		{
+			"Sections are invalid because the first element has an empty Name",
+			CreateSongRequest{
+				Title: validSongTitle,
+				Sections: []CreateSongSectionRequest{
+					{Name: "", TypeID: uuid.New()},
+				},
+			},
+			[]string{"Sections[0].Name"},
+			[]string{"required"},
+		},
+		// Sections - Name Test Cases
+		{
+			"Sections are invalid because the first element has a Name with too many characters",
+			CreateSongRequest{
+				Title: validSongTitle,
+				Sections: []CreateSongSectionRequest{
+					{Name: strings.Repeat("a", 31), TypeID: uuid.New()},
+				},
+			},
+			[]string{"Sections[0].Name"},
+			[]string{"max"},
+		},
+		// Sections - Type ID Test Cases
+		{
+			"Sections are invalid because the first element has an empty Type ID",
+			CreateSongRequest{
+				Title: validSongTitle,
+				Sections: []CreateSongSectionRequest{
+					{Name: "some Name", TypeID: uuid.Nil},
+				},
+			},
+			[]string{"Sections[0].TypeID"},
+			[]string{"required"},
 		},
 	}
 	for _, tt := range tests {

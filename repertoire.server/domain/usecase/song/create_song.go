@@ -77,7 +77,7 @@ func (c CreateSong) createSections(request []requests.CreateSongSectionRequest) 
 		sections = append(sections, model.SongSection{
 			ID:                uuid.New(),
 			Name:              sectionRequest.Name,
-			SongSectionTypeID: sectionRequest.TypeId,
+			SongSectionTypeID: sectionRequest.TypeID,
 		})
 	}
 	return sections
