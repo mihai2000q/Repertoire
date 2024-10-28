@@ -1,6 +1,6 @@
 import { Mutex } from 'async-mutex'
 import { RootState } from './store'
-import { logout, setToken } from './authSlice'
+import { signOut, setToken } from './authSlice'
 import { setErrorPath } from './globalSlice'
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query'
 
@@ -42,7 +42,7 @@ const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
           api.dispatch(setToken(data.token))
           result = await queryWithAuthorization(args, api, extraOptions)
         } else {
-          api.dispatch(logout())
+          api.dispatch(signOut())
         }
       } finally {
         release()
