@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"repertoire/utils/enums"
+	"slices"
 	"unicode"
 
 	"github.com/go-playground/validator/v10"
@@ -31,4 +33,14 @@ func HasDigit(fl validator.FieldLevel) bool {
 		}
 	}
 	return false
+}
+
+func IsDifficultyEnum(fl validator.FieldLevel) bool {
+	difficulties := []enums.Difficulty{enums.Easy, enums.Medium, enums.Hard, enums.Impossible}
+
+	difficulty, ok := fl.Field().Interface().(enums.Difficulty)
+	if !ok {
+		return false
+	}
+	return slices.Contains(difficulties, difficulty)
 }

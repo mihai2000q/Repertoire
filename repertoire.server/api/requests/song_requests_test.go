@@ -2,8 +2,10 @@ package requests
 
 import (
 	"repertoire/api/validation"
+	"repertoire/utils/enums"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -128,6 +130,8 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"https://songsterr.com/some-other"}[0],
+				ReleaseDate:    &[]time.Time{time.Now()}[0],
+				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle:     &[]string{"New Album Title"}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
@@ -190,6 +194,16 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			[]string{"SongsterrLink"},
 			[]string{"contains"},
+		},
+		// Difficulty Test Cases
+		{
+			"Difficulty is invalid because it is not a Difficulty Enum",
+			CreateSongRequest{
+				Title:      validSongTitle,
+				Difficulty: &[]enums.Difficulty{"Something else"}[0],
+			},
+			[]string{"Difficulty"},
+			[]string{"isDifficultyEnum"},
 		},
 		// Album ID and Album Title Test Case
 		{
@@ -296,6 +310,8 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				IsRecorded:     true,
 				Bpm:            &[]uint{120}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				ReleaseDate:    &[]time.Time{time.Now()}[0],
+				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
 				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
@@ -363,6 +379,17 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			"SongsterrLink",
 			"contains",
+		},
+		// Difficulty Test Cases
+		{
+			"Difficulty is invalid because it is not a Difficulty Enum",
+			UpdateSongRequest{
+				ID:         uuid.New(),
+				Title:      validSongTitle,
+				Difficulty: &[]enums.Difficulty{"Something else"}[0],
+			},
+			"Difficulty",
+			"isDifficultyEnum",
 		},
 	}
 	for _, tt := range tests {
