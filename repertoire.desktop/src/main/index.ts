@@ -14,7 +14,8 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
-    }
+    },
+    titleBarStyle: 'hidden',
   })
   mainWindow.removeMenu()
 
@@ -34,6 +35,12 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html')).then()
   }
+
+  ipcMain.on('minimize', (_) =>
+    mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.minimize())
+  ipcMain.on('maximize', (_) =>
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize())
+  ipcMain.on('close', (_) => mainWindow.close())
 }
 
 // This method will be called when Electron has finished
