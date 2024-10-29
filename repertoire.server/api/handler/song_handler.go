@@ -158,7 +158,7 @@ func (s SongHandler) CreateSection(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "song section has been created successfully!")
+	s.SendMessage(c, "song section has been created successfully!")
 }
 
 func (s SongHandler) UpdateSection(c *gin.Context) {
@@ -175,7 +175,7 @@ func (s SongHandler) UpdateSection(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "song section has been updated successfully!")
+	s.SendMessage(c, "song section has been updated successfully!")
 }
 
 func (s SongHandler) DeleteSection(c *gin.Context) {
@@ -197,5 +197,5 @@ func (s SongHandler) DeleteSection(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "song section has been deleted successfully!")
+	s.SendMessage(c, "song section has been deleted successfully!")
 }
