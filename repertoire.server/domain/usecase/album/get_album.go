@@ -20,7 +20,7 @@ func NewGetAlbum(repository repository.AlbumRepository) GetAlbum {
 }
 
 func (g GetAlbum) Handle(id uuid.UUID) (album model.Album, e *wrapper.ErrorCode) {
-	err := g.repository.Get(&album, id)
+	err := g.repository.GetWithAssociations(&album, id)
 	if err != nil {
 		return album, wrapper.InternalServerError(err)
 	}
