@@ -22,6 +22,16 @@ func (a *ArtistRepositoryMock) Get(artist *model.Artist, id uuid.UUID) error {
 	return args.Error(0)
 }
 
+func (a *ArtistRepositoryMock) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
+	args := a.Called(artist, id)
+
+	if len(args) > 1 {
+		*artist = *args.Get(1).(*model.Artist)
+	}
+
+	return args.Error(0)
+}
+
 func (a *ArtistRepositoryMock) GetAllByUser(
 	artists *[]model.Artist,
 	userID uuid.UUID,

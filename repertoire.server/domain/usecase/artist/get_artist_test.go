@@ -20,7 +20,9 @@ func TestGetArtistQuery_WhenGetArtistFails_ShouldReturnInternalServerError(t *te
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("Get", new(model.Artist), id).Return(internalError).Once()
+	artistRepository.On("GetWithAssociations", new(model.Artist), id).
+		Return(internalError).
+		Once()
 
 	// when
 	artist, errCode := _uut.Handle(id)
@@ -42,7 +44,9 @@ func TestGetArtistQuery_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T
 	}
 	id := uuid.New()
 
-	artistRepository.On("Get", new(model.Artist), id).Return(nil).Once()
+	artistRepository.On("GetWithAssociations", new(model.Artist), id).
+		Return(nil).
+		Once()
 
 	// when
 	artist, errCode := _uut.Handle(id)
@@ -69,7 +73,9 @@ func TestGetArtistQuery_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 		Name: "Some Artist",
 	}
 
-	artistRepository.On("Get", new(model.Artist), id).Return(nil, expectedArtist).Once()
+	artistRepository.On("GetWithAssociations", new(model.Artist), id).
+		Return(nil, expectedArtist).
+		Once()
 
 	// when
 	artist, errCode := _uut.Handle(id)
