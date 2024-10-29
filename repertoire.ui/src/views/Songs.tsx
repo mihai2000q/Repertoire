@@ -1,11 +1,12 @@
 import { ReactElement, useState } from 'react'
-import { Box, Button, Group, Loader, Pagination, Stack, Text, Title } from '@mantine/core'
+import {Box, Button, Group, Loader, Pagination, Space, Stack, Text, Title} from '@mantine/core'
 import { useGetSongsQuery } from '../state/songsApi'
 import SongCard from '../components/songs/SongCard'
 import { IconMusicPlus } from '@tabler/icons-react'
 import NewSongCard from '../components/songs/NewSongCard'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/songs/modal/AddNewSongModal'
+import SongsLoader from "../components/songs/SongsLoader.tsx";
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -31,12 +32,15 @@ function Songs(): ReactElement {
       </Group>
 
       {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
-      <Group flex={1} h={'100%'}>
+      <Group>
+        {isLoading && <SongsLoader />}
         {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
         {songs?.totalCount > 0 && <NewSongCard openModal={open} />}
       </Group>
 
-      <Box style={{ alignSelf: 'center' }}>
+      <Space flex={1} />
+
+      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
         {!isLoading ? (
           <Pagination
             data-testid={'songs-pagination'}
