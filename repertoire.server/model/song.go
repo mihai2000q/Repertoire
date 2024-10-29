@@ -19,11 +19,11 @@ type Song struct {
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`
 	GuitarTuningID *uuid.UUID    `json:"-"`
-	Album          *Album        `json:"-"`
-	Artist         *Artist       `json:"-"`
-	GuitarTuning   *GuitarTuning `json:"-"`
-	Sections       []SongSection `json:"-"`
-	Playlist       []Playlist    `gorm:"many2many:playlist_song" json:"-"`
+	Album          *Album        `json:"album"`
+	Artist         *Artist       `json:"artist"`
+	GuitarTuning   *GuitarTuning `json:"guitarTuning"`
+	Sections       []SongSection `json:"sections"`
+	Playlists      []Playlist    `gorm:"many2many:playlist_song" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
@@ -48,7 +48,7 @@ type SongSection struct {
 	SongID            uuid.UUID       `gorm:"not null" json:"-"`
 	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
 	Song              Song            `json:"-"`
-	SongSectionType   SongSectionType `json:"-"`
+	SongSectionType   SongSectionType `json:"songSectionType"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`

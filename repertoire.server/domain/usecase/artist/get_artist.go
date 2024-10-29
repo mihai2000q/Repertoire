@@ -20,7 +20,7 @@ func NewGetArtist(repository repository.ArtistRepository) GetArtist {
 }
 
 func (g GetArtist) Handle(id uuid.UUID) (artist model.Artist, e *wrapper.ErrorCode) {
-	err := g.repository.Get(&artist, id)
+	err := g.repository.GetWithAssociations(&artist, id)
 	if err != nil {
 		return artist, wrapper.InternalServerError(err)
 	}

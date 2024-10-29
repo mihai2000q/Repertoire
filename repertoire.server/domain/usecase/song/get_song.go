@@ -19,7 +19,7 @@ func NewGetSong(repository repository.SongRepository) GetSong {
 }
 
 func (g GetSong) Handle(id uuid.UUID) (song model.Song, e *wrapper.ErrorCode) {
-	err := g.repository.Get(&song, id)
+	err := g.repository.GetWithAssociations(&song, id)
 	if err != nil {
 		return song, wrapper.InternalServerError(err)
 	}

@@ -20,7 +20,9 @@ func TestGetAlbumQuery_WhenGetAlbumFails_ShouldReturnInternalServerError(t *test
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("Get", new(model.Album), id).Return(internalError).Once()
+	albumRepository.On("GetWithAssociations", new(model.Album), id).
+		Return(internalError).
+		Once()
 
 	// when
 	album, errCode := _uut.Handle(id)
@@ -42,7 +44,9 @@ func TestGetAlbumQuery_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 	}
 	id := uuid.New()
 
-	albumRepository.On("Get", new(model.Album), id).Return(nil).Once()
+	albumRepository.On("GetWithAssociations", new(model.Album), id).
+		Return(nil).
+		Once()
 
 	// when
 	album, errCode := _uut.Handle(id)
@@ -69,7 +73,9 @@ func TestGetAlbumQuery_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 		Title: "Some Album",
 	}
 
-	albumRepository.On("Get", new(model.Album), id).Return(nil, expectedAlbum).Once()
+	albumRepository.On("GetWithAssociations", new(model.Album), id).
+		Return(nil, expectedAlbum).
+		Once()
 
 	// when
 	album, errCode := _uut.Handle(id)

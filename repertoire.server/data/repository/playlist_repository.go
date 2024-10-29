@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm/clause"
 	"repertoire/data/database"
 	"repertoire/model"
 
@@ -9,6 +10,7 @@ import (
 
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
+	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.Playlist,
 		userID uuid.UUID,
@@ -36,6 +38,10 @@ func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
 	return p.client.DB.Find(&playlist, model.Playlist{ID: id}).Error
 }
 
+func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
+	return p.client.DB.Preload(clause.Associations).Find(&playlist, model.Playlist{ID: id}).Error
+}
+
 func (p playlistRepository) GetAllByUser(
 	playlists *[]model.Playlist,
 	userID uuid.UUID,
@@ -50,6 +56,7 @@ func (p playlistRepository) GetAllByUser(
 		offset = (*currentPage - 1) * *pageSize
 	}
 	return p.client.DB.Model(&model.Playlist{}).
+		Preload(clause.Associations).
 		Where(model.Playlist{UserID: userID}).
 		Order(orderBy).
 		Offset(offset).

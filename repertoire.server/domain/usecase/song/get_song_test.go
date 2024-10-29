@@ -19,7 +19,9 @@ func TestGetSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) 
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Get", new(model.Song), id).Return(internalError).Once()
+	songRepository.On("GetWithAssociations", new(model.Song), id).
+		Return(internalError).
+		Once()
 
 	// when
 	song, errCode := _uut.Handle(id)
@@ -41,7 +43,9 @@ func TestGetSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	}
 	id := uuid.New()
 
-	songRepository.On("Get", new(model.Song), id).Return(nil).Once()
+	songRepository.On("GetWithAssociations", new(model.Song), id).
+		Return(nil).
+		Once()
 
 	// when
 	song, errCode := _uut.Handle(id)
@@ -68,7 +72,9 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 		Title: "Some Song",
 	}
 
-	songRepository.On("Get", new(model.Song), id).Return(nil, expectedSong).Once()
+	songRepository.On("GetWithAssociations", new(model.Song), id).
+		Return(nil, expectedSong).
+		Once()
 
 	// when
 	song, errCode := _uut.Handle(id)

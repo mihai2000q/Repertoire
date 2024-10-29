@@ -40,8 +40,8 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		GuitarTuningID: request.GuitarTuningID,
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
-		Album:          c.createAlbum(request),
-		Artist:         c.createArtist(request),
+		Album:          c.createAlbum(request, userID),
+		Artist:         c.createArtist(request, userID),
 		Sections:       c.createSections(request.Sections, songID),
 		UserID:         userID,
 	}
@@ -52,23 +52,25 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 	return nil
 }
 
-func (c CreateSong) createAlbum(request requests.CreateSongRequest) *model.Album {
+func (c CreateSong) createAlbum(request requests.CreateSongRequest, userID uuid.UUID) *model.Album {
 	var album *model.Album
 	if request.AlbumTitle != nil {
 		album = &model.Album{
-			ID:    uuid.New(),
-			Title: *request.AlbumTitle,
+			ID:     uuid.New(),
+			Title:  *request.AlbumTitle,
+			UserID: userID,
 		}
 	}
 	return album
 }
 
-func (c CreateSong) createArtist(request requests.CreateSongRequest) *model.Artist {
+func (c CreateSong) createArtist(request requests.CreateSongRequest, userID uuid.UUID) *model.Artist {
 	var artist *model.Artist
 	if request.ArtistName != nil {
 		artist = &model.Artist{
-			ID:   uuid.New(),
-			Name: *request.ArtistName,
+			ID:     uuid.New(),
+			Name:   *request.ArtistName,
+			UserID: userID,
 		}
 	}
 	return artist

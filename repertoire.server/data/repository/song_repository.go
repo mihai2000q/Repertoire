@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm/clause"
 	"repertoire/data/database"
 	"repertoire/model"
 
@@ -9,6 +10,8 @@ import (
 
 type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
+	GetWithSections(song *model.Song, id uuid.UUID) error
+	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.Song,
 		userID uuid.UUID,
@@ -44,6 +47,21 @@ func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.Find(&song, model.Song{ID: id}).Error
 }
 
+func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
+	return s.client.DB.
+		Preload(clause.Associations).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
+	return s.client.DB.
+		Preload("Sections.SongSectionType").
+		Preload(clause.Associations).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
 func (s songRepository) GetAllByUser(
 	songs *[]model.Song,
 	userID uuid.UUID,
@@ -58,6 +76,7 @@ func (s songRepository) GetAllByUser(
 		offset = (*currentPage - 1) * *pageSize
 	}
 	return s.client.DB.Model(&model.Song{}).
+		Preload(clause.Associations).
 		Where(model.Song{UserID: userID}).
 		Order(orderBy).
 		Offset(offset).

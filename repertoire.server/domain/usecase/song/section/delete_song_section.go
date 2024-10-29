@@ -20,7 +20,7 @@ func NewDeleteSongSection(repository repository.SongRepository) DeleteSongSectio
 
 func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
 	var song model.Song
-	err := d.songRepository.Get(&song, songID)
+	err := d.songRepository.GetWithSections(&song, songID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

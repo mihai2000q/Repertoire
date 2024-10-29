@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm/clause"
 	"repertoire/data/database"
 	"repertoire/model"
 
@@ -9,6 +10,7 @@ import (
 
 type AlbumRepository interface {
 	Get(album *model.Album, id uuid.UUID) error
+	GetWithAssociations(album *model.Album, id uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.Album,
 		userID uuid.UUID,
@@ -36,6 +38,10 @@ func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
 	return a.client.DB.Find(&album, model.Album{ID: id}).Error
 }
 
+func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID) error {
+	return a.client.DB.Preload(clause.Associations).Find(&album, model.Album{ID: id}).Error
+}
+
 func (a albumRepository) GetAllByUser(
 	albums *[]model.Album,
 	userID uuid.UUID,
@@ -50,6 +56,7 @@ func (a albumRepository) GetAllByUser(
 		offset = (*currentPage - 1) * *pageSize
 	}
 	return a.client.DB.Model(&model.Album{}).
+		Preload(clause.Associations).
 		Where(model.Album{UserID: userID}).
 		Order(orderBy).
 		Offset(offset).
