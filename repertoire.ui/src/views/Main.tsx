@@ -23,6 +23,7 @@ function Main(): ReactElement {
         }}
         px={'xl'}
         mt={45}
+        disabled={!useAuth()}
       >
         <Topbar />
         <Sidebar />
