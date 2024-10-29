@@ -28,6 +28,9 @@ describe('Songs', () => {
         totalCount: 3
       }
       return HttpResponse.json(response)
+    }),
+    http.get('/songs/1', async () => {
+      return HttpResponse.json(songs[0])
     })
   ]
 
@@ -64,7 +67,7 @@ describe('Songs', () => {
     await user.click(newSongButton)
 
     // Assert
-    expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it('should open the add new song modal when clicking the new song card button', async () => {
@@ -78,7 +81,21 @@ describe('Songs', () => {
     await user.click(newSongCardButton)
 
     // Assert
-    expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+  })
+
+  it('should open song drawer when clicking on song', async () => {
+    // Arrange
+    const song = songs[0]
+    const user = userEvent.setup()
+
+    // Act
+    reduxRender(<Songs />)
+
+    await user.click(await screen.findByTestId(`song-card-${song.id}`))
+
+    // Assert
+    expect(await screen.findByRole('heading', { name: song.title })).toBeInTheDocument()
   })
 
   it('should display not display some info when there are no songs', async () => {

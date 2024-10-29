@@ -40,7 +40,7 @@ function Songs(): ReactElement {
         {songs?.models.map((song) => (
           <SongCard key={song.id} song={song} openDrawer={openSongDrawer} />
         ))}
-        {songs?.totalCount > 0 && <NewSongCard openModal={open} />}
+        {songs?.totalCount > 0 && <NewSongCard openModal={openAddNewSongModal} />}
       </Group>
 
       <Space flex={1} />
