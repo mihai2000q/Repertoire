@@ -22,7 +22,9 @@ func TestDeleteSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *t
 	songID := uuid.New()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Get", new(model.Song), songID).Return(internalError).Once()
+	songRepository.On("GetWithSections", new(model.Song), songID).
+		Return(internalError).
+		Once()
 
 	// when
 	errCode := _uut.Handle(id, songID)
@@ -52,7 +54,9 @@ func TestDeleteSongSection_WhenDeleteSectionFails_ShouldReturnInternalServerErro
 			{ID: uuid.New(), Order: 1},
 		},
 	}
-	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
+	songRepository.On("GetWithSections", new(model.Song), songID).
+		Return(nil, song).
+		Once()
 
 	internalError := errors.New("internal error")
 	songRepository.On("DeleteSection", id).Return(internalError).Once()
@@ -85,7 +89,9 @@ func TestDeleteSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerErro
 			{ID: uuid.New(), Order: 1},
 		},
 	}
-	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
+	songRepository.On("GetWithSections", new(model.Song), songID).
+		Return(nil, song).
+		Once()
 
 	songRepository.On("DeleteSection", id).Return(nil).Once()
 
@@ -151,7 +157,9 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 			// given - mocking
 			song := &model.Song{ID: songID, Sections: tt.sections}
-			songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
+			songRepository.On("GetWithSections", new(model.Song), songID).
+				Return(nil, song).
+				Once()
 
 			songRepository.On("DeleteSection", tt.id).Return(nil).Once()
 

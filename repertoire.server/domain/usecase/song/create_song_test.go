@@ -176,10 +176,12 @@ func assertCreatedSong(t *testing.T, request requests.CreateSongRequest, song mo
 		assert.NotNil(t, song.Album)
 		assert.NotEmpty(t, song.Album.ID)
 		assert.Equal(t, *request.AlbumTitle, song.Album.Title)
+		assert.Equal(t, song.UserID, song.Album.UserID)
 	}
 	if request.ArtistName != nil {
 		assert.NotNil(t, song.Artist)
 		assert.NotEmpty(t, song.Artist.ID)
 		assert.Equal(t, *request.ArtistName, song.Artist.Name)
+		assert.Equal(t, song.UserID, song.Artist.UserID)
 	}
 }
