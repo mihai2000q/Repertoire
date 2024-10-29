@@ -44,6 +44,7 @@ describe('Songs', () => {
 
     expect(screen.getByRole('heading', { name: /songs/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new song/i })).toBeInTheDocument()
+    expect(screen.getByTestId('songs-loader')).toBeInTheDocument()
     expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
 
     expect(await screen.findByTestId('new-song-card')).toBeInTheDocument()

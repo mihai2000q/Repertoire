@@ -36,7 +36,7 @@ describe('Song Drawer', () => {
     reduxRender(<SongDrawer opened={true} close={() => {}} />, { songs: { songId: '1' } })
 
     expect(await screen.findByText(song.title)).toBeInTheDocument()
-    
+
     expect(screen.queryByTestId('song-drawer-loader')).not.toBeInTheDocument()
   })
 })

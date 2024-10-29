@@ -1,12 +1,13 @@
 import { ReactElement, useState } from 'react'
-import {Box, Button, Group, Loader, Pagination, Space, Stack, Text, Title} from '@mantine/core'
+import { Box, Button, Group, Loader, Pagination, Space, Stack, Text, Title } from '@mantine/core'
 import { useGetSongsQuery } from '../state/songsApi'
 import SongCard from '../components/songs/SongCard'
 import { IconMusicPlus } from '@tabler/icons-react'
 import NewSongCard from '../components/songs/NewSongCard'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/songs/modal/AddNewSongModal'
-import SongsLoader from "../components/songs/SongsLoader.tsx";
+import SongsLoader from '../components/songs/loader/SongsLoader.tsx'
+import SongDrawer from "../components/songs/SongDrawer.tsx";
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -15,18 +16,20 @@ function Songs(): ReactElement {
     currentPage: currentPage
   })
 
-  const [opened, { open, close }] = useDisclosure(false)
+  const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
+    useDisclosure(false)
+  const [openedSongDrawer, { open: openSongDrawer, close: closeSongDrawer }] = useDisclosure(false)
 
   return (
     <Stack h={'100%'} pt={'xs'}>
-      <AddNewSongModal opened={opened} onClose={close} />
+      <AddNewSongModal opened={openedAddNewSongModal} onClose={closeAddNewSongModal} />
 
       <Title order={3} fw={800}>
         Songs
       </Title>
 
       <Group>
-        <Button leftSection={<IconMusicPlus size={17} />} onClick={open}>
+        <Button leftSection={<IconMusicPlus size={17} />} onClick={openAddNewSongModal}>
           New Song
         </Button>
       </Group>
@@ -34,7 +37,9 @@ function Songs(): ReactElement {
       {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
       <Group>
         {isLoading && <SongsLoader />}
-        {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
+        {songs?.models.map((song) => (
+          <SongCard key={song.id} song={song} openDrawer={openSongDrawer} />
+        ))}
         {songs?.totalCount > 0 && <NewSongCard openModal={open} />}
       </Group>
 
@@ -52,6 +57,8 @@ function Songs(): ReactElement {
           <Loader size={25} />
         )}
       </Box>
+
+      <SongDrawer opened={openedSongDrawer} close={closeSongDrawer} />
     </Stack>
   )
 }

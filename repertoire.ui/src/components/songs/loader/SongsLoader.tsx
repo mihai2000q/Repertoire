@@ -2,7 +2,7 @@ import { Card, Group, Skeleton, Stack } from '@mantine/core'
 
 function SongsLoader() {
   return (
-    <Group>
+    <Group data-testid="songs-loader">
       {Array.from(Array(20)).map((_, i) => (
         <Card key={i} p="sm" shadow="md" h={253} w={175}>
           <Card.Section>
