@@ -5,14 +5,15 @@ import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import User from '../../types/models/User.ts'
-import {userEvent} from "@testing-library/user-event";
+import { userEvent } from '@testing-library/user-event'
 
 describe('Topbar', () => {
-  const render = () =>
+  const render = (token?: string | null) =>
     reduxRender(
       <AppShell>
         <Topbar />
-      </AppShell>
+      </AppShell>,
+      { auth: { token } }
     )
 
   const user: User = {
@@ -35,20 +36,23 @@ describe('Topbar', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display search bar and user avatar', async () => {
-    const [{ container }] = render()
+  it.each(['some token', undefined])(
+    'should render and display search bar and user avatar',
+    async (token) => {
+      const [{ container }] = render(token)
 
-    expect(screen.getByPlaceholderText('Search')).toBeInTheDocument()
-    expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
-    expect(await screen.findByTestId('user-button')).toBeInTheDocument()
-  })
+      expect(screen.getByPlaceholderText('Search')).toBeInTheDocument()
+      expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
+      expect(await screen.findByTestId('user-button')).toBeInTheDocument()
+    }
+  )
 
   it('should display menu when clicking on the user button', async () => {
     // Arrange
     const userEventDispatcher = userEvent.setup()
 
     // Act
-    render()
+    render('some token')
 
     const userButton = await screen.findByTestId('user-button')
     await userEventDispatcher.click(userButton)

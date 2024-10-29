@@ -5,11 +5,14 @@ import {IconCaretDownFilled, IconLogout2, IconSearch, IconSettings, IconUser} fr
 import { useAppDispatch } from '../../state/store.ts'
 import { signOut } from '../../state/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
+import useAuth from "../../hooks/useAuth.ts";
 
 function Topbar(): ReactElement {
   const dispatch = useAppDispatch()
 
-  const { data: user, isLoading } = useGetCurrentUserQuery()
+  const { data: user, isLoading } = useGetCurrentUserQuery(undefined, {
+    skip: !useAuth()
+  })
 
   function handleSignOut() {
     dispatch(signOut())
@@ -43,8 +46,8 @@ function Topbar(): ReactElement {
             <Menu.Dropdown>
               <Menu.Label>
                 <Stack gap={0}>
-                  <Text fw={400} c={'black'}>{user.name}</Text>
-                  <Text fz={'xs'} fw={300}>{user.email}</Text>
+                  <Text fw={400} c={'black'}>{user?.name}</Text>
+                  <Text fz={'xs'} fw={300}>{user?.email}</Text>
                 </Stack>
               </Menu.Label>
 
