@@ -20,7 +20,7 @@ func NewGetPlaylist(repository repository.PlaylistRepository) GetPlaylist {
 }
 
 func (g GetPlaylist) Handle(id uuid.UUID) (playlist model.Playlist, e *wrapper.ErrorCode) {
-	err := g.repository.Get(&playlist, id)
+	err := g.repository.GetWithAssociations(&playlist, id)
 	if err != nil {
 		return playlist, wrapper.InternalServerError(err)
 	}

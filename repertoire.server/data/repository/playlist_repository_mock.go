@@ -22,6 +22,16 @@ func (p *PlaylistRepositoryMock) Get(playlist *model.Playlist, id uuid.UUID) err
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
+	args := p.Called(playlist, id)
+
+	if len(args) > 1 {
+		*playlist = *args.Get(1).(*model.Playlist)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetAllByUser(
 	playlists *[]model.Playlist,
 	userID uuid.UUID,

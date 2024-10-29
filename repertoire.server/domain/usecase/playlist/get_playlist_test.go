@@ -20,7 +20,9 @@ func TestGetPlaylistQuery_WhenGetPlaylistFails_ShouldReturnInternalServerError(t
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("Get", new(model.Playlist), id).Return(internalError).Once()
+	playlistRepository.On("GetWithAssociations", new(model.Playlist), id).
+		Return(internalError).
+		Once()
 
 	// when
 	playlist, errCode := _uut.Handle(id)
@@ -42,7 +44,9 @@ func TestGetPlaylistQuery_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testi
 	}
 	id := uuid.New()
 
-	playlistRepository.On("Get", new(model.Playlist), id).Return(nil).Once()
+	playlistRepository.On("GetWithAssociations", new(model.Playlist), id).
+		Return(nil).
+		Once()
 
 	// when
 	playlist, errCode := _uut.Handle(id)
@@ -69,7 +73,9 @@ func TestGetPlaylistQuery_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 		Title: "Some Playlist",
 	}
 
-	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, expectedPlaylist).Once()
+	playlistRepository.On("GetWithAssociations", new(model.Playlist), id).
+		Return(nil, expectedPlaylist).
+		Once()
 
 	// when
 	playlist, errCode := _uut.Handle(id)
