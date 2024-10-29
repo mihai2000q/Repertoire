@@ -3,14 +3,20 @@ import { IconArrowDownLeft, IconArrowsDiagonal, IconX } from '@tabler/icons-reac
 
 function TitleBar() {
   function handleMinimize() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     window.electron.ipcRenderer.send('minimize')
   }
 
   function handleMaximize() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     window.electron.ipcRenderer.send('maximize')
   }
 
   function handleClose() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     window.electron.ipcRenderer.send('close')
   }
 
