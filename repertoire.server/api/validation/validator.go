@@ -58,6 +58,11 @@ func registerCustomValidators(validate *validator.Validate) error {
 		return err
 	}
 
+	err = validate.RegisterValidation("isDifficultyEnum", IsDifficultyEnum)
+	if err != nil {
+		return err
+	}
+
 	err = validate.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err

@@ -1,6 +1,10 @@
 package requests
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"repertoire/utils/enums"
+	"time"
+)
 
 type GetSongsRequest struct {
 	CurrentPage *int `validate:"required_with=PageSize,omitempty,gt=0"`
@@ -13,6 +17,8 @@ type CreateSongRequest struct {
 	Description    string
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
+	ReleaseDate    *time.Time
+	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
 	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle"`
@@ -28,6 +34,8 @@ type UpdateSongRequest struct {
 	IsRecorded     bool
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
+	ReleaseDate    *time.Time
+	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
 	AlbumID        *uuid.UUID
 	ArtistID       *uuid.UUID
