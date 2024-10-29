@@ -9,9 +9,9 @@ interface SongCardProps {
 
 function SongCard({ song }: SongCardProps) {
   return (
-    <Card data-testid={`song-card-${song.id}`} padding="sm" shadow="md" h={253} w={175}>
+    <Card data-testid={`song-card-${song.id}`} p="sm" shadow="md" h={253} w={175}>
       <Card.Section>
-        <Image src={demoSong} height={140} fit={'cover'} alt={song.title} />
+        <Image src={demoSong} height={150} fit={'cover'} alt={song.title} />
       </Card.Section>
 
       <Group justify="space-between" mt="sm" mb="xs">
