@@ -16,7 +16,7 @@ function Topbar(): ReactElement {
   }
 
   return (
-    <AppShell.Header px={'md'} withBorder={false}>
+    <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
       <Group justify={'space-between'} align={'center'} h={'100%'}>
         <Autocomplete
           placeholder="Search"
