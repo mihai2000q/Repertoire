@@ -6,8 +6,8 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "@ui/*": [
-        "../repertoire.ui/src/*"
+      "@ui/App": [
+        "../repertoire.ui/src/App"
       ]
     },
 
@@ -25,8 +25,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src",
-    "../repertoire.ui/src/*.tsx"
-  ]
+  "include": ["src"]
 }
