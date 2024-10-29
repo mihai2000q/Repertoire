@@ -23,15 +23,15 @@ function App(): ReactElement {
         <MantineProvider theme={theme} forceColorScheme={'light'}>
           <BrowserRouter>
             <Routes>
-              <Route path={'/'} element={<Navigate to={'home'} replace />} />
+              <Route element={<Main />}>
+                <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
-              <Route element={<IsAlreadyAuthenticated />}>
-                <Route path={'sign-in'} element={<SignIn />} />
-                <Route path={'sign-up'} element={<SignUp />} />
-              </Route>
+                <Route element={<IsAlreadyAuthenticated />}>
+                  <Route path={'sign-in'} element={<SignIn />} />
+                  <Route path={'sign-up'} element={<SignUp />} />
+                </Route>
 
-              <Route element={<RequireAuthentication />}>
-                <Route element={<Main />}>
+                <Route element={<RequireAuthentication />}>
                   <Route path={'home'} element={<Home />} />
                   <Route path={'songs'} element={<Songs />} />
 

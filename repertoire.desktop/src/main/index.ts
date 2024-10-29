@@ -1,7 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
   // Create the browser window.
@@ -10,11 +9,11 @@ function createWindow(): void {
     height: 720,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
-    }
+    },
+    titleBarStyle: 'hidden',
   })
   mainWindow.removeMenu()
 
@@ -34,6 +33,12 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html')).then()
   }
+
+  ipcMain.on('minimize', (_) =>
+    mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.minimize())
+  ipcMain.on('maximize', (_) =>
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize())
+  ipcMain.on('close', (_) => mainWindow.close())
 }
 
 // This method will be called when Electron has finished

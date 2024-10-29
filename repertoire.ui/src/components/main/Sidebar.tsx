@@ -8,7 +8,7 @@ function Sidebar(): ReactElement {
   const navigate = useNavigate()
 
   return (
-    <AppShell.Navbar py={'xl'} px={'lg'}>
+    <AppShell.Navbar py={'xl'} px={'lg'} top={'unset'}>
       {sidebarLinks.map((sidebarLink) => (
         <NavLink
           key={sidebarLink.label}

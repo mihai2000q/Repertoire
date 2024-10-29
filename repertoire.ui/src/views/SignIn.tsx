@@ -50,7 +50,7 @@ function SignIn(): ReactElement {
   }
 
   return (
-    <Container>
+    <Container h={'100%'}>
       <Center h={'90%'} style={{ flexDirection: 'column' }}>
         <Title ta="center" order={2}>
           Welcome back!
