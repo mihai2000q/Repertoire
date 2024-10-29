@@ -2,16 +2,33 @@ import Song from '../../types/models/Song'
 import demoSong from '../../assets/demoSong.jpg'
 import { Card, Group, Image, Text, Tooltip } from '@mantine/core'
 import { IconMicrophoneFilled } from '@tabler/icons-react'
+import { useAppDispatch } from '../../state/store.ts'
+import { setSongId } from '../../state/songsSlice.ts'
 
 interface SongCardProps {
   song: Song
+  openDrawer: () => void
 }
 
-function SongCard({ song }: SongCardProps) {
+function SongCard({ song, openDrawer }: SongCardProps) {
+  const dispatch = useAppDispatch()
+
+  function handleClick() {
+    openDrawer()
+    dispatch(setSongId(song.id))
+  }
+
   return (
-    <Card data-testid={`song-card-${song.id}`} p="sm" shadow="md" h={253} w={175}>
+    <Card
+      data-testid={`song-card-${song.id}`}
+      p="sm"
+      shadow="md"
+      h={253}
+      w={175}
+      onClick={handleClick}
+    >
       <Card.Section>
-        <Image src={demoSong} height={150} fit={'cover'} alt={song.title} />
+        <Image src={demoSong} h={150} alt={song.title} />
       </Card.Section>
 
       <Group justify="space-between" mt="sm" mb="xs">
