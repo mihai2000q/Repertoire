@@ -13,7 +13,9 @@ type StorageRouter struct {
 func (s StorageRouter) RegisterRoutes() {
 	api := s.requestHandler.Router.Group("/storage")
 	{
-		api.GET("", s.handler.Get)
+		api.GET("/files/:filePath", s.handler.Get)
+		api.POST("/upload", s.handler.Upload)
+		api.DELETE("/files/:filePath", s.handler.Delete)
 	}
 }
 
