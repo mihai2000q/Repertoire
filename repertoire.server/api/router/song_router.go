@@ -1,8 +1,8 @@
 package router
 
 import (
-	"repertoire/api/handler"
-	"repertoire/api/server"
+	"repertoire/server/api/handler"
+	"repertoire/server/api/server"
 )
 
 type SongRouter struct {

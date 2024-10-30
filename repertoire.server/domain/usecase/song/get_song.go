@@ -3,9 +3,9 @@ package song
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/data/repository"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
+	"repertoire/server/utils/wrapper"
 )
 
 type GetSong struct {

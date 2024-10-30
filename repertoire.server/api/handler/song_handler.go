@@ -2,10 +2,10 @@ package handler
 
 import (
 	"net/http"
-	"repertoire/api/requests"
-	"repertoire/api/server"
-	"repertoire/api/validation"
-	"repertoire/domain/service"
+	"repertoire/server/api/requests"
+	"repertoire/server/api/server"
+	"repertoire/server/api/validation"
+	"repertoire/server/domain/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

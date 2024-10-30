@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
-	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/model"
+	"repertoire/server/api/requests"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
 	"testing"
 )
 

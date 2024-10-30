@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"repertoire/model"
-	"repertoire/utils"
+	"repertoire/server/model"
+	"repertoire/server/utils"
 	"time"
 
 	"go.uber.org/fx"

@@ -3,7 +3,7 @@ package repository
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"repertoire/model"
+	"repertoire/server/model"
 )
 
 type UserRepositoryMock struct {

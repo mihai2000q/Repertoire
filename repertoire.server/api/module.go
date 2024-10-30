@@ -2,12 +2,12 @@ package api
 
 import (
 	"net/http"
-	"repertoire/api/handler"
-	"repertoire/api/middleware"
-	"repertoire/api/router"
-	"repertoire/api/routes"
-	"repertoire/api/server"
-	"repertoire/api/validation"
+	"repertoire/server/api/handler"
+	"repertoire/server/api/middleware"
+	"repertoire/server/api/router"
+	"repertoire/server/api/routes"
+	"repertoire/server/api/server"
+	"repertoire/server/api/validation"
 
 	"go.uber.org/fx"
 )

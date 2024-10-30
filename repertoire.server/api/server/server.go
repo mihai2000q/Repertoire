@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"repertoire/utils"
+	"repertoire/server/utils"
 )
 
 func NewServer(lc fx.Lifecycle, handler *RequestHandler, env utils.Env) *http.Server {

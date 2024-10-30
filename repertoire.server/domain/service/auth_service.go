@@ -1,9 +1,9 @@
 package service
 
 import (
-	"repertoire/api/requests"
-	"repertoire/domain/usecase/auth"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/requests"
+	"repertoire/server/domain/usecase/auth"
+	"repertoire/server/utils/wrapper"
 )
 
 type AuthService interface {

@@ -1,8 +1,8 @@
 package artist
 
 import (
-	"repertoire/data/repository"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/utils/wrapper"
 
 	"github.com/google/uuid"
 )

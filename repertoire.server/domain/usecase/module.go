@@ -1,13 +1,13 @@
 package usecase
 
 import (
-	"repertoire/domain/usecase/album"
-	"repertoire/domain/usecase/artist"
-	"repertoire/domain/usecase/auth"
-	"repertoire/domain/usecase/playlist"
-	"repertoire/domain/usecase/song"
-	"repertoire/domain/usecase/song/section"
-	"repertoire/domain/usecase/user"
+	"repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/auth"
+	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/user"
 
 	"go.uber.org/fx"
 )

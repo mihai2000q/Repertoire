@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
-	"repertoire/api/server"
-	"repertoire/api/validation"
-	"repertoire/domain/provider"
-	"repertoire/domain/service"
+	"repertoire/server/api/server"
+	"repertoire/server/api/validation"
+	"repertoire/server/domain/provider"
+	"repertoire/server/domain/service"
 )
 
 type UserHandler struct {

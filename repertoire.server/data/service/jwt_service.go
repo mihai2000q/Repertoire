@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"repertoire/model"
-	"repertoire/utils"
-	"repertoire/utils/wrapper"
+	"repertoire/server/model"
+	"repertoire/server/utils"
+	"repertoire/server/utils/wrapper"
 	"time"
 )
 

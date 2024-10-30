@@ -1,9 +1,9 @@
 package section
 
 import (
-	"repertoire/data/repository"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
+	"repertoire/server/utils/wrapper"
 
 	"github.com/google/uuid"
 )

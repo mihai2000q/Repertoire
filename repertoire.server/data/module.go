@@ -1,9 +1,9 @@
 package data
 
 import (
-	"repertoire/data/database"
-	"repertoire/data/repository"
-	"repertoire/data/service"
+	"repertoire/server/data/database"
+	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
 
 	"go.uber.org/fx"
 )

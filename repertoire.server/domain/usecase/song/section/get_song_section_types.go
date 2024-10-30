@@ -1,10 +1,10 @@
 package section
 
 import (
-	"repertoire/data/repository"
-	"repertoire/data/service"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/model"
+	"repertoire/server/utils/wrapper"
 )
 
 type GetSongSectionTypes struct {

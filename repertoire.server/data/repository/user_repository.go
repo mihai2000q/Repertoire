@@ -2,8 +2,8 @@ package repository
 
 import (
 	"github.com/google/uuid"
-	"repertoire/data/database"
-	"repertoire/model"
+	"repertoire/server/data/database"
+	"repertoire/server/model"
 )
 
 type UserRepository interface {

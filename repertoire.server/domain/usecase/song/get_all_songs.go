@@ -1,11 +1,11 @@
 package song
 
 import (
-	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/data/service"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/requests"
+	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/model"
+	"repertoire/server/utils/wrapper"
 )
 
 type GetAllSongs struct {

@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
-	"repertoire/data/repository"
-	"repertoire/data/service"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/model"
+	"repertoire/server/utils/wrapper"
 	"testing"
 )
 

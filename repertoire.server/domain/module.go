@@ -1,9 +1,9 @@
 package domain
 
 import (
-	"repertoire/domain/provider"
-	"repertoire/domain/service"
-	"repertoire/domain/usecase"
+	"repertoire/server/domain/provider"
+	"repertoire/server/domain/service"
+	"repertoire/server/domain/usecase"
 
 	"go.uber.org/fx"
 )

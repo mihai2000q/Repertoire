@@ -3,10 +3,10 @@ package section
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/requests"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
+	"repertoire/server/utils/wrapper"
 )
 
 type UpdateSongSection struct {

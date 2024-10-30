@@ -2,7 +2,7 @@ package requests
 
 import (
 	"github.com/stretchr/testify/assert"
-	"repertoire/api/validation"
+	"repertoire/server/api/validation"
 	"strings"
 	"testing"
 )
