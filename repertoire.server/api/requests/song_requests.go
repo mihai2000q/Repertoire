@@ -2,7 +2,7 @@ package requests
 
 import (
 	"github.com/google/uuid"
-	"repertoire/server/utils/enums"
+	"repertoire/server/internal/enums"
 	"time"
 )
 

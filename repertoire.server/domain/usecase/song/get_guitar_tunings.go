@@ -3,8 +3,8 @@ package song
 import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/utils/wrapper"
 )
 
 type GetGuitarTunings struct {

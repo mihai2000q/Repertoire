@@ -2,7 +2,7 @@ package album
 
 import (
 	"repertoire/server/data/repository"
-	"repertoire/server/utils/wrapper"
+	"repertoire/server/internal/wrapper"
 
 	"github.com/google/uuid"
 )

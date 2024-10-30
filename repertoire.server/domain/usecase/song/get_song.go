@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/utils/wrapper"
 )
 
 type GetSong struct {

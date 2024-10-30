@@ -3,8 +3,8 @@ package playlist
 import (
 	"errors"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/utils/wrapper"
 
 	"github.com/google/uuid"
 )

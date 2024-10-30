@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"repertoire/server/internal"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/utils"
-	"repertoire/server/utils/wrapper"
 	"time"
 )
 
@@ -18,10 +18,10 @@ type JwtService interface {
 }
 
 type jwtService struct {
-	env utils.Env
+	env internal.Env
 }
 
-func NewJwtService(env utils.Env) JwtService {
+func NewJwtService(env internal.Env) JwtService {
 	return &jwtService{
 		env: env,
 	}

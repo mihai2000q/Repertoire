@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/google/uuid"
 	"repertoire/server/domain/usecase/user"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/utils/wrapper"
 )
 
 type UserService interface {

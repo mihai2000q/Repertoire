@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/utils/wrapper"
 
 	"github.com/google/uuid"
 )

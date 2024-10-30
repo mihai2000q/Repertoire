@@ -3,7 +3,7 @@ package song
 import (
 	"github.com/google/uuid"
 	"repertoire/server/data/repository"
-	"repertoire/server/utils/wrapper"
+	"repertoire/server/internal/wrapper"
 )
 
 type DeleteSong struct {

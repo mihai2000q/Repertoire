@@ -5,12 +5,12 @@ import (
 	"repertoire/server/api"
 	"repertoire/server/data"
 	"repertoire/server/domain"
-	"repertoire/server/utils"
+	"repertoire/server/internal"
 )
 
 func main() {
 	fx.New(
-		fx.Provide(utils.NewEnv),
+		fx.Provide(internal.NewEnv),
 		data.Module,
 		domain.Module,
 		api.Module,

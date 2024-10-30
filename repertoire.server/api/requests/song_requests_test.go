@@ -2,7 +2,7 @@ package requests
 
 import (
 	"repertoire/server/api/validation"
-	"repertoire/server/utils/enums"
+	"repertoire/server/internal/enums"
 	"strings"
 	"testing"
 	"time"

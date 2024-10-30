@@ -7,15 +7,15 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"repertoire/storage/utils"
+	"repertoire/storage/internal"
 )
 
 type StorageHandler struct {
-	env utils.Env
+	env internal.Env
 }
 
 func NewStorageHandler(
-	env utils.Env,
+	env internal.Env,
 ) *StorageHandler {
 	return &StorageHandler{
 		env: env,
