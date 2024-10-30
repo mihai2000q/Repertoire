@@ -5,23 +5,19 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"repertoire/storage/domain/service"
 	"os"
 	"path/filepath"
 	"repertoire/storage/utils"
 )
 
 type StorageHandler struct {
-	service service.StorageService
 	env utils.Env
 }
 
 func NewStorageHandler(
-	service service.StorageService,
 	env utils.Env,
 ) *StorageHandler {
 	return &StorageHandler{
-		service: service,
 		env: env,
 	}
 }
