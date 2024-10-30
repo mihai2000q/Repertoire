@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"repertoire/api/validation"
+	"repertoire/server/api/validation"
 	"strings"
 	"testing"
 

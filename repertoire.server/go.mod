@@ -1,4 +1,4 @@
-module repertoire
+module repertoire/server
 
 go 1.23.1
 

@@ -3,9 +3,9 @@ package album
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/model"
+	"repertoire/server/api/requests"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
 	"testing"
 
 	"github.com/google/uuid"

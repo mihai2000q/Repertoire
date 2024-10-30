@@ -3,11 +3,11 @@ package artist
 import (
 	"errors"
 	"net/http"
-	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/data/service"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/requests"
+	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/internal/wrapper"
+	"repertoire/server/model"
 	"testing"
 
 	"github.com/google/uuid"

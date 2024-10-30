@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
-	"repertoire/utils/enums"
+	"repertoire/server/internal/enums"
 	"time"
 )
 

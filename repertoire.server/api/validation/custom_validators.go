@@ -1,7 +1,7 @@
 package validation
 
 import (
-	"repertoire/utils/enums"
+	"repertoire/server/internal/enums"
 	"slices"
 	"unicode"
 

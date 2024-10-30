@@ -2,8 +2,8 @@ package server
 
 import (
 	"net/http"
-	"repertoire/api/validation"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/validation"
+	"repertoire/server/internal/wrapper"
 	"strconv"
 	"strings"
 

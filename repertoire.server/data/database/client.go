@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"repertoire/model"
-	"repertoire/utils"
+	"repertoire/server/internal"
+	"repertoire/server/model"
 	"time"
 
 	"go.uber.org/fx"
@@ -17,7 +17,7 @@ type Client struct {
 	DB *gorm.DB
 }
 
-func NewClient(lc fx.Lifecycle, env utils.Env) Client {
+func NewClient(lc fx.Lifecycle, env internal.Env) Client {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		env.DatabaseHost,
 		env.DatabaseUser,
@@ -36,7 +36,7 @@ func NewClient(lc fx.Lifecycle, env utils.Env) Client {
 		log.Fatalf("Failed to connect database: %v", err)
 	}
 
-	if env.Environment == utils.DevelopmentEnvironment {
+	if env.Environment == internal.DevelopmentEnvironment {
 		lc.Append(fx.Hook{
 			OnStart: func(ctx context.Context) error {
 				return db.AutoMigrate(

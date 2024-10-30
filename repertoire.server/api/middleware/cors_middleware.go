@@ -3,33 +3,28 @@ package middleware
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"repertoire/utils"
-	"strings"
+	"repertoire/server/internal"
 )
 
 type CorsMiddleware struct {
-	env utils.Env
+	env internal.Env
 }
 
-func NewCorsMiddleware(env utils.Env) CorsMiddleware {
+func NewCorsMiddleware(env internal.Env) CorsMiddleware {
 	return CorsMiddleware{
 		env: env,
 	}
 }
 
 func (m CorsMiddleware) Handler() gin.HandlerFunc {
-	var allowOriginsFunc func(origin string) bool = nil
-	if m.env.Environment == utils.DevelopmentEnvironment {
-		allowOriginsFunc = func(origin string) bool {
-			return strings.HasPrefix(origin, "http://localhost:") ||
-				strings.HasPrefix(origin, "https://localhost:")
-		}
+	allowOrigins := []string{"https://yourdomain.com"}
+	if m.env.Environment == internal.DevelopmentEnvironment {
+		allowOrigins = []string{"*"}
 	}
 	config := cors.Config{
-		AllowOriginFunc: allowOriginsFunc,
-		AllowOrigins:    []string{"https://yourdomain.com"},
-		AllowMethods:    []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:    []string{"*"}, // []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowOrigins: allowOrigins,
+		AllowMethods: []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"*"}, // []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 	}
 
 	return cors.New(config)

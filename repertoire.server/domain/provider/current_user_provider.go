@@ -3,10 +3,10 @@ package provider
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/data/repository"
-	"repertoire/data/service"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/internal/wrapper"
+	"repertoire/server/model"
 )
 
 type CurrentUserProvider interface {

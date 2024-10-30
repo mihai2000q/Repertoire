@@ -1,8 +1,8 @@
 package playlist
 
 import (
-	"repertoire/data/repository"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/internal/wrapper"
 
 	"github.com/google/uuid"
 )

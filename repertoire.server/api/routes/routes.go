@@ -2,7 +2,7 @@ package routes
 
 import (
 	"context"
-	"repertoire/api/router"
+	"repertoire/server/api/router"
 
 	"go.uber.org/fx"
 )

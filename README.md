@@ -4,6 +4,7 @@
   * [Abstract](#abstract)
   * [Get Started](#get-started)
     * [Server](#server)
+    * [Storage](#storage)
     * [UI](#ui)
     * [Platform](#platform)
       * [Desktop](#desktop)
@@ -24,7 +25,7 @@ Songs can be measured how rehearsed they have been, whether they have been recor
 
 ## Get Started
 
-To get started on the application, you need the server, the UI and one of the platforms up and running.
+To get started on the application, you need the server, the storage, the UI and one of the platforms up and running.
 
 IF you have Go and Node installed, you can take the shortest route. 
 Fire the following shell script: `startup-web.sh` or `startup-desktop.sh`.
@@ -40,6 +41,12 @@ you can run the `run-container.sh` script to run all the docker containers.
 This is the HTTP Server of the application, and it does all the business logic and calls to the database.
 <br>
 For a detailed setup on the server of the application, check out the [documentation](repertoire.server/README.md).
+
+### Storage
+
+This is the Server that takes care of the storage of the application. It takes care of images, audios and other type of files.
+<br>
+For a detailed setup on the storage of the application, check out the [documentation](repertoire.storage/README.md).
 
 ### UI
 

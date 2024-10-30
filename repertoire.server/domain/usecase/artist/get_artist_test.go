@@ -3,8 +3,8 @@ package artist
 import (
 	"errors"
 	"net/http"
-	"repertoire/data/repository"
-	"repertoire/model"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
 	"testing"
 
 	"github.com/google/uuid"

@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"repertoire/data/service"
+	"repertoire/server/data/service"
 	"strings"
 )
 

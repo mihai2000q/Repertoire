@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"repertoire/model"
+	"repertoire/server/model"
 
 	"github.com/stretchr/testify/mock"
 

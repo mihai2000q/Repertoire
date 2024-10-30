@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"repertoire/api/middleware"
+	"repertoire/server/api/middleware"
 )
 
 type RequestHandler struct {
@@ -20,9 +20,9 @@ func NewRequestHandler(
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
 	engine.Use(corsMiddleware.Handler())
+	engine.Use(errorHandlerMiddleware.Handler())
 
 	publicRouter := engine.Group("/api")
-	publicRouter.Use(errorHandlerMiddleware.Handler())
 
 	var privateRouter = &gin.RouterGroup{}
 	*privateRouter = *publicRouter

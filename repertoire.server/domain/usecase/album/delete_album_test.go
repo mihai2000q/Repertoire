@@ -3,7 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
-	"repertoire/data/repository"
+	"repertoire/server/data/repository"
 	"testing"
 
 	"github.com/google/uuid"

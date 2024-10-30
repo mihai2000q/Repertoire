@@ -2,10 +2,10 @@ package section
 
 import (
 	"github.com/google/uuid"
-	"repertoire/api/requests"
-	"repertoire/data/repository"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/requests"
+	"repertoire/server/data/repository"
+	"repertoire/server/internal/wrapper"
+	"repertoire/server/model"
 )
 
 type CreateSongSection struct {

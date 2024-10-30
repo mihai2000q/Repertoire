@@ -1,10 +1,10 @@
 package service
 
 import (
-	"repertoire/api/requests"
-	"repertoire/domain/usecase/artist"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/api/requests"
+	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/internal/wrapper"
+	"repertoire/server/model"
 
 	"github.com/google/uuid"
 )

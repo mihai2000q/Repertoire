@@ -5,8 +5,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"repertoire/data/repository"
-	"repertoire/model"
+	"repertoire/server/data/repository"
+	"repertoire/server/model"
 	"testing"
 )
 

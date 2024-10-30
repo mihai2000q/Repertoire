@@ -3,9 +3,9 @@ package user
 import (
 	"errors"
 	"github.com/google/uuid"
-	"repertoire/data/repository"
-	"repertoire/model"
-	"repertoire/utils/wrapper"
+	"repertoire/server/data/repository"
+	"repertoire/server/internal/wrapper"
+	"repertoire/server/model"
 )
 
 type GetUser struct {

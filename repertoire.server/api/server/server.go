@@ -7,10 +7,10 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"repertoire/utils"
+	"repertoire/server/internal"
 )
 
-func NewServer(lc fx.Lifecycle, handler *RequestHandler, env utils.Env) *http.Server {
+func NewServer(lc fx.Lifecycle, handler *RequestHandler, env internal.Env) *http.Server {
 	server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort),
 		Handler: handler.Gin,
