@@ -11,6 +11,7 @@ type Env struct {
 	ApplicationHost string
 	ApplicationPort string
 	Environment     string
+	UploadDirectory string
 }
 
 func NewEnv() Env {
@@ -25,6 +26,7 @@ func NewEnv() Env {
 		ApplicationHost: os.Getenv("SERVER_HOST"),
 		ApplicationPort: os.Getenv("SERVER_PORT"),
 		Environment:     os.Getenv("ENV"),
+		UploadDirectory: os.Getenv("UPLOAD_DIRECTORY"),
 	}
 	return env
 }
