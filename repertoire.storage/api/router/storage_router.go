@@ -14,7 +14,7 @@ func (s StorageRouter) RegisterRoutes() {
 	api := s.requestHandler.Router.Group("/storage")
 	{
 		api.GET("/files/:filePath", s.handler.Get)
-		api.POST("/upload", s.handler.Upload)
+		api.PUT("/upload", s.handler.Upload)
 		api.DELETE("/files/:filePath", s.handler.Delete)
 	}
 }
