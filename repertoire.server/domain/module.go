@@ -10,6 +10,7 @@ import (
 
 var providers = fx.Options(
 	fx.Provide(provider.NewCurrentUserProvider),
+	fx.Provide(provider.NewStorageFilePathProvider),
 )
 
 var services = fx.Options(
