@@ -41,7 +41,7 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 		SetFormData(map[string]string{
 			"filePath": filePath,
 		}).
-		Post("upload")
+		Put("upload")
 
 	return err
 }
