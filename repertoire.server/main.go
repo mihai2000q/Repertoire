@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fx.New(
-		fx.Provide(internal.NewEnv),
+		internal.Module,
 		data.Module,
 		domain.Module,
 		api.Module,

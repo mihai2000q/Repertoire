@@ -8,20 +8,25 @@ import (
 )
 
 type Env struct {
-	ApplicationHost  string
-	ApplicationPort  string
-	Environment      string
+	ApplicationHost string
+	ApplicationPort string
+	Environment     string
+
 	DatabaseHost     string
 	DatabaseUser     string
 	DatabasePassword string
 	DatabaseName     string
 	DatabasePort     string
 	DatabaseSSLMode  string
-	LogOutput        string
-	LogLevel         string
-	JwtIssuer        string
-	JwtAudience      string
-	JwtSecretKey     string
+
+	LogOutput string
+	LogLevel  string
+
+	JwtIssuer    string
+	JwtAudience  string
+	JwtSecretKey string
+
+	StorageUrl string
 }
 
 func NewEnv() Env {
@@ -47,6 +52,7 @@ func NewEnv() Env {
 		JwtIssuer:        os.Getenv("JWT_ISSUER"),
 		JwtAudience:      os.Getenv("JWT_AUDIENCE"),
 		JwtSecretKey:     os.Getenv("JWT_SECRET_KEY"),
+		StorageUrl:       os.Getenv("STORAGE_SERVER_URL"),
 	}
 	return env
 }
