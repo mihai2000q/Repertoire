@@ -2,9 +2,11 @@ package service
 
 import (
 	"bytes"
+	"errors"
 	"github.com/go-resty/resty/v2"
 	"io"
 	"mime/multipart"
+	"net/http"
 )
 
 type StorageService interface {
@@ -35,15 +37,22 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 		return err
 	}
 
-	_, err = s.httpClient.R().
+	res, err := s.httpClient.R().
 		SetAuthToken(token).
 		SetFileReader("file", fileHeader.Filename, bytes.NewReader(buf.Bytes())).
 		SetFormData(map[string]string{
 			"filePath": filePath,
 		}).
 		Put("upload")
+	if err != nil {
+		return err
+	}
 
-	return err
+	if res.StatusCode() != http.StatusOK {
+		return errors.New("Storage Service - Upload failed: " + res.String())
+	}
+
+	return nil
 }
 
 func (s storageService) Delete(token string, filePath string) error {
