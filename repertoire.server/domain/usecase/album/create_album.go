@@ -29,9 +29,10 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *
 	}
 
 	album := model.Album{
-		ID:     uuid.New(),
-		Title:  request.Title,
-		UserID: userID,
+		ID:          uuid.New(),
+		Title:       request.Title,
+		ReleaseDate: request.ReleaseDate,
+		UserID:      userID,
 	}
 	err := c.repository.Create(&album)
 	if err != nil {

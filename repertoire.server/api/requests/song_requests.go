@@ -20,6 +20,7 @@ type CreateSongRequest struct {
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	TrackNo        *uint             `validate:"excluded_without_all=AlbumID AlbumTitle,omitempty,gt=0"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
 	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle"`
@@ -37,6 +38,7 @@ type UpdateSongRequest struct {
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	TrackNo        *uint             `validate:"excluded_without=AlbumID,omitempty,gt=0"`
 	GuitarTuningID *uuid.UUID
 	AlbumID        *uuid.UUID
 	ArtistID       *uuid.UUID

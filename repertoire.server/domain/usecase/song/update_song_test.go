@@ -81,10 +81,6 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	songRepository.On("Get", new(model.Song), request.ID).Return(nil, song).Once()
 	internalError := errors.New("internal error")
 	songRepository.On("Update", mock.IsType(song)).
-		Run(func(args mock.Arguments) {
-			newSong := args.Get(0).(*model.Song)
-			assertUpdatedSong(t, request, newSong)
-		}).
 		Return(internalError).
 		Once()
 
@@ -140,6 +136,7 @@ func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song *m
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
+	assert.Equal(t, request.TrackNo, song.TrackNo)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, request.ArtistID, song.ArtistID)
 	assert.Equal(t, request.AlbumID, song.AlbumID)

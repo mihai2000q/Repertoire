@@ -56,11 +56,6 @@ func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 	internalError := errors.New("internal error")
 	artistRepository.On("Create", mock.IsType(new(model.Artist))).
-		Run(func(args mock.Arguments) {
-			newArtist := args.Get(0).(*model.Artist)
-			assert.Equal(t, request.Name, newArtist.Name)
-			assert.Equal(t, userID, newArtist.UserID)
-		}).
 		Return(internalError).
 		Once()
 

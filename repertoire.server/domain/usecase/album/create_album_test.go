@@ -56,11 +56,6 @@ func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 	internalError := errors.New("internal error")
 	albumRepository.On("Create", mock.IsType(new(model.Album))).
-		Run(func(args mock.Arguments) {
-			newAlbum := args.Get(0).(*model.Album)
-			assert.Equal(t, request.Title, newAlbum.Title)
-			assert.Equal(t, userID, newAlbum.UserID)
-		}).
 		Return(internalError).
 		Once()
 
@@ -94,8 +89,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	albumRepository.On("Create", mock.IsType(new(model.Album))).
 		Run(func(args mock.Arguments) {
 			newAlbum := args.Get(0).(*model.Album)
-			assert.Equal(t, request.Title, newAlbum.Title)
-			assert.Equal(t, userID, newAlbum.UserID)
+			assertCreatedAlbum(t, *newAlbum, request, userID)
 		}).
 		Return(nil).
 		Once()
@@ -108,4 +102,15 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 	jwtService.AssertExpectations(t)
 	albumRepository.AssertExpectations(t)
+}
+
+func assertCreatedAlbum(
+	t *testing.T,
+	album model.Album,
+	request requests.CreateAlbumRequest,
+	userID uuid.UUID,
+) {
+	assert.Equal(t, request.Title, album.Title)
+	assert.Equal(t, request.ReleaseDate, album.ReleaseDate)
+	assert.Equal(t, userID, album.UserID)
 }
