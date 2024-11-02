@@ -22,8 +22,9 @@ type CreateSongRequest struct {
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
-	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle"`
-	AlbumTitle     *string                `validate:"omitempty,excluded_with=AlbumID,max=100"`
+	AlbumID        *uuid.UUID             `validate:"required_with=TrackNo,omitempty,excluded_with=AlbumTitle"`
+	AlbumTitle     *string                `validate:"required_with=TrackNo,omitempty,excluded_with=AlbumID,max=100"`
+	TrackNo        *uint                  `validate:"omitempty,gt=0"`
 	ArtistID       *uuid.UUID             `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
@@ -38,7 +39,8 @@ type UpdateSongRequest struct {
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
-	AlbumID        *uuid.UUID
+	AlbumID        *uuid.UUID `validate:"required_with=TrackNo"`
+	TrackNo        *uint      `validate:"omitempty,gt=0"`
 	ArtistID       *uuid.UUID
 }
 

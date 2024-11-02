@@ -1,9 +1,10 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal/enums"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Song struct {
@@ -16,6 +17,7 @@ type Song struct {
 	ReleaseDate   *time.Time        `json:"releaseDate"`
 	Difficulty    *enums.Difficulty `json:"difficulty"`
 	ImageURL      *string           `json:"imageUrl"`
+	TrackNo       *uint             `json:"trackNo"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`

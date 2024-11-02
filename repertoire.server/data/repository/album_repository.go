@@ -1,9 +1,11 @@
 package repository
 
 import (
-	"gorm.io/gorm/clause"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/google/uuid"
 )
@@ -39,7 +41,13 @@ func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
 }
 
 func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID) error {
-	return a.client.DB.Preload(clause.Associations).Find(&album, model.Album{ID: id}).Error
+	return a.client.DB.
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("songs.track_no")
+		}).
+		Preload(clause.Associations).
+		Find(&album, model.Album{ID: id}).
+		Error
 }
 
 func (a albumRepository) GetAllByUser(
