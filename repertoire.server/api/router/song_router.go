@@ -26,6 +26,7 @@ func (s SongRouter) RegisterRoutes() {
 		sectionsApi.GET("/types", s.handler.GetSectionTypes)
 		sectionsApi.POST("", s.handler.CreateSection)
 		sectionsApi.PUT("", s.handler.UpdateSection)
+		sectionsApi.PUT("/move", s.handler.MoveSection)
 		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
 	}
 }

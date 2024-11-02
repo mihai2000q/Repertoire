@@ -588,3 +588,67 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		})
 	}
 }
+
+func TestValidateMoveSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := MoveSongSectionRequest{
+		ID:     uuid.New(),
+		OverID: uuid.New(),
+		SongID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              MoveSongSectionRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			MoveSongSectionRequest{ID: uuid.Nil, OverID: uuid.New(), SongID: uuid.New()},
+			"ID",
+			"required",
+		},
+		// Over ID Test Cases
+		{
+			"Over ID is invalid because it's required",
+			MoveSongSectionRequest{ID: uuid.New(), OverID: uuid.Nil, SongID: uuid.New()},
+			"OverID",
+			"required",
+		},
+		// Song ID Test Cases
+		{
+			"Song ID is invalid because it's required",
+			MoveSongSectionRequest{ID: uuid.New(), OverID: uuid.New(), SongID: uuid.Nil},
+			"SongID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "MoveSongSectionRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, 400, errCode.Code)
+		})
+	}
+}

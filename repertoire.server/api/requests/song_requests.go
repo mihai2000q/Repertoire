@@ -1,9 +1,10 @@
 package requests
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal/enums"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type GetSongsRequest struct {
@@ -59,4 +60,10 @@ type UpdateSongSectionRequest struct {
 	Name       string    `validate:"required,max=30"`
 	Rehearsals uint
 	TypeID     uuid.UUID `validate:"required"`
+}
+
+type MoveSongSectionRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	OverID uuid.UUID `validate:"required"`
+	SongID uuid.UUID `validate:"required"`
 }
