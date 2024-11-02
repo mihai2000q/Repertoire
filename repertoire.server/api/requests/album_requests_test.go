@@ -4,6 +4,7 @@ import (
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -97,18 +98,36 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 var validAlbumTitle = "Justice For All"
 
 func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := CreateAlbumRequest{
-		Title: validAlbumTitle,
+	tests := []struct {
+		name    string
+		request CreateAlbumRequest
+	}{
+		{
+			"All Null",
+			CreateAlbumRequest{
+				Title: validAlbumTitle,
+			},
+		},
+		{
+			"All Filled",
+			CreateAlbumRequest{
+				Title:       validAlbumTitle,
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+			},
+		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// when
-	errCode := _uut.Validate(request)
+			// when
+			errCode := _uut.Validate(tt.request)
 
-	// then
-	assert.Nil(t, errCode)
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -151,19 +170,38 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 }
 
 func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := UpdateAlbumRequest{
-		ID:    uuid.New(),
-		Title: validAlbumTitle,
+	tests := []struct {
+		name    string
+		request UpdateAlbumRequest
+	}{
+		{
+			"All Null",
+			UpdateAlbumRequest{
+				ID:    uuid.New(),
+				Title: validAlbumTitle,
+			},
+		},
+		{
+			"All Filled",
+			UpdateAlbumRequest{
+				ID:          uuid.New(),
+				Title:       validAlbumTitle,
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+			},
+		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// when
-	errCode := _uut.Validate(request)
+			// when
+			errCode := _uut.Validate(tt.request)
 
-	// then
-	assert.Nil(t, errCode)
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateUpdateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {

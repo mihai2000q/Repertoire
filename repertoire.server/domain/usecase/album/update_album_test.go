@@ -81,10 +81,6 @@ func TestUpdateAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *tes
 	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, album).Once()
 	internalError := errors.New("internal error")
 	albumRepository.On("Update", mock.IsType(album)).
-		Run(func(args mock.Arguments) {
-			newAlbum := args.Get(0).(*model.Album)
-			assert.Equal(t, request.Title, newAlbum.Title)
-		}).
 		Return(internalError).
 		Once()
 
@@ -118,7 +114,7 @@ func TestUpdateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	albumRepository.On("Update", mock.IsType(album)).
 		Run(func(args mock.Arguments) {
 			newAlbum := args.Get(0).(*model.Album)
-			assert.Equal(t, request.Title, newAlbum.Title)
+			assertUpdatedAlbum(t, *newAlbum, request)
 		}).
 		Return(nil).
 		Once()
@@ -130,4 +126,13 @@ func TestUpdateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	albumRepository.AssertExpectations(t)
+}
+
+func assertUpdatedAlbum(
+	t *testing.T,
+	album model.Album,
+	request requests.UpdateAlbumRequest,
+) {
+	assert.Equal(t, request.Title, album.Title)
+	assert.Equal(t, request.ReleaseDate, album.ReleaseDate)
 }

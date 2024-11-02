@@ -1,6 +1,10 @@
 package requests
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type GetAlbumsRequest struct {
 	CurrentPage *int `validate:"required_with=PageSize,omitempty,gt=0"`
@@ -9,10 +13,12 @@ type GetAlbumsRequest struct {
 }
 
 type CreateAlbumRequest struct {
-	Title string `validate:"required,max=100"`
+	Title       string `validate:"required,max=100"`
+	ReleaseDate *time.Time
 }
 
 type UpdateAlbumRequest struct {
-	ID    uuid.UUID `validate:"required"`
-	Title string    `validate:"required,max=100"`
+	ID          uuid.UUID `validate:"required"`
+	Title       string    `validate:"required,max=100"`
+	ReleaseDate *time.Time
 }
