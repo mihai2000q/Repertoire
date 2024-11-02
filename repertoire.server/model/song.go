@@ -15,6 +15,7 @@ type Song struct {
 	SongsterrLink *string           `json:"songsterrLink"`
 	ReleaseDate   *time.Time        `json:"releaseDate"`
 	Difficulty    *enums.Difficulty `json:"difficulty"`
+	ImageURL      *string           `json:"imageUrl"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`

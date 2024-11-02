@@ -1,6 +1,7 @@
 package service
 
 import (
+	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
@@ -18,6 +19,8 @@ type SongService interface {
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 
+	SaveImage(file *multipart.FileHeader, songID uuid.UUID, token string) *wrapper.ErrorCode
+
 	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
@@ -32,6 +35,7 @@ type songService struct {
 	createSong          song.CreateSong
 	updateSong          song.UpdateSong
 	deleteSong          song.DeleteSong
+	saveImageToSong     song.SaveImageToSong
 	getSongSectionTypes section.GetSongSectionTypes
 	createSongSection   section.CreateSongSection
 	moveSongSection     section.MoveSongSection
@@ -46,6 +50,7 @@ func NewSongService(
 	createSong song.CreateSong,
 	updateSong song.UpdateSong,
 	deleteSong song.DeleteSong,
+	saveImageToSong song.SaveImageToSong,
 	getSongSectionTypes section.GetSongSectionTypes,
 	createSongSection section.CreateSongSection,
 	moveSongSection section.MoveSongSection,
@@ -59,6 +64,7 @@ func NewSongService(
 		createSong:          createSong,
 		updateSong:          updateSong,
 		deleteSong:          deleteSong,
+		saveImageToSong:     saveImageToSong,
 		getSongSectionTypes: getSongSectionTypes,
 		createSongSection:   createSongSection,
 		moveSongSection:     moveSongSection,
@@ -89,6 +95,12 @@ func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorC
 
 func (s *songService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return s.deleteSong.Handle(id)
+}
+
+// Images
+
+func (s *songService) SaveImage(file *multipart.FileHeader, songID uuid.UUID, token string) *wrapper.ErrorCode {
+	return s.saveImageToSong.Handle(file, songID, token)
 }
 
 // Sections

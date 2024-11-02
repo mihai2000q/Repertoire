@@ -89,6 +89,7 @@ The expected labels to use are:
 - **project** that is being updated:
   - **desktop** if the desktop is the topic of the issue
   - **server** if the server is the topic of the issue
+  - **storage** if the storage is the topic of the issue
   - **ui** if the ui is the topic of the issue
   - **web** if the web is the topic of the issue
 - **type** of the issue:
@@ -108,6 +109,7 @@ Based on the above label, the branch will have similar prefixes:
 
 - **desktop** for a _desktop_ issue
 - **server** for a _server_ issue
+- **storage** for a _storage_ issue
 - **ui** for an _ui_ issue
 - **web** for a _web_ issue
 - **build** for a _build_ issue
