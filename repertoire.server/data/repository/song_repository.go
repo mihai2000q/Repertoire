@@ -1,9 +1,11 @@
 package repository
 
 import (
-	"gorm.io/gorm/clause"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/google/uuid"
 )
@@ -23,6 +25,7 @@ type SongRepository interface {
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
+	UpdateWithAssociations(song *model.Song) error
 	Delete(id uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
@@ -49,13 +52,18 @@ func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 
 func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
-		Preload(clause.Associations).
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sections.order")
+		}).
 		Find(&song, model.Song{ID: id}).
 		Error
 }
 
 func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sections.order")
+		}).
 		Preload("Sections.SongSectionType").
 		Preload(clause.Associations).
 		Find(&song, model.Song{ID: id}).
@@ -106,6 +114,13 @@ func (s songRepository) Create(song *model.Song) error {
 
 func (s songRepository) Update(song *model.Song) error {
 	return s.client.DB.Save(&song).Error
+}
+
+func (s songRepository) UpdateWithAssociations(song *model.Song) error {
+	return s.client.DB.
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Updates(&song).
+		Error
 }
 
 func (s songRepository) Delete(id uuid.UUID) error {

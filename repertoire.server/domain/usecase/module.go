@@ -45,6 +45,7 @@ var playlistUseCases = fx.Options(
 var songUseCases = fx.Options(
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewGetSongSectionTypes),
+	fx.Provide(section.NewMoveSongSection),
 	fx.Provide(section.NewUpdateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
 

@@ -204,6 +204,23 @@ func (s SongHandler) UpdateSection(c *gin.Context) {
 	s.SendMessage(c, "song section has been updated successfully!")
 }
 
+func (s SongHandler) MoveSection(c *gin.Context) {
+	var request requests.MoveSongSectionRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.MoveSection(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song section has been moved successfully!")
+}
+
 func (s SongHandler) DeleteSection(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
