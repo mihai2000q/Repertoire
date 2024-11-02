@@ -81,10 +81,6 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	songRepository.On("Get", new(model.Song), request.ID).Return(nil, song).Once()
 	internalError := errors.New("internal error")
 	songRepository.On("Update", mock.IsType(song)).
-		Run(func(args mock.Arguments) {
-			newSong := args.Get(0).(*model.Song)
-			assertUpdatedSong(t, request, newSong)
-		}).
 		Return(internalError).
 		Once()
 

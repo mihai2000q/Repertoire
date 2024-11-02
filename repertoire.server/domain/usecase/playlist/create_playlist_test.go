@@ -56,12 +56,6 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 	internalError := errors.New("internal error")
 	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
-		Run(func(args mock.Arguments) {
-			newPlaylist := args.Get(0).(*model.Playlist)
-			assert.Equal(t, request.Title, newPlaylist.Title)
-			assert.Equal(t, request.Description, newPlaylist.Description)
-			assert.Equal(t, userID, newPlaylist.UserID)
-		}).
 		Return(internalError).
 		Once()
 
@@ -95,9 +89,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
 		Run(func(args mock.Arguments) {
 			newPlaylist := args.Get(0).(*model.Playlist)
-			assert.Equal(t, request.Title, newPlaylist.Title)
-			assert.Equal(t, request.Description, newPlaylist.Description)
-			assert.Equal(t, userID, newPlaylist.UserID)
+			assertCreatedPlaylist(t, *newPlaylist, request, userID)
 		}).
 		Return(nil).
 		Once()
@@ -110,4 +102,15 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 	jwtService.AssertExpectations(t)
 	playlistRepository.AssertExpectations(t)
+}
+
+func assertCreatedPlaylist(
+	t *testing.T,
+	playlist model.Playlist,
+	request requests.CreatePlaylistRequest,
+	userID uuid.UUID,
+) {
+	assert.Equal(t, request.Title, playlist.Title)
+	assert.Equal(t, request.Description, playlist.Description)
+	assert.Equal(t, userID, playlist.UserID)
 }

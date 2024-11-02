@@ -56,10 +56,6 @@ func TestCreateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 	internalError := errors.New("internal error")
 	songRepository.On("Create", mock.IsType(new(model.Song))).
-		Run(func(args mock.Arguments) {
-			newSong := args.Get(0).(*model.Song)
-			assertCreatedSong(t, request, *newSong, userID)
-		}).
 		Return(internalError).
 		Once()
 

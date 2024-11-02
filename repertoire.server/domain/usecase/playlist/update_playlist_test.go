@@ -81,11 +81,6 @@ func TestUpdatePlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerError(
 	playlistRepository.On("Get", new(model.Playlist), request.ID).Return(nil, playlist).Once()
 	internalError := errors.New("internal error")
 	playlistRepository.On("Update", mock.IsType(playlist)).
-		Run(func(args mock.Arguments) {
-			newPlaylist := args.Get(0).(*model.Playlist)
-			assert.Equal(t, request.Title, newPlaylist.Title)
-			assert.Equal(t, request.Description, newPlaylist.Description)
-		}).
 		Return(internalError).
 		Once()
 
@@ -119,8 +114,7 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	playlistRepository.On("Update", mock.IsType(playlist)).
 		Run(func(args mock.Arguments) {
 			newPlaylist := args.Get(0).(*model.Playlist)
-			assert.Equal(t, request.Title, newPlaylist.Title)
-			assert.Equal(t, request.Description, newPlaylist.Description)
+			assertUpdatedPlaylist(t, *newPlaylist, request)
 		}).
 		Return(nil).
 		Once()
@@ -132,4 +126,13 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	playlistRepository.AssertExpectations(t)
+}
+
+func assertUpdatedPlaylist(
+	t *testing.T,
+	playlist model.Playlist,
+	request requests.UpdatePlaylistRequest,
+) {
+	assert.Equal(t, request.Title, playlist.Title)
+	assert.Equal(t, request.Description, playlist.Description)
 }
