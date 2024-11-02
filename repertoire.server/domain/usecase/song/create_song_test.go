@@ -159,6 +159,7 @@ func assertCreatedSong(t *testing.T, request requests.CreateSongRequest, song mo
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
+	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, request.AlbumID, song.AlbumID)
 	assert.Equal(t, request.ArtistID, song.ArtistID)

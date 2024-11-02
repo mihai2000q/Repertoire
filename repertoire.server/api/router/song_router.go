@@ -21,6 +21,11 @@ func (s SongRouter) RegisterRoutes() {
 		api.DELETE("/:id", s.handler.Delete)
 	}
 
+	imagesApi := api.Group("/images")
+	{
+		imagesApi.PUT("", s.handler.SaveImage)
+	}
+
 	sectionsApi := api.Group("/sections")
 	{
 		sectionsApi.GET("/types", s.handler.GetSectionTypes)
