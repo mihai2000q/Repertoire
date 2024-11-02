@@ -52,13 +52,18 @@ func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 
 func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
-		Preload(clause.Associations).
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sections.order")
+		}).
 		Find(&song, model.Song{ID: id}).
 		Error
 }
 
 func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("sections.order")
+		}).
 		Preload("Sections.SongSectionType").
 		Preload(clause.Associations).
 		Find(&song, model.Song{ID: id}).
