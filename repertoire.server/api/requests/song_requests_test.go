@@ -128,9 +128,9 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				TrackNo:        &[]uint{3}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
-				TrackNo:        &[]uint{3}[0],
 				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
 				Sections: []CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
@@ -147,9 +147,9 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				SongsterrLink:  &[]string{"https://songsterr.com/some-other"}[0],
 				ReleaseDate:    &[]time.Time{time.Now()}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
+				TrackNo:        &[]uint{3}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle:     &[]string{"New Album Title"}[0],
-				TrackNo:        &[]uint{3}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
 				Sections: []CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
@@ -221,6 +221,26 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			[]string{"Difficulty"},
 			[]string{"isDifficultyEnum"},
 		},
+		// TrackNo Test Cases
+		{
+			"TrackNo is invalid because it is should be greater than 0",
+			CreateSongRequest{
+				Title:   validSongTitle,
+				TrackNo: &[]uint{0}[0],
+				AlbumID: &[]uuid.UUID{uuid.New()}[0],
+			},
+			[]string{"TrackNo"},
+			[]string{"gt"},
+		},
+		{
+			"TrackNo is invalid because it requires either AlbumID or AlbumTitle to be set",
+			CreateSongRequest{
+				Title:   validSongTitle,
+				TrackNo: &[]uint{0}[0],
+			},
+			[]string{"TrackNo"},
+			[]string{"excluded_without_all"},
+		},
 		// Album ID and Album Title Test Case
 		{
 			"Album Title and ID are invalid because only one can be set at a time",
@@ -231,15 +251,6 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			[]string{"AlbumID", "AlbumTitle"},
 			[]string{"excluded_with", "excluded_with"},
-		},
-		{
-			"Album Title and ID are invalid because they are not set while the TrackNo is set",
-			CreateSongRequest{
-				Title:   validSongTitle,
-				TrackNo: &[]uint{1}[0],
-			},
-			[]string{"AlbumID", "AlbumTitle"},
-			[]string{"required_with", "required_with"},
 		},
 		// Artist ID and Artist Title Test Case
 		{
@@ -345,9 +356,9 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				ReleaseDate:    &[]time.Time{time.Now()}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
+				TrackNo:        &[]uint{3}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
-				TrackNo:        &[]uint{3}[0],
 				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
@@ -425,17 +436,6 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Difficulty",
 			"isDifficultyEnum",
 		},
-		// Album ID Test Cases
-		{
-			"Album ID is invalid because it is null while the TrackNo is set",
-			UpdateSongRequest{
-				ID:      uuid.New(),
-				Title:   validSongTitle,
-				TrackNo: &[]uint{1}[0],
-			},
-			"AlbumID",
-			"required_with",
-		},
 		// TrackNo Test Cases
 		{
 			"TrackNo is invalid because it has to be bigger than 0",
@@ -447,6 +447,16 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			"TrackNo",
 			"gt",
+		},
+		{
+			"TrackNo is invalid because it requires AlbumID",
+			UpdateSongRequest{
+				ID:      uuid.New(),
+				Title:   validSongTitle,
+				TrackNo: &[]uint{1}[0],
+			},
+			"TrackNo",
+			"excluded_without",
 		},
 	}
 	for _, tt := range tests {

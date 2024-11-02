@@ -20,11 +20,11 @@ type CreateSongRequest struct {
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	TrackNo        *uint             `validate:"excluded_without_all=AlbumID AlbumTitle,omitempty,gt=0"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
-	AlbumID        *uuid.UUID             `validate:"required_with=TrackNo,omitempty,excluded_with=AlbumTitle"`
-	AlbumTitle     *string                `validate:"required_with=TrackNo,omitempty,excluded_with=AlbumID,max=100"`
-	TrackNo        *uint                  `validate:"omitempty,gt=0"`
+	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle"`
+	AlbumTitle     *string                `validate:"omitempty,excluded_with=AlbumID,max=100"`
 	ArtistID       *uuid.UUID             `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
@@ -38,9 +38,9 @@ type UpdateSongRequest struct {
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	TrackNo        *uint             `validate:"excluded_without=AlbumID,omitempty,gt=0"`
 	GuitarTuningID *uuid.UUID
-	AlbumID        *uuid.UUID `validate:"required_with=TrackNo"`
-	TrackNo        *uint      `validate:"omitempty,gt=0"`
+	AlbumID        *uuid.UUID
 	ArtistID       *uuid.UUID
 }
 

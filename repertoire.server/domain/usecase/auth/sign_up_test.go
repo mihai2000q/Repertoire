@@ -224,7 +224,7 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	var user *model.User
 	userRepository.On("Create", mock.IsType(user)).
 		Run(func(args mock.Arguments) {
-			user := args.Get(0).(*model.User)
+			user = args.Get(0).(*model.User)
 			assertCreatedUser(t, *user, request, hashedPassword)
 		}).
 		Return(nil).
