@@ -23,10 +23,10 @@ func NewStorageFilePathProvider(env internal.Env) StorageFilePathProvider {
 
 func (s storageFilePathProvider) GetSongImagePathAndURL(file *multipart.FileHeader, songID uuid.UUID) (string, string) {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := "/songs/" + songID.String() + fileExtension
+	filePath := "songs/" + songID.String() + fileExtension
 	return filePath, s.getBaseURL() + filePath
 }
 
 func (s storageFilePathProvider) getBaseURL() string {
-	return s.env.StorageUrl + "/files"
+	return s.env.StorageUrl + "/files/"
 }
