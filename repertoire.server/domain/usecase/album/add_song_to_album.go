@@ -1,6 +1,8 @@
 package album
 
 import (
+	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -8,8 +10,8 @@ import (
 )
 
 type AddSongToAlbum struct {
-	albumRepository repository.AlbumRepository
-	repository      repository.SongRepository
+	repository     repository.AlbumRepository
+	songRepository repository.SongRepository
 }
 
 func NewAddSongToAlbum(
@@ -17,20 +19,23 @@ func NewAddSongToAlbum(
 	repository repository.SongRepository,
 ) AddSongToAlbum {
 	return AddSongToAlbum{
-		albumRepository: albumRepository,
-		repository:      repository,
+		repository:     albumRepository,
+		songRepository: repository,
 	}
 }
 
 func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.Get(&song, request.SongID)
+	err := a.songRepository.Get(&song, request.SongID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
+	if reflect.ValueOf(song).IsZero() {
+		return wrapper.NotFoundError(errors.New("song not found"))
+	}
 
 	var count int64
-	err = a.albumRepository.CountSongs(&count, &request.ID)
+	err = a.repository.CountSongs(&count, &request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -39,7 +44,7 @@ func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.
 	trackNo := uint(count) + 1
 	song.AlbumTrackNo = &trackNo
 
-	err = a.repository.Update(&song)
+	err = a.songRepository.Update(&song)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

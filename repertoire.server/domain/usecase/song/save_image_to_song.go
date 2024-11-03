@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"mime/multipart"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
@@ -36,7 +37,7 @@ func (a SaveImageToSong) Handle(file *multipart.FileHeader, songID uuid.UUID, to
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if song.ID == uuid.Nil {
+	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 

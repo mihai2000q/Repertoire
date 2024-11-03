@@ -3,6 +3,7 @@ package album
 import (
 	"errors"
 	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -23,7 +24,7 @@ func (m MoveSongFromAlbum) Handle(request requests.MoveSongFromAlbumRequest) *wr
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if album.ID == uuid.Nil {
+	if reflect.ValueOf(album).IsZero() {
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 

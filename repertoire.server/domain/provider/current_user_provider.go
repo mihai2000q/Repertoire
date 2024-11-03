@@ -2,7 +2,7 @@ package provider
 
 import (
 	"errors"
-	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
@@ -38,7 +38,7 @@ func (c *currentUserProvider) Get(token string) (user model.User, e *wrapper.Err
 	if err != nil {
 		return user, wrapper.InternalServerError(err)
 	}
-	if user.ID == uuid.Nil {
+	if reflect.ValueOf(user).IsZero() {
 		return user, wrapper.NotFoundError(errors.New("user not found"))
 	}
 

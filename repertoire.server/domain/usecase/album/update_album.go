@@ -2,12 +2,11 @@ package album
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type UpdateAlbum struct {
@@ -24,7 +23,7 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if album.ID == uuid.Nil {
+	if reflect.ValueOf(album).IsZero() {
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 

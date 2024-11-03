@@ -2,7 +2,7 @@ package auth
 
 import (
 	"errors"
-	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -35,7 +35,7 @@ func (r *Refresh) Handle(request requests.RefreshRequest) (string, *wrapper.Erro
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
-	if user.ID == uuid.Nil {
+	if reflect.ValueOf(user).IsZero() {
 		return "", wrapper.UnauthorizedError(errors.New("not authorized"))
 	}
 

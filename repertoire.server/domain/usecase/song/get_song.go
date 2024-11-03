@@ -3,6 +3,7 @@ package song
 import (
 	"errors"
 	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -23,7 +24,7 @@ func (g GetSong) Handle(id uuid.UUID) (song model.Song, e *wrapper.ErrorCode) {
 	if err != nil {
 		return song, wrapper.InternalServerError(err)
 	}
-	if song.ID == uuid.Nil {
+	if reflect.ValueOf(song).IsZero() {
 		return song, wrapper.NotFoundError(errors.New("song not found"))
 	}
 	return song, nil
