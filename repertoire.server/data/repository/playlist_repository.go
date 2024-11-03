@@ -25,6 +25,7 @@ type PlaylistRepository interface {
 	AddSong(playlist *model.Playlist, song *model.Song) error
 	Update(playlist *model.Playlist) error
 	Delete(id uuid.UUID) error
+	RemoveSong(playlist *model.Playlist, song *model.Song) error
 }
 
 type playlistRepository struct {
@@ -97,4 +98,8 @@ func (p playlistRepository) Update(playlist *model.Playlist) error {
 
 func (p playlistRepository) Delete(id uuid.UUID) error {
 	return p.client.DB.Delete(&model.Playlist{}, id).Error
+}
+
+func (p playlistRepository) RemoveSong(playlist *model.Playlist, song *model.Song) error {
+	return p.client.DB.Model(&playlist).Association("Songs").Delete(&song)
 }

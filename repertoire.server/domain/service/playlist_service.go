@@ -12,19 +12,21 @@ import (
 type PlaylistService interface {
 	AddSong(request requests.AddSongToPlaylistRequest) *wrapper.ErrorCode
 	Create(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
 	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode)
+	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode
-	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type playlistService struct {
-	addSongToPlaylist playlist.AddSongToPlaylist
-	createPlaylist    playlist.CreatePlaylist
-	deletePlaylist    playlist.DeletePlaylist
-	getPlaylist       playlist.GetPlaylist
-	getAllPlaylists   playlist.GetAllPlaylists
-	updatePlaylist    playlist.UpdatePlaylist
+	addSongToPlaylist      playlist.AddSongToPlaylist
+	createPlaylist         playlist.CreatePlaylist
+	deletePlaylist         playlist.DeletePlaylist
+	getPlaylist            playlist.GetPlaylist
+	getAllPlaylists        playlist.GetAllPlaylists
+	removeSongFromPlaylist playlist.RemoveSongFromPlaylist
+	updatePlaylist         playlist.UpdatePlaylist
 }
 
 func NewPlaylistService(
@@ -33,15 +35,17 @@ func NewPlaylistService(
 	deletePlaylist playlist.DeletePlaylist,
 	getPlaylist playlist.GetPlaylist,
 	getAllPlaylists playlist.GetAllPlaylists,
+	removeSongFromPlaylist playlist.RemoveSongFromPlaylist,
 	updatePlaylist playlist.UpdatePlaylist,
 ) PlaylistService {
 	return &playlistService{
-		addSongToPlaylist: addSongToPlaylist,
-		createPlaylist:    createPlaylist,
-		deletePlaylist:    deletePlaylist,
-		getPlaylist:       getPlaylist,
-		getAllPlaylists:   getAllPlaylists,
-		updatePlaylist:    updatePlaylist,
+		addSongToPlaylist:      addSongToPlaylist,
+		createPlaylist:         createPlaylist,
+		deletePlaylist:         deletePlaylist,
+		getPlaylist:            getPlaylist,
+		getAllPlaylists:        getAllPlaylists,
+		removeSongFromPlaylist: removeSongFromPlaylist,
+		updatePlaylist:         updatePlaylist,
 	}
 }
 
@@ -63,6 +67,10 @@ func (p *playlistService) Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
 
 func (p *playlistService) GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode) {
 	return p.getAllPlaylists.Handle(request, token)
+}
+
+func (p *playlistService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+	return p.removeSongFromPlaylist.Handle(id, songID)
 }
 
 func (p *playlistService) Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode {

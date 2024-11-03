@@ -87,3 +87,8 @@ func (p *PlaylistRepositoryMock) Delete(id uuid.UUID) error {
 	args := p.Called(id)
 	return args.Error(0)
 }
+
+func (p *PlaylistRepositoryMock) RemoveSong(playlist *model.Playlist, song *model.Song) error {
+	args := p.Called(playlist, song)
+	return args.Error(0)
+}

@@ -120,9 +120,7 @@ func (p PlaylistHandler) Update(c *gin.Context) {
 }
 
 func (p PlaylistHandler) Delete(c *gin.Context) {
-	paramId := c.Param("id")
-
-	id, err := uuid.Parse(paramId)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -135,4 +133,26 @@ func (p PlaylistHandler) Delete(c *gin.Context) {
 	}
 
 	p.SendMessage(c, "playlist has been deleted successfully")
+}
+
+func (p PlaylistHandler) RemoveSong(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	songId, err := uuid.Parse(c.Param("songId"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := p.service.RemoveSong(id, songId)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "song has been removed from playlist successfully")
 }
