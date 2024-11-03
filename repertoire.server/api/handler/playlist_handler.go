@@ -142,13 +142,13 @@ func (p PlaylistHandler) RemoveSong(c *gin.Context) {
 		return
 	}
 
-	songId, err := uuid.Parse(c.Param("songId"))
+	songID, err := uuid.Parse(c.Param("songID"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	errorCode := p.service.RemoveSong(id, songId)
+	errorCode := p.service.RemoveSong(id, songID)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

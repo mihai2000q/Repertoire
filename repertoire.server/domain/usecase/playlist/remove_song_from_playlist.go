@@ -23,20 +23,20 @@ func NewRemoveSongFromPlaylist(
 	}
 }
 
-func (a RemoveSongFromPlaylist) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+func (r RemoveSongFromPlaylist) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
 	var playlist model.Playlist
-	err := a.repository.Get(&playlist, id)
+	err := r.repository.Get(&playlist, id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
 	var song model.Song
-	err = a.songRepository.Get(&song, songID)
+	err = r.songRepository.Get(&song, songID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = a.repository.RemoveSong(&playlist, &song)
+	err = r.repository.RemoveSong(&playlist, &song)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
