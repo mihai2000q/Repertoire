@@ -37,7 +37,6 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		SongsterrLink:  request.SongsterrLink,
 		ReleaseDate:    request.ReleaseDate,
 		Difficulty:     request.Difficulty,
-		TrackNo:        request.TrackNo,
 		GuitarTuningID: request.GuitarTuningID,
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
