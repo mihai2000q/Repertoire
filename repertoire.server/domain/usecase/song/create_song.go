@@ -40,28 +40,22 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 		GuitarTuningID: request.GuitarTuningID,
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
-		Album:          c.createAlbum(request, userID),
 		Artist:         c.createArtist(request, userID),
 		Sections:       c.createSections(request.Sections, songID),
 		UserID:         userID,
 	}
-	err := c.repository.Create(&song)
+	c.createAlbum(&song, request)
+
+	err := c.addToAlbum(&song, request.AlbumID)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	err = c.repository.Create(&song)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 	return nil
-}
-
-func (c CreateSong) createAlbum(request requests.CreateSongRequest, userID uuid.UUID) *model.Album {
-	var album *model.Album
-	if request.AlbumTitle != nil {
-		album = &model.Album{
-			ID:     uuid.New(),
-			Title:  *request.AlbumTitle,
-			UserID: userID,
-		}
-	}
-	return album
 }
 
 func (c CreateSong) createArtist(request requests.CreateSongRequest, userID uuid.UUID) *model.Artist {
@@ -88,4 +82,34 @@ func (c CreateSong) createSections(request []requests.CreateSectionRequest, song
 		})
 	}
 	return sections
+}
+
+func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongRequest) {
+	if request.AlbumTitle == nil {
+		return
+	}
+	song.Album = &model.Album{
+		ID:     uuid.New(),
+		Title:  *request.AlbumTitle,
+		UserID: song.UserID,
+	}
+	song.AlbumTrackNo = &[]uint{1}[0]
+}
+
+func (c CreateSong) addToAlbum(song *model.Song, albumID *uuid.UUID) error {
+	if albumID == nil {
+		return nil
+	}
+
+	var count int64
+	err := c.repository.CountByAlbum(&count, albumID)
+	if err != nil {
+		return err
+	}
+
+	song.AlbumID = albumID
+	trackNo := uint(count) + 1
+	song.AlbumTrackNo = &trackNo
+
+	return nil
 }
