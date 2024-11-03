@@ -30,13 +30,15 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 		return a.ID == id
 	})
 
-	song.Sections = append(song.Sections[:index], song.Sections[index+1:]...)
-
-	for i := index; i < len(song.Sections); i++ {
+	for i := index + 1; i < len(song.Sections); i++ {
 		song.Sections[i].Order = song.Sections[i].Order - 1
 	}
 
 	err = d.songRepository.UpdateWithAssociations(&song)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+	err = d.songRepository.DeleteSection(id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

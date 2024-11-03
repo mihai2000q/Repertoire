@@ -75,6 +75,44 @@ func TestDeleteSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 	songRepository.AssertExpectations(t)
 }
 
+func TestDeleteSongSection_WhenDeleteSectionFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := DeleteSongSection{
+		songRepository: songRepository,
+	}
+	id := uuid.New()
+	songID := uuid.New()
+
+	// given - mocking
+	song := &model.Song{
+		ID: songID,
+		Sections: []model.SongSection{
+			{ID: id, Order: 0},
+		},
+	}
+	songRepository.On("GetWithSections", new(model.Song), songID).
+		Return(nil, song).
+		Once()
+
+	songRepository.On("UpdateWithAssociations", mock.IsType(song)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	songRepository.On("DeleteSection", id).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(id, songID)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
@@ -117,6 +155,8 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 		}).
 		Return(nil).
 		Once()
+
+	songRepository.On("DeleteSection", id).Return(nil).Once()
 
 	// when
 	errCode := _uut.Handle(id, songID)
