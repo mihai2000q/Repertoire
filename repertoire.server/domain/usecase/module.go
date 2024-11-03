@@ -43,20 +43,21 @@ var playlistUseCases = fx.Options(
 )
 
 var songUseCases = fx.Options(
-	fx.Provide(section.NewCreateSongSection),
-	fx.Provide(section.NewGetSongSectionTypes),
-	fx.Provide(section.NewMoveSongSection),
-	fx.Provide(section.NewUpdateSongSection),
-	fx.Provide(section.NewDeleteSongSection),
-
-	fx.Provide(song.NewSaveImageToSong),
-
+	fx.Provide(song.NewAddSongToAlbum),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewGetAllSongs),
 	fx.Provide(song.NewGetGuitarTunings),
 	fx.Provide(song.NewUpdateSong),
+
+	fx.Provide(song.NewSaveImageToSong),
+
+	fx.Provide(section.NewCreateSongSection),
+	fx.Provide(section.NewDeleteSongSection),
+	fx.Provide(section.NewGetSongSectionTypes),
+	fx.Provide(section.NewMoveSongSection),
+	fx.Provide(section.NewUpdateSongSection),
 )
 
 var userUseCases = fx.Options(

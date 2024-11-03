@@ -12,12 +12,13 @@ import (
 )
 
 type SongService interface {
+	AddToAlbum(requests.AddSongToAlbumRequest) *wrapper.ErrorCode
+	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
-	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
-	Delete(id uuid.UUID) *wrapper.ErrorCode
 
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID, token string) *wrapper.ErrorCode
 
@@ -29,13 +30,16 @@ type SongService interface {
 }
 
 type songService struct {
-	getSong             song.GetSong
-	getAllSongs         song.GetAllSongs
-	getGuitarTunings    song.GetGuitarTunings
-	createSong          song.CreateSong
-	updateSong          song.UpdateSong
-	deleteSong          song.DeleteSong
-	saveImageToSong     song.SaveImageToSong
+	addSongToAlbum   song.AddSongToAlbum
+	createSong       song.CreateSong
+	deleteSong       song.DeleteSong
+	getSong          song.GetSong
+	getAllSongs      song.GetAllSongs
+	getGuitarTunings song.GetGuitarTunings
+	updateSong       song.UpdateSong
+
+	saveImageToSong song.SaveImageToSong
+
 	getSongSectionTypes section.GetSongSectionTypes
 	createSongSection   section.CreateSongSection
 	moveSongSection     section.MoveSongSection
@@ -44,13 +48,16 @@ type songService struct {
 }
 
 func NewSongService(
+	addSongToAlbum song.AddSongToAlbum,
+	createSong song.CreateSong,
+	deleteSong song.DeleteSong,
 	getSong song.GetSong,
 	getAllSongs song.GetAllSongs,
 	getGuitarTunings song.GetGuitarTunings,
-	createSong song.CreateSong,
 	updateSong song.UpdateSong,
-	deleteSong song.DeleteSong,
+
 	saveImageToSong song.SaveImageToSong,
+
 	getSongSectionTypes section.GetSongSectionTypes,
 	createSongSection section.CreateSongSection,
 	moveSongSection section.MoveSongSection,
@@ -58,19 +65,34 @@ func NewSongService(
 	deleteSongSection section.DeleteSongSection,
 ) SongService {
 	return &songService{
-		getSong:             getSong,
-		getAllSongs:         getAllSongs,
-		getGuitarTunings:    getGuitarTunings,
-		createSong:          createSong,
-		updateSong:          updateSong,
-		deleteSong:          deleteSong,
-		saveImageToSong:     saveImageToSong,
+		addSongToAlbum:   addSongToAlbum,
+		createSong:       createSong,
+		deleteSong:       deleteSong,
+		getSong:          getSong,
+		getAllSongs:      getAllSongs,
+		getGuitarTunings: getGuitarTunings,
+		updateSong:       updateSong,
+
+		saveImageToSong: saveImageToSong,
+
 		getSongSectionTypes: getSongSectionTypes,
 		createSongSection:   createSongSection,
 		moveSongSection:     moveSongSection,
 		updateSongSection:   updateSongSection,
 		deleteSongSection:   deleteSongSection,
 	}
+}
+
+func (s *songService) AddToAlbum(request requests.AddSongToAlbumRequest) *wrapper.ErrorCode {
+	return s.addSongToAlbum.Handle(request)
+}
+
+func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
+	return s.createSong.Handle(request, token)
+}
+
+func (s *songService) Delete(id uuid.UUID) *wrapper.ErrorCode {
+	return s.deleteSong.Handle(id)
 }
 
 func (s *songService) Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode) {
@@ -85,16 +107,8 @@ func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wra
 	return s.getGuitarTunings.Handle(token)
 }
 
-func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
-	return s.createSong.Handle(request, token)
-}
-
 func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorCode {
 	return s.updateSong.Handle(request)
-}
-
-func (s *songService) Delete(id uuid.UUID) *wrapper.ErrorCode {
-	return s.deleteSong.Handle(id)
 }
 
 // Images
