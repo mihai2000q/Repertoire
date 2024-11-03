@@ -85,6 +85,23 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 	p.SendMessage(c, "playlist has been created successfully")
 }
 
+func (p PlaylistHandler) AddSong(c *gin.Context) {
+	var request requests.AddSongToPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.AddSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "song has been added to playlist successfully")
+}
+
 func (p PlaylistHandler) Update(c *gin.Context) {
 	var request requests.UpdatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)

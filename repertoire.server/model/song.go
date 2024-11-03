@@ -11,17 +11,16 @@ import (
 )
 
 type Song struct {
-	ID              uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Title           string             `gorm:"size:100; not null" json:"title"`
-	Description     string             `gorm:"not null" json:"description"`
-	IsRecorded      bool               `json:"isRecorded"`
-	Bpm             *uint              `json:"bpm"`
-	SongsterrLink   *string            `json:"songsterrLink"`
-	ReleaseDate     *time.Time         `json:"releaseDate"`
-	Difficulty      *enums.Difficulty  `json:"difficulty"`
-	ImageURL        *internal.FilePath `json:"imageUrl"`
-	AlbumTrackNo    *uint              `json:"albumTrackNo"`
-	PlaylistTrackNo *uint              `json:"playlistTrackNo"`
+	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title         string             `gorm:"size:100; not null" json:"title"`
+	Description   string             `gorm:"not null" json:"description"`
+	IsRecorded    bool               `json:"isRecorded"`
+	Bpm           *uint              `json:"bpm"`
+	SongsterrLink *string            `json:"songsterrLink"`
+	ReleaseDate   *time.Time         `json:"releaseDate"`
+	Difficulty    *enums.Difficulty  `json:"difficulty"`
+	ImageURL      *internal.FilePath `json:"imageUrl"`
+	AlbumTrackNo  *uint              `json:"albumTrackNo"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`
