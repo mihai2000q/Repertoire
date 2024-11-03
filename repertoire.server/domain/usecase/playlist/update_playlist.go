@@ -2,12 +2,11 @@ package playlist
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type UpdatePlaylist struct {
@@ -24,7 +23,7 @@ func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *wrapper.
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if playlist.ID == uuid.Nil {
+	if reflect.ValueOf(playlist).IsZero() {
 		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 

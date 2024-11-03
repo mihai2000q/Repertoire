@@ -2,12 +2,11 @@ package artist
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type UpdateArtist struct {
@@ -24,7 +23,7 @@ func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *wrapper.Erro
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if artist.ID == uuid.Nil {
+	if reflect.ValueOf(artist).IsZero() {
 		return wrapper.NotFoundError(errors.New("artist not found"))
 	}
 

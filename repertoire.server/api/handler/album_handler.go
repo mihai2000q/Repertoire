@@ -119,6 +119,23 @@ func (a AlbumHandler) Update(c *gin.Context) {
 	a.SendMessage(c, "album has been updated successfully")
 }
 
+func (a AlbumHandler) MoveSong(c *gin.Context) {
+	var request requests.MoveSongFromAlbumRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.MoveSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "song has been moved from album successfully")
+}
+
 func (a AlbumHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

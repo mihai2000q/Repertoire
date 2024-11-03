@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -38,7 +39,7 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
-	if user.ID != uuid.Nil {
+	if !reflect.ValueOf(user).IsZero() {
 		return "", wrapper.BadRequestError(errors.New("user already exists"))
 	}
 

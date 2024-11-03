@@ -15,6 +15,7 @@ type AlbumService interface {
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
 	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
+	MoveSong(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode
 	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode
 }
@@ -25,6 +26,7 @@ type albumService struct {
 	deleteAlbum         album.DeleteAlbum
 	getAlbum            album.GetAlbum
 	getAllAlbums        album.GetAllAlbums
+	moveSongFromAlbum   album.MoveSongFromAlbum
 	removeSongFromAlbum album.RemoveSongFromAlbum
 	updateAlbum         album.UpdateAlbum
 }
@@ -35,6 +37,7 @@ func NewAlbumService(
 	deleteAlbum album.DeleteAlbum,
 	getAlbum album.GetAlbum,
 	getAllAlbums album.GetAllAlbums,
+	moveSongFromAlbum album.MoveSongFromAlbum,
 	removeSongFromAlbum album.RemoveSongFromAlbum,
 	updateAlbum album.UpdateAlbum,
 ) AlbumService {
@@ -44,6 +47,7 @@ func NewAlbumService(
 		deleteAlbum:         deleteAlbum,
 		getAlbum:            getAlbum,
 		getAllAlbums:        getAllAlbums,
+		moveSongFromAlbum:   moveSongFromAlbum,
 		removeSongFromAlbum: removeSongFromAlbum,
 		updateAlbum:         updateAlbum,
 	}
@@ -67,6 +71,10 @@ func (a *albumService) Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode) {
 
 func (a *albumService) GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode) {
 	return a.getAllAlbums.Handle(request, token)
+}
+
+func (a *albumService) MoveSong(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode {
+	return a.moveSongFromAlbum.Handle(request)
 }
 
 func (a *albumService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {

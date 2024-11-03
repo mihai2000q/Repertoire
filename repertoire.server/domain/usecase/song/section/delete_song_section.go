@@ -1,6 +1,8 @@
 package section
 
 import (
+	"errors"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -24,6 +26,9 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 	err := d.songRepository.GetWithSections(&song, songID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
+	}
+	if reflect.ValueOf(song).IsZero() {
+		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
 	index := slices.IndexFunc(song.Sections, func(a model.SongSection) bool {

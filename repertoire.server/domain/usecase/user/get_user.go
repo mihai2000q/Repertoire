@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -21,7 +22,7 @@ func (g GetUser) Handle(id uuid.UUID) (user model.User, e *wrapper.ErrorCode) {
 	if err != nil {
 		return user, wrapper.InternalServerError(err)
 	}
-	if user.ID == uuid.Nil {
+	if reflect.ValueOf(user).IsZero() {
 		return user, wrapper.NotFoundError(errors.New("user not found"))
 	}
 	return user, nil

@@ -2,6 +2,7 @@ package section
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -26,7 +27,7 @@ func (c MoveSongSection) Handle(request requests.MoveSongSectionRequest) *wrappe
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if song.ID == uuid.Nil {
+	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 

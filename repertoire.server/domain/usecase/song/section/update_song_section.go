@@ -2,7 +2,7 @@ package section
 
 import (
 	"errors"
-	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -25,7 +25,7 @@ func (c UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if section.ID == uuid.Nil {
+	if reflect.ValueOf(section).IsZero() {
 		return wrapper.NotFoundError(errors.New("song section not found"))
 	}
 

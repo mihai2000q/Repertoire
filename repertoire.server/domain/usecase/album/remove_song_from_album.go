@@ -1,6 +1,8 @@
 package album
 
 import (
+	"errors"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -22,6 +24,9 @@ func (r RemoveSongFromAlbum) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Err
 	err := r.repository.GetWithSongs(&album, id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
+	}
+	if reflect.ValueOf(album).IsZero() {
+		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
 	index := slices.IndexFunc(album.Songs, func(s model.Song) bool {

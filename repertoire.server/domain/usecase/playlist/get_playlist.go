@@ -2,6 +2,7 @@ package playlist
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -24,7 +25,7 @@ func (g GetPlaylist) Handle(id uuid.UUID) (playlist model.Playlist, e *wrapper.E
 	if err != nil {
 		return playlist, wrapper.InternalServerError(err)
 	}
-	if playlist.ID == uuid.Nil {
+	if reflect.ValueOf(playlist).IsZero() {
 		return playlist, wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 	return playlist, nil

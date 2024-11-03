@@ -41,6 +41,32 @@ func TestRemoveSongFromAlbum_WhenGetWithSongsFails_ShouldReturnInternalServerErr
 	albumRepository.AssertExpectations(t)
 }
 
+func TestRemoveSongFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	_uut := RemoveSongFromAlbum{
+		repository: albumRepository,
+	}
+
+	id := uuid.New()
+	songID := uuid.New()
+
+	// given - mocking
+	albumRepository.On("GetWithSongs", new(model.Album), id).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id, songID)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "album not found", errCode.Error.Error())
+
+	albumRepository.AssertExpectations(t)
+}
+
 func TestRemoveSongFromAlbum_WhenUpdateWithAssociationsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)

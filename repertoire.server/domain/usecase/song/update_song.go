@@ -2,12 +2,11 @@ package song
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type UpdateSong struct {
@@ -24,7 +23,7 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if song.ID == uuid.Nil {
+	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 

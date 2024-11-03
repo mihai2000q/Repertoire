@@ -39,6 +39,30 @@ func TestDeleteSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *t
 	songRepository.AssertExpectations(t)
 }
 
+func TestDeleteSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := DeleteSongSection{
+		songRepository: songRepository,
+	}
+	id := uuid.New()
+	songID := uuid.New()
+
+	songRepository.On("GetWithSections", new(model.Song), songID).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id, songID)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "song not found", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestDeleteSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)

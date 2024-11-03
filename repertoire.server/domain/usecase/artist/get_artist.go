@@ -2,6 +2,7 @@ package artist
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -24,7 +25,7 @@ func (g GetArtist) Handle(id uuid.UUID) (artist model.Artist, e *wrapper.ErrorCo
 	if err != nil {
 		return artist, wrapper.InternalServerError(err)
 	}
-	if artist.ID == uuid.Nil {
+	if reflect.ValueOf(artist).IsZero() {
 		return artist, wrapper.NotFoundError(errors.New("artist not found"))
 	}
 	return artist, nil
