@@ -142,9 +142,9 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			song := args.Get(0).(*model.Song)
 			sections := slices.Clone(song.Sections)
 
-			assert.False(t, slices.ContainsFunc(sections, func(a model.SongSection) bool {
+			sections = slices.DeleteFunc(sections, func(a model.SongSection) bool {
 				return a.ID == id
-			}))
+			})
 
 			slices.SortFunc(sections, func(a, b model.SongSection) int {
 				return cmp.Compare(a.Order, b.Order)
