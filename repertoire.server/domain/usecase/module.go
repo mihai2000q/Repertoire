@@ -13,19 +13,20 @@ import (
 )
 
 var albumUseCases = fx.Options(
+	fx.Provide(album.NewCreateAlbum),
+	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewGetAlbum),
 	fx.Provide(album.NewGetAllAlbums),
-	fx.Provide(album.NewCreateAlbum),
+	fx.Provide(album.NewRemoveSongFromAlbum),
 	fx.Provide(album.NewUpdateAlbum),
-	fx.Provide(album.NewDeleteAlbum),
 )
 
 var artistUseCases = fx.Options(
+	fx.Provide(artist.NewCreateArtist),
+	fx.Provide(artist.NewDeleteArtist),
 	fx.Provide(artist.NewGetArtist),
 	fx.Provide(artist.NewGetAllArtists),
-	fx.Provide(artist.NewCreateArtist),
 	fx.Provide(artist.NewUpdateArtist),
-	fx.Provide(artist.NewDeleteArtist),
 )
 
 var authUseCases = fx.Options(
@@ -40,6 +41,7 @@ var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewDeletePlaylist),
 	fx.Provide(playlist.NewGetPlaylist),
 	fx.Provide(playlist.NewGetAllPlaylists),
+	fx.Provide(playlist.NewRemoveSongFromPlaylist),
 	fx.Provide(playlist.NewUpdatePlaylist),
 )
 
