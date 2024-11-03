@@ -13,6 +13,7 @@ import (
 )
 
 var albumUseCases = fx.Options(
+	fx.Provide(album.NewAddSongToAlbum),
 	fx.Provide(album.NewCreateAlbum),
 	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewGetAlbum),
@@ -46,7 +47,6 @@ var playlistUseCases = fx.Options(
 )
 
 var songUseCases = fx.Options(
-	fx.Provide(song.NewAddSongToAlbum),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
 	fx.Provide(song.NewGetSong),

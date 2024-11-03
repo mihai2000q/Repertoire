@@ -10,6 +10,7 @@ import (
 )
 
 type AlbumService interface {
+	AddSong(requests.AddSongToAlbumRequest) *wrapper.ErrorCode
 	Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
@@ -19,6 +20,7 @@ type AlbumService interface {
 }
 
 type albumService struct {
+	addSongToAlbum      album.AddSongToAlbum
 	createAlbum         album.CreateAlbum
 	deleteAlbum         album.DeleteAlbum
 	getAlbum            album.GetAlbum
@@ -28,6 +30,7 @@ type albumService struct {
 }
 
 func NewAlbumService(
+	addSongToAlbum album.AddSongToAlbum,
 	createAlbum album.CreateAlbum,
 	deleteAlbum album.DeleteAlbum,
 	getAlbum album.GetAlbum,
@@ -36,6 +39,7 @@ func NewAlbumService(
 	updateAlbum album.UpdateAlbum,
 ) AlbumService {
 	return &albumService{
+		addSongToAlbum:      addSongToAlbum,
 		createAlbum:         createAlbum,
 		deleteAlbum:         deleteAlbum,
 		getAlbum:            getAlbum,
@@ -43,6 +47,10 @@ func NewAlbumService(
 		removeSongFromAlbum: removeSongFromAlbum,
 		updateAlbum:         updateAlbum,
 	}
+}
+
+func (a *albumService) AddSong(request requests.AddSongToAlbumRequest) *wrapper.ErrorCode {
+	return a.addSongToAlbum.Handle(request)
 }
 
 func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {

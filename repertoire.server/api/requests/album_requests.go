@@ -17,6 +17,11 @@ type CreateAlbumRequest struct {
 	ReleaseDate *time.Time
 }
 
+type AddSongToAlbumRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	SongID uuid.UUID `validate:"required"`
+}
+
 type UpdateAlbumRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`

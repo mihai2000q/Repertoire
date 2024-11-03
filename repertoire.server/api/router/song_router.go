@@ -17,7 +17,6 @@ func (s SongRouter) RegisterRoutes() {
 		api.GET("", s.handler.GetAll)
 		api.GET("/guitar-tunings", s.handler.GetGuitarTunings)
 		api.POST("", s.handler.Create)
-		api.POST("/add-to-album", s.handler.AddToAlbum)
 		api.PUT("", s.handler.Update)
 		api.DELETE("/:id", s.handler.Delete)
 	}

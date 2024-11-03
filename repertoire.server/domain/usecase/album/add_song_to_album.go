@@ -1,4 +1,4 @@
-package song
+package album
 
 import (
 	"repertoire/server/api/requests"
@@ -8,27 +8,34 @@ import (
 )
 
 type AddSongToAlbum struct {
-	repository repository.SongRepository
+	albumRepository repository.AlbumRepository
+	repository      repository.SongRepository
 }
 
-func NewAddSongToAlbum(repository repository.SongRepository) AddSongToAlbum {
-	return AddSongToAlbum{repository: repository}
+func NewAddSongToAlbum(
+	albumRepository repository.AlbumRepository,
+	repository repository.SongRepository,
+) AddSongToAlbum {
+	return AddSongToAlbum{
+		albumRepository: albumRepository,
+		repository:      repository,
+	}
 }
 
 func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.Get(&song, request.ID)
+	err := a.repository.Get(&song, request.SongID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
 	var count int64
-	err = a.repository.CountByAlbum(&count, &request.AlbumID)
+	err = a.albumRepository.CountSongs(&count, &request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	song.AlbumID = &request.AlbumID
+	song.AlbumID = &request.ID
 	trackNo := uint(count) + 1
 	song.AlbumTrackNo = &trackNo
 
