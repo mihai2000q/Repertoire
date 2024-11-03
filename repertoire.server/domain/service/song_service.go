@@ -12,7 +12,7 @@ import (
 )
 
 type SongService interface {
-	Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode
+	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
@@ -79,7 +79,7 @@ func NewSongService(
 	}
 }
 
-func (s *songService) Create(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
+func (s *songService) Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	return s.createSong.Handle(request, token)
 }
 

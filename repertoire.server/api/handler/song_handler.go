@@ -80,21 +80,23 @@ func (s SongHandler) GetGuitarTunings(c *gin.Context) {
 
 func (s SongHandler) Create(c *gin.Context) {
 	var request requests.CreateSongRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+	errCode := s.BindAndValidate(c, &request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
 	token := s.GetTokenFromContext(c)
 
-	errorCode = s.service.Create(request, token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+	id, errCode := s.service.Create(request, token)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "song has been created successfully")
+	c.JSON(http.StatusOK, gin.H{
+		"id": id,
+	})
 }
 
 func (s SongHandler) Update(c *gin.Context) {

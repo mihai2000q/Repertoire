@@ -11,21 +11,27 @@ import (
 )
 
 type CreateSong struct {
-	jwtService service.JwtService
-	repository repository.SongRepository
+	jwtService      service.JwtService
+	repository      repository.SongRepository
+	albumRepository repository.AlbumRepository
 }
 
-func NewCreateSong(jwtService service.JwtService, repository repository.SongRepository) CreateSong {
+func NewCreateSong(
+	jwtService service.JwtService,
+	repository repository.SongRepository,
+	albumRepository repository.AlbumRepository,
+) CreateSong {
 	return CreateSong{
-		jwtService: jwtService,
-		repository: repository,
+		jwtService:      jwtService,
+		repository:      repository,
+		albumRepository: albumRepository,
 	}
 }
 
-func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wrapper.ErrorCode {
+func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
-		return errCode
+		return uuid.Nil, errCode
 	}
 
 	songID := uuid.New()
@@ -48,14 +54,14 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) *wr
 
 	err := c.addToAlbum(&song, request.AlbumID)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
 	err = c.repository.Create(&song)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
-	return nil
+	return song.ID, nil
 }
 
 func (c CreateSong) createArtist(request requests.CreateSongRequest, userID uuid.UUID) *model.Artist {
@@ -102,7 +108,7 @@ func (c CreateSong) addToAlbum(song *model.Song, albumID *uuid.UUID) error {
 	}
 
 	var count int64
-	err := c.repository.CountByAlbum(&count, albumID)
+	err := c.albumRepository.CountSongs(&count, albumID)
 	if err != nil {
 		return err
 	}

@@ -30,22 +30,25 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
 }
 
-func TestCreateSong_WhenCountByAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
+	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
 	_uut := &CreateSong{
-		repository: songRepository,
-		jwtService: jwtService,
+		repository:      songRepository,
+		albumRepository: albumRepository,
+		jwtService:      jwtService,
 	}
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
@@ -57,19 +60,21 @@ func TestCreateSong_WhenCountByAlbumFails_ShouldReturnInternalServerError(t *tes
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("CountByAlbum", mock.Anything, request.AlbumID).
+	albumRepository.On("CountSongs", mock.Anything, request.AlbumID).
 		Return(internalError).
 		Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
+	albumRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
@@ -94,9 +99,10 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 		Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -151,10 +157,12 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
+			albumRepository := new(repository.AlbumRepositoryMock)
 			jwtService := new(service.JwtServiceMock)
 			_uut := &CreateSong{
-				repository: songRepository,
-				jwtService: jwtService,
+				repository:      songRepository,
+				albumRepository: albumRepository,
+				jwtService:      jwtService,
 			}
 			token := "this is a token"
 
@@ -162,27 +170,30 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-			var countByAlbum *int64
+			var albumCount *int64
 			if tt.request.AlbumID != nil {
-				countByAlbum = &[]int64{12}[0]
-				songRepository.On("CountByAlbum", mock.IsType(countByAlbum), tt.request.AlbumID).
-					Return(nil, countByAlbum).
+				albumCount = &[]int64{12}[0]
+				albumRepository.On("CountSongs", mock.IsType(albumCount), tt.request.AlbumID).
+					Return(nil, albumCount).
 					Once()
 			}
 
+			var songID uuid.UUID
 			songRepository.On("Create", mock.IsType(new(model.Song))).
 				Run(func(args mock.Arguments) {
 					newSong := args.Get(0).(*model.Song)
-					assertCreatedSong(t, tt.request, *newSong, userID, countByAlbum)
+					songID = newSong.ID
+					assertCreatedSong(t, tt.request, *newSong, userID, albumCount)
 				}).
 				Return(nil).
 				Once()
 
 			// when
-			errCode := _uut.Handle(tt.request, token)
+			id, errCode := _uut.Handle(tt.request, token)
 
 			// then
 			assert.Nil(t, errCode)
+			assert.Equal(t, id, songID)
 
 			jwtService.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
@@ -195,7 +206,7 @@ func assertCreatedSong(
 	request requests.CreateSongRequest,
 	song model.Song,
 	userID uuid.UUID,
-	countByAlbum *int64,
+	albumCount *int64,
 ) {
 	assert.Equal(t, request.Title, song.Title)
 	assert.Equal(t, request.Description, song.Description)
@@ -232,7 +243,7 @@ func assertCreatedSong(
 		assert.Equal(t, song.UserID, song.Artist.UserID)
 	}
 	if request.AlbumID != nil {
-		assert.Equal(t, &[]uint{uint(*countByAlbum) + 1}[0], song.AlbumTrackNo)
+		assert.Equal(t, &[]uint{uint(*albumCount) + 1}[0], song.AlbumTrackNo)
 	}
 	if request.AlbumID == nil && request.AlbumTitle == nil {
 		assert.Nil(t, song.AlbumTrackNo)
