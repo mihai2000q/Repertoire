@@ -1,6 +1,6 @@
 name: repertoire
 services:
-  server:
+  storage:
     build: 
       context: .
       args:
