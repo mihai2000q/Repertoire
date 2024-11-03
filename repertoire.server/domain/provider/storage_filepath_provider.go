@@ -8,7 +8,7 @@ import (
 )
 
 type StorageFilePathProvider interface {
-	GetSongImagePathAndURL(file *multipart.FileHeader, songID uuid.UUID) (string, string)
+	GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string
 }
 
 type storageFilePathProvider struct {
@@ -21,12 +21,8 @@ func NewStorageFilePathProvider(env internal.Env) StorageFilePathProvider {
 	}
 }
 
-func (s storageFilePathProvider) GetSongImagePathAndURL(file *multipart.FileHeader, songID uuid.UUID) (string, string) {
+func (s storageFilePathProvider) GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string {
 	fileExtension := filepath.Ext(file.Filename)
 	filePath := "songs/" + songID.String() + fileExtension
-	return filePath, s.getBaseURL() + filePath
-}
-
-func (s storageFilePathProvider) getBaseURL() string {
-	return s.env.StorageUrl + "/files/"
+	return filePath
 }

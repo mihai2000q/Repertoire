@@ -7,6 +7,7 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
+	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
@@ -39,14 +40,14 @@ func (a SaveImageToSong) Handle(file *multipart.FileHeader, songID uuid.UUID, to
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	filePath, imageUrl := a.storageFilePathProvider.GetSongImagePathAndURL(file, songID)
+	imagePath := a.storageFilePathProvider.GetSongImagePath(file, songID)
 
-	err = a.storageService.Upload(token, file, filePath)
+	err = a.storageService.Upload(token, file, imagePath)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	song.ImageURL = &imageUrl
+	song.ImageURL = (*internal.FilePath)(&imagePath)
 	err = a.repository.Update(&song)
 	if err != nil {
 		return wrapper.InternalServerError(err)

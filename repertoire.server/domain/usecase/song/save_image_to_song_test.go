@@ -84,8 +84,8 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	song := &model.Song{ID: songID, ImageURL: nil}
 	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
 
-	imagePath, imageUrl := "songs file path", "songs image url"
-	storageFilePathProvider.On("GetSongImagePathAndURL", file, songID).Return(imagePath, imageUrl).Once()
+	imagePath := "songs file path"
+	storageFilePathProvider.On("GetSongImagePath", file, songID).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", token, file, imagePath).Return(internalError).Once()
@@ -122,17 +122,13 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	song := &model.Song{ID: songID, ImageURL: nil}
 	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
 
-	imagePath, imageUrl := "songs file path", "songs image url"
-	storageFilePathProvider.On("GetSongImagePathAndURL", file, songID).Return(imagePath, imageUrl).Once()
+	imagePath := "songs file path"
+	storageFilePathProvider.On("GetSongImagePath", file, songID).Return(imagePath).Once()
 
 	storageService.On("Upload", token, file, imagePath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	songRepository.On("Update", mock.IsType(new(model.Song))).
-		Run(func(args mock.Arguments) {
-			newSong := args.Get(0).(*model.Song)
-			assert.Equal(t, imageUrl, *newSong.ImageURL)
-		}).
 		Return(internalError).
 		Once()
 
@@ -168,15 +164,15 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	song := &model.Song{ID: songID, ImageURL: nil}
 	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
 
-	imagePath, imageUrl := "songs file path", "songs image url"
-	storageFilePathProvider.On("GetSongImagePathAndURL", file, songID).Return(imagePath, imageUrl).Once()
+	imagePath := "songs file path"
+	storageFilePathProvider.On("GetSongImagePath", file, songID).Return(imagePath).Once()
 
 	storageService.On("Upload", token, file, imagePath).Return(nil).Once()
 
 	songRepository.On("Update", mock.IsType(new(model.Song))).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
-			assert.Equal(t, imageUrl, *newSong.ImageURL)
+			assert.Equal(t, imagePath, string(*newSong.ImageURL))
 		}).
 		Return(nil).
 		Once()
