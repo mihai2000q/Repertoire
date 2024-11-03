@@ -1,10 +1,11 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"time"
+
+	"gorm.io/gorm"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ type Song struct {
 	ReleaseDate   *time.Time         `json:"releaseDate"`
 	Difficulty    *enums.Difficulty  `json:"difficulty"`
 	ImageURL      *internal.FilePath `json:"imageUrl"`
-	TrackNo       *uint              `json:"trackNo"`
+	AlbumTrackNo  *uint              `json:"albumTrackNo"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`

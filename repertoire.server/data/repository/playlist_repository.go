@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"gorm.io/gorm/clause"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"gorm.io/gorm/clause"
 
 	"github.com/google/uuid"
 )
@@ -19,9 +20,12 @@ type PlaylistRepository interface {
 		orderBy string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
+	AddSong(playlist *model.Playlist, song *model.Song) error
 	Update(playlist *model.Playlist) error
 	Delete(id uuid.UUID) error
+	RemoveSong(playlist *model.Playlist, song *model.Song) error
 }
 
 type playlistRepository struct {
@@ -72,8 +76,20 @@ func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID) er
 		Error
 }
 
+func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {
+	return p.client.DB.Model(&model.Song{}).
+		Preload("Playlists").
+		Where("playlist_song.playlist_id = ?", id).
+		Count(count).
+		Error
+}
+
 func (p playlistRepository) Create(playlist *model.Playlist) error {
 	return p.client.DB.Create(&playlist).Error
+}
+
+func (p playlistRepository) AddSong(playlist *model.Playlist, song *model.Song) error {
+	return p.client.DB.Model(&playlist).Association("Songs").Append(&song)
 }
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {
@@ -82,4 +98,8 @@ func (p playlistRepository) Update(playlist *model.Playlist) error {
 
 func (p playlistRepository) Delete(id uuid.UUID) error {
 	return p.client.DB.Delete(&model.Playlist{}, id).Error
+}
+
+func (p playlistRepository) RemoveSong(playlist *model.Playlist, song *model.Song) error {
+	return p.client.DB.Model(&playlist).Association("Songs").Delete(&song)
 }

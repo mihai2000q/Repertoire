@@ -85,6 +85,23 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 	p.SendMessage(c, "playlist has been created successfully")
 }
 
+func (p PlaylistHandler) AddSong(c *gin.Context) {
+	var request requests.AddSongToPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.AddSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "song has been added to playlist successfully")
+}
+
 func (p PlaylistHandler) Update(c *gin.Context) {
 	var request requests.UpdatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
@@ -103,9 +120,7 @@ func (p PlaylistHandler) Update(c *gin.Context) {
 }
 
 func (p PlaylistHandler) Delete(c *gin.Context) {
-	paramId := c.Param("id")
-
-	id, err := uuid.Parse(paramId)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -118,4 +133,26 @@ func (p PlaylistHandler) Delete(c *gin.Context) {
 	}
 
 	p.SendMessage(c, "playlist has been deleted successfully")
+}
+
+func (p PlaylistHandler) RemoveSong(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	songID, err := uuid.Parse(c.Param("songID"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := p.service.RemoveSong(id, songID)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "song has been removed from playlist successfully")
 }

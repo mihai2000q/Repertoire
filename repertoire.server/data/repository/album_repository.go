@@ -12,6 +12,7 @@ import (
 
 type AlbumRepository interface {
 	Get(album *model.Album, id uuid.UUID) error
+	GetWithSongs(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.Album,
@@ -21,9 +22,12 @@ type AlbumRepository interface {
 		orderBy string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	CountSongs(count *int64, id *uuid.UUID) error
 	Create(album *model.Album) error
 	Update(album *model.Album) error
+	UpdateWithAssociations(album *model.Album) error
 	Delete(id uuid.UUID) error
+	RemoveSong(album *model.Album, song *model.Song) error
 }
 
 type albumRepository struct {
@@ -38,6 +42,15 @@ func NewAlbumRepository(client database.Client) AlbumRepository {
 
 func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
 	return a.client.DB.Find(&album, model.Album{ID: id}).Error
+}
+
+func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
+	return a.client.DB.
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("songs.track_no")
+		}).
+		Find(&album, model.Album{ID: id}).
+		Error
 }
 
 func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID) error {
@@ -80,6 +93,13 @@ func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error
 		Error
 }
 
+func (a albumRepository) CountSongs(count *int64, id *uuid.UUID) error {
+	return a.client.DB.Model(&model.Song{}).
+		Where(model.Song{AlbumID: id}).
+		Count(count).
+		Error
+}
+
 func (a albumRepository) Create(album *model.Album) error {
 	return a.client.DB.Create(&album).Error
 }
@@ -88,6 +108,17 @@ func (a albumRepository) Update(album *model.Album) error {
 	return a.client.DB.Save(&album).Error
 }
 
+func (a albumRepository) UpdateWithAssociations(album *model.Album) error {
+	return a.client.DB.
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Updates(&album).
+		Error
+}
+
 func (a albumRepository) Delete(id uuid.UUID) error {
 	return a.client.DB.Delete(&model.Album{}, id).Error
+}
+
+func (a albumRepository) RemoveSong(album *model.Album, song *model.Song) error {
+	return a.client.DB.Model(&album).Association("Songs").Delete(&song)
 }

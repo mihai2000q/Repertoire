@@ -58,8 +58,23 @@ func (p *PlaylistRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUI
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) CountSongs(count *int64, id uuid.UUID) error {
+	args := p.Called(count, id)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) Create(playlist *model.Playlist) error {
 	args := p.Called(playlist)
+	return args.Error(0)
+}
+
+func (p *PlaylistRepositoryMock) AddSong(playlist *model.Playlist, song *model.Song) error {
+	args := p.Called(playlist, song)
 	return args.Error(0)
 }
 
@@ -70,5 +85,10 @@ func (p *PlaylistRepositoryMock) Update(playlist *model.Playlist) error {
 
 func (p *PlaylistRepositoryMock) Delete(id uuid.UUID) error {
 	args := p.Called(id)
+	return args.Error(0)
+}
+
+func (p *PlaylistRepositoryMock) RemoveSong(playlist *model.Playlist, song *model.Song) error {
+	args := p.Called(playlist, song)
 	return args.Error(0)
 }

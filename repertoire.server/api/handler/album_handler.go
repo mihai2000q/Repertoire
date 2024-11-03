@@ -85,6 +85,23 @@ func (a AlbumHandler) Create(c *gin.Context) {
 	a.SendMessage(c, "album has been created successfully")
 }
 
+func (a AlbumHandler) AddSong(c *gin.Context) {
+	var request requests.AddSongToAlbumRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.AddSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "song has been added to album successfully")
+}
+
 func (a AlbumHandler) Update(c *gin.Context) {
 	var request requests.UpdateAlbumRequest
 	errorCode := a.BindAndValidate(c, &request)
@@ -103,9 +120,7 @@ func (a AlbumHandler) Update(c *gin.Context) {
 }
 
 func (a AlbumHandler) Delete(c *gin.Context) {
-	paramId := c.Param("id")
-
-	id, err := uuid.Parse(paramId)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -118,4 +133,26 @@ func (a AlbumHandler) Delete(c *gin.Context) {
 	}
 
 	a.SendMessage(c, "album has been deleted successfully")
+}
+
+func (a AlbumHandler) RemoveSong(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	songID, err := uuid.Parse(c.Param("songId"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := a.service.RemoveSong(id, songID)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "song has been removed from album successfully")
 }

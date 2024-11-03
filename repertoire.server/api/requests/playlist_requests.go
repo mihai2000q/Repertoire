@@ -13,6 +13,11 @@ type CreatePlaylistRequest struct {
 	Description string
 }
 
+type AddSongToPlaylistRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	SongID uuid.UUID `validate:"required"`
+}
+
 type UpdatePlaylistRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`

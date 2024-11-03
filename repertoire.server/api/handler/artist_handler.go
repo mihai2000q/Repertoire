@@ -103,9 +103,7 @@ func (a ArtistHandler) Update(c *gin.Context) {
 }
 
 func (a ArtistHandler) Delete(c *gin.Context) {
-	paramId := c.Param("id")
-
-	id, err := uuid.Parse(paramId)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return

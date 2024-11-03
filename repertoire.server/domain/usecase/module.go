@@ -13,19 +13,21 @@ import (
 )
 
 var albumUseCases = fx.Options(
+	fx.Provide(album.NewAddSongToAlbum),
+	fx.Provide(album.NewCreateAlbum),
+	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewGetAlbum),
 	fx.Provide(album.NewGetAllAlbums),
-	fx.Provide(album.NewCreateAlbum),
+	fx.Provide(album.NewRemoveSongFromAlbum),
 	fx.Provide(album.NewUpdateAlbum),
-	fx.Provide(album.NewDeleteAlbum),
 )
 
 var artistUseCases = fx.Options(
+	fx.Provide(artist.NewCreateArtist),
+	fx.Provide(artist.NewDeleteArtist),
 	fx.Provide(artist.NewGetArtist),
 	fx.Provide(artist.NewGetAllArtists),
-	fx.Provide(artist.NewCreateArtist),
 	fx.Provide(artist.NewUpdateArtist),
-	fx.Provide(artist.NewDeleteArtist),
 )
 
 var authUseCases = fx.Options(
@@ -35,28 +37,30 @@ var authUseCases = fx.Options(
 )
 
 var playlistUseCases = fx.Options(
+	fx.Provide(playlist.NewAddSongToPlaylist),
+	fx.Provide(playlist.NewCreatePlaylist),
+	fx.Provide(playlist.NewDeletePlaylist),
 	fx.Provide(playlist.NewGetPlaylist),
 	fx.Provide(playlist.NewGetAllPlaylists),
-	fx.Provide(playlist.NewCreatePlaylist),
+	fx.Provide(playlist.NewRemoveSongFromPlaylist),
 	fx.Provide(playlist.NewUpdatePlaylist),
-	fx.Provide(playlist.NewDeletePlaylist),
 )
 
 var songUseCases = fx.Options(
-	fx.Provide(section.NewCreateSongSection),
-	fx.Provide(section.NewGetSongSectionTypes),
-	fx.Provide(section.NewMoveSongSection),
-	fx.Provide(section.NewUpdateSongSection),
-	fx.Provide(section.NewDeleteSongSection),
-
-	fx.Provide(song.NewSaveImageToSong),
-
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewGetAllSongs),
 	fx.Provide(song.NewGetGuitarTunings),
 	fx.Provide(song.NewUpdateSong),
+
+	fx.Provide(song.NewSaveImageToSong),
+
+	fx.Provide(section.NewCreateSongSection),
+	fx.Provide(section.NewDeleteSongSection),
+	fx.Provide(section.NewGetSongSectionTypes),
+	fx.Provide(section.NewMoveSongSection),
+	fx.Provide(section.NewUpdateSongSection),
 )
 
 var userUseCases = fx.Options(
