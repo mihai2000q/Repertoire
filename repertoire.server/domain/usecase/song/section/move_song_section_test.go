@@ -184,17 +184,6 @@ func TestMoveSongSection_WhenUpdateFails_ShouldReturnInternalServerError(t *test
 }
 
 func TestMoveSongSection_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
-	initialSong := &model.Song{
-		ID: uuid.New(),
-		Sections: []model.SongSection{
-			{ID: uuid.New(), Order: 0},
-			{ID: uuid.New(), Order: 1},
-			{ID: uuid.New(), Order: 2},
-			{ID: uuid.New(), Order: 3},
-			{ID: uuid.New(), Order: 4},
-		},
-	}
-
 	tests := []struct {
 		name      string
 		song      *model.Song
@@ -203,13 +192,31 @@ func TestMoveSongSection_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	}{
 		{
 			"Use case 1",
-			initialSong,
+			&model.Song{
+				ID: uuid.New(),
+				Sections: []model.SongSection{
+					{ID: uuid.New(), Order: 0},
+					{ID: uuid.New(), Order: 1},
+					{ID: uuid.New(), Order: 2},
+					{ID: uuid.New(), Order: 3},
+					{ID: uuid.New(), Order: 4},
+				},
+			},
 			1,
 			3,
 		},
 		{
 			"Use case 2",
-			initialSong,
+			&model.Song{
+				ID: uuid.New(),
+				Sections: []model.SongSection{
+					{ID: uuid.New(), Order: 0},
+					{ID: uuid.New(), Order: 1},
+					{ID: uuid.New(), Order: 2},
+					{ID: uuid.New(), Order: 3},
+					{ID: uuid.New(), Order: 4},
+				},
+			},
 			3,
 			1,
 		},
@@ -241,6 +248,11 @@ func TestMoveSongSection_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 					slices.SortFunc(sections, func(a, b model.SongSection) int {
 						return cmp.Compare(a.Order, b.Order)
 					})
+					if tt.index < tt.overIndex {
+						assert.Equal(t, sections[tt.overIndex-1].ID, request.OverID)
+					} else if tt.index > tt.overIndex {
+						assert.Equal(t, sections[tt.overIndex+1].ID, request.OverID)
+					}
 					assert.Equal(t, sections[tt.overIndex].ID, request.ID)
 					for i, section := range sections {
 						assert.Equal(t, uint(i), section.Order)

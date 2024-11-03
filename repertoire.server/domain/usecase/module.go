@@ -18,6 +18,7 @@ var albumUseCases = fx.Options(
 	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewGetAlbum),
 	fx.Provide(album.NewGetAllAlbums),
+	fx.Provide(album.NewMoveSongFromAlbum),
 	fx.Provide(album.NewRemoveSongFromAlbum),
 	fx.Provide(album.NewUpdateAlbum),
 )
