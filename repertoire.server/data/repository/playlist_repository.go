@@ -20,7 +20,7 @@ type PlaylistRepository interface {
 		orderBy string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID) error
-	CountSongs(count *int64, playlistID uuid.UUID) error
+	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
 	AddSong(playlist *model.Playlist, song *model.Song) error
 	Update(playlist *model.Playlist) error
@@ -76,10 +76,10 @@ func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID) er
 		Error
 }
 
-func (p playlistRepository) CountSongs(count *int64, playlistID uuid.UUID) error {
+func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {
 	return p.client.DB.Model(&model.Song{}).
 		Preload("Playlists").
-		Where("playlist_song.playlist_id = ?", playlistID).
+		Where("playlist_song.playlist_id = ?", id).
 		Count(count).
 		Error
 }

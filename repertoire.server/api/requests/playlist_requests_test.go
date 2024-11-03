@@ -179,6 +179,7 @@ func TestValidateAddSongToPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			"ID",
 			"required",
 		},
+		// Song ID Test Cases
 		{
 			"Song ID is invalid because it's required",
 			AddSongToPlaylistRequest{ID: uuid.New(), SongID: uuid.Nil},
@@ -197,7 +198,7 @@ func TestValidateAddSongToPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "AddSongtToPlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "AddSongToPlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, 400, errCode.Code)
 		})

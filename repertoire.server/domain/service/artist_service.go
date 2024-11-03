@@ -10,27 +10,27 @@ import (
 )
 
 type ArtistService interface {
+	Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode
+	Delete(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
 	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
-	Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode
 	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
-	Delete(id uuid.UUID) *wrapper.ErrorCode
 }
 
 type artistService struct {
+	createArtist  artist.CreateArtist
+	deleteArtist  artist.DeleteArtist
 	getArtist     artist.GetArtist
 	getAllArtists artist.GetAllArtists
-	createArtist  artist.CreateArtist
 	updateArtist  artist.UpdateArtist
-	deleteArtist  artist.DeleteArtist
 }
 
 func NewArtistService(
+	createArtist artist.CreateArtist,
+	deleteArtist artist.DeleteArtist,
 	getArtist artist.GetArtist,
 	getAllArtists artist.GetAllArtists,
-	createArtist artist.CreateArtist,
 	updateArtist artist.UpdateArtist,
-	deleteArtist artist.DeleteArtist,
 ) ArtistService {
 	return &artistService{
 		getArtist:     getArtist,
@@ -41,6 +41,14 @@ func NewArtistService(
 	}
 }
 
+func (a *artistService) Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
+	return a.createArtist.Handle(request, token)
+}
+
+func (a *artistService) Delete(id uuid.UUID) *wrapper.ErrorCode {
+	return a.deleteArtist.Handle(id)
+}
+
 func (a *artistService) Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
@@ -49,14 +57,6 @@ func (a *artistService) GetAll(request requests.GetArtistsRequest, token string)
 	return a.getAllArtists.Handle(request, token)
 }
 
-func (a *artistService) Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
-	return a.createArtist.Handle(request, token)
-}
-
 func (a *artistService) Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode {
 	return a.updateArtist.Handle(request)
-}
-
-func (a *artistService) Delete(id uuid.UUID) *wrapper.ErrorCode {
-	return a.deleteArtist.Handle(id)
 }

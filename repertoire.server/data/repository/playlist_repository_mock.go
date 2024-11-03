@@ -58,8 +58,8 @@ func (p *PlaylistRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUI
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) CountSongs(count *int64, playlistID uuid.UUID) error {
-	args := p.Called(count, playlistID)
+func (p *PlaylistRepositoryMock) CountSongs(count *int64, id uuid.UUID) error {
+	args := p.Called(count, id)
 
 	if len(args) > 1 {
 		*count = *args.Get(1).(*int64)
