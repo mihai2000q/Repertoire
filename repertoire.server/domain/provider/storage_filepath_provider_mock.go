@@ -10,7 +10,7 @@ type StorageFilePathProviderMock struct {
 	mock.Mock
 }
 
-func (s *StorageFilePathProviderMock) GetSongImagePathAndURL(file *multipart.FileHeader, songID uuid.UUID) (string, string) {
+func (s *StorageFilePathProviderMock) GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string {
 	args := s.Called(file, songID)
-	return args.String(0), args.String(1)
+	return args.String(0)
 }

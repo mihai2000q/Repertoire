@@ -8,5 +8,7 @@ services:
         VITE_APPLICATION_PORT: ${VITE_APPLICATION_PORT}
     container_name: Repertoire-Web
     env_file: ".env"
+    environment:
+      - VITE_BACKEND_URL=http://Repertoire-Server:8000/api
     ports:
       - "${VITE_APPLICATION_PORT}:${VITE_APPLICATION_PORT}"

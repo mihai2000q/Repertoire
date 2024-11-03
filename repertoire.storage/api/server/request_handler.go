@@ -20,7 +20,7 @@ func NewRequestHandler(
 	engine.Use(corsMiddleware.Handler())
 	engine.Use(errorHandlerMiddleware.Handler())
 
-	router := engine.Group("/api")
+	router := engine.Group("")
 
 	return &RequestHandler{
 		Gin:    engine,

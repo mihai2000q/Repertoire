@@ -1,6 +1,8 @@
 package model
 
 import (
+	"gorm.io/gorm"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"time"
 
@@ -8,16 +10,16 @@ import (
 )
 
 type Song struct {
-	ID            uuid.UUID         `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Title         string            `gorm:"size:100; not null" json:"title"`
-	Description   string            `gorm:"not null" json:"description"`
-	IsRecorded    bool              `json:"isRecorded"`
-	Bpm           *uint             `json:"bpm"`
-	SongsterrLink *string           `json:"songsterrLink"`
-	ReleaseDate   *time.Time        `json:"releaseDate"`
-	Difficulty    *enums.Difficulty `json:"difficulty"`
-	ImageURL      *string           `json:"imageUrl"`
-	TrackNo       *uint             `json:"trackNo"`
+	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title         string             `gorm:"size:100; not null" json:"title"`
+	Description   string             `gorm:"not null" json:"description"`
+	IsRecorded    bool               `json:"isRecorded"`
+	Bpm           *uint              `json:"bpm"`
+	SongsterrLink *string            `json:"songsterrLink"`
+	ReleaseDate   *time.Time         `json:"releaseDate"`
+	Difficulty    *enums.Difficulty  `json:"difficulty"`
+	ImageURL      *internal.FilePath `json:"imageUrl"`
+	TrackNo       *uint              `json:"trackNo"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`
@@ -31,6 +33,11 @@ type Song struct {
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+}
+
+func (s *Song) AfterFind(*gorm.DB) error {
+	s.ImageURL = s.ImageURL.ToNullableFullURL()
+	return nil
 }
 
 type GuitarTuning struct {

@@ -12,6 +12,7 @@ services:
       - SERVER_HOST=0.0.0.0
       - DB_HOST=Repertoire-Database
       - DB_PORT=5432
+      - UPLOAD_STORAGE_URL=http://Repertoire-Storage:8020/storage
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:

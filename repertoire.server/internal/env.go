@@ -52,7 +52,7 @@ func NewEnv() Env {
 		JwtIssuer:        os.Getenv("JWT_ISSUER"),
 		JwtAudience:      os.Getenv("JWT_AUDIENCE"),
 		JwtSecretKey:     os.Getenv("JWT_SECRET_KEY"),
-		StorageUrl:       os.Getenv("STORAGE_SERVER_URL"),
+		StorageUrl:       os.Getenv("UPLOAD_STORAGE_URL"),
 	}
 	return env
 }
