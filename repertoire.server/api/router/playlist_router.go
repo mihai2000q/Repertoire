@@ -19,7 +19,7 @@ func (p PlaylistRouter) RegisterRoutes() {
 		api.POST("/add-song", p.handler.AddSong)
 		api.PUT("", p.handler.Update)
 		api.DELETE("/:id", p.handler.Delete)
-		api.DELETE("/:songID/from/:id", p.handler.RemoveSong)
+		api.DELETE("/song/:songID/from/:id", p.handler.RemoveSong)
 	}
 }
 
