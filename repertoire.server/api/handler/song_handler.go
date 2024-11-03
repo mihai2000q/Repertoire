@@ -187,6 +187,23 @@ func (s SongHandler) CreateSection(c *gin.Context) {
 	s.SendMessage(c, "song section has been created successfully!")
 }
 
+func (s SongHandler) AddToAlbum(c *gin.Context) {
+	var request requests.AddSongToAlbumRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.AddToAlbum(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song has been added to album successfully")
+}
+
 func (s SongHandler) UpdateSection(c *gin.Context) {
 	var request requests.UpdateSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)
