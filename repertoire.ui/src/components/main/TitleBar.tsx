@@ -1,5 +1,6 @@
 import { ActionIcon, Avatar, Group, Space, Stack, Text } from '@mantine/core'
 import { IconArrowDownLeft, IconArrowsDiagonal, IconX } from '@tabler/icons-react'
+import useTitleBarHeight from 'src/hooks/useTitleBarHeight'
 
 function TitleBar() {
   function handleMinimize() {
@@ -20,6 +21,8 @@ function TitleBar() {
     window.electron.ipcRenderer.send('close')
   }
 
+  const height = useTitleBarHeight()
+
   return (
     <Stack
       data-testid="title-bar"
@@ -30,7 +33,7 @@ function TitleBar() {
       gap={0}
       style={{ zIndex: 2, WebkitAppRegion: 'drag' }}
     >
-      <Group gap={0} h={45} px={'xs'} align={'center'}>
+      <Group gap={0} h={height} px={'xs'} align={'center'}>
         <Avatar size={35} />
         <Text pl={4}>Repertoire</Text>
 

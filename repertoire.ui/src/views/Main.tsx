@@ -6,12 +6,14 @@ import useErrorRedirection from '../hooks/useErrorRedirection'
 import { AppShell, Box } from '@mantine/core'
 import TitleBar from "../components/main/TitleBar.tsx";
 import useAuth from "../hooks/useAuth.ts";
+import useIsDesktop from 'src/hooks/useIsDesktop.ts'
+import useTitleBarHeight from 'src/hooks/useTitleBarHeight.ts'
 
 function Main(): ReactElement {
   useErrorRedirection()
 
-  const isDesktop = import.meta.env.VITE_PLATFORM === 'desktop'
-  const titleBarWidth = isDesktop ? '45px' : '0'
+  const isDesktop = useIsDesktop()
+  const titleBarHeight = useTitleBarHeight()
 
   return (
     <Box w={'100%'} h={'100%'}>
@@ -26,8 +28,8 @@ function Main(): ReactElement {
         }}
         px={'xl'}
         w={'100%'}
-        h={`calc(100% - ${titleBarWidth})`}
-        mt={titleBarWidth}
+        h={`calc(100% - ${titleBarHeight})`}
+        mt={titleBarHeight}
         disabled={!useAuth()}
       >
         <Topbar />

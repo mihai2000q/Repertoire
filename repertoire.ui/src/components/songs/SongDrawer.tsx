@@ -3,6 +3,7 @@ import { useGetSongQuery } from '../../state/songsApi.ts'
 import { useAppSelector } from '../../state/store.ts'
 import SongDrawerLoader from './loader/SongDrawerLoader.tsx'
 import demoSong from '../../assets/demoSong.jpg'
+import useTitleBarHeight from 'src/hooks/useTitleBarHeight.ts'
 
 interface SongDrawerProps {
   opened: boolean
@@ -10,6 +11,8 @@ interface SongDrawerProps {
 }
 
 function SongDrawer({ opened, close }: SongDrawerProps) {
+  const titleBarHeight = useTitleBarHeight()
+
   const songId = useAppSelector((state) => state.songs.songId)
 
   const song = useGetSongQuery(songId, { skip: !songId })?.data
@@ -25,12 +28,12 @@ function SongDrawer({ opened, close }: SongDrawerProps) {
       radius={'8 0 0 8'}
       styles={{
         overlay: {
-          height: 'calc(100% - 45px)',
-          marginTop: '45px'
+          height: `calc(100% - ${titleBarHeight})`,
+          marginTop: titleBarHeight
         },
         inner: {
-          height: 'calc(100% - 45px)',
-          marginTop: '45px'
+          height: `calc(100% - ${titleBarHeight})`,
+          marginTop: titleBarHeight
         },
         body: {
           padding: 0,
