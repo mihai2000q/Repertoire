@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
-import {AppShell, Autocomplete, Avatar, Group, Loader, Menu, Stack, Text, UnstyledButton} from '@mantine/core'
+import { AppShell, Autocomplete, Avatar, Group, Loader, Menu, Stack, Text, UnstyledButton } from '@mantine/core'
 import demoUser from '../../assets/demoUser.png'
-import {IconCaretDownFilled, IconLogout2, IconSearch, IconSettings, IconUser} from '@tabler/icons-react'
+import { IconCaretDownFilled, IconLogout2, IconSearch, IconSettings, IconUser } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { signOut } from '../../state/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
@@ -19,7 +19,7 @@ function Topbar(): ReactElement {
   }
 
   return (
-    <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
+    <AppShell.Header px={'md'} py={'md'} withBorder={false} top={'unset'}>
       <Group justify={'space-between'} align={'center'} h={'100%'}>
         <Autocomplete
           placeholder="Search"
