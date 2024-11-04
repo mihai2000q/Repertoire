@@ -9,5 +9,3 @@ echo "Installing Server Dependencies"
 go mod download
 
 echo -e "Server Setup Finished\n"
-
-cd .. 
