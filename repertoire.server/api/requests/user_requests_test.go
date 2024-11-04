@@ -15,6 +15,7 @@ func TestValidateUpdateUserRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
 	request := UpdateUserRequest{
+		ID:   uuid.New(),
 		Name: validUserName,
 	}
 
