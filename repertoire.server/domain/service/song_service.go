@@ -18,7 +18,7 @@ type SongService interface {
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
-	SaveImage(file *multipart.FileHeader, songID uuid.UUID, token string) *wrapper.ErrorCode
+	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
@@ -103,8 +103,8 @@ func (s *songService) Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode) {
 	return s.getSong.Handle(id)
 }
 
-func (s *songService) SaveImage(file *multipart.FileHeader, songID uuid.UUID, token string) *wrapper.ErrorCode {
-	return s.saveImageToSong.Handle(file, songID, token)
+func (s *songService) SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode {
+	return s.saveImageToSong.Handle(file, songID)
 }
 
 func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorCode {

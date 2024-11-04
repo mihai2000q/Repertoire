@@ -141,15 +141,13 @@ func (s SongHandler) SaveImage(c *gin.Context) {
 		return
 	}
 
-	token := s.GetTokenFromContext(c)
-
 	id, err := uuid.Parse(c.PostForm("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	errorCode := s.service.SaveImage(file, id, token)
+	errorCode := s.service.SaveImage(file, id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

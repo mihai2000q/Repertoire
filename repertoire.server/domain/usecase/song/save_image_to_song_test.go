@@ -2,9 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"mime/multipart"
 	"net/http"
 	"repertoire/server/data/repository"
@@ -12,6 +9,10 @@ import (
 	"repertoire/server/domain/provider"
 	"repertoire/server/model"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T) {
@@ -22,15 +23,14 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 	}
 
 	file := new(multipart.FileHeader)
-	songID := uuid.New()
-	token := "This is a token"
+	id := uuid.New()
 
 	// given - mocking
 	internalError := errors.New("internal error")
-	songRepository.On("Get", new(model.Song), songID).Return(internalError).Once()
+	songRepository.On("Get", new(model.Song), id).Return(internalError).Once()
 
 	// when
-	errCode := _uut.Handle(file, songID, token)
+	errCode := _uut.Handle(file, id)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -48,14 +48,13 @@ func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 	}
 
 	file := new(multipart.FileHeader)
-	songID := uuid.New()
-	token := "This is a token"
+	id := uuid.New()
 
 	// given - mocking
-	songRepository.On("Get", new(model.Song), songID).Return(nil).Once()
+	songRepository.On("Get", new(model.Song), id).Return(nil).Once()
 
 	// when
-	errCode := _uut.Handle(file, songID, token)
+	errCode := _uut.Handle(file, id)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -77,21 +76,20 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	}
 
 	file := new(multipart.FileHeader)
-	songID := uuid.New()
-	token := "This is a token"
+	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: songID, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
+	song := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, songID).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, id).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
-	storageService.On("Upload", token, file, imagePath).Return(internalError).Once()
+	storageService.On("Upload", file, imagePath).Return(internalError).Once()
 
 	// when
-	errCode := _uut.Handle(file, songID, token)
+	errCode := _uut.Handle(file, id)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -115,17 +113,16 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	}
 
 	file := new(multipart.FileHeader)
-	songID := uuid.New()
-	token := "This is a token"
+	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: songID, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
+	song := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, songID).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, id).Return(imagePath).Once()
 
-	storageService.On("Upload", token, file, imagePath).Return(nil).Once()
+	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	songRepository.On("Update", mock.IsType(new(model.Song))).
@@ -133,7 +130,7 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 		Once()
 
 	// when
-	errCode := _uut.Handle(file, songID, token)
+	errCode := _uut.Handle(file, id)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -157,17 +154,16 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	}
 
 	file := new(multipart.FileHeader)
-	songID := uuid.New()
-	token := "This is a token"
+	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: songID, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), songID).Return(nil, song).Once()
+	song := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, songID).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, id).Return(imagePath).Once()
 
-	storageService.On("Upload", token, file, imagePath).Return(nil).Once()
+	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
 	songRepository.On("Update", mock.IsType(new(model.Song))).
 		Run(func(args mock.Arguments) {
@@ -178,7 +174,7 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Once()
 
 	// when
-	errCode := _uut.Handle(file, songID, token)
+	errCode := _uut.Handle(file, id)
 
 	// then
 	assert.Nil(t, errCode)

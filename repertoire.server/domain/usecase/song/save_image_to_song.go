@@ -2,7 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"mime/multipart"
 	"reflect"
 	"repertoire/server/data/repository"
@@ -11,6 +10,8 @@ import (
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type SaveImageToSong struct {
@@ -31,9 +32,9 @@ func NewSaveImageToSong(
 	}
 }
 
-func (a SaveImageToSong) Handle(file *multipart.FileHeader, songID uuid.UUID, token string) *wrapper.ErrorCode {
+func (a SaveImageToSong) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.Get(&song, songID)
+	err := a.repository.Get(&song, id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -41,9 +42,9 @@ func (a SaveImageToSong) Handle(file *multipart.FileHeader, songID uuid.UUID, to
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	imagePath := a.storageFilePathProvider.GetSongImagePath(file, songID)
+	imagePath := a.storageFilePathProvider.GetSongImagePath(file, id)
 
-	err = a.storageService.Upload(token, file, imagePath)
+	err = a.storageService.Upload(file, imagePath)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

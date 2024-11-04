@@ -11,7 +11,7 @@ import (
 )
 
 type StorageService interface {
-	Upload(token string, fileHeader *multipart.FileHeader, filePath string) error
+	Upload(fileHeader *multipart.FileHeader, filePath string) error
 	Delete(filePath string) error
 }
 
@@ -25,7 +25,7 @@ func NewStorageService(httpClient *resty.Client) StorageService {
 	}
 }
 
-func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, filePath string) error {
+func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string) error {
 	file, err := fileHeader.Open()
 	if err != nil {
 		return err
@@ -40,7 +40,6 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 	}
 
 	res, err := s.httpClient.R().
-		SetAuthToken(token).
 		SetFileReader("file", fileHeader.Filename, bytes.NewReader(buf.Bytes())).
 		SetFormData(map[string]string{
 			"filePath": filePath,
@@ -58,7 +57,7 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 
 func (s storageService) Delete(filePath string) error {
 	res, err := s.httpClient.R().
-		Delete("files" + filePath)
+		Delete("files/" + filePath)
 	if err != nil {
 		return err
 	}
