@@ -1,8 +1,9 @@
 package service
 
 import (
-	"github.com/stretchr/testify/mock"
 	"mime/multipart"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type StorageServiceMock struct {
@@ -14,7 +15,7 @@ func (s *StorageServiceMock) Upload(token string, fileHeader *multipart.FileHead
 	return args.Error(0)
 }
 
-func (s *StorageServiceMock) Delete(token string, filePath string) error {
-	args := s.Called(token, filePath)
+func (s *StorageServiceMock) Delete(filePath string) error {
+	args := s.Called(filePath)
 	return args.Error(0)
 }

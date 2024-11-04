@@ -158,7 +158,23 @@ func (s SongHandler) SaveImage(c *gin.Context) {
 	s.SendMessage(c, "image has been saved to song successfully!")
 }
 
-// Section
+func (s SongHandler) DeleteImage(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := s.service.DeleteImage(id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "image has been deleted from song successfully")
+}
+
+// Sections
 
 func (s SongHandler) GetSectionTypes(c *gin.Context) {
 	token := s.GetTokenFromContext(c)
