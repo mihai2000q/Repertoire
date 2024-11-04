@@ -1,13 +1,15 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/api/server"
 	"repertoire/server/api/validation"
 	"repertoire/server/domain/provider"
 	"repertoire/server/domain/service"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type UserHandler struct {
@@ -43,9 +45,7 @@ func (u UserHandler) GetCurrentUser(c *gin.Context) {
 }
 
 func (u UserHandler) Get(c *gin.Context) {
-	paramId := c.Param("id")
-
-	id, err := uuid.Parse(paramId)
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
@@ -58,4 +58,21 @@ func (u UserHandler) Get(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func (u UserHandler) Update(c *gin.Context) {
+	var request requests.UpdateUserRequest
+	errCode := u.BindAndValidate(c, &request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	errCode = u.service.Update(request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "user has been updated successfully!")
 }

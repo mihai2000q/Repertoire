@@ -1,15 +1,17 @@
 package repository
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
 	Get(user *model.User, id uuid.UUID) error
 	GetByEmail(user *model.User, email string) error
 	Create(user *model.User) error
+	Update(user *model.User) error
 }
 
 type userRepository struct {
@@ -32,4 +34,8 @@ func (u userRepository) GetByEmail(user *model.User, email string) error {
 
 func (u userRepository) Create(user *model.User) error {
 	return u.client.DB.Create(&user).Error
+}
+
+func (u userRepository) Update(user *model.User) error {
+	return u.client.DB.Save(&user).Error
 }
