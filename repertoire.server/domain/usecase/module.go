@@ -66,6 +66,7 @@ var songUseCases = fx.Options(
 
 var userUseCases = fx.Options(
 	fx.Provide(user.NewGetUser),
+	fx.Provide(user.NewUpdateUser),
 )
 
 var Module = fx.Options(

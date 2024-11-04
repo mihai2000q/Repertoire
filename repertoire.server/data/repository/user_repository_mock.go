@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"repertoire/server/model"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"repertoire/server/model"
 )
 
 type UserRepositoryMock struct {
@@ -31,6 +32,11 @@ func (u *UserRepositoryMock) GetByEmail(user *model.User, email string) error {
 }
 
 func (u *UserRepositoryMock) Create(user *model.User) error {
+	args := u.Called(user)
+	return args.Error(0)
+}
+
+func (u *UserRepositoryMock) Update(user *model.User) error {
 	args := u.Called(user)
 	return args.Error(0)
 }
