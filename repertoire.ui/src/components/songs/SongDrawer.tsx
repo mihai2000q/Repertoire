@@ -3,7 +3,7 @@ import { useGetSongQuery } from '../../state/songsApi.ts'
 import { useAppSelector } from '../../state/store.ts'
 import SongDrawerLoader from './loader/SongDrawerLoader.tsx'
 import demoSong from '../../assets/demoSong.jpg'
-import useTitleBarHeight from 'src/hooks/useTitleBarHeight.ts'
+import useTitleBarHeight from '../../hooks/useTitleBarHeight.ts'
 
 interface SongDrawerProps {
   opened: boolean

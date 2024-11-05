@@ -1,6 +1,6 @@
 import { ActionIcon, Avatar, Group, Space, Stack, Text } from '@mantine/core'
 import { IconArrowDownLeft, IconArrowsDiagonal, IconX } from '@tabler/icons-react'
-import useTitleBarHeight from 'src/hooks/useTitleBarHeight'
+import useTitleBarHeight from '../../hooks/useTitleBarHeight'
 
 function TitleBar() {
   function handleMinimize() {

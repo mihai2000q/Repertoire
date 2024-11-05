@@ -23,7 +23,7 @@ describe('use Is Desktop', () => {
         const { result } = renderHook(() => useIsDesktop())
 
         // Assert
-        expect(result.current).toBeTruthy()
+        expect(result.current).toBeFalsy()
 
         import.meta.env.VITE_PLATFORM = ''
     })

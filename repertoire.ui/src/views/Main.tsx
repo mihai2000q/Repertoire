@@ -4,10 +4,10 @@ import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
 import { AppShell, Box } from '@mantine/core'
-import TitleBar from "../components/main/TitleBar.tsx";
-import useAuth from "../hooks/useAuth.ts";
-import useIsDesktop from 'src/hooks/useIsDesktop.ts'
-import useTitleBarHeight from 'src/hooks/useTitleBarHeight.ts'
+import TitleBar from "../components/main/TitleBar";
+import useAuth from "../hooks/useAuth";
+import useIsDesktop from '../hooks/useIsDesktop'
+import useTitleBarHeight from '../hooks/useTitleBarHeight'
 
 function Main(): ReactElement {
   useErrorRedirection()
