@@ -1,7 +1,19 @@
-import { Button, Modal, Stack, TextInput } from '@mantine/core'
+import {
+  ActionIcon,
+  Button,
+  FileButton,
+  Group,
+  Image,
+  Modal,
+  Stack,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm'
-import { useCreateSongMutation } from '../../../state/songsApi'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi'
+import { useState } from 'react'
+import { IconPhotoPlus } from '@tabler/icons-react'
 
 interface AddNewSongModalProps {
   opened: boolean
@@ -9,7 +21,11 @@ interface AddNewSongModalProps {
 }
 
 function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
-  const [createSongMutation, { isLoading }] = useCreateSongMutation()
+  const [createSongMutation, { isLoading: isCreateSongLoading }] = useCreateSongMutation()
+  const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
+  const isLoading = isCreateSongLoading || isSaveImageLoading
+
+  const [image, setImage] = useState<File>(null)
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -23,8 +39,10 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   })
 
   async function addSong({ title }: AddNewSongForm) {
-    await createSongMutation({ title }).unwrap()
+    const res = await createSongMutation({ title }).unwrap()
+    if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
     onClose()
+    setImage(null)
     form.reset()
   }
 
@@ -41,6 +59,21 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
               key={form.key('title')}
               {...form.getInputProps('title')}
             />
+
+            <Group align={'center'}>
+              <FileButton onChange={setImage} accept="image/png,image/jpeg">
+                {(props) => (
+                  <Tooltip label={'Add an Image'}>
+                    <ActionIcon aria-label={'add-image-button'} size={'xl'} {...props}>
+                      <IconPhotoPlus />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </FileButton>
+
+              {image && <Image src={URL.createObjectURL(image)} h={'100px'} w={'100px'} radius={'md'} />}
+            </Group>
+
             <Button type={'submit'} style={{ alignSelf: 'end' }} disabled={isLoading}>
               Add
             </Button>
