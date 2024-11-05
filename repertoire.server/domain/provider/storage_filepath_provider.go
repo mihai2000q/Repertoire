@@ -9,6 +9,7 @@ import (
 type StorageFilePathProvider interface {
 	GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string
 	GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string
+	GetPlaylistImagePath(file *multipart.FileHeader, playlist model.Playlist) string
 	GetSongImagePath(file *multipart.FileHeader, song model.Song) string
 }
 
@@ -28,6 +29,12 @@ func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, a
 func (s storageFilePathProvider) GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string {
 	fileExtension := filepath.Ext(file.Filename)
 	filePath := artist.UserID.String() + "/artists/" + artist.ID.String() + fileExtension
+	return filePath
+}
+
+func (s storageFilePathProvider) GetPlaylistImagePath(file *multipart.FileHeader, playlist model.Playlist) string {
+	fileExtension := filepath.Ext(file.Filename)
+	filePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + fileExtension
 	return filePath
 }
 

@@ -51,6 +51,27 @@ func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(
 	assert.Equal(t, expectedImagePath, imagePath)
 }
 
+func TestStorageFilePathProvider_GetPlaylistImagePath_ShouldReturnPlaylistImagePath(t *testing.T) {
+	// given
+	_uut := new(storageFilePathProvider)
+
+	fileExtension := ".jpg"
+	file := new(multipart.FileHeader)
+	file.Filename = "something" + fileExtension
+	playlist := model.Playlist{
+		ID:     uuid.New(),
+		UserID: uuid.New(),
+	}
+
+	// when
+	imagePath := _uut.GetPlaylistImagePath(file, playlist)
+
+	// then
+	expectedImagePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + fileExtension
+
+	assert.Equal(t, expectedImagePath, imagePath)
+}
+
 func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *testing.T) {
 	// given
 	_uut := new(storageFilePathProvider)
