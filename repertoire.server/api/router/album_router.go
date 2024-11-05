@@ -22,6 +22,11 @@ func (a AlbumRouter) RegisterRoutes() {
 		api.DELETE("/song/:songID/from/:id", a.handler.RemoveSong)
 		api.DELETE("/:id", a.handler.Delete)
 	}
+
+	imagesApi := api.Group("/images")
+	{
+		imagesApi.PUT("", a.handler.SaveImage)
+	}
 }
 
 func NewAlbumRouter(

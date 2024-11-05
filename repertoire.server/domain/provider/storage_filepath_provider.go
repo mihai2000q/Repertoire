@@ -1,24 +1,29 @@
 package provider
 
 import (
-	"github.com/google/uuid"
 	"mime/multipart"
 	"path/filepath"
-	"repertoire/server/internal"
+	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type StorageFilePathProvider interface {
+	GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string
 	GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string
 }
 
 type storageFilePathProvider struct {
-	env internal.Env
 }
 
-func NewStorageFilePathProvider(env internal.Env) StorageFilePathProvider {
-	return storageFilePathProvider{
-		env: env,
-	}
+func NewStorageFilePathProvider() StorageFilePathProvider {
+	return new(storageFilePathProvider)
+}
+
+func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string {
+	fileExtension := filepath.Ext(file.Filename)
+	filePath := album.UserID.String() + "/albums/" + album.ID.String() + fileExtension
+	return filePath
 }
 
 func (s storageFilePathProvider) GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string {

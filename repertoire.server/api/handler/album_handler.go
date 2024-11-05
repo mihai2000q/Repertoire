@@ -136,6 +136,28 @@ func (a AlbumHandler) MoveSong(c *gin.Context) {
 	a.SendMessage(c, "song has been moved from album successfully")
 }
 
+func (a AlbumHandler) SaveImage(c *gin.Context) {
+	file, err := c.FormFile("image")
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	id, err := uuid.Parse(c.PostForm("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := a.service.SaveImage(file, id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "image has been saved to album successfully!")
+}
+
 func (a AlbumHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

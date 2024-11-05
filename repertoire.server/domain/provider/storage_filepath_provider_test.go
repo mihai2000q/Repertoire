@@ -1,17 +1,38 @@
 package provider
 
 import (
+	"mime/multipart"
+	"repertoire/server/model"
+	"testing"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"mime/multipart"
-	"repertoire/server/internal"
-	"testing"
 )
 
-func TestStorageFilePathProvider_GetSongImagePathAndURL_ShouldReturnImagePathAndUrl(t *testing.T) {
+func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t *testing.T) {
 	// given
-	env := internal.Env{StorageUrl: "storageUrl"}
-	_uut := storageFilePathProvider{env}
+	_uut := new(storageFilePathProvider)
+
+	fileExtension := ".jpg"
+	file := new(multipart.FileHeader)
+	file.Filename = "something" + fileExtension
+	album := model.Album{
+		ID:     uuid.New(),
+		UserID: uuid.New(),
+	}
+
+	// when
+	imagePath := _uut.GetAlbumImagePath(file, album)
+
+	// then
+	expectedImagePath := album.UserID.String() + "/albums/" + album.ID.String() + fileExtension
+
+	assert.Equal(t, expectedImagePath, imagePath)
+}
+
+func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *testing.T) {
+	// given
+	_uut := new(storageFilePathProvider)
 
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
@@ -19,10 +40,10 @@ func TestStorageFilePathProvider_GetSongImagePathAndURL_ShouldReturnImagePathAnd
 	songID := uuid.New()
 
 	// when
-	songImagePath := _uut.GetSongImagePath(file, songID)
+	imagePath := _uut.GetSongImagePath(file, songID)
 
 	// then
 	expectedImagePath := "songs/" + songID.String() + fileExtension
 
-	assert.Equal(t, expectedImagePath, songImagePath)
+	assert.Equal(t, expectedImagePath, imagePath)
 }
