@@ -46,7 +46,7 @@ func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *t
 	imagePath := _uut.GetSongImagePath(file, song)
 
 	// then
-	expectedImagePath := song.UserID.String() + "songs/" + song.ID.String() + fileExtension
+	expectedImagePath := song.UserID.String() + "/songs/" + song.ID.String() + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
