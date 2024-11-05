@@ -4,7 +4,6 @@ import (
 	"mime/multipart"
 	"repertoire/server/model"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -17,7 +16,7 @@ func (s *StorageFilePathProviderMock) GetAlbumImagePath(file *multipart.FileHead
 	return args.String(0)
 }
 
-func (s *StorageFilePathProviderMock) GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string {
-	args := s.Called(file, songID)
+func (s *StorageFilePathProviderMock) GetSongImagePath(file *multipart.FileHeader, song model.Song) string {
+	args := s.Called(file, song)
 	return args.String(0)
 }

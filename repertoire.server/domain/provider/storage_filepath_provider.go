@@ -4,13 +4,11 @@ import (
 	"mime/multipart"
 	"path/filepath"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type StorageFilePathProvider interface {
 	GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string
-	GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string
+	GetSongImagePath(file *multipart.FileHeader, song model.Song) string
 }
 
 type storageFilePathProvider struct {
@@ -26,8 +24,8 @@ func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, a
 	return filePath
 }
 
-func (s storageFilePathProvider) GetSongImagePath(file *multipart.FileHeader, songID uuid.UUID) string {
+func (s storageFilePathProvider) GetSongImagePath(file *multipart.FileHeader, song model.Song) string {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := "songs/" + songID.String() + fileExtension
+	filePath := song.UserID.String() + "/songs/" + song.ID.String() + fileExtension
 	return filePath
 }

@@ -42,7 +42,7 @@ func (s SaveImageToSong) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapp
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	imagePath := s.storageFilePathProvider.GetSongImagePath(file, id)
+	imagePath := s.storageFilePathProvider.GetSongImagePath(file, song)
 
 	err = s.storageService.Upload(file, imagePath)
 	if err != nil {

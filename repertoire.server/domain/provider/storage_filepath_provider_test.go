@@ -37,13 +37,16 @@ func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *t
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
 	file.Filename = "something" + fileExtension
-	songID := uuid.New()
+	song := model.Song{
+		ID:     uuid.New(),
+		UserID: uuid.New(),
+	}
 
 	// when
-	imagePath := _uut.GetSongImagePath(file, songID)
+	imagePath := _uut.GetSongImagePath(file, song)
 
 	// then
-	expectedImagePath := "songs/" + songID.String() + fileExtension
+	expectedImagePath := song.UserID.String() + "songs/" + song.ID.String() + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }

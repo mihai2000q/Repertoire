@@ -83,7 +83,7 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, id).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -120,7 +120,7 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, id).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
@@ -161,7 +161,7 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, id).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
