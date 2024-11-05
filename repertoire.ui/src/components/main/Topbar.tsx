@@ -1,11 +1,28 @@
 import { ReactElement } from 'react'
-import { AppShell, Autocomplete, Avatar, Group, Loader, Menu, Stack, Text, UnstyledButton } from '@mantine/core'
-import demoUser from '../../assets/demoUser.png'
-import { IconCaretDownFilled, IconLogout2, IconSearch, IconSettings, IconUser } from '@tabler/icons-react'
+import {
+  AppShell,
+  Autocomplete,
+  Avatar,
+  Group,
+  Image,
+  Loader,
+  Menu,
+  Stack,
+  Text,
+  UnstyledButton
+} from '@mantine/core'
+import userPlaceholder from '../../assets/user-placeholder.jpg'
+import {
+  IconCaretDownFilled,
+  IconLogout2,
+  IconSearch,
+  IconSettings,
+  IconUser
+} from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { signOut } from '../../state/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
-import useAuth from "../../hooks/useAuth.ts";
+import useAuth from '../../hooks/useAuth.ts'
 
 function Topbar(): ReactElement {
   const dispatch = useAppDispatch()
@@ -37,7 +54,9 @@ function Topbar(): ReactElement {
             <Menu.Target>
               <UnstyledButton style={{ cursor: 'pointer' }} data-testid={'user-button'}>
                 <Group gap={4}>
-                  <Avatar src={demoUser} />
+                  <Avatar src={user.imageUrl}>
+                    <Image src={userPlaceholder} />
+                  </Avatar>
                   <IconCaretDownFilled size={12} color={'#323233'} />
                 </Group>
               </UnstyledButton>
@@ -46,8 +65,12 @@ function Topbar(): ReactElement {
             <Menu.Dropdown>
               <Menu.Label>
                 <Stack gap={0}>
-                  <Text fw={400} c={'black'}>{user?.name}</Text>
-                  <Text fz={'xs'} fw={300}>{user?.email}</Text>
+                  <Text fw={400} c={'black'}>
+                    {user?.name}
+                  </Text>
+                  <Text fz={'xs'} fw={300}>
+                    {user?.email}
+                  </Text>
                 </Stack>
               </Menu.Label>
 
