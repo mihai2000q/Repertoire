@@ -26,6 +26,7 @@ func (a AlbumRouter) RegisterRoutes() {
 	imagesApi := api.Group("/images")
 	{
 		imagesApi.PUT("", a.handler.SaveImage)
+		imagesApi.DELETE("/:id", a.handler.DeleteImage)
 	}
 }
 
