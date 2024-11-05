@@ -16,6 +16,11 @@ func (s *StorageFilePathProviderMock) GetAlbumImagePath(file *multipart.FileHead
 	return args.String(0)
 }
 
+func (s *StorageFilePathProviderMock) GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string {
+	args := s.Called(file, artist)
+	return args.String(0)
+}
+
 func (s *StorageFilePathProviderMock) GetSongImagePath(file *multipart.FileHeader, song model.Song) string {
 	args := s.Called(file, song)
 	return args.String(0)

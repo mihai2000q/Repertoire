@@ -117,3 +117,43 @@ func (a ArtistHandler) Delete(c *gin.Context) {
 
 	a.SendMessage(c, "artist has been deleted successfully")
 }
+
+// Images
+
+func (a ArtistHandler) SaveImage(c *gin.Context) {
+	file, err := c.FormFile("image")
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	id, err := uuid.Parse(c.PostForm("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := a.service.SaveImage(file, id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "image has been saved to artist successfully!")
+}
+
+func (a ArtistHandler) DeleteImage(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := a.service.DeleteImage(id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "image has been deleted from artist successfully")
+}
