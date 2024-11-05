@@ -48,7 +48,7 @@ describe('Add New Song Modal', () => {
     reduxRender(<AddNewSongModal opened={true} onClose={vi.fn()} />)
 
     // Assert
-    await user.click(screen.getByRole('button', { name: /add/i }))
+    await user.click(screen.getByRole('button', { name: /add song/i }))
     expect(screen.getByText(error)).toBeInTheDocument()
 
     await user.type(screen.getByRole('textbox', { name: /title/i }), '  ')
