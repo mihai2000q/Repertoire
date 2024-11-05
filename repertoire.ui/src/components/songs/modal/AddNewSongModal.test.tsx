@@ -13,7 +13,7 @@ describe('Add New Song Modal', () => {
   const handlers = [
     http.post('/songs', async (req) => {
       capturedCreateSongRequest = (await req.request.json()) as CreateSongRequest
-      return HttpResponse.json('Song created successfully!')
+      return HttpResponse.json({ id: 'some id' })
     })
   ]
 
@@ -34,11 +34,12 @@ describe('Add New Song Modal', () => {
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
 
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveTextContent('')
+    expect(screen.getByRole('button', { name: /add-image-button/i })).toBeInTheDocument()
 
-    expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /add song/i })).toBeInTheDocument()
   })
 
-  it('should render and display error if the title is invalid', async ({ expect }) => {
+  it('should display error if the title is invalid', async ({ expect }) => {
     // Arrange
     const user = userEvent.setup()
     const error = 'Title cannot be blank'
@@ -51,11 +52,11 @@ describe('Add New Song Modal', () => {
     expect(screen.getByText(error)).toBeInTheDocument()
 
     await user.type(screen.getByRole('textbox', { name: /title/i }), '  ')
-    await user.click(screen.getByRole('button', { name: /add/i }))
+    await user.click(screen.getByRole('button', { name: /add song/i }))
     expect(screen.getByText(error)).toBeInTheDocument()
   })
 
-  it('should render and send POST request when valid', async ({ expect }) => {
+  it('should send POST request when valid', async ({ expect }) => {
     // Arrange
     const onClose = vi.fn()
     const user = userEvent.setup()
@@ -66,7 +67,7 @@ describe('Add New Song Modal', () => {
 
     // Assert
     await user.type(screen.getByRole('textbox', { name: /title/i }), title)
-    await user.click(screen.getByRole('button', { name: /add/i }))
+    await user.click(screen.getByRole('button', { name: /add song/i }))
 
     expect(capturedCreateSongRequest).toStrictEqual({
       title: title

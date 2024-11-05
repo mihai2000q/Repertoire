@@ -63,7 +63,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
             <Group align={'center'}>
               <FileButton onChange={setImage} accept="image/png,image/jpeg">
                 {(props) => (
-                  <Tooltip label={'Add an Image'}>
+                  <Tooltip label={'Add a Image'}>
                     <ActionIcon aria-label={'add-image-button'} size={'xl'} {...props}>
                       <IconPhotoPlus />
                     </ActionIcon>
@@ -71,11 +71,19 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
                 )}
               </FileButton>
 
-              {image && <Image src={URL.createObjectURL(image)} h={'100px'} w={'100px'} radius={'md'} />}
+              {image && (
+                <Image
+                  src={URL.createObjectURL(image)}
+                  h={'100px'}
+                  w={'100px'}
+                  radius={'md'}
+                  alt={'song-image'}
+                />
+              )}
             </Group>
 
             <Button type={'submit'} style={{ alignSelf: 'end' }} disabled={isLoading}>
-              Add
+              Add Song
             </Button>
           </Stack>
         </form>
