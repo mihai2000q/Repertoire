@@ -76,3 +76,35 @@ func (u UserHandler) Update(c *gin.Context) {
 
 	u.SendMessage(c, "user has been updated successfully!")
 }
+
+// Pictures
+
+func (u UserHandler) SaveProfilePicture(c *gin.Context) {
+	file, err := c.FormFile("profile_pic")
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode := u.service.SaveProfilePicture(file, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "profile picture has been saved to current user successfully!")
+}
+
+func (u UserHandler) DeleteProfilePicture(c *gin.Context) {
+	token := u.GetTokenFromContext(c)
+
+	errorCode := u.service.DeleteProfilePicture(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "profile picture has been deleted from current user successfully")
+}

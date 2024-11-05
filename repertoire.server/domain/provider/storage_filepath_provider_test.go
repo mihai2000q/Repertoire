@@ -9,6 +9,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestStorageFilePathProvider_GetUserProfilePicturePath_ShouldReturnPlaylistImagePath(t *testing.T) {
+	// given
+	_uut := new(storageFilePathProvider)
+
+	fileExtension := ".jpg"
+	file := new(multipart.FileHeader)
+	file.Filename = "something" + fileExtension
+	user := model.User{ID: uuid.New()}
+
+	// when
+	imagePath := _uut.GetUserProfilePicturePath(file, user)
+
+	// then
+	expectedImagePath := user.ID.String() + "/profile_pic" + fileExtension
+
+	assert.Equal(t, expectedImagePath, imagePath)
+}
+
 func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t *testing.T) {
 	// given
 	_uut := new(storageFilePathProvider)

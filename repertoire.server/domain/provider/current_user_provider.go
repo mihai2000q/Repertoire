@@ -10,7 +10,7 @@ import (
 )
 
 type CurrentUserProvider interface {
-	Get(token string) (user model.User, e *wrapper.ErrorCode)
+	Get(token string) (model.User, *wrapper.ErrorCode)
 }
 
 type currentUserProvider struct {
