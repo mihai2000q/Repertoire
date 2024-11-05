@@ -43,7 +43,7 @@ func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t 
 	imagePath := _uut.GetAlbumImagePath(file, album)
 
 	// then
-	expectedImagePath := album.UserID.String() + "/albums/" + album.ID.String() + fileExtension
+	expectedImagePath := album.UserID.String() + "/albums/" + album.ID.String() + "/image" + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -64,7 +64,7 @@ func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(
 	imagePath := _uut.GetArtistImagePath(file, artist)
 
 	// then
-	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() + fileExtension
+	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() + "/image" + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -85,7 +85,7 @@ func TestStorageFilePathProvider_GetPlaylistImagePath_ShouldReturnPlaylistImageP
 	imagePath := _uut.GetPlaylistImagePath(file, playlist)
 
 	// then
-	expectedImagePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + fileExtension
+	expectedImagePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + "/image" + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -106,7 +106,7 @@ func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *t
 	imagePath := _uut.GetSongImagePath(file, song)
 
 	// then
-	expectedImagePath := song.UserID.String() + "/songs/" + song.ID.String() + fileExtension
+	expectedImagePath := song.UserID.String() + "/songs/" + song.ID.String() + "/image" + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }

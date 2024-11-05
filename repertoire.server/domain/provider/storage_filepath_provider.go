@@ -29,24 +29,24 @@ func (s storageFilePathProvider) GetUserProfilePicturePath(file *multipart.FileH
 
 func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := album.UserID.String() + "/albums/" + album.ID.String() + fileExtension
+	filePath := album.UserID.String() + "/albums/" + album.ID.String() + "/image" + fileExtension
 	return filePath
 }
 
 func (s storageFilePathProvider) GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := artist.UserID.String() + "/artists/" + artist.ID.String() + fileExtension
+	filePath := artist.UserID.String() + "/artists/" + artist.ID.String() + "/image" + fileExtension
 	return filePath
 }
 
 func (s storageFilePathProvider) GetPlaylistImagePath(file *multipart.FileHeader, playlist model.Playlist) string {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + fileExtension
+	filePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + "/image" + fileExtension
 	return filePath
 }
 
 func (s storageFilePathProvider) GetSongImagePath(file *multipart.FileHeader, song model.Song) string {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := song.UserID.String() + "/songs/" + song.ID.String() + fileExtension
+	filePath := song.UserID.String() + "/songs/" + song.ID.String() + "/image" + fileExtension
 	return filePath
 }
