@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetAlbumQuery_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestGetAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := &GetAlbum{
@@ -36,7 +36,7 @@ func TestGetAlbumQuery_WhenGetAlbumFails_ShouldReturnInternalServerError(t *test
 	albumRepository.AssertExpectations(t)
 }
 
-func TestGetAlbumQuery_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestGetAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := &GetAlbum{
@@ -60,7 +60,7 @@ func TestGetAlbumQuery_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 	albumRepository.AssertExpectations(t)
 }
 
-func TestGetAlbumQuery_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
+func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := &GetAlbum{
