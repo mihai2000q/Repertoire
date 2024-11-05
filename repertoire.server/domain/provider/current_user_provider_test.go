@@ -2,14 +2,15 @@ package provider
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 // Get
@@ -49,9 +50,10 @@ func TestCurrentUserProvider_Get_WhenUserRepositoryReturnsAnError_ShouldReturnIn
 	}
 
 	token := "this is a token"
-	userID := uuid.New()
 
+	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
 	internalError := errors.New("internal error")
 	userRepository.On("Get", new(model.User), userID).Return(internalError).Once()
 
@@ -78,9 +80,10 @@ func TestCurrentUserProvider_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *te
 	}
 
 	token := "this is a token"
-	userID := uuid.New()
 
+	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
 	userRepository.On("Get", new(model.User), userID).Return(nil).Once()
 
 	// when
@@ -106,6 +109,7 @@ func TestCurrentUserProvider_Get_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	}
 
 	token := "this is a token"
+
 	userID := uuid.New()
 	expectedUser := &model.User{
 		ID:    userID,

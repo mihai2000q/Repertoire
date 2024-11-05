@@ -15,6 +15,9 @@ func (u UserRouter) RegisterRoutes() {
 	{
 		api.GET("/current", u.handler.GetCurrentUser)
 		api.GET("/:id", u.handler.Get)
+		api.PUT("", u.handler.Update)
+		api.PUT("/pictures", u.handler.SaveProfilePicture)
+		api.DELETE("/pictures", u.handler.DeleteProfilePicture)
 	}
 }
 

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetArtistQuery_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestGetArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := &GetArtist{
@@ -36,7 +36,7 @@ func TestGetArtistQuery_WhenGetArtistFails_ShouldReturnInternalServerError(t *te
 	artistRepository.AssertExpectations(t)
 }
 
-func TestGetArtistQuery_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestGetArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := &GetArtist{
@@ -60,7 +60,7 @@ func TestGetArtistQuery_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T
 	artistRepository.AssertExpectations(t)
 }
 
-func TestGetArtistQuery_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
+func TestGetArtist_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := &GetArtist{

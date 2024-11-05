@@ -3,16 +3,21 @@ import Sidebar from '../components/main/Sidebar'
 import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
-import {AppShell, Box} from '@mantine/core'
-import TitleBar from "../components/main/TitleBar.tsx";
-import useAuth from "../hooks/useAuth.ts";
+import { AppShell, Box } from '@mantine/core'
+import TitleBar from "../components/main/TitleBar";
+import useAuth from "../hooks/useAuth";
+import useIsDesktop from '../hooks/useIsDesktop'
+import useTitleBarHeight from '../hooks/useTitleBarHeight'
 
 function Main(): ReactElement {
   useErrorRedirection()
 
+  const isDesktop = useIsDesktop()
+  const titleBarHeight = useTitleBarHeight()
+
   return (
     <Box w={'100%'} h={'100%'}>
-      {import.meta.env.VITE_PLATFORM === 'desktop' && <TitleBar />}
+      {isDesktop && <TitleBar />}
       <AppShell
         layout={'alt'}
         header={{ height: 50 }}
@@ -23,8 +28,8 @@ function Main(): ReactElement {
         }}
         px={'xl'}
         w={'100%'}
-        h={'calc(100% - 45px)'}
-        mt={45}
+        h={`calc(100% - ${titleBarHeight})`}
+        mt={titleBarHeight}
         disabled={!useAuth()}
       >
         <Topbar />

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetPlaylistQuery_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestGetPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := &GetPlaylist{
@@ -36,7 +36,7 @@ func TestGetPlaylistQuery_WhenGetPlaylistFails_ShouldReturnInternalServerError(t
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestGetPlaylistQuery_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestGetPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := &GetPlaylist{
@@ -60,7 +60,7 @@ func TestGetPlaylistQuery_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testi
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestGetPlaylistQuery_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
+func TestGetPlaylist_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := &GetPlaylist{

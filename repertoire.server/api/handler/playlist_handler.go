@@ -156,3 +156,43 @@ func (p PlaylistHandler) RemoveSong(c *gin.Context) {
 
 	p.SendMessage(c, "song has been removed from playlist successfully")
 }
+
+// Images
+
+func (p PlaylistHandler) SaveImage(c *gin.Context) {
+	file, err := c.FormFile("image")
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	id, err := uuid.Parse(c.PostForm("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := p.service.SaveImage(file, id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "image has been saved to playlist successfully!")
+}
+
+func (p PlaylistHandler) DeleteImage(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := p.service.DeleteImage(id)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "image has been deleted from playlist successfully")
+}

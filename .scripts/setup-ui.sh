@@ -6,5 +6,3 @@ echo "Installing UI Dependencies"
 npm ci
 
 echo -e "UI Setup Finished\n"
-
-cd ..

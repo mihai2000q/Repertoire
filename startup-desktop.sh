@@ -1,9 +1,9 @@
-DIR_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DESKTOP_DIR_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source ${DIR_SCRIPT}/.scripts/base-startup.sh
+source ${DESKTOP_DIR_SCRIPT}/.scripts/base-startup.sh
 
 # Setup Web
-cd ${DIR_SCRIPT}/repertoire.desktop
+cd ${DESKTOP_DIR_SCRIPT}/repertoire.desktop
 
 echo "Settting up the development Environment Variables for the Desktop"
 cp .env.dev .env

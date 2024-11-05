@@ -3,14 +3,16 @@ package service
 import (
 	"bytes"
 	"errors"
-	"github.com/go-resty/resty/v2"
 	"io"
 	"mime/multipart"
 	"net/http"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type StorageService interface {
-	Upload(token string, fileHeader *multipart.FileHeader, filePath string) error
+	Upload(fileHeader *multipart.FileHeader, filePath string) error
+	Delete(filePath string) error
 }
 
 type storageService struct {
@@ -23,7 +25,7 @@ func NewStorageService(httpClient *resty.Client) StorageService {
 	}
 }
 
-func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, filePath string) error {
+func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string) error {
 	file, err := fileHeader.Open()
 	if err != nil {
 		return err
@@ -38,7 +40,6 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 	}
 
 	res, err := s.httpClient.R().
-		SetAuthToken(token).
 		SetFileReader("file", fileHeader.Filename, bytes.NewReader(buf.Bytes())).
 		SetFormData(map[string]string{
 			"filePath": filePath,
@@ -47,7 +48,6 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 	if err != nil {
 		return err
 	}
-
 	if res.StatusCode() != http.StatusOK {
 		return errors.New("Storage Service - Upload failed: " + res.String())
 	}
@@ -55,10 +55,15 @@ func (s storageService) Upload(token string, fileHeader *multipart.FileHeader, f
 	return nil
 }
 
-func (s storageService) Delete(token string, filePath string) error {
-	_, err := s.httpClient.R().
-		SetAuthToken(token).
-		Delete("files" + filePath)
+func (s storageService) Delete(filePath string) error {
+	res, err := s.httpClient.R().
+		Delete("files/" + filePath)
+	if err != nil {
+		return err
+	}
+	if res.StatusCode() != http.StatusOK {
+		return errors.New("Storage Service - Delete failed: " + res.String())
+	}
 
-	return err
+	return nil
 }

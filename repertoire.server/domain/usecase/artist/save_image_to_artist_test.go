@@ -1,4 +1,4 @@
-package song
+package artist
 
 import (
 	"errors"
@@ -15,11 +15,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T) {
+func TestSaveImageToArtist_WhenGetArtistFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := SaveImageToSong{
-		repository: songRepository,
+	artistRepository := new(repository.ArtistRepositoryMock)
+	_uut := SaveImageToArtist{
+		repository: artistRepository,
 	}
 
 	file := new(multipart.FileHeader)
@@ -27,7 +27,7 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 
 	// given - mocking
 	internalError := errors.New("internal error")
-	songRepository.On("Get", new(model.Song), id).Return(internalError).Once()
+	artistRepository.On("Get", new(model.Artist), id).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(file, id)
@@ -37,21 +37,21 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestSaveImageToArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := SaveImageToSong{
-		repository: songRepository,
+	artistRepository := new(repository.ArtistRepositoryMock)
+	_uut := SaveImageToArtist{
+		repository: artistRepository,
 	}
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	songRepository.On("Get", new(model.Song), id).Return(nil).Once()
+	artistRepository.On("Get", new(model.Artist), id).Return(nil).Once()
 
 	// when
 	errCode := _uut.Handle(file, id)
@@ -59,18 +59,18 @@ func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "song not found", errCode.Error.Error())
+	assert.Equal(t, "artist not found", errCode.Error.Error())
 
-	songRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestSaveImageToArtist_WhenStorageUploadFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
+	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := SaveImageToSong{
-		repository:              songRepository,
+	_uut := SaveImageToArtist{
+		repository:              artistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -79,11 +79,11 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	artist := &model.Artist{ID: id, ImageURL: nil}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, artist).Once()
 
-	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	imagePath := "artists file path"
+	storageFilePathProvider.On("GetArtistImagePath", file, *artist).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -96,18 +96,18 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestSaveImageToArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
+	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := SaveImageToSong{
-		repository:              songRepository,
+	_uut := SaveImageToArtist{
+		repository:              artistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -116,16 +116,16 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	artist := &model.Artist{ID: id, ImageURL: nil}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, artist).Once()
 
-	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	imagePath := "artists file path"
+	storageFilePathProvider.On("GetArtistImagePath", file, *artist).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(new(model.Song))).
+	artistRepository.On("Update", mock.IsType(new(model.Artist))).
 		Return(internalError).
 		Once()
 
@@ -137,18 +137,18 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestSaveImageToArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
+	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := SaveImageToSong{
-		repository:              songRepository,
+	_uut := SaveImageToArtist{
+		repository:              artistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -157,18 +157,18 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	artist := &model.Artist{ID: id, ImageURL: nil}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, artist).Once()
 
-	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	imagePath := "artists file path"
+	storageFilePathProvider.On("GetArtistImagePath", file, *artist).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
-	songRepository.On("Update", mock.IsType(new(model.Song))).
+	artistRepository.On("Update", mock.IsType(new(model.Artist))).
 		Run(func(args mock.Arguments) {
-			newSong := args.Get(0).(*model.Song)
-			assert.Equal(t, imagePath, string(*newSong.ImageURL))
+			newArtist := args.Get(0).(*model.Artist)
+			assert.Equal(t, imagePath, string(*newArtist.ImageURL))
 		}).
 		Return(nil).
 		Once()
@@ -179,7 +179,7 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// then
 	assert.Nil(t, errCode)
 
-	songRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
 }

@@ -9,5 +9,3 @@ echo "Installing Storage Dependencies"
 go mod download
 
 echo -e "Storage Setup Finished\n"
-
-cd .. 

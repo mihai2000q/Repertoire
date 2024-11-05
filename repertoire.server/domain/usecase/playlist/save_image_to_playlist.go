@@ -1,4 +1,4 @@
-package song
+package playlist
 
 import (
 	"errors"
@@ -14,43 +14,43 @@ import (
 	"github.com/google/uuid"
 )
 
-type SaveImageToSong struct {
-	repository              repository.SongRepository
+type SaveImageToPlaylist struct {
+	repository              repository.PlaylistRepository
 	storageFilePathProvider provider.StorageFilePathProvider
 	storageService          service.StorageService
 }
 
-func NewSaveImageToSong(
-	repository repository.SongRepository,
+func NewSaveImageToPlaylist(
+	repository repository.PlaylistRepository,
 	storageFilePathProvider provider.StorageFilePathProvider,
 	storageService service.StorageService,
-) SaveImageToSong {
-	return SaveImageToSong{
+) SaveImageToPlaylist {
+	return SaveImageToPlaylist{
 		repository:              repository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
 }
 
-func (s SaveImageToSong) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
-	var song model.Song
-	err := s.repository.Get(&song, id)
+func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
+	var playlist model.Playlist
+	err := s.repository.Get(&playlist, id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+	if reflect.ValueOf(playlist).IsZero() {
+		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 
-	imagePath := s.storageFilePathProvider.GetSongImagePath(file, song)
+	imagePath := s.storageFilePathProvider.GetPlaylistImagePath(file, playlist)
 
 	err = s.storageService.Upload(file, imagePath)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	song.ImageURL = (*internal.FilePath)(&imagePath)
-	err = s.repository.Update(&song)
+	playlist.ImageURL = (*internal.FilePath)(&imagePath)
+	err = s.repository.Update(&playlist)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

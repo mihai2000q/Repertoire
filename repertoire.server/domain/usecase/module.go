@@ -16,18 +16,22 @@ var albumUseCases = fx.Options(
 	fx.Provide(album.NewAddSongToAlbum),
 	fx.Provide(album.NewCreateAlbum),
 	fx.Provide(album.NewDeleteAlbum),
+	fx.Provide(album.NewDeleteImageFromAlbum),
 	fx.Provide(album.NewGetAlbum),
 	fx.Provide(album.NewGetAllAlbums),
 	fx.Provide(album.NewMoveSongFromAlbum),
 	fx.Provide(album.NewRemoveSongFromAlbum),
+	fx.Provide(album.NewSaveImageToAlbum),
 	fx.Provide(album.NewUpdateAlbum),
 )
 
 var artistUseCases = fx.Options(
 	fx.Provide(artist.NewCreateArtist),
 	fx.Provide(artist.NewDeleteArtist),
+	fx.Provide(artist.NewDeleteImageFromArtist),
 	fx.Provide(artist.NewGetArtist),
 	fx.Provide(artist.NewGetAllArtists),
+	fx.Provide(artist.NewSaveImageToArtist),
 	fx.Provide(artist.NewUpdateArtist),
 )
 
@@ -41,21 +45,23 @@ var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewAddSongToPlaylist),
 	fx.Provide(playlist.NewCreatePlaylist),
 	fx.Provide(playlist.NewDeletePlaylist),
+	fx.Provide(playlist.NewDeleteImageFromPlaylist),
 	fx.Provide(playlist.NewGetPlaylist),
 	fx.Provide(playlist.NewGetAllPlaylists),
 	fx.Provide(playlist.NewRemoveSongFromPlaylist),
+	fx.Provide(playlist.NewSaveImageToPlaylist),
 	fx.Provide(playlist.NewUpdatePlaylist),
 )
 
 var songUseCases = fx.Options(
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
-	fx.Provide(song.NewGetSong),
+	fx.Provide(song.NewDeleteImageFromSong),
 	fx.Provide(song.NewGetAllSongs),
 	fx.Provide(song.NewGetGuitarTunings),
-	fx.Provide(song.NewUpdateSong),
-
+	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewSaveImageToSong),
+	fx.Provide(song.NewUpdateSong),
 
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),

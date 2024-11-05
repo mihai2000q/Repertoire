@@ -1,4 +1,4 @@
-package song
+package playlist
 
 import (
 	"errors"
@@ -15,11 +15,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T) {
+func TestSaveImageToPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := SaveImageToSong{
-		repository: songRepository,
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := SaveImageToPlaylist{
+		repository: playlistRepository,
 	}
 
 	file := new(multipart.FileHeader)
@@ -27,7 +27,7 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 
 	// given - mocking
 	internalError := errors.New("internal error")
-	songRepository.On("Get", new(model.Song), id).Return(internalError).Once()
+	playlistRepository.On("Get", new(model.Playlist), id).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(file, id)
@@ -37,21 +37,21 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestSaveImageToPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := SaveImageToSong{
-		repository: songRepository,
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := SaveImageToPlaylist{
+		repository: playlistRepository,
 	}
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	songRepository.On("Get", new(model.Song), id).Return(nil).Once()
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil).Once()
 
 	// when
 	errCode := _uut.Handle(file, id)
@@ -59,18 +59,18 @@ func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "song not found", errCode.Error.Error())
+	assert.Equal(t, "playlist not found", errCode.Error.Error())
 
-	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestSaveImageToPlaylist_WhenStorageUploadFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := SaveImageToSong{
-		repository:              songRepository,
+	_uut := SaveImageToPlaylist{
+		repository:              playlistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -79,11 +79,11 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	playlist := &model.Playlist{ID: id, ImageURL: nil}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, playlist).Once()
 
-	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	imagePath := "playlists file path"
+	storageFilePathProvider.On("GetPlaylistImagePath", file, *playlist).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -96,18 +96,18 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestSaveImageToPlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := SaveImageToSong{
-		repository:              songRepository,
+	_uut := SaveImageToPlaylist{
+		repository:              playlistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -116,16 +116,16 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	playlist := &model.Playlist{ID: id, ImageURL: nil}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, playlist).Once()
 
-	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	imagePath := "playlists file path"
+	storageFilePathProvider.On("GetPlaylistImagePath", file, *playlist).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(new(model.Song))).
+	playlistRepository.On("Update", mock.IsType(new(model.Playlist))).
 		Return(internalError).
 		Once()
 
@@ -137,18 +137,18 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
 }
 
-func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestSaveImageToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := SaveImageToSong{
-		repository:              songRepository,
+	_uut := SaveImageToPlaylist{
+		repository:              playlistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -157,18 +157,18 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	playlist := &model.Playlist{ID: id, ImageURL: nil}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, playlist).Once()
 
-	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	imagePath := "playlists file path"
+	storageFilePathProvider.On("GetPlaylistImagePath", file, *playlist).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
-	songRepository.On("Update", mock.IsType(new(model.Song))).
+	playlistRepository.On("Update", mock.IsType(new(model.Playlist))).
 		Run(func(args mock.Arguments) {
-			newSong := args.Get(0).(*model.Song)
-			assert.Equal(t, imagePath, string(*newSong.ImageURL))
+			newPlaylist := args.Get(0).(*model.Playlist)
+			assert.Equal(t, imagePath, string(*newPlaylist.ImageURL))
 		}).
 		Return(nil).
 		Once()
@@ -179,7 +179,7 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// then
 	assert.Nil(t, errCode)
 
-	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
 }

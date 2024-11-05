@@ -19,6 +19,12 @@ func (a ArtistRouter) RegisterRoutes() {
 		api.PUT("", a.handler.Update)
 		api.DELETE("/:id", a.handler.Delete)
 	}
+
+	imagesApi := api.Group("/images")
+	{
+		imagesApi.PUT("", a.handler.SaveImage)
+		imagesApi.DELETE("/:id", a.handler.DeleteImage)
+	}
 }
 
 func NewArtistRouter(

@@ -21,6 +21,12 @@ func (p PlaylistRouter) RegisterRoutes() {
 		api.DELETE("/:id", p.handler.Delete)
 		api.DELETE("/song/:songID/from/:id", p.handler.RemoveSong)
 	}
+
+	imagesApi := api.Group("/images")
+	{
+		imagesApi.PUT("", p.handler.SaveImage)
+		imagesApi.DELETE("/:id", p.handler.DeleteImage)
+	}
 }
 
 func NewPlaylistRouter(

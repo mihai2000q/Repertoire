@@ -1,6 +1,7 @@
 package service
 
 import (
+	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal/wrapper"
@@ -13,43 +14,51 @@ type AlbumService interface {
 	AddSong(requests.AddSongToAlbumRequest) *wrapper.ErrorCode
 	Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
+	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
 	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode
 	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
+	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode
 }
 
 type albumService struct {
-	addSongToAlbum      album.AddSongToAlbum
-	createAlbum         album.CreateAlbum
-	deleteAlbum         album.DeleteAlbum
-	getAlbum            album.GetAlbum
-	getAllAlbums        album.GetAllAlbums
-	moveSongFromAlbum   album.MoveSongFromAlbum
-	removeSongFromAlbum album.RemoveSongFromAlbum
-	updateAlbum         album.UpdateAlbum
+	addSongToAlbum       album.AddSongToAlbum
+	createAlbum          album.CreateAlbum
+	deleteAlbum          album.DeleteAlbum
+	deleteImageFromAlbum album.DeleteImageFromAlbum
+	getAlbum             album.GetAlbum
+	getAllAlbums         album.GetAllAlbums
+	moveSongFromAlbum    album.MoveSongFromAlbum
+	removeSongFromAlbum  album.RemoveSongFromAlbum
+	saveImageToAlbum     album.SaveImageToAlbum
+	updateAlbum          album.UpdateAlbum
 }
 
 func NewAlbumService(
 	addSongToAlbum album.AddSongToAlbum,
 	createAlbum album.CreateAlbum,
 	deleteAlbum album.DeleteAlbum,
+	deleteImageFromAlbum album.DeleteImageFromAlbum,
 	getAlbum album.GetAlbum,
 	getAllAlbums album.GetAllAlbums,
 	moveSongFromAlbum album.MoveSongFromAlbum,
 	removeSongFromAlbum album.RemoveSongFromAlbum,
+	saveImageToAlbum album.SaveImageToAlbum,
 	updateAlbum album.UpdateAlbum,
 ) AlbumService {
 	return &albumService{
-		addSongToAlbum:      addSongToAlbum,
-		createAlbum:         createAlbum,
-		deleteAlbum:         deleteAlbum,
-		getAlbum:            getAlbum,
-		getAllAlbums:        getAllAlbums,
-		moveSongFromAlbum:   moveSongFromAlbum,
-		removeSongFromAlbum: removeSongFromAlbum,
-		updateAlbum:         updateAlbum,
+		addSongToAlbum:       addSongToAlbum,
+		createAlbum:          createAlbum,
+		deleteAlbum:          deleteAlbum,
+		deleteImageFromAlbum: deleteImageFromAlbum,
+		getAlbum:             getAlbum,
+		getAllAlbums:         getAllAlbums,
+		moveSongFromAlbum:    moveSongFromAlbum,
+		removeSongFromAlbum:  removeSongFromAlbum,
+		saveImageToAlbum:     saveImageToAlbum,
+		updateAlbum:          updateAlbum,
 	}
 }
 
@@ -63,6 +72,10 @@ func (a *albumService) Create(request requests.CreateAlbumRequest, token string)
 
 func (a *albumService) Delete(id uuid.UUID) *wrapper.ErrorCode {
 	return a.deleteAlbum.Handle(id)
+}
+
+func (a *albumService) DeleteImage(id uuid.UUID) *wrapper.ErrorCode {
+	return a.deleteImageFromAlbum.Handle(id)
 }
 
 func (a *albumService) Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode) {
@@ -79,6 +92,10 @@ func (a *albumService) MoveSong(request requests.MoveSongFromAlbumRequest) *wrap
 
 func (a *albumService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
 	return a.removeSongFromAlbum.Handle(id, songID)
+}
+
+func (a *albumService) SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
+	return a.saveImageToAlbum.Handle(file, id)
 }
 
 func (a *albumService) Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
