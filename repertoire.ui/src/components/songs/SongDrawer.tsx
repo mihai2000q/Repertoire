@@ -2,7 +2,7 @@ import { Drawer, Image, Stack, Text, Title } from '@mantine/core'
 import { useGetSongQuery } from '../../state/songsApi.ts'
 import { useAppSelector } from '../../state/store.ts'
 import SongDrawerLoader from './loader/SongDrawerLoader.tsx'
-import demoSong from '../../assets/demoSong.jpg'
+import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
 import useTitleBarHeight from '../../hooks/useTitleBarHeight.ts'
 
 interface SongDrawerProps {
@@ -46,7 +46,8 @@ function SongDrawer({ opened, close }: SongDrawerProps) {
       ) : (
         <Stack gap={'xs'}>
           <Image
-            src={demoSong}
+            src={song.imageUrl}
+            fallbackSrc={imagePlaceholder}
             mah={400}
             alt={song.title}
             style={{ alignSelf: 'center' }}

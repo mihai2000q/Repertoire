@@ -13,3 +13,8 @@ export interface UpdateSongRequest {
   title: string
   isRecorded?: boolean
 }
+
+export interface SaveImageToSongRequest {
+  image: File
+  id: string
+}

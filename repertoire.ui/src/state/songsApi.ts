@@ -4,9 +4,11 @@ import Song from '../types/models/Song'
 import {
   CreateSongRequest,
   GetSongsRequest,
+  SaveImageToSongRequest,
   UpdateSongRequest
 } from '../types/requests/SongRequests'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse'
+import createFormData from '../utils/createFormData.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -21,7 +23,7 @@ const songsApi = api.injectEndpoints({
       query: (arg) => `songs/${arg}`,
       providesTags: ['Songs']
     }),
-    createSong: build.mutation<HttpMessageResponse, CreateSongRequest>({
+    createSong: build.mutation<{ id: string }, CreateSongRequest>({
       query: (body) => ({
         url: 'songs',
         method: 'POST',
@@ -34,6 +36,15 @@ const songsApi = api.injectEndpoints({
         url: 'songs',
         method: 'PUT',
         body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    saveImageToSong: build.mutation<HttpMessageResponse, SaveImageToSongRequest>({
+      query: (request) => ({
+        url: 'songs/images',
+        method: 'PUT',
+        body: createFormData(request),
+        formData: true
       }),
       invalidatesTags: ['Songs']
     }),
@@ -52,5 +63,6 @@ export const {
   useGetSongQuery,
   useCreateSongMutation,
   useUpdateSongMutation,
+  useSaveImageToSongMutation,
   useDeleteSongMutation
 } = songsApi

@@ -1,5 +1,5 @@
 import Song from '../../types/models/Song'
-import demoSong from '../../assets/demoSong.jpg'
+import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
 import { Card, Group, Image, Text, Tooltip } from '@mantine/core'
 import { IconMicrophoneFilled } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
@@ -28,7 +28,12 @@ function SongCard({ song, openDrawer }: SongCardProps) {
       onClick={handleClick}
     >
       <Card.Section>
-        <Image src={demoSong} h={150} alt={song.title} />
+        <Image
+          src={song.imageUrl}
+          fallbackSrc={imagePlaceholder}
+          h={150}
+          alt={song.title}
+        />
       </Card.Section>
 
       <Group justify="space-between" mt="sm" mb="xs">
