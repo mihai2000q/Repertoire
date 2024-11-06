@@ -1,4 +1,4 @@
-import { createTheme, rem } from '@mantine/core'
+import {createTheme, rem} from '@mantine/core'
 import { colors } from './colors'
 import {components} from "./components";
 
@@ -7,8 +7,9 @@ export const theme = createTheme({
   // @ts-ignore
   colors: colors,
   primaryColor: 'cyan',
-  primaryShade: { light: 5, dark: 7 },
-  white: '#f0f0f0',
+  primaryShade: 5,
+  white: '#fafafa',
+  black: '#242424',
 
   defaultRadius: 'md',
   cursorType: 'pointer',
