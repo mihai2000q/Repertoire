@@ -7,11 +7,18 @@ import { configureStore, EnhancedStore } from '@reduxjs/toolkit'
 import { reducer, RootState } from './state/store'
 import { api } from './state/api'
 import { BrowserRouter } from 'react-router-dom'
+import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
+
+const MantineProviderComponent = ({ children }: { children: ReactNode }) => (
+  <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+    <MantineEmotionProvider>{children}</MantineEmotionProvider>
+  </MantineProvider>
+)
 
 export function mantineRender(ui: ReactNode) {
   return render(ui, {
     wrapper: ({ children }: { children: ReactNode }) => (
-      <MantineProvider theme={theme}>{children}</MantineProvider>
+      <MantineProviderComponent>{children}</MantineProviderComponent>
     )
   })
 }
@@ -20,7 +27,7 @@ export function routerRender(ui: ReactNode) {
   return render(ui, {
     wrapper: ({ children }: { children: ReactNode }) => (
       <BrowserRouter>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProviderComponent>{children}</MantineProviderComponent>
       </BrowserRouter>
     )
   })
@@ -40,7 +47,7 @@ export function reduxRender(
     render(ui, {
       wrapper: ({ children }: { children: ReactNode }) => (
         <Provider store={store}>
-          <MantineProvider theme={theme}>{children}</MantineProvider>
+          <MantineProviderComponent>{children}</MantineProviderComponent>
         </Provider>
       )
     }),
@@ -63,9 +70,7 @@ export function reduxRouterRender(
       wrapper: ({ children }: { children: ReactNode }) => (
         <Provider store={store}>
           <BrowserRouter>
-          <MantineProvider theme={theme}>
-            {children}
-          </MantineProvider>
+            <MantineProviderComponent>{children}</MantineProviderComponent>
           </BrowserRouter>
         </Provider>
       )
