@@ -7,7 +7,7 @@ export const theme = createTheme({
   // @ts-ignore
   colors: colors,
   primaryColor: 'cyan',
-  primaryShade: 5,
+  primaryShade: 4,
   white: '#fafafa',
   black: '#242424',
 
@@ -15,7 +15,7 @@ export const theme = createTheme({
   cursorType: 'pointer',
 
   autoContrast: true,
-  luminanceThreshold: 0.4,
+  luminanceThreshold: 0.5,
 
   fontFamily: 'Poppins, sans-serif',
   fontSizes: {

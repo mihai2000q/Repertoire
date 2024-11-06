@@ -1,6 +1,15 @@
-import {alpha, NavLink} from "@mantine/core";
+import {alpha, Menu, NavLink} from "@mantine/core";
 
 export const components = {
+  Menu: Menu.extend({
+    defaultProps: {
+      styles: {
+        item: {
+          transition: '0.25s',
+        }
+      }
+    }
+  }),
   NavLink: NavLink.extend({
     defaultProps: {
       py: 'md',
