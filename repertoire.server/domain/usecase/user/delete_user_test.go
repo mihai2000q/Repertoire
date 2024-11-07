@@ -47,7 +47,7 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
 	internalError := errors.New("internal error")
-	userRepository.On("Delete", id).Return(nil).Once()
+	userRepository.On("Delete", id).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(token)
