@@ -54,7 +54,7 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInsufficientStorage, errCode.Code)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
