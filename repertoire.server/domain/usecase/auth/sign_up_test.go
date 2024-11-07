@@ -257,9 +257,10 @@ func assertCreatedUser(
 	hashedPassword string,
 ) {
 	assert.NotEmpty(t, user.ID)
-	assert.Equal(t, user.Name, request.Name)
-	assert.Equal(t, user.Email, strings.ToLower(request.Email))
-	assert.Equal(t, user.Password, hashedPassword)
+	assert.Equal(t, request.Name, user.Name)
+	assert.Equal(t, strings.ToLower(request.Email), user.Email)
+	assert.Equal(t, hashedPassword, user.Password)
+	assert.Nil(t, user.ProfilePictureURL)
 
 	for i, guitarTuning := range user.GuitarTunings {
 		assert.NotEmpty(t, guitarTuning.ID)

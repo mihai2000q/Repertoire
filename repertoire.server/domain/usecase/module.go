@@ -71,6 +71,7 @@ var songUseCases = fx.Options(
 )
 
 var userUseCases = fx.Options(
+	fx.Provide(user.NewDeleteUser),
 	fx.Provide(user.NewDeleteProfilePictureFromUser),
 	fx.Provide(user.NewGetUser),
 	fx.Provide(user.NewSaveProfilePictureToUser),

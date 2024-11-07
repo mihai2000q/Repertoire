@@ -4,7 +4,6 @@ import (
 	"repertoire/server/api/validation"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,7 +14,6 @@ func TestValidateUpdateUserRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
 	request := UpdateUserRequest{
-		ID:   uuid.New(),
 		Name: validUserName,
 	}
 
@@ -33,17 +31,10 @@ func TestValidateUpdateUserRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// ID Test Cases
-		{
-			"ID is invalid because it's required",
-			UpdateUserRequest{ID: uuid.Nil, Name: validUserName},
-			"ID",
-			"required",
-		},
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			UpdateUserRequest{ID: uuid.New(), Name: ""},
+			UpdateUserRequest{Name: ""},
 			"Name",
 			"required",
 		},

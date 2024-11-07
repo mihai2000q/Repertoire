@@ -113,4 +113,5 @@ func assertCreatedPlaylist(
 	assert.Equal(t, request.Title, playlist.Title)
 	assert.Equal(t, request.Description, playlist.Description)
 	assert.Equal(t, userID, playlist.UserID)
+	assert.Nil(t, playlist.ImageURL)
 }
