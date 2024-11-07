@@ -79,6 +79,18 @@ func (u UserHandler) Update(c *gin.Context) {
 	u.SendMessage(c, "user has been updated successfully!")
 }
 
+func (u UserHandler) Delete(c *gin.Context) {
+	token := u.GetTokenFromContext(c)
+
+	errCode := u.service.Delete(token)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "user has been deleted successfully!")
+}
+
 // Pictures
 
 func (u UserHandler) SaveProfilePicture(c *gin.Context) {

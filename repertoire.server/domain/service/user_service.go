@@ -11,6 +11,7 @@ import (
 )
 
 type UserService interface {
+	Delete(token string) *wrapper.ErrorCode
 	DeleteProfilePicture(token string) *wrapper.ErrorCode
 	Get(id uuid.UUID) (user model.User, e *wrapper.ErrorCode)
 	SaveProfilePicture(file *multipart.FileHeader, token string) *wrapper.ErrorCode
@@ -18,6 +19,7 @@ type UserService interface {
 }
 
 type userService struct {
+	deleteUser                   user.DeleteUser
 	deleteProfilePictureFromUser user.DeleteProfilePictureFromUser
 	getUser                      user.GetUser
 	saveProfilePictureToUser     user.SaveProfilePictureToUser
@@ -25,17 +27,23 @@ type userService struct {
 }
 
 func NewUserService(
+	deleteUser user.DeleteUser,
 	deleteProfilePictureFromUser user.DeleteProfilePictureFromUser,
 	getUser user.GetUser,
 	saveProfilePictureToUser user.SaveProfilePictureToUser,
 	updateUser user.UpdateUser,
 ) UserService {
 	return &userService{
+		deleteUser:                   deleteUser,
 		deleteProfilePictureFromUser: deleteProfilePictureFromUser,
 		getUser:                      getUser,
 		saveProfilePictureToUser:     saveProfilePictureToUser,
 		updateUser:                   updateUser,
 	}
+}
+
+func (u *userService) Delete(token string) *wrapper.ErrorCode {
+	return u.deleteUser.Handle(token)
 }
 
 func (u *userService) DeleteProfilePicture(token string) *wrapper.ErrorCode {
