@@ -68,7 +68,9 @@ func (u UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	errCode = u.service.Update(request)
+	token := u.GetTokenFromContext(c)
+
+	errCode = u.service.Update(request, token)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return

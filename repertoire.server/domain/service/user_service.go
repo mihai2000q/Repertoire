@@ -14,7 +14,7 @@ type UserService interface {
 	DeleteProfilePicture(token string) *wrapper.ErrorCode
 	Get(id uuid.UUID) (user model.User, e *wrapper.ErrorCode)
 	SaveProfilePicture(file *multipart.FileHeader, token string) *wrapper.ErrorCode
-	Update(request requests.UpdateUserRequest) *wrapper.ErrorCode
+	Update(request requests.UpdateUserRequest, token string) *wrapper.ErrorCode
 }
 
 type userService struct {
@@ -50,6 +50,6 @@ func (u *userService) SaveProfilePicture(file *multipart.FileHeader, token strin
 	return u.saveProfilePictureToUser.Handle(file, token)
 }
 
-func (u *userService) Update(request requests.UpdateUserRequest) *wrapper.ErrorCode {
-	return u.updateUser.Handle(request)
+func (u *userService) Update(request requests.UpdateUserRequest, token string) *wrapper.ErrorCode {
+	return u.updateUser.Handle(request, token)
 }
