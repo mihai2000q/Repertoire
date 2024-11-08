@@ -1,22 +1,25 @@
+import './index.css'
+import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
+import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
+import { emotionCache } from './cache.ts'
+import 'react-toastify/dist/ReactToastify.css'
+import CustomizedToastContainer from './components/CustomizedToastContainer.tsx'
+import { ReactElement } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { MantineProvider } from '@mantine/core'
+import { theme } from './theme/theme'
+import { Provider } from 'react-redux'
+import { store } from './state/store'
 import IsAlreadyAuthenticated from './router/IsAlreadyAuthenticated'
 import SignUp from './views/SignUp'
 import RequireAuthentication from './router/RequireAuthentication'
 import Home from './views/Home'
 import NotFound from './views/NotFound'
 import Unauthorized from './views/Unauthorized'
-import { ReactElement } from 'react'
 import Main from './views/Main'
 import SignIn from './views/SignIn'
-import { MantineProvider } from '@mantine/core'
-import { theme } from './theme/theme'
-import { Provider } from 'react-redux'
-import { store } from './state/store'
-import './index.css'
-import '@mantine/core/styles.css'
 import Songs from './views/Songs'
-import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
-import {emotionCache} from "./cache.ts";
 
 function App(): ReactElement {
   return (
@@ -29,6 +32,7 @@ function App(): ReactElement {
         >
           <MantineEmotionProvider cache={emotionCache}>
             <BrowserRouter>
+              <CustomizedToastContainer />
               <Routes>
                 <Route element={<Main />}>
                   <Route path={'/'} element={<Navigate to={'home'} replace />} />
