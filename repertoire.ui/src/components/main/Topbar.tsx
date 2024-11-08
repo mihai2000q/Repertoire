@@ -45,8 +45,9 @@ function Topbar(): ReactElement {
       <Group align={'center'} h={'100%'} gap={0}>
         <Autocomplete
           placeholder="Search"
-          leftSection={<IconSearch size={16} stroke={1.5} />}
+          leftSection={<IconSearch size={16} stroke={2} />}
           data={[]}
+          fw={500}
           visibleFrom="xs"
           radius={'lg'}
           w={200}
@@ -55,17 +56,11 @@ function Topbar(): ReactElement {
               transition: '0.3s',
               backgroundColor: alpha(theme.colors.gray[0], 0.1),
               borderWidth: 0,
-
-              '&:hover': {
+              '&:focus, &:hover': {
                 boxShadow: theme.shadows.sm,
                 backgroundColor: alpha(theme.colors.gray[0], 0.2)
               },
-
-              '&:focus': {
-                boxShadow: theme.shadows.sm,
-                backgroundColor: alpha(theme.colors.gray[0], 0.2)
-              }
-            }
+            },
           })}
         />
 
@@ -74,16 +69,14 @@ function Topbar(): ReactElement {
         <ActionIcon
           variant={'subtle'}
           size={'lg'}
-          styles={(theme) => ({
-            root: {
-              borderRadius: '50%',
-              transition: '0.175s',
-              color: theme.colors.gray[6],
-
-              '&:hover': {
-                backgroundColor: theme.colors.cyan[0],
-                color: theme.colors.cyan[6]
-              }
+          sx={(theme) => ({
+            borderRadius: '50%',
+            transition: '0.175s',
+            color: theme.colors.gray[6],
+            '&:hover': {
+              boxShadow: theme.shadows.sm,
+              backgroundColor: theme.colors.cyan[0],
+              color: theme.colors.cyan[6]
             }
           })}
         >
@@ -104,6 +97,7 @@ function Topbar(): ReactElement {
                   transition: '0.175s',
                   color: theme.colors.gray[7],
                   '&:hover': {
+                    boxShadow: theme.shadows.sm,
                     color: theme.colors.gray[8],
                     backgroundColor: alpha(theme.colors.gray[1], 0.7)
                   }
