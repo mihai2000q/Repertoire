@@ -1,3 +1,5 @@
+import { FileWithPath } from '@mantine/dropzone'
+
 export interface GetSongsRequest {
   currentPage?: number
   pageSize?: number
@@ -5,7 +7,24 @@ export interface GetSongsRequest {
 
 export interface CreateSongRequest {
   title: string
-  isRecorded?: boolean
+  description: string
+  bpm?: number
+  releaseDate?: Date
+  difficulty?: string
+  songsterrLink?: string
+  youtubeLink?: string
+
+  sections?: CreateSectionRequest[]
+  guitarTuningId?: string
+  albumId?: string
+  albumTitle?: string
+  artistId?: string
+  artistName?: string
+}
+
+export interface CreateSectionRequest {
+  name: string
+  typeId: string
 }
 
 export interface UpdateSongRequest {
@@ -15,6 +34,6 @@ export interface UpdateSongRequest {
 }
 
 export interface SaveImageToSongRequest {
-  image: File
+  image: FileWithPath
   id: string
 }
