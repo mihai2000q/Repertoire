@@ -3,6 +3,8 @@ import { RootState } from './store'
 import { signOut, setToken } from './authSlice'
 import { setErrorPath } from './globalSlice'
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query'
+import {toast} from "react-toastify";
+import HttpErrorResponse from "../types/responses/HttpErrorResponse.ts";
 
 const queryWithAuthorization = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BACKEND_URL,
@@ -66,10 +68,12 @@ export const queryWithRedirection: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await queryWithRefresh(args, api, extraOptions)
-  const error = result?.error as { status: number } | undefined | null
+  const error = result?.error as HttpErrorResponse | undefined | null
   const errorStatus = error?.status ?? 0
   if (errorCodeToPathname.has(errorStatus)) {
     api.dispatch(setErrorPath(errorCodeToPathname.get(errorStatus)))
+  } else if (errorStatus === 400) {
+    toast.error(error.data.error)
   }
   return result
 }
