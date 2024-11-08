@@ -7,7 +7,7 @@ import User from '../types/models/User'
 export const api = createApi({
   baseQuery: queryWithRedirection,
   reducerPath: 'api',
-  tagTypes: ['Songs'],
+  tagTypes: ['Songs', 'Albums', 'Artists', 'GuitarTunings', 'SongSectionTypes'],
   endpoints: (build) => {
     return {
       // Auth
