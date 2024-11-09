@@ -18,6 +18,7 @@ type CreateSongRequest struct {
 	Description    string
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
+	YoutubeLink    *string `validate:"omitempty,isYoutubeLink"`
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
@@ -35,6 +36,7 @@ type UpdateSongRequest struct {
 	IsRecorded     bool
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
+	YoutubeLink    *string `validate:"omitempty,isYoutubeLink"`
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
