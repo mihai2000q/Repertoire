@@ -134,6 +134,7 @@ func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song *m
 	assert.Equal(t, request.IsRecorded, song.IsRecorded)
 	assert.Equal(t, request.Bpm, song.Bpm)
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
+	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
 	assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)

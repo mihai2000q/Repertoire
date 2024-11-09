@@ -130,6 +130,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"https://songsterr.com/some-other"}[0],
+				YoutubeLink:    &[]string{"https://youtu.be/9DyxtUCW84o?si=2pNX8eaV4KwKfOaF"}[0],
 				ReleaseDate:    &[]time.Time{time.Now()}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
@@ -194,6 +195,16 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			[]string{"SongsterrLink"},
 			[]string{"contains"},
+		},
+		// YoutubeLink Test Cases
+		{
+			"Youtube Link is invalid because it is not youtube link",
+			CreateSongRequest{
+				Title:       validSongTitle,
+				YoutubeLink: &[]string{"https://google.com"}[0],
+			},
+			[]string{"YoutubeLink"},
+			[]string{"isYoutubeLink"},
 		},
 		// Difficulty Test Cases
 		{
@@ -310,6 +321,7 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				IsRecorded:     true,
 				Bpm:            &[]uint{120}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=IHgFJEJgUrg&pp=ygUMeW91ciBiZXRyYXlh"}[0],
 				ReleaseDate:    &[]time.Time{time.Now()}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
@@ -378,6 +390,17 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			"SongsterrLink",
 			"contains",
+		},
+		// YoutubeLink Test Cases
+		{
+			"Youtube Link is invalid because it is a youtube link",
+			UpdateSongRequest{
+				ID:          uuid.New(),
+				Title:       validSongTitle,
+				YoutubeLink: &[]string{"https://google.com"}[0],
+			},
+			"YoutubeLink",
+			"isYoutubeLink",
 		},
 		// Difficulty Test Cases
 		{

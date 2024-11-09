@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"regexp"
 	"repertoire/server/internal/enums"
 	"slices"
 	"unicode"
@@ -43,4 +44,9 @@ func IsDifficultyEnum(fl validator.FieldLevel) bool {
 		return false
 	}
 	return slices.Contains(difficulties, difficulty)
+}
+
+func IsYoutubeLink(fl validator.FieldLevel) bool {
+	regex := regexp.MustCompile(`^(https?://)?(www\.)?(youtube\.com|youtu\.be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})`)
+	return regex.MatchString(fl.Field().String())
 }
