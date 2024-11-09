@@ -198,10 +198,10 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		},
 		// YoutubeLink Test Cases
 		{
-			"Youtube Link is invalid because it is not an url",
+			"Youtube Link is invalid because it is not youtube link",
 			CreateSongRequest{
-				Title:         validSongTitle,
-				SongsterrLink: &[]string{"https://google.com"}[0],
+				Title:       validSongTitle,
+				YoutubeLink: &[]string{"https://google.com"}[0],
 			},
 			[]string{"YoutubeLink"},
 			[]string{"isYoutubeLink"},
@@ -393,7 +393,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		},
 		// YoutubeLink Test Cases
 		{
-			"Youtube Link is invalid because it is not an url",
+			"Youtube Link is invalid because it is a youtube link",
 			UpdateSongRequest{
 				ID:          uuid.New(),
 				Title:       validSongTitle,
