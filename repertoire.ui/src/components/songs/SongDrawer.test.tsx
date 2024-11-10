@@ -9,7 +9,9 @@ describe('Song Drawer', () => {
   const song: Song = {
     id: '1',
     title: "Justice for all",
+    description: '',
     isRecorded: false,
+    sections: []
   }
 
   const handlers = [
