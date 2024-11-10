@@ -21,6 +21,7 @@ import Main from './views/Main'
 import SignIn from './views/SignIn'
 import Songs from './views/songs/Songs.tsx'
 import Albums from "./views/albums/Albums.tsx";
+import Artists from "./views/artists/Artists.tsx";
 
 function App(): ReactElement {
   return (
@@ -46,6 +47,7 @@ function App(): ReactElement {
                   <Route element={<RequireAuthentication />}>
                     <Route path={'home'} element={<Home />} />
                     <Route path={'songs'} element={<Songs />} />
+                    <Route path={'artists'} element={<Artists />} />
                     <Route path={'albums'} element={<Albums />} />
 
                     {/* Errors */}
