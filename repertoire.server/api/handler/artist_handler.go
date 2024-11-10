@@ -76,13 +76,15 @@ func (a ArtistHandler) Create(c *gin.Context) {
 
 	token := a.GetTokenFromContext(c)
 
-	errorCode = a.service.Create(request, token)
+	id, errorCode := a.service.Create(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	a.SendMessage(c, "artist has been created successfully")
+	c.JSON(http.StatusOK, gin.H{
+		"id": id,
+	})
 }
 
 func (a ArtistHandler) Update(c *gin.Context) {

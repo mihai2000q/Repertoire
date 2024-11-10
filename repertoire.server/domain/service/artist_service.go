@@ -11,7 +11,7 @@ import (
 )
 
 type ArtistService interface {
-	Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode
+	Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
@@ -50,7 +50,7 @@ func NewArtistService(
 	}
 }
 
-func (a *artistService) Create(request requests.CreateArtistRequest, token string) *wrapper.ErrorCode {
+func (a *artistService) Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	return a.createArtist.Handle(request, token)
 }
 
