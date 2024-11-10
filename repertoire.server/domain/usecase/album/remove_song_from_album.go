@@ -32,6 +32,9 @@ func (r RemoveSongFromAlbum) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Err
 	index := slices.IndexFunc(album.Songs, func(s model.Song) bool {
 		return s.ID == songID
 	})
+	if index == -1 {
+		return wrapper.NotFoundError(errors.New("song not found"))
+	}
 
 	for i := index + 1; i < len(album.Songs); i++ {
 		*album.Songs[i].AlbumTrackNo = *album.Songs[i].AlbumTrackNo - 1
