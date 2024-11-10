@@ -1,16 +1,16 @@
 import { api } from './api'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
-import Artist from "../types/models/Artist.ts";
+import Artist from '../types/models/Artist.ts'
 import {
   CreateArtistRequest,
   GetArtistsRequest,
   SaveImageToArtistRequest,
   UpdateArtistRequest
-} from "../types/requests/ArtistRequests.ts";
-import HttpMessageResponse from "../types/responses/HttpMessageResponse.ts";
-import createFormData from "../utils/createFormData.ts";
+} from '../types/requests/ArtistRequests.ts'
+import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
+import createFormData from '../utils/createFormData.ts'
 
-const songsApi = api.injectEndpoints({
+const artistsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getArtists: build.query<WithTotalCountResponse<Artist>, GetArtistsRequest>({
       query: (arg) => ({
@@ -58,4 +58,11 @@ const songsApi = api.injectEndpoints({
   })
 })
 
-export const { useGetArtistsQuery } = songsApi
+export const {
+  useGetArtistQuery,
+  useGetArtistsQuery,
+  useCreateArtistMutation,
+  useUpdateArtistMutation,
+  useSaveImageToArtistMutation,
+  useDeleteArtistMutation
+} = artistsApi
