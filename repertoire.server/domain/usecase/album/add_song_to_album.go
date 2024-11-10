@@ -34,14 +34,20 @@ func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	var count int64
-	err = a.repository.CountSongs(&count, &request.ID)
+	var album model.Album
+	err = a.repository.GetWithSongs(&album, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
+	if reflect.ValueOf(album).IsZero() {
+		return wrapper.NotFoundError(errors.New("album not found"))
+	}
+	if song.ArtistID != album.ArtistID {
+		return wrapper.BadRequestError(errors.New("song and album do not share the same artist"))
+	}
 
 	song.AlbumID = &request.ID
-	trackNo := uint(count) + 1
+	trackNo := uint(len(album.Songs)) + 1
 	song.AlbumTrackNo = &trackNo
 
 	err = a.songRepository.Update(&song)

@@ -22,7 +22,6 @@ type AlbumRepository interface {
 		orderBy string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID) error
-	CountSongs(count *int64, id *uuid.UUID) error
 	Create(album *model.Album) error
 	Update(album *model.Album) error
 	UpdateWithAssociations(album *model.Album) error
@@ -89,13 +88,6 @@ func (a albumRepository) GetAllByUser(
 func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
 	return a.client.DB.Model(&model.Album{}).
 		Where(model.Album{UserID: userID}).
-		Count(count).
-		Error
-}
-
-func (a albumRepository) CountSongs(count *int64, id *uuid.UUID) error {
-	return a.client.DB.Model(&model.Song{}).
-		Where(model.Song{AlbumID: id}).
 		Count(count).
 		Error
 }
