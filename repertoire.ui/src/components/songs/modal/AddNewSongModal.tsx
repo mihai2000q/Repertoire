@@ -83,7 +83,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
-    toast.success(`${title} has been added!`)
+    toast.success(`${title} added!`)
 
     onCloseWithImage()
     setActiveStep(0)
