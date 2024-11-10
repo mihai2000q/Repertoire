@@ -22,10 +22,10 @@ func NewCreatePlaylist(jwtService service.JwtService, repository repository.Play
 	}
 }
 
-func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode {
+func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
-		return errCode
+		return uuid.Nil, errCode
 	}
 
 	playlist := model.Playlist{
@@ -36,7 +36,7 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 	}
 	err := c.repository.Create(&playlist)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
-	return nil
+	return playlist.ID, nil
 }

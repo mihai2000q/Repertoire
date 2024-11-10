@@ -76,13 +76,15 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 
 	token := p.GetTokenFromContext(c)
 
-	errorCode = p.service.Create(request, token)
+	id, errorCode := p.service.Create(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	p.SendMessage(c, "playlist has been created successfully")
+	c.JSON(http.StatusOK, gin.H{
+		"id": id,
+	})
 }
 
 func (p PlaylistHandler) AddSong(c *gin.Context) {
