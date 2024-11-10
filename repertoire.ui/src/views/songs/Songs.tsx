@@ -1,13 +1,13 @@
 import { ReactElement, useState } from 'react'
 import { Box, Button, Group, Loader, Pagination, Space, Stack, Text, Title } from '@mantine/core'
-import { useGetSongsQuery } from '../state/songsApi'
-import SongCard from '../components/songs/SongCard'
+import { useGetSongsQuery } from '../../state/songsApi.ts'
+import SongCard from '../../components/songs/SongCard.tsx'
 import { IconMusicPlus } from '@tabler/icons-react'
-import NewSongCard from '../components/songs/NewSongCard'
+import NewSongCard from '../../components/songs/NewSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import AddNewSongModal from '../components/songs/modal/AddNewSongModal'
-import SongsLoader from '../components/songs/loader/SongsLoader.tsx'
-import SongDrawer from "../components/songs/SongDrawer.tsx";
+import AddNewSongModal from '../../components/songs/modal/AddNewSongModal.tsx'
+import SongsLoader from '../../components/songs/loader/SongsLoader.tsx'
+import SongDrawer from "../../components/songs/SongDrawer.tsx";
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -21,7 +21,7 @@ function Songs(): ReactElement {
   const [openedSongDrawer, { open: openSongDrawer, close: closeSongDrawer }] = useDisclosure(false)
 
   return (
-    <Stack h={'100%'} pt={'xs'}>
+    <Stack h={'100%'}>
       <AddNewSongModal opened={openedAddNewSongModal} onClose={closeAddNewSongModal} />
 
       <Title order={3} fw={800}>
@@ -29,7 +29,7 @@ function Songs(): ReactElement {
       </Title>
 
       <Group>
-        <Button leftSection={<IconMusicPlus size={17} />} onClick={openAddNewSongModal}>
+        <Button variant={'gradient'} leftSection={<IconMusicPlus size={17} />} onClick={openAddNewSongModal}>
           New Song
         </Button>
       </Group>

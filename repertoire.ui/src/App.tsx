@@ -19,7 +19,7 @@ import NotFound from './views/NotFound'
 import Unauthorized from './views/Unauthorized'
 import Main from './views/Main'
 import SignIn from './views/SignIn'
-import Songs from './views/Songs'
+import Songs from './views/songs/Songs.tsx'
 
 function App(): ReactElement {
   return (

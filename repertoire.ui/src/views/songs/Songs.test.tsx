@@ -1,10 +1,10 @@
 import { screen } from '@testing-library/react'
-import Songs from './Songs'
-import { reduxRender } from '../test-utils'
+import Songs from './Songs.tsx'
+import { reduxRender } from '../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import Song from "../types/models/Song.ts";
-import WithTotalCountResponse from "../types/responses/WithTotalCountResponse.ts";
+import Song from "../../types/models/Song.ts";
+import WithTotalCountResponse from "../../types/responses/WithTotalCountResponse.ts";
 import {userEvent} from "@testing-library/user-event";
 
 describe('Songs', () => {

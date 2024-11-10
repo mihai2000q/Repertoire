@@ -1,19 +1,20 @@
-import {
-  ActionIcon,
-  Button,
-  FileButton,
-  Group,
-  Image,
-  Modal,
-  Stack,
-  TextInput,
-  Tooltip
-} from '@mantine/core'
+import { Button, ComboboxItem, Group, Modal, Space, Stepper } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
-import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi'
+import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
 import { useState } from 'react'
-import { IconPhotoPlus } from '@tabler/icons-react'
+import { toast } from 'react-toastify'
+import { FileWithPath } from '@mantine/dropzone'
+import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
+import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
+import AddNewSongModelFinalStep from './AddNewSongModelFinalStep.tsx'
+import {useListState} from "@mantine/hooks";
+
+export interface AddNewSongModalSongSection {
+  id: string
+  name: string
+  type: ComboboxItem | null
+}
 
 interface AddNewSongModalProps {
   opened: boolean
@@ -25,12 +26,22 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
   const isLoading = isCreateSongLoading || isSaveImageLoading
 
-  const [image, setImage] = useState<File>(null)
+  const [guitarTuning, setGuitarTuning] = useState<ComboboxItem>(null)
+  const [difficulty, setDifficulty] = useState<ComboboxItem>(null)
+  const [sections, sectionsHandlers] = useListState<AddNewSongModalSongSection>([])
+
+  const [image, setImage] = useState<FileWithPath>(null)
+
+  const onCloseWithImage = () => {
+    onClose()
+    setImage(null)
+  }
 
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      title: ''
+      title: '',
+      description: ''
     } as AddNewSongForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -38,54 +49,90 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
     validate: zodResolver(addNewSongValidation)
   })
 
-  async function addSong({ title }: AddNewSongForm) {
-    const res = await createSongMutation({ title }).unwrap()
+  const [activeStep, setActiveStep] = useState(0)
+  const handleActiveStepChange = (activeStep: ((prevState: number) => number) | number) => {
+    if (form.validate().hasErrors) return
+    setActiveStep(activeStep)
+  }
+  const prevStep = () => handleActiveStepChange((current) => current - 1)
+  const nextStep = () => handleActiveStepChange((current) => current + 1)
+
+  async function addSong({
+    title,
+    description,
+    bpm,
+    releaseDate,
+    songsterrLink,
+    youtubeLink
+  }: AddNewSongForm) {
+    title = title.trim()
+    songsterrLink = songsterrLink?.trim()
+    youtubeLink = youtubeLink?.trim()
+
+    const res = await createSongMutation({
+      title: title,
+      description: description,
+      bpm: bpm,
+      difficulty: difficulty?.value,
+      releaseDate: releaseDate,
+      songsterrLink: songsterrLink,
+      youtubeLink: youtubeLink,
+      sections: sections.map((s) => ({ name: s.name, typeId: s.type.value })),
+      guitarTuningId: guitarTuning?.value
+    }).unwrap()
+
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
-    onClose()
-    setImage(null)
+
+    toast.success(`${title} has been added!`)
+
+    onCloseWithImage()
+    setActiveStep(0)
     form.reset()
+    setGuitarTuning(null)
+    setDifficulty(null)
+    sectionsHandlers.setState([])
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={'Add New Song'}>
+    <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Song'} size={500}>
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addSong)}>
-          <Stack>
-            <TextInput
-              withAsterisk={true}
-              maxLength={100}
-              label="Title"
-              placeholder="The title of the song"
-              key={form.key('title')}
-              {...form.getInputProps('title')}
-            />
+          <Stepper iconSize={35} active={activeStep} onStepClick={handleActiveStepChange}>
+            <Stepper.Step label={'First Step'} description={'Basic Info'}>
+              <AddNewSongModalFirstStep form={form} />
+            </Stepper.Step>
 
-            <Group align={'center'}>
-              <FileButton onChange={setImage} accept="image/png,image/jpeg">
-                {(props) => (
-                  <Tooltip label={'Add a Image'}>
-                    <ActionIcon aria-label={'add-image-button'} size={'xl'} {...props}>
-                      <IconPhotoPlus />
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </FileButton>
+            <Stepper.Step label={'Second Step'} description={'More Info'}>
+              <AddNewSongModalSecondStep
+                form={form}
+                sections={sections}
+                sectionsHandlers={sectionsHandlers}
+                guitarTuning={guitarTuning}
+                setGuitarTuning={setGuitarTuning}
+                difficulty={difficulty}
+                setDifficulty={setDifficulty}
+              />
+            </Stepper.Step>
 
-              {image && (
-                <Image
-                  src={URL.createObjectURL(image)}
-                  h={'100px'}
-                  w={'100px'}
-                  radius={'md'}
-                  alt={'song-image'}
-                />
-              )}
-            </Group>
+            <Stepper.Step label={'Final Step'} description={'Web & Media'}>
+              <AddNewSongModelFinalStep form={form} image={image} setImage={setImage} />
+            </Stepper.Step>
+          </Stepper>
 
-            <Button type={'submit'} style={{ alignSelf: 'end' }} disabled={isLoading}>
-              Add Song
-            </Button>
-          </Stack>
+          <Group pt={'xs'} gap={'xs'}>
+            <Space flex={1} />
+            {activeStep !== 0 && (
+              <Button variant={'subtle'} onClick={prevStep}>
+                Previous
+              </Button>
+            )}
+            {activeStep !== 2 && <Button onClick={nextStep}>Next</Button>}
+            {activeStep === 2 && (
+              <Button type={'submit'} disabled={isLoading}>
+                Submit
+              </Button>
+            )}
+          </Group>
         </form>
       </Modal.Body>
     </Modal>
