@@ -196,7 +196,7 @@ func TestAddSongToAlbum_WhenUpdateSongFails_ShouldReturnInternalServerError(t *t
 		Return(nil, song).
 		Once()
 
-	album := &model.Album{ArtistID: &[]uuid.UUID{uuid.New()}[0]}
+	album := &model.Album{ID: request.ID}
 	albumRepository.On("GetWithSongs", mock.IsType(album), request.ID).
 		Return(nil, album).
 		Once()
