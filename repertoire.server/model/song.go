@@ -17,6 +17,7 @@ type Song struct {
 	IsRecorded    bool               `json:"isRecorded"`
 	Bpm           *uint              `json:"bpm"`
 	SongsterrLink *string            `json:"songsterrLink"`
+	YoutubeLink   *string            `json:"youtubeLink"`
 	ReleaseDate   *time.Time         `json:"releaseDate"`
 	Difficulty    *enums.Difficulty  `json:"difficulty"`
 	ImageURL      *internal.FilePath `json:"imageUrl"`

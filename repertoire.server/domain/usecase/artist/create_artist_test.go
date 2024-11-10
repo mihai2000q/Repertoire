@@ -89,8 +89,7 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	artistRepository.On("Create", mock.IsType(new(model.Artist))).
 		Run(func(args mock.Arguments) {
 			newArtist := args.Get(0).(*model.Artist)
-			assert.Equal(t, request.Name, newArtist.Name)
-			assert.Equal(t, userID, newArtist.UserID)
+			assertCreatedArtist(t, *newArtist, request, userID)
 		}).
 		Return(nil).
 		Once()
@@ -103,4 +102,15 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 	jwtService.AssertExpectations(t)
 	artistRepository.AssertExpectations(t)
+}
+
+func assertCreatedArtist(
+	t *testing.T,
+	artist model.Artist,
+	request requests.CreateArtistRequest,
+	userID uuid.UUID,
+) {
+	assert.Equal(t, request.Name, artist.Name)
+	assert.Nil(t, artist.ImageURL)
+	assert.Equal(t, userID, artist.UserID)
 }

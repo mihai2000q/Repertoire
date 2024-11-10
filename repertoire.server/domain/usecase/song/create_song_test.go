@@ -213,6 +213,7 @@ func assertCreatedSong(
 	assert.False(t, song.IsRecorded)
 	assert.Equal(t, request.Bpm, song.Bpm)
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
+	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
 	assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
 	assert.Nil(t, song.ImageURL)

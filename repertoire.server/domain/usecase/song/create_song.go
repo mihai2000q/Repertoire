@@ -41,6 +41,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		Description:    request.Description,
 		Bpm:            request.Bpm,
 		SongsterrLink:  request.SongsterrLink,
+		YoutubeLink:    request.YoutubeLink,
 		ReleaseDate:    request.ReleaseDate,
 		Difficulty:     request.Difficulty,
 		GuitarTuningID: request.GuitarTuningID,

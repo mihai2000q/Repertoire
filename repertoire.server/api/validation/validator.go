@@ -2,8 +2,9 @@ package validation
 
 import (
 	"context"
-	"go.uber.org/fx"
 	"repertoire/server/internal/wrapper"
+
+	"go.uber.org/fx"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
@@ -25,7 +26,7 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 	} else {
 		err := registerCustomValidators(validate)
 		if err != nil {
-			return nil
+			panic(err)
 		}
 	}
 
@@ -59,6 +60,11 @@ func registerCustomValidators(validate *validator.Validate) error {
 	}
 
 	err = validate.RegisterValidation("isDifficultyEnum", IsDifficultyEnum)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("isYoutubeLink", IsYoutubeLink)
 	if err != nil {
 		return err
 	}
