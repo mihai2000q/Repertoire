@@ -1,9 +1,7 @@
-import {ToastContainer} from "react-toastify";
+import { ToastContainer } from 'react-toastify'
 
 function CustomizedToastContainer() {
-  return (
-    <ToastContainer position={'bottom-center'}  />
-  );
+  return <ToastContainer position={'bottom-center'} />
 }
 
-export default CustomizedToastContainer;
+export default CustomizedToastContainer

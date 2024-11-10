@@ -7,7 +7,7 @@ import NewSongCard from '../../components/songs/NewSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../../components/songs/loader/SongsLoader.tsx'
-import SongDrawer from "../../components/songs/SongDrawer.tsx";
+import SongDrawer from '../../components/songs/SongDrawer.tsx'
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -29,7 +29,11 @@ function Songs(): ReactElement {
       </Title>
 
       <Group>
-        <Button variant={'gradient'} leftSection={<IconMusicPlus size={17} />} onClick={openAddNewSongModal}>
+        <Button
+          variant={'gradient'}
+          leftSection={<IconMusicPlus size={17} />}
+          onClick={openAddNewSongModal}
+        >
           New Song
         </Button>
       </Group>

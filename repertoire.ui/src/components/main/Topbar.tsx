@@ -59,8 +59,8 @@ function Topbar(): ReactElement {
               '&:focus, &:hover': {
                 boxShadow: theme.shadows.sm,
                 backgroundColor: alpha(theme.colors.gray[0], 0.2)
-              },
-            },
+              }
+            }
           })}
         />
 

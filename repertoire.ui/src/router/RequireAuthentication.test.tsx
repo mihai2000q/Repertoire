@@ -1,8 +1,8 @@
-import {reduxRouterRender} from '../test-utils.tsx'
+import { reduxRouterRender } from '../test-utils.tsx'
 import RequireAuthentication from './RequireAuthentication.tsx'
-import {Navigate, Route, Routes} from "react-router-dom";
-import {expect} from "vitest";
-import {screen} from "@testing-library/react";
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { expect } from 'vitest'
+import { screen } from '@testing-library/react'
 
 describe('Require Authentication', () => {
   const render = (token: string | null) =>

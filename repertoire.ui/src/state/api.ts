@@ -22,12 +22,9 @@ export const api = createApi({
       // Users
       getCurrentUser: build.query<User, void>({
         query: () => `users/current`
-      }),
+      })
     }
   }
 })
 
-export const {
-  useSignInMutation,
-  useGetCurrentUserQuery
-} = api
+export const { useSignInMutation, useGetCurrentUserQuery } = api

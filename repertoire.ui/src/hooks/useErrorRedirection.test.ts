@@ -1,6 +1,6 @@
 import { reduxRouterRenderHook } from '../test-utils.tsx'
 import useErrorRedirection from './useErrorRedirection.ts'
-import {RootState} from "../state/store.ts";
+import { RootState } from '../state/store.ts'
 
 describe('useErrorRedirection', () => {
   it('should not navigate when the error path is undefined', () => {
@@ -14,7 +14,9 @@ describe('useErrorRedirection', () => {
     const errorPath = '404'
 
     // Act
-    const [_, store] = reduxRouterRenderHook(() => useErrorRedirection(), { global: { errorPath: errorPath } })
+    const [_, store] = reduxRouterRenderHook(() => useErrorRedirection(), {
+      global: { errorPath: errorPath }
+    })
 
     // Assert
     expect(window.location.pathname).toBe(`/${errorPath}`)

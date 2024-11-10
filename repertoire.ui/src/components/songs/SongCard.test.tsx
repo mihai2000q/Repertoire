@@ -13,7 +13,7 @@ describe('Song Card', () => {
       title: 'Some song',
       description: '',
       isRecorded: false,
-      sections: [],
+      sections: []
     }
 
     // Act

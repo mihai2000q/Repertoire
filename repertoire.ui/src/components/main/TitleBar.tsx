@@ -40,10 +40,20 @@ function TitleBar() {
         <Space flex={1} />
 
         <Group gap={4} style={{ WebkitAppRegion: 'no-drag' }}>
-          <ActionIcon aria-label={'minimize'} variant={'subtle'} size={'lg'} onClick={handleMinimize}>
+          <ActionIcon
+            aria-label={'minimize'}
+            variant={'subtle'}
+            size={'lg'}
+            onClick={handleMinimize}
+          >
             <IconArrowDownLeft />
           </ActionIcon>
-          <ActionIcon aria-label={'maximize'} variant={'subtle'} size={'lg'} onClick={handleMaximize}>
+          <ActionIcon
+            aria-label={'maximize'}
+            variant={'subtle'}
+            size={'lg'}
+            onClick={handleMaximize}
+          >
             <IconArrowsDiagonal />
           </ActionIcon>
           <ActionIcon aria-label={'close'} variant={'subtle'} size={'lg'} onClick={handleClose}>

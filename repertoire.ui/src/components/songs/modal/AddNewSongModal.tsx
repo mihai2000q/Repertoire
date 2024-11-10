@@ -8,7 +8,7 @@ import { FileWithPath } from '@mantine/dropzone'
 import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
 import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
 import AddNewSongModelFinalStep from './AddNewSongModelFinalStep.tsx'
-import {useListState} from "@mantine/hooks";
+import { useListState } from '@mantine/hooks'
 
 export interface AddNewSongModalSongSection {
   id: string

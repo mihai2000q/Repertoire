@@ -1,5 +1,5 @@
-import Album from "./Album.ts";
-import Song from "./Song.ts";
+import Album from './Album.ts'
+import Song from './Song.ts'
 
 export default interface Artist {
   id: string

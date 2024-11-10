@@ -1,6 +1,6 @@
 import { mantineRender } from '../test-utils.tsx'
-import SignUp from "./SignUp.tsx";
-import {screen} from "@testing-library/react";
+import SignUp from './SignUp.tsx'
+import { screen } from '@testing-library/react'
 
 describe('Sign Up', () => {
   it('should render', () => {

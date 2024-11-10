@@ -6,9 +6,9 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import SignInRequest from '../types/requests/AuthRequests.ts'
 import TokenResponse from '../types/responses/TokenResponse.ts'
-import {EnhancedStore} from "@reduxjs/toolkit";
-import {expect} from "vitest";
-import {RootState} from "../state/store.ts";
+import { EnhancedStore } from '@reduxjs/toolkit'
+import { expect } from 'vitest'
+import { RootState } from '../state/store.ts'
 
 describe('Sign In', () => {
   const server = setupServer()
@@ -92,15 +92,13 @@ describe('Sign In', () => {
     const password = 'ThisIsAGoodPassword123'
     const error = 'Invalid credentials'
 
-    server.use(
-      http.put('/auth/sign-in', async () => HttpResponse.json({ error }, { status: 401 }))
-    )
+    server.use(http.put('/auth/sign-in', async () => HttpResponse.json({ error }, { status: 401 })))
 
     // Act
     await sendSignInRequest(email, password)
 
     // Assert
-    screen.getAllByText(error).forEach(e => expect(e).toBeVisible())
+    screen.getAllByText(error).forEach((e) => expect(e).toBeVisible())
   })
 
   it('should send sign in request and save token', async () => {

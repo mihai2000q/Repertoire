@@ -1,10 +1,10 @@
 import { Mutex } from 'async-mutex'
 import { RootState } from './store'
-import { signOut, setToken } from './authSlice'
+import { setToken, signOut } from './authSlice'
 import { setErrorPath } from './globalSlice'
 import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query'
-import {toast} from "react-toastify";
-import HttpErrorResponse from "../types/responses/HttpErrorResponse.ts";
+import { toast } from 'react-toastify'
+import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 
 const queryWithAuthorization = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_BACKEND_URL,

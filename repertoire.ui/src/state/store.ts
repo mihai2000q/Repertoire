@@ -1,4 +1,4 @@
-import {combineReducers, configureStore} from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import authReducer from './authSlice'
 import globalReducer from './globalSlice'
 import songsReducer from './songsSlice'

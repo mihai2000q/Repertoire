@@ -1,11 +1,11 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface AuthState {
   songId: string | undefined
 }
 
 const initialState: AuthState = {
-  songId: undefined,
+  songId: undefined
 }
 
 export const songsSlice = createSlice({
@@ -14,7 +14,7 @@ export const songsSlice = createSlice({
   reducers: {
     setSongId: (state, action: PayloadAction<string | undefined>) => {
       state.songId = action.payload
-    },
+    }
   }
 })
 

@@ -1,6 +1,6 @@
-import Difficulty from "../../utils/Difficulty.ts";
-import Album from "./Album.ts";
-import Artist from "./Artist.ts";
+import Difficulty from '../../utils/Difficulty.ts'
+import Album from './Album.ts'
+import Artist from './Artist.ts'
 
 export default interface Song {
   id: string

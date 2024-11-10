@@ -3,9 +3,9 @@ import Sidebar from '../components/main/Sidebar'
 import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
-import {AppShell, Box} from '@mantine/core'
-import TitleBar from "../components/main/TitleBar";
-import useAuth from "../hooks/useAuth";
+import { AppShell, Box } from '@mantine/core'
+import TitleBar from '../components/main/TitleBar'
+import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
 import useTitleBarHeight from '../hooks/useTitleBarHeight'
 
