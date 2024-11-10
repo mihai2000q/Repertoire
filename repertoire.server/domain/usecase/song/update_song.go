@@ -36,7 +36,6 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 	song.ReleaseDate = request.ReleaseDate
 	song.Difficulty = request.Difficulty
 	song.GuitarTuningID = request.GuitarTuningID
-	song.ArtistID = request.ArtistID
 
 	err = u.repository.Update(&song)
 	if err != nil {
