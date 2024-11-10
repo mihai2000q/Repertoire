@@ -12,7 +12,7 @@ import (
 
 type AlbumService interface {
 	AddSong(requests.AddSongToAlbumRequest) *wrapper.ErrorCode
-	Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode
+	Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
@@ -66,7 +66,7 @@ func (a *albumService) AddSong(request requests.AddSongToAlbumRequest) *wrapper.
 	return a.addSongToAlbum.Handle(request)
 }
 
-func (a *albumService) Create(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
+func (a *albumService) Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	return a.createAlbum.Handle(request, token)
 }
 

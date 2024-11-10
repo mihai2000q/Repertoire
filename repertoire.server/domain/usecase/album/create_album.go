@@ -22,10 +22,10 @@ func NewCreateAlbum(jwtService service.JwtService, repository repository.AlbumRe
 	}
 }
 
-func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *wrapper.ErrorCode {
+func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
-		return errCode
+		return uuid.Nil, errCode
 	}
 
 	album := model.Album{
@@ -36,7 +36,7 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) *
 	}
 	err := c.repository.Create(&album)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
-	return nil
+	return album.ID, nil
 }

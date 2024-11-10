@@ -30,9 +30,10 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
@@ -60,9 +61,10 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 		Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -86,18 +88,22 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	userID := uuid.New()
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	var playlistID uuid.UUID
 	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
 		Run(func(args mock.Arguments) {
 			newPlaylist := args.Get(0).(*model.Playlist)
 			assertCreatedPlaylist(t, *newPlaylist, request, userID)
+			playlistID = newPlaylist.ID
 		}).
 		Return(nil).
 		Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Equal(t, playlistID, id)
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)

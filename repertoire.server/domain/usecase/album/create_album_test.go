@@ -30,9 +30,10 @@ func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *tes
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
@@ -60,9 +61,10 @@ func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 		Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -86,18 +88,22 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	userID := uuid.New()
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	var albumID uuid.UUID
 	albumRepository.On("Create", mock.IsType(new(model.Album))).
 		Run(func(args mock.Arguments) {
 			newAlbum := args.Get(0).(*model.Album)
 			assertCreatedAlbum(t, *newAlbum, request, userID)
+			albumID = newAlbum.ID
 		}).
 		Return(nil).
 		Once()
 
 	// when
-	errCode := _uut.Handle(request, token)
+	id, errCode := _uut.Handle(request, token)
 
 	// then
+	assert.Equal(t, albumID, id)
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)

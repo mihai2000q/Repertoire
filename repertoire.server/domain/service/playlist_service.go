@@ -12,7 +12,7 @@ import (
 
 type PlaylistService interface {
 	AddSong(request requests.AddSongToPlaylistRequest) *wrapper.ErrorCode
-	Create(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode
+	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode)
@@ -62,7 +62,7 @@ func (p *playlistService) AddSong(request requests.AddSongToPlaylistRequest) *wr
 	return p.addSongToPlaylist.Handle(request)
 }
 
-func (p *playlistService) Create(request requests.CreatePlaylistRequest, token string) *wrapper.ErrorCode {
+func (p *playlistService) Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
 	return p.createPlaylist.Handle(request, token)
 }
 
