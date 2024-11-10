@@ -116,7 +116,6 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
-				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
 				Sections: []CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
@@ -216,6 +215,27 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			[]string{"Difficulty"},
 			[]string{"isDifficultyEnum"},
 		},
+		// Album ID
+		{
+			"Album ID is invalid because the Artist Id is also set",
+			CreateSongRequest{
+				Title:    validSongTitle,
+				AlbumID:  &[]uuid.UUID{uuid.New()}[0],
+				ArtistID: &[]uuid.UUID{uuid.New()}[0],
+			},
+			[]string{"AlbumID"},
+			[]string{"excluded_with"},
+		},
+		{
+			"Album ID is invalid because the Artist Name is also set",
+			CreateSongRequest{
+				Title:      validSongTitle,
+				AlbumID:    &[]uuid.UUID{uuid.New()}[0],
+				ArtistName: &[]string{"New Artist Name"}[0],
+			},
+			[]string{"AlbumID"},
+			[]string{"excluded_with"},
+		},
 		// Album ID and Album Title Test Case
 		{
 			"Album Title and ID are invalid because only one can be set at a time",
@@ -283,14 +303,12 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			// when
 			errCode := _uut.Validate(tt.request)
 
-			err := errCode.Error.Error()
-
 			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, tt.expectedFailedTags, len(tt.expectedInvalidFields))
 			assert.Len(t, errCode.Error, len(tt.expectedFailedTags))
 			for _, expectedInvalidField := range tt.expectedInvalidFields {
-				assert.Contains(t, err, "CreateSongRequest."+expectedInvalidField)
+				assert.Contains(t, errCode.Error.Error(), "CreateSongRequest."+expectedInvalidField)
 			}
 			for _, expectedFailedTag := range tt.expectedFailedTags {
 				assert.Contains(t, errCode.Error.Error(), "'"+expectedFailedTag+"' tag")

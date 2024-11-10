@@ -23,7 +23,7 @@ type CreateSongRequest struct {
 	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
-	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle"`
+	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle ArtistID ArtistName"`
 	AlbumTitle     *string                `validate:"omitempty,excluded_with=AlbumID,max=100"`
 	ArtistID       *uuid.UUID             `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
