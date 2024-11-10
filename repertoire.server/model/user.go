@@ -1,6 +1,7 @@
 package model
 
 import (
+	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"time"
 
@@ -23,4 +24,9 @@ type User struct {
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+}
+
+func (u *User) AfterFind(*gorm.DB) error {
+	u.ProfilePictureURL = u.ProfilePictureURL.ToNullableFullURL()
+	return nil
 }
