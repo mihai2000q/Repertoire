@@ -23,12 +23,8 @@ function ImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewP
               size={'lg'}
               sx={(theme) => ({
                 transition: '0.15s',
-                color: theme.colors.red[4],
                 backgroundColor: alpha(theme.colors.red[5], 0.5),
-                '&:hover': {
-                  color: theme.colors.red[6],
-                  backgroundColor: alpha(theme.colors.red[5], 0.7)
-                }
+                '&:hover': { backgroundColor: alpha(theme.colors.red[5], 0.7) }
               })}
               onClick={() => setImage(null)}
             >

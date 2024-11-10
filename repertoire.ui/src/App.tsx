@@ -46,9 +46,9 @@ function App(): ReactElement {
 
                   <Route element={<RequireAuthentication />}>
                     <Route path={'home'} element={<Home />} />
-                    <Route path={'songs'} element={<Songs />} />
                     <Route path={'artists'} element={<Artists />} />
                     <Route path={'albums'} element={<Albums />} />
+                    <Route path={'songs'} element={<Songs />} />
 
                     {/* Errors */}
                     <Route path={'401'} element={<Unauthorized />} />

@@ -1,4 +1,4 @@
-import {z} from "zod";
+import { z } from 'zod'
 
 export interface AddNewAlbumForm {
   title: string
@@ -6,5 +6,5 @@ export interface AddNewAlbumForm {
 }
 
 export const addNewAlbumValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank'),
+  title: z.string().trim().min(1, 'Title cannot be blank')
 })
