@@ -50,7 +50,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
-    toast.success(`${title} has been added!`)
+    toast.success(`${title} added!`)
 
     onCloseWithImage()
     form.reset()

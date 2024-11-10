@@ -1,6 +1,7 @@
 package model
 
 import (
+	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"time"
 
@@ -17,4 +18,9 @@ type Playlist struct {
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+}
+
+func (p *Playlist) AfterFind(*gorm.DB) error {
+	p.ImageURL = p.ImageURL.ToNullableFullURL()
+	return nil
 }
