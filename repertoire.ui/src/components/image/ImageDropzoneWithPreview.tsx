@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-import { ActionIcon, FileButton, Group, Image, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, alpha, FileButton, Group, Image, Stack, Text, Tooltip } from '@mantine/core'
 import { IconPhoto, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
@@ -14,21 +14,39 @@ function ImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewP
       <Group justify={'center'} align={'center'}>
         <Image src={URL.createObjectURL(image)} h={200} w={320} radius={'md'} alt={'song-image'} />
 
-        <FileButton onChange={setImage} accept="image/png,image/jpeg">
-          {(props) => (
-            <Tooltip label={'Reload Image'} openDelay={300} position={'right'}>
-              <ActionIcon
-                c={'dark'}
-                variant={'subtle'}
-                aria-label={'add-image-button'}
-                size={'xl'}
-                {...props}
-              >
-                <IconPhotoDown size={20} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </FileButton>
+        <Stack>
+          <FileButton onChange={setImage} accept="image/png,image/jpeg">
+            {(props) => (
+              <Tooltip label={'Reload Image'} openDelay={300} position={'right'}>
+                <ActionIcon
+                  c={'dark'}
+                  variant={'subtle'}
+                  aria-label={'add-image-button'}
+                  size={'xl'}
+                  {...props}
+                >
+                  <IconPhotoDown size={20} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </FileButton>
+
+          <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
+            <ActionIcon
+              variant={'subtle'}
+              color={'red.6'}
+              aria-label={'remove-image-button'}
+              size={'xl'}
+              sx={(theme) => ({
+                transition: '0.15s',
+                '&:hover': { backgroundColor: alpha(theme.colors.red[5], 0.2) }
+              })}
+              onClick={() => setImage(null)}
+            >
+              <IconX size={18} />
+            </ActionIcon>
+          </Tooltip>
+        </Stack>
       </Group>
     )
   }
