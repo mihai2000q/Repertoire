@@ -13,6 +13,7 @@ import (
 type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
+	GetWithSongs(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.Song,
@@ -55,6 +56,14 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_sections.order")
 		}).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithSongs(song *model.Song, id uuid.UUID) error {
+	return s.client.DB.
+		Preload("Album").
+		Preload("Album.Songs").
 		Find(&song, model.Song{ID: id}).
 		Error
 }

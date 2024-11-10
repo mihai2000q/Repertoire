@@ -87,6 +87,23 @@ func (a ArtistHandler) Create(c *gin.Context) {
 	})
 }
 
+func (a ArtistHandler) AddSong(c *gin.Context) {
+	var request requests.AddSongToArtistRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.AddSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "song has been added to artist successfully")
+}
+
 func (a ArtistHandler) Update(c *gin.Context) {
 	var request requests.UpdateArtistRequest
 	errorCode := a.BindAndValidate(c, &request)

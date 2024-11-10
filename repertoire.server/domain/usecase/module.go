@@ -26,6 +26,7 @@ var albumUseCases = fx.Options(
 )
 
 var artistUseCases = fx.Options(
+	fx.Provide(artist.NewAddSongToArtist),
 	fx.Provide(artist.NewCreateArtist),
 	fx.Provide(artist.NewDeleteArtist),
 	fx.Provide(artist.NewDeleteImageFromArtist),
