@@ -1,6 +1,8 @@
 package song
 
 import (
+	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -51,14 +53,15 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		Sections:       c.createSections(request.Sections, songID),
 		UserID:         userID,
 	}
+
 	c.createAlbum(&song, request)
 
-	err := c.addToAlbum(&song, request.AlbumID)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	errCode = c.addToAlbum(&song, request)
+	if errCode != nil {
+		return uuid.Nil, errCode
 	}
 
-	err = c.repository.Create(&song)
+	err := c.repository.Create(&song)
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
@@ -95,28 +98,35 @@ func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongReq
 	if request.AlbumTitle == nil {
 		return
 	}
+
 	song.Album = &model.Album{
-		ID:     uuid.New(),
-		Title:  *request.AlbumTitle,
-		UserID: song.UserID,
+		ID:       uuid.New(),
+		Title:    *request.AlbumTitle,
+		UserID:   song.UserID,
+		ArtistID: song.ArtistID, // album inherits that artist from song
 	}
 	song.AlbumTrackNo = &[]uint{1}[0]
 }
 
-func (c CreateSong) addToAlbum(song *model.Song, albumID *uuid.UUID) error {
-	if albumID == nil {
+func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequest) *wrapper.ErrorCode {
+	if request.AlbumID == nil {
 		return nil
 	}
 
-	var count int64
-	err := c.albumRepository.CountSongs(&count, albumID)
+	var album model.Album
+	err := c.albumRepository.GetWithSongs(&album, *request.AlbumID)
 	if err != nil {
-		return err
+		return wrapper.InternalServerError(err)
+	}
+	if reflect.ValueOf(album).IsZero() {
+		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
-	song.AlbumID = albumID
-	trackNo := uint(count) + 1
+	song.AlbumID = request.AlbumID
+	trackNo := uint(len(album.Songs)) + 1
 	song.AlbumTrackNo = &trackNo
+	// song inherits the artist from album
+	song.ArtistID = album.ArtistID
 
 	return nil
 }
