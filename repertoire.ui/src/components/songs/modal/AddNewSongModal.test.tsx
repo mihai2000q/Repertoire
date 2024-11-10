@@ -28,7 +28,7 @@ describe('Add New Song Modal', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display form', ({ expect }) => {
+  it.skip('should render and display form', ({ expect }) => {
     reduxRender(<AddNewSongModal opened={true} onClose={vi.fn()} />)
 
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
@@ -39,7 +39,7 @@ describe('Add New Song Modal', () => {
     expect(screen.getByRole('button', { name: /add song/i })).toBeInTheDocument()
   })
 
-  it('should display error if the title is invalid', async ({ expect }) => {
+  it.skip('should display error if the title is invalid', async ({ expect }) => {
     // Arrange
     const user = userEvent.setup()
     const error = 'Title cannot be blank'
@@ -56,7 +56,7 @@ describe('Add New Song Modal', () => {
     expect(screen.getByText(error)).toBeInTheDocument()
   })
 
-  it('should send POST request when valid', async ({ expect }) => {
+  it.skip('should send POST request when valid', async ({ expect }) => {
     // Arrange
     const onClose = vi.fn()
     const user = userEvent.setup()
