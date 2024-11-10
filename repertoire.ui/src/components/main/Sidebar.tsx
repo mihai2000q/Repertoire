@@ -45,7 +45,10 @@ function Sidebar(): ReactElement {
             key={sidebarLink.label}
             label={sidebarLink.label}
             leftSection={sidebarLink.icon}
-            active={location.pathname === sidebarLink.link}
+            active={
+              location.pathname === sidebarLink.link ||
+              sidebarLink.subLinks.some((link) => location.pathname.startsWith(link))
+            }
             onClick={() => navigate(sidebarLink.link)}
           />
         ))}
