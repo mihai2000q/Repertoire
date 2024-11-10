@@ -66,6 +66,32 @@ func TestAddSongToAlbum_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 	songRepository.AssertExpectations(t)
 }
 
+func TestAddSongToAlbum_WhenSongHasAlbum_ShouldReturnBadRequestError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := AddSongToAlbum{songRepository: songRepository}
+
+	request := requests.AddSongToAlbumRequest{
+		ID:     uuid.New(),
+		SongID: uuid.New(),
+	}
+
+	song := &model.Song{AlbumID: &[]uuid.UUID{uuid.New()}[0]}
+	songRepository.On("Get", mock.IsType(song), request.SongID).
+		Return(nil, song).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "song not found", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestAddSongToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)

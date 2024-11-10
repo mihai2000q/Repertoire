@@ -33,6 +33,9 @@ func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.
 	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
+	if song.AlbumID != nil {
+		return wrapper.BadRequestError(errors.New("song already has an album"))
+	}
 
 	var album model.Album
 	err = a.repository.GetWithSongs(&album, request.ID)
