@@ -12,12 +12,16 @@ describe('Songs', () => {
     {
       id: '1',
       title: 'All for justice',
-      isRecorded: false
+      description: '',
+      isRecorded: false,
+      sections: []
     },
     {
       id: '2',
+      description: '',
       title: 'Seek and Destroy',
-      isRecorded: true
+      isRecorded: true,
+      sections: []
     }
   ]
 

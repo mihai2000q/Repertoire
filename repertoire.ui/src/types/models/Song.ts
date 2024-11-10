@@ -14,8 +14,8 @@ export default interface Song {
   difficulty?: Difficulty
   imageUrl?: string
 
-  album: Album
-  artist: Artist
+  album?: Album
+  artist?: Artist
   guitarTuning?: GuitarTuning
   sections: SongSection[]
 }
