@@ -7,5 +7,5 @@ export interface SignInForm {
 
 export const signInValidation = z.object({
   email: z.string().email('Email is invalid'),
-  password: z.string().trim().min(1, 'Password cannot be blank'),
+  password: z.string().trim().min(1, 'Password cannot be blank')
 })

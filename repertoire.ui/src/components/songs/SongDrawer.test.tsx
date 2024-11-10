@@ -1,15 +1,17 @@
-import {reduxRender} from "../../test-utils.tsx";
-import SongDrawer from "./SongDrawer.tsx";
-import {screen} from "@testing-library/react";
-import {http, HttpResponse} from "msw";
-import Song from "../../types/models/Song.ts";
-import {setupServer} from "msw/node";
+import { reduxRender } from '../../test-utils.tsx'
+import SongDrawer from './SongDrawer.tsx'
+import { screen } from '@testing-library/react'
+import { http, HttpResponse } from 'msw'
+import Song from '../../types/models/Song.ts'
+import { setupServer } from 'msw/node'
 
 describe('Song Drawer', () => {
   const song: Song = {
     id: '1',
-    title: "Justice for all",
+    title: 'Justice for all',
+    description: '',
     isRecorded: false,
+    sections: []
   }
 
   const handlers = [

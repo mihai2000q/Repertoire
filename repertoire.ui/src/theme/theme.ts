@@ -1,20 +1,21 @@
 import { createTheme, rem } from '@mantine/core'
 import { colors } from './colors'
-import {components} from "./components";
+import { components } from './components'
 
 export const theme = createTheme({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   colors: colors,
   primaryColor: 'cyan',
-  primaryShade: { light: 5, dark: 7 },
-  white: '#f0f0f0',
+  primaryShade: 4,
+  white: '#fafafa',
+  black: '#242424',
 
   defaultRadius: 'md',
   cursorType: 'pointer',
 
   autoContrast: true,
-  luminanceThreshold: 0.4,
+  luminanceThreshold: 0.5,
 
   fontFamily: 'Poppins, sans-serif',
   fontSizes: {

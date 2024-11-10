@@ -8,7 +8,8 @@ export interface SignUpForm {
 
 export const signUpValidation = z.object({
   email: z.string().email('Email is Invalid'),
-  password: z.string()
+  password: z
+    .string()
     .trim()
     .min(8, 'Password should be at least 8 characters')
     .refine((val) => /[A-Z]/.test(val), 'Password should have at least 1 upper character')

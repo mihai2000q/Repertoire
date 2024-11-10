@@ -11,7 +11,9 @@ describe('Song Card', () => {
     const song: Song = {
       id: '',
       title: 'Some song',
-      isRecorded: false
+      description: '',
+      isRecorded: false,
+      sections: []
     }
 
     // Act
@@ -27,7 +29,9 @@ describe('Song Card', () => {
     const song: Song = {
       id: '',
       title: 'Some song',
-      isRecorded: true
+      description: '',
+      isRecorded: true,
+      sections: []
     }
 
     // Act
@@ -43,7 +47,9 @@ describe('Song Card', () => {
     const song: Song = {
       id: '1',
       title: 'Some song',
-      isRecorded: true
+      description: '',
+      isRecorded: true,
+      sections: []
     }
 
     const user = userEvent.setup()

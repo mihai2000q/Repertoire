@@ -1,6 +1,6 @@
 import { api } from './api'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
-import Song from '../types/models/Song'
+import Song, { GuitarTuning, SongSectionType } from '../types/models/Song'
 import {
   CreateSongRequest,
   GetSongsRequest,
@@ -54,6 +54,15 @@ const songsApi = api.injectEndpoints({
         method: 'DELETE'
       }),
       invalidatesTags: ['Songs']
+    }),
+
+    getGuitarTunings: build.query<GuitarTuning[], void>({
+      query: () => 'songs/guitar-tunings',
+      providesTags: ['GuitarTunings']
+    }),
+    getSongSectionTypes: build.query<SongSectionType[], void>({
+      query: () => 'songs/sections/types',
+      providesTags: ['SongSectionTypes']
     })
   })
 })
@@ -64,5 +73,7 @@ export const {
   useCreateSongMutation,
   useUpdateSongMutation,
   useSaveImageToSongMutation,
-  useDeleteSongMutation
+  useDeleteSongMutation,
+  useGetGuitarTuningsQuery,
+  useGetSongSectionTypesQuery
 } = songsApi

@@ -7,7 +7,7 @@ import User from '../types/models/User'
 export const api = createApi({
   baseQuery: queryWithRedirection,
   reducerPath: 'api',
-  tagTypes: ['Songs'],
+  tagTypes: ['Songs', 'Albums', 'Artists', 'GuitarTunings', 'SongSectionTypes'],
   endpoints: (build) => {
     return {
       // Auth
@@ -22,12 +22,9 @@ export const api = createApi({
       // Users
       getCurrentUser: build.query<User, void>({
         query: () => `users/current`
-      }),
+      })
     }
   }
 })
 
-export const {
-  useSignInMutation,
-  useGetCurrentUserQuery
-} = api
+export const { useSignInMutation, useGetCurrentUserQuery } = api

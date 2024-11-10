@@ -28,12 +28,7 @@ function SongCard({ song, openDrawer }: SongCardProps) {
       onClick={handleClick}
     >
       <Card.Section>
-        <Image
-          src={song.imageUrl}
-          fallbackSrc={imagePlaceholder}
-          h={150}
-          alt={song.title}
-        />
+        <Image src={song.imageUrl} fallbackSrc={imagePlaceholder} h={150} alt={song.title} />
       </Card.Section>
 
       <Group justify="space-between" mt="sm" mb="xs">

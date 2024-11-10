@@ -1,4 +1,4 @@
-import {Skeleton, Stack} from "@mantine/core";
+import { Skeleton, Stack } from '@mantine/core'
 
 function SongDrawerLoader() {
   return (
@@ -14,7 +14,7 @@ function SongDrawerLoader() {
         </Stack>
       </Stack>
     </Stack>
-  );
+  )
 }
 
-export default SongDrawerLoader;
+export default SongDrawerLoader

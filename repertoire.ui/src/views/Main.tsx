@@ -4,8 +4,8 @@ import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
 import { AppShell, Box } from '@mantine/core'
-import TitleBar from "../components/main/TitleBar";
-import useAuth from "../hooks/useAuth";
+import TitleBar from '../components/main/TitleBar'
+import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
 import useTitleBarHeight from '../hooks/useTitleBarHeight'
 
@@ -20,7 +20,7 @@ function Main(): ReactElement {
       {isDesktop && <TitleBar />}
       <AppShell
         layout={'alt'}
-        header={{ height: 50 }}
+        header={{ height: 65 }}
         navbar={{
           width: 250,
           breakpoint: 'xs',

@@ -1,6 +1,6 @@
 import { mantineRender } from '../test-utils.tsx'
-import Unauthorized from "./Unauthorized.tsx";
-import {screen} from "@testing-library/react";
+import Unauthorized from './Unauthorized.tsx'
+import { screen } from '@testing-library/react'
 
 describe('Unauthorized', () => {
   it('should render', () => {

@@ -3,7 +3,7 @@ import TitleBar from './TitleBar.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { afterEach } from 'vitest'
-import {ElectronAPI, IpcRenderer} from '@electron-toolkit/preload'
+import { ElectronAPI, IpcRenderer } from '@electron-toolkit/preload'
 
 describe('Title Bar', () => {
   afterEach(() => vi.restoreAllMocks())
@@ -21,7 +21,7 @@ describe('Title Bar', () => {
     const user = userEvent.setup()
     window.electron = {
       ipcRenderer: {
-        send: vi.fn(),
+        send: vi.fn()
       } as unknown as IpcRenderer
     } as unknown as ElectronAPI
 
