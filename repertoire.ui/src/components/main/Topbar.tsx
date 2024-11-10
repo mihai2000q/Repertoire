@@ -30,15 +30,13 @@ import useAuth from '../../hooks/useAuth.ts'
 function Topbar(): ReactElement {
   const dispatch = useAppDispatch()
 
-  const { data: user, isLoading } = useGetCurrentUserQuery(undefined, {
+  const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
   })
 
   function handleSignOut() {
     dispatch(signOut())
   }
-
-  if (!user) return <></>
 
   return (
     <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
@@ -83,7 +81,7 @@ function Topbar(): ReactElement {
           <IconBellFilled size={18} />
         </ActionIcon>
 
-        {isLoading ? (
+        {!user ? (
           <Loader />
         ) : (
           <Menu shadow={'lg'} width={200}>
