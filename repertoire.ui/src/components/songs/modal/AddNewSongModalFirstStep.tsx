@@ -41,6 +41,7 @@ function AddNewSongModalFirstStep({ form }: AddNewSongModalFirstStepProps) {
           </Group>
         ) : (
           <Autocomplete
+            maxLength={100}
             flex={1}
             data={albums}
             label={'Album'}
@@ -57,10 +58,11 @@ function AddNewSongModalFirstStep({ form }: AddNewSongModalFirstStepProps) {
           </Group>
         ) : (
           <Autocomplete
+            maxLength={100}
             flex={1}
             data={artists}
             label={'Artist'}
-            placeholder={`${albums.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
+            placeholder={`${artists.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
           />
         )}
       </Group>

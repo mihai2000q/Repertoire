@@ -166,6 +166,7 @@ function AddNewSongModalSecondStep({
 
                           <TextInput
                             flex={1}
+                            maxLength={30}
                             placeholder={'Name of Section'}
                             value={section.name}
                             onChange={(e) =>
