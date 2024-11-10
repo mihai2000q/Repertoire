@@ -1,6 +1,33 @@
-import { alpha, Menu, NavLink, Tooltip } from '@mantine/core'
+import {
+  ActionIcon,
+  ActionIconFactory,
+  alpha,
+  Menu,
+  NavLink,
+  StylesApiProps,
+  Text,
+  Title,
+  Tooltip
+} from '@mantine/core'
 
 export const components = {
+  ActionIcon: ActionIcon.extend({
+    styles: (theme) => ({
+      root: {
+        '&[data-variant="grey"]': {
+          transition: '0.15s',
+          color: theme.colors.gray[5],
+          backgroundColor: theme.colors.gray[0],
+
+          '&:hover': {
+            color: theme.colors.gray[6],
+            backgroundColor: theme.colors.gray[2],
+            shadows: theme.shadows.lg
+          }
+        }
+      }
+    })
+  }),
   Menu: Menu.extend({
     defaultProps: {
       styles: {
@@ -8,11 +35,6 @@ export const components = {
           transition: '0.25s'
         }
       }
-    }
-  }),
-  Tooltip: Tooltip.extend({
-    defaultProps: {
-      bg: 'cyan.9'
     }
   }),
   NavLink: NavLink.extend({
@@ -45,5 +67,26 @@ export const components = {
         }
       })
     }
+  }),
+  Text: Text.extend({
+    defaultProps: {
+      c: 'dark'
+    }
+  }),
+  Title: Title.extend({
+    defaultProps: {
+      c: 'dark'
+    }
+  }),
+  Tooltip: Tooltip.extend({
+    defaultProps: {
+      bg: 'cyan.9'
+    }
   })
+}
+
+declare module '@mantine/core' {
+  interface ActionIconProps {
+    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey'
+  }
 }
