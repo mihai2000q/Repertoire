@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import { AddNewAlbumForm, addNewAlbumValidation } from '../../../validation/albumsForm.ts'
 import { useCreateAlbumMutation, useSaveImageToAlbumMutation } from '../../../state/albumsApi.ts'
 import { useGetArtistsQuery } from '../../../state/artistsApi.ts'
-import ImageDropzoneWithPreview from '../../ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
 import { DatePickerInput } from '@mantine/dates'
 
 interface AddNewAlbumModalProps {

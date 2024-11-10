@@ -51,7 +51,7 @@ export const components = {
           '&:hover': {
             backgroundColor: 'inherit',
             color: theme.colors.gray[7],
-            transform: 'scale(110%)'
+            transform: 'scale(1.1)'
           },
 
           '&:where([data-active])': {
@@ -61,7 +61,7 @@ export const components = {
             '&:hover': {
               backgroundColor: alpha(theme.colors.cyan[4], 0.15),
               color: theme.colors.cyan[5],
-              transform: 'scale(100%)'
+              transform: 'scale(1)'
             }
           }
         }
