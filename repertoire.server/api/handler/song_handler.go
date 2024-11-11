@@ -45,11 +45,13 @@ func (s SongHandler) Get(c *gin.Context) {
 }
 
 func (s SongHandler) GetAll(c *gin.Context) {
-	request := requests.GetSongsRequest{
-		CurrentPage: s.IntQueryOrNull(c, "currentPage"),
-		PageSize:    s.IntQueryOrNull(c, "pageSize"),
-		OrderBy:     c.Query("orderBy"),
+	var request requests.GetSongsRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
+
 	errorCode := s.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
