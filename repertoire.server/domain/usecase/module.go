@@ -32,6 +32,7 @@ var artistUseCases = fx.Options(
 	fx.Provide(artist.NewDeleteImageFromArtist),
 	fx.Provide(artist.NewGetAllArtists),
 	fx.Provide(artist.NewGetArtist),
+	fx.Provide(artist.NewRemoveAlbumFromArtist),
 	fx.Provide(artist.NewRemoveSongFromArtist),
 	fx.Provide(artist.NewSaveImageToArtist),
 	fx.Provide(artist.NewUpdateArtist),

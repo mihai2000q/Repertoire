@@ -137,6 +137,28 @@ func (a ArtistHandler) Delete(c *gin.Context) {
 	a.SendMessage(c, "artist has been deleted successfully")
 }
 
+func (a ArtistHandler) RemoveAlbum(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	albumID, err := uuid.Parse(c.Param("albumID"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := a.service.RemoveAlbum(id, albumID)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "album has been removed from artist successfully")
+}
+
 func (a ArtistHandler) RemoveSong(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -144,7 +166,7 @@ func (a ArtistHandler) RemoveSong(c *gin.Context) {
 		return
 	}
 
-	songID, err := uuid.Parse(c.Param("songId"))
+	songID, err := uuid.Parse(c.Param("songID"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
