@@ -17,6 +17,7 @@ type ArtistService interface {
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
+	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
 }
@@ -28,6 +29,7 @@ type artistService struct {
 	deleteImageFromArtist artist.DeleteImageFromArtist
 	getAllArtists         artist.GetAllArtists
 	getArtist             artist.GetArtist
+	removeSongFromArtist  artist.RemoveSongFromArtist
 	saveImageToArtist     artist.SaveImageToArtist
 	updateArtist          artist.UpdateArtist
 }
@@ -39,6 +41,7 @@ func NewArtistService(
 	deleteImageFromArtist artist.DeleteImageFromArtist,
 	getAllArtists artist.GetAllArtists,
 	getArtist artist.GetArtist,
+	removeSongFromArtist artist.RemoveSongFromArtist,
 	saveImageToArtist artist.SaveImageToArtist,
 	updateArtist artist.UpdateArtist,
 ) ArtistService {
@@ -49,6 +52,7 @@ func NewArtistService(
 		deleteImageFromArtist: deleteImageFromArtist,
 		getAllArtists:         getAllArtists,
 		getArtist:             getArtist,
+		removeSongFromArtist:  removeSongFromArtist,
 		saveImageToArtist:     saveImageToArtist,
 		updateArtist:          updateArtist,
 	}
@@ -76,6 +80,10 @@ func (a *artistService) GetAll(request requests.GetArtistsRequest, token string)
 
 func (a *artistService) Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
+}
+
+func (a *artistService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+	return a.removeSongFromArtist.Handle(id, songID)
 }
 
 func (a *artistService) SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
