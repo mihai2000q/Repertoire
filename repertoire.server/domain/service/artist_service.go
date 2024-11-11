@@ -11,6 +11,7 @@ import (
 )
 
 type ArtistService interface {
+	AddAlbum(request requests.AddAlbumToArtistRequest) *wrapper.ErrorCode
 	AddSong(request requests.AddSongToArtistRequest) *wrapper.ErrorCode
 	Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -24,6 +25,7 @@ type ArtistService interface {
 }
 
 type artistService struct {
+	addAlbumToArtist      artist.AddAlbumToArtist
 	addSongToArtist       artist.AddSongToArtist
 	createArtist          artist.CreateArtist
 	deleteArtist          artist.DeleteArtist
@@ -37,6 +39,7 @@ type artistService struct {
 }
 
 func NewArtistService(
+	addAlbumToArtist artist.AddAlbumToArtist,
 	addSongToArtist artist.AddSongToArtist,
 	createArtist artist.CreateArtist,
 	deleteArtist artist.DeleteArtist,
@@ -49,6 +52,7 @@ func NewArtistService(
 	updateArtist artist.UpdateArtist,
 ) ArtistService {
 	return &artistService{
+		addAlbumToArtist:      addAlbumToArtist,
 		addSongToArtist:       addSongToArtist,
 		createArtist:          createArtist,
 		deleteArtist:          deleteArtist,
@@ -60,6 +64,10 @@ func NewArtistService(
 		saveImageToArtist:     saveImageToArtist,
 		updateArtist:          updateArtist,
 	}
+}
+
+func (a *artistService) AddAlbum(request requests.AddAlbumToArtistRequest) *wrapper.ErrorCode {
+	return a.addAlbumToArtist.Handle(request)
 }
 
 func (a *artistService) AddSong(request requests.AddSongToArtistRequest) *wrapper.ErrorCode {
