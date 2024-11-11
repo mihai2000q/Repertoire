@@ -21,8 +21,9 @@ type SongRepository interface {
 		currentPage *int,
 		pageSize *int,
 		orderBy []string,
+		searchBy []string,
 	) error
-	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
@@ -85,20 +86,22 @@ func (s songRepository) GetAllByUser(
 	currentPage *int,
 	pageSize *int,
 	orderBy []string,
+	searchBy []string,
 ) error {
 	tx := s.client.DB.Model(&model.Song{}).
 		Preload(clause.Associations).
 		Where(model.Song{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)
 	tx = database.Paginate(tx, currentPage, pageSize)
 	return tx.Find(&songs).Error
 }
 
-func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.Song{}).
-		Where(model.Song{UserID: userID}).
-		Count(count).
-		Error
+func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
+	tx := s.client.DB.Model(&model.Song{}).
+		Where(model.Song{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	return tx.Count(count).Error
 }
 
 func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {

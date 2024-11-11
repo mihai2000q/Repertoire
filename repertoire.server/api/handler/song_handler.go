@@ -57,6 +57,7 @@ func (s SongHandler) GetAll(c *gin.Context) {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+
 	token := s.GetTokenFromContext(c)
 
 	result, errorCode := s.service.GetAll(request, token)
