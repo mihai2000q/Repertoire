@@ -343,7 +343,6 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				ReleaseDate:    &[]time.Time{time.Now()}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
-				ArtistID:       &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}

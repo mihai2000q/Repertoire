@@ -12,6 +12,16 @@ type CreateArtistRequest struct {
 	Name string `validate:"required,max=100"`
 }
 
+type AddAlbumToArtistRequest struct {
+	ID      uuid.UUID `validate:"required"`
+	AlbumID uuid.UUID `validate:"required"`
+}
+
+type AddSongToArtistRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	SongID uuid.UUID `validate:"required"`
+}
+
 type UpdateArtistRequest struct {
 	ID   uuid.UUID `validate:"required"`
 	Name string    `validate:"required,max=100"`

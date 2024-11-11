@@ -22,6 +22,16 @@ func (s *SongRepositoryMock) Get(song *model.Song, id uuid.UUID) error {
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetWithSongs(song *model.Song, id uuid.UUID) error {
+	args := s.Called(song, id)
+
+	if len(args) > 1 {
+		*song = *args.Get(1).(*model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetWithSections(song *model.Song, id uuid.UUID) error {
 	args := s.Called(song, id)
 

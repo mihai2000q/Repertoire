@@ -33,6 +33,9 @@ func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.
 	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
+	if song.AlbumID != nil {
+		return wrapper.BadRequestError(errors.New("song already has an album"))
+	}
 
 	var album model.Album
 	err = a.repository.GetWithSongs(&album, request.ID)
@@ -42,13 +45,16 @@ func (a AddSongToAlbum) Handle(request requests.AddSongToAlbumRequest) *wrapper.
 	if reflect.ValueOf(album).IsZero() {
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
-	if song.ArtistID != album.ArtistID {
+	if song.ArtistID != nil && album.ArtistID != nil && song.ArtistID != album.ArtistID {
 		return wrapper.BadRequestError(errors.New("song and album do not share the same artist"))
 	}
 
 	song.AlbumID = &request.ID
 	trackNo := uint(len(album.Songs)) + 1
 	song.AlbumTrackNo = &trackNo
+
+	// synchronize artist
+	song.ArtistID, album.ArtistID = album.ArtistID, song.ArtistID
 
 	err = a.songRepository.Update(&song)
 	if err != nil {

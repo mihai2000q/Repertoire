@@ -16,8 +16,12 @@ func (a ArtistRouter) RegisterRoutes() {
 		api.GET("/:id", a.handler.Get)
 		api.GET("", a.handler.GetAll)
 		api.POST("", a.handler.Create)
+		api.POST("/add-album", a.handler.AddAlbum)
+		api.POST("/add-song", a.handler.AddSong)
 		api.PUT("", a.handler.Update)
 		api.DELETE("/:id", a.handler.Delete)
+		api.DELETE("/album/:albumID/from/:id", a.handler.RemoveAlbum)
+		api.DELETE("/song/:songID/from/:id", a.handler.RemoveSong)
 	}
 
 	imagesApi := api.Group("/images")

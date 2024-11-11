@@ -161,7 +161,7 @@ func (a AlbumHandler) RemoveSong(c *gin.Context) {
 		return
 	}
 
-	songID, err := uuid.Parse(c.Param("songId"))
+	songID, err := uuid.Parse(c.Param("songID"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
