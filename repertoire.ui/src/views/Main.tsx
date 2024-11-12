@@ -10,6 +10,8 @@ import useIsDesktop from '../hooks/useIsDesktop'
 import useTitleBarHeight from '../hooks/useTitleBarHeight'
 import SongDrawer from '../components/main/SongDrawer.tsx'
 import { useAppDispatch, useAppSelector } from '../state/store.ts'
+import { closeSongDrawer as closeSongDrawerRedux, closeAlbumDrawer as closeAlbumDrawerRedux } from '../state/globalSlice.ts'
+import AlbumDrawer from "../components/main/AlbumDrawer.tsx";
 
 function Main(): ReactElement {
   useErrorRedirection()
@@ -17,6 +19,10 @@ function Main(): ReactElement {
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
   const dispatch = useAppDispatch()
+
+  const openedAlbumDrawer = useAppSelector((state) => state.global.albumDrawer.open)
+  const closeAlbumDrawer = () => dispatch(closeAlbumDrawerRedux())
+
   const openedSongDrawer = useAppSelector((state) => state.global.songDrawer.open)
   const closeSongDrawer = () => dispatch(closeSongDrawerRedux())
 
@@ -43,6 +49,8 @@ function Main(): ReactElement {
           <Outlet />
         </AppShell.Main>
       </AppShell>
+
+      <AlbumDrawer opened={openedAlbumDrawer} close={closeAlbumDrawer} />
       <SongDrawer opened={openedSongDrawer} close={closeSongDrawer} />
     </Box>
   )
