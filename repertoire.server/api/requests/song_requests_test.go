@@ -237,6 +237,16 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			[]string{"AlbumID"},
 			[]string{"excluded_with"},
 		},
+		// Album Title Test Case
+		{
+			"Album Title is invalid because it has too many characters",
+			CreateSongRequest{
+				Title:      validSongTitle,
+				AlbumTitle: &[]string{strings.Repeat("a", 101)}[0],
+			},
+			[]string{"AlbumTitle"},
+			[]string{"max"},
+		},
 		// Album ID and Album Title Test Case
 		{
 			"Album Title and ID are invalid because only one can be set at a time",
@@ -248,7 +258,17 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			[]string{"AlbumID", "AlbumTitle"},
 			[]string{"excluded_with", "excluded_with"},
 		},
-		// Artist ID and Artist Title Test Case
+		// Artist Name Test Case
+		{
+			"Artist Name is invalid because it has too many characters",
+			CreateSongRequest{
+				Title:      validSongTitle,
+				ArtistName: &[]string{strings.Repeat("a", 101)}[0],
+			},
+			[]string{"ArtistName"},
+			[]string{"max"},
+		},
+		// Artist ID and Artist Name Test Case
 		{
 			"Artist Name and ID are invalid because only one can be set at a time",
 			CreateSongRequest{

@@ -160,7 +160,17 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 			[]string{"Title"},
 			[]string{"max"},
 		},
-		// Artist ID and Artist Title Test Case
+		// Artist Name Test Case
+		{
+			"Artist Name is invalid because it has too many characters",
+			CreateAlbumRequest{
+				Title:      validSongTitle,
+				ArtistName: &[]string{strings.Repeat("a", 101)}[0],
+			},
+			[]string{"ArtistName"},
+			[]string{"max"},
+		},
+		// Artist ID and Artist Name Test Case
 		{
 			"Artist Name and ID are invalid because only one can be set at a time",
 			CreateAlbumRequest{
@@ -182,7 +192,8 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 
 			// then
 			assert.NotNil(t, errCode)
-			assert.Len(t, errCode.Error, 1)
+			assert.Len(t, tt.expectedFailedTags, len(tt.expectedInvalidFields))
+			assert.Len(t, errCode.Error, len(tt.expectedFailedTags))
 			for _, expectedInvalidField := range tt.expectedInvalidFields {
 				assert.Contains(t, errCode.Error.Error(), "CreateAlbumRequest."+expectedInvalidField)
 			}
