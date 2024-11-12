@@ -32,6 +32,8 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (
 		ID:          uuid.New(),
 		Title:       request.Title,
 		ReleaseDate: request.ReleaseDate,
+		ArtistID:    request.ArtistID,
+		Artist:      c.createArtist(request, userID),
 		UserID:      userID,
 	}
 	err := c.repository.Create(&album)
@@ -39,4 +41,16 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 	return album.ID, nil
+}
+
+func (c CreateAlbum) createArtist(request requests.CreateAlbumRequest, userID uuid.UUID) *model.Artist {
+	var artist *model.Artist
+	if request.ArtistName != nil {
+		artist = &model.Artist{
+			ID:     uuid.New(),
+			Name:   *request.ArtistName,
+			UserID: userID,
+		}
+	}
+	return artist
 }
