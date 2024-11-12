@@ -19,9 +19,10 @@ type AlbumRepository interface {
 		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
-		orderBy string,
+		orderBy []string,
+		searchBy []string,
 	) error
-	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	Create(album *model.Album) error
 	Update(album *model.Album) error
 	UpdateWithAssociations(album *model.Album) error
@@ -67,29 +68,23 @@ func (a albumRepository) GetAllByUser(
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
-	orderBy string,
+	orderBy []string,
+	searchBy []string,
 ) error {
-	offset := -1
-	if pageSize == nil {
-		pageSize = &[]int{-1}[0]
-	} else {
-		offset = (*currentPage - 1) * *pageSize
-	}
-	return a.client.DB.Model(&model.Album{}).
+	tx := a.client.DB.Model(&model.Album{}).
 		Preload(clause.Associations).
-		Where(model.Album{UserID: userID}).
-		Order(orderBy).
-		Offset(offset).
-		Limit(*pageSize).
-		Find(&albums).
-		Error
+		Where(model.Album{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	tx = database.OrderBy(tx, orderBy)
+	tx = database.Paginate(tx, currentPage, pageSize)
+	return tx.Find(&albums).Error
 }
 
-func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
-	return a.client.DB.Model(&model.Album{}).
-		Where(model.Album{UserID: userID}).
-		Count(count).
-		Error
+func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
+	tx := a.client.DB.Model(&model.Album{}).
+		Where(model.Album{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	return tx.Count(count).Error
 }
 
 func (a albumRepository) Create(album *model.Album) error {

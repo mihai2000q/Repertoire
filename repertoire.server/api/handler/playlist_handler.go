@@ -45,16 +45,19 @@ func (p PlaylistHandler) Get(c *gin.Context) {
 }
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
-	request := requests.GetPlaylistsRequest{
-		CurrentPage: p.IntQueryOrNull(c, "currentPage"),
-		PageSize:    p.IntQueryOrNull(c, "pageSize"),
-		OrderBy:     c.Query("orderBy"),
+	var request requests.GetPlaylistsRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
+
 	errorCode := p.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+
 	token := p.GetTokenFromContext(c)
 
 	result, errorCode := p.service.GetAll(request, token)

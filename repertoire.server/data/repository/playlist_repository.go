@@ -17,9 +17,10 @@ type PlaylistRepository interface {
 		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
-		orderBy string,
+		orderBy []string,
+		searchBy []string,
 	) error
-	GetAllByUserCount(count *int64, userID uuid.UUID) error
+	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
 	AddSong(playlist *model.Playlist, song *model.Song) error
@@ -51,29 +52,23 @@ func (p playlistRepository) GetAllByUser(
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
-	orderBy string,
+	orderBy []string,
+	searchBy []string,
 ) error {
-	offset := -1
-	if pageSize == nil {
-		pageSize = &[]int{-1}[0]
-	} else {
-		offset = (*currentPage - 1) * *pageSize
-	}
-	return p.client.DB.Model(&model.Playlist{}).
+	tx := p.client.DB.Model(&model.Playlist{}).
 		Preload(clause.Associations).
-		Where(model.Playlist{UserID: userID}).
-		Order(orderBy).
-		Offset(offset).
-		Limit(*pageSize).
-		Find(&playlists).
-		Error
+		Where(model.Playlist{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	tx = database.OrderBy(tx, orderBy)
+	tx = database.Paginate(tx, currentPage, pageSize)
+	return tx.Find(&playlists).Error
 }
 
-func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID) error {
-	return p.client.DB.Model(&model.Playlist{}).
-		Where(model.Playlist{UserID: userID}).
-		Count(count).
-		Error
+func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
+	tx := p.client.DB.Model(&model.Playlist{}).
+		Where(model.Playlist{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	return tx.Count(count).Error
 }
 
 func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {

@@ -32,12 +32,13 @@ func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (r
 		request.CurrentPage,
 		request.PageSize,
 		request.OrderBy,
+		request.SearchBy,
 	)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userID)
+	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}
