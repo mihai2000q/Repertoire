@@ -18,3 +18,23 @@ export interface SaveImageToArtistRequest {
   image: FileWithPath
   id: string
 }
+
+export interface AddAlbumsToArtistRequest {
+  id: string
+  albumIds: string[]
+}
+
+export interface RemoveAlbumsFromAristRequest {
+  id: string
+  albumIds: string[]
+}
+
+export interface AddSongsToArtistRequest {
+  id: string
+  songIds: string[]
+}
+
+export interface RemoveSongsFromAristRequest {
+  id: string
+  songIds: string[]
+}
