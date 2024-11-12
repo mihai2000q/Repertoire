@@ -1,6 +1,6 @@
-import Artist from '../../types/models/Artist.ts'
+import Artist from '../../../types/models/Artist.ts'
 import { Avatar, Stack, Text } from '@mantine/core'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
+import artistPlaceholder from '../../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import {useNavigate} from "react-router-dom";
 
@@ -33,11 +33,11 @@ function ArtistCard({ artist }: ArtistCardProps) {
         onMouseLeave={() => setIsAvatarHovered(false)}
         src={artist.imageUrl ? artist.imageUrl : artistPlaceholder}
         size={125}
-        style={{
+        sx={(theme) => ({
           cursor: 'pointer',
           transition: '0.3s',
-          boxShadow: `rgba(0, 0, 0, ${isAvatarHovered ? '0.4' : '0.2'}) 0px 10px 36px 0px`,
-        }}
+          boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl,
+        })}
         onClick={handleClick}
       />
       <Text fw={600} fz={'lg'}>
