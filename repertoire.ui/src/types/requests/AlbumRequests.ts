@@ -3,6 +3,7 @@ import { FileWithPath } from '@mantine/dropzone'
 export interface GetAlbumsRequest {
   currentPage?: number
   pageSize?: number
+  orderBy?: string[]
 }
 
 export interface CreateAlbumRequest {

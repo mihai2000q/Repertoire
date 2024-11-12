@@ -9,13 +9,13 @@ import {
 } from '../types/requests/AlbumRequests.ts'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
 import createFormData from '../utils/createFormData.ts'
+import createQueryParams from '../utils/createQueryParams.ts'
 
 const albumsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getAlbums: build.query<WithTotalCountResponse<Album>, GetAlbumsRequest>({
       query: (arg) => ({
-        url: 'albums',
-        params: arg
+        url: `albums${createQueryParams(arg)}`
       }),
       providesTags: ['Albums']
     }),

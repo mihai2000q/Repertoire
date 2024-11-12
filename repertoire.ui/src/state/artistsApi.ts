@@ -13,13 +13,13 @@ import {
 } from '../types/requests/ArtistRequests.ts'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
 import createFormData from '../utils/createFormData.ts'
+import createQueryParams from "../utils/createQueryParams.ts";
 
 const artistsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getArtists: build.query<WithTotalCountResponse<Artist>, GetArtistsRequest>({
       query: (arg) => ({
-        url: 'artists',
-        params: arg
+        url: `artists${createQueryParams(arg)}`,
       }),
       providesTags: ['Artists']
     }),
