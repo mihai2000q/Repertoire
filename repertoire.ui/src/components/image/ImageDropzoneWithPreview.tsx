@@ -1,53 +1,68 @@
 import { Dispatch, SetStateAction } from 'react'
-import { ActionIcon, alpha, FileButton, Group, Image, Stack, Text, Tooltip } from '@mantine/core'
-import { IconPhoto, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
+import { ActionIcon, alpha, Box, FileButton, Group, Image, Tooltip } from '@mantine/core'
+import { IconMusic, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
-interface ImageDropzoneWithPreviewProps {
+interface RoundImageDropzoneWithPreviewProps {
   image: FileWithPath
   setImage: Dispatch<SetStateAction<FileWithPath>>
 }
 
-function ImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewProps) {
+function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWithPreviewProps) {
   if (image) {
     return (
-      <Group justify={'center'} align={'center'}>
-        <Image src={URL.createObjectURL(image)} h={200} w={320} radius={'md'} alt={'song-image'} />
+      <Box pos={'relative'}>
+        <Image
+          src={URL.createObjectURL(image)}
+          w={92}
+          h={92}
+          radius={'32px'}
+          alt={'image-preview'}
+        />
 
-        <Stack>
+        <Box pos={'absolute'} top={70} left={-8}>
+          <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
+            <ActionIcon
+              c={'white'}
+              radius={'50%'}
+              aria-label={'remove-image-button'}
+              size={'md'}
+              sx={(theme) => ({
+                transition: '0.15s',
+                backgroundColor: alpha(theme.colors.red[5], 0.5),
+                '&:hover': { backgroundColor: alpha(theme.colors.red[5], 0.7) }
+              })}
+              onClick={() => setImage(null)}
+            >
+              <IconX size={15} />
+            </ActionIcon>
+          </Tooltip>
+        </Box>
+        <Box pos={'absolute'} top={70} right={-8}>
           <FileButton onChange={setImage} accept="image/png,image/jpeg">
             {(props) => (
-              <Tooltip label={'Reload Image'} openDelay={300} position={'right'}>
+              <Tooltip label={'Reload Image'} openDelay={300} position={'bottom'}>
                 <ActionIcon
                   c={'dark'}
-                  variant={'subtle'}
+                  radius={'50%'}
                   aria-label={'add-image-button'}
-                  size={'xl'}
+                  size={'md'}
                   {...props}
+                  sx={(theme) => ({
+                    transition: '0.15s',
+                    backgroundColor: alpha(theme.colors.gray[4], 0.5),
+                    '&:hover': {
+                      backgroundColor: alpha(theme.colors.gray[4], 0.7)
+                    }
+                  })}
                 >
-                  <IconPhotoDown size={20} />
+                  <IconPhotoDown size={15} />
                 </ActionIcon>
               </Tooltip>
             )}
           </FileButton>
-
-          <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
-            <ActionIcon
-              variant={'subtle'}
-              color={'red.6'}
-              aria-label={'remove-image-button'}
-              size={'xl'}
-              sx={(theme) => ({
-                transition: '0.15s',
-                '&:hover': { backgroundColor: alpha(theme.colors.red[5], 0.2) }
-              })}
-              onClick={() => setImage(null)}
-            >
-              <IconX size={18} />
-            </ActionIcon>
-          </Tooltip>
-        </Stack>
-      </Group>
+        </Box>
+      </Box>
     )
   }
 
@@ -56,44 +71,49 @@ function ImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewP
       onDrop={(files) => setImage(files[0])}
       accept={IMAGE_MIME_TYPE}
       multiple={false}
+      w={92}
+      h={92}
+      styles={{
+        inner: {
+          height: 'calc(100% - 5px)'
+        }
+      }}
       sx={(theme) => ({
         cursor: 'pointer',
-        borderRadius: '16px',
+        borderRadius: '32px',
+        border: `1px solid ${theme.colors.gray[4]}`,
         transition: '0.3s',
         color: theme.colors.gray[6],
+        backgroundColor: theme.colors.gray[3],
         '&:hover': {
           color: theme.colors.gray[7],
-          backgroundColor: theme.colors.gray[2]
+          backgroundColor: theme.colors.gray[4]
         },
 
         '&:where([data-accept])': {
-          color: theme.colors.green[6],
-          backgroundColor: theme.colors.green[1]
+          color: theme.colors.green[7],
+          backgroundColor: theme.colors.green[3]
         },
 
         '&:where([data-reject])': {
-          color: theme.colors.red[6],
-          backgroundColor: theme.colors.red[1]
+          color: theme.colors.red[7],
+          backgroundColor: theme.colors.red[3]
         }
       })}
     >
-      <Group justify="center" gap="xs" h={150} style={{ pointerEvents: 'none' }}>
+      <Group justify="center" style={{ pointerEvents: 'none' }} h={'100%'}>
         <Dropzone.Accept>
-          <IconUpload size={40} />
+          <IconUpload size={45} />
         </Dropzone.Accept>
         <Dropzone.Reject>
-          <IconX size={40} />
+          <IconX size={45} />
         </Dropzone.Reject>
         <Dropzone.Idle>
-          <IconPhoto size={40} />
+          <IconMusic size={45} />
         </Dropzone.Idle>
-
-        <Text size="xl" inline>
-          Drag image here or click to select it
-        </Text>
       </Group>
     </Dropzone>
   )
 }
 
-export default ImageDropzoneWithPreview
+export default RoundImageDropzoneWithPreview
