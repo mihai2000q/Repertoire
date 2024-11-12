@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import { AppShell, NavLink } from '@mantine/core'
-import { sidebarLinks } from '../../data/sidebarLinks'
+import { sidebarLinks } from '../../data/main/sidebarLinks.tsx'
 import wallpaper from '../../assets/wallpapers/sidebar.jpg'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { createStyles } from '@mantine/emotion'
