@@ -17,6 +17,12 @@ export const theme = createTheme({
   autoContrast: true,
   luminanceThreshold: 0.5,
 
+  shadows: {
+    xxl: 'rgba(0, 0, 0, 0.2) 0px 10px 36px 0px',
+    xxl_hover: 'rgba(0, 0, 0, 0.4) 0px 10px 36px 0px',
+  },
+
+  // typography
   fontFamily: 'Poppins, sans-serif',
   fontSizes: {
     xs: rem(10),
