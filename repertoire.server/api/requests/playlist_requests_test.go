@@ -23,6 +23,8 @@ func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			GetPlaylistsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
+				OrderBy:     []string{"title asc"},
+				SearchBy:    []string{"title = something"},
 			},
 		},
 	}
