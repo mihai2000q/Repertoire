@@ -47,9 +47,10 @@ func (a *AlbumRepositoryMock) GetAllByUser(
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
-	orderBy string,
+	orderBy []string,
+	searchBy []string,
 ) error {
-	args := a.Called(albums, userID, currentPage, pageSize, orderBy)
+	args := a.Called(albums, userID, currentPage, pageSize, orderBy, searchBy)
 
 	if len(args) > 1 {
 		*albums = *args.Get(1).(*[]model.Album)
@@ -58,8 +59,8 @@ func (a *AlbumRepositoryMock) GetAllByUser(
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID) error {
-	args := a.Called(count, userID)
+func (a *AlbumRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
+	args := a.Called(count, userID, searchBy)
 
 	if len(args) > 1 {
 		*count = *args.Get(1).(*int64)

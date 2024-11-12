@@ -61,6 +61,7 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
+			request.SearchBy,
 		).
 		Return(internalError).
 		Once()
@@ -105,6 +106,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
+			request.SearchBy,
 		).
 		Return(nil, expectedAlbums).
 		Once()
@@ -115,6 +117,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 			"GetAllByUserCount",
 			mock.Anything,
 			userID,
+			request.SearchBy,
 		).
 		Return(internalError).
 		Once()
@@ -161,6 +164,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 			request.CurrentPage,
 			request.PageSize,
 			request.OrderBy,
+			request.SearchBy,
 		).
 		Return(nil, expectedAlbums).
 		Once()
@@ -170,6 +174,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 			"GetAllByUserCount",
 			mock.IsType(expectedTotalCount),
 			userID,
+			request.SearchBy,
 		).
 		Return(nil, expectedTotalCount).
 		Once()
