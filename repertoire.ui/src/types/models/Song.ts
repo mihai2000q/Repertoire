@@ -1,4 +1,4 @@
-import Difficulty from '../../utils/Difficulty.ts'
+import Difficulty from '../../utils/enums/Difficulty.ts'
 import Album from './Album.ts'
 import Artist from './Artist.ts'
 
