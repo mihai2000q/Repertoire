@@ -23,6 +23,8 @@ func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			GetArtistsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
+				OrderBy:     []string{"name asc"},
+				SearchBy:    []string{"name = Metallica"},
 			},
 		},
 	}

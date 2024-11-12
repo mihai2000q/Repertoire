@@ -45,16 +45,19 @@ func (a ArtistHandler) Get(c *gin.Context) {
 }
 
 func (a ArtistHandler) GetAll(c *gin.Context) {
-	request := requests.GetArtistsRequest{
-		CurrentPage: a.IntQueryOrNull(c, "currentPage"),
-		PageSize:    a.IntQueryOrNull(c, "pageSize"),
-		OrderBy:     c.Query("orderBy"),
+	var request requests.GetArtistsRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
+
 	errorCode := a.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+
 	token := a.GetTokenFromContext(c)
 
 	result, errorCode := a.service.GetAll(request, token)
