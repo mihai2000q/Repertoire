@@ -7,3 +7,11 @@ export interface AddNewArtistForm {
 export const addNewArtistValidation = z.object({
   name: z.string().trim().min(1, 'Name cannot be blank')
 })
+
+export interface AddNewArtistAlbumForm {
+  title: string
+}
+
+export const addNewArtistAlbumValidation = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank')
+})
