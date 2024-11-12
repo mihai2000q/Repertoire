@@ -13,7 +13,7 @@ interface SongDrawerProps {
 function SongDrawer({ opened, close }: SongDrawerProps) {
   const titleBarHeight = useTitleBarHeight()
 
-  const songId = useAppSelector((state) => state.songs.songId)
+  const songId = useAppSelector((state) => state.global.songDrawer.songId)
 
   const song = useGetSongQuery(songId, { skip: !songId })?.data
 

@@ -8,12 +8,17 @@ import TitleBar from '../components/main/TitleBar'
 import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
 import useTitleBarHeight from '../hooks/useTitleBarHeight'
+import SongDrawer from '../components/main/SongDrawer.tsx'
+import { useAppDispatch, useAppSelector } from '../state/store.ts'
 
 function Main(): ReactElement {
   useErrorRedirection()
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
+  const dispatch = useAppDispatch()
+  const openedSongDrawer = useAppSelector((state) => state.global.songDrawer.open)
+  const closeSongDrawer = () => dispatch(closeSongDrawerRedux())
 
   return (
     <Box w={'100%'} h={'100%'}>
@@ -38,6 +43,7 @@ function Main(): ReactElement {
           <Outlet />
         </AppShell.Main>
       </AppShell>
+      <SongDrawer opened={openedSongDrawer} close={closeSongDrawer} />
     </Box>
   )
 }

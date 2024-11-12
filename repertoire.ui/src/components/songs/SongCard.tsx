@@ -3,19 +3,17 @@ import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
 import { Card, Group, Image, Text, Tooltip } from '@mantine/core'
 import { IconMicrophoneFilled } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
-import { setSongId } from '../../state/songsSlice.ts'
+import { openSongDrawer } from '../../state/globalSlice.ts'
 
 interface SongCardProps {
   song: Song
-  openDrawer: () => void
 }
 
-function SongCard({ song, openDrawer }: SongCardProps) {
+function SongCard({ song }: SongCardProps) {
   const dispatch = useAppDispatch()
 
   function handleClick() {
-    openDrawer()
-    dispatch(setSongId(song.id))
+    dispatch(openSongDrawer(song.id))
   }
 
   return (
