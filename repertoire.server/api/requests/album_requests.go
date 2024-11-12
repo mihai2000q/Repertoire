@@ -16,6 +16,8 @@ type GetAlbumsRequest struct {
 type CreateAlbumRequest struct {
 	Title       string `validate:"required,max=100"`
 	ReleaseDate *time.Time
+	ArtistID    *uuid.UUID `validate:"omitempty,excluded_with=ArtistName"`
+	ArtistName  *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
 type AddSongToAlbumRequest struct {

@@ -9,6 +9,7 @@ import (
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -74,40 +75,65 @@ func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 }
 
 func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
-	// given
-	albumRepository := new(repository.AlbumRepositoryMock)
-	jwtService := new(service.JwtServiceMock)
-	_uut := &CreateAlbum{
-		repository: albumRepository,
-		jwtService: jwtService,
+	tests := []struct {
+		name    string
+		request requests.CreateAlbumRequest
+	}{
+		{
+			"With Existing Artist",
+			requests.CreateAlbumRequest{
+				Title:       "Some Album",
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
+		{
+			"With New Artist",
+			requests.CreateAlbumRequest{
+				Title:      "Some Album",
+				ArtistName: &[]string{"New Artist Name"}[0],
+			},
+		},
 	}
-	request := requests.CreateAlbumRequest{
-		Title: "Some Album",
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			albumRepository := new(repository.AlbumRepositoryMock)
+			jwtService := new(service.JwtServiceMock)
+			_uut := &CreateAlbum{
+				repository: albumRepository,
+				jwtService: jwtService,
+			}
+			request := requests.CreateAlbumRequest{
+				Title: "Some Album",
+			}
+			token := "this is a token"
+			userID := uuid.New()
+
+			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+			var albumID uuid.UUID
+			albumRepository.On("Create", mock.IsType(new(model.Album))).
+				Run(func(args mock.Arguments) {
+					newAlbum := args.Get(0).(*model.Album)
+					assertCreatedAlbum(t, *newAlbum, request, userID)
+					albumID = newAlbum.ID
+				}).
+				Return(nil).
+				Once()
+
+			// when
+			id, errCode := _uut.Handle(request, token)
+
+			// then
+			assert.Equal(t, albumID, id)
+			assert.Nil(t, errCode)
+
+			jwtService.AssertExpectations(t)
+			albumRepository.AssertExpectations(t)
+		})
 	}
-	token := "this is a token"
-	userID := uuid.New()
-
-	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
-
-	var albumID uuid.UUID
-	albumRepository.On("Create", mock.IsType(new(model.Album))).
-		Run(func(args mock.Arguments) {
-			newAlbum := args.Get(0).(*model.Album)
-			assertCreatedAlbum(t, *newAlbum, request, userID)
-			albumID = newAlbum.ID
-		}).
-		Return(nil).
-		Once()
-
-	// when
-	id, errCode := _uut.Handle(request, token)
-
-	// then
-	assert.Equal(t, albumID, id)
-	assert.Nil(t, errCode)
-
-	jwtService.AssertExpectations(t)
-	albumRepository.AssertExpectations(t)
 }
 
 func assertCreatedAlbum(
@@ -119,5 +145,11 @@ func assertCreatedAlbum(
 	assert.Equal(t, request.Title, album.Title)
 	assert.Equal(t, request.ReleaseDate, album.ReleaseDate)
 	assert.Nil(t, album.ImageURL)
+	assert.Equal(t, request.ArtistID, album.ArtistID)
 	assert.Equal(t, userID, album.UserID)
+	if request.ArtistName != nil {
+		assert.NotEmpty(t, album.Artist.ID)
+		assert.Equal(t, request.ArtistName, album.Artist.Name)
+		assert.Equal(t, userID, album.Artist.UserID)
+	}
 }

@@ -110,10 +110,19 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			},
 		},
 		{
-			"All Filled",
+			"All Filled With Existing Arist",
 			CreateAlbumRequest{
 				Title:       validAlbumTitle,
 				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
+		{
+			"All Filled With New Arist",
+			CreateAlbumRequest{
+				Title:       validAlbumTitle,
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ArtistName:  &[]string{"New Name"}[0],
 			},
 		},
 	}
@@ -133,23 +142,34 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 
 func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
-		name                 string
-		request              CreateAlbumRequest
-		expectedInvalidField string
-		expectedFailedTag    string
+		name                  string
+		request               CreateAlbumRequest
+		expectedInvalidFields []string
+		expectedFailedTags    []string
 	}{
 		// Title Test Cases
 		{
 			"Title is invalid because it's required",
 			CreateAlbumRequest{Title: ""},
-			"Title",
-			"required",
+			[]string{"Title"},
+			[]string{"required"},
 		},
 		{
 			"Title is invalid because it has more than 100 characters",
 			CreateAlbumRequest{Title: strings.Repeat("a", 101)},
-			"Title",
-			"max",
+			[]string{"Title"},
+			[]string{"max"},
+		},
+		// Artist ID and Artist Title Test Case
+		{
+			"Artist Name and ID are invalid because only one can be set at a time",
+			CreateAlbumRequest{
+				Title:      validAlbumTitle,
+				ArtistID:   &[]uuid.UUID{uuid.New()}[0],
+				ArtistName: &[]string{"New Artist Name"}[0],
+			},
+			[]string{"ArtistID", "ArtistName"},
+			[]string{"excluded_with", "excluded_with"},
 		},
 	}
 	for _, tt := range tests {
@@ -163,8 +183,12 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "CreateAlbumRequest."+tt.expectedInvalidField)
-			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			for _, expectedInvalidField := range tt.expectedInvalidFields {
+				assert.Contains(t, errCode.Error.Error(), "CreateAlbumRequest."+expectedInvalidField)
+			}
+			for _, expectedFailedTag := range tt.expectedFailedTags {
+				assert.Contains(t, errCode.Error.Error(), "'"+expectedFailedTag+"' tag")
+			}
 			assert.Equal(t, 400, errCode.Code)
 		})
 	}
