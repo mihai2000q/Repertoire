@@ -1,21 +1,21 @@
 import { Drawer, Image, Stack, Text, Title } from '@mantine/core'
-import { useGetSongQuery } from '../../state/songsApi.ts'
+import { useGetAlbumQuery } from '../../state/albumsApi.ts'
 import { useAppSelector } from '../../state/store.ts'
-import SongDrawerLoader from './loader/SongDrawerLoader.tsx'
+import AlbumDrawerLoader from './loader/AlbumDrawerLoader.tsx'
 import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
 import useTitleBarHeight from '../../hooks/useTitleBarHeight.ts'
 
-interface SongDrawerProps {
+interface AlbumDrawerProps {
   opened: boolean
   close: () => void
 }
 
-function SongDrawer({ opened, close }: SongDrawerProps) {
+function AlbumDrawer({ opened, close }: AlbumDrawerProps) {
   const titleBarHeight = useTitleBarHeight()
 
-  const songId = useAppSelector((state) => state.songs.songId)
+  const albumId = useAppSelector((state) => state.global.albumDrawer.albumId)
 
-  const song = useGetSongQuery(songId, { skip: !songId })?.data
+  const album = useGetAlbumQuery(albumId, { skip: !albumId })?.data
 
   return (
     <Drawer
@@ -41,21 +41,21 @@ function SongDrawer({ opened, close }: SongDrawerProps) {
         }
       }}
     >
-      {!song ? (
-        <SongDrawerLoader />
+      {!album ? (
+        <AlbumDrawerLoader />
       ) : (
         <Stack gap={'xs'}>
           <Image
-            src={song.imageUrl}
+            src={album.imageUrl}
             fallbackSrc={imagePlaceholder}
             mah={400}
-            alt={song.title}
+            alt={album.title}
             style={{ alignSelf: 'center' }}
           />
 
           <Stack px={'md'} gap={4}>
             <Title order={5} fw={600}>
-              {song.title}
+              {album.title}
             </Title>
             <Text size="sm" c="dimmed">
               With Fjord Tours you can explore more of the
@@ -67,4 +67,4 @@ function SongDrawer({ opened, close }: SongDrawerProps) {
   )
 }
 
-export default SongDrawer
+export default AlbumDrawer

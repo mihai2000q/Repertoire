@@ -4,7 +4,13 @@ import { RootState } from '../state/store.ts'
 
 describe('useErrorRedirection', () => {
   it('should not navigate when the error path is undefined', () => {
-    reduxRouterRenderHook(() => useErrorRedirection(), { global: { errorPath: undefined } })
+    reduxRouterRenderHook(() => useErrorRedirection(), {
+      global: {
+        errorPath: undefined,
+        songDrawer: undefined,
+        albumDrawer: undefined
+      }
+    })
 
     expect(window.location.pathname).toBe('/')
   })
@@ -15,7 +21,11 @@ describe('useErrorRedirection', () => {
 
     // Act
     const [_, store] = reduxRouterRenderHook(() => useErrorRedirection(), {
-      global: { errorPath: errorPath }
+      global: {
+        errorPath: errorPath,
+        songDrawer: undefined,
+        albumDrawer: undefined
+      }
     })
 
     // Assert

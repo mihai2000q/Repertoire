@@ -7,7 +7,6 @@ import NewSongCard from '../../components/songs/NewSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../../components/songs/loader/SongsLoader.tsx'
-import SongDrawer from '../../components/songs/SongDrawer.tsx'
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -18,7 +17,6 @@ function Songs(): ReactElement {
 
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
-  const [openedSongDrawer, { open: openSongDrawer, close: closeSongDrawer }] = useDisclosure(false)
 
   return (
     <Stack h={'100%'}>
@@ -41,9 +39,7 @@ function Songs(): ReactElement {
       {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
       <Group>
         {isLoading && <SongsLoader />}
-        {songs?.models.map((song) => (
-          <SongCard key={song.id} song={song} openDrawer={openSongDrawer} />
-        ))}
+        {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
         {songs?.totalCount > 0 && <NewSongCard openModal={openAddNewSongModal} />}
       </Group>
 
@@ -61,8 +57,6 @@ function Songs(): ReactElement {
           <Loader size={25} />
         )}
       </Box>
-
-      <SongDrawer opened={openedSongDrawer} close={closeSongDrawer} />
     </Stack>
   )
 }

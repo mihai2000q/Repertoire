@@ -3,7 +3,7 @@ import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-reac
 import { FileWithPath } from '@mantine/dropzone'
 import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
-import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPreview.tsx'
 
 interface AddNewSongModelFinalStepProps {
   form: UseFormReturnType<unknown, (values: unknown) => unknown>
@@ -29,7 +29,7 @@ function AddNewSongModelFinalStep({ form, image, setImage }: AddNewSongModelFina
         {...form.getInputProps('youtubeLink')}
       />
 
-      <ImageDropzoneWithPreview image={image} setImage={setImage} />
+      <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
     </Stack>
   )
 }

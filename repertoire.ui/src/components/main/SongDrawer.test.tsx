@@ -35,7 +35,9 @@ describe('Song Drawer', () => {
   })
 
   it('should display song details when the songId exists', async () => {
-    reduxRender(<SongDrawer opened={true} close={() => {}} />, { songs: { songId: '1' } })
+    reduxRender(<SongDrawer opened={true} close={() => {}} />, {
+      global: { songDrawer: { songId: '1', open: false }, albumDrawer: undefined }
+    })
 
     expect(await screen.findByText(song.title)).toBeInTheDocument()
 

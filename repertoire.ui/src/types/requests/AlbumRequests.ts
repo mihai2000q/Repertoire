@@ -3,11 +3,12 @@ import { FileWithPath } from '@mantine/dropzone'
 export interface GetAlbumsRequest {
   currentPage?: number
   pageSize?: number
+  orderBy?: string[]
 }
 
 export interface CreateAlbumRequest {
   title: string
-  releaseDate: string
+  releaseDate?: string
   artistId?: string
   artistName?: string
 }
@@ -15,7 +16,7 @@ export interface CreateAlbumRequest {
 export interface UpdateAlbumRequest {
   id: string
   title: string
-  releaseDate: string
+  releaseDate?: string
 }
 
 export interface SaveImageToAlbumRequest {

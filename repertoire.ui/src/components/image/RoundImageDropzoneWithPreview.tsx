@@ -3,16 +3,16 @@ import { ActionIcon, alpha, Box, FileButton, Group, Image, Tooltip } from '@mant
 import { IconPhotoDown, IconUpload, IconUserFilled, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
-interface ImageDropzoneWithPreviewProps {
+interface RoundImageDropzoneWithPreviewProps {
   image: FileWithPath
   setImage: Dispatch<SetStateAction<FileWithPath>>
 }
 
-function ImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewProps) {
+function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWithPreviewProps) {
   if (image) {
     return (
       <Box pos={'relative'}>
-        <Image src={URL.createObjectURL(image)} w={92} h={92} radius={'50%'} alt={'song-image'} />
+        <Image src={URL.createObjectURL(image)} w={92} h={92} radius={'50%'} alt={'image-preview'} />
 
         <Box pos={'absolute'} top={70} left={-8}>
           <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
@@ -110,4 +110,4 @@ function ImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewP
   )
 }
 
-export default ImageDropzoneWithPreview
+export default RoundImageDropzoneWithPreview

@@ -17,7 +17,7 @@ describe('Song Card', () => {
     }
 
     // Act
-    const [{ container }] = reduxRender(<SongCard song={song} openDrawer={() => {}} />)
+    const [{ container }] = reduxRender(<SongCard song={song} />)
 
     // Assert
     expect(screen.getByText(song.title)).toBeVisible()
@@ -35,7 +35,7 @@ describe('Song Card', () => {
     }
 
     // Act
-    const [{ container }] = reduxRender(<SongCard song={song} openDrawer={() => {}} />)
+    const [{ container }] = reduxRender(<SongCard song={song} />)
 
     // Assert
     expect(screen.getByText(song.title)).toBeVisible()
@@ -53,15 +53,14 @@ describe('Song Card', () => {
     }
 
     const user = userEvent.setup()
-    const openDrawer = vi.fn()
 
     // Act
-    const [_, store] = reduxRender(<SongCard song={song} openDrawer={openDrawer} />)
+    const [_, store] = reduxRender(<SongCard song={song} />)
 
     // Assert
     await user.click(screen.getByTestId(`song-card-${song.id}`))
 
-    expect(openDrawer).toHaveBeenCalledOnce()
-    expect((store.getState() as RootState).songs.songId).toBe(song.id)
+    expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
+    expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
   })
 })

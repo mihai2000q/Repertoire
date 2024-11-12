@@ -86,6 +86,7 @@ export const components = {
 }
 
 declare module '@mantine/core' {
+  // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
     variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey'
   }

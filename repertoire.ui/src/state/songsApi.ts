@@ -9,13 +9,13 @@ import {
 } from '../types/requests/SongRequests'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse'
 import createFormData from '../utils/createFormData.ts'
+import createQueryParams from '../utils/createQueryParams.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
       query: (arg) => ({
-        url: 'songs',
-        params: arg
+        url: `songs${createQueryParams(arg)}`
       }),
       providesTags: ['Songs']
     }),

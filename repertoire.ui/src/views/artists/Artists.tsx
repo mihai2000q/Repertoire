@@ -12,7 +12,7 @@ import {
   Title
 } from '@mantine/core'
 import ArtistsLoader from '../../components/artists/loader/ArtistsLoader.tsx'
-import ArtistCard from '../../components/artists/ArtistCard.tsx'
+import ArtistCard from '../../components/artists/card/ArtistCard.tsx'
 import AddNewArtistModal from '../../components/artists/modal/AddNewArtistModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus } from '@tabler/icons-react'
