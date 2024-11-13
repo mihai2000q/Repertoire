@@ -13,6 +13,7 @@ export default interface Song {
   releaseDate?: string
   difficulty?: Difficulty
   imageUrl?: string
+  albumTrackNo?: number
 
   album?: Album
   artist?: Artist

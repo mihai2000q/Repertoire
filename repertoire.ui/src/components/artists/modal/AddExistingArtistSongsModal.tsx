@@ -62,7 +62,7 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
     <Modal
       opened={opened}
       onClose={onClose}
-      title={'Add Existing Song'}
+      title={'Add Existing Songs'}
       styles={{ body: { padding: 0 } }}
     >
       <Modal.Body p={0} pos={'relative'}>
@@ -122,7 +122,7 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
                     onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
                     pr={'sm'}
                   />
-                  <Avatar radius={'md'} src={song.imageUrl ? song.imageUrl : songPlaceholder} />
+                  <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
                   <Text fw={500}>{song.title}</Text>
                 </Group>
               ))

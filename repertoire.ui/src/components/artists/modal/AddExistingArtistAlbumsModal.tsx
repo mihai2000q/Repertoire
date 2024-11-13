@@ -62,7 +62,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
     <Modal
       opened={opened}
       onClose={onClose}
-      title={'Add Existing Album'}
+      title={'Add Existing Albums'}
       styles={{ body: { padding: 0 } }}
     >
       <Modal.Body p={0} pos={'relative'}>
@@ -122,7 +122,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
                     onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
                     pr={'sm'}
                   />
-                  <Avatar radius={'md'} src={album.imageUrl ? album.imageUrl : albumPlaceholder} />
+                  <Avatar radius={'md'} src={album.imageUrl ?? albumPlaceholder} />
                   <Text fw={500}>{album.title}</Text>
                 </Group>
               ))

@@ -31,17 +31,19 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
       py={'xs'}
       onClick={handleClick}
     >
-      <Avatar radius={'8px'} src={song.imageUrl ? song.imageUrl : songPlaceholder} />
+      <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
       <Stack gap={0} style={{ overflow: 'hidden' }}>
-        <Group>
+        <Group gap={4}>
           <Text fw={500} truncate={'end'}>
             {song.title}
           </Text>
           {song.album && (
-            <Text fz={'sm'} truncate={'end'}>
-              {' '}
-              - {song.album.title}
-            </Text>
+            <>
+              <Text fz={'sm'}>-</Text>
+              <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                {song.album.title}
+              </Text>
+            </>
           )}
         </Group>
         {song.releaseDate && (
