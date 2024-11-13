@@ -52,6 +52,26 @@ func (s *SongRepositoryMock) GetWithAssociations(song *model.Song, id uuid.UUID)
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetAllByUser(
 	songs *[]model.Song,
 	userID uuid.UUID,
@@ -109,8 +129,18 @@ func (s *SongRepositoryMock) Update(song *model.Song) error {
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) UpdateAll(songs *[]model.Song) error {
+	args := s.Called(songs)
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) UpdateWithAssociations(song *model.Song) error {
 	args := s.Called(song)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) UpdateAllWithAssociations(songs *[]model.Song) error {
+	args := s.Called(songs)
 	return args.Error(0)
 }
 

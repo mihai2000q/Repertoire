@@ -11,59 +11,59 @@ import (
 )
 
 type AlbumService interface {
-	AddSong(requests.AddSongToAlbumRequest) *wrapper.ErrorCode
+	AddSongs(requests.AddSongsToAlbumRequest) *wrapper.ErrorCode
 	Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Get(id uuid.UUID) (model.Album, *wrapper.ErrorCode)
 	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode
-	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
+	RemoveSongs(request requests.RemoveSongsFromAlbumRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateAlbumRequest) *wrapper.ErrorCode
 }
 
 type albumService struct {
-	addSongToAlbum       album.AddSongToAlbum
+	addSongsToAlbum      album.AddSongsToAlbum
 	createAlbum          album.CreateAlbum
 	deleteAlbum          album.DeleteAlbum
 	deleteImageFromAlbum album.DeleteImageFromAlbum
 	getAlbum             album.GetAlbum
 	getAllAlbums         album.GetAllAlbums
 	moveSongFromAlbum    album.MoveSongFromAlbum
-	removeSongFromAlbum  album.RemoveSongFromAlbum
+	removeSongsFromAlbum album.RemoveSongsFromAlbum
 	saveImageToAlbum     album.SaveImageToAlbum
 	updateAlbum          album.UpdateAlbum
 }
 
 func NewAlbumService(
-	addSongToAlbum album.AddSongToAlbum,
+	addSongsToAlbum album.AddSongsToAlbum,
 	createAlbum album.CreateAlbum,
 	deleteAlbum album.DeleteAlbum,
 	deleteImageFromAlbum album.DeleteImageFromAlbum,
 	getAlbum album.GetAlbum,
 	getAllAlbums album.GetAllAlbums,
 	moveSongFromAlbum album.MoveSongFromAlbum,
-	removeSongFromAlbum album.RemoveSongFromAlbum,
+	removeSongsFromAlbum album.RemoveSongsFromAlbum,
 	saveImageToAlbum album.SaveImageToAlbum,
 	updateAlbum album.UpdateAlbum,
 ) AlbumService {
 	return &albumService{
-		addSongToAlbum:       addSongToAlbum,
+		addSongsToAlbum:      addSongsToAlbum,
 		createAlbum:          createAlbum,
 		deleteAlbum:          deleteAlbum,
 		deleteImageFromAlbum: deleteImageFromAlbum,
 		getAlbum:             getAlbum,
 		getAllAlbums:         getAllAlbums,
 		moveSongFromAlbum:    moveSongFromAlbum,
-		removeSongFromAlbum:  removeSongFromAlbum,
+		removeSongsFromAlbum: removeSongsFromAlbum,
 		saveImageToAlbum:     saveImageToAlbum,
 		updateAlbum:          updateAlbum,
 	}
 }
 
-func (a *albumService) AddSong(request requests.AddSongToAlbumRequest) *wrapper.ErrorCode {
-	return a.addSongToAlbum.Handle(request)
+func (a *albumService) AddSongs(request requests.AddSongsToAlbumRequest) *wrapper.ErrorCode {
+	return a.addSongsToAlbum.Handle(request)
 }
 
 func (a *albumService) Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
@@ -90,8 +90,8 @@ func (a *albumService) MoveSong(request requests.MoveSongFromAlbumRequest) *wrap
 	return a.moveSongFromAlbum.Handle(request)
 }
 
-func (a *albumService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	return a.removeSongFromAlbum.Handle(id, songID)
+func (a *albumService) RemoveSongs(request requests.RemoveSongsFromAlbumRequest) *wrapper.ErrorCode {
+	return a.removeSongsFromAlbum.Handle(request)
 }
 
 func (a *albumService) SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {

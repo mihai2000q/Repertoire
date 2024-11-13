@@ -20,9 +20,9 @@ type CreateAlbumRequest struct {
 	ArtistName  *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
-type AddSongToAlbumRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	SongID uuid.UUID `validate:"required"`
+type AddSongsToAlbumRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
 }
 
 type UpdateAlbumRequest struct {
@@ -35,4 +35,9 @@ type MoveSongFromAlbumRequest struct {
 	ID         uuid.UUID `validate:"required"`
 	SongID     uuid.UUID `validate:"required"`
 	OverSongID uuid.UUID `validate:"required"`
+}
+
+type RemoveSongsFromAlbumRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
 }

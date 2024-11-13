@@ -2,8 +2,7 @@ package artist
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"reflect"
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -17,24 +16,25 @@ func NewRemoveSongFromArtist(songRepository repository.SongRepository) RemoveSon
 	return RemoveSongFromArtist{songRepository: songRepository}
 }
 
-func (r RemoveSongFromArtist) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	var song model.Song
-	err := r.songRepository.Get(&song, songID)
+func (r RemoveSongFromArtist) Handle(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode {
+	var songs []model.Song
+	err := r.songRepository.GetAllByIDs(&songs, request.SongIDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
-	}
-	if song.ArtistID == nil || *song.ArtistID != id {
-		return wrapper.BadRequestError(errors.New("song is not owned by this artist"))
+
+	for i, song := range songs {
+		if song.ArtistID == nil || *song.ArtistID != request.ID {
+			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " is not owned by this artist"))
+		}
+
+		songs[i].ArtistID = nil
 	}
 
-	song.ArtistID = nil
-
-	err = r.songRepository.Update(&song)
+	err = r.songRepository.UpdateAll(&songs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
+
 	return nil
 }

@@ -13,27 +13,27 @@ import (
 )
 
 var albumUseCases = fx.Options(
-	fx.Provide(album.NewAddSongToAlbum),
+	fx.Provide(album.NewAddSongsToAlbum),
 	fx.Provide(album.NewCreateAlbum),
 	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewDeleteImageFromAlbum),
 	fx.Provide(album.NewGetAlbum),
 	fx.Provide(album.NewGetAllAlbums),
 	fx.Provide(album.NewMoveSongFromAlbum),
-	fx.Provide(album.NewRemoveSongFromAlbum),
+	fx.Provide(album.NewRemoveSongsFromAlbum),
 	fx.Provide(album.NewSaveImageToAlbum),
 	fx.Provide(album.NewUpdateAlbum),
 )
 
 var artistUseCases = fx.Options(
-	fx.Provide(artist.NewAddAlbumToArtist),
-	fx.Provide(artist.NewAddSongToArtist),
+	fx.Provide(artist.NewAddAlbumsToArtist),
+	fx.Provide(artist.NewAddSongsToArtist),
 	fx.Provide(artist.NewCreateArtist),
 	fx.Provide(artist.NewDeleteArtist),
 	fx.Provide(artist.NewDeleteImageFromArtist),
 	fx.Provide(artist.NewGetAllArtists),
 	fx.Provide(artist.NewGetArtist),
-	fx.Provide(artist.NewRemoveAlbumFromArtist),
+	fx.Provide(artist.NewRemoveAlbumsFromArtist),
 	fx.Provide(artist.NewRemoveSongFromArtist),
 	fx.Provide(artist.NewSaveImageToArtist),
 	fx.Provide(artist.NewUpdateArtist),
