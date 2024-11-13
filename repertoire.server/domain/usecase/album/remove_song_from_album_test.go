@@ -203,8 +203,8 @@ func TestRemoveSongFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 
 	albumRepository.On("UpdateWithAssociations", mock.IsType(album)).
 		Run(func(args mock.Arguments) {
-			album := args.Get(0).(*model.Album)
-			songs := slices.Clone(album.Songs)
+			newAlbum := args.Get(0).(*model.Album)
+			songs := slices.Clone(newAlbum.Songs)
 
 			songs = slices.DeleteFunc(songs, func(s model.Song) bool {
 				return s.ID == songID

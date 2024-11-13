@@ -27,3 +27,13 @@ type UpdateArtistRequest struct {
 	ID   uuid.UUID `validate:"required"`
 	Name string    `validate:"required,max=100"`
 }
+
+type RemoveAlbumsFromArtistRequest struct {
+	ID       uuid.UUID   `validate:"required"`
+	AlbumIDs []uuid.UUID `validate:"min=1"`
+}
+
+type RemoveSongsFromArtistRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
+}

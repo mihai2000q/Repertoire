@@ -6,26 +6,29 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/model"
 	"testing"
 )
 
-func TestRemoveAlbumFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := RemoveAlbumFromArtist{albumRepository: albumRepository}
+	_uut := RemoveAlbumsFromArtist{albumRepository: albumRepository}
 
-	id := uuid.New()
-	albumID := uuid.New()
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
 
 	internalError := errors.New("internal error")
-	albumRepository.On("GetWithSongs", mock.IsType(new(model.Album)), albumID).
+	albumRepository.On("GetAllByIDsWithSongs", mock.Anything, request.AlbumIDs).
 		Return(internalError).
 		Once()
 
 	// when
-	errCode := _uut.Handle(id, albumID)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -35,76 +38,59 @@ func TestRemoveAlbumFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerError
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveAlbumFromArtist_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := RemoveAlbumFromArtist{albumRepository: albumRepository}
+	_uut := RemoveAlbumsFromArtist{albumRepository: albumRepository}
 
-	id := uuid.New()
-	albumID := uuid.New()
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
 
-	albumRepository.On("GetWithSongs", mock.IsType(new(model.Album)), albumID).
-		Return(nil).
+	albums := &[]model.Album{{ID: request.AlbumIDs[0]}}
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(albums), request.AlbumIDs).
+		Return(nil, albums).
 		Once()
 
 	// when
-	errCode := _uut.Handle(id, albumID)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "album not found", errCode.Error.Error())
-
-	albumRepository.AssertExpectations(t)
-}
-
-func TestRemoveAlbumFromArtist_WhenAlbumArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
-	// given
-	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := RemoveAlbumFromArtist{albumRepository: albumRepository}
-
-	id := uuid.New()
-	albumID := uuid.New()
-
-	album := &model.Album{ID: albumID}
-	albumRepository.On("GetWithSongs", mock.IsType(new(model.Album)), albumID).
-		Return(nil, album).
-		Once()
-
-	// when
-	errCode := _uut.Handle(id, albumID)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusBadRequest, errCode.Code)
-	assert.Equal(t, "album is not owned by this artist", errCode.Error.Error())
+	assert.Equal(t, "album "+request.AlbumIDs[0].String()+" is not owned by this artist", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveAlbumFromArtist_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := RemoveAlbumFromArtist{albumRepository: albumRepository}
+	_uut := RemoveAlbumsFromArtist{albumRepository: albumRepository}
 
-	id := uuid.New()
-	albumID := uuid.New()
-
-	album := &model.Album{
-		ID:       albumID,
-		ArtistID: &id,
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
 	}
-	albumRepository.On("GetWithSongs", mock.IsType(album), albumID).
-		Return(nil, album).
+
+	albums := []model.Album{
+		{
+			ID:       request.AlbumIDs[0],
+			ArtistID: &request.ID,
+		},
+	}
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(&albums), request.AlbumIDs).
+		Return(nil, &albums).
 		Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("UpdateWithAssociations", mock.IsType(album)).
+	albumRepository.On("UpdateWithAssociations", mock.IsType(&albums[0])).
 		Return(internalError).
 		Once()
 
 	// when
-	errCode := _uut.Handle(id, albumID)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -114,36 +100,46 @@ func TestRemoveAlbumFromArtist_WhenUpdateAlbumFails_ShouldReturnInternalServerEr
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveAlbumFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := RemoveAlbumFromArtist{albumRepository: albumRepository}
+	_uut := RemoveAlbumsFromArtist{albumRepository: albumRepository}
 
-	id := uuid.New()
-	albumID := uuid.New()
-
-	album := &model.Album{
-		ID:       albumID,
-		ArtistID: &id,
-		Songs:    []model.Song{{ArtistID: &id}, {ArtistID: &id}, {ArtistID: &id}},
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
-	albumRepository.On("GetWithSongs", mock.IsType(album), albumID).
-		Return(nil, album).
+
+	albums := []model.Album{
+		{
+			ID:       request.AlbumIDs[0],
+			ArtistID: &request.ID,
+			Songs:    []model.Song{{ArtistID: &request.ID}, {ArtistID: &request.ID}, {ArtistID: &request.ID}},
+		},
+		{
+			ID:       request.AlbumIDs[1],
+			ArtistID: &request.ID,
+		},
+	}
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(&albums), request.AlbumIDs).
+		Return(nil, &albums).
 		Once()
 
-	albumRepository.On("UpdateWithAssociations", mock.IsType(album)).
-		Run(func(args mock.Arguments) {
-			newAlbum := args.Get(0).(*model.Album)
-			assert.Nil(t, newAlbum.ArtistID)
-			for _, song := range newAlbum.Songs {
-				assert.Nil(t, song.ArtistID)
-			}
-		}).
-		Return(nil).
-		Once()
+	for _, album := range albums {
+		albumRepository.On("UpdateWithAssociations", mock.IsType(&album)).
+			Run(func(args mock.Arguments) {
+				newAlbum := args.Get(0).(*model.Album)
+				assert.Nil(t, newAlbum.ArtistID)
+				for _, song := range newAlbum.Songs {
+					assert.Nil(t, song.ArtistID)
+				}
+			}).
+			Return(nil).
+			Once()
+	}
 
 	// when
-	errCode := _uut.Handle(id, albumID)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.Nil(t, errCode)

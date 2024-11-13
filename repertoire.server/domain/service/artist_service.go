@@ -18,24 +18,24 @@ type ArtistService interface {
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
-	RemoveAlbum(id uuid.UUID, albumID uuid.UUID) *wrapper.ErrorCode
-	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
+	RemoveAlbums(request requests.RemoveAlbumsFromArtistRequest) *wrapper.ErrorCode
+	RemoveSongs(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
 }
 
 type artistService struct {
-	addAlbumsToArtist     artist.AddAlbumsToArtist
-	addSongsToArtist      artist.AddSongsToArtist
-	createArtist          artist.CreateArtist
-	deleteArtist          artist.DeleteArtist
-	deleteImageFromArtist artist.DeleteImageFromArtist
-	getAllArtists         artist.GetAllArtists
-	getArtist             artist.GetArtist
-	removeAlbumFromArtist artist.RemoveAlbumFromArtist
-	removeSongFromArtist  artist.RemoveSongFromArtist
-	saveImageToArtist     artist.SaveImageToArtist
-	updateArtist          artist.UpdateArtist
+	addAlbumsToArtist      artist.AddAlbumsToArtist
+	addSongsToArtist       artist.AddSongsToArtist
+	createArtist           artist.CreateArtist
+	deleteArtist           artist.DeleteArtist
+	deleteImageFromArtist  artist.DeleteImageFromArtist
+	getAllArtists          artist.GetAllArtists
+	getArtist              artist.GetArtist
+	removeAlbumsFromArtist artist.RemoveAlbumsFromArtist
+	removeSongsFromArtist  artist.RemoveSongFromArtist
+	saveImageToArtist      artist.SaveImageToArtist
+	updateArtist           artist.UpdateArtist
 }
 
 func NewArtistService(
@@ -46,23 +46,23 @@ func NewArtistService(
 	deleteImageFromArtist artist.DeleteImageFromArtist,
 	getAllArtists artist.GetAllArtists,
 	getArtist artist.GetArtist,
-	removeAlbumFromArtist artist.RemoveAlbumFromArtist,
-	removeSongFromArtist artist.RemoveSongFromArtist,
+	removeAlbumsFromArtist artist.RemoveAlbumsFromArtist,
+	removeSongsFromArtist artist.RemoveSongFromArtist,
 	saveImageToArtist artist.SaveImageToArtist,
 	updateArtist artist.UpdateArtist,
 ) ArtistService {
 	return &artistService{
-		addAlbumsToArtist:     addAlbumsToArtist,
-		addSongsToArtist:      addSongsToArtist,
-		createArtist:          createArtist,
-		deleteArtist:          deleteArtist,
-		deleteImageFromArtist: deleteImageFromArtist,
-		getAllArtists:         getAllArtists,
-		getArtist:             getArtist,
-		removeAlbumFromArtist: removeAlbumFromArtist,
-		removeSongFromArtist:  removeSongFromArtist,
-		saveImageToArtist:     saveImageToArtist,
-		updateArtist:          updateArtist,
+		addAlbumsToArtist:      addAlbumsToArtist,
+		addSongsToArtist:       addSongsToArtist,
+		createArtist:           createArtist,
+		deleteArtist:           deleteArtist,
+		deleteImageFromArtist:  deleteImageFromArtist,
+		getAllArtists:          getAllArtists,
+		getArtist:              getArtist,
+		removeAlbumsFromArtist: removeAlbumsFromArtist,
+		removeSongsFromArtist:  removeSongsFromArtist,
+		saveImageToArtist:      saveImageToArtist,
+		updateArtist:           updateArtist,
 	}
 }
 
@@ -94,12 +94,12 @@ func (a *artistService) Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
 
-func (a *artistService) RemoveAlbum(id uuid.UUID, albumID uuid.UUID) *wrapper.ErrorCode {
-	return a.removeAlbumFromArtist.Handle(id, albumID)
+func (a *artistService) RemoveAlbums(request requests.RemoveAlbumsFromArtistRequest) *wrapper.ErrorCode {
+	return a.removeAlbumsFromArtist.Handle(request)
 }
 
-func (a *artistService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	return a.removeSongFromArtist.Handle(id, songID)
+func (a *artistService) RemoveSongs(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode {
+	return a.removeSongsFromArtist.Handle(request)
 }
 
 func (a *artistService) SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
