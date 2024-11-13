@@ -49,17 +49,17 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " already has an album"))
 		}
 
-		song.AlbumID = &request.ID
+		songs[i].AlbumID = &request.ID
 		trackNo := uint(songsLength + i)
-		song.AlbumTrackNo = &trackNo
+		songs[i].AlbumTrackNo = &trackNo
 
 		// synchronize artist
-		song.ArtistID, album.ArtistID = album.ArtistID, song.ArtistID
+		songs[i].ArtistID, album.ArtistID = album.ArtistID, songs[i].ArtistID
+	}
 
-		err = a.songRepository.Update(&song)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
+	err = a.songRepository.UpdateAll(&songs)
+	if err != nil {
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

@@ -134,6 +134,11 @@ func (s *SongRepositoryMock) UpdateWithAssociations(song *model.Song) error {
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) UpdateAll(songs *[]model.Song) error {
+	args := s.Called(songs)
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
 	args := s.Called(id)
 	return args.Error(0)

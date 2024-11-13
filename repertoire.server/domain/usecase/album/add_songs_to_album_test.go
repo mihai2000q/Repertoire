@@ -200,9 +200,9 @@ func TestAddSongToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *
 	}
 
 	// given - mocking
-	songs := []model.Song{{ID: request.SongIDs[0]}}
-	songRepository.On("GetAllByIDs", mock.IsType(&songs), request.SongIDs).
-		Return(nil, &songs).
+	songs := &[]model.Song{{ID: request.SongIDs[0]}}
+	songRepository.On("GetAllByIDs", mock.IsType(songs), request.SongIDs).
+		Return(nil, songs).
 		Once()
 
 	album := &model.Album{ID: request.ID}
@@ -211,7 +211,7 @@ func TestAddSongToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(&songs[0])).
+	songRepository.On("UpdateAll", mock.IsType(songs)).
 		Return(internalError).
 		Once()
 
@@ -315,17 +315,17 @@ func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 				Return(nil, tt.album).
 				Once()
 
-			for i, song := range *tt.songs {
-				songRepository.On("Update", mock.IsType(&song)).
-					Run(func(args mock.Arguments) {
-						newSong := args.Get(0).(*model.Song)
-						assert.Equal(t, *newSong.AlbumID, tt.request.ID)
-						assert.Equal(t, *newSong.AlbumTrackNo, uint(len(tt.album.Songs)+i)+1)
-						assert.Equal(t, newSong.ArtistID, tt.album.ArtistID)
-					}).
-					Return(nil).
-					Once()
-			}
+			songRepository.On("UpdateAll", mock.IsType(tt.songs)).
+				Run(func(args mock.Arguments) {
+					newSongs := args.Get(0).(*[]model.Song)
+					for i, song := range *newSongs {
+						assert.Equal(t, *song.AlbumID, tt.request.ID)
+						assert.Equal(t, *song.AlbumTrackNo, uint(len(tt.album.Songs)+i)+1)
+						assert.Equal(t, song.ArtistID, tt.album.ArtistID)
+					}
+				}).
+				Return(nil).
+				Once()
 
 			// when
 			errCode := _uut.Handle(tt.request)

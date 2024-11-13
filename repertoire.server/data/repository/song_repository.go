@@ -29,6 +29,7 @@ type SongRepository interface {
 	Create(song *model.Song) error
 	Update(song *model.Song) error
 	UpdateWithAssociations(song *model.Song) error
+	UpdateAll(songs *[]model.Song) error
 	Delete(id uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
@@ -130,6 +131,17 @@ func (s songRepository) UpdateWithAssociations(song *model.Song) error {
 		Session(&gorm.Session{FullSaveAssociations: true}).
 		Updates(&song).
 		Error
+}
+
+func (s songRepository) UpdateAll(songs *[]model.Song) error {
+	return s.client.DB.Transaction(func(tx *gorm.DB) error {
+		for _, song := range *songs {
+			if err := tx.Save(&song).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func (s songRepository) Delete(id uuid.UUID) error {
