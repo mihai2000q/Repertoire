@@ -102,7 +102,7 @@ function Topbar(): ReactElement {
                 })}
               >
                 <Group gap={4}>
-                  <Avatar src={user.imageUrl ? user.imageUrl : userPlaceholder} />
+                  <Avatar src={user.profilePictureUrl ?? userPlaceholder} />
                   <IconCaretDownFilled size={12} />
                 </Group>
               </UnstyledButton>

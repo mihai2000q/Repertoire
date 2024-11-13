@@ -123,7 +123,7 @@ function Artist() {
     <Stack>
       <Group>
         <Avatar
-          src={artist.imageUrl ? artist.imageUrl : artistPlaceholder}
+          src={artist.imageUrl ?? artistPlaceholder}
           size={125}
           sx={(theme) => ({
             boxShadow: theme.shadows.sm

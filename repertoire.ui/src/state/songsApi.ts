@@ -29,7 +29,7 @@ const songsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Songs']
+      invalidatesTags: ['Songs', 'Artists', 'Albums']
     }),
     updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
       query: (body) => ({

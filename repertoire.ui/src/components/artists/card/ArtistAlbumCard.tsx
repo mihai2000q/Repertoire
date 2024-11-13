@@ -1,6 +1,6 @@
 import Album from '../../../types/models/Album.ts'
 import { alpha, Avatar, Group, Stack, Text } from '@mantine/core'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../../state/store.ts'
 import { openAlbumDrawer } from '../../../state/globalSlice.ts'
@@ -32,7 +32,7 @@ function ArtistAlbumCard({ album }: ArtistAlbumCardProps) {
       py={'xs'}
       onClick={handleClick}
     >
-      <Avatar radius={'8px'} src={album.imageUrl ? album.imageUrl : songPlaceholder} />
+      <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} />
       <Stack gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={500} truncate={'end'}>
           {album.title}

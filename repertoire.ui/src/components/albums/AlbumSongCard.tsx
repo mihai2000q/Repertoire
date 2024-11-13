@@ -1,15 +1,15 @@
-import Song from '../../../types/models/Song.ts'
-import { alpha, Avatar, Group, Space, Stack, Text } from '@mantine/core'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import Song from '../../types/models/Song.ts'
+import { alpha, Avatar, Group, Stack, Text } from '@mantine/core'
+import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
-import { useAppDispatch } from '../../../state/store.ts'
-import { openSongDrawer } from '../../../state/globalSlice.ts'
+import { useAppDispatch } from '../../state/store.ts'
+import { openSongDrawer } from '../../state/globalSlice.ts'
 
-interface ArtistSongCardProps {
+interface AlbumSongCardProps {
   song: Song
 }
 
-function ArtistSongCard({ song }: ArtistSongCardProps) {
+function AlbumSongCard({ song }: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
 
   function handleClick() {
@@ -31,19 +31,18 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
       py={'xs'}
       onClick={handleClick}
     >
+      <Text fw={500} w={35} ta={'center'}>{song.albumTrackNo}</Text>
       <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
       <Stack gap={0} style={{ overflow: 'hidden' }}>
-        <Group gap={4}>
+        <Group>
           <Text fw={500} truncate={'end'}>
             {song.title}
           </Text>
           {song.album && (
-            <>
-              <Text fz={'sm'}>-</Text>
-              <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
-                {song.album.title}
-              </Text>
-            </>
+            <Text fz={'sm'} truncate={'end'}>
+              {' '}
+              - {song.album.title}
+            </Text>
           )}
         </Group>
         {song.releaseDate && (
@@ -52,9 +51,8 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
           </Text>
         )}
       </Stack>
-      <Space flex={1} />
     </Group>
   )
 }
 
-export default ArtistSongCard
+export default AlbumSongCard

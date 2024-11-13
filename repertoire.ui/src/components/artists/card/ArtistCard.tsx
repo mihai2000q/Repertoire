@@ -21,9 +21,9 @@ function ArtistCard({ artist }: ArtistCardProps) {
     <Stack
       align={'center'}
       gap={'xs'}
-      sx={{
+      style={{
+        transition: '0.25s',
         ...isAvatarHovered && {
-          transition: '0.25s',
           transform: 'scale(1.1)',
         }
       }}
@@ -31,7 +31,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
       <Avatar
         onMouseEnter={() => setIsAvatarHovered(true)}
         onMouseLeave={() => setIsAvatarHovered(false)}
-        src={artist.imageUrl ? artist.imageUrl : artistPlaceholder}
+        src={artist.imageUrl ?? artistPlaceholder}
         size={125}
         sx={(theme) => ({
           cursor: 'pointer',
@@ -40,7 +40,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         })}
         onClick={handleClick}
       />
-      <Text fw={600} fz={'lg'}>
+      <Text fw={600} ta={'center'} lineClamp={2}>
         {artist.name}
       </Text>
     </Stack>

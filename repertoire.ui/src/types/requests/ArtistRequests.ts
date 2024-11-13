@@ -34,7 +34,7 @@ export interface AddSongsToArtistRequest {
   songIds: string[]
 }
 
-export interface RemoveSongsFromAristRequest {
+export interface RemoveSongsFromArtistRequest {
   id: string
   songIds: string[]
 }

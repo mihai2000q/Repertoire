@@ -16,6 +16,7 @@ import AlbumCard from '../../components/albums/AlbumCard.tsx'
 import AddNewAlbumModal from '../../components/albums/modal/AddNewAlbumModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus } from '@tabler/icons-react'
+import NewAlbumCard from "../../components/albums/NewAlbumCard.tsx";
 
 function Albums() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -48,10 +49,10 @@ function Albums() {
       </Group>
 
       {albums?.totalCount === 0 && <Text mt={'sm'}>There are no albums yet. Try to add one</Text>}
-      <Group>
+      <Group gap={'xl'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
-        {/*{albums?.totalCount > 0 && <NewAlbumCard openModal={openAddNewAlbumModal} />}*/}
+        {albums?.totalCount > 0 && <NewAlbumCard openModal={openAddNewAlbumModal} />}
       </Group>
 
       <Space flex={1} />

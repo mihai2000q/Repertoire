@@ -23,3 +23,13 @@ export interface SaveImageToAlbumRequest {
   image: FileWithPath
   id: string
 }
+
+export interface AddSongsToAlbumRequest {
+  id: string
+  songIds: string[]
+}
+
+export interface RemoveSongsFromAlbumRequest {
+  id: string
+  songIds: string[]
+}

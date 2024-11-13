@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-interface SongDrawer {
-  songId?: string
+interface ArtistDrawer {
+  artistId?: string
   open: boolean
 }
 
@@ -10,11 +10,17 @@ interface AlbumDrawer {
   open: boolean
 }
 
+interface SongDrawer {
+  songId?: string
+  open: boolean
+}
+
 export interface GlobalState {
   userId?: string | undefined
   errorPath?: string | undefined
-  songDrawer: SongDrawer
+  artistDrawer: ArtistDrawer
   albumDrawer: AlbumDrawer
+  songDrawer: SongDrawer
 }
 
 const initialState: GlobalState = {
@@ -22,6 +28,9 @@ const initialState: GlobalState = {
     open: false
   },
   albumDrawer: {
+    open: false
+  },
+  artistDrawer: {
     open: false
   }
 }
@@ -36,12 +45,12 @@ export const globalSlice = createSlice({
     setErrorPath: (state, action: PayloadAction<string | undefined>) => {
       state.errorPath = action.payload
     },
-    openSongDrawer: (state, action: PayloadAction<string | undefined>) => {
-      state.songDrawer.songId = action.payload
-      state.songDrawer.open = true
+    openArtistDrawer: (state, action: PayloadAction<string | undefined>) => {
+      state.artistDrawer.artistId = action.payload
+      state.artistDrawer.open = true
     },
-    closeSongDrawer: (state) => {
-      state.songDrawer.open = false
+    closeArtistDrawer: (state) => {
+      state.artistDrawer.open = false
     },
     openAlbumDrawer: (state, action: PayloadAction<string | undefined>) => {
       state.albumDrawer.albumId = action.payload
@@ -49,6 +58,13 @@ export const globalSlice = createSlice({
     },
     closeAlbumDrawer: (state) => {
       state.albumDrawer.open = false
+    },
+    openSongDrawer: (state, action: PayloadAction<string | undefined>) => {
+      state.songDrawer.songId = action.payload
+      state.songDrawer.open = true
+    },
+    closeSongDrawer: (state) => {
+      state.songDrawer.open = false
     }
   }
 })
@@ -56,10 +72,12 @@ export const globalSlice = createSlice({
 export const {
   setUserId,
   setErrorPath,
-  openSongDrawer,
-  closeSongDrawer,
+  openArtistDrawer,
+  closeArtistDrawer,
   openAlbumDrawer,
-  closeAlbumDrawer
+  closeAlbumDrawer,
+  openSongDrawer,
+  closeSongDrawer
 } = globalSlice.actions
 
 export default globalSlice.reducer

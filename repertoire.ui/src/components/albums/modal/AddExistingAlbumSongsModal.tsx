@@ -6,32 +6,33 @@ import {
   Checkbox,
   Group,
   LoadingOverlay,
-  Modal, Skeleton,
+  Modal,
+  Skeleton,
   Stack,
   Text,
   TextInput,
   Tooltip
 } from '@mantine/core'
 import { toast } from 'react-toastify'
-import { useAddSongsToArtistMutation } from '../../../state/artistsApi.ts'
 import { useListState } from '@mantine/hooks'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {useState} from "react";
+import { useState } from 'react'
+import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
 
-interface AddNewArtistSongModalProps {
+interface AddNewAlbumSongModalProps {
   opened: boolean
   onClose: () => void
-  artistId: string
+  albumId: string
 }
 
-function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtistSongModalProps) {
+function AddExistingAlbumSongsModal({ opened, onClose, albumId }: AddNewAlbumSongModalProps) {
   const [searchValue, setSearchValue] = useState('')
 
   const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({})
 
-  const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToArtistMutation()
+  const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()
 
   const [songIds, songIdsHandlers] = useListState<string>([])
 
@@ -51,9 +52,9 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
   }
 
   async function addSongs() {
-    await addSongMutation({ id: artistId, songIds }).unwrap()
+    await addSongsMutation({ id: albumId, songIds }).unwrap()
 
-    toast.success(`Songs added to artist!`)
+    toast.success(`Songs added to album!`)
     onClose()
     songIdsHandlers.setState([])
   }
@@ -81,7 +82,7 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
-          {songs?.totalCount === 0 && <Text>There are no songs without artist</Text>}
+          {songs?.totalCount === 0 && <Text>There are no songs without album</Text>}
           {songs?.totalCount > 0 && (
             <Group w={'100%'} px={'xl'}>
               <Checkbox
@@ -93,40 +94,38 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
             </Group>
           )}
           <Stack w={'100%'} gap={0} style={{ overflow: 'auto', maxHeight: '50vh' }}>
-            {songsIsLoading ? (
-              Array.from(Array(5)).map((_, i) => (
-                <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                  <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                  <Skeleton width={37} height={37} radius={'md'} />
-                  <Skeleton width={160} height={18} />
-                </Group>
-              ))
-            ) : (
-              songs.models.map((song) => (
-                <Group
-                  key={song.id}
-                  align={'center'}
-                  sx={(theme) => ({
-                    transition: '0.3s',
-                    '&:hover': {
-                      boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-                    }
-                  })}
-                  w={'100%'}
-                  px={'xl'}
-                  py={'xs'}
-                >
-                  <Checkbox
-                    checked={songIds.includes(song.id)}
-                    onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
-                    pr={'sm'}
-                  />
-                  <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
-                  <Text fw={500}>{song.title}</Text>
-                </Group>
-              ))
-            )}
+            {songsIsLoading
+              ? Array.from(Array(5)).map((_, i) => (
+                  <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+                    <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+                    <Skeleton width={37} height={37} radius={'md'} />
+                    <Skeleton width={160} height={18} />
+                  </Group>
+                ))
+              : songs.models.map((song) => (
+                  <Group
+                    key={song.id}
+                    align={'center'}
+                    sx={(theme) => ({
+                      transition: '0.3s',
+                      '&:hover': {
+                        boxShadow: theme.shadows.xl,
+                        backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      }
+                    })}
+                    w={'100%'}
+                    px={'xl'}
+                    py={'xs'}
+                  >
+                    <Checkbox
+                      checked={songIds.includes(song.id)}
+                      onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
+                      pr={'sm'}
+                    />
+                    <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
+                    <Text fw={500}>{song.title}</Text>
+                  </Group>
+                ))}
           </Stack>
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip label="Select songs">
@@ -147,4 +146,4 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
   )
 }
 
-export default AddExistingArtistSongsModal
+export default AddExistingAlbumSongsModal

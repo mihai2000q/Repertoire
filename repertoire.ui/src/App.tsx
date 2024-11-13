@@ -20,9 +20,10 @@ import Unauthorized from './views/Unauthorized'
 import Main from './views/Main'
 import SignIn from './views/SignIn'
 import Songs from './views/songs/Songs.tsx'
-import Albums from "./views/albums/Albums.tsx";
-import Artists from "./views/artists/Artists.tsx";
-import Artist from "./views/artists/Artist.tsx";
+import Albums from './views/albums/Albums.tsx'
+import Artists from './views/artists/Artists.tsx'
+import Artist from './views/artists/Artist.tsx'
+import Album from './views/albums/Album.tsx'
 
 function App(): ReactElement {
   return (
@@ -50,6 +51,7 @@ function App(): ReactElement {
                     <Route path={'artists'} element={<Artists />} />
                     <Route path={'artist/:id'} element={<Artist />} />
                     <Route path={'albums'} element={<Albums />} />
+                    <Route path={'album/:id'} element={<Album />} />
                     <Route path={'songs'} element={<Songs />} />
 
                     {/* Errors */}

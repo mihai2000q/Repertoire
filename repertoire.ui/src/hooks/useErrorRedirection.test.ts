@@ -8,7 +8,8 @@ describe('useErrorRedirection', () => {
       global: {
         errorPath: undefined,
         songDrawer: undefined,
-        albumDrawer: undefined
+        albumDrawer: undefined,
+        artistDrawer: undefined,
       }
     })
 
@@ -24,7 +25,8 @@ describe('useErrorRedirection', () => {
       global: {
         errorPath: errorPath,
         songDrawer: undefined,
-        albumDrawer: undefined
+        albumDrawer: undefined,
+        artistDrawer: undefined,
       }
     })
 
