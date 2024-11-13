@@ -7,7 +7,7 @@ import {
   CreateArtistRequest,
   GetArtistsRequest,
   RemoveAlbumsFromAristRequest,
-  RemoveSongsFromAristRequest,
+  RemoveSongsFromArtistRequest,
   SaveImageToArtistRequest,
   UpdateArtistRequest
 } from '../types/requests/ArtistRequests.ts'
@@ -85,7 +85,7 @@ const artistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Artists', 'Songs']
     }),
-    removeSongsFromArtist: build.mutation<HttpMessageResponse, RemoveSongsFromAristRequest>({
+    removeSongsFromArtist: build.mutation<HttpMessageResponse, RemoveSongsFromArtistRequest>({
       query: (body) => ({
         url: `artists/remove-songs`,
         method: 'PUT',
