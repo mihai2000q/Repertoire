@@ -90,15 +90,15 @@ func (a ArtistHandler) Create(c *gin.Context) {
 	})
 }
 
-func (a ArtistHandler) AddAlbum(c *gin.Context) {
-	var request requests.AddAlbumToArtistRequest
+func (a ArtistHandler) AddAlbums(c *gin.Context) {
+	var request requests.AddAlbumsToArtistRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = a.service.AddAlbum(request)
+	errorCode = a.service.AddAlbums(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -107,15 +107,15 @@ func (a ArtistHandler) AddAlbum(c *gin.Context) {
 	a.SendMessage(c, "album has been added to artist successfully")
 }
 
-func (a ArtistHandler) AddSong(c *gin.Context) {
-	var request requests.AddSongToArtistRequest
+func (a ArtistHandler) AddSongs(c *gin.Context) {
+	var request requests.AddSongsToArtistRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = a.service.AddSong(request)
+	errorCode = a.service.AddSongs(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

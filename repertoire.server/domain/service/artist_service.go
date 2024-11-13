@@ -11,8 +11,8 @@ import (
 )
 
 type ArtistService interface {
-	AddAlbum(request requests.AddAlbumToArtistRequest) *wrapper.ErrorCode
-	AddSong(request requests.AddSongToArtistRequest) *wrapper.ErrorCode
+	AddAlbums(request requests.AddAlbumsToArtistRequest) *wrapper.ErrorCode
+	AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode
 	Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -25,8 +25,8 @@ type ArtistService interface {
 }
 
 type artistService struct {
-	addAlbumToArtist      artist.AddAlbumToArtist
-	addSongToArtist       artist.AddSongToArtist
+	addAlbumsToArtist     artist.AddAlbumsToArtist
+	addSongsToArtist      artist.AddSongsToArtist
 	createArtist          artist.CreateArtist
 	deleteArtist          artist.DeleteArtist
 	deleteImageFromArtist artist.DeleteImageFromArtist
@@ -39,8 +39,8 @@ type artistService struct {
 }
 
 func NewArtistService(
-	addAlbumToArtist artist.AddAlbumToArtist,
-	addSongToArtist artist.AddSongToArtist,
+	addAlbumsToArtist artist.AddAlbumsToArtist,
+	addSongsToArtist artist.AddSongsToArtist,
 	createArtist artist.CreateArtist,
 	deleteArtist artist.DeleteArtist,
 	deleteImageFromArtist artist.DeleteImageFromArtist,
@@ -52,8 +52,8 @@ func NewArtistService(
 	updateArtist artist.UpdateArtist,
 ) ArtistService {
 	return &artistService{
-		addAlbumToArtist:      addAlbumToArtist,
-		addSongToArtist:       addSongToArtist,
+		addAlbumsToArtist:     addAlbumsToArtist,
+		addSongsToArtist:      addSongsToArtist,
 		createArtist:          createArtist,
 		deleteArtist:          deleteArtist,
 		deleteImageFromArtist: deleteImageFromArtist,
@@ -66,12 +66,12 @@ func NewArtistService(
 	}
 }
 
-func (a *artistService) AddAlbum(request requests.AddAlbumToArtistRequest) *wrapper.ErrorCode {
-	return a.addAlbumToArtist.Handle(request)
+func (a *artistService) AddAlbums(request requests.AddAlbumsToArtistRequest) *wrapper.ErrorCode {
+	return a.addAlbumsToArtist.Handle(request)
 }
 
-func (a *artistService) AddSong(request requests.AddSongToArtistRequest) *wrapper.ErrorCode {
-	return a.addSongToArtist.Handle(request)
+func (a *artistService) AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode {
+	return a.addSongsToArtist.Handle(request)
 }
 
 func (a *artistService) Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

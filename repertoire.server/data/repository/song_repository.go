@@ -13,7 +13,6 @@ import (
 type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
-	GetWithSongs(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.Song,
@@ -24,6 +23,7 @@ type SongRepository interface {
 		searchBy []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
+	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
@@ -61,14 +61,6 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 		Error
 }
 
-func (s songRepository) GetWithSongs(song *model.Song, id uuid.UUID) error {
-	return s.client.DB.
-		Preload("Album").
-		Preload("Album.Songs").
-		Find(&song, model.Song{ID: id}).
-		Error
-}
-
 func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
@@ -77,6 +69,14 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Preload("Sections.SongSectionType").
 		Preload(clause.Associations).
 		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.DB.Model(&model.Song{}).
+		Preload("Album").
+		Preload("Album.Songs").
+		Find(&songs, ids).
 		Error
 }
 

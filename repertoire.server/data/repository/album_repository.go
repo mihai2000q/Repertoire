@@ -14,6 +14,7 @@ type AlbumRepository interface {
 	Get(album *model.Album, id uuid.UUID) error
 	GetWithSongs(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID) error
+	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.Album,
 		userID uuid.UUID,
@@ -47,7 +48,7 @@ func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
 func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
 	return a.client.DB.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
-			return db.Order("songs.track_no")
+			return db.Order("songs.album_track_no")
 		}).
 		Find(&album, model.Album{ID: id}).
 		Error
@@ -56,10 +57,19 @@ func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
 func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID) error {
 	return a.client.DB.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
-			return db.Order("songs.track_no")
+			return db.Order("songs.album_track_no")
 		}).
 		Preload(clause.Associations).
 		Find(&album, model.Album{ID: id}).
+		Error
+}
+
+func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {
+	return a.client.DB.Model(&model.Album{}).
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("songs.album_track_no")
+		}).
+		Find(&albums, ids).
 		Error
 }
 

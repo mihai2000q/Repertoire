@@ -42,6 +42,16 @@ func (a *AlbumRepositoryMock) GetWithAssociations(album *model.Album, id uuid.UU
 	return args.Error(0)
 }
 
+func (a *AlbumRepositoryMock) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {
+	args := a.Called(albums, ids)
+
+	if len(args) > 1 {
+		*albums = *args.Get(1).(*[]model.Album)
+	}
+
+	return args.Error(0)
+}
+
 func (a *AlbumRepositoryMock) GetAllByUser(
 	albums *[]model.Album,
 	userID uuid.UUID,
