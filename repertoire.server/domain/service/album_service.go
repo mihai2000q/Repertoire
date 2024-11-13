@@ -11,7 +11,7 @@ import (
 )
 
 type AlbumService interface {
-	AddSong(requests.AddSongToAlbumRequest) *wrapper.ErrorCode
+	AddSongs(requests.AddSongsToAlbumRequest) *wrapper.ErrorCode
 	Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -24,7 +24,7 @@ type AlbumService interface {
 }
 
 type albumService struct {
-	addSongToAlbum       album.AddSongToAlbum
+	addSongsToAlbum      album.AddSongsToAlbum
 	createAlbum          album.CreateAlbum
 	deleteAlbum          album.DeleteAlbum
 	deleteImageFromAlbum album.DeleteImageFromAlbum
@@ -37,7 +37,7 @@ type albumService struct {
 }
 
 func NewAlbumService(
-	addSongToAlbum album.AddSongToAlbum,
+	addSongsToAlbum album.AddSongsToAlbum,
 	createAlbum album.CreateAlbum,
 	deleteAlbum album.DeleteAlbum,
 	deleteImageFromAlbum album.DeleteImageFromAlbum,
@@ -49,7 +49,7 @@ func NewAlbumService(
 	updateAlbum album.UpdateAlbum,
 ) AlbumService {
 	return &albumService{
-		addSongToAlbum:       addSongToAlbum,
+		addSongsToAlbum:      addSongsToAlbum,
 		createAlbum:          createAlbum,
 		deleteAlbum:          deleteAlbum,
 		deleteImageFromAlbum: deleteImageFromAlbum,
@@ -62,8 +62,8 @@ func NewAlbumService(
 	}
 }
 
-func (a *albumService) AddSong(request requests.AddSongToAlbumRequest) *wrapper.ErrorCode {
-	return a.addSongToAlbum.Handle(request)
+func (a *albumService) AddSongs(request requests.AddSongsToAlbumRequest) *wrapper.ErrorCode {
+	return a.addSongsToAlbum.Handle(request)
 }
 
 func (a *albumService) Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

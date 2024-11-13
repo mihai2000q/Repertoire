@@ -216,7 +216,7 @@ func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServer
 		Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("AddSong", playlist, song).Return(internalError).Once()
+	playlistRepository.On("AddSongs", playlist, song).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -260,7 +260,7 @@ func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil, count).
 		Once()
 
-	playlistRepository.On("AddSong", playlist, song).Return(nil).Once()
+	playlistRepository.On("AddSongs", playlist, song).Return(nil).Once()
 
 	// when
 	errCode := _uut.Handle(request)

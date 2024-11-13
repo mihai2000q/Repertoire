@@ -90,15 +90,15 @@ func (a AlbumHandler) Create(c *gin.Context) {
 	})
 }
 
-func (a AlbumHandler) AddSong(c *gin.Context) {
-	var request requests.AddSongToAlbumRequest
+func (a AlbumHandler) AddSongs(c *gin.Context) {
+	var request requests.AddSongsToAlbumRequest
 	errorCode := a.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = a.service.AddSong(request)
+	errorCode = a.service.AddSongs(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

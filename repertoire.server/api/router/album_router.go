@@ -16,7 +16,7 @@ func (a AlbumRouter) RegisterRoutes() {
 		api.GET("/:id", a.handler.Get)
 		api.GET("", a.handler.GetAll)
 		api.POST("", a.handler.Create)
-		api.POST("/add-song", a.handler.AddSong)
+		api.POST("/add-songs", a.handler.AddSongs)
 		api.PUT("", a.handler.Update)
 		api.PUT("/move-song", a.handler.MoveSong)
 		api.DELETE("/song/:songID/from/:id", a.handler.RemoveSong)
