@@ -14,7 +14,7 @@ type AddSongsToAlbum struct {
 	songRepository repository.SongRepository
 }
 
-func NewAddSongToAlbum(
+func NewAddSongsToAlbum(
 	albumRepository repository.AlbumRepository,
 	repository repository.SongRepository,
 ) AddSongsToAlbum {

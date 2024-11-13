@@ -13,14 +13,14 @@ import (
 )
 
 var albumUseCases = fx.Options(
-	fx.Provide(album.NewAddSongToAlbum),
+	fx.Provide(album.NewAddSongsToAlbum),
 	fx.Provide(album.NewCreateAlbum),
 	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewDeleteImageFromAlbum),
 	fx.Provide(album.NewGetAlbum),
 	fx.Provide(album.NewGetAllAlbums),
 	fx.Provide(album.NewMoveSongFromAlbum),
-	fx.Provide(album.NewRemoveSongFromAlbum),
+	fx.Provide(album.NewRemoveSongsFromAlbum),
 	fx.Provide(album.NewSaveImageToAlbum),
 	fx.Provide(album.NewUpdateAlbum),
 )

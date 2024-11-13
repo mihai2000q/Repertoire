@@ -36,3 +36,8 @@ type MoveSongFromAlbumRequest struct {
 	SongID     uuid.UUID `validate:"required"`
 	OverSongID uuid.UUID `validate:"required"`
 }
+
+type RemoveSongsFromAlbumRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
+}

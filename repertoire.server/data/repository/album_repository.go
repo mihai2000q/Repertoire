@@ -28,7 +28,7 @@ type AlbumRepository interface {
 	Update(album *model.Album) error
 	UpdateWithAssociations(album *model.Album) error
 	Delete(id uuid.UUID) error
-	RemoveSong(album *model.Album, song *model.Song) error
+	RemoveSongs(album *model.Album, song *[]model.Song) error
 }
 
 type albumRepository struct {
@@ -116,6 +116,6 @@ func (a albumRepository) Delete(id uuid.UUID) error {
 	return a.client.DB.Delete(&model.Album{}, id).Error
 }
 
-func (a albumRepository) RemoveSong(album *model.Album, song *model.Song) error {
-	return a.client.DB.Model(&album).Association("Songs").Delete(&song)
+func (a albumRepository) RemoveSongs(album *model.Album, songs *[]model.Song) error {
+	return a.client.DB.Model(&album).Association("Songs").Delete(&songs)
 }

@@ -141,6 +141,23 @@ func (a AlbumHandler) MoveSong(c *gin.Context) {
 	a.SendMessage(c, "song has been moved from album successfully")
 }
 
+func (a AlbumHandler) RemoveSongs(c *gin.Context) {
+	var request requests.RemoveSongsFromAlbumRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.RemoveSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "song has been removed from album successfully")
+}
+
 func (a AlbumHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -155,28 +172,6 @@ func (a AlbumHandler) Delete(c *gin.Context) {
 	}
 
 	a.SendMessage(c, "album has been deleted successfully")
-}
-
-func (a AlbumHandler) RemoveSong(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	songID, err := uuid.Parse(c.Param("songID"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	errorCode := a.service.RemoveSong(id, songID)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	a.SendMessage(c, "song has been removed from album successfully")
 }
 
 // Images
