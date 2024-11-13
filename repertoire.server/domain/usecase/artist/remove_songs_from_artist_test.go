@@ -69,7 +69,7 @@ func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnBadRequ
 	songRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongsFromArtist_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := RemoveSongFromArtist{songRepository: songRepository}
@@ -79,18 +79,18 @@ func TestRemoveSongsFromArtist_WhenUpdateSongFails_ShouldReturnInternalServerErr
 		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
-	songs := []model.Song{
+	songs := &[]model.Song{
 		{
 			ID:       request.SongIDs[0],
 			ArtistID: &request.ID,
 		},
 	}
-	songRepository.On("GetAllByIDs", mock.IsType(&songs), request.SongIDs).
-		Return(nil, &songs).
+	songRepository.On("GetAllByIDs", mock.IsType(songs), request.SongIDs).
+		Return(nil, songs).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(&songs[0])).
+	songRepository.On("UpdateAll", mock.IsType(songs)).
 		Return(internalError).
 		Once()
 
@@ -129,15 +129,15 @@ func TestRemoveSongsFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 		Return(nil, &songs).
 		Once()
 
-	for _, song := range songs {
-		songRepository.On("Update", mock.IsType(&song)).
-			Run(func(args mock.Arguments) {
-				newSong := args.Get(0).(*model.Song)
-				assert.Nil(t, newSong.ArtistID)
-			}).
-			Return(nil).
-			Once()
-	}
+	songRepository.On("UpdateAll", mock.IsType(&songs)).
+		Run(func(args mock.Arguments) {
+			newSongs := args.Get(0).(*[]model.Song)
+			for _, song := range *newSongs {
+				assert.Nil(t, song.ArtistID)
+			}
+		}).
+		Return(nil).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)

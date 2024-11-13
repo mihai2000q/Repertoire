@@ -69,7 +69,7 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnBadRequestError(t *te
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToArtist_WhenUpdateWithAssociationsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := AddSongsToArtist{songRepository: songRepository}
@@ -79,18 +79,18 @@ func TestAddSongsToArtist_WhenUpdateWithAssociationsFails_ShouldReturnInternalSe
 		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
-	songs := []model.Song{
+	songs := &[]model.Song{
 		{
 			ID:       request.SongIDs[0],
 			ArtistID: nil,
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(&songs), request.SongIDs).
-		Return(nil, &songs).
+	songRepository.On("GetAllByIDsWithSongs", mock.IsType(songs), request.SongIDs).
+		Return(nil, songs).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateWithAssociations", mock.IsType(&songs[0])).
+	songRepository.On("UpdateAllWithAssociations", mock.IsType(songs)).
 		Return(internalError).
 		Once()
 
@@ -138,22 +138,22 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil, &songs).
 		Once()
 
-	for _, song := range songs {
-		songRepository.On("UpdateWithAssociations", mock.IsType(&song)).
-			Run(func(args mock.Arguments) {
-				newSong := args.Get(0).(*model.Song)
-				if newSong.Album != nil {
+	songRepository.On("UpdateAllWithAssociations", mock.IsType(&songs)).
+		Run(func(args mock.Arguments) {
+			newSongs := args.Get(0).(*[]model.Song)
+			for _, song := range *newSongs {
+				if song.Album != nil {
 					assert.Equal(t, request.ID, *song.Album.ArtistID)
-					for _, s := range newSong.Album.Songs {
+					for _, s := range song.Album.Songs {
 						assert.Equal(t, request.ID, *s.ArtistID)
 					}
 				} else {
-					assert.Equal(t, request.ID, *newSong.ArtistID)
+					assert.Equal(t, request.ID, *song.ArtistID)
 				}
-			}).
-			Return(nil).
-			Once()
-	}
+			}
+		}).
+		Return(nil).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)

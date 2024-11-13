@@ -69,7 +69,7 @@ func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnBadRequestEr
 	albumRepository.AssertExpectations(t)
 }
 
-func TestAddAlbumsToArtist_WhenUpdateWithAssociationsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddAlbumsToArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := AddAlbumsToArtist{albumRepository: albumRepository}
@@ -79,13 +79,13 @@ func TestAddAlbumsToArtist_WhenUpdateWithAssociationsFails_ShouldReturnInternalS
 		AlbumIDs: []uuid.UUID{uuid.New()},
 	}
 
-	albums := []model.Album{{ID: request.AlbumIDs[0]}}
-	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(&albums), request.AlbumIDs).
-		Return(nil, &albums).
+	albums := &[]model.Album{{ID: request.AlbumIDs[0]}}
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(albums), request.AlbumIDs).
+		Return(nil, albums).
 		Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("UpdateWithAssociations", mock.IsType(&albums[0])).
+	albumRepository.On("UpdateAllWithAssociations", mock.IsType(albums)).
 		Return(internalError).
 		Once()
 
@@ -110,7 +110,7 @@ func TestAddAlbumsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 		AlbumIDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
-	albums := []model.Album{
+	albums := &[]model.Album{
 		{
 			ID:       request.AlbumIDs[0],
 			ArtistID: nil,
@@ -121,22 +121,22 @@ func TestAddAlbumsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			ArtistID: nil,
 		},
 	}
-	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(&albums), request.AlbumIDs).
-		Return(nil, &albums).
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(albums), request.AlbumIDs).
+		Return(nil, albums).
 		Once()
 
-	for _, album := range albums {
-		albumRepository.On("UpdateWithAssociations", mock.IsType(&album)).
-			Run(func(args mock.Arguments) {
-				newAlbum := args.Get(0).(*model.Album)
-				assert.Equal(t, request.ID, *newAlbum.ArtistID)
-				for _, song := range newAlbum.Songs {
-					assert.Equal(t, request.ID, *song.ArtistID)
+	albumRepository.On("UpdateAllWithAssociations", mock.IsType(albums)).
+		Run(func(args mock.Arguments) {
+			newAlbums := args.Get(0).(*[]model.Album)
+			for _, album := range *newAlbums {
+				assert.Equal(t, &request.ID, album.ArtistID)
+				for _, song := range album.Songs {
+					assert.Equal(t, &request.ID, song.ArtistID)
 				}
-			}).
-			Return(nil).
-			Once()
-	}
+			}
+		}).
+		Return(nil).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)

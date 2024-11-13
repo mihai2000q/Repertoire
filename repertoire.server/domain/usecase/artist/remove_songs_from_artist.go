@@ -23,17 +23,17 @@ func (r RemoveSongFromArtist) Handle(request requests.RemoveSongsFromArtistReque
 		return wrapper.InternalServerError(err)
 	}
 
-	for _, song := range songs {
+	for i, song := range songs {
 		if song.ArtistID == nil || *song.ArtistID != request.ID {
 			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " is not owned by this artist"))
 		}
 
-		song.ArtistID = nil
+		songs[i].ArtistID = nil
+	}
 
-		err = r.songRepository.Update(&song)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
+	err = r.songRepository.UpdateAll(&songs)
+	if err != nil {
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

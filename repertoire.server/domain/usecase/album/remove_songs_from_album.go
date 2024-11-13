@@ -46,6 +46,7 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 	if len(songsToDelete) != len(request.SongIDs) {
 		return wrapper.NotFoundError(errors.New("could not find all songs"))
 	}
+	// TODO: TRANSACTION!!!
 	err = r.repository.RemoveSongs(&album, &songsToDelete)
 	if err != nil {
 		return wrapper.InternalServerError(err)

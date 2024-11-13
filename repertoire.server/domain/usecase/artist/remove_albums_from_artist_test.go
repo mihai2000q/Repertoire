@@ -64,7 +64,7 @@ func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnBadRe
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveAlbumsFromArtist_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := RemoveAlbumsFromArtist{albumRepository: albumRepository}
@@ -74,18 +74,18 @@ func TestRemoveAlbumsFromArtist_WhenUpdateAlbumFails_ShouldReturnInternalServerE
 		AlbumIDs: []uuid.UUID{uuid.New()},
 	}
 
-	albums := []model.Album{
+	albums := &[]model.Album{
 		{
 			ID:       request.AlbumIDs[0],
 			ArtistID: &request.ID,
 		},
 	}
-	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(&albums), request.AlbumIDs).
-		Return(nil, &albums).
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(albums), request.AlbumIDs).
+		Return(nil, albums).
 		Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("UpdateWithAssociations", mock.IsType(&albums[0])).
+	albumRepository.On("UpdateAllWithAssociations", mock.IsType(albums)).
 		Return(internalError).
 		Once()
 
@@ -125,18 +125,18 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testin
 		Return(nil, &albums).
 		Once()
 
-	for _, album := range albums {
-		albumRepository.On("UpdateWithAssociations", mock.IsType(&album)).
-			Run(func(args mock.Arguments) {
-				newAlbum := args.Get(0).(*model.Album)
-				assert.Nil(t, newAlbum.ArtistID)
-				for _, song := range newAlbum.Songs {
+	albumRepository.On("UpdateAllWithAssociations", mock.IsType(&albums)).
+		Run(func(args mock.Arguments) {
+			newAlbums := args.Get(0).(*[]model.Album)
+			for _, album := range *newAlbums {
+				assert.Nil(t, album.ArtistID)
+				for _, song := range album.Songs {
 					assert.Nil(t, song.ArtistID)
 				}
-			}).
-			Return(nil).
-			Once()
-	}
+			}
+		}).
+		Return(nil).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)

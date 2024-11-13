@@ -23,20 +23,20 @@ func (r RemoveAlbumsFromArtist) Handle(request requests.RemoveAlbumsFromArtistRe
 		return wrapper.InternalServerError(err)
 	}
 
-	for _, album := range albums {
+	for i, album := range albums {
 		if album.ArtistID == nil || *album.ArtistID != request.ID {
 			return wrapper.BadRequestError(errors.New("album " + album.ID.String() + " is not owned by this artist"))
 		}
 
-		album.ArtistID = nil
-		for i := range album.Songs {
-			album.Songs[i].ArtistID = nil
+		albums[i].ArtistID = nil
+		for j := range album.Songs {
+			albums[i].Songs[j].ArtistID = nil
 		}
+	}
 
-		err = r.albumRepository.UpdateWithAssociations(&album)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
+	err = r.albumRepository.UpdateAllWithAssociations(&albums)
+	if err != nil {
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

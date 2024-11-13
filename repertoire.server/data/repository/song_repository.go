@@ -28,8 +28,9 @@ type SongRepository interface {
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
-	UpdateWithAssociations(song *model.Song) error
 	UpdateAll(songs *[]model.Song) error
+	UpdateWithAssociations(song *model.Song) error
+	UpdateAllWithAssociations(songs *[]model.Song) error
 	Delete(id uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
@@ -126,6 +127,17 @@ func (s songRepository) Update(song *model.Song) error {
 	return s.client.DB.Save(&song).Error
 }
 
+func (s songRepository) UpdateAll(songs *[]model.Song) error {
+	return s.client.DB.Transaction(func(tx *gorm.DB) error {
+		for _, song := range *songs {
+			if err := tx.Save(&song).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 func (s songRepository) UpdateWithAssociations(song *model.Song) error {
 	return s.client.DB.
 		Session(&gorm.Session{FullSaveAssociations: true}).
@@ -133,10 +145,11 @@ func (s songRepository) UpdateWithAssociations(song *model.Song) error {
 		Error
 }
 
-func (s songRepository) UpdateAll(songs *[]model.Song) error {
+func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 	return s.client.DB.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *songs {
-			if err := tx.Save(&song).Error; err != nil {
+			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&song).Error
+			if err != nil {
 				return err
 			}
 		}

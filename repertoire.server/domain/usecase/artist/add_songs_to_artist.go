@@ -23,25 +23,25 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrap
 		return wrapper.InternalServerError(err)
 	}
 
-	for _, song := range songs {
+	for i, song := range songs {
 		if song.ArtistID != nil {
 			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + "already has an artist"))
 		}
 
 		// update the whole album's artist, including the other songs
 		if song.Album != nil {
-			song.Album.ArtistID = &request.ID
-			for i := range song.Album.Songs {
-				song.Album.Songs[i].ArtistID = &request.ID
+			songs[i].Album.ArtistID = &request.ID
+			for j := range song.Album.Songs {
+				songs[i].Album.Songs[j].ArtistID = &request.ID
 			}
 		} else {
-			song.ArtistID = &request.ID
+			songs[i].ArtistID = &request.ID
 		}
+	}
 
-		err = a.songRepository.UpdateWithAssociations(&song)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
+	err = a.songRepository.UpdateAllWithAssociations(&songs)
+	if err != nil {
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

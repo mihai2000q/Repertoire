@@ -129,12 +129,17 @@ func (s *SongRepositoryMock) Update(song *model.Song) error {
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) UpdateAll(songs *[]model.Song) error {
+	args := s.Called(songs)
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) UpdateWithAssociations(song *model.Song) error {
 	args := s.Called(song)
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) UpdateAll(songs *[]model.Song) error {
+func (s *SongRepositoryMock) UpdateAllWithAssociations(songs *[]model.Song) error {
 	args := s.Called(songs)
 	return args.Error(0)
 }
