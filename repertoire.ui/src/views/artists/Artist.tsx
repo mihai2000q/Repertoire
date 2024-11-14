@@ -176,14 +176,16 @@ function Artist() {
                   <ArtistAlbumCard key={album.id} album={album} />
                 ))}
                 {albums.models.length === albums.totalCount && (
-                  <NewArtistAlbumCard openModal={openAddExistingAlbums} />
+                  <NewHorizontalCard onClick={openAddExistingAlbums} borderRadius={'8px'}>
+                    Add New Albums
+                  </NewHorizontalCard>
                 )}
               </SimpleGrid>
             </Stack>
           )}
         </Card>
 
-        <Card className={classes.card} flex={1.05}>
+        <Card variant={'panel'} p={0} h={'100%'} flex={1.05}>
           {isSongsLoading ? (
             <ArtistSongsLoader />
           ) : (
@@ -217,7 +219,9 @@ function Artist() {
                   <ArtistSongCard key={song.id} song={song} />
                 ))}
                 {songs.models.length === songs.totalCount && (
-                  <NewArtistSongCard openModal={openAddExistingSongs} />
+                  <NewHorizontalCard onClick={openAddExistingSongs}>
+                    Add New Songs
+                  </NewHorizontalCard>
                 )}
               </Stack>
             </Stack>

@@ -18,7 +18,6 @@ import { useGetAlbumQuery } from '../../state/albumsApi.ts'
 import AlbumLoader from '../../components/albums/loader/AlbumLoader.tsx'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import AlbumSongCard from '../../components/albums/AlbumSongCard.tsx'
-import NewAlbumSongCard from '../../components/albums/NewAlbumSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import AddNewAlbumSongModal from '../../components/albums/modal/AddNewAlbumSongModal.tsx'
@@ -27,6 +26,7 @@ import userPlaceholder from '../../assets/user-placeholder.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/globalSlice.ts'
 import dayjs from 'dayjs'
+import NewHorizontalCard from "../../components/card/NewHorizontalCard.tsx";
 
 function Album() {
   const dispatch = useAppDispatch()
@@ -61,7 +61,9 @@ function Album() {
           />
         </AspectRatio>
         <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
-          <Text fw={500} inline>Album</Text>
+          <Text fw={500} inline>
+            Album
+          </Text>
           <Title order={1} fw={700}>
             {album.title}
           </Title>
@@ -142,7 +144,7 @@ function Album() {
             {album.songs.map((song) => (
               <AlbumSongCard key={song.id} song={song} />
             ))}
-            {album.songs.length === 0 && <NewAlbumSongCard openModal={openAddExistingSongs} />}
+            {album.songs.length === 0 && <NewHorizontalCard onClick={openAddExistingSongs}>Add New Songs</NewHorizontalCard>}
           </Stack>
         </Stack>
       </Card>

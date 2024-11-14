@@ -1,18 +1,23 @@
 import { alpha, Box, Group, Text } from '@mantine/core'
 import { IconMusicPlus } from '@tabler/icons-react'
+import { MouseEvent } from 'react'
 
-interface NewAlbumSongCardProps {
-  openModal: () => void
+interface NewHorizontalCardProps {
+  children?: string
+  onClick?: (e: MouseEvent) => void,
+  borderRadius?: string
 }
 
-function NewAlbumSongCard({ openModal }: NewAlbumSongCardProps) {
+function NewHorizontalCard({ children, onClick, borderRadius }: NewHorizontalCardProps) {
   return (
     <Group
       align={'center'}
+      wrap={'nowrap'}
       px={'md'}
-      py={'sm'}
-      style={{ cursor: 'pointer' }}
+      py={'xs'}
       sx={(theme) => ({
+        borderRadius: borderRadius,
+        cursor: 'pointer',
         transition: '0.3s',
         color: theme.colors.gray[6],
         '&:hover': {
@@ -21,16 +26,16 @@ function NewAlbumSongCard({ openModal }: NewAlbumSongCardProps) {
           backgroundColor: alpha(theme.colors.cyan[0], 0.15)
         }
       })}
-      onClick={openModal}
+      onClick={onClick}
     >
       <Box bd={'1px dashed gray'} p={'11px 9px 7px 9px'} style={{ borderRadius: '8px' }}>
         <IconMusicPlus size={18} />
       </Box>
       <Text fw={500} c={'inherit'} truncate={'end'}>
-        Add New Songs
+        {children}
       </Text>
     </Group>
   )
 }
 
-export default NewAlbumSongCard
+export default NewHorizontalCard
