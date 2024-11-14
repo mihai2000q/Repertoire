@@ -1,7 +1,6 @@
 import Song from '../../types/models/Song.ts'
 import { alpha, Avatar, Group, Stack, Text } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
-import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/globalSlice.ts'
 
@@ -31,25 +30,14 @@ function AlbumSongCard({ song }: AlbumSongCardProps) {
       py={'xs'}
       onClick={handleClick}
     >
-      <Text fw={500} w={35} ta={'center'}>{song.albumTrackNo}</Text>
+      <Text fw={500} w={35} ta={'center'}>
+        {song.albumTrackNo}
+      </Text>
       <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
-      <Stack gap={0} style={{ overflow: 'hidden' }}>
-        <Group>
-          <Text fw={500} truncate={'end'}>
-            {song.title}
-          </Text>
-          {song.album && (
-            <Text fz={'sm'} truncate={'end'}>
-              {' '}
-              - {song.album.title}
-            </Text>
-          )}
-        </Group>
-        {song.releaseDate && (
-          <Text fz={'xs'} c={'dimmed'}>
-            {dayjs(song.releaseDate).format('DD MMM YYYY')}
-          </Text>
-        )}
+      <Stack style={{ overflow: 'hidden' }}>
+        <Text fw={500} truncate={'end'}>
+          {song.title}
+        </Text>
       </Stack>
     </Group>
   )
