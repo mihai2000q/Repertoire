@@ -38,3 +38,27 @@ export interface SaveImageToSongRequest {
   image: FileWithPath
   id: string
 }
+
+export interface CreateSongSectionRequest {
+  songId: string
+  typeId: string
+  name: string
+}
+
+export interface UpdateSongSectionRequest {
+  id: string
+  typeId: string
+  name: string
+  rehearsals: number
+}
+
+export interface MoveSongSectionRequest {
+  id: string
+  overId: string
+  songId: string
+}
+
+export interface DeleteSongSectionRequest {
+  id: string
+  songId: string
+}
