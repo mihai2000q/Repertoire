@@ -1,5 +1,15 @@
 import { ReactElement, useState } from 'react'
-import { Box, Button, Group, Loader, Pagination, Space, Stack, Text, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Group,
+  Loader,
+  Pagination,
+  Space,
+  Stack,
+  Text,
+  Title
+} from '@mantine/core'
 import { useGetSongsQuery } from '../../state/songsApi.ts'
 import SongCard from '../../components/songs/SongCard.tsx'
 import { IconMusicPlus } from '@tabler/icons-react'
@@ -7,6 +17,7 @@ import NewSongCard from '../../components/songs/NewSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../../components/songs/loader/SongsLoader.tsx'
+import usePaginationInfo from '../../hooks/usePaginationInfo.ts'
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
@@ -15,11 +26,13 @@ function Songs(): ReactElement {
     currentPage: currentPage
   })
 
+  const { startCount, endCount, totalPages } = usePaginationInfo(songs?.totalCount, 20, currentPage)
+
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
 
   return (
-    <Stack h={'100%'}>
+    <Stack h={'100%'} gap={'xs'}>
       <AddNewSongModal opened={openedAddNewSongModal} onClose={closeAddNewSongModal} />
 
       <Title order={3} fw={800}>
@@ -35,6 +48,11 @@ function Songs(): ReactElement {
           New Song
         </Button>
       </Group>
+      {!isLoading && (
+        <Text inline mb={'xs'}>
+          {startCount} - {endCount} songs out of {songs?.totalCount}
+        </Text>
+      )}
 
       {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
       <Group>
@@ -51,7 +69,7 @@ function Songs(): ReactElement {
             data-testid={'songs-pagination'}
             value={currentPage}
             onChange={setCurrentPage}
-            total={songs?.totalCount > 0 ? songs?.totalCount / songs?.models.length : 0}
+            total={totalPages}
           />
         ) : (
           <Loader size={25} />

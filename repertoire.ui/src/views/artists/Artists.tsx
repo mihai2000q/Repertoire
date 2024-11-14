@@ -16,6 +16,7 @@ import ArtistCard from '../../components/artists/card/ArtistCard.tsx'
 import AddNewArtistModal from '../../components/artists/modal/AddNewArtistModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus } from '@tabler/icons-react'
+import usePaginationInfo from "../../hooks/usePaginationInfo.ts";
 
 function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -24,11 +25,13 @@ function Artists() {
     currentPage: currentPage
   })
 
+  const { startCount, endCount, totalPages } = usePaginationInfo(artists?.totalCount, 20, currentPage)
+
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
   return (
-    <Stack h={'100%'}>
+    <Stack h={'100%'} gap={'xs'}>
       <AddNewArtistModal opened={openedAddNewArtistModal} onClose={closeAddNewArtistModal} />
 
       <Group gap={4} align={'center'}>
@@ -46,6 +49,11 @@ function Artists() {
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
+      {!isLoading && (
+        <Text inline mb={'xs'}>
+          {startCount} - {endCount} artists out of {artists?.totalCount}
+        </Text>
+      )}
 
       {artists?.totalCount === 0 && <Text mt={'sm'}>There are no artists yet. Try to add one</Text>}
       <Group gap={'xl'}>
@@ -61,7 +69,7 @@ function Artists() {
             data-testid={'artists-pagination'}
             value={currentPage}
             onChange={setCurrentPage}
-            total={artists?.totalCount > 0 ? artists?.totalCount / artists?.models.length : 0}
+            total={totalPages}
           />
         ) : (
           <Loader size={25} />
