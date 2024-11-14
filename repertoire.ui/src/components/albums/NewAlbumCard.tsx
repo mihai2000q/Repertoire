@@ -1,4 +1,4 @@
-import { alpha, Card, Stack } from '@mantine/core'
+import { alpha, Card, Center } from '@mantine/core'
 import { IconMusicPlus } from '@tabler/icons-react'
 
 interface NewAlbumCardProps {
@@ -26,9 +26,9 @@ function NewAlbumCard({ openModal }: NewAlbumCardProps) {
         }
       })}
     >
-      <Stack w={'100%'} h={'100%'} align={'center'} justify={'center'}>
+      <Center h={'100%'}>
         <IconMusicPlus size={40} />
-      </Stack>
+      </Center>
     </Card>
   )
 }
