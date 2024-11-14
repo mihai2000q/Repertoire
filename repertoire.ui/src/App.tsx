@@ -24,6 +24,7 @@ import Albums from './views/albums/Albums.tsx'
 import Artists from './views/artists/Artists.tsx'
 import Artist from './views/artists/Artist.tsx'
 import Album from './views/albums/Album.tsx'
+import Song from './views/songs/Song.tsx'
 
 function App(): ReactElement {
   return (
@@ -53,6 +54,7 @@ function App(): ReactElement {
                     <Route path={'albums'} element={<Albums />} />
                     <Route path={'album/:id'} element={<Album />} />
                     <Route path={'songs'} element={<Songs />} />
+                    <Route path={'song/:id'} element={<Song />} />
 
                     {/* Errors */}
                     <Route path={'401'} element={<Unauthorized />} />
