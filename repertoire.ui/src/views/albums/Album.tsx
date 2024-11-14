@@ -60,7 +60,8 @@ function Album() {
             })}
           />
         </AspectRatio>
-        <Stack gap={4}>
+        <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
+          <Text fw={500} inline>Album</Text>
           <Title order={1} fw={700}>
             {album.title}
           </Title>
