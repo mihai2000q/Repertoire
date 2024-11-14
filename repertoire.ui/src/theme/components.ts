@@ -2,6 +2,8 @@ import {
   ActionIcon,
   ActionIconFactory,
   alpha,
+  Card,
+  CardFactory,
   Menu,
   NavLink,
   StylesApiProps,
@@ -23,6 +25,31 @@ export const components = {
             color: theme.colors.gray[6],
             backgroundColor: theme.colors.gray[2],
             shadows: theme.shadows.lg
+          }
+        }
+      }
+    })
+  }),
+  Card: Card.extend({
+    styles: (theme) => ({
+      root: {
+        '&[data-variant="panel"]': {
+          boxShadow: theme.shadows.sm,
+          transition: '0.3s',
+          '&:hover': {
+            boxShadow: theme.shadows.xl
+          }
+        },
+        '&[data-variant="add-new"]': {
+          cursor: 'pointer',
+          transition: '0.3s',
+          boxShadow: theme.shadows.xxl,
+          color: theme.colors.cyan[7],
+          '&:hover': {
+            boxShadow: theme.shadows.xxl_hover,
+            color: theme.colors.cyan[8],
+            backgroundColor: alpha(theme.colors.cyan[0], 0.2),
+            transform: 'scale(1.1)'
           }
         }
       }
@@ -89,5 +116,10 @@ declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
     variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey'
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  interface CardProps {
+    variant?: StylesApiProps<CardFactory>['variant'] | 'panel' | 'add-new'
   }
 }

@@ -3,6 +3,8 @@ import { useGetAlbumsQuery } from '../../state/albumsApi.ts'
 import {
   ActionIcon,
   Box,
+  Card,
+  Center,
   Group,
   Loader,
   Pagination,
@@ -15,9 +17,8 @@ import AlbumsLoader from '../../components/albums/loader/AlbumsLoader.tsx'
 import AlbumCard from '../../components/albums/AlbumCard.tsx'
 import AddNewAlbumModal from '../../components/albums/modal/AddNewAlbumModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconArrowsSort, IconFilterFilled, IconPlus } from '@tabler/icons-react'
-import NewAlbumCard from "../../components/albums/NewAlbumCard.tsx";
-import usePaginationInfo from "../../hooks/usePaginationInfo.ts";
+import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
+import usePaginationInfo from '../../hooks/usePaginationInfo.ts'
 
 function Albums() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -26,7 +27,11 @@ function Albums() {
     currentPage: currentPage
   })
 
-  const { startCount, endCount, totalPages } = usePaginationInfo(albums?.totalCount, 20, currentPage)
+  const { startCount, endCount, totalPages } = usePaginationInfo(
+    albums?.totalCount,
+    20,
+    currentPage
+  )
 
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
@@ -60,7 +65,21 @@ function Albums() {
       <Group gap={'xl'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
-        {albums?.totalCount > 0 && <NewAlbumCard openModal={openAddNewAlbumModal} />}
+        {albums?.totalCount > 0 && currentPage == totalPages && (
+          <Card
+            data-testid={'new-album-card'}
+            w={150}
+            h={150}
+            radius={'lg'}
+            onClick={openAddNewAlbumModal}
+            style={{ alignSelf: 'start' }}
+            variant={'add-new'}
+          >
+            <Center h={'100%'}>
+              <IconMusicPlus size={40} />
+            </Center>
+          </Card>
+        )}
       </Group>
 
       <Space flex={1} />

@@ -55,10 +55,23 @@ function Songs(): ReactElement {
       )}
 
       {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
-      <Group>
+      <Group gap={'lg'} align={'stretch'}>
         {isLoading && <SongsLoader />}
         {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
-        {songs?.totalCount > 0 && <NewSongCard openModal={openAddNewSongModal} />}
+        {songs?.totalCount > 0 && currentPage == totalPages && (
+          <Card
+            data-testid={'new-song-card'}
+            variant={'add-new'}
+            radius={'lg'}
+            mih={175}
+            w={175}
+            onClick={openAddNewSongModal}
+          >
+            <Center h={'100%'}>
+              <IconMusicPlus size={40} />
+            </Center>
+          </Card>
+        )}
       </Group>
 
       <Space flex={1} />

@@ -107,18 +107,7 @@ function Album() {
 
       <Divider />
 
-      <Card
-        h={'100%'}
-        p={0}
-        mx={'xs'}
-        sx={(theme) => ({
-          boxShadow: theme.shadows.sm,
-          transition: '0.3s',
-          '&:hover': {
-            boxShadow: theme.shadows.xl
-          }
-        })}
-      >
+      <Card variant={'panel'} h={'100%'} p={0} mx={'xs'}>
         <Stack gap={0}>
           <Group px={'md'} pt={'md'} pb={'xs'}>
             <Text fw={600}>Songs</Text>

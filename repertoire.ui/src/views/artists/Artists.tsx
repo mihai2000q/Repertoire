@@ -3,6 +3,8 @@ import { useGetArtistsQuery } from '../../state/artistsApi.ts'
 import {
   ActionIcon,
   Box,
+  Card,
+  Center,
   Group,
   Loader,
   Pagination,
@@ -15,8 +17,8 @@ import ArtistsLoader from '../../components/artists/loader/ArtistsLoader.tsx'
 import ArtistCard from '../../components/artists/card/ArtistCard.tsx'
 import AddNewArtistModal from '../../components/artists/modal/AddNewArtistModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconArrowsSort, IconFilterFilled, IconPlus } from '@tabler/icons-react'
-import usePaginationInfo from "../../hooks/usePaginationInfo.ts";
+import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@tabler/icons-react'
+import usePaginationInfo from '../../hooks/usePaginationInfo.ts'
 
 function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -25,7 +27,11 @@ function Artists() {
     currentPage: currentPage
   })
 
-  const { startCount, endCount, totalPages } = usePaginationInfo(artists?.totalCount, 20, currentPage)
+  const { startCount, endCount, totalPages } = usePaginationInfo(
+    artists?.totalCount,
+    20,
+    currentPage
+  )
 
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
@@ -59,6 +65,21 @@ function Artists() {
       <Group gap={'xl'}>
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
+        {artists?.totalCount > 0 && currentPage == totalPages && (
+          <Card
+            data-testid={'new-artist-card'}
+            w={125}
+            h={125}
+            radius={'50%'}
+            onClick={openAddNewArtistModal}
+            style={{ alignSelf: 'start' }}
+            variant={'add-new'}
+          >
+            <Center h={'100%'}>
+              <IconUserPlus size={40} />
+            </Center>
+          </Card>
+        )}
       </Group>
 
       <Space flex={1} />

@@ -18,7 +18,6 @@ import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import ArtistLoader from '../../components/artists/loader/ArtistLoader.tsx'
 import { useGetAlbumsQuery } from '../../state/albumsApi.ts'
 import { useGetSongsQuery } from '../../state/songsApi.ts'
-import { createStyles } from '@mantine/emotion'
 import ArtistAlbumsLoader from '../../components/artists/loader/ArtistAlbumsLoader.tsx'
 import ArtistSongsLoader from '../../components/artists/loader/ArtistSongsLoader.tsx'
 import ArtistSongCard from '../../components/artists/card/ArtistSongCard.tsx'
@@ -39,21 +38,8 @@ import { useDisclosure } from '@mantine/hooks'
 import AddExistingArtistSongsModal from '../../components/artists/modal/AddExistingArtistSongsModal.tsx'
 import AddExistingArtistAlbumsModal from '../../components/artists/modal/AddExistingArtistAlbumsModal.tsx'
 import AddNewArtistAlbumModal from '../../components/artists/modal/AddNewArtistAlbumModal.tsx'
-import NewArtistSongCard from '../../components/artists/card/NewArtistSongCard.tsx'
-import NewArtistAlbumCard from '../../components/artists/card/NewArtistAlbumCard.tsx'
 import artistAlbumsOrders from '../../data/artists/artistAlbumsOrders.ts'
-
-const useStyles = createStyles((theme) => ({
-  card: {
-    padding: 0,
-    boxShadow: theme.shadows.sm,
-    height: '100%',
-    transition: '0.3s',
-    '&:hover': {
-      boxShadow: theme.shadows.xl
-    }
-  }
-}))
+import NewHorizontalCard from '../../components/card/NewHorizontalCard.tsx'
 
 const SortButton = ({
   order,
@@ -91,8 +77,6 @@ const SortButton = ({
 )
 
 function Artist() {
-  const { classes } = useStyles()
-
   const params = useParams()
   const artistId = params['id'] ?? ''
 
@@ -137,7 +121,7 @@ function Artist() {
       <Divider />
 
       <Group align={'start'}>
-        <Card className={classes.card} flex={1}>
+        <Card variant={'panel'} p={0} h={'100%'} flex={1}>
           {isAlbumsLoading ? (
             <ArtistAlbumsLoader />
           ) : (
