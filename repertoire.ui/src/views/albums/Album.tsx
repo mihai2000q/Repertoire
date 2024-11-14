@@ -10,7 +10,8 @@ import {
   Space,
   Stack,
   Text,
-  Title
+  Title,
+  Tooltip
 } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { useGetAlbumQuery } from '../../state/albumsApi.ts'
@@ -25,6 +26,7 @@ import AddExistingAlbumSongsModal from '../../components/albums/modal/AddExistin
 import userPlaceholder from '../../assets/user-placeholder.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/globalSlice.ts'
+import dayjs from 'dayjs'
 
 function Album() {
   const dispatch = useAppDispatch()
@@ -59,27 +61,44 @@ function Album() {
           />
         </AspectRatio>
         <Stack gap={4}>
-          <Title order={5} fw={700}>
+          <Title order={1} fw={700}>
             {album.title}
           </Title>
-          {album.artist && (
-            <Group gap={'xs'}>
-              <Avatar src={album.artist.imageUrl ?? userPlaceholder} />
-              <Text
-                fw={600}
-                fz={'lg'}
-                sx={{
-                  cursor: 'pointer',
-                  '&:hover': {
-                    textDecoration: 'underline'
-                  }
-                }}
-                onClick={handleArtistClick}
+          <Group gap={4}>
+            {album.artist && (
+              <>
+                <Group gap={'xs'}>
+                  <Avatar size={35} src={album.artist.imageUrl ?? userPlaceholder} />
+                  <Text
+                    fw={600}
+                    fz={'lg'}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': { textDecoration: 'underline' }
+                    }}
+                    onClick={handleArtistClick}
+                  >
+                    {album.artist.name}
+                  </Text>
+                </Group>
+                <Text c={'dimmed'}>•</Text>
+              </>
+            )}
+            {album.releaseDate && (
+              <Tooltip
+                label={'Released on ' + dayjs(album.releaseDate).format('DD MMMM YYYY')}
+                openDelay={200}
+                position={'bottom'}
               >
-                {album.artist.name}
-              </Text>
-            </Group>
-          )}
+                <Text fw={500} c={'dimmed'}>
+                  {dayjs(album.releaseDate).format('YYYY')} •
+                </Text>
+              </Tooltip>
+            )}
+            <Text fw={500} c={'dimmed'}>
+              {album.songs.length} songs
+            </Text>
+          </Group>
         </Stack>
       </Group>
 
