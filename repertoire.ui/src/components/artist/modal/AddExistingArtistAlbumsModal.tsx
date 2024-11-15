@@ -6,7 +6,8 @@ import {
   Checkbox,
   Group,
   LoadingOverlay,
-  Modal, Skeleton,
+  Modal,
+  Skeleton,
   Stack,
   Text,
   TextInput,
@@ -18,7 +19,7 @@ import { useListState } from '@mantine/hooks'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {useState} from "react";
+import { MouseEvent, useState } from 'react'
 
 interface AddNewArtistAlbumModalProps {
   opened: boolean
@@ -50,7 +51,12 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
     }
   }
 
-  async function addAlbums() {
+  async function addAlbums(e: MouseEvent) {
+    if (albumIds.length === 0) {
+      e.preventDefault()
+      return
+    }
+
     await addAlbumMutation({ id: artistId, albumIds }).unwrap()
 
     toast.success(`Albums added to artist!`)
@@ -93,50 +99,42 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
             </Group>
           )}
           <Stack w={'100%'} gap={0} style={{ overflow: 'auto', maxHeight: '50vh' }}>
-            {albumsIsLoading ? (
-              Array.from(Array(5)).map((_, i) => (
-                <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                  <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                  <Skeleton width={37} height={37} radius={'md'} />
-                  <Skeleton width={160} height={18} />
-                </Group>
-              ))
-            ) : (
-              albums.models.map((album) => (
-                <Group
-                  key={album.id}
-                  align={'center'}
-                  sx={(theme) => ({
-                    transition: '0.3s',
-                    '&:hover': {
-                      boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-                    }
-                  })}
-                  w={'100%'}
-                  px={'xl'}
-                  py={'xs'}
-                >
-                  <Checkbox
-                    checked={albumIds.includes(album.id)}
-                    onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
-                    pr={'sm'}
-                  />
-                  <Avatar radius={'md'} src={album.imageUrl ?? albumPlaceholder} />
-                  <Text fw={500}>{album.title}</Text>
-                </Group>
-              ))
-            )}
+            {albumsIsLoading
+              ? Array.from(Array(5)).map((_, i) => (
+                  <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+                    <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+                    <Skeleton width={37} height={37} radius={'md'} />
+                    <Skeleton width={160} height={18} />
+                  </Group>
+                ))
+              : albums.models.map((album) => (
+                  <Group
+                    key={album.id}
+                    align={'center'}
+                    sx={(theme) => ({
+                      transition: '0.3s',
+                      '&:hover': {
+                        boxShadow: theme.shadows.xl,
+                        backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      }
+                    })}
+                    w={'100%'}
+                    px={'xl'}
+                    py={'xs'}
+                  >
+                    <Checkbox
+                      checked={albumIds.includes(album.id)}
+                      onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
+                      pr={'sm'}
+                    />
+                    <Avatar radius={'md'} src={album.imageUrl ?? albumPlaceholder} />
+                    <Text fw={500}>{album.title}</Text>
+                  </Group>
+                ))}
           </Stack>
           <Box p={'md'} style={{ alignSelf: 'end' }}>
-            <Tooltip label="Select albums">
-              <Button
-                data-disabled={albumIds.length === 0}
-                onClick={(e) => {
-                  e.preventDefault()
-                  addAlbums().then()
-                }}
-              >
+            <Tooltip disabled={albumIds.length > 0} label="Select albums">
+              <Button data-disabled={albumIds.length === 0} onClick={addAlbums}>
                 Add
               </Button>
             </Tooltip>

@@ -18,7 +18,7 @@ import { useListState } from '@mantine/hooks'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import { useState } from 'react'
+import { MouseEvent, useState } from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
 
 interface AddNewAlbumSongModalProps {
@@ -51,7 +51,12 @@ function AddExistingAlbumSongsModal({ opened, onClose, albumId }: AddNewAlbumSon
     }
   }
 
-  async function addSongs() {
+  async function addSongs(e: MouseEvent) {
+    if (songIds.length === 0) {
+      e.preventDefault()
+      return
+    }
+
     await addSongsMutation({ id: albumId, songIds }).unwrap()
 
     toast.success(`Songs added to album!`)
@@ -128,14 +133,8 @@ function AddExistingAlbumSongsModal({ opened, onClose, albumId }: AddNewAlbumSon
                 ))}
           </Stack>
           <Box p={'md'} style={{ alignSelf: 'end' }}>
-            <Tooltip label="Select songs">
-              <Button
-                data-disabled={songIds.length === 0}
-                onClick={(e) => {
-                  e.preventDefault()
-                  addSongs().then()
-                }}
-              >
+            <Tooltip disabled={songIds.length > 0} label="Select songs">
+              <Button data-disabled={songIds.length === 0} onClick={addSongs}>
                 Add
               </Button>
             </Tooltip>
