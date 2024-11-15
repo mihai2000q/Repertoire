@@ -68,7 +68,7 @@ function AddNewAlbumSongModal({ opened, onClose, albumId }: AddNewAlbumSongModal
               />
             </Group>
 
-            <Button style={{ alignSelf: 'center' }} type={'submit'} disabled={isLoading}>
+            <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
               Submit
             </Button>
           </Stack>

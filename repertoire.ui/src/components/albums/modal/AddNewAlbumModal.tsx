@@ -98,7 +98,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
 
             <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
 
-            <Button style={{ alignSelf: 'end' }} type={'submit'} disabled={isLoading}>
+            <Button style={{ alignSelf: 'end' }} type={'submit'} loading={isLoading}>
               Submit
             </Button>
           </Stack>

@@ -70,7 +70,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
               />
             </Group>
 
-            <Button style={{ alignSelf: 'center' }} type={'submit'} disabled={isLoading}>
+            <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
               Submit
             </Button>
           </Stack>

@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
 import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
-import AddNewSongModelFinalStep from './AddNewSongModelFinalStep.tsx'
+import AddNewSongModalFinalStep from './AddNewSongModalFinalStep.tsx'
 import { useListState } from '@mantine/hooks'
 
 export interface AddNewSongModalSongSection {
@@ -66,8 +66,8 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
     youtubeLink
   }: AddNewSongForm) {
     title = title.trim()
-    songsterrLink = songsterrLink?.trim()
-    youtubeLink = youtubeLink?.trim()
+    songsterrLink = songsterrLink?.trim() === '' ? null : songsterrLink?.trim()
+    youtubeLink = youtubeLink?.trim() === '' ? null : youtubeLink?.trim()
 
     const res = await createSongMutation({
       title: title,
@@ -125,7 +125,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
             </Stepper.Step>
 
             <Stepper.Step label={'Final Step'} description={'Web & Media'}>
-              <AddNewSongModelFinalStep form={form} image={image} setImage={setImage} />
+              <AddNewSongModalFinalStep form={form} image={image} setImage={setImage} />
             </Stepper.Step>
           </Stepper>
 
@@ -138,7 +138,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
             )}
             {activeStep !== 2 && <Button onClick={nextStep}>Next</Button>}
             {activeStep === 2 && (
-              <Button type={'submit'} disabled={isLoading}>
+              <Button type={'submit'} loading={isLoading}>
                 Submit
               </Button>
             )}
