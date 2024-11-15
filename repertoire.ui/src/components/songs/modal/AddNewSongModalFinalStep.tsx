@@ -5,13 +5,13 @@ import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
 import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPreview.tsx'
 
-interface AddNewSongModelFinalStepProps {
+interface AddNewSongModalFinalStepProps {
   form: UseFormReturnType<unknown, (values: unknown) => unknown>
   image: FileWithPath | null
   setImage: Dispatch<SetStateAction<FileWithPath | null>>
 }
 
-function AddNewSongModelFinalStep({ form, image, setImage }: AddNewSongModelFinalStepProps) {
+function AddNewSongModalFinalStep({ form, image, setImage }: AddNewSongModalFinalStepProps) {
   return (
     <Stack>
       <TextInput
@@ -34,4 +34,4 @@ function AddNewSongModelFinalStep({ form, image, setImage }: AddNewSongModelFina
   )
 }
 
-export default AddNewSongModelFinalStep
+export default AddNewSongModalFinalStep
