@@ -68,6 +68,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
     title = title.trim()
     songsterrLink = songsterrLink?.trim() === '' ? null : songsterrLink?.trim()
     youtubeLink = youtubeLink?.trim() === '' ? null : youtubeLink?.trim()
+    bpm = typeof bpm === 'string' ? null : bpm
 
     const res = await createSongMutation({
       title: title,

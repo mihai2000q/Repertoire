@@ -40,10 +40,10 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
 
     await updateSongMutation({
       ...song,
+      guitarTuningId: song.guitarTuning?.id,
       id: song.id,
       songsterrLink: songsterrLink,
-      youtubeLink: youtubeLink,
-      guitarTuningId: song.guitarTuning?.id
+      youtubeLink: youtubeLink
     }).unwrap()
 
     onClose()
