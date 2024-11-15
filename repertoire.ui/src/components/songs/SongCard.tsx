@@ -25,7 +25,7 @@ import {
   IconMicrophoneFilled,
   IconStarFilled
 } from '@tabler/icons-react'
-import useDifficultyInfo from '../../hooks/songs/useDifficultyInfo.ts'
+import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (

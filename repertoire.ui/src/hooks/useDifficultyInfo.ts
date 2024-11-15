@@ -1,4 +1,4 @@
-import Difficulty from '../../utils/enums/Difficulty.ts'
+import Difficulty from '../utils/enums/Difficulty.ts'
 import { useMemo } from 'react'
 import { useMantineTheme } from '@mantine/core'
 
