@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+const youtubeRegex =
+  /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%?]{11})$/
+
 export interface AddNewSongForm {
   title: string
   description: string
@@ -10,13 +13,31 @@ export interface AddNewSongForm {
   artistName?: string
 
   releaseDate?: Date
-  bpm?: number
+  bpm?: number | string
   songsterrLink?: string
   youtubeLink?: string
 }
 
 export const addNewSongValidation = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank'),
+  songsterrLink: z
+    .string()
+    .includes('songsterr.com', { message: 'This is not a valid Songsterr URL' })
+    .url('This is not a valid URL')
+    .nullish(),
+  youtubeLink: z
+    .string()
+    .url('This is not a valid URL')
+    .regex(youtubeRegex, { message: 'This is not a valid Youtube URL' })
+    .nullish()
+})
+
+export interface EditSongLinksForm {
+  songsterrLink?: string
+  youtubeLink?: string
+}
+
+export const editSongLinksValidation = z.object({
   songsterrLink: z
     .preprocess(
       (input) => (input === '' ? null : input),
@@ -30,7 +51,11 @@ export const addNewSongValidation = z.object({
   youtubeLink: z
     .preprocess(
       (input) => (input === '' ? null : input),
-      z.string().url('This is not a valid URL').nullish()
+      z
+        .string()
+        .url('This is not a valid URL')
+        .regex(youtubeRegex, { message: 'This is not a valid Youtube URL' })
+        .nullish()
     )
     .nullish()
 })

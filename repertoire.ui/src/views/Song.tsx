@@ -4,7 +4,6 @@ import {
   AspectRatio,
   Avatar,
   Button,
-  Card,
   Divider,
   Grid,
   Group,
@@ -29,6 +28,10 @@ import Difficulty from '../utils/enums/Difficulty.ts'
 import { IconBrandYoutube, IconCheck, IconGuitarPick } from '@tabler/icons-react'
 import SongSections from '../components/song/SongSections.tsx'
 import EditPanelCard from '../components/card/EditPanelCard.tsx'
+import { useDisclosure } from '@mantine/hooks'
+import EditSongDescriptionModal from '../components/song/modal/EditSongDescriptionModal.tsx'
+import EditSongInformationModal from '../components/song/modal/EditSongInformationModal.tsx'
+import EditSongLinksModal from '../components/song/modal/EditSongLinksModal.tsx'
 
 const NotSet = () => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
@@ -45,6 +48,17 @@ function Song() {
   const { data: song, isLoading } = useGetSongQuery(songId)
 
   const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(song?.difficulty)
+
+  const [
+    openedEditSongInformation,
+    { open: openEditSongInformation, close: closeEditSongInformation }
+  ] = useDisclosure(false)
+  const [
+    openedEditSongDescription,
+    { open: openEditSongDescription, close: closeEditSongDescription }
+  ] = useDisclosure(false)
+  const [openedEditSongLinks, { open: openEditSongLinks, close: closeEditSongLinks }] =
+    useDisclosure(false)
 
   function handleAlbumClick() {
     dispatch(openAlbumDrawer(song.album.id))
@@ -165,7 +179,7 @@ function Song() {
 
       <Group align="start" mb={'lg'}>
         <Stack flex={1}>
-          <EditPanelCard p={'md'} onEditClick={() => {}}>
+          <EditPanelCard p={'md'} onEditClick={openEditSongInformation}>
             <Stack gap={'xs'}>
               <Text fw={600}>Information</Text>
               <Grid align={'center'} gutter={'sm'}>
@@ -243,7 +257,7 @@ function Song() {
             </Stack>
           </EditPanelCard>
 
-          <Card variant={'panel'} p={'md'}>
+          <EditPanelCard p={'md'} onEditClick={openEditSongLinks}>
             <Stack>
               <Text fw={600}>Links</Text>
               <Stack gap={'xs'}>
@@ -296,11 +310,11 @@ function Song() {
                 )}
               </Stack>
             </Stack>
-          </Card>
+          </EditPanelCard>
         </Stack>
 
         <Stack flex={1.75}>
-          <Card variant={'panel'} p={'md'}>
+          <EditPanelCard p={'md'} onEditClick={openEditSongDescription}>
             <Stack gap={'xs'}>
               <Text fw={600}>Description</Text>
               {song.description ? (
@@ -311,11 +325,23 @@ function Song() {
                 </Text>
               )}
             </Stack>
-          </Card>
+          </EditPanelCard>
 
           <SongSections songId={songId} sections={song.sections} />
         </Stack>
       </Group>
+
+      <EditSongInformationModal
+        song={song}
+        opened={openedEditSongInformation}
+        onClose={closeEditSongInformation}
+      />
+      <EditSongDescriptionModal
+        song={song}
+        opened={openedEditSongDescription}
+        onClose={closeEditSongDescription}
+      />
+      <EditSongLinksModal song={song} opened={openedEditSongLinks} onClose={closeEditSongLinks} />
     </Stack>
   )
 }
