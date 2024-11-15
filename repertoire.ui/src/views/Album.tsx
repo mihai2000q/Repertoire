@@ -14,19 +14,19 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useParams } from 'react-router-dom'
-import { useGetAlbumQuery } from '../../state/albumsApi.ts'
-import AlbumLoader from '../../components/albums/loader/AlbumLoader.tsx'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
-import AlbumSongCard from '../../components/albums/AlbumSongCard.tsx'
+import { useGetAlbumQuery } from '../state/albumsApi.ts'
+import AlbumLoader from '../components/album/AlbumLoader.tsx'
+import albumPlaceholder from '../assets/image-placeholder-1.jpg'
+import AlbumSongCard from '../components/album/AlbumSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
-import AddNewAlbumSongModal from '../../components/albums/modal/AddNewAlbumSongModal.tsx'
-import AddExistingAlbumSongsModal from '../../components/albums/modal/AddExistingAlbumSongsModal.tsx'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
-import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer } from '../../state/globalSlice.ts'
+import AddNewAlbumSongModal from '../components/album/modal/AddNewAlbumSongModal.tsx'
+import AddExistingAlbumSongsModal from '../components/album/modal/AddExistingAlbumSongsModal.tsx'
+import userPlaceholder from '../assets/user-placeholder.jpg'
+import { useAppDispatch } from '../state/store.ts'
+import { openArtistDrawer } from '../state/globalSlice.ts'
 import dayjs from 'dayjs'
-import NewHorizontalCard from "../../components/card/NewHorizontalCard.tsx";
+import NewHorizontalCard from "../components/card/NewHorizontalCard.tsx";
 
 function Album() {
   const dispatch = useAppDispatch()

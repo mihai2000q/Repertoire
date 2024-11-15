@@ -12,13 +12,13 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useGetSongsQuery } from '../../state/songsApi.ts'
-import SongCard from '../../components/songs/SongCard.tsx'
+import { useGetSongsQuery } from '../state/songsApi.ts'
+import SongCard from '../components/songs/SongCard.tsx'
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import AddNewSongModal from '../../components/songs/modal/AddNewSongModal.tsx'
-import SongsLoader from '../../components/songs/loader/SongsLoader.tsx'
-import usePaginationInfo from '../../hooks/usePaginationInfo.ts'
+import AddNewSongModal from '../components/songs/modal/AddNewSongModal.tsx'
+import SongsLoader from '../components/songs/SongsLoader.tsx'
+import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)

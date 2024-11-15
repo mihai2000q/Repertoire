@@ -1,6 +1,6 @@
-import Artist from '../../../types/models/Artist.ts'
+import Artist from '../../types/models/Artist.ts'
 import { Avatar, Stack, Text } from '@mantine/core'
-import artistPlaceholder from '../../../assets/user-placeholder.jpg'
+import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import {useNavigate} from "react-router-dom";
 

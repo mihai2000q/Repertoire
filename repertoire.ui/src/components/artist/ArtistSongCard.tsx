@@ -1,9 +1,9 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../types/models/Song.ts'
 import { alpha, Avatar, Group, Space, Stack, Text } from '@mantine/core'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
-import { useAppDispatch } from '../../../state/store.ts'
-import { openSongDrawer } from '../../../state/globalSlice.ts'
+import { useAppDispatch } from '../../state/store.ts'
+import { openSongDrawer } from '../../state/globalSlice.ts'
 
 interface ArtistSongCardProps {
   song: Song

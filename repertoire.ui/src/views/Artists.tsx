@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useGetAlbumsQuery } from '../../state/albumsApi.ts'
+import { useGetArtistsQuery } from '../state/artistsApi.ts'
 import {
   ActionIcon,
   Box,
@@ -13,38 +13,38 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import AlbumsLoader from '../../components/albums/loader/AlbumsLoader.tsx'
-import AlbumCard from '../../components/albums/AlbumCard.tsx'
-import AddNewAlbumModal from '../../components/albums/modal/AddNewAlbumModal.tsx'
+import ArtistsLoader from '../components/artists/ArtistsLoader.tsx'
+import ArtistCard from '../components/artists/ArtistCard.tsx'
+import AddNewArtistModal from '../components/artists/modal/AddNewArtistModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
-import usePaginationInfo from '../../hooks/usePaginationInfo.ts'
+import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@tabler/icons-react'
+import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 
-function Albums() {
+function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data: albums, isLoading } = useGetAlbumsQuery({
+  const { data: artists, isLoading } = useGetArtistsQuery({
     pageSize: 20,
     currentPage: currentPage
   })
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
-    albums?.totalCount,
+    artists?.totalCount,
     20,
     currentPage
   )
 
-  const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
+  const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <AddNewAlbumModal opened={openedAddNewAlbumModal} onClose={closeAddNewAlbumModal} />
+      <AddNewArtistModal opened={openedAddNewArtistModal} onClose={closeAddNewArtistModal} />
 
       <Group gap={4} align={'center'}>
         <Title order={3} fw={800}>
-          Albums
+          Artists
         </Title>
-        <ActionIcon variant={'grey'} size={'lg'} onClick={openAddNewAlbumModal}>
+        <ActionIcon variant={'grey'} size={'lg'} onClick={openAddNewArtistModal}>
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
@@ -57,26 +57,26 @@ function Albums() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} albums out of {albums?.totalCount}
+          {startCount} - {endCount} artists out of {artists?.totalCount}
         </Text>
       )}
 
-      {albums?.totalCount === 0 && <Text mt={'sm'}>There are no albums yet. Try to add one</Text>}
+      {artists?.totalCount === 0 && <Text mt={'sm'}>There are no artists yet. Try to add one</Text>}
       <Group gap={'xl'}>
-        {isLoading && <AlbumsLoader />}
-        {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
-        {albums?.totalCount > 0 && currentPage == totalPages && (
+        {isLoading && <ArtistsLoader />}
+        {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
+        {artists?.totalCount > 0 && currentPage == totalPages && (
           <Card
-            data-testid={'new-album-card'}
-            w={150}
-            h={150}
-            radius={'lg'}
-            onClick={openAddNewAlbumModal}
+            data-testid={'new-artist-card'}
+            w={125}
+            h={125}
+            radius={'50%'}
+            onClick={openAddNewArtistModal}
             style={{ alignSelf: 'start' }}
             variant={'add-new'}
           >
             <Center h={'100%'}>
-              <IconMusicPlus size={40} />
+              <IconUserPlus size={40} />
             </Center>
           </Card>
         )}
@@ -87,7 +87,7 @@ function Albums() {
       <Box style={{ alignSelf: 'center' }} pb={'xs'}>
         {!isLoading ? (
           <Pagination
-            data-testid={'albums-pagination'}
+            data-testid={'artists-pagination'}
             value={currentPage}
             onChange={setCurrentPage}
             total={totalPages}
@@ -100,4 +100,4 @@ function Albums() {
   )
 }
 
-export default Albums
+export default Artists

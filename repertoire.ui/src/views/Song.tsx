@@ -16,19 +16,19 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
+import songPlaceholder from '../assets/image-placeholder-1.jpg'
+import userPlaceholder from '../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
-import { useAppDispatch } from '../../state/store.ts'
+import { useAppDispatch } from '../state/store.ts'
 import { useParams } from 'react-router-dom'
-import { openAlbumDrawer, openArtistDrawer } from '../../state/globalSlice.ts'
-import SongLoader from '../../components/songs/loader/SongLoader.tsx'
-import { useGetSongQuery } from '../../state/songsApi.ts'
-import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
-import Difficulty from '../../utils/enums/Difficulty.ts'
+import { openAlbumDrawer, openArtistDrawer } from '../state/globalSlice.ts'
+import SongLoader from '../components/song/SongLoader.tsx'
+import { useGetSongQuery } from '../state/songsApi.ts'
+import useDifficultyInfo from '../hooks/useDifficultyInfo.ts'
+import Difficulty from '../utils/enums/Difficulty.ts'
 import { IconBrandYoutube, IconCheck, IconGuitarPick } from '@tabler/icons-react'
-import SongSections from '../../components/songs/SongSections.tsx'
-import EditPanelCard from '../../components/card/EditPanelCard.tsx'
+import SongSections from '../components/song/SongSections.tsx'
+import EditPanelCard from '../components/card/EditPanelCard.tsx'
 
 const NotSet = () => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>

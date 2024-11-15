@@ -13,18 +13,18 @@ import {
   Title
 } from '@mantine/core'
 import { useParams } from 'react-router-dom'
-import { useGetArtistQuery } from '../../state/artistsApi.ts'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
-import ArtistLoader from '../../components/artists/loader/ArtistLoader.tsx'
-import { useGetAlbumsQuery } from '../../state/albumsApi.ts'
-import { useGetSongsQuery } from '../../state/songsApi.ts'
-import ArtistAlbumsLoader from '../../components/artists/loader/ArtistAlbumsLoader.tsx'
-import ArtistSongsLoader from '../../components/artists/loader/ArtistSongsLoader.tsx'
-import ArtistSongCard from '../../components/artists/card/ArtistSongCard.tsx'
-import ArtistAlbumCard from '../../components/artists/card/ArtistAlbumCard.tsx'
+import { useGetArtistQuery } from '../state/artistsApi.ts'
+import artistPlaceholder from '../assets/user-placeholder.jpg'
+import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
+import { useGetAlbumsQuery } from '../state/albumsApi.ts'
+import { useGetSongsQuery } from '../state/songsApi.ts'
+import ArtistAlbumsLoader from '../components/artist/loader/ArtistAlbumsLoader.tsx'
+import ArtistSongsLoader from '../components/artist/loader/ArtistSongsLoader.tsx'
+import ArtistSongCard from '../components/artist/ArtistSongCard.tsx'
+import ArtistAlbumCard from '../components/artist/ArtistAlbumCard.tsx'
 import { Dispatch, SetStateAction, useState } from 'react'
-import Order from '../../types/Order.ts'
-import artistSongsOrders from '../../data/artist/artistSongsOrders.ts'
+import Order from '../types/Order.ts'
+import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 import {
   IconCaretDownFilled,
   IconCheck,
@@ -33,13 +33,13 @@ import {
   IconMusicPlus,
   IconPlus
 } from '@tabler/icons-react'
-import AddNewArtistSongModal from '../../components/artists/modal/AddNewArtistSongModal.tsx'
+import AddNewArtistSongModal from '../components/artist/modal/AddNewArtistSongModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import AddExistingArtistSongsModal from '../../components/artists/modal/AddExistingArtistSongsModal.tsx'
-import AddExistingArtistAlbumsModal from '../../components/artists/modal/AddExistingArtistAlbumsModal.tsx'
-import AddNewArtistAlbumModal from '../../components/artists/modal/AddNewArtistAlbumModal.tsx'
-import artistAlbumsOrders from '../../data/artist/artistAlbumsOrders.ts'
-import NewHorizontalCard from '../../components/card/NewHorizontalCard.tsx'
+import AddExistingArtistSongsModal from '../components/artist/modal/AddExistingArtistSongsModal.tsx'
+import AddExistingArtistAlbumsModal from '../components/artist/modal/AddExistingArtistAlbumsModal.tsx'
+import AddNewArtistAlbumModal from '../components/artist/modal/AddNewArtistAlbumModal.tsx'
+import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
+import NewHorizontalCard from '../components/card/NewHorizontalCard.tsx'
 
 const SortButton = ({
   order,
