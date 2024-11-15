@@ -1,4 +1,5 @@
 import { FileWithPath } from '@mantine/dropzone'
+import Difficulty from "../../utils/enums/Difficulty.ts";
 
 export interface GetSongsRequest {
   currentPage?: number
@@ -31,7 +32,14 @@ export interface CreateSectionRequest {
 export interface UpdateSongRequest {
   id: string
   title: string
+  description: string
   isRecorded?: boolean
+  bpm?: number
+  songsterrLink?: string
+  youtubeLink?: string
+  releaseDate?: string
+  difficulty?: Difficulty
+  guitarTuningId?: string
 }
 
 export interface SaveImageToSongRequest {
