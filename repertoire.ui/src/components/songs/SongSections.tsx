@@ -1,14 +1,15 @@
 import { useMoveSongSectionMutation } from '../../state/songsApi.ts'
-import { ActionIcon, alpha, Card, Group, Stack, Text } from '@mantine/core'
-import { IconDots, IconGripVertical, IconPlus } from '@tabler/icons-react'
+import { ActionIcon, Card, Group, Stack, Text } from '@mantine/core'
+import { IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { SongSection } from '../../types/models/Song.ts'
+import { SongSection as SongSectionType } from '../../types/models/Song.ts'
+import SongSection from './SongSection.tsx'
 
 interface SongSectionsProps {
-  sections: SongSection[]
+  sections: SongSectionType[]
   songId: string
 }
 
@@ -47,38 +48,18 @@ function SongSections({ sections, songId }: SongSectionsProps) {
               {(provided) => (
                 <Stack gap={0} ref={provided.innerRef} {...provided.droppableProps}>
                   {sections.map((section, index) => (
-                    <Draggable key={section.id} index={index} draggableId={section.id} isDragDisabled={isMoveLoading}>
+                    <Draggable
+                      key={section.id}
+                      index={index}
+                      draggableId={section.id}
+                      isDragDisabled={isMoveLoading}
+                    >
                       {(provided, snapshot) => (
-                        <Group
-                          key={section.id}
-                          align={'center'}
-                          gap={'xs'}
-                          py={'xs'}
-                          px={'md'}
-                          sx={(theme) => ({
-                            transition: '0.25s',
-                            borderRadius: snapshot.isDragging ? '16px' : '0px',
-                            border: snapshot.isDragging ? `1px solid ${alpha(theme.colors.cyan[9], 0.33)}` : '1px solid transparent',
-
-                            '&:hover': {
-                              boxShadow: theme.shadows.xl,
-                              backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-                            }
-                          })}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                        >
-                          <ActionIcon variant={'subtle'} size={'lg'} {...provided.dragHandleProps}>
-                            <IconGripVertical size={20} />
-                          </ActionIcon>
-
-                          <Text inline fw={600}>{section.songSectionType.name}</Text>
-                          <Text flex={1} inline>{section.name}</Text>
-
-                          <ActionIcon variant={'subtle'} size={'lg'}>
-                            <IconDots size={20} />
-                          </ActionIcon>
-                        </Group>
+                        <SongSection
+                          section={section}
+                          draggableProvided={provided}
+                          isDragging={snapshot.isDragging}
+                        />
                       )}
                     </Draggable>
                   ))}
