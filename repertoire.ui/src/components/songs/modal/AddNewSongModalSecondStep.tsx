@@ -142,6 +142,7 @@ function AddNewSongModalSecondStep({
                           gap={'xs'}
                           py={'xs'}
                           sx={(theme) => ({
+                            transition: '0.25s',
                             borderRadius: '16px',
                             border: `1px solid ${alpha(theme.colors.cyan[9], 0.33)}`,
                             borderWidth: snapshot.isDragging ? '1px' : '0px'

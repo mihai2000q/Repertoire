@@ -2,6 +2,8 @@ import { ReactElement, useState } from 'react'
 import {
   ActionIcon,
   Box,
+  Card,
+  Center,
   Group,
   Loader,
   Pagination,
@@ -12,8 +14,7 @@ import {
 } from '@mantine/core'
 import { useGetSongsQuery } from '../../state/songsApi.ts'
 import SongCard from '../../components/songs/SongCard.tsx'
-import { IconMusicPlus } from '@tabler/icons-react'
-import NewSongCard from '../../components/songs/NewSongCard.tsx'
+import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../../components/songs/loader/SongsLoader.tsx'
@@ -35,18 +36,20 @@ function Songs(): ReactElement {
     <Stack h={'100%'} gap={'xs'}>
       <AddNewSongModal opened={openedAddNewSongModal} onClose={closeAddNewSongModal} />
 
-      <Title order={3} fw={800}>
-        Songs
-      </Title>
-
-      <Group>
-        <Button
-          variant={'gradient'}
-          leftSection={<IconMusicPlus size={17} />}
-          onClick={openAddNewSongModal}
-        >
-          New Song
-        </Button>
+      <Group align={'center'} gap={4}>
+        <Title order={3} fw={800}>
+          Songs
+        </Title>
+        <ActionIcon variant={'grey'} size={'lg'} onClick={openAddNewSongModal}>
+          <IconPlus />
+        </ActionIcon>
+        <Space flex={1} />
+        <ActionIcon variant={'grey'} size={'lg'}>
+          <IconArrowsSort size={17} />
+        </ActionIcon>
+        <ActionIcon variant={'grey'} size={'lg'}>
+          <IconFilterFilled size={17} />
+        </ActionIcon>
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
