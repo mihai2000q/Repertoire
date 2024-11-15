@@ -1,7 +1,7 @@
 import {
   ActionIcon,
   ActionIconFactory,
-  alpha,
+  alpha, Button,
   Card,
   CardFactory,
   Menu,
@@ -14,10 +14,12 @@ import {
 
 export const components = {
   ActionIcon: ActionIcon.extend({
+    defaultProps: {
+      style: { transition: '0.16s' }
+    },
     styles: (theme) => ({
       root: {
         '&[data-variant="grey"]': {
-          transition: '0.15s',
           color: theme.colors.gray[5],
           backgroundColor: theme.colors.gray[0],
 
@@ -29,6 +31,16 @@ export const components = {
         }
       }
     })
+  }),
+  Button: Button.extend({
+    defaultProps: {
+      style: {
+        transition: '0.18s'
+      },
+      loaderProps: {
+        type: 'dots'
+      }
+    }
   }),
   Card: Card.extend({
     styles: (theme) => ({
