@@ -1,10 +1,10 @@
 import {
+  ActionIcon,
   Anchor,
   AspectRatio,
   Avatar,
   Button,
   Card,
-  Checkbox,
   Divider,
   Grid,
   Group,
@@ -25,7 +25,7 @@ import SongLoader from '../../components/songs/loader/SongLoader.tsx'
 import { useGetSongQuery } from '../../state/songsApi.ts'
 import useDifficultyInfo from '../../hooks/songs/useDifficultyInfo.ts'
 import Difficulty from '../../utils/enums/Difficulty.ts'
-import { IconBrandYoutube, IconGuitarPick } from '@tabler/icons-react'
+import { IconBrandYoutube, IconCheck, IconGuitarPick } from '@tabler/icons-react'
 import SongSections from '../../components/songs/SongSections.tsx'
 
 const NotSet = () => (
@@ -99,7 +99,6 @@ function Song() {
                     on
                   </Text>
                 )}
-                {/*<Avatar radius={'md'} size={40} src={song.album.imageUrl ?? userPlaceholder} />*/}
                 <Text
                   fw={600}
                   inline
@@ -134,7 +133,7 @@ function Song() {
 
       <Divider />
 
-      <Group align="start">
+      <Group align="start" mb={'lg'}>
         <Stack flex={1}>
           <Card variant={'panel'} p={'md'}>
             <Stack gap={'xs'}>
@@ -196,7 +195,16 @@ function Song() {
                 </Grid.Col>
                 <Grid.Col span={6}>
                   {song.isRecorded ? (
-                    <Checkbox disabled checked={song.isRecorded} style={{ cursor: 'default' }} />
+                    <ActionIcon
+                      size={'sm'}
+                      sx={(theme) => ({
+                        cursor: 'default',
+                        backgroundColor: theme.colors.cyan[5],
+                        '&:hover': { backgroundColor: theme.colors.cyan[5] }
+                      })}
+                    >
+                      <IconCheck size={17} />
+                    </ActionIcon>
                   ) : (
                     <Text fw={600}>No</Text>
                   )}
