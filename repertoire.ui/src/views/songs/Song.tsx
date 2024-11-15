@@ -8,6 +8,7 @@ import {
   Divider,
   Grid,
   Group,
+  HoverCard,
   Image,
   Progress,
   Stack,
@@ -15,7 +16,7 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import userPlaceholder from '../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
@@ -27,6 +28,7 @@ import useDifficultyInfo from '../../hooks/songs/useDifficultyInfo.ts'
 import Difficulty from '../../utils/enums/Difficulty.ts'
 import { IconBrandYoutube, IconCheck, IconGuitarPick } from '@tabler/icons-react'
 import SongSections from '../../components/songs/SongSections.tsx'
+import EditPanelCard from '../../components/card/EditPanelCard.tsx'
 
 const NotSet = () => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
@@ -61,7 +63,7 @@ function Song() {
           <Image
             h={150}
             src={song.imageUrl}
-            fallbackSrc={albumPlaceholder}
+            fallbackSrc={songPlaceholder}
             radius={'lg'}
             sx={(theme) => ({
               boxShadow: theme.shadows.lg
@@ -92,6 +94,7 @@ function Song() {
                 </Text>
               </Group>
             )}
+
             {song.album && (
               <Group gap={0}>
                 {song.artist && (
@@ -99,20 +102,47 @@ function Song() {
                     on
                   </Text>
                 )}
-                <Text
-                  fw={600}
-                  inline
-                  c={'dark'}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': { textDecoration: 'underline' }
-                  }}
-                  onClick={handleAlbumClick}
-                >
-                  {song.album.title}
-                </Text>
+                <HoverCard shadow={'lg'} withArrow>
+                  <HoverCard.Target>
+                    <Text
+                      fw={600}
+                      inline
+                      c={'dark'}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': { textDecoration: 'underline' }
+                      }}
+                      onClick={handleAlbumClick}
+                    >
+                      {song.album.title}
+                    </Text>
+                  </HoverCard.Target>
+                  <HoverCard.Dropdown maw={300}>
+                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                      <Avatar
+                        size={45}
+                        radius={'md'}
+                        src={song.album.imageUrl ?? songPlaceholder}
+                      />
+                      <Stack gap={2}>
+                        <Text fw={500} fz={'xs'} inline>
+                          Album
+                        </Text>
+                        <Text fw={600} fz={'md'} inline lineClamp={2}>
+                          {song.album.title}
+                        </Text>
+                        {song.album.releaseDate && (
+                          <Text fw={500} c={'dimmed'} fz={'sm'} inline>
+                            {dayjs(song.album.releaseDate).format('MMM YYYY')}
+                          </Text>
+                        )}
+                      </Stack>
+                    </Group>
+                  </HoverCard.Dropdown>
+                </HoverCard>
               </Group>
             )}
+
             {song.releaseDate && (
               <>
                 {(song.album || song.artist) && <Text c={'dimmed'}>•</Text>}
@@ -135,7 +165,7 @@ function Song() {
 
       <Group align="start" mb={'lg'}>
         <Stack flex={1}>
-          <Card variant={'panel'} p={'md'}>
+          <EditPanelCard p={'md'} onEditClick={() => {}}>
             <Stack gap={'xs'}>
               <Text fw={600}>Information</Text>
               <Grid align={'center'} gutter={'sm'}>
@@ -211,7 +241,7 @@ function Song() {
                 </Grid.Col>
               </Grid>
             </Stack>
-          </Card>
+          </EditPanelCard>
 
           <Card variant={'panel'} p={'md'}>
             <Stack>
