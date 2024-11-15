@@ -2,20 +2,18 @@ import Song from '../../../types/models/Song.ts'
 import {
   Button,
   ComboboxItem,
-  Group,
-  Loader,
   LoadingOverlay,
   Modal,
   NumberInput,
-  Select,
   Stack,
-  Text,
   Tooltip
 } from '@mantine/core'
-import { useGetGuitarTuningsQuery, useUpdateSongMutation } from '../../../state/songsApi.ts'
+import { useUpdateSongMutation } from '../../../state/songsApi.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
+import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
+import DifficultySelect from '../../form/select/DifficultySelect.tsx'
 
 interface EditSongInformationModalProps {
   song: Song
@@ -25,17 +23,6 @@ interface EditSongInformationModalProps {
 
 function EditSongInformationModal({ song, opened, onClose }: EditSongInformationModalProps) {
   const [updateSongMutation, { isLoading }] = useUpdateSongMutation()
-
-  const { data: guitarTuningsData, isLoading: isGuitarTuningsLoading } = useGetGuitarTuningsQuery()
-  const guitarTunings = guitarTuningsData?.map((guitarTuning) => ({
-    value: guitarTuning.id,
-    label: guitarTuning.name
-  }))
-
-  const difficulties = Object.entries(Difficulty).map(([key, value]) => ({
-    value: value,
-    label: key
-  }))
 
   const [guitarTuning, setGuitarTuning] = useState<ComboboxItem>(
     song.guitarTuning
@@ -47,7 +34,10 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
   )
   const [difficulty, setDifficulty] = useState<ComboboxItem>(
     song.difficulty
-      ? difficulties.find((d) => d.value === song.difficulty)
+      ? {
+          value: song.difficulty,
+          label: Difficulty[song.difficulty]
+        }
       : null
   )
   const [bpm, setBpm] = useInputState<string | number>(song.bpm)
@@ -86,35 +76,9 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
         />
 
         <Stack>
-          {isGuitarTuningsLoading ? (
-            <Group gap={'xs'} flex={1.25}>
-              <Loader size={25} />
-              <Text fz={'sm'} c={'dimmed'}>
-                Loading Tunings...
-              </Text>
-            </Group>
-          ) : (
-            <Select
-              flex={1.25}
-              label={'Guitar Tuning'}
-              placeholder={'Select Guitar Tuning'}
-              data={guitarTunings}
-              value={guitarTuning ? guitarTuning.value : null}
-              onChange={(_, option) => setGuitarTuning(option)}
-              maxDropdownHeight={150}
-              clearable
-            />
-          )}
+          <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
 
-          <Select
-            flex={1}
-            label={'Difficulty'}
-            placeholder={'Select Difficulty'}
-            data={difficulties}
-            value={difficulty ? difficulty.value : null}
-            onChange={(_, option) => setDifficulty(option)}
-            clearable
-          />
+          <DifficultySelect option={difficulty} onChange={setDifficulty} />
 
           <NumberInput
             flex={1}

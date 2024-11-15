@@ -4,7 +4,6 @@ import {
   Button,
   ComboboxItem,
   Group,
-  Loader,
   NumberInput,
   Select,
   Stack,
@@ -13,14 +12,15 @@ import {
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import { IconGripVertical, IconMinus } from '@tabler/icons-react'
-import { useGetGuitarTuningsQuery, useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
+import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { v4 as uuid } from 'uuid'
 import { UseFormReturnType } from '@mantine/form'
 import { AddNewSongModalSongSection } from './AddNewSongModal.tsx'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { UseListStateHandlers } from '@mantine/hooks'
+import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
+import DifficultySelect from '../../form/select/DifficultySelect.tsx'
 
 interface AddNewSongModalSecondStepProps {
   form: UseFormReturnType<unknown, (values: unknown) => unknown>
@@ -41,17 +41,6 @@ function AddNewSongModalSecondStep({
   difficulty,
   setDifficulty
 }: AddNewSongModalSecondStepProps) {
-  const { data: guitarTuningsData, isLoading: isGuitarTuningsLoading } = useGetGuitarTuningsQuery()
-  const guitarTunings = guitarTuningsData?.map((guitarTuning) => ({
-    value: guitarTuning.id,
-    label: guitarTuning.name
-  }))
-
-  const difficulties = Object.entries(Difficulty).map(([key, value]) => ({
-    value: value,
-    label: key
-  }))
-
   const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
   const songSectionTypes = songSectionTypesData?.map((type) => ({
     value: type.id,
@@ -67,40 +56,15 @@ function AddNewSongModalSecondStep({
   return (
     <Stack>
       <Group justify={'space-between'} align={'center'}>
-        {isGuitarTuningsLoading ? (
-          <Group gap={'xs'}>
-            <Loader size={25} />
-            <Text fz={'sm'} c={'dimmed'}>
-              Loading Tunings...
-            </Text>
-          </Group>
-        ) : (
-          <Select
-            flex={1.25}
-            label={'Guitar Tuning'}
-            placeholder={'Select Guitar Tuning'}
-            data={guitarTunings}
-            value={guitarTuning ? guitarTuning.value : null}
-            onChange={(_, option) => setGuitarTuning(option)}
-            maxDropdownHeight={150}
-            clearable
-          />
-        )}
+        <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
 
-        <Select
-          flex={1}
-          label={'Difficulty'}
-          placeholder={'Select Difficulty'}
-          data={difficulties}
-          value={difficulty ? difficulty.value : null}
-          onChange={(_, option) => setDifficulty(option)}
-          clearable
-        />
+        <DifficultySelect option={difficulty} onChange={setDifficulty} />
       </Group>
 
       <Group justify={'space-between'} align={'center'}>
         <NumberInput
           flex={1}
+          min={1}
           label="Bpm"
           placeholder="Enter Bpm"
           key={form.key('bpm')}
