@@ -24,7 +24,7 @@ import ArtistSongCard from '../../components/artists/card/ArtistSongCard.tsx'
 import ArtistAlbumCard from '../../components/artists/card/ArtistAlbumCard.tsx'
 import { Dispatch, SetStateAction, useState } from 'react'
 import Order from '../../types/Order.ts'
-import artistSongsOrders from '../../data/artists/artistSongsOrders.ts'
+import artistSongsOrders from '../../data/artist/artistSongsOrders.ts'
 import {
   IconCaretDownFilled,
   IconCheck,
@@ -38,7 +38,7 @@ import { useDisclosure } from '@mantine/hooks'
 import AddExistingArtistSongsModal from '../../components/artists/modal/AddExistingArtistSongsModal.tsx'
 import AddExistingArtistAlbumsModal from '../../components/artists/modal/AddExistingArtistAlbumsModal.tsx'
 import AddNewArtistAlbumModal from '../../components/artists/modal/AddNewArtistAlbumModal.tsx'
-import artistAlbumsOrders from '../../data/artists/artistAlbumsOrders.ts'
+import artistAlbumsOrders from '../../data/artist/artistAlbumsOrders.ts'
 import NewHorizontalCard from '../../components/card/NewHorizontalCard.tsx'
 
 const SortButton = ({
