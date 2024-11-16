@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export interface AddNewAlbumForm {
   title: string
-  releaseDate: string
+  releaseDate?: Date
 }
 
 export const addNewAlbumValidation = z.object({
