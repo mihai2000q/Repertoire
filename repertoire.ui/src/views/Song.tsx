@@ -32,6 +32,8 @@ import { useDisclosure } from '@mantine/hooks'
 import EditSongDescriptionModal from '../components/song/modal/EditSongDescriptionModal.tsx'
 import EditSongInformationModal from '../components/song/modal/EditSongInformationModal.tsx'
 import EditSongLinksModal from '../components/song/modal/EditSongLinksModal.tsx'
+import EditSongHeaderModal from '../components/song/modal/EditSongHeaderModal.tsx'
+import EditHeaderCard from '../components/card/EditHeaderCard.tsx'
 
 const NotSet = () => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
@@ -49,6 +51,8 @@ function Song() {
 
   const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(song?.difficulty)
 
+  const [openedEditSongHeader, { open: openEditSongHeader, close: closeEditSongHeader }] =
+    useDisclosure(false)
   const [
     openedEditSongInformation,
     { open: openEditSongInformation, close: closeEditSongInformation }
@@ -72,108 +76,110 @@ function Song() {
 
   return (
     <Stack>
-      <Group>
-        <AspectRatio>
-          <Image
-            h={150}
-            src={song.imageUrl}
-            fallbackSrc={songPlaceholder}
-            radius={'lg'}
-            sx={(theme) => ({
-              boxShadow: theme.shadows.lg
-            })}
-          />
-        </AspectRatio>
-        <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
-          <Text fw={500} inline>
-            Song
-          </Text>
-          <Title order={1} fw={700}>
-            {song.title}
-          </Title>
-          <Group gap={4}>
-            {song.artist && (
-              <Group gap={'xs'}>
-                <Avatar size={35} src={song.artist.imageUrl ?? userPlaceholder} />
-                <Text
-                  fw={700}
-                  fz={'lg'}
-                  sx={{
-                    cursor: 'pointer',
-                    '&:hover': { textDecoration: 'underline' }
-                  }}
-                  onClick={handleArtistClick}
-                >
-                  {song.artist.name}
-                </Text>
-              </Group>
-            )}
-
-            {song.album && (
-              <Group gap={0}>
-                {song.artist && (
-                  <Text fw={500} c={'dimmed'} inline pr={4}>
-                    on
+      <EditHeaderCard onEditClick={openEditSongHeader}>
+        <Group>
+          <AspectRatio>
+            <Image
+              h={150}
+              src={song.imageUrl}
+              fallbackSrc={songPlaceholder}
+              radius={'lg'}
+              sx={(theme) => ({
+                boxShadow: theme.shadows.lg
+              })}
+            />
+          </AspectRatio>
+          <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
+            <Text fw={500} inline>
+              Song
+            </Text>
+            <Title order={1} fw={700}>
+              {song.title}
+            </Title>
+            <Group gap={4}>
+              {song.artist && (
+                <Group gap={'xs'}>
+                  <Avatar size={35} src={song.artist.imageUrl ?? userPlaceholder} />
+                  <Text
+                    fw={700}
+                    fz={'lg'}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': { textDecoration: 'underline' }
+                    }}
+                    onClick={handleArtistClick}
+                  >
+                    {song.artist.name}
                   </Text>
-                )}
-                <HoverCard shadow={'lg'} withArrow>
-                  <HoverCard.Target>
-                    <Text
-                      fw={600}
-                      inline
-                      c={'dark'}
-                      sx={{
-                        cursor: 'pointer',
-                        '&:hover': { textDecoration: 'underline' }
-                      }}
-                      onClick={handleAlbumClick}
-                    >
-                      {song.album.title}
+                </Group>
+              )}
+
+              {song.album && (
+                <Group gap={0}>
+                  {song.artist && (
+                    <Text fw={500} c={'dimmed'} inline pr={4}>
+                      on
                     </Text>
-                  </HoverCard.Target>
-                  <HoverCard.Dropdown maw={300}>
-                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
-                      <Avatar
-                        size={45}
-                        radius={'md'}
-                        src={song.album.imageUrl ?? songPlaceholder}
-                      />
-                      <Stack gap={2}>
-                        <Text fw={500} fz={'xs'} inline>
-                          Album
-                        </Text>
-                        <Text fw={600} fz={'md'} inline lineClamp={2}>
-                          {song.album.title}
-                        </Text>
-                        {song.album.releaseDate && (
-                          <Text fw={500} c={'dimmed'} fz={'sm'} inline>
-                            {dayjs(song.album.releaseDate).format('MMM YYYY')}
+                  )}
+                  <HoverCard shadow={'lg'} withArrow>
+                    <HoverCard.Target>
+                      <Text
+                        fw={600}
+                        inline
+                        c={'dark'}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': { textDecoration: 'underline' }
+                        }}
+                        onClick={handleAlbumClick}
+                      >
+                        {song.album.title}
+                      </Text>
+                    </HoverCard.Target>
+                    <HoverCard.Dropdown maw={300}>
+                      <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                        <Avatar
+                          size={45}
+                          radius={'md'}
+                          src={song.album.imageUrl ?? songPlaceholder}
+                        />
+                        <Stack gap={2}>
+                          <Text fw={500} fz={'xs'} inline>
+                            Album
                           </Text>
-                        )}
-                      </Stack>
-                    </Group>
-                  </HoverCard.Dropdown>
-                </HoverCard>
-              </Group>
-            )}
+                          <Text fw={600} fz={'md'} inline lineClamp={2}>
+                            {song.album.title}
+                          </Text>
+                          {song.album.releaseDate && (
+                            <Text fw={500} c={'dimmed'} fz={'sm'} inline>
+                              {dayjs(song.album.releaseDate).format('MMM YYYY')}
+                            </Text>
+                          )}
+                        </Stack>
+                      </Group>
+                    </HoverCard.Dropdown>
+                  </HoverCard>
+                </Group>
+              )}
 
-            {song.releaseDate && (
-              <>
-                {(song.album || song.artist) && <Text c={'dimmed'}>•</Text>}
-                <Tooltip
-                  label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
-                  openDelay={200}
-                  position={'bottom'}
-                >
-                  <Text fw={500} c={'dimmed'}>
-                    {dayjs(song.releaseDate).format('YYYY')}
-                  </Text>
-                </Tooltip>
-              </>
-            )}
-          </Group>
-        </Stack>
-      </Group>
+              {song.releaseDate && (
+                <>
+                  {(song.album || song.artist) && <Text c={'dimmed'}>•</Text>}
+                  <Tooltip
+                    label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
+                    openDelay={200}
+                    position={'bottom'}
+                  >
+                    <Text fw={500} c={'dimmed'}>
+                      {dayjs(song.releaseDate).format('YYYY')}
+                    </Text>
+                  </Tooltip>
+                </>
+              )}
+            </Group>
+          </Stack>
+        </Group>
+      </EditHeaderCard>
 
       <Divider />
 
@@ -331,6 +337,11 @@ function Song() {
         </Stack>
       </Group>
 
+      <EditSongHeaderModal
+        song={song}
+        opened={openedEditSongHeader}
+        onClose={closeEditSongHeader}
+      />
       <EditSongInformationModal
         song={song}
         opened={openedEditSongInformation}

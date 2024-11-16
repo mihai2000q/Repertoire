@@ -29,6 +29,15 @@ export const addNewSongValidation = z.object({
     .nullish()
 })
 
+export interface EditSongHeaderForm {
+  title: string
+  releaseDate: Date
+}
+
+export const editSongHeaderValidation = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+})
+
 export interface EditSongLinksForm {
   songsterrLink?: string
   youtubeLink?: string
