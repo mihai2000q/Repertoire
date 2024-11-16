@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"net/http"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
@@ -91,7 +92,7 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetAlbumsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -200,7 +201,7 @@ func TestValidateCreateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 			for _, expectedFailedTag := range tt.expectedFailedTags {
 				assert.Contains(t, errCode.Error.Error(), "'"+expectedFailedTag+"' tag")
 			}
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -256,7 +257,7 @@ func TestValidateAddSongsToAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddSongsToAlbumRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -337,7 +338,7 @@ func TestValidateUpdateAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateAlbumRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -413,7 +414,7 @@ func TestValidateMoveSongFromAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveSongFromAlbumRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -469,7 +470,7 @@ func TestValidateRemoveSongsFromAlbumRequest_WhenSingleFieldIsInvalid_ShouldRetu
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveSongsFromAlbumRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }

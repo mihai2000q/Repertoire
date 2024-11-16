@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"net/http"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
@@ -90,7 +91,7 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetPlaylistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -146,7 +147,7 @@ func TestValidateCreatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreatePlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -202,7 +203,7 @@ func TestValidateAddSongToPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddSongToPlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -264,7 +265,7 @@ func TestValidateUpdatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdatePlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }

@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"net/http"
 	"repertoire/server/api/validation"
 	"repertoire/server/internal/enums"
 	"strings"
@@ -92,7 +93,7 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetSongsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -334,7 +335,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			for _, expectedFailedTag := range tt.expectedFailedTags {
 				assert.Contains(t, errCode.Error.Error(), "'"+expectedFailedTag+"' tag")
 			}
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -465,7 +466,10 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
 
 // Guitar Tunings
 
@@ -607,7 +611,7 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
-			assert.Equal(t, 400, errCode.Code)
+}
 
 func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
@@ -695,7 +699,7 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
-			assert.Equal(t, 400, errCode.Code)
+}
 
 func TestValidateMoveSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
@@ -759,4 +763,4 @@ func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
-			assert.Equal(t, 400, errCode.Code)
+}
