@@ -8,7 +8,7 @@ export interface GetAlbumsRequest {
 
 export interface CreateAlbumRequest {
   title: string
-  releaseDate?: Date
+  releaseDate?: Date | string
   artistId?: string
   artistName?: string
 }
@@ -16,7 +16,7 @@ export interface CreateAlbumRequest {
 export interface UpdateAlbumRequest {
   id: string
   title: string
-  releaseDate?: Date
+  releaseDate?: Date | string
 }
 
 export interface SaveImageToAlbumRequest {

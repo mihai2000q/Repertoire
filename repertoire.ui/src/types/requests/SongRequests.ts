@@ -11,7 +11,7 @@ export interface CreateSongRequest {
   title: string
   description: string
   bpm?: number
-  releaseDate?: Date
+  releaseDate?: Date | string
   difficulty?: string
   songsterrLink?: string
   youtubeLink?: string
@@ -37,7 +37,7 @@ export interface UpdateSongRequest {
   bpm?: number
   songsterrLink?: string
   youtubeLink?: string
-  releaseDate?: string
+  releaseDate?: Date | string
   difficulty?: Difficulty
   guitarTuningId?: string
 }
