@@ -3,7 +3,8 @@ import { alpha, Avatar, Group, Space, Stack, Text } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
-import { openSongDrawer } from '../../state/globalSlice.ts'
+import { openAlbumDrawer, openSongDrawer } from '../../state/globalSlice.ts'
+import { MouseEvent } from 'react'
 
 interface ArtistSongCardProps {
   song: Song
@@ -14,6 +15,11 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
 
   function handleClick() {
     dispatch(openSongDrawer(song.id))
+  }
+
+  function handleAlbumClick(e: MouseEvent) {
+    e.stopPropagation()
+    dispatch(openAlbumDrawer(song.album.id))
   }
 
   return (
@@ -41,7 +47,13 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
           {song.album && (
             <>
               <Text fz={'sm'}>-</Text>
-              <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+              <Text
+                fz={'sm'}
+                c={'dimmed'}
+                truncate={'end'}
+                sx={{ '&:hover': { textDecoration: 'underline' } }}
+                onClick={handleAlbumClick}
+              >
                 {song.album.title}
               </Text>
             </>
