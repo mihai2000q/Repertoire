@@ -4,7 +4,7 @@ import { IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection as SongSectionType } from '../../types/models/Song.ts'
 import SongSection from './SongSection.tsx'
 
@@ -19,7 +19,13 @@ function SongSections({ sections, songId }: SongSectionsProps) {
   const [openedAddSongSection, { open: openAddSongSection, close: closeAddSongSection }] =
     useDisclosure(false)
 
-  function onSectionsDragEnd({ destination, source }) {
+  const [internalSections, { reorder }] = useListState<SongSectionType>(sections)
+
+  function onSectionsDragEnd({ source, destination }) {
+    reorder({ from: source.index, to: destination?.index || 0 })
+
+    if (source.index === destination.index || !destination) return
+
     moveSongSectionMutation({
       id: sections[source.index].id,
       overId: sections[destination.index].id,
@@ -47,7 +53,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (
                 <Stack gap={0} ref={provided.innerRef} {...provided.droppableProps}>
-                  {sections.map((section, index) => (
+                  {internalSections.map((section, index) => (
                     <Draggable
                       key={section.id}
                       index={index}
@@ -68,7 +74,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
               )}
             </Droppable>
           </DragDropContext>
-          {sections.length === 0 && (
+          {internalSections.length === 0 && (
             <NewHorizontalCard
               onClick={openedAddSongSection ? closeAddSongSection : openAddSongSection}
             >
