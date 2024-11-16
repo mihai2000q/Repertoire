@@ -18,6 +18,7 @@ function SongSection({ section, isDragging, draggableProvided }: SongSectionProp
       py={'xs'}
       px={'md'}
       sx={(theme) => ({
+        cursor: 'default',
         transition: '0.25s',
         borderRadius: isDragging ? '16px' : '0px',
         border: isDragging

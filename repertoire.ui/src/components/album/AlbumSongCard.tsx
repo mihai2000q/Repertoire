@@ -20,6 +20,7 @@ function AlbumSongCard({ song }: AlbumSongCardProps) {
       align={'center'}
       wrap={'nowrap'}
       sx={(theme) => ({
+        cursor: 'default',
         transition: '0.3s',
         '&:hover': {
           boxShadow: theme.shadows.xl,

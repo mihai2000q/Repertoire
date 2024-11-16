@@ -21,6 +21,7 @@ function ArtistAlbumCard({ album }: ArtistAlbumCardProps) {
       align={'center'}
       wrap={'nowrap'}
       sx={(theme) => ({
+        cursor: 'default',
         borderRadius: '8px',
         transition: '0.3s',
         '&:hover': {
