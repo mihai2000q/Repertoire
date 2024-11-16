@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -16,10 +17,12 @@ type SongService interface {
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
-	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
+
+	CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode
+	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
@@ -33,10 +36,12 @@ type songService struct {
 	deleteImageFromSong song.DeleteImageFromSong
 	deleteSong          song.DeleteSong
 	getAllSongs         song.GetAllSongs
-	getGuitarTunings    song.GetGuitarTunings
 	getSong             song.GetSong
 	saveImageToSong     song.SaveImageToSong
 	updateSong          song.UpdateSong
+
+	createGuitarTuning tuning.CreateGuitarTuning
+	getGuitarTunings   tuning.GetGuitarTunings
 
 	createSongSection   section.CreateSongSection
 	deleteSongSection   section.DeleteSongSection
@@ -50,10 +55,12 @@ func NewSongService(
 	deleteImageFromSong song.DeleteImageFromSong,
 	deleteSong song.DeleteSong,
 	getAllSongs song.GetAllSongs,
-	getGuitarTunings song.GetGuitarTunings,
 	getSong song.GetSong,
 	saveImageToSong song.SaveImageToSong,
 	updateSong song.UpdateSong,
+
+	getGuitarTunings tuning.GetGuitarTunings,
+	createGuitarTuning tuning.CreateGuitarTuning,
 
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
@@ -66,10 +73,12 @@ func NewSongService(
 		deleteImageFromSong: deleteImageFromSong,
 		deleteSong:          deleteSong,
 		getAllSongs:         getAllSongs,
-		getGuitarTunings:    getGuitarTunings,
 		getSong:             getSong,
 		saveImageToSong:     saveImageToSong,
 		updateSong:          updateSong,
+
+		createGuitarTuning: createGuitarTuning,
+		getGuitarTunings:   getGuitarTunings,
 
 		createSongSection:   createSongSection,
 		deleteSongSection:   deleteSongSection,
@@ -95,10 +104,6 @@ func (s *songService) GetAll(request requests.GetSongsRequest, token string) (wr
 	return s.getAllSongs.Handle(request, token)
 }
 
-func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {
-	return s.getGuitarTunings.Handle(token)
-}
-
 func (s *songService) Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode) {
 	return s.getSong.Handle(id)
 }
@@ -109,6 +114,16 @@ func (s *songService) SaveImage(file *multipart.FileHeader, songID uuid.UUID) *w
 
 func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorCode {
 	return s.updateSong.Handle(request)
+}
+
+// Guitar Tunings
+
+func (s *songService) CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode {
+	return s.createGuitarTuning.Handle(request, token)
+}
+
+func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {
+	return s.getGuitarTunings.Handle(token)
 }
 
 // Sections
