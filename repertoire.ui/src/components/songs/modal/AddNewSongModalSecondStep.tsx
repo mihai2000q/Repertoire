@@ -11,7 +11,12 @@ import {
   TextInput
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
-import { IconGripVertical, IconMinus } from '@tabler/icons-react'
+import {
+  IconActivityHeartbeat,
+  IconCalendarFilled,
+  IconGripVertical,
+  IconMinus
+} from '@tabler/icons-react'
 import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { v4 as uuid } from 'uuid'
@@ -21,9 +26,10 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { UseListStateHandlers } from '@mantine/hooks'
 import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
 import DifficultySelect from '../../form/select/DifficultySelect.tsx'
+import { AddNewSongForm } from '../../../validation/songsForm.ts'
 
 interface AddNewSongModalSecondStepProps {
-  form: UseFormReturnType<unknown, (values: unknown) => unknown>
+  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
   sections: AddNewSongModalSongSection[]
   sectionsHandlers: UseListStateHandlers<AddNewSongModalSongSection>
   guitarTuning: ComboboxItem | null
@@ -65,6 +71,7 @@ function AddNewSongModalSecondStep({
         <NumberInput
           flex={1}
           min={1}
+          leftSection={<IconActivityHeartbeat size={20} />}
           label="Bpm"
           placeholder="Enter Bpm"
           key={form.key('bpm')}
@@ -73,6 +80,7 @@ function AddNewSongModalSecondStep({
 
         <DatePickerInput
           flex={1}
+          leftSection={<IconCalendarFilled size={20} />}
           label={'Release Date'}
           placeholder={'Choose the release date'}
           key={form.key('releaseDate')}

@@ -1,9 +1,10 @@
-import {ComboboxItem, Group, Loader, Select, Text} from "@mantine/core";
-import {useGetGuitarTuningsQuery} from "../../../state/songsApi.ts";
+import { ComboboxItem, Group, Loader, Select, Text } from '@mantine/core'
+import { useGetGuitarTuningsQuery } from '../../../state/songsApi.ts'
+import { IconMichelinStarFilled } from '@tabler/icons-react'
 
 interface GuitarTuningsSelectProps {
-  option: ComboboxItem,
-  onChange: (comboboxItem: ComboboxItem) => void,
+  option: ComboboxItem
+  onChange: (comboboxItem: ComboboxItem) => void
 }
 
 function GuitarTuningsSelect({ option, onChange }: GuitarTuningsSelectProps) {
@@ -13,28 +14,27 @@ function GuitarTuningsSelect({ option, onChange }: GuitarTuningsSelectProps) {
     label: guitarTuning.name
   }))
 
-  return (
-    isLoading ? (
-        <Group gap={'xs'} flex={1.25}>
-          <Loader size={25} />
-          <Text fz={'sm'} c={'dimmed'}>
-            Loading Tunings...
-          </Text>
-        </Group>
-      ) : (
-        <Select
-          flex={1.25}
-          label={'Guitar Tuning'}
-          placeholder={'Select Guitar Tuning'}
-          data={guitarTunings}
-          value={option ? option.value : null}
-          onChange={(_, option) => onChange(option)}
-          maxDropdownHeight={150}
-          clearable
-          searchable
-        />
-      )
-  );
+  return isLoading ? (
+    <Group gap={'xs'} flex={1.25}>
+      <Loader size={25} />
+      <Text fz={'sm'} c={'dimmed'}>
+        Loading Tunings...
+      </Text>
+    </Group>
+  ) : (
+    <Select
+      flex={1.25}
+      leftSection={<IconMichelinStarFilled size={20} />}
+      label={'Guitar Tuning'}
+      placeholder={'Select Guitar Tuning'}
+      data={guitarTunings}
+      value={option ? option.value : null}
+      onChange={(_, option) => onChange(option)}
+      maxDropdownHeight={150}
+      clearable
+      searchable
+    />
+  )
 }
 
-export default GuitarTuningsSelect;
+export default GuitarTuningsSelect

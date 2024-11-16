@@ -14,6 +14,7 @@ import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
 import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
 import DifficultySelect from '../../form/select/DifficultySelect.tsx'
+import { IconBmp } from '@tabler/icons-react'
 
 interface EditSongInformationModalProps {
   song: Song
@@ -83,6 +84,7 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
           <NumberInput
             flex={1}
             min={1}
+            leftSection={<IconBmp size={20} />}
             label="Bpm"
             placeholder="Enter Bpm"
             value={bpm}
