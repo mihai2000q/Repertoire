@@ -4,7 +4,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { EditSongLinksForm, editSongLinksValidation } from '../../../validation/songsForm.ts'
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
 import { useUpdateSongMutation } from '../../../state/songsApi.ts'
-import { useMemo } from 'react'
+import { useState } from 'react'
 
 interface EditSongLinksModalProps {
   song: Song
@@ -15,6 +15,8 @@ interface EditSongLinksModalProps {
 function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) {
   const [updateSongMutation, { isLoading }] = useUpdateSongMutation()
 
+  const [hasChanged, setHasChanged] = useState(false)
+
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -24,15 +26,13 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editSongLinksValidation)
+    validate: zodResolver(editSongLinksValidation),
+    onValuesChange: (values) => {
+      setHasChanged(
+        song.songsterrLink !== values.songsterrLink || song.youtubeLink !== values.youtubeLink
+      )
+    }
   })
-
-  const hasChanged = useMemo(
-    () =>
-      song.songsterrLink !== (form.getValues() as EditSongLinksForm).songsterrLink ||
-      song.youtubeLink !== (form.getValues() as EditSongLinksForm).youtubeLink,
-    [form]
-  )
 
   async function updateSong({ songsterrLink, youtubeLink }: EditSongLinksForm) {
     songsterrLink = songsterrLink?.trim() === '' ? null : songsterrLink?.trim()
