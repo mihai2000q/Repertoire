@@ -15,7 +15,7 @@ import Artist from '../../../types/models/Artist.ts'
 import {ChangeEvent, FocusEvent, useState} from 'react'
 import {IconUserFilled} from "@tabler/icons-react";
 
-interface ArtistsComboboxProps {
+interface ArtistsAutocompleteProps {
   artist: Artist
   setArtist: (artist: Artist) => void
   setValue: (value: string) => void
@@ -27,7 +27,7 @@ interface ArtistsComboboxProps {
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
 }
 
-function ArtistAutocomplete({ artist, setArtist, setValue, ...inputProps }: ArtistsComboboxProps) {
+function ArtistAutocomplete({ artist, setArtist, setValue, ...inputProps }: ArtistsAutocompleteProps) {
   const combobox = useCombobox()
 
   const [searchValue, setSearchValue] = useState('')

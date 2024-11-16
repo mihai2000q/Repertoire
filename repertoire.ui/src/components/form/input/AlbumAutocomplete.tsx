@@ -17,7 +17,7 @@ import { ChangeEvent, FocusEvent, useState } from 'react'
 import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'
 
-interface AlbumsComboboxProps {
+interface AlbumsAutocompleteProps {
   album: Album
   setAlbum: (album: Album) => void
   setValue: (value: string) => void
@@ -29,7 +29,7 @@ interface AlbumsComboboxProps {
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
 }
 
-function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsComboboxProps) {
+function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsAutocompleteProps) {
   const combobox = useCombobox()
 
   const [searchValue, setSearchValue] = useState('')
