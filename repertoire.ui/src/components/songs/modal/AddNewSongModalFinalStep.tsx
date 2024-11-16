@@ -4,9 +4,10 @@ import { FileWithPath } from '@mantine/dropzone'
 import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
 import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPreview.tsx'
+import { AddNewSongForm } from '../../../validation/songsForm.ts'
 
 interface AddNewSongModalFinalStepProps {
-  form: UseFormReturnType<unknown, (values: unknown) => unknown>
+  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
   image: FileWithPath | null
   setImage: Dispatch<SetStateAction<FileWithPath | null>>
 }

@@ -4,7 +4,7 @@ import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { useGetArtistsQuery } from '../../../state/artistsApi.ts'
 
 interface AddNewSongModalFirstStepProps {
-  form: UseFormReturnType<unknown, (values: unknown) => unknown>
+  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
 }
 
 function AddNewSongModalFirstStep({ form }: AddNewSongModalFirstStepProps) {
