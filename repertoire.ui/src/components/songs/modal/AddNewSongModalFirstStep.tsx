@@ -1,25 +1,26 @@
-import { Autocomplete, Group, Loader, Stack, Text, Textarea, TextInput } from '@mantine/core'
+import { Group, Stack, Textarea, TextInput } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
-import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
-import { useGetArtistsQuery } from '../../../state/artistsApi.ts'
+import ArtistAutocomplete from '../../form/input/ArtistAutocomplete.tsx'
+import Artist from '../../../types/models/Artist.ts'
+import AlbumAutocomplete from '../../form/input/AlbumAutocomplete.tsx'
+import Album from '../../../types/models/Album.ts'
+import { AddNewSongForm } from '../../../validation/songsForm.ts'
 
 interface AddNewSongModalFirstStepProps {
   form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  artist: Artist
+  setArtist: (artist: Artist) => void
+  album: Album
+  setAlbum: (album: Album) => void
 }
 
-function AddNewSongModalFirstStep({ form }: AddNewSongModalFirstStepProps) {
-  const { data: albumsData, isLoading: isAlbumsLoading } = useGetAlbumsQuery({})
-  const albums = albumsData?.models?.map((album) => ({
-    value: album.id,
-    label: album.title
-  }))
-
-  const { data: artistsData, isLoading: isArtistsLoading } = useGetArtistsQuery({})
-  const artists = artistsData?.models?.map((artist) => ({
-    value: artist.id,
-    label: artist.name
-  }))
-
+function AddNewSongModalFirstStep({
+  form,
+  artist,
+  setArtist,
+  album,
+  setAlbum
+}: AddNewSongModalFirstStepProps) {
   return (
     <Stack>
       <TextInput
@@ -32,39 +33,21 @@ function AddNewSongModalFirstStep({ form }: AddNewSongModalFirstStepProps) {
       />
 
       <Group align={'center'}>
-        {isAlbumsLoading ? (
-          <Group gap={'xs'} flex={1}>
-            <Loader size={25} />
-            <Text fz={'sm'} c={'dimmed'}>
-              Loading Albums...
-            </Text>
-          </Group>
-        ) : (
-          <Autocomplete
-            maxLength={100}
-            flex={1}
-            data={albums}
-            label={'Album'}
-            placeholder={`${albums.length > 0 ? 'Choose or Create Album' : 'Enter New Album Title'}`}
-          />
-        )}
+        <AlbumAutocomplete
+          album={album}
+          setAlbum={setAlbum}
+          key={form.key('albumTitle')}
+          setValue={(v) => form.setFieldValue('albumTitle', v)}
+          {...form.getInputProps('albumTitle')}
+        />
 
-        {isArtistsLoading ? (
-          <Group gap={'xs'} flex={1}>
-            <Loader size={25} />
-            <Text fz={'sm'} c={'dimmed'}>
-              Loading Artists...
-            </Text>
-          </Group>
-        ) : (
-          <Autocomplete
-            maxLength={100}
-            flex={1}
-            data={artists}
-            label={'Artist'}
-            placeholder={`${artists.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
-          />
-        )}
+        <ArtistAutocomplete
+          artist={artist}
+          setArtist={setArtist}
+          key={form.key('artistName')}
+          setValue={(v) => form.setFieldValue('artistName', v)}
+          {...form.getInputProps('artistName')}
+        />
       </Group>
 
       <Textarea

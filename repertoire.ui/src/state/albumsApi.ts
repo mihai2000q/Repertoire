@@ -31,7 +31,7 @@ const albumsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Albums']
+      invalidatesTags: ['Albums', 'Artists']
     }),
     updateAlbum: build.mutation<HttpMessageResponse, UpdateAlbumRequest>({
       query: (body) => ({

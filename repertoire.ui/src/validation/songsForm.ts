@@ -6,11 +6,8 @@ const youtubeRegex =
 export interface AddNewSongForm {
   title: string
   description: string
-
-  albumId?: string
-  albumTitle?: string
-  artistId?: string
   artistName?: string
+  albumTitle?: string
 
   releaseDate?: Date
   bpm?: number | string
