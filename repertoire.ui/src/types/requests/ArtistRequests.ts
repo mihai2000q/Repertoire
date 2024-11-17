@@ -3,6 +3,8 @@ import { FileWithPath } from '@mantine/dropzone'
 export interface GetArtistsRequest {
   currentPage?: number
   pageSize?: number
+  orderBy?: string[]
+  searchBy?: string[]
 }
 
 export interface CreateArtistRequest {

@@ -4,6 +4,7 @@ import {
   Group,
   HoverCard,
   Loader,
+  LoadingOverlay,
   ScrollArea,
   Text,
   TextInput,
@@ -12,8 +13,9 @@ import {
 import artistPlaceholder from '../../../assets/user-placeholder.jpg'
 import { useGetArtistsQuery } from '../../../state/artistsApi.ts'
 import Artist from '../../../types/models/Artist.ts'
-import {ChangeEvent, FocusEvent, useState} from 'react'
-import {IconUserFilled} from "@tabler/icons-react";
+import { ChangeEvent, FocusEvent } from 'react'
+import { IconUserFilled } from '@tabler/icons-react'
+import { useDebouncedState } from '@mantine/hooks'
 
 interface ArtistsAutocompleteProps {
   artist: Artist
@@ -27,12 +29,31 @@ interface ArtistsAutocompleteProps {
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
 }
 
-function ArtistAutocomplete({ artist, setArtist, setValue, ...inputProps }: ArtistsAutocompleteProps) {
+function ArtistAutocomplete({
+  artist,
+  setArtist,
+  setValue,
+  ...inputProps
+}: ArtistsAutocompleteProps) {
   const combobox = useCombobox()
 
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: artists, isLoading } = useGetArtistsQuery({})
+  const {
+    data: artists,
+    isLoading,
+    isFetching
+  } = useGetArtistsQuery({
+    currentPage: 1,
+    pageSize: 10,
+    orderBy: ['name asc'],
+    searchBy:
+      searchValue.trim() !== ''
+        ? [`name ~* ${searchValue}`]
+        : artist
+          ? [`name ~* ${artist.name}`]
+          : []
+  })
 
   function handleClear() {
     if (setValue) setValue('')
@@ -78,7 +99,7 @@ function ArtistAutocomplete({ artist, setArtist, setValue, ...inputProps }: Arti
           flex={1}
           maxLength={100}
           label={'Artist'}
-          placeholder={`${artists.models.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
+          placeholder={`${artists?.models?.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
           leftSection={artist ? <ArtistHoverCard /> : <IconUserFilled size={20} />}
           rightSection={artist && <Combobox.ClearButton onClear={handleClear} />}
           onClick={() => combobox.openDropdown()}
@@ -104,9 +125,11 @@ function ArtistAutocomplete({ artist, setArtist, setValue, ...inputProps }: Arti
       </Combobox.Target>
 
       <Combobox.Dropdown sx={(theme) => ({ boxShadow: theme.shadows.lg })}>
+        <LoadingOverlay visible={!isFetching} />
+
         <Combobox.Options>
           <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
-            {artists.totalCount === 0 ? (
+            {artists?.totalCount === 0 ? (
               <Combobox.Empty>No artist found</Combobox.Empty>
             ) : (
               artists?.models?.map((artist) => (

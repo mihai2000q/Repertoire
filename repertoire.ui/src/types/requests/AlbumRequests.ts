@@ -4,6 +4,7 @@ export interface GetAlbumsRequest {
   currentPage?: number
   pageSize?: number
   orderBy?: string[]
+  searchBy?: string[]
 }
 
 export interface CreateAlbumRequest {

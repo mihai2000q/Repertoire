@@ -4,6 +4,7 @@ import {
   Group,
   HoverCard,
   Loader,
+  LoadingOverlay,
   ScrollArea,
   Stack,
   Text,
@@ -13,9 +14,10 @@ import {
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import Album from '../../../types/models/Album.ts'
-import { ChangeEvent, FocusEvent, useState } from 'react'
+import { ChangeEvent, FocusEvent } from 'react'
 import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'
+import { useDebouncedState } from '@mantine/hooks'
 
 interface AlbumsAutocompleteProps {
   album: Album
@@ -32,9 +34,23 @@ interface AlbumsAutocompleteProps {
 function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsAutocompleteProps) {
   const combobox = useCombobox()
 
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: albums, isLoading } = useGetAlbumsQuery({})
+  const {
+    data: albums,
+    isLoading,
+    isFetching
+  } = useGetAlbumsQuery({
+    currentPage: 1,
+    pageSize: 10,
+    orderBy: ['title asc'],
+    searchBy:
+      searchValue.trim() !== ''
+        ? [`title ~* ${searchValue}`]
+        : album
+          ? [`title ~* ${album.title}`]
+          : []
+  })
 
   function handleClear() {
     if (setValue) setValue('')
@@ -97,7 +113,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
           flex={1}
           maxLength={100}
           label={'Album'}
-          placeholder={`${albums.models.length > 0 ? 'Choose or Create Album' : 'Enter New Album Name'}`}
+          placeholder={`${albums?.models?.length > 0 ? 'Choose or Create Album' : 'Enter New Album Name'}`}
           leftSection={album ? <AlbumHoverCard /> : <IconDiscFilled size={20} />}
           rightSection={album && <Combobox.ClearButton onClear={handleClear} />}
           {...inputProps}
@@ -122,9 +138,11 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
       </Combobox.Target>
 
       <Combobox.Dropdown sx={(theme) => ({ boxShadow: theme.shadows.lg })}>
+        <LoadingOverlay visible={isFetching} />
+
         <Combobox.Options>
           <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
-            {albums.totalCount === 0 ? (
+            {albums?.totalCount === 0 ? (
               <Combobox.Empty>No album found</Combobox.Empty>
             ) : (
               albums?.models?.map((album) => (
