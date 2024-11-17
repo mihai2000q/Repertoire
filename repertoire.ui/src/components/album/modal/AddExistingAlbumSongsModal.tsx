@@ -72,11 +72,8 @@ function AddExistingAlbumSongsModal({ opened, onClose, albumId }: AddNewAlbumSon
       styles={{ body: { padding: 0 } }}
     >
       <Modal.Body p={0} pos={'relative'}>
-        <LoadingOverlay
-          visible={addSongIsLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <LoadingOverlay visible={addSongIsLoading} />
+
         <Stack align={'center'} w={'100%'}>
           <Text fw={500} fz={'lg'}>
             Choose songs

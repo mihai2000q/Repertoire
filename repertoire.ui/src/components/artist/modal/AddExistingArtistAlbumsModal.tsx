@@ -72,11 +72,8 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
       styles={{ body: { padding: 0 } }}
     >
       <Modal.Body p={0} pos={'relative'}>
-        <LoadingOverlay
-          visible={addAlbumIsLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <LoadingOverlay visible={addAlbumIsLoading} />
+
         <Stack align={'center'} w={'100%'}>
           <Text fw={500} fz={'lg'}>
             Choose albums

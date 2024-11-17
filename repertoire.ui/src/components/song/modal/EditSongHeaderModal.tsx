@@ -51,11 +51,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Header'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay
-          visible={isLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <LoadingOverlay visible={isLoading} />
 
         <form onSubmit={form.onSubmit(updateSong)}>
           <Stack>

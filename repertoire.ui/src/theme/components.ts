@@ -1,9 +1,11 @@
 import {
   ActionIcon,
   ActionIconFactory,
-  alpha, Button,
+  alpha,
+  Button,
   Card,
   CardFactory,
+  LoadingOverlay,
   Menu,
   NavLink,
   StylesApiProps,
@@ -66,6 +68,12 @@ export const components = {
         }
       }
     })
+  }),
+  LoadingOverlay: LoadingOverlay.extend({
+    defaultProps: {
+      overlayProps: { radius: 'md', blur: 2 },
+      zIndex: 1000
+    }
   }),
   Menu: Menu.extend({
     defaultProps: {

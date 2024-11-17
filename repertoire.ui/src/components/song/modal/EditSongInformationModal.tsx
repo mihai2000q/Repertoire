@@ -70,11 +70,7 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Information'}>
       <Modal.Body p={'xs'}>
-        <LoadingOverlay
-          visible={isLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <LoadingOverlay visible={isLoading} />
 
         <Stack>
           <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />

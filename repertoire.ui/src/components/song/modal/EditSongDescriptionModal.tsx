@@ -36,11 +36,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Description'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay
-          visible={isLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <LoadingOverlay visible={isLoading} />
 
         <Stack>
           <Textarea

@@ -52,11 +52,8 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Links'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay
-          visible={isLoading}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
+        <LoadingOverlay visible={isLoading} />
+
         <form onSubmit={form.onSubmit(updateSong)}>
           <Stack>
             <TextInput
