@@ -26,6 +26,11 @@ type User struct {
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
 
+func (u *User) BeforeSave(*gorm.DB) error {
+	u.ProfilePictureURL = u.ProfilePictureURL.StripNullableURL()
+	return nil
+}
+
 func (u *User) AfterFind(*gorm.DB) error {
 	u.ProfilePictureURL = u.ProfilePictureURL.ToNullableFullURL()
 	return nil
