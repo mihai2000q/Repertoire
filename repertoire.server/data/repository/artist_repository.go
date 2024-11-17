@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"gorm.io/gorm/clause"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
@@ -40,7 +39,7 @@ func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
 }
 
 func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
-	return a.client.DB.Preload(clause.Associations).Find(&artist, model.Artist{ID: id}).Error
+	return a.client.DB.Find(&artist, model.Artist{ID: id}).Error
 }
 
 func (a artistRepository) GetAllByUser(
@@ -52,7 +51,6 @@ func (a artistRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := a.client.DB.Model(&model.Artist{}).
-		Preload(clause.Associations).
 		Where(model.Artist{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)
