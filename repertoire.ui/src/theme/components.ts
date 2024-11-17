@@ -2,6 +2,10 @@ import {
   ActionIcon,
   ActionIconFactory,
   alpha,
+  Button,
+  Card,
+  CardFactory,
+  LoadingOverlay,
   Menu,
   NavLink,
   StylesApiProps,
@@ -12,10 +16,12 @@ import {
 
 export const components = {
   ActionIcon: ActionIcon.extend({
+    defaultProps: {
+      style: { transition: '0.16s' }
+    },
     styles: (theme) => ({
       root: {
         '&[data-variant="grey"]': {
-          transition: '0.15s',
           color: theme.colors.gray[5],
           backgroundColor: theme.colors.gray[0],
 
@@ -27,6 +33,47 @@ export const components = {
         }
       }
     })
+  }),
+  Button: Button.extend({
+    defaultProps: {
+      style: {
+        transition: '0.18s'
+      },
+      loaderProps: {
+        type: 'dots'
+      }
+    }
+  }),
+  Card: Card.extend({
+    styles: (theme) => ({
+      root: {
+        '&[data-variant="panel"]': {
+          boxShadow: theme.shadows.sm,
+          transition: '0.3s',
+          '&:hover': {
+            boxShadow: theme.shadows.xl
+          }
+        },
+        '&[data-variant="add-new"]': {
+          cursor: 'pointer',
+          transition: '0.3s',
+          boxShadow: theme.shadows.xxl,
+          color: theme.colors.cyan[7],
+          '&:hover': {
+            boxShadow: theme.shadows.xxl_hover,
+            color: theme.colors.cyan[8],
+            backgroundColor: alpha(theme.colors.cyan[0], 0.2),
+            transform: 'scale(1.1)'
+          }
+        }
+      }
+    })
+  }),
+  LoadingOverlay: LoadingOverlay.extend({
+    defaultProps: {
+      overlayProps: { radius: 'md', blur: 2 },
+      zIndex: 1000
+    }
   }),
   Menu: Menu.extend({
     defaultProps: {
@@ -89,5 +136,10 @@ declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
     variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey'
+  }
+
+  // noinspection JSUnusedGlobalSymbols
+  interface CardProps {
+    variant?: StylesApiProps<CardFactory>['variant'] | 'panel' | 'add-new'
   }
 }

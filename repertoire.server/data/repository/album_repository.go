@@ -83,7 +83,7 @@ func (a albumRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := a.client.DB.Model(&model.Album{}).
-		Preload(clause.Associations).
+		Preload("Artist").
 		Where(model.Album{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)

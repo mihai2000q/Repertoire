@@ -3,9 +3,13 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
 import Song, { GuitarTuning, SongSectionType } from '../types/models/Song'
 import {
   CreateSongRequest,
+  CreateSongSectionRequest,
+  DeleteSongSectionRequest,
   GetSongsRequest,
+  MoveSongSectionRequest,
   SaveImageToSongRequest,
-  UpdateSongRequest
+  UpdateSongRequest,
+  UpdateSongSectionRequest
 } from '../types/requests/SongRequests'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse'
 import createFormData from '../utils/createFormData.ts'
@@ -60,9 +64,41 @@ const songsApi = api.injectEndpoints({
       query: () => 'songs/guitar-tunings',
       providesTags: ['GuitarTunings']
     }),
+
     getSongSectionTypes: build.query<SongSectionType[], void>({
       query: () => 'songs/sections/types',
       providesTags: ['SongSectionTypes']
+    }),
+    createSongSection: build.mutation<{ id: string }, CreateSongSectionRequest>({
+      query: (body) => ({
+        url: 'songs/sections',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    updateSongSection: build.mutation<HttpMessageResponse, UpdateSongSectionRequest>({
+      query: (body) => ({
+        url: 'songs/sections',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
+      query: (body) => ({
+        url: 'songs/sections/move',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    deleteSongSection: build.mutation<HttpMessageResponse, DeleteSongSectionRequest>({
+      query: (arg) => ({
+        url: `songs/sections/${arg.id}/from/${arg.songId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: ['Songs']
     })
   })
 })
@@ -75,5 +111,9 @@ export const {
   useSaveImageToSongMutation,
   useDeleteSongMutation,
   useGetGuitarTuningsQuery,
-  useGetSongSectionTypesQuery
+  useGetSongSectionTypesQuery,
+  useCreateSongSectionMutation,
+  useUpdateSongSectionMutation,
+  useMoveSongSectionMutation,
+  useDeleteSongSectionMutation
 } = songsApi

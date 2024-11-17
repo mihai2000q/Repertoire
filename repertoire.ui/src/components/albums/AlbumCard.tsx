@@ -4,7 +4,7 @@ import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/globalSlice.ts'
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
 interface AlbumCardProps {
   album: Album
@@ -53,7 +53,7 @@ function AlbumCard({ album }: AlbumCardProps) {
         <Text fw={600} lineClamp={2} ta={'center'}>
           {album.title}
         </Text>
-        {album.artist && (
+        {album.artist ? (
           <Text
             fw={500}
             ta={'center'}
@@ -63,11 +63,15 @@ function AlbumCard({ album }: AlbumCardProps) {
             sx={{
               cursor: 'pointer',
               '&:hover': {
-                textDecoration: 'underline',
+                textDecoration: 'underline'
               }
             }}
           >
             {album.artist.name}
+          </Text>
+        ) : (
+          <Text c={'dimmed'} ta={'center'} fs={'oblique'}>
+            Unknown
           </Text>
         )}
       </Stack>

@@ -6,7 +6,7 @@ type GetArtistsRequest struct {
 	CurrentPage *int     `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
 	OrderBy     []string `form:"orderBy"`
-	SearchBy    []string `form:"orderBy"`
+	SearchBy    []string `form:"searchBy"`
 }
 
 type CreateArtistRequest struct {

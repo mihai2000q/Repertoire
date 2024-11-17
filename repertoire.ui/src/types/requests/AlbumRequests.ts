@@ -4,11 +4,12 @@ export interface GetAlbumsRequest {
   currentPage?: number
   pageSize?: number
   orderBy?: string[]
+  searchBy?: string[]
 }
 
 export interface CreateAlbumRequest {
   title: string
-  releaseDate?: string
+  releaseDate?: Date | string
   artistId?: string
   artistName?: string
 }
@@ -16,7 +17,7 @@ export interface CreateAlbumRequest {
 export interface UpdateAlbumRequest {
   id: string
   title: string
-  releaseDate?: string
+  releaseDate?: Date | string
 }
 
 export interface SaveImageToAlbumRequest {
