@@ -12,8 +12,8 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useParams } from 'react-router-dom'
-import { useGetArtistQuery } from '../state/artistsApi.ts'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDeleteArtistMutation, useGetArtistQuery } from '../state/artistsApi.ts'
 import artistPlaceholder from '../assets/user-placeholder.jpg'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
 import { useGetAlbumsQuery } from '../state/albumsApi.ts'
@@ -30,8 +30,10 @@ import {
   IconCheck,
   IconDisc,
   IconDots,
+  IconEdit,
   IconMusicPlus,
-  IconPlus
+  IconPlus,
+  IconTrash
 } from '@tabler/icons-react'
 import AddNewArtistSongModal from '../components/artist/modal/AddNewArtistSongModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -40,6 +42,9 @@ import AddExistingArtistAlbumsModal from '../components/artist/modal/AddExisting
 import AddNewArtistAlbumModal from '../components/artist/modal/AddNewArtistAlbumModal.tsx'
 import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
 import NewHorizontalCard from '../components/card/NewHorizontalCard.tsx'
+import { toast } from 'react-toastify'
+import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
+import EditArtistHeaderModal from '../components/artist/modal/EditArtistHeaderModal.tsx'
 
 const SortButton = ({
   order,
@@ -77,8 +82,12 @@ const SortButton = ({
 )
 
 function Artist() {
+  const navigate = useNavigate()
+
   const params = useParams()
   const artistId = params['id'] ?? ''
+
+  const [deleteArtistMutation] = useDeleteArtistMutation()
 
   const { data: artist, isLoading } = useGetArtistQuery(artistId)
 
@@ -92,6 +101,9 @@ function Artist() {
     orderBy: [songsOrder.value]
   })
 
+  const [openedEditArtistHeader, { open: openEditArtistHeader, close: closeEditArtistHeader }] =
+    useDisclosure(false)
+
   const [openedAddNewAlbum, { open: openAddNewAlbum, close: closeAddNewAlbum }] =
     useDisclosure(false)
   const [openedAddExistingAlbums, { open: openAddExistingAlbums, close: closeAddExistingAlbums }] =
@@ -101,22 +113,47 @@ function Artist() {
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
+  function handleDelete() {
+    deleteArtistMutation(artist.id)
+    navigate(`/artists`, { replace: true })
+    toast.success(`${artist.name} deleted!`)
+  }
+
   if (isLoading) return <ArtistLoader />
 
   return (
     <Stack>
-      <Group>
-        <Avatar
-          src={artist.imageUrl ?? artistPlaceholder}
-          size={125}
-          sx={(theme) => ({
-            boxShadow: theme.shadows.sm
-          })}
-        />
-        <Title order={3} fw={700}>
-          {artist.name}
-        </Title>
-      </Group>
+      <HeaderPanelCard
+        onEditClick={openEditArtistHeader}
+        menuDropdown={
+          <>
+            <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditArtistHeader}>
+              Edit
+            </Menu.Item>
+            <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              Delete
+            </Menu.Item>
+          </>
+        }
+      >
+        <Group>
+          <Avatar
+            src={artist.imageUrl ?? artistPlaceholder}
+            size={125}
+            sx={(theme) => ({
+              boxShadow: theme.shadows.md
+            })}
+          />
+          <Stack gap={4} style={{ alignSelf: 'start' }} pt={'md'}>
+            <Text fw={500} inline>
+              Artist
+            </Text>
+            <Title order={1} fw={700}>
+              {artist.name}
+            </Title>
+          </Stack>
+        </Group>
+      </HeaderPanelCard>
 
       <Divider />
 
@@ -213,6 +250,11 @@ function Artist() {
         </Card>
       </Group>
 
+      <EditArtistHeaderModal
+        artist={artist}
+        opened={openedEditArtistHeader}
+        onClose={closeEditArtistHeader}
+      />
       <AddNewArtistSongModal
         opened={openedAddNewSong}
         onClose={closeAddNewSong}
