@@ -9,18 +9,18 @@ interface MenuState {
   }
 }
 
-interface MenuProps {
+interface MenuDropdownProps {
   style: MantineStyleProp
 }
 
 interface ContextMenuHandlers {
   openMenu: (event: MouseEvent) => void
-  onChange: (opened: boolean) => void
+  onMenuChange: (opened: boolean) => void
 }
 
-export default function useContextMenu(): [boolean, MenuProps, ContextMenuHandlers] {
+export default function useContextMenu(): [boolean, MenuDropdownProps, ContextMenuHandlers] {
   const [menuState, setMenuState] = useState<MenuState>({ opened: false })
-  const menuProps: MenuProps = {
+  const menuProps: MenuDropdownProps = {
     style: {
       position: 'absolute',
       top: menuState.position?.top,
@@ -39,9 +39,9 @@ export default function useContextMenu(): [boolean, MenuProps, ContextMenuHandle
     })
   }
 
-  function onChange(opened: boolean) {
+  function onMenuChange(opened: boolean) {
     setMenuState({ ...menuState, opened })
   }
 
-  return [menuState.opened, menuProps, { openMenu, onChange }]
+  return [menuState.opened, menuProps, { openMenu, onMenuChange }]
 }

@@ -66,7 +66,7 @@ function SongCard({ song }: SongCardProps) {
   const solos = song.sections.filter((s) => s.songSectionType.name === 'Solo').length
   const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
 
-  const [openedMenu, menuProps, { openMenu, onChange: onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
 
   function handleClick() {
     navigate(`/song/${song.id}`)
@@ -79,7 +79,6 @@ function SongCard({ song }: SongCardProps) {
 
   function handleDelete() {
     deleteSongMutation(song.id)
-    navigate(`/songs`, { replace: true })
     toast.success(`${song.title} deleted!`)
   }
 
@@ -193,7 +192,7 @@ function SongCard({ song }: SongCardProps) {
         </Card>
       </Menu.Target>
 
-      <Menu.Dropdown style={menuProps.style}>
+      <Menu.Dropdown {...menuDropdownProps}>
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={handleDelete}>
           Delete
         </Menu.Item>
