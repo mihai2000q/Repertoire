@@ -9,6 +9,7 @@ import {
   Group,
   HoverCard,
   Image,
+  Menu,
   Progress,
   Stack,
   Text,
@@ -19,13 +20,19 @@ import songPlaceholder from '../assets/image-placeholder-1.jpg'
 import userPlaceholder from '../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../state/store.ts'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { openAlbumDrawer, openArtistDrawer } from '../state/globalSlice.ts'
 import SongLoader from '../components/song/SongLoader.tsx'
-import { useGetSongQuery } from '../state/songsApi.ts'
+import { useDeleteSongMutation, useGetSongQuery } from '../state/songsApi.ts'
 import useDifficultyInfo from '../hooks/useDifficultyInfo.ts'
 import Difficulty from '../utils/enums/Difficulty.ts'
-import { IconBrandYoutube, IconCheck, IconGuitarPick } from '@tabler/icons-react'
+import {
+  IconBrandYoutube,
+  IconCheck,
+  IconEdit,
+  IconGuitarPick,
+  IconTrash
+} from '@tabler/icons-react'
 import SongSections from '../components/song/SongSections.tsx'
 import EditPanelCard from '../components/card/EditPanelCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -33,7 +40,7 @@ import EditSongDescriptionModal from '../components/song/modal/EditSongDescripti
 import EditSongInformationModal from '../components/song/modal/EditSongInformationModal.tsx'
 import EditSongLinksModal from '../components/song/modal/EditSongLinksModal.tsx'
 import EditSongHeaderModal from '../components/song/modal/EditSongHeaderModal.tsx'
-import EditHeaderCard from '../components/card/EditHeaderCard.tsx'
+import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 
 const NotSet = () => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
@@ -43,9 +50,12 @@ const NotSet = () => (
 
 function Song() {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
 
   const params = useParams()
   const songId = params['id'] ?? ''
+
+  const [deleteSongMutation] = useDeleteSongMutation()
 
   const { data: song, isLoading } = useGetSongQuery(songId)
 
@@ -72,11 +82,28 @@ function Song() {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
+  function handleDelete() {
+    deleteSongMutation(song.id)
+    navigate(`/songs`, { replace: true })
+  }
+
   if (isLoading) return <SongLoader />
 
   return (
     <Stack>
-      <EditHeaderCard onEditClick={openEditSongHeader}>
+      <HeaderPanelCard
+        onEditClick={openEditSongHeader}
+        menuDropdown={
+          <>
+            <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongHeader}>
+              Edit
+            </Menu.Item>
+            <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              Delete
+            </Menu.Item>
+          </>
+        }
+      >
         <Group>
           <AspectRatio>
             <Image
@@ -179,7 +206,7 @@ function Song() {
             </Group>
           </Stack>
         </Group>
-      </EditHeaderCard>
+      </HeaderPanelCard>
 
       <Divider />
 
