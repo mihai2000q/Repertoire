@@ -17,3 +17,12 @@ export interface AddNewAlbumSongForm {
 export const addNewAlbumSongValidation = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank')
 })
+
+export interface EditAlbumHeaderForm {
+  title: string
+  releaseDate: Date
+}
+
+export const editAlbumHeaderValidation = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+})
