@@ -8,6 +8,7 @@ import {
   Center,
   Group,
   Image,
+  Menu,
   Stack,
   Text,
   Tooltip
@@ -23,9 +24,13 @@ import {
   IconGuitarPickFilled,
   IconMichelinStarFilled,
   IconMicrophoneFilled,
-  IconStarFilled
+  IconStarFilled,
+  IconTrash
 } from '@tabler/icons-react'
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
+import { toast } from 'react-toastify'
+import { useDeleteSongMutation } from '../../state/songsApi.ts'
+import useContextMenu from '../../hooks/useContextMenu.ts'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -55,9 +60,13 @@ function SongCard({ song }: SongCardProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
+  const [deleteSongMutation] = useDeleteSongMutation()
+
   const { color: difficultyColor } = useDifficultyInfo(song?.difficulty)
   const solos = song.sections.filter((s) => s.songSectionType.name === 'Solo').length
   const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
+
+  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
 
   function handleClick() {
     navigate(`/song/${song.id}`)
@@ -68,111 +77,127 @@ function SongCard({ song }: SongCardProps) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
-  return (
-    <Card
-      data-testid={`song-card-${song.id}`}
-      p={0}
-      radius={'lg'}
-      w={175}
-      onClick={handleClick}
-      sx={(theme) => ({
-        cursor: 'pointer',
-        transition: '0.3s',
-        boxShadow: theme.shadows.lg,
-        '&:hover': {
-          boxShadow: theme.shadows.xxl,
-          transform: 'scale(1.1)'
-        }
-      })}
-    >
-      <Stack gap={0}>
-        <AspectRatio ratio={8 / 7}>
-          <Image
-            radius={'16px'}
-            src={song.imageUrl ?? song.album?.imageUrl}
-            fallbackSrc={imagePlaceholder}
-            alt={song.title}
-            sx={(theme) => ({
-              boxShadow: theme.shadows.sm
-            })}
-          />
-        </AspectRatio>
+  function handleDelete() {
+    deleteSongMutation(song.id)
+    toast.success(`${song.title} deleted!`)
+  }
 
-        <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
-          <Text fw={600} lineClamp={2} inline mb={1}>
-            {song.title}
-          </Text>
-          <Box pb={1}>
-            {song.artist ? (
-              <Text
-                fz={'sm'}
-                c="dimmed"
-                truncate={'end'}
-                onClick={handleArtistClick}
-                sx={{ '&:hover': { textDecoration: 'underline' } }}
-              >
-                {song.artist?.name}
+  return (
+    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+      <Menu.Target>
+        <Card
+          data-testid={`song-card-${song.id}`}
+          p={0}
+          radius={'lg'}
+          w={175}
+          onClick={handleClick}
+          onContextMenu={openMenu}
+          sx={(theme) => ({
+            cursor: 'pointer',
+            transition: '0.3s',
+            boxShadow: theme.shadows.lg,
+            '&:hover': {
+              boxShadow: theme.shadows.xxl,
+              transform: 'scale(1.1)'
+            }
+          })}
+        >
+          <Stack gap={0}>
+            <AspectRatio ratio={8 / 7}>
+              <Image
+                radius={'16px'}
+                src={song.imageUrl ?? song.album?.imageUrl}
+                fallbackSrc={imagePlaceholder}
+                alt={song.title}
+                style={(theme) => ({
+                  boxShadow: theme.shadows.sm
+                })}
+              />
+            </AspectRatio>
+
+            <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
+              <Text fw={600} lineClamp={2} inline mb={1}>
+                {song.title}
               </Text>
-            ) : (
-              <Text fz={'sm'} c="dimmed" fs={'oblique'}>
-                Unknown
-              </Text>
-            )}
-          </Box>
-          <Group c={'cyan.9'} gap={4} align={'end'} pb={1}>
-            {song.isRecorded && (
-              <LocalTooltip label={'This song is recorded'}>
-                <IconMicrophoneFilled size={iconSize - 2} />
-              </LocalTooltip>
-            )}
-            {song.guitarTuning && (
-              <LocalTooltip label={`This song is tuned in ${song.guitarTuning.name}`}>
-                <IconMichelinStarFilled size={iconSize} />
-              </LocalTooltip>
-            )}
-            {riffs > 1 && (
-              <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
-                <IconBombFilled size={iconSize} />
-              </LocalTooltip>
-            )}
-            {solos > 0 && (
-              <LocalTooltip
-                label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
-              >
-                <Center c={solos === 1 ? 'yellow' : 'cyan'}>
-                  <IconBoltFilled size={iconSize} />
-                </Center>
-              </LocalTooltip>
-            )}
-            {song.difficulty && (
-              <LocalTooltip label={`This song is ${song.difficulty}`}>
-                <Center c={difficultyColor}>
-                  <IconStarFilled size={iconSize} />
-                </Center>
-              </LocalTooltip>
-            )}
-            {song.songsterrLink && (
-              <LocalAnchor link={song.songsterrLink}>
-                <LocalTooltip label={'This song has a songsterr link'}>
-                  <Center c={'blue.7'}>
-                    <IconGuitarPickFilled size={iconSize} />
-                  </Center>
-                </LocalTooltip>
-              </LocalAnchor>
-            )}
-            {song.youtubeLink && (
-              <LocalAnchor link={song.youtubeLink}>
-                <LocalTooltip label={'This song has a youtube link'}>
-                  <Center c={'red.7'}>
-                    <IconBrandYoutubeFilled size={iconSize} />
-                  </Center>
-                </LocalTooltip>
-              </LocalAnchor>
-            )}
-          </Group>
-        </Stack>
-      </Stack>
-    </Card>
+              <Box pb={1}>
+                {song.artist ? (
+                  <Text
+                    fz={'sm'}
+                    c="dimmed"
+                    truncate={'end'}
+                    onClick={handleArtistClick}
+                    sx={{ '&:hover': { textDecoration: 'underline' } }}
+                  >
+                    {song.artist?.name}
+                  </Text>
+                ) : (
+                  <Text fz={'sm'} c="dimmed" fs={'oblique'}>
+                    Unknown
+                  </Text>
+                )}
+              </Box>
+              <Group c={'cyan.9'} gap={4} align={'end'} pb={1}>
+                {song.isRecorded && (
+                  <LocalTooltip label={'This song is recorded'}>
+                    <IconMicrophoneFilled size={iconSize - 2} />
+                  </LocalTooltip>
+                )}
+                {song.guitarTuning && (
+                  <LocalTooltip label={`This song is tuned in ${song.guitarTuning.name}`}>
+                    <IconMichelinStarFilled size={iconSize} />
+                  </LocalTooltip>
+                )}
+                {riffs > 1 && (
+                  <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
+                    <IconBombFilled size={iconSize} />
+                  </LocalTooltip>
+                )}
+                {solos > 0 && (
+                  <LocalTooltip
+                    label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
+                  >
+                    <Center c={solos === 1 ? 'yellow' : 'cyan'}>
+                      <IconBoltFilled size={iconSize} />
+                    </Center>
+                  </LocalTooltip>
+                )}
+                {song.difficulty && (
+                  <LocalTooltip label={`This song is ${song.difficulty}`}>
+                    <Center c={difficultyColor}>
+                      <IconStarFilled size={iconSize} />
+                    </Center>
+                  </LocalTooltip>
+                )}
+                {song.songsterrLink && (
+                  <LocalAnchor link={song.songsterrLink}>
+                    <LocalTooltip label={'This song has a songsterr link'}>
+                      <Center c={'blue.7'}>
+                        <IconGuitarPickFilled size={iconSize} />
+                      </Center>
+                    </LocalTooltip>
+                  </LocalAnchor>
+                )}
+                {song.youtubeLink && (
+                  <LocalAnchor link={song.youtubeLink}>
+                    <LocalTooltip label={'This song has a youtube link'}>
+                      <Center c={'red.7'}>
+                        <IconBrandYoutubeFilled size={iconSize} />
+                      </Center>
+                    </LocalTooltip>
+                  </LocalAnchor>
+                )}
+              </Group>
+            </Stack>
+          </Stack>
+        </Card>
+      </Menu.Target>
+
+      <Menu.Dropdown {...menuDropdownProps}>
+        <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={handleDelete}>
+          Delete
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
   )
 }
 
