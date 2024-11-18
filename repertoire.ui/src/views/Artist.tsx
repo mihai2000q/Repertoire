@@ -140,7 +140,7 @@ function Artist() {
           <Avatar
             src={artist.imageUrl ?? artistPlaceholder}
             size={125}
-            sx={(theme) => ({
+            style={(theme) => ({
               boxShadow: theme.shadows.md
             })}
           />

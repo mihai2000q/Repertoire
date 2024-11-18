@@ -113,7 +113,7 @@ function Song() {
               src={song.imageUrl}
               fallbackSrc={songPlaceholder}
               radius={'lg'}
-              sx={(theme) => ({
+              style={(theme) => ({
                 boxShadow: theme.shadows.lg
               })}
             />

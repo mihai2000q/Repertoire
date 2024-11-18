@@ -33,7 +33,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         onMouseLeave={() => setIsAvatarHovered(false)}
         src={artist.imageUrl ?? artistPlaceholder}
         size={125}
-        sx={(theme) => ({
+        style={(theme) => ({
           cursor: 'pointer',
           transition: '0.3s',
           boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl,

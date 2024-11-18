@@ -82,7 +82,7 @@ function Album() {
               src={album.imageUrl}
               fallbackSrc={albumPlaceholder}
               radius={'lg'}
-              sx={(theme) => ({
+              style={(theme) => ({
                 boxShadow: theme.shadows.lg
               })}
             />

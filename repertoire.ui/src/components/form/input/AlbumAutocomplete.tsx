@@ -137,7 +137,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown sx={(theme) => ({ boxShadow: theme.shadows.lg })}>
+      <Combobox.Dropdown style={(theme) => ({ boxShadow: theme.shadows.lg })}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
