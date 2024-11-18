@@ -18,7 +18,7 @@ interface ContextMenuHandlers {
   onChange: (opened: boolean) => void
 }
 
-export default function useContextMenu(): [MenuState, MenuProps, ContextMenuHandlers] {
+export default function useContextMenu(): [boolean, MenuProps, ContextMenuHandlers] {
   const [menuState, setMenuState] = useState<MenuState>({ opened: false })
   const menuProps: MenuProps = {
     style: {
@@ -43,5 +43,5 @@ export default function useContextMenu(): [MenuState, MenuProps, ContextMenuHand
     setMenuState({ ...menuState, opened })
   }
 
-  return [menuState, menuProps, { openMenu, onChange }]
+  return [menuState.opened, menuProps, { openMenu, onChange }]
 }
