@@ -25,7 +25,7 @@ export interface SongSection {
   id: string
   name: string
   rehearsals: number
-  type: SongSectionType
+  songSectionType: SongSectionType
 }
 
 export interface SongSectionType {

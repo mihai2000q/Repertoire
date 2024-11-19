@@ -1,13 +1,15 @@
-import { Autocomplete, Button, Group, Loader, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewAlbumForm, addNewAlbumValidation } from '../../../validation/albumsForm.ts'
 import { useCreateAlbumMutation, useSaveImageToAlbumMutation } from '../../../state/albumsApi.ts'
-import { useGetArtistsQuery } from '../../../state/artistsApi.ts'
 import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPreview.tsx'
 import { DatePickerInput } from '@mantine/dates'
+import ArtistAutocomplete from '../../form/input/ArtistAutocomplete.tsx'
+import Artist from '../../../types/models/Artist.ts'
+import {IconCalendarFilled} from "@tabler/icons-react";
 
 interface AddNewAlbumModalProps {
   opened: boolean
@@ -19,11 +21,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToAlbumMutation()
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
-  const { data: artistsData, isLoading: isArtistsLoading } = useGetArtistsQuery({})
-  const artists = artistsData?.models?.map((artist) => ({
-    value: artist.id,
-    label: artist.name
-  }))
+  const [artist, setArtist] = useState<Artist>(null)
 
   const [image, setImage] = useState<FileWithPath>(null)
 
@@ -43,10 +41,16 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
     validate: zodResolver(addNewAlbumValidation)
   })
 
-  async function addAlbum({ title, releaseDate }: AddNewAlbumForm) {
+  async function addAlbum({ title, artistName, releaseDate }: AddNewAlbumForm) {
     title = title.trim()
+    artistName = artistName?.trim() === '' ? null : artistName?.trim()
 
-    const res = await createAlbumMutation({ title, releaseDate }).unwrap()
+    const res = await createAlbumMutation({
+      title: title,
+      releaseDate: releaseDate,
+      artistId: artist?.id,
+      artistName: artist ? null : artistName
+    }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
@@ -54,6 +58,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
 
     onCloseWithImage()
     form.reset()
+    setArtist(null)
   }
 
   return (
@@ -71,34 +76,27 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
             />
 
             <Group>
+              <ArtistAutocomplete
+                artist={artist}
+                setArtist={setArtist}
+                key={form.key('artistName')}
+                setValue={(v) => form.setFieldValue('artistName', v)}
+                {...form.getInputProps('artistName')}
+              />
+
               <DatePickerInput
                 flex={1}
                 label={'Release Date'}
+                leftSection={<IconCalendarFilled size={20} />}
                 placeholder={'Choose the release date'}
                 key={form.key('releaseDate')}
                 {...form.getInputProps('releaseDate')}
               />
-
-              {isArtistsLoading ? (
-                <Group gap={'xs'} flex={1}>
-                  <Loader size={25} />
-                  <Text fz={'sm'} c={'dimmed'}>
-                    Loading Artists...
-                  </Text>
-                </Group>
-              ) : (
-                <Autocomplete
-                  flex={1}
-                  data={artists}
-                  label={'Artist'}
-                  placeholder={`${artists.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
-                />
-              )}
             </Group>
 
             <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
 
-            <Button style={{ alignSelf: 'end' }} type={'submit'} disabled={isLoading}>
+            <Button style={{ alignSelf: 'end' }} type={'submit'} loading={isLoading}>
               Submit
             </Button>
           </Stack>

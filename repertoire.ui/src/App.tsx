@@ -4,7 +4,7 @@ import '@mantine/dates/styles.css'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { emotionCache } from './cache.ts'
 import 'react-toastify/dist/ReactToastify.css'
-import CustomizedToastContainer from './components/CustomizedToastContainer.tsx'
+import CustomizedToastContainer from './components/toast/CustomizedToastContainer.tsx'
 import { ReactElement } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { MantineProvider } from '@mantine/core'
@@ -19,11 +19,12 @@ import NotFound from './views/NotFound'
 import Unauthorized from './views/Unauthorized'
 import Main from './views/Main'
 import SignIn from './views/SignIn'
-import Songs from './views/songs/Songs.tsx'
-import Albums from './views/albums/Albums.tsx'
-import Artists from './views/artists/Artists.tsx'
-import Artist from './views/artists/Artist.tsx'
-import Album from './views/albums/Album.tsx'
+import Songs from './views/Songs.tsx'
+import Albums from './views/Albums.tsx'
+import Artists from './views/Artists.tsx'
+import Artist from './views/Artist.tsx'
+import Album from './views/Album.tsx'
+import Song from './views/Song.tsx'
 
 function App(): ReactElement {
   return (
@@ -53,6 +54,7 @@ function App(): ReactElement {
                     <Route path={'albums'} element={<Albums />} />
                     <Route path={'album/:id'} element={<Album />} />
                     <Route path={'songs'} element={<Songs />} />
+                    <Route path={'song/:id'} element={<Song />} />
 
                     {/* Errors */}
                     <Route path={'401'} element={<Unauthorized />} />

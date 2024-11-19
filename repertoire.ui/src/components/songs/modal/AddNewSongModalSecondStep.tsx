@@ -4,7 +4,6 @@ import {
   Button,
   ComboboxItem,
   Group,
-  Loader,
   NumberInput,
   Select,
   Stack,
@@ -12,18 +11,25 @@ import {
   TextInput
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
-import { IconGripVertical, IconMinus } from '@tabler/icons-react'
-import { useGetGuitarTuningsQuery, useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
+import {
+  IconActivityHeartbeat,
+  IconCalendarFilled,
+  IconGripVertical,
+  IconMinus
+} from '@tabler/icons-react'
+import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { v4 as uuid } from 'uuid'
 import { UseFormReturnType } from '@mantine/form'
 import { AddNewSongModalSongSection } from './AddNewSongModal.tsx'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { UseListStateHandlers } from '@mantine/hooks'
+import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
+import DifficultySelect from '../../form/select/DifficultySelect.tsx'
+import { AddNewSongForm } from '../../../validation/songsForm.ts'
 
 interface AddNewSongModalSecondStepProps {
-  form: UseFormReturnType<unknown, (values: unknown) => unknown>
+  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
   sections: AddNewSongModalSongSection[]
   sectionsHandlers: UseListStateHandlers<AddNewSongModalSongSection>
   guitarTuning: ComboboxItem | null
@@ -41,17 +47,6 @@ function AddNewSongModalSecondStep({
   difficulty,
   setDifficulty
 }: AddNewSongModalSecondStepProps) {
-  const { data: guitarTuningsData, isLoading: isGuitarTuningsLoading } = useGetGuitarTuningsQuery()
-  const guitarTunings = guitarTuningsData?.map((guitarTuning) => ({
-    value: guitarTuning.id,
-    label: guitarTuning.name
-  }))
-
-  const difficulties = Object.entries(Difficulty).map(([key, value]) => ({
-    value: value,
-    label: key
-  }))
-
   const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
   const songSectionTypes = songSectionTypesData?.map((type) => ({
     value: type.id,
@@ -67,40 +62,16 @@ function AddNewSongModalSecondStep({
   return (
     <Stack>
       <Group justify={'space-between'} align={'center'}>
-        {isGuitarTuningsLoading ? (
-          <Group gap={'xs'}>
-            <Loader size={25} />
-            <Text fz={'sm'} c={'dimmed'}>
-              Loading Tunings...
-            </Text>
-          </Group>
-        ) : (
-          <Select
-            flex={1.25}
-            label={'Guitar Tuning'}
-            placeholder={'Select Guitar Tuning'}
-            data={guitarTunings}
-            value={guitarTuning ? guitarTuning.value : null}
-            onChange={(_, option) => setGuitarTuning(option)}
-            maxDropdownHeight={150}
-            clearable
-          />
-        )}
+        <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
 
-        <Select
-          flex={1}
-          label={'Difficulty'}
-          placeholder={'Select Difficulty'}
-          data={difficulties}
-          value={difficulty ? difficulty.value : null}
-          onChange={(_, option) => setDifficulty(option)}
-          clearable
-        />
+        <DifficultySelect option={difficulty} onChange={setDifficulty} />
       </Group>
 
       <Group justify={'space-between'} align={'center'}>
         <NumberInput
           flex={1}
+          min={1}
+          leftSection={<IconActivityHeartbeat size={20} />}
           label="Bpm"
           placeholder="Enter Bpm"
           key={form.key('bpm')}
@@ -109,6 +80,7 @@ function AddNewSongModalSecondStep({
 
         <DatePickerInput
           flex={1}
+          leftSection={<IconCalendarFilled size={20} />}
           label={'Release Date'}
           placeholder={'Choose the release date'}
           key={form.key('releaseDate')}
@@ -142,6 +114,7 @@ function AddNewSongModalSecondStep({
                           gap={'xs'}
                           py={'xs'}
                           sx={(theme) => ({
+                            transition: '0.25s',
                             borderRadius: '16px',
                             border: `1px solid ${alpha(theme.colors.cyan[9], 0.33)}`,
                             borderWidth: snapshot.isDragging ? '1px' : '0px'

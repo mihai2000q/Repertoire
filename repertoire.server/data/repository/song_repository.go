@@ -101,6 +101,7 @@ func (s songRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := s.client.DB.Model(&model.Song{}).
+		Preload("Sections.SongSectionType").
 		Preload(clause.Associations).
 		Where(model.Song{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)

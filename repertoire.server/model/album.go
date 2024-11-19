@@ -22,6 +22,11 @@ type Album struct {
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
+func (a *Album) BeforeSave(*gorm.DB) error {
+	a.ImageURL = a.ImageURL.StripNullableURL()
+	return nil
+}
+
 func (a *Album) AfterFind(*gorm.DB) error {
 	a.ImageURL = a.ImageURL.ToNullableFullURL()
 	return nil

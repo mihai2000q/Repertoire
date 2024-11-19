@@ -20,6 +20,11 @@ type Playlist struct {
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
+func (p *Playlist) BeforeSave(*gorm.DB) error {
+	p.ImageURL = p.ImageURL.StripNullableURL()
+	return nil
+}
+
 func (p *Playlist) AfterFind(*gorm.DB) error {
 	p.ImageURL = p.ImageURL.ToNullableFullURL()
 	return nil

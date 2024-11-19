@@ -82,7 +82,7 @@ function Topbar(): ReactElement {
         </ActionIcon>
 
         {!user ? (
-          <Loader />
+          <Loader size={'sm'} />
         ) : (
           <Menu shadow={'lg'} width={200}>
             <Menu.Target>

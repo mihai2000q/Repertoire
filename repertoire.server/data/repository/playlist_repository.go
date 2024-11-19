@@ -56,7 +56,7 @@ func (p playlistRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := p.client.DB.Model(&model.Playlist{}).
-		Preload(clause.Associations).
+		Preload("Songs").
 		Where(model.Playlist{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)
