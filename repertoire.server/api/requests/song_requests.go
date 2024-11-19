@@ -54,6 +54,11 @@ type CreateGuitarTuningRequest struct {
 	Name string `validate:"required,max=16"`
 }
 
+type MoveGuitarTuningRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	OverID uuid.UUID `validate:"required"`
+}
+
 // Sections
 
 type CreateSongSectionRequest struct {

@@ -522,6 +522,63 @@ func TestValidateCreateGuitarTuningRequest_WhenSingleFieldIsInvalid_ShouldReturn
 	}
 }
 
+func TestValidateMoveGuitarTuningRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := MoveGuitarTuningRequest{
+		ID:     uuid.New(),
+		OverID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+
+}
+
+func TestValidateMoveGuitarTuningRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              MoveGuitarTuningRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			MoveGuitarTuningRequest{ID: uuid.Nil, OverID: uuid.New()},
+			"ID",
+			"required",
+		},
+		// Over ID Test Cases
+		{
+			"Over ID is invalid because it's required",
+			MoveGuitarTuningRequest{ID: uuid.New(), OverID: uuid.Nil},
+			"OverID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "MoveGuitarTuningRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 // Sections
 
 var validSectionName = "James Solo"

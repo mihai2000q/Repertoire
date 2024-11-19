@@ -196,6 +196,25 @@ func (s SongHandler) CreateGuitarTuning(c *gin.Context) {
 	s.SendMessage(c, "guitar tuning has been created successfully!")
 }
 
+func (s SongHandler) MoveGuitarTuning(c *gin.Context) {
+	var request requests.MoveGuitarTuningRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode = s.service.MoveGuitarTuning(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "guitar tuning has been created successfully!")
+}
+
 func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
