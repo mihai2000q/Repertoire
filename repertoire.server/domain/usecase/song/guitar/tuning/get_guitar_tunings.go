@@ -1,4 +1,4 @@
-package song
+package tuning
 
 import (
 	"repertoire/server/data/repository"

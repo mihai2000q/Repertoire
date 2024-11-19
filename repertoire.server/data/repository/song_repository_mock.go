@@ -109,16 +109,6 @@ func (s *SongRepositoryMock) CountByAlbum(count *int64, albumID *uuid.UUID) erro
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
-	args := s.Called(tunings, userID)
-
-	if len(args) > 1 {
-		*tunings = *args.Get(1).(*[]model.GuitarTuning)
-	}
-
-	return args.Error(0)
-}
-
 func (s *SongRepositoryMock) Create(song *model.Song) error {
 	args := s.Called(song)
 	return args.Error(0)
@@ -145,6 +135,43 @@ func (s *SongRepositoryMock) UpdateAllWithAssociations(songs *[]model.Song) erro
 }
 
 func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
+	args := s.Called(id)
+	return args.Error(0)
+}
+
+// Guitar Tunings
+
+func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
+	args := s.Called(tunings, userID)
+
+	if len(args) > 1 {
+		*tunings = *args.Get(1).(*[]model.GuitarTuning)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetGuitarTuningsCount(count *int64, userID uuid.UUID) error {
+	args := s.Called(count, userID)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) CreateGuitarTuning(tuning *model.GuitarTuning) error {
+	args := s.Called(tuning)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
+	args := s.Called(tunings)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) DeleteGuitarTuning(id uuid.UUID) error {
 	args := s.Called(id)
 	return args.Error(0)
 }

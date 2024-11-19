@@ -1,10 +1,12 @@
 package requests
 
 import (
-	"github.com/stretchr/testify/assert"
+	"net/http"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var validEmail = "someone@yahoo.com"
@@ -85,7 +87,7 @@ func TestValidateSignInRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "SignInRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
@@ -199,7 +201,7 @@ func TestValidateSignUpRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "SignUpRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }

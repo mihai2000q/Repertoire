@@ -69,18 +69,6 @@ func (s SongHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (s SongHandler) GetGuitarTunings(c *gin.Context) {
-	token := s.GetTokenFromContext(c)
-
-	result, errorCode := s.service.GetGuitarTunings(token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	c.JSON(http.StatusOK, result)
-}
-
 func (s SongHandler) Create(c *gin.Context) {
 	var request requests.CreateSongRequest
 	errCode := s.BindAndValidate(c, &request)
@@ -173,6 +161,76 @@ func (s SongHandler) DeleteImage(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "image has been deleted from song successfully")
+}
+
+// Guitar Tunings
+
+func (s SongHandler) GetGuitarTunings(c *gin.Context) {
+	token := s.GetTokenFromContext(c)
+
+	result, errorCode := s.service.GetGuitarTunings(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (s SongHandler) CreateGuitarTuning(c *gin.Context) {
+	var request requests.CreateGuitarTuningRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode = s.service.CreateGuitarTuning(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "guitar tuning has been created successfully!")
+}
+
+func (s SongHandler) MoveGuitarTuning(c *gin.Context) {
+	var request requests.MoveGuitarTuningRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode = s.service.MoveGuitarTuning(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "guitar tuning has been created successfully!")
+}
+
+func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode := s.service.DeleteGuitarTuning(id, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "guitar tuning has been deleted successfully!")
 }
 
 // Sections

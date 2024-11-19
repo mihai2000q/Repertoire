@@ -15,7 +15,6 @@ func (s SongRouter) RegisterRoutes() {
 	{
 		api.GET("/:id", s.handler.Get)
 		api.GET("", s.handler.GetAll)
-		api.GET("/guitar-tunings", s.handler.GetGuitarTunings)
 		api.POST("", s.handler.Create)
 		api.PUT("", s.handler.Update)
 		api.DELETE("/:id", s.handler.Delete)
@@ -25,6 +24,14 @@ func (s SongRouter) RegisterRoutes() {
 	{
 		imagesApi.PUT("", s.handler.SaveImage)
 		imagesApi.DELETE("/:id", s.handler.DeleteImage)
+	}
+
+	guitarTuningsApi := api.Group("/guitar-tunings")
+	{
+		guitarTuningsApi.GET("", s.handler.GetGuitarTunings)
+		guitarTuningsApi.POST("", s.handler.CreateGuitarTuning)
+		guitarTuningsApi.PUT("/move", s.handler.MoveGuitarTuning)
+		guitarTuningsApi.DELETE("/:id", s.handler.DeleteGuitarTuning)
 	}
 
 	sectionsApi := api.Group("/sections")

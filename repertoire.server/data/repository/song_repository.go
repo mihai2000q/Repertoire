@@ -25,13 +25,18 @@ type SongRepository interface {
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
-	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
 	UpdateAll(songs *[]model.Song) error
 	UpdateWithAssociations(song *model.Song) error
 	UpdateAllWithAssociations(songs *[]model.Song) error
 	Delete(id uuid.UUID) error
+
+	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
+	GetGuitarTuningsCount(count *int64, userID uuid.UUID) error
+	CreateGuitarTuning(tuning *model.GuitarTuning) error
+	UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error
+	DeleteGuitarTuning(id uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
 	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
@@ -112,14 +117,6 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 	return tx.Count(count).Error
 }
 
-func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.GuitarTuning{}).
-		Where(model.GuitarTuning{UserID: userID}).
-		Order("\"order\"").
-		Find(&tunings).
-		Error
-}
-
 func (s songRepository) Create(song *model.Song) error {
 	return s.client.DB.Create(&song).Error
 }
@@ -160,6 +157,42 @@ func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 
 func (s songRepository) Delete(id uuid.UUID) error {
 	return s.client.DB.Delete(&model.Song{}, id).Error
+}
+
+// Guitar Tunings
+
+func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.GuitarTuning{}).
+		Where(model.GuitarTuning{UserID: userID}).
+		Order("\"order\"").
+		Find(&tunings).
+		Error
+}
+
+func (s songRepository) GetGuitarTuningsCount(count *int64, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.GuitarTuning{}).
+		Where(model.GuitarTuning{UserID: userID}).
+		Count(count).
+		Error
+}
+
+func (s songRepository) CreateGuitarTuning(tuning *model.GuitarTuning) error {
+	return s.client.DB.Create(&tuning).Error
+}
+
+func (s songRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
+	return s.client.DB.Transaction(func(tx *gorm.DB) error {
+		for _, tuning := range *tunings {
+			if err := tx.Save(tuning).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (s songRepository) DeleteGuitarTuning(id uuid.UUID) error {
+	return s.client.DB.Delete(&model.GuitarTuning{}, id).Error
 }
 
 // Sections

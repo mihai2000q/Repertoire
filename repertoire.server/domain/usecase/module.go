@@ -6,6 +6,7 @@ import (
 	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/domain/usecase/user"
 
@@ -62,10 +63,14 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewDeleteSong),
 	fx.Provide(song.NewDeleteImageFromSong),
 	fx.Provide(song.NewGetAllSongs),
-	fx.Provide(song.NewGetGuitarTunings),
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewSaveImageToSong),
 	fx.Provide(song.NewUpdateSong),
+
+	fx.Provide(tuning.NewCreateGuitarTuning),
+	fx.Provide(tuning.NewDeleteGuitarTuning),
+	fx.Provide(tuning.NewGetGuitarTunings),
+	fx.Provide(tuning.NewMoveGuitarTuning),
 
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),

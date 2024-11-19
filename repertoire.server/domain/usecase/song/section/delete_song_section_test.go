@@ -1,7 +1,6 @@
 package section
 
 import (
-	"cmp"
 	"errors"
 	"net/http"
 	"repertoire/server/data/repository"
@@ -168,10 +167,6 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 			sections = slices.DeleteFunc(sections, func(a model.SongSection) bool {
 				return a.ID == id
-			})
-
-			slices.SortFunc(sections, func(a, b model.SongSection) int {
-				return cmp.Compare(a.Order, b.Order)
 			})
 			for i, section := range sections {
 				assert.Equal(t, uint(i), section.Order)

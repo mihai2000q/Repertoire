@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"net/http"
 	"repertoire/server/api/validation"
 	"testing"
 
@@ -52,7 +53,7 @@ func TestValidateUpdateUserRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateUserRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, 400, errCode.Code)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
 }
