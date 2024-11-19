@@ -166,8 +166,8 @@ func (s *SongRepositoryMock) CreateGuitarTuning(tuning *model.GuitarTuning) erro
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning, index int) error {
-	args := s.Called(tunings, index)
+func (s *SongRepositoryMock) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
+	args := s.Called(tunings)
 	return args.Error(0)
 }
 

@@ -35,7 +35,7 @@ type SongRepository interface {
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	GetGuitarTuningsCount(count *int64, userID uuid.UUID) error
 	CreateGuitarTuning(tuning *model.GuitarTuning) error
-	UpdateAllGuitarTunings(tunings *[]model.GuitarTuning, index int) error
+	UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error
 	DeleteGuitarTuning(id uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
@@ -180,10 +180,10 @@ func (s songRepository) CreateGuitarTuning(tuning *model.GuitarTuning) error {
 	return s.client.DB.Create(&tuning).Error
 }
 
-func (s songRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning, index int) error {
+func (s songRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
 	return s.client.DB.Transaction(func(tx *gorm.DB) error {
-		for i := index; i < len(*tunings); i++ {
-			if err := tx.Save((*tunings)[i]).Error; err != nil {
+		for _, tuning := range *tunings {
+			if err := tx.Save(tuning).Error; err != nil {
 				return err
 			}
 		}

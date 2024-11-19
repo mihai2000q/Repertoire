@@ -42,7 +42,7 @@ func (d DeleteGuitarTuning) Handle(id uuid.UUID, token string) *wrapper.ErrorCod
 		tunings[i].Order = uint(tunings[i].Order - 1)
 	}
 
-	err = d.repository.UpdateAllGuitarTunings(&tunings, index)
+	err = d.repository.UpdateAllGuitarTunings(&tunings)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

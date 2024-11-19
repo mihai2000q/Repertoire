@@ -247,7 +247,7 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 				Return(nil, tt.tunings).
 				Once()
 
-			songRepository.On("UpdateAllGuitarTunings", mock.IsType(tt.tunings), 0).
+			songRepository.On("UpdateAllGuitarTunings", mock.IsType(tt.tunings)).
 				Run(func(args mock.Arguments) {
 					newGuitarTunings := args.Get(0).(*[]model.GuitarTuning)
 					tunings := slices.Clone(*newGuitarTunings)
@@ -260,7 +260,7 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 						assert.Equal(t, tunings[tt.overIndex+1].ID, request.OverID)
 					}
 					for i, tuning := range tunings {
-						assert.Equal(t, i, tuning.Order)
+						assert.Equal(t, uint(i), tuning.Order)
 					}
 				}).
 				Return(nil).

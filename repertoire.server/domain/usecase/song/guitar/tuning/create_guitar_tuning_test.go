@@ -163,5 +163,5 @@ func assertCreatedGuitarTuning(
 	assert.NotEmpty(t, guitarTuning.ID)
 	assert.Equal(t, request.Name, guitarTuning.Name)
 	assert.Equal(t, userID, guitarTuning.UserID)
-	assert.Equal(t, &count, guitarTuning.Order)
+	assert.Equal(t, uint(*count), guitarTuning.Order)
 }

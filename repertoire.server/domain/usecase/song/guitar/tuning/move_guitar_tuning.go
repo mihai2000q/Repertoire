@@ -41,7 +41,7 @@ func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token
 	}
 	tunings = m.move(tunings, index, overIndex)
 
-	err = m.repository.UpdateAllGuitarTunings(&tunings, index)
+	err = m.repository.UpdateAllGuitarTunings(&tunings)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

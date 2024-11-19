@@ -172,7 +172,7 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 		Return(nil, tunings).
 		Once()
 
-	songRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings), 0).
+	songRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
 		Run(func(args mock.Arguments) {
 			newGuitarTunings := args.Get(0).(*[]model.GuitarTuning)
 			guitarTunings := slices.DeleteFunc(*newGuitarTunings, func(t model.GuitarTuning) bool {
