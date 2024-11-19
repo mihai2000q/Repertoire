@@ -22,6 +22,7 @@ type SongService interface {
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 
 	CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode
+	DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
@@ -41,6 +42,7 @@ type songService struct {
 	updateSong          song.UpdateSong
 
 	createGuitarTuning tuning.CreateGuitarTuning
+	deleteGuitarTuning tuning.DeleteGuitarTuning
 	getGuitarTunings   tuning.GetGuitarTunings
 
 	createSongSection   section.CreateSongSection
@@ -59,8 +61,9 @@ func NewSongService(
 	saveImageToSong song.SaveImageToSong,
 	updateSong song.UpdateSong,
 
-	getGuitarTunings tuning.GetGuitarTunings,
 	createGuitarTuning tuning.CreateGuitarTuning,
+	deleteGuitarTuning tuning.DeleteGuitarTuning,
+	getGuitarTunings tuning.GetGuitarTunings,
 
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
@@ -78,6 +81,7 @@ func NewSongService(
 		updateSong:          updateSong,
 
 		createGuitarTuning: createGuitarTuning,
+		deleteGuitarTuning: deleteGuitarTuning,
 		getGuitarTunings:   getGuitarTunings,
 
 		createSongSection:   createSongSection,
@@ -120,6 +124,10 @@ func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorC
 
 func (s *songService) CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode {
 	return s.createGuitarTuning.Handle(request, token)
+}
+
+func (s *songService) DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode {
+	return s.deleteGuitarTuning.Handle(id, token)
 }
 
 func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {

@@ -30,6 +30,7 @@ func (s SongRouter) RegisterRoutes() {
 	{
 		guitarTuningsApi.GET("", s.handler.GetGuitarTunings)
 		guitarTuningsApi.POST("", s.handler.CreateGuitarTuning)
+		guitarTuningsApi.DELETE("/:id", s.handler.DeleteGuitarTuning)
 	}
 
 	sectionsApi := api.Group("/sections")

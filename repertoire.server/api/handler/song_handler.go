@@ -196,6 +196,24 @@ func (s SongHandler) CreateGuitarTuning(c *gin.Context) {
 	s.SendMessage(c, "guitar tuning has been created successfully!")
 }
 
+func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode := s.service.DeleteGuitarTuning(id, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "guitar tuning has been deleted successfully!")
+}
+
 // Sections
 
 func (s SongHandler) GetSectionTypes(c *gin.Context) {

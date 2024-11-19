@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TesCreateGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
+func TestCreateGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	_uut := &CreateGuitarTuning{
@@ -40,7 +40,7 @@ func TesCreateGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testin
 	jwtService.AssertExpectations(t)
 }
 
-func TesCreateGuitarTuning_WhenGetGuitarTuningsCountFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreateGuitarTuning_WhenGetGuitarTuningsCountFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -58,7 +58,7 @@ func TesCreateGuitarTuning_WhenGetGuitarTuningsCountFails_ShouldReturnInternalSe
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetGuitarTuningsCount", new([]model.GuitarTuning), userID).
+	songRepository.On("GetGuitarTuningsCount", new(int64), userID).
 		Return(internalError).
 		Once()
 
@@ -74,7 +74,7 @@ func TesCreateGuitarTuning_WhenGetGuitarTuningsCountFails_ShouldReturnInternalSe
 	songRepository.AssertExpectations(t)
 }
 
-func TesCreateGuitarTuning_WhenCreateGuitarTuningFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreateGuitarTuning_WhenCreateGuitarTuningFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -91,8 +91,9 @@ func TesCreateGuitarTuning_WhenCreateGuitarTuningFails_ShouldReturnInternalServe
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	songRepository.On("GetGuitarTuningsCount", new([]model.GuitarTuning), userID).
-		Return(nil, &[]int64{12}[0]).
+	count := &[]int64{12}[0]
+	songRepository.On("GetGuitarTuningsCount", mock.IsType(count), userID).
+		Return(nil, count).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -112,7 +113,7 @@ func TesCreateGuitarTuning_WhenCreateGuitarTuningFails_ShouldReturnInternalServe
 	songRepository.AssertExpectations(t)
 }
 
-func TesCreateGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
+func TestCreateGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
