@@ -130,7 +130,7 @@ func TestCreateSongSectionType_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 		Return(nil, count).
 		Once()
 
-	songRepository.On("CreateSectionType", mock.IsType(new(model.SongSectionType)), userID).
+	songRepository.On("CreateSectionType", mock.IsType(new(model.SongSectionType))).
 		Run(func(args mock.Arguments) {
 			newType := args.Get(0).(*model.SongSectionType)
 			assertCreatedSongSectionType(t, *newType, request, userID, count)
