@@ -8,6 +8,7 @@ import (
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/section/types"
 	"repertoire/server/domain/usecase/user"
 
 	"go.uber.org/fx"

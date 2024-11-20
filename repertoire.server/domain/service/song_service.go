@@ -6,6 +6,7 @@ import (
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/section/types"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
