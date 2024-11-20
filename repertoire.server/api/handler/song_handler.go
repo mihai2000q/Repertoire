@@ -235,18 +235,6 @@ func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {
 
 // Sections
 
-func (s SongHandler) GetSectionTypes(c *gin.Context) {
-	token := s.GetTokenFromContext(c)
-
-	result, errorCode := s.service.GetSectionTypes(token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	c.JSON(http.StatusOK, result)
-}
-
 func (s SongHandler) CreateSection(c *gin.Context) {
 	var request requests.CreateSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)
@@ -318,4 +306,37 @@ func (s SongHandler) DeleteSection(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "song section has been deleted successfully!")
+}
+
+// Sections - Types
+
+func (s SongHandler) GetSectionTypes(c *gin.Context) {
+	token := s.GetTokenFromContext(c)
+
+	result, errorCode := s.service.GetSectionTypes(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (s SongHandler) CreateSectionType(c *gin.Context) {
+	var request requests.CreateSongSectionTypeRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode = s.service.CreateSectionType(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song section has been created successfully!")
 }

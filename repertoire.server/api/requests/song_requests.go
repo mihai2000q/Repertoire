@@ -79,3 +79,9 @@ type MoveSongSectionRequest struct {
 	OverID uuid.UUID `validate:"required"`
 	SongID uuid.UUID `validate:"required"`
 }
+
+// Sections - Types
+
+type CreateSongSectionTypeRequest struct {
+	Name string `validate:"required,max=16"`
+}

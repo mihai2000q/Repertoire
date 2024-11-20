@@ -75,9 +75,11 @@ var songUseCases = fx.Options(
 
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
-	fx.Provide(section.NewGetSongSectionTypes),
 	fx.Provide(section.NewMoveSongSection),
 	fx.Provide(section.NewUpdateSongSection),
+
+	fx.Provide(types.NewCreateSongSectionType),
+	fx.Provide(types.NewGetSongSectionTypes),
 )
 
 var userUseCases = fx.Options(
