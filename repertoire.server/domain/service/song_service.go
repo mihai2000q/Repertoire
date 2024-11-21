@@ -35,6 +35,7 @@ type SongService interface {
 	CreateSectionType(request requests.CreateSongSectionTypeRequest, token string) *wrapper.ErrorCode
 	DeleteSectionType(id uuid.UUID, token string) *wrapper.ErrorCode
 	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
+	MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *wrapper.ErrorCode
 }
 
 type songService struct {
@@ -59,6 +60,7 @@ type songService struct {
 	createSongSectionType types.CreateSongSectionType
 	deleteSongSectionType types.DeleteSongSectionType
 	getSongSectionTypes   types.GetSongSectionTypes
+	moveSongSectionType   types.MoveSongSectionType
 }
 
 func NewSongService(
@@ -83,6 +85,7 @@ func NewSongService(
 	createSongSectionType types.CreateSongSectionType,
 	deleteSongSectionType types.DeleteSongSectionType,
 	getSongSectionTypes types.GetSongSectionTypes,
+	moveSongSectionType types.MoveSongSectionType,
 ) SongService {
 	return &songService{
 		createSong:          createSong,
@@ -106,6 +109,7 @@ func NewSongService(
 		createSongSectionType: createSongSectionType,
 		deleteSongSectionType: deleteSongSectionType,
 		getSongSectionTypes:   getSongSectionTypes,
+		moveSongSectionType:   moveSongSectionType,
 	}
 }
 
@@ -188,4 +192,8 @@ func (s *songService) DeleteSectionType(id uuid.UUID, token string) *wrapper.Err
 
 func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
 	return s.getSongSectionTypes.Handle(token)
+}
+
+func (s *songService) MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *wrapper.ErrorCode {
+	return s.moveSongSectionType.Handle(request, token)
 }

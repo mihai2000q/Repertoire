@@ -341,6 +341,25 @@ func (s SongHandler) CreateSectionType(c *gin.Context) {
 	s.SendMessage(c, "song section type has been created successfully!")
 }
 
+func (s SongHandler) MoveSectionType(c *gin.Context) {
+	var request requests.MoveSongSectionTypeRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	errorCode = s.service.MoveSectionType(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song section type has been moved successfully!")
+}
+
 func (s SongHandler) DeleteSectionType(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
