@@ -91,7 +91,7 @@ func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnIntern
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateSectionTypes", mock.IsType(types)).
+	songRepository.On("UpdateAllSectionTypes", mock.IsType(types)).
 		Return(internalError).
 		Once()
 
