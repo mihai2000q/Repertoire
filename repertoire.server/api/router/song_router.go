@@ -36,11 +36,18 @@ func (s SongRouter) RegisterRoutes() {
 
 	sectionsApi := api.Group("/sections")
 	{
-		sectionsApi.GET("/types", s.handler.GetSectionTypes)
 		sectionsApi.POST("", s.handler.CreateSection)
 		sectionsApi.PUT("", s.handler.UpdateSection)
 		sectionsApi.PUT("/move", s.handler.MoveSection)
 		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
+	}
+
+	sectionTypesApi := sectionsApi.Group("/types")
+	{
+		sectionTypesApi.GET("", s.handler.GetSectionTypes)
+		sectionTypesApi.POST("", s.handler.CreateSectionType)
+		sectionTypesApi.PUT("/move", s.handler.MoveSectionType)
+		sectionTypesApi.DELETE("/:id", s.handler.DeleteSectionType)
 	}
 }
 

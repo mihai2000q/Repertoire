@@ -39,11 +39,16 @@ type SongRepository interface {
 	DeleteGuitarTuning(id uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
-	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
 	CountSectionsBySong(count *int64, songID uuid.UUID) error
 	CreateSection(section *model.SongSection) error
 	UpdateSection(section *model.SongSection) error
 	DeleteSection(id uuid.UUID) error
+
+	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
+	CountSectionTypes(count *int64, userID uuid.UUID) error
+	CreateSectionType(sectionType *model.SongSectionType) error
+	UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error
+	DeleteSectionType(id uuid.UUID) error
 }
 
 type songRepository struct {
@@ -201,14 +206,6 @@ func (s songRepository) GetSection(section *model.SongSection, id uuid.UUID) err
 	return s.client.DB.Find(&section, model.SongSection{ID: id}).Error
 }
 
-func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.SongSectionType{}).
-		Where(model.SongSectionType{UserID: userID}).
-		Order("\"order\"").
-		Find(&types).
-		Error
-}
-
 func (s songRepository) CountSectionsBySong(count *int64, songID uuid.UUID) error {
 	return s.client.DB.Model(&model.SongSection{}).
 		Where(model.SongSection{SongID: songID}).
@@ -225,5 +222,41 @@ func (s songRepository) UpdateSection(section *model.SongSection) error {
 }
 
 func (s songRepository) DeleteSection(id uuid.UUID) error {
+	return s.client.DB.Delete(&model.SongSection{}, id).Error
+}
+
+// Section Types
+
+func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.SongSectionType{}).
+		Where(model.SongSectionType{UserID: userID}).
+		Order("\"order\"").
+		Find(&types).
+		Error
+}
+
+func (s songRepository) CountSectionTypes(count *int64, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.SongSectionType{}).
+		Where(model.SongSectionType{UserID: userID}).
+		Count(count).
+		Error
+}
+
+func (s songRepository) CreateSectionType(sectionType *model.SongSectionType) error {
+	return s.client.DB.Create(&sectionType).Error
+}
+
+func (s songRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {
+	return s.client.DB.Transaction(func(tx *gorm.DB) error {
+		for _, sectionType := range *sectionTypes {
+			if err := tx.Save(sectionType).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (s songRepository) DeleteSectionType(id uuid.UUID) error {
 	return s.client.DB.Delete(&model.SongSection{}, id).Error
 }

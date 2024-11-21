@@ -49,7 +49,7 @@ func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token
 	return nil
 }
 
-func (c MoveGuitarTuning) getIndexes(tunings []model.GuitarTuning, id uuid.UUID, overID uuid.UUID) (int, int, error) {
+func (MoveGuitarTuning) getIndexes(tunings []model.GuitarTuning, id uuid.UUID, overID uuid.UUID) (int, int, error) {
 	var index *int
 	var overIndex *int
 	for i := 0; i < len(tunings); i++ {
@@ -70,7 +70,7 @@ func (c MoveGuitarTuning) getIndexes(tunings []model.GuitarTuning, id uuid.UUID,
 	return *index, *overIndex, nil
 }
 
-func (c MoveGuitarTuning) move(tunings []model.GuitarTuning, index int, overIndex int) []model.GuitarTuning {
+func (MoveGuitarTuning) move(tunings []model.GuitarTuning, index int, overIndex int) []model.GuitarTuning {
 	if index < overIndex {
 		for i := index + 1; i <= overIndex; i++ {
 			tunings[i].Order = uint(i - 1)

@@ -1,4 +1,4 @@
-package section
+package types
 
 import (
 	"repertoire/server/data/repository"

@@ -188,16 +188,6 @@ func (s *SongRepositoryMock) GetSection(section *model.SongSection, id uuid.UUID
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetSectionTypes(tunings *[]model.SongSectionType, userID uuid.UUID) error {
-	args := s.Called(tunings, userID)
-
-	if len(args) > 1 {
-		*tunings = *args.Get(1).(*[]model.SongSectionType)
-	}
-
-	return args.Error(0)
-}
-
 func (s *SongRepositoryMock) CountSectionsBySong(count *int64, songID uuid.UUID) error {
 	args := s.Called(count, songID)
 
@@ -219,6 +209,43 @@ func (s *SongRepositoryMock) UpdateSection(section *model.SongSection) error {
 }
 
 func (s *SongRepositoryMock) DeleteSection(id uuid.UUID) error {
+	args := s.Called(id)
+	return args.Error(0)
+}
+
+// Section Types
+
+func (s *SongRepositoryMock) GetSectionTypes(tunings *[]model.SongSectionType, userID uuid.UUID) error {
+	args := s.Called(tunings, userID)
+
+	if len(args) > 1 {
+		*tunings = *args.Get(1).(*[]model.SongSectionType)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) CountSectionTypes(count *int64, userID uuid.UUID) error {
+	args := s.Called(count, userID)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) CreateSectionType(sectionType *model.SongSectionType) error {
+	args := s.Called(sectionType)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {
+	args := s.Called(sectionTypes)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) DeleteSectionType(id uuid.UUID) error {
 	args := s.Called(id)
 	return args.Error(0)
 }
