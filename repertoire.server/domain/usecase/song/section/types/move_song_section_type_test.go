@@ -41,7 +41,7 @@ func TestMoveSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *test
 	jwtService.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenGetSongSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestMoveSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -60,7 +60,7 @@ func TestMoveSongSectionType_WhenGetSongSectionTypesFails_ShouldReturnInternalSe
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetSongSectionTypes", new([]model.SongSectionType), userID).
+	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
 		Return(internalError).
 		Once()
 
@@ -76,7 +76,7 @@ func TestMoveSongSectionType_WhenGetSongSectionTypesFails_ShouldReturnInternalSe
 	songRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenSongSectionTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -95,7 +95,7 @@ func TestMoveSongSectionType_WhenSongSectionTypeIsNotFound_ShouldReturnNotFoundE
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	tunings := &[]model.SongSectionType{}
-	songRepository.On("GetSongSectionTypes", new([]model.SongSectionType), userID).
+	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
 		Return(nil, tunings).
 		Once()
 
@@ -111,7 +111,7 @@ func TestMoveSongSectionType_WhenSongSectionTypeIsNotFound_ShouldReturnNotFoundE
 	songRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenOverSongSectionTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -132,7 +132,7 @@ func TestMoveSongSectionType_WhenOverSongSectionTypeIsNotFound_ShouldReturnNotFo
 	tunings := &[]model.SongSectionType{
 		{ID: request.ID},
 	}
-	songRepository.On("GetSongSectionTypes", new([]model.SongSectionType), userID).
+	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
 		Return(nil, tunings).
 		Once()
 
@@ -148,7 +148,7 @@ func TestMoveSongSectionType_WhenOverSongSectionTypeIsNotFound_ShouldReturnNotFo
 	songRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenUpdateAllSongSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -170,12 +170,12 @@ func TestMoveSongSectionType_WhenUpdateAllSongSectionTypesFails_ShouldReturnInte
 		{ID: request.ID},
 		{ID: request.OverID},
 	}
-	songRepository.On("GetSongSectionTypes", new([]model.SongSectionType), userID).
+	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
 		Return(nil, tunings).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateAllSongSectionTypes", mock.IsType(tunings)).
+	songRepository.On("UpdateAllSectionTypes", mock.IsType(tunings)).
 		Return(internalError).
 		Once()
 
@@ -243,11 +243,11 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-			songRepository.On("GetSongSectionTypes", new([]model.SongSectionType), userID).
+			songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
 				Return(nil, tt.types).
 				Once()
 
-			songRepository.On("UpdateAllSongSectionTypes", mock.IsType(tt.types)).
+			songRepository.On("UpdateAllSectionTypes", mock.IsType(tt.types)).
 				Run(func(args mock.Arguments) {
 					newSongSectionTypes := args.Get(0).(*[]model.SongSectionType)
 					sectionTypes := slices.Clone(*newSongSectionTypes)
