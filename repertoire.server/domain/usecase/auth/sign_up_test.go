@@ -265,7 +265,7 @@ func assertCreatedUser(
 	for i, guitarTuning := range user.GuitarTunings {
 		assert.NotEmpty(t, guitarTuning.ID)
 		assert.Equal(t, user.ID, guitarTuning.UserID)
-		assert.Equal(t, model.DefaultGuitarTuning[i], guitarTuning.Name)
+		assert.Equal(t, model.DefaultGuitarTunings[i], guitarTuning.Name)
 		assert.Equal(t, uint(i), guitarTuning.Order)
 	}
 
