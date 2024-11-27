@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -14,9 +14,8 @@ import (
 func TestGetSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.GetSong{
-		repository: songRepository,
-	}
+	_uut := song.NewGetSong(songRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -25,10 +24,10 @@ func TestGetSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) 
 		Once()
 
 	// when
-	song, errCode := _uut.Handle(id)
+	resultSong, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, song)
+	assert.Empty(t, resultSong)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -39,9 +38,8 @@ func TestGetSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) 
 func TestGetSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.GetSong{
-		repository: songRepository,
-	}
+	_uut := song.NewGetSong(songRepository)
+
 	id := uuid.New()
 
 	songRepository.On("GetWithAssociations", new(model.Song), id).
@@ -49,10 +47,10 @@ func TestGetSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 		Once()
 
 	// when
-	song, errCode := _uut.Handle(id)
+	resultSong, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, song)
+	assert.Empty(t, resultSong)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
@@ -63,9 +61,8 @@ func TestGetSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.GetSong{
-		repository: songRepository,
-	}
+	_uut := song.NewGetSong(songRepository)
+
 	id := uuid.New()
 
 	expectedSong := &model.Song{
@@ -78,11 +75,11 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 		Once()
 
 	// when
-	song, errCode := _uut.Handle(id)
+	resultSong, errCode := _uut.Handle(id)
 
 	// then
-	assert.NotEmpty(t, song)
-	assert.Equal(t, expectedSong, &song)
+	assert.NotEmpty(t, resultSong)
+	assert.Equal(t, expectedSong, &resultSong)
 	assert.Nil(t, errCode)
 
 	songRepository.AssertExpectations(t)

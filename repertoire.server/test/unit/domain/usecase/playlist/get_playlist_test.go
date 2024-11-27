@@ -3,7 +3,7 @@ package playlist
 import (
 	"errors"
 	"net/http"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -15,9 +15,8 @@ import (
 func TestGetPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.GetPlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewGetPlaylist(playlistRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -26,10 +25,10 @@ func TestGetPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *tes
 		Once()
 
 	// when
-	playlist, errCode := _uut.Handle(id)
+	resultPlaylist, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, playlist)
+	assert.Empty(t, resultPlaylist)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -40,9 +39,8 @@ func TestGetPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *tes
 func TestGetPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.GetPlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewGetPlaylist(playlistRepository)
+
 	id := uuid.New()
 
 	playlistRepository.On("GetWithAssociations", new(model.Playlist), id).
@@ -50,10 +48,10 @@ func TestGetPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 		Once()
 
 	// when
-	playlist, errCode := _uut.Handle(id)
+	resultPlaylist, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, playlist)
+	assert.Empty(t, resultPlaylist)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "playlist not found", errCode.Error.Error())
@@ -64,9 +62,8 @@ func TestGetPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 func TestGetPlaylist_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.GetPlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewGetPlaylist(playlistRepository)
+
 	id := uuid.New()
 
 	expectedPlaylist := &model.Playlist{
@@ -79,11 +76,11 @@ func TestGetPlaylist_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 		Once()
 
 	// when
-	playlist, errCode := _uut.Handle(id)
+	resultPlaylist, errCode := _uut.Handle(id)
 
 	// then
-	assert.NotEmpty(t, playlist)
-	assert.Equal(t, expectedPlaylist, &playlist)
+	assert.NotEmpty(t, resultPlaylist)
+	assert.Equal(t, expectedPlaylist, &resultPlaylist)
 	assert.Nil(t, errCode)
 
 	playlistRepository.AssertExpectations(t)

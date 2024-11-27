@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -17,9 +17,8 @@ import (
 func TestUpdatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.UpdatePlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewUpdatePlaylist(playlistRepository)
+
 	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
@@ -42,9 +41,8 @@ func TestUpdatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 func TestUpdatePlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.UpdatePlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewUpdatePlaylist(playlistRepository)
+
 	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
@@ -66,22 +64,23 @@ func TestUpdatePlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing
 func TestUpdatePlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.UpdatePlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewUpdatePlaylist(playlistRepository)
+
 	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
 	}
 
-	playlist := &model.Playlist{
+	mockPlaylist := &model.Playlist{
 		ID:    request.ID,
 		Title: "Some Playlist",
 	}
+	playlistRepository.On("Get", new(model.Playlist), request.ID).
+		Return(nil, mockPlaylist).
+		Once()
 
-	playlistRepository.On("Get", new(model.Playlist), request.ID).Return(nil, playlist).Once()
 	internalError := errors.New("internal error")
-	playlistRepository.On("Update", mock.IsType(playlist)).
+	playlistRepository.On("Update", mock.IsType(mockPlaylist)).
 		Return(internalError).
 		Once()
 
@@ -98,21 +97,22 @@ func TestUpdatePlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerError(
 func TestUpdatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.UpdatePlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewUpdatePlaylist(playlistRepository)
+
 	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: "New Playlist",
 	}
 
-	playlist := &model.Playlist{
+	mockPlaylist := &model.Playlist{
 		ID:    request.ID,
 		Title: "Some Playlist",
 	}
+	playlistRepository.On("Get", new(model.Playlist), request.ID).
+		Return(nil, mockPlaylist).
+		Once()
 
-	playlistRepository.On("Get", new(model.Playlist), request.ID).Return(nil, playlist).Once()
-	playlistRepository.On("Update", mock.IsType(playlist)).
+	playlistRepository.On("Update", mock.IsType(mockPlaylist)).
 		Run(func(args mock.Arguments) {
 			newPlaylist := args.Get(0).(*model.Playlist)
 			assertUpdatedPlaylist(t, *newPlaylist, request)

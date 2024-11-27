@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	album2 "repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/album"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -17,9 +17,8 @@ import (
 func TestUpdateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.UpdateAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewUpdateAlbum(albumRepository)
+
 	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
@@ -42,9 +41,8 @@ func TestUpdateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 func TestUpdateAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.UpdateAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewUpdateAlbum(albumRepository)
+
 	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
@@ -66,22 +64,22 @@ func TestUpdateAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 func TestUpdateAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.UpdateAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewUpdateAlbum(albumRepository)
+
 	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
 	}
 
-	album := &model.Album{
+	mockAlbum := &model.Album{
 		ID:    request.ID,
 		Title: "Some Album",
 	}
 
-	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, album).Once()
+	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
+
 	internalError := errors.New("internal error")
-	albumRepository.On("Update", mock.IsType(album)).
+	albumRepository.On("Update", mock.IsType(mockAlbum)).
 		Return(internalError).
 		Once()
 
@@ -98,21 +96,20 @@ func TestUpdateAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *tes
 func TestUpdateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.UpdateAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewUpdateAlbum(albumRepository)
+
 	request := requests.UpdateAlbumRequest{
 		ID:    uuid.New(),
 		Title: "New Album",
 	}
 
-	album := &model.Album{
+	mockAlbum := &model.Album{
 		ID:    request.ID,
 		Title: "Some Album",
 	}
 
-	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, album).Once()
-	albumRepository.On("Update", mock.IsType(album)).
+	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
+	albumRepository.On("Update", mock.IsType(mockAlbum)).
 		Run(func(args mock.Arguments) {
 			newAlbum := args.Get(0).(*model.Album)
 			assertUpdatedAlbum(t, *newAlbum, request)

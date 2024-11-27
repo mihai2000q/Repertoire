@@ -6,11 +6,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/server/api/requests"
-	auth2 "repertoire/server/domain/usecase/auth"
+	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
-	service2 "repertoire/server/test/unit/data/service"
+	"repertoire/server/test/unit/data/service"
 	"strings"
 	"testing"
 )
@@ -18,9 +18,8 @@ import (
 func TestSignIn_WhenGetUserByEmailFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignIn{
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignIn(nil, nil, userRepository)
+
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -46,9 +45,8 @@ func TestSignIn_WhenGetUserByEmailFails_ShouldReturnInternalServerError(t *testi
 func TestSignIn_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignIn{
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignIn(nil, nil, userRepository)
+
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -72,12 +70,10 @@ func TestSignIn_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 
 func TestSignIn_WhenPasswordsAreNotTheSame_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
-	bCryptService := new(service2.BCryptServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignIn{
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignIn(nil, bCryptService, userRepository)
+
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -109,14 +105,11 @@ func TestSignIn_WhenPasswordsAreNotTheSame_ShouldReturnUnauthorizedError(t *test
 
 func TestSignIn_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
-	bCryptService := new(service2.BCryptServiceMock)
+	jwtService := new(service.JwtServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignIn{
-		jwtService:     jwtService,
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignIn(jwtService, bCryptService, userRepository)
+
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
@@ -151,14 +144,11 @@ func TestSignIn_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing.
 
 func TestSignIn_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
-	bCryptService := new(service2.BCryptServiceMock)
+	jwtService := new(service.JwtServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignIn{
-		jwtService:     jwtService,
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignIn(jwtService, bCryptService, userRepository)
+
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",

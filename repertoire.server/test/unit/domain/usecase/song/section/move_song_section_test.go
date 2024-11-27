@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	section2 "repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -19,9 +19,7 @@ import (
 func TestMoveSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.MoveSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewMoveSongSection(songRepository)
 
 	request := requests.MoveSongSectionRequest{
 		ID:     uuid.New(),
@@ -49,9 +47,7 @@ func TestMoveSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *tes
 func TestMoveSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.MoveSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewMoveSongSection(songRepository)
 
 	request := requests.MoveSongSectionRequest{
 		ID:     uuid.New(),
@@ -78,9 +74,7 @@ func TestMoveSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing
 func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.MoveSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewMoveSongSection(songRepository)
 
 	song := &model.Song{ID: uuid.New()}
 
@@ -109,9 +103,7 @@ func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *test
 func TestMoveSongSection_WhenOverSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.MoveSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewMoveSongSection(songRepository)
 
 	song := &model.Song{
 		ID: uuid.New(),
@@ -145,9 +137,7 @@ func TestMoveSongSection_WhenOverSectionIsNotFound_ShouldReturnNotFoundError(t *
 func TestMoveSongSection_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.MoveSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewMoveSongSection(songRepository)
 
 	song := &model.Song{
 		ID: uuid.New(),
@@ -227,9 +217,7 @@ func TestMoveSongSection_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := section2.MoveSongSection{
-				songRepository: songRepository,
-			}
+			_uut := section.NewMoveSongSection(songRepository)
 
 			request := requests.MoveSongSectionRequest{
 				ID:     tt.song.Sections[tt.index].ID,
@@ -255,8 +243,8 @@ func TestMoveSongSection_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 						assert.Equal(t, sections[tt.overIndex+1].ID, request.OverID)
 					}
 					assert.Equal(t, sections[tt.overIndex].ID, request.ID)
-					for i, section := range sections {
-						assert.Equal(t, uint(i), section.Order)
+					for i, s := range sections {
+						assert.Equal(t, uint(i), s.Order)
 					}
 				}).
 				Return(nil).

@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
 )
@@ -13,9 +13,8 @@ import (
 func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.DeleteSong{
-		repository: songRepository,
-	}
+	_uut := song.NewDeleteSong(songRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -35,9 +34,8 @@ func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testi
 func TestDeleteSong_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.DeleteSong{
-		repository: songRepository,
-	}
+	_uut := song.NewDeleteSong(songRepository)
+
 	id := uuid.New()
 
 	songRepository.On("Delete", id).Return(nil).Once()

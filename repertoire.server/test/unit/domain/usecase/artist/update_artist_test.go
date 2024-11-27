@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -17,9 +17,8 @@ import (
 func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.UpdateArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewUpdateArtist(artistRepository)
+
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
@@ -42,9 +41,8 @@ func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 func TestUpdateArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.UpdateArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewUpdateArtist(artistRepository)
+
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
@@ -66,22 +64,21 @@ func TestUpdateArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 func TestUpdateArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.UpdateArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewUpdateArtist(artistRepository)
+
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
 	}
 
-	artist := &model.Artist{
+	mockArtist := &model.Artist{
 		ID:   request.ID,
 		Name: "Some Artist",
 	}
 
-	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, artist).Once()
+	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
 	internalError := errors.New("internal error")
-	artistRepository.On("Update", mock.IsType(artist)).
+	artistRepository.On("Update", mock.IsType(mockArtist)).
 		Return(internalError).
 		Once()
 
@@ -98,21 +95,20 @@ func TestUpdateArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *t
 func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.UpdateArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewUpdateArtist(artistRepository)
+
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: "New Artist",
 	}
 
-	artist := &model.Artist{
+	mockArtist := &model.Artist{
 		ID:   request.ID,
 		Name: "Some Artist",
 	}
 
-	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, artist).Once()
-	artistRepository.On("Update", mock.IsType(artist)).
+	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
+	artistRepository.On("Update", mock.IsType(mockArtist)).
 		Run(func(args mock.Arguments) {
 			newArtist := args.Get(0).(*model.Artist)
 			assert.Equal(t, request.Name, newArtist.Name)

@@ -4,11 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	auth2 "repertoire/server/domain/usecase/auth"
+	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
-	service2 "repertoire/server/test/unit/data/service"
+	"repertoire/server/test/unit/data/service"
 	"strings"
 	"testing"
 
@@ -20,9 +20,8 @@ import (
 func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignUp{
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignUp(nil, nil, userRepository)
+
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
@@ -49,9 +48,8 @@ func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalS
 func TestAuthService_SignUp_WhenUserIsNotEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignUp{
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignUp(nil, nil, userRepository)
+
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
@@ -76,12 +74,10 @@ func TestAuthService_SignUp_WhenUserIsNotEmpty_ShouldReturnUnauthorizedError(t *
 
 func TestAuthService_SignUp_WhenHashPasswordFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	bCryptService := new(service2.BCryptServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignUp{
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignUp(nil, bCryptService, userRepository)
+
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
@@ -110,12 +106,10 @@ func TestAuthService_SignUp_WhenHashPasswordFails_ShouldReturnInternalServerErro
 
 func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	bCryptService := new(service2.BCryptServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignUp{
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignUp(nil, bCryptService, userRepository)
+
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
@@ -149,14 +143,11 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 
 func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
-	bCryptService := new(service2.BCryptServiceMock)
+	jwtService := new(service.JwtServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignUp{
-		jwtService:     jwtService,
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignUp(jwtService, bCryptService, userRepository)
+
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
@@ -201,20 +192,18 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 
 func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
-	bCryptService := new(service2.BCryptServiceMock)
+	jwtService := new(service.JwtServiceMock)
+	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.SignUp{
-		jwtService:     jwtService,
-		bCryptService:  bCryptService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewSignUp(jwtService, bCryptService, userRepository)
+
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
 		Email:    "Samuel@yahoo.com",
 		Password: "Password123",
 	}
 
+	// given - mocking
 	userRepository.On("GetByEmail", new(model.User), strings.ToLower(request.Email)).
 		Return(nil).
 		Once()

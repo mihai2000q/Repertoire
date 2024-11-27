@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,8 @@ import (
 func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.GetAllPlaylists{
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewGetAllPlaylists(nil, jwtService)
+
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
@@ -43,10 +42,8 @@ func TestGetAll_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.GetAllPlaylists{
-		repository: playlistRepository,
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewGetAllPlaylists(playlistRepository, jwtService)
+
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
@@ -84,10 +81,8 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.GetAllPlaylists{
-		repository: playlistRepository,
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewGetAllPlaylists(playlistRepository, jwtService)
+
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
@@ -96,6 +91,7 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 		{Title: "Some other Playlist"},
 	}
 
+	// given - mocking
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
@@ -141,10 +137,8 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.GetAllPlaylists{
-		repository: playlistRepository,
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewGetAllPlaylists(playlistRepository, jwtService)
+
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
@@ -154,6 +148,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
+	// given - mocking
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 

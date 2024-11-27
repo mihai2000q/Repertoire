@@ -2,7 +2,7 @@ package provider
 
 import (
 	"mime/multipart"
-	provider2 "repertoire/server/domain/provider"
+	"repertoire/server/domain/provider"
 	"repertoire/server/model"
 	"testing"
 
@@ -12,7 +12,7 @@ import (
 
 func TestStorageFilePathProvider_GetUserProfilePicturePath_ShouldReturnPlaylistImagePath(t *testing.T) {
 	// given
-	_uut := new(provider2.storageFilePathProvider)
+	_uut := provider.NewStorageFilePathProvider()
 
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
@@ -30,7 +30,7 @@ func TestStorageFilePathProvider_GetUserProfilePicturePath_ShouldReturnPlaylistI
 
 func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t *testing.T) {
 	// given
-	_uut := new(provider2.storageFilePathProvider)
+	_uut := provider.NewStorageFilePathProvider()
 
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
@@ -51,7 +51,7 @@ func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t 
 
 func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(t *testing.T) {
 	// given
-	_uut := new(provider2.storageFilePathProvider)
+	_uut := provider.NewStorageFilePathProvider()
 
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
@@ -72,7 +72,7 @@ func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(
 
 func TestStorageFilePathProvider_GetPlaylistImagePath_ShouldReturnPlaylistImagePath(t *testing.T) {
 	// given
-	_uut := new(provider2.storageFilePathProvider)
+	_uut := provider.NewStorageFilePathProvider()
 
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
@@ -93,7 +93,7 @@ func TestStorageFilePathProvider_GetPlaylistImagePath_ShouldReturnPlaylistImageP
 
 func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *testing.T) {
 	// given
-	_uut := new(provider2.storageFilePathProvider)
+	_uut := provider.NewStorageFilePathProvider()
 
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	repository2 "repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
 
@@ -19,9 +19,8 @@ import (
 func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.CreateSong{
-		jwtService: jwtService,
-	}
+	_uut := song.NewCreateSong(jwtService, nil, nil)
+
 	request := requests.CreateSongRequest{
 		Title: "Some Song",
 	}
@@ -43,14 +42,10 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 
 func TestCreateSong_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository2.SongRepositoryMock)
-	albumRepository := new(repository2.AlbumRepositoryMock)
+	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.CreateSong{
-		repository:      songRepository,
-		albumRepository: albumRepository,
-		jwtService:      jwtService,
-	}
+	_uut := song.NewCreateSong(jwtService, nil, albumRepository)
+
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
 		AlbumID: &[]uuid.UUID{uuid.New()}[0],
@@ -76,19 +71,15 @@ func TestCreateSong_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t
 
 	jwtService.AssertExpectations(t)
 	albumRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
 }
 
 func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songRepository := new(repository2.SongRepositoryMock)
-	albumRepository := new(repository2.AlbumRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.CreateSong{
-		repository:      songRepository,
-		albumRepository: albumRepository,
-		jwtService:      jwtService,
-	}
+	_uut := song.NewCreateSong(jwtService, songRepository, albumRepository)
+
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
 		AlbumID: &[]uuid.UUID{uuid.New()}[0],
@@ -118,12 +109,10 @@ func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 
 func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository2.SongRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.CreateSong{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := song.NewCreateSong(jwtService, songRepository, nil)
+
 	request := requests.CreateSongRequest{
 		Title: "Some Song",
 	}
@@ -207,14 +196,11 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			songRepository := new(repository2.SongRepositoryMock)
-			albumRepository := new(repository2.AlbumRepositoryMock)
+			songRepository := new(repository.SongRepositoryMock)
+			albumRepository := new(repository.AlbumRepositoryMock)
 			jwtService := new(service.JwtServiceMock)
-			_uut := &song2.CreateSong{
-				repository:      songRepository,
-				albumRepository: albumRepository,
-				jwtService:      jwtService,
-			}
+			_uut := song.NewCreateSong(jwtService, songRepository, albumRepository)
+
 			token := "this is a token"
 
 			// given - mocks

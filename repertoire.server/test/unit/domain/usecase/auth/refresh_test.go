@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/server/api/requests"
-	auth2 "repertoire/server/domain/usecase/auth"
+	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -17,9 +17,8 @@ import (
 func TestRefresh_WhenValidateJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &auth2.Refresh{
-		jwtService: jwtService,
-	}
+	_uut := auth.NewRefresh(jwtService, nil)
+
 	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
@@ -42,10 +41,8 @@ func TestRefresh_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.T) 
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.Refresh{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewRefresh(jwtService, userRepository)
+
 	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
@@ -73,10 +70,8 @@ func TestRefresh_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.Refresh{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewRefresh(jwtService, userRepository)
+
 	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
@@ -102,10 +97,8 @@ func TestRefresh_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.Refresh{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewRefresh(jwtService, userRepository)
+
 	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}
@@ -135,10 +128,9 @@ func TestRefresh_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := &auth2.Refresh{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := auth.NewRefresh(jwtService, userRepository)
+
+	// given - mocking
 	request := requests.RefreshRequest{
 		Token: "This is a token",
 	}

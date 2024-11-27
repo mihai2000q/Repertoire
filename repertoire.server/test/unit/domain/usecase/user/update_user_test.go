@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	user2 "repertoire/server/domain/usecase/user"
+	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +19,7 @@ import (
 func TestUpdateUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := user2.UpdateUser{jwtService: jwtService}
+	_uut := user.NewUpdateUser(nil, jwtService)
 
 	request := requests.UpdateUserRequest{
 		Name: "New User Name",
@@ -45,10 +45,7 @@ func TestUpdateUser_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.UpdateUser{
-		repository: userRepository,
-		jwtService: jwtService,
-	}
+	_uut := user.NewUpdateUser(userRepository, jwtService)
 
 	request := requests.UpdateUserRequest{
 		Name: "New User Name",
@@ -79,10 +76,7 @@ func TestUpdateUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.UpdateUser{
-		repository: userRepository,
-		jwtService: jwtService,
-	}
+	_uut := user.NewUpdateUser(userRepository, jwtService)
 
 	request := requests.UpdateUserRequest{
 		Name: "New User Name",
@@ -112,10 +106,7 @@ func TestUpdateUser_WhenUpdateUserFails_ShouldReturnInternalServerError(t *testi
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.UpdateUser{
-		repository: userRepository,
-		jwtService: jwtService,
-	}
+	_uut := user.NewUpdateUser(userRepository, jwtService)
 
 	request := requests.UpdateUserRequest{
 		Name: "New User Name",
@@ -127,11 +118,11 @@ func TestUpdateUser_WhenUpdateUserFails_ShouldReturnInternalServerError(t *testi
 	id := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
-	user := &model.User{ID: id}
-	userRepository.On("Get", new(model.User), id).Return(nil, user).Once()
+	mockUser := &model.User{ID: id}
+	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
 	internalError := errors.New("internal error")
-	userRepository.On("Update", mock.IsType(user)).Return(internalError).Once()
+	userRepository.On("Update", mock.IsType(mockUser)).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request, token)
@@ -149,10 +140,7 @@ func TestUpdateUser_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.UpdateUser{
-		repository: userRepository,
-		jwtService: jwtService,
-	}
+	_uut := user.NewUpdateUser(userRepository, jwtService)
 
 	request := requests.UpdateUserRequest{
 		Name: "New User Name",
@@ -164,12 +152,12 @@ func TestUpdateUser_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	id := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
-	user := &model.User{
+	mockUser := &model.User{
 		ID:   id,
 		Name: "Old name",
 	}
-	userRepository.On("Get", new(model.User), id).Return(nil, user).Once()
-	userRepository.On("Update", mock.IsType(user)).
+	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
+	userRepository.On("Update", mock.IsType(mockUser)).
 		Run(func(args mock.Arguments) {
 			newUser := args.Get(0).(*model.User)
 			assertUpdatedUser(t, *newUser, request)

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,8 @@ import (
 func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.GetAllArtists{
-		jwtService: jwtService,
-	}
+	_uut := artist.NewGetAllArtists(nil, jwtService)
+
 	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
@@ -43,10 +42,8 @@ func TestGetAll_WhenGetArtistsFails_ShouldReturnInternalServerError(t *testing.T
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.GetAllArtists{
-		repository: artistRepository,
-		jwtService: jwtService,
-	}
+	_uut := artist.NewGetAllArtists(artistRepository, jwtService)
+
 	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
@@ -84,10 +81,8 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.GetAllArtists{
-		repository: artistRepository,
-		jwtService: jwtService,
-	}
+	_uut := artist.NewGetAllArtists(artistRepository, jwtService)
+
 	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
@@ -141,10 +136,8 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.GetAllArtists{
-		repository: artistRepository,
-		jwtService: jwtService,
-	}
+	_uut := artist.NewGetAllArtists(artistRepository, jwtService)
+
 	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 

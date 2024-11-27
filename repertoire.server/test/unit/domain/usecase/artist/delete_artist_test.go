@@ -3,7 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
 
@@ -14,9 +14,8 @@ import (
 func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.DeleteArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewDeleteArtist(artistRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -36,9 +35,8 @@ func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *t
 func TestDeleteArtist_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.DeleteArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewDeleteArtist(artistRepository)
+
 	id := uuid.New()
 
 	artistRepository.On("Delete", id).Return(nil).Once()

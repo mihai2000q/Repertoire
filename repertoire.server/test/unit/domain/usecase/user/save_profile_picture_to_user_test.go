@@ -4,11 +4,11 @@ import (
 	"errors"
 	"mime/multipart"
 	"net/http"
-	user2 "repertoire/server/domain/usecase/user"
+	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
-	service2 "repertoire/server/test/unit/data/service"
+	"repertoire/server/test/unit/data/service"
 	"repertoire/server/test/unit/domain/provider"
 	"testing"
 
@@ -17,14 +17,43 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	_uut := user.NewSaveProfilePictureToUser(
+		nil,
+		nil,
+		jwtService,
+		nil,
+	)
+
+	file := new(multipart.FileHeader)
+	token := "This is a token"
+
+	// given - mocking
+	err := wrapper.ForbiddenError(errors.New("internal error"))
+	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, err).Once()
+
+	// when
+	errCode := _uut.Handle(file, token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, err, errCode)
+
+	jwtService.AssertExpectations(t)
+}
+
 func TestSaveProfilePictureToUser_WhenGetUserFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
+	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.SaveProfilePictureToUser{
-		jwtService: jwtService,
-		repository: userRepository,
-	}
+	_uut := user.NewSaveProfilePictureToUser(
+		userRepository,
+		nil,
+		jwtService,
+		nil,
+	)
 
 	file := new(multipart.FileHeader)
 	token := "This is a token"
@@ -47,36 +76,16 @@ func TestSaveProfilePictureToUser_WhenGetUserFails_ShouldReturnNotFoundError(t *
 	userRepository.AssertExpectations(t)
 }
 
-func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
-	// given
-	jwtService := new(service2.JwtServiceMock)
-	_uut := user2.SaveProfilePictureToUser{jwtService: jwtService}
-
-	file := new(multipart.FileHeader)
-	token := "This is a token"
-
-	// given - mocking
-	err := wrapper.ForbiddenError(errors.New("internal error"))
-	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, err).Once()
-
-	// when
-	errCode := _uut.Handle(file, token)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, err, errCode)
-
-	jwtService.AssertExpectations(t)
-}
-
 func TestSaveProfilePictureToUser_WhenUserIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
+	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.SaveProfilePictureToUser{
-		jwtService: jwtService,
-		repository: userRepository,
-	}
+	_uut := user.NewSaveProfilePictureToUser(
+		userRepository,
+		nil,
+		jwtService,
+		nil,
+	)
 
 	file := new(multipart.FileHeader)
 	token := "This is a token"
@@ -101,16 +110,16 @@ func TestSaveProfilePictureToUser_WhenUserIsEmpty_ShouldReturnNotFoundError(t *t
 
 func TestSaveProfilePictureToUser_WhenStorageUploadFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
+	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	storageService := new(service2.StorageServiceMock)
-	_uut := user2.SaveProfilePictureToUser{
-		jwtService:              jwtService,
-		repository:              userRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	storageService := new(service.StorageServiceMock)
+	_uut := user.NewSaveProfilePictureToUser(
+		userRepository,
+		storageFilePathProvider,
+		jwtService,
+		storageService,
+	)
 
 	file := new(multipart.FileHeader)
 	token := "This is a token"
@@ -119,11 +128,11 @@ func TestSaveProfilePictureToUser_WhenStorageUploadFails_ShouldReturnInternalSer
 	id := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
-	user := &model.User{ID: id, ProfilePictureURL: nil}
-	userRepository.On("Get", new(model.User), id).Return(nil, user).Once()
+	mockUser := &model.User{ID: id, ProfilePictureURL: nil}
+	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
 	imagePath := "users file path"
-	storageFilePathProvider.On("GetUserProfilePicturePath", file, *user).Return(imagePath).Once()
+	storageFilePathProvider.On("GetUserProfilePicturePath", file, *mockUser).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -144,16 +153,16 @@ func TestSaveProfilePictureToUser_WhenStorageUploadFails_ShouldReturnInternalSer
 
 func TestSaveProfilePictureToUser_WhenUpdateUserFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
+	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	storageService := new(service2.StorageServiceMock)
-	_uut := user2.SaveProfilePictureToUser{
-		jwtService:              jwtService,
-		repository:              userRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	storageService := new(service.StorageServiceMock)
+	_uut := user.NewSaveProfilePictureToUser(
+		userRepository,
+		storageFilePathProvider,
+		jwtService,
+		storageService,
+	)
 
 	file := new(multipart.FileHeader)
 	token := "This is a token"
@@ -162,11 +171,11 @@ func TestSaveProfilePictureToUser_WhenUpdateUserFails_ShouldReturnInternalServer
 	id := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
-	user := &model.User{ID: id, ProfilePictureURL: nil}
-	userRepository.On("Get", new(model.User), id).Return(nil, user).Once()
+	mockUser := &model.User{ID: id, ProfilePictureURL: nil}
+	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
 	imagePath := "users file path"
-	storageFilePathProvider.On("GetUserProfilePicturePath", file, *user).Return(imagePath).Once()
+	storageFilePathProvider.On("GetUserProfilePicturePath", file, *mockUser).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
@@ -191,16 +200,16 @@ func TestSaveProfilePictureToUser_WhenUpdateUserFails_ShouldReturnInternalServer
 
 func TestSaveProfilePictureToUser_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	jwtService := new(service2.JwtServiceMock)
+	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	storageService := new(service2.StorageServiceMock)
-	_uut := user2.SaveProfilePictureToUser{
-		jwtService:              jwtService,
-		repository:              userRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	storageService := new(service.StorageServiceMock)
+	_uut := user.NewSaveProfilePictureToUser(
+		userRepository,
+		storageFilePathProvider,
+		jwtService,
+		storageService,
+	)
 
 	file := new(multipart.FileHeader)
 	token := "This is a token"
@@ -209,11 +218,11 @@ func TestSaveProfilePictureToUser_WhenIsValid_ShouldNotReturnAnyError(t *testing
 	id := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
-	user := &model.User{ID: id, ProfilePictureURL: nil}
-	userRepository.On("Get", new(model.User), id).Return(nil, user).Once()
+	mockUser := &model.User{ID: id, ProfilePictureURL: nil}
+	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
 	imagePath := "users file path"
-	storageFilePathProvider.On("GetUserProfilePicturePath", file, *user).Return(imagePath).Once()
+	storageFilePathProvider.On("GetUserProfilePicturePath", file, *mockUser).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 

@@ -3,7 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
-	album2 "repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/album"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -15,9 +15,8 @@ import (
 func TestGetAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.GetAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewGetAlbum(albumRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -26,10 +25,10 @@ func TestGetAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T
 		Once()
 
 	// when
-	album, errCode := _uut.Handle(id)
+	resultAlbum, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, album)
+	assert.Empty(t, resultAlbum)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -40,9 +39,8 @@ func TestGetAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T
 func TestGetAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.GetAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewGetAlbum(albumRepository)
+
 	id := uuid.New()
 
 	albumRepository.On("GetWithAssociations", new(model.Album), id).
@@ -50,10 +48,10 @@ func TestGetAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 		Once()
 
 	// when
-	album, errCode := _uut.Handle(id)
+	resultAlbum, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, album)
+	assert.Empty(t, resultAlbum)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
@@ -64,9 +62,8 @@ func TestGetAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.GetAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewGetAlbum(albumRepository)
+
 	id := uuid.New()
 
 	expectedAlbum := &model.Album{
@@ -79,11 +76,11 @@ func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 		Once()
 
 	// when
-	album, errCode := _uut.Handle(id)
+	resultAlbum, errCode := _uut.Handle(id)
 
 	// then
-	assert.NotEmpty(t, album)
-	assert.Equal(t, expectedAlbum, &album)
+	assert.NotEmpty(t, resultAlbum)
+	assert.Equal(t, expectedAlbum, &resultAlbum)
 	assert.Nil(t, errCode)
 
 	albumRepository.AssertExpectations(t)

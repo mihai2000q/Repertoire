@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	album2 "repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -20,9 +20,8 @@ import (
 func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &album2.CreateAlbum{
-		jwtService: jwtService,
-	}
+	_uut := album.NewCreateAlbum(jwtService, nil)
+
 	request := requests.CreateAlbumRequest{
 		Title: "Some Album",
 	}
@@ -46,10 +45,8 @@ func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &album2.CreateAlbum{
-		repository: albumRepository,
-		jwtService: jwtService,
-	}
+	_uut := album.NewCreateAlbum(jwtService, albumRepository)
+
 	request := requests.CreateAlbumRequest{
 		Title: "Some Album",
 	}
@@ -102,10 +99,8 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			// given
 			albumRepository := new(repository.AlbumRepositoryMock)
 			jwtService := new(service.JwtServiceMock)
-			_uut := &album2.CreateAlbum{
-				repository: albumRepository,
-				jwtService: jwtService,
-			}
+			_uut := album.NewCreateAlbum(jwtService, albumRepository)
+
 			request := requests.CreateAlbumRequest{
 				Title: "Some Album",
 			}

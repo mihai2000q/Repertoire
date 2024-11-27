@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -16,7 +16,7 @@ import (
 func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.RemoveSongFromArtist{songRepository: songRepository}
+	_uut := artist.NewRemoveSongsFromArtist(songRepository)
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
@@ -42,7 +42,7 @@ func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(
 func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.RemoveSongFromArtist{songRepository: songRepository}
+	_uut := artist.NewRemoveSongsFromArtist(songRepository)
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
@@ -73,7 +73,7 @@ func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnBadRequ
 func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.RemoveSongFromArtist{songRepository: songRepository}
+	_uut := artist.NewRemoveSongsFromArtist(songRepository)
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
@@ -109,7 +109,7 @@ func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServe
 func TestRemoveSongsFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.RemoveSongFromArtist{songRepository: songRepository}
+	_uut := artist.NewRemoveSongsFromArtist(songRepository)
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"mime/multipart"
 	"net/http"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -19,9 +19,7 @@ import (
 func TestSaveImageToPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist2.SaveImageToPlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewSaveImageToPlaylist(playlistRepository, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -44,9 +42,7 @@ func TestSaveImageToPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(t *t
 func TestSaveImageToPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist2.SaveImageToPlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewSaveImageToPlaylist(playlistRepository, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -70,21 +66,17 @@ func TestSaveImageToPlaylist_WhenStorageUploadFails_ShouldReturnInternalServerEr
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := playlist2.SaveImageToPlaylist{
-		repository:              playlistRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	_uut := playlist.NewSaveImageToPlaylist(playlistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	playlist := &model.Playlist{ID: id, ImageURL: nil}
-	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, playlist).Once()
+	mockPlaylist := &model.Playlist{ID: id, ImageURL: nil}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
 	imagePath := "playlists file path"
-	storageFilePathProvider.On("GetPlaylistImagePath", file, *playlist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetPlaylistImagePath", file, *mockPlaylist).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -107,21 +99,17 @@ func TestSaveImageToPlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerE
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := playlist2.SaveImageToPlaylist{
-		repository:              playlistRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	_uut := playlist.NewSaveImageToPlaylist(playlistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	playlist := &model.Playlist{ID: id, ImageURL: nil}
-	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, playlist).Once()
+	mockPlaylist := &model.Playlist{ID: id, ImageURL: nil}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
 	imagePath := "playlists file path"
-	storageFilePathProvider.On("GetPlaylistImagePath", file, *playlist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetPlaylistImagePath", file, *mockPlaylist).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
@@ -148,21 +136,17 @@ func TestSaveImageToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := playlist2.SaveImageToPlaylist{
-		repository:              playlistRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	_uut := playlist.NewSaveImageToPlaylist(playlistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	playlist := &model.Playlist{ID: id, ImageURL: nil}
-	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, playlist).Once()
+	mockPlaylist := &model.Playlist{ID: id, ImageURL: nil}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
 	imagePath := "playlists file path"
-	storageFilePathProvider.On("GetPlaylistImagePath", file, *playlist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetPlaylistImagePath", file, *mockPlaylist).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 

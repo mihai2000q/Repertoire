@@ -8,15 +8,15 @@ import (
 	"repertoire/server/model"
 )
 
-type RemoveSongFromArtist struct {
+type RemoveSongsFromArtist struct {
 	songRepository repository.SongRepository
 }
 
-func NewRemoveSongFromArtist(songRepository repository.SongRepository) RemoveSongFromArtist {
-	return RemoveSongFromArtist{songRepository: songRepository}
+func NewRemoveSongsFromArtist(songRepository repository.SongRepository) RemoveSongsFromArtist {
+	return RemoveSongsFromArtist{songRepository: songRepository}
 }
 
-func (r RemoveSongFromArtist) Handle(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode {
+func (r RemoveSongsFromArtist) Handle(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode {
 	var songs []model.Song
 	err := r.songRepository.GetAllByIDs(&songs, request.SongIDs)
 	if err != nil {

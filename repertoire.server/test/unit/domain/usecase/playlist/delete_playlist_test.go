@@ -3,7 +3,7 @@ package playlist
 import (
 	"errors"
 	"net/http"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
 
@@ -14,9 +14,8 @@ import (
 func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.DeletePlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewDeletePlaylist(playlistRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -36,9 +35,8 @@ func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(
 func TestDeletePlaylist_WhenSuccessful_ShouldReturnPlaylists(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := &playlist2.DeletePlaylist{
-		repository: playlistRepository,
-	}
+	_uut := playlist.NewDeletePlaylist(playlistRepository)
+
 	id := uuid.New()
 
 	playlistRepository.On("Delete", id).Return(nil).Once()

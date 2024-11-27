@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	types2 "repertoire/server/domain/usecase/song/section/types"
+	"repertoire/server/domain/usecase/song/section/types"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -21,7 +21,7 @@ import (
 func TestMoveSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &types2.MoveSongSectionType{jwtService: jwtService}
+	_uut := types.NewMoveSongSectionType(nil, jwtService)
 
 	request := requests.MoveSongSectionTypeRequest{
 		ID:     uuid.New(),
@@ -46,10 +46,7 @@ func TestMoveSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServer
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.MoveSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewMoveSongSectionType(songRepository, jwtService)
 
 	request := requests.MoveSongSectionTypeRequest{
 		ID:     uuid.New(),
@@ -81,10 +78,7 @@ func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.MoveSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewMoveSongSectionType(songRepository, jwtService)
 
 	request := requests.MoveSongSectionTypeRequest{
 		ID:     uuid.New(),
@@ -116,10 +110,7 @@ func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundE
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.MoveSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewMoveSongSectionType(songRepository, jwtService)
 
 	request := requests.MoveSongSectionTypeRequest{
 		ID:     uuid.New(),
@@ -153,10 +144,7 @@ func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternal
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.MoveSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewMoveSongSectionType(songRepository, jwtService)
 
 	request := requests.MoveSongSectionTypeRequest{
 		ID:     uuid.New(),
@@ -230,10 +218,7 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 			// given
 			jwtService := new(service.JwtServiceMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := &types2.MoveSongSectionType{
-				repository: songRepository,
-				jwtService: jwtService,
-			}
+			_uut := types.NewMoveSongSectionType(songRepository, jwtService)
 
 			request := requests.MoveSongSectionTypeRequest{
 				ID:     (*tt.types)[tt.index].ID,
@@ -241,6 +226,7 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 			}
 			token := "this is a token"
 
+			// given - mocking
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
@@ -251,16 +237,16 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 			songRepository.On("UpdateAllSectionTypes", mock.IsType(tt.types)).
 				Run(func(args mock.Arguments) {
 					newSongSectionTypes := args.Get(0).(*[]model.SongSectionType)
-					sectionTypes := slices.Clone(*newSongSectionTypes)
-					slices.SortFunc(sectionTypes, func(a, b model.SongSectionType) int {
+					sortedSectionTypes := slices.Clone(*newSongSectionTypes)
+					slices.SortFunc(sortedSectionTypes, func(a, b model.SongSectionType) int {
 						return cmp.Compare(a.Order, b.Order)
 					})
 					if tt.index < tt.overIndex {
-						assert.Equal(t, sectionTypes[tt.overIndex-1].ID, request.OverID)
+						assert.Equal(t, sortedSectionTypes[tt.overIndex-1].ID, request.OverID)
 					} else if tt.index > tt.overIndex {
-						assert.Equal(t, sectionTypes[tt.overIndex+1].ID, request.OverID)
+						assert.Equal(t, sortedSectionTypes[tt.overIndex+1].ID, request.OverID)
 					}
-					for i, sectionType := range sectionTypes {
+					for i, sectionType := range sortedSectionTypes {
 						assert.Equal(t, uint(i), sectionType.Order)
 					}
 				}).

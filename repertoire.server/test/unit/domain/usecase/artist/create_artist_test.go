@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,8 @@ import (
 func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.CreateArtist{
-		jwtService: jwtService,
-	}
+	_uut := artist.NewCreateArtist(jwtService, nil)
+
 	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
 	}
@@ -45,10 +44,8 @@ func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.CreateArtist{
-		repository: artistRepository,
-		jwtService: jwtService,
-	}
+	_uut := artist.NewCreateArtist(jwtService, artistRepository)
+
 	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
 	}
@@ -78,10 +75,8 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &artist2.CreateArtist{
-		repository: artistRepository,
-		jwtService: jwtService,
-	}
+	_uut := artist.NewCreateArtist(jwtService, artistRepository)
+
 	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
 	}

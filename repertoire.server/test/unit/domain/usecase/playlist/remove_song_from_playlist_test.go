@@ -3,9 +3,9 @@ package playlist
 import (
 	"errors"
 	"net/http"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/model"
-	repository2 "repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/data/repository"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,10 +15,8 @@ import (
 
 func TestRemoveSongFromPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	playlistRepository := new(repository2.PlaylistRepositoryMock)
-	_uut := playlist2.RemoveSongFromPlaylist{
-		repository: playlistRepository,
-	}
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewRemoveSongFromPlaylist(nil, playlistRepository)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -42,10 +40,8 @@ func TestRemoveSongFromPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerE
 
 func TestRemoveSongFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	playlistRepository := new(repository2.PlaylistRepositoryMock)
-	_uut := playlist2.RemoveSongFromPlaylist{
-		repository: playlistRepository,
-	}
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewRemoveSongFromPlaylist(nil, playlistRepository)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -68,20 +64,17 @@ func TestRemoveSongFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError
 
 func TestRemoveSongFromPlaylist_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	playlistRepository := new(repository2.PlaylistRepositoryMock)
-	songRepository := new(repository2.SongRepositoryMock)
-	_uut := playlist2.RemoveSongFromPlaylist{
-		repository:     playlistRepository,
-		songRepository: songRepository,
-	}
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := playlist.NewRemoveSongFromPlaylist(songRepository, playlistRepository)
 
 	id := uuid.New()
 	songID := uuid.New()
 
 	// given - mocking
-	playlist := &model.Playlist{ID: id}
-	playlistRepository.On("Get", mock.IsType(playlist), id).
-		Return(nil, playlist).
+	mockPlaylist := &model.Playlist{ID: id}
+	playlistRepository.On("Get", mock.IsType(mockPlaylist), id).
+		Return(nil, mockPlaylist).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -103,20 +96,17 @@ func TestRemoveSongFromPlaylist_WhenGetSongFails_ShouldReturnInternalServerError
 
 func TestRemoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	playlistRepository := new(repository2.PlaylistRepositoryMock)
-	songRepository := new(repository2.SongRepositoryMock)
-	_uut := playlist2.RemoveSongFromPlaylist{
-		repository:     playlistRepository,
-		songRepository: songRepository,
-	}
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := playlist.NewRemoveSongFromPlaylist(songRepository, playlistRepository)
 
 	id := uuid.New()
 	songID := uuid.New()
 
 	// given - mocking
-	playlist := &model.Playlist{ID: id}
-	playlistRepository.On("Get", mock.IsType(playlist), id).
-		Return(nil, playlist).
+	mockPlaylist := &model.Playlist{ID: id}
+	playlistRepository.On("Get", mock.IsType(mockPlaylist), id).
+		Return(nil, mockPlaylist).
 		Once()
 
 	songRepository.On("Get", mock.IsType(new(model.Song)), songID).
@@ -137,29 +127,26 @@ func TestRemoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *
 
 func TestRemoveSongFromPlaylist_WhenRemoveSongFromPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	playlistRepository := new(repository2.PlaylistRepositoryMock)
-	songRepository := new(repository2.SongRepositoryMock)
-	_uut := playlist2.RemoveSongFromPlaylist{
-		repository:     playlistRepository,
-		songRepository: songRepository,
-	}
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := playlist.NewRemoveSongFromPlaylist(songRepository, playlistRepository)
 
 	id := uuid.New()
 	songID := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: songID}
-	songRepository.On("Get", mock.IsType(song), songID).
-		Return(nil, song).
+	mockSong := &model.Song{ID: songID}
+	songRepository.On("Get", mock.IsType(mockSong), songID).
+		Return(nil, mockSong).
 		Once()
 
-	playlist := &model.Playlist{ID: id}
-	playlistRepository.On("Get", mock.IsType(playlist), id).
-		Return(nil, playlist).
+	mockPlaylist := &model.Playlist{ID: id}
+	playlistRepository.On("Get", mock.IsType(mockPlaylist), id).
+		Return(nil, mockPlaylist).
 		Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("RemoveSong", playlist, song).Return(internalError).Once()
+	playlistRepository.On("RemoveSong", mockPlaylist, mockSong).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id, songID)
@@ -175,28 +162,25 @@ func TestRemoveSongFromPlaylist_WhenRemoveSongFromPlaylistFails_ShouldReturnInte
 
 func TestRemoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	playlistRepository := new(repository2.PlaylistRepositoryMock)
-	songRepository := new(repository2.SongRepositoryMock)
-	_uut := playlist2.RemoveSongFromPlaylist{
-		repository:     playlistRepository,
-		songRepository: songRepository,
-	}
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := playlist.NewRemoveSongFromPlaylist(songRepository, playlistRepository)
 
 	id := uuid.New()
 	songID := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: songID}
-	songRepository.On("Get", mock.IsType(song), songID).
-		Return(nil, song).
+	mockSong := &model.Song{ID: songID}
+	songRepository.On("Get", mock.IsType(mockSong), songID).
+		Return(nil, mockSong).
 		Once()
 
-	playlist := &model.Playlist{ID: id}
-	playlistRepository.On("Get", mock.IsType(playlist), id).
-		Return(nil, playlist).
+	mockPlaylist := &model.Playlist{ID: id}
+	playlistRepository.On("Get", mock.IsType(mockPlaylist), id).
+		Return(nil, mockPlaylist).
 		Once()
 
-	playlistRepository.On("RemoveSong", playlist, song).Return(nil).Once()
+	playlistRepository.On("RemoveSong", mockPlaylist, mockSong).Return(nil).Once()
 
 	// when
 	errCode := _uut.Handle(id, songID)

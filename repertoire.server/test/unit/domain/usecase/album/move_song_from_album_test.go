@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	album2 "repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/album"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -19,9 +19,7 @@ import (
 func TestMoveSongFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album2.MoveSongFromAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewMoveSongFromAlbum(albumRepository)
 
 	request := requests.MoveSongFromAlbumRequest{
 		ID:         uuid.New(),
@@ -49,9 +47,7 @@ func TestMoveSongFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *
 func TestMoveSongFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album2.MoveSongFromAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewMoveSongFromAlbum(albumRepository)
 
 	request := requests.MoveSongFromAlbumRequest{
 		ID:         uuid.New(),
@@ -78,9 +74,7 @@ func TestMoveSongFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *test
 func TestMoveSongFromAlbum_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album2.MoveSongFromAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewMoveSongFromAlbum(albumRepository)
 
 	request := requests.MoveSongFromAlbumRequest{
 		ID:         uuid.New(),
@@ -89,9 +83,9 @@ func TestMoveSongFromAlbum_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testi
 	}
 
 	// given - mocking
-	album := &model.Album{ID: uuid.New()}
+	mockAlbum := &model.Album{ID: uuid.New()}
 	albumRepository.On("GetWithSongs", new(model.Album), request.ID).
-		Return(nil, album).
+		Return(nil, mockAlbum).
 		Once()
 
 	// when
@@ -108,11 +102,9 @@ func TestMoveSongFromAlbum_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testi
 func TestMoveSongFromAlbum_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album2.MoveSongFromAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewMoveSongFromAlbum(albumRepository)
 
-	album := &model.Album{
+	mockAlbum := &model.Album{
 		ID: uuid.New(),
 		Songs: []model.Song{
 			{ID: uuid.New(), AlbumTrackNo: &[]uint{1}[0]},
@@ -120,14 +112,14 @@ func TestMoveSongFromAlbum_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t *t
 	}
 
 	request := requests.MoveSongFromAlbumRequest{
-		ID:         album.ID,
-		SongID:     album.Songs[0].ID,
+		ID:         mockAlbum.ID,
+		SongID:     mockAlbum.Songs[0].ID,
 		OverSongID: uuid.New(),
 	}
 
 	// given - mocking
 	albumRepository.On("GetWithSongs", new(model.Album), request.ID).
-		Return(nil, album).
+		Return(nil, mockAlbum).
 		Once()
 
 	// when
@@ -144,11 +136,9 @@ func TestMoveSongFromAlbum_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t *t
 func TestMoveSongFromAlbum_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album2.MoveSongFromAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewMoveSongFromAlbum(albumRepository)
 
-	album := &model.Album{
+	mockAlbum := &model.Album{
 		ID: uuid.New(),
 		Songs: []model.Song{
 			{ID: uuid.New(), AlbumTrackNo: &[]uint{1}[0]},
@@ -157,14 +147,14 @@ func TestMoveSongFromAlbum_WhenUpdateFails_ShouldReturnInternalServerError(t *te
 	}
 
 	request := requests.MoveSongFromAlbumRequest{
-		ID:         album.ID,
-		SongID:     album.Songs[0].ID,
-		OverSongID: album.Songs[1].ID,
+		ID:         mockAlbum.ID,
+		SongID:     mockAlbum.Songs[0].ID,
+		OverSongID: mockAlbum.Songs[1].ID,
 	}
 
 	// given - mocking
 	albumRepository.On("GetWithSongs", new(model.Album), request.ID).
-		Return(nil, album).
+		Return(nil, mockAlbum).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -226,9 +216,7 @@ func TestMoveSongFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			albumRepository := new(repository.AlbumRepositoryMock)
-			_uut := album2.MoveSongFromAlbum{
-				repository: albumRepository,
-			}
+			_uut := album.NewMoveSongFromAlbum(albumRepository)
 
 			request := requests.MoveSongFromAlbumRequest{
 				ID:         tt.album.ID,
@@ -243,8 +231,8 @@ func TestMoveSongFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 
 			albumRepository.On("UpdateWithAssociations", mock.IsType(new(model.Album))).
 				Run(func(args mock.Arguments) {
-					album := args.Get(0).(*model.Album)
-					songs := slices.Clone(album.Songs)
+					newAlbum := args.Get(0).(*model.Album)
+					songs := slices.Clone(newAlbum.Songs)
 					slices.SortFunc(songs, func(a, b model.Song) int {
 						return cmp.Compare(*a.AlbumTrackNo, *b.AlbumTrackNo)
 					})

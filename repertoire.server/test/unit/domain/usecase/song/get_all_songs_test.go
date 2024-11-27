@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,8 @@ import (
 func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.GetAllSongs{
-		jwtService: jwtService,
-	}
+	_uut := song.NewGetAllSongs(nil, jwtService)
+
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
@@ -43,10 +42,8 @@ func TestGetAll_WhenGetSongsFails_ShouldReturnInternalServerError(t *testing.T) 
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.GetAllSongs{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := song.NewGetAllSongs(songRepository, jwtService)
+
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
@@ -85,10 +82,8 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.GetAllSongs{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := song.NewGetAllSongs(songRepository, jwtService)
+
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
@@ -98,6 +93,7 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 		{Title: "Some other Song"},
 	}
 
+	// given - mocking
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	songRepository.
@@ -142,10 +138,8 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &song2.GetAllSongs{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := song.NewGetAllSongs(songRepository, jwtService)
+
 	request := requests.GetSongsRequest{}
 	token := "this is the token"
 
@@ -156,6 +150,7 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 	}
 	expectedTotalCount := &[]int64{20}[0]
 
+	// given - mocking
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	songRepository.

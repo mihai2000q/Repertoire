@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	types2 "repertoire/server/domain/usecase/song/section/types"
+	"repertoire/server/domain/usecase/song/section/types"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,7 @@ import (
 func TestCreateSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &types2.CreateSongSectionType{
-		jwtService: jwtService,
-	}
+	_uut := types.NewCreateSongSectionType(nil, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",
@@ -45,10 +43,7 @@ func TestCreateSongSectionType_WhenCountSectionTypesFails_ShouldReturnInternalSe
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.CreateSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewCreateSongSectionType(songRepository, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",
@@ -77,10 +72,7 @@ func TestCreateSongSectionType_WhenCreateSectionTypeFails_ShouldReturnInternalSe
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.CreateSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewCreateSongSectionType(songRepository, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",
@@ -113,10 +105,7 @@ func TestCreateSongSectionType_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.CreateSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewCreateSongSectionType(songRepository, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",

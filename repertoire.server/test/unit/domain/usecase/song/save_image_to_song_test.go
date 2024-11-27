@@ -4,7 +4,7 @@ import (
 	"errors"
 	"mime/multipart"
 	"net/http"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -19,9 +19,7 @@ import (
 func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song2.SaveImageToSong{
-		repository: songRepository,
-	}
+	_uut := song.NewSaveImageToSong(songRepository, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -44,9 +42,7 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song2.SaveImageToSong{
-		repository: songRepository,
-	}
+	_uut := song.NewSaveImageToSong(songRepository, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -70,21 +66,21 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 	songRepository := new(repository.SongRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := song2.SaveImageToSong{
-		repository:              songRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	_uut := song.NewSaveImageToSong(
+		songRepository,
+		storageFilePathProvider,
+		storageService,
+	)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	mockSong := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, *mockSong).Return(imagePath).Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -107,21 +103,21 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	songRepository := new(repository.SongRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := song2.SaveImageToSong{
-		repository:              songRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	_uut := song.NewSaveImageToSong(
+		songRepository,
+		storageFilePathProvider,
+		storageService,
+	)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	mockSong := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, *mockSong).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
@@ -148,21 +144,21 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	songRepository := new(repository.SongRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := song2.SaveImageToSong{
-		repository:              songRepository,
-		storageFilePathProvider: storageFilePathProvider,
-		storageService:          storageService,
-	}
+	_uut := song.NewSaveImageToSong(
+		songRepository,
+		storageFilePathProvider,
+		storageService,
+	)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: nil}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	mockSong := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
 	imagePath := "songs file path"
-	storageFilePathProvider.On("GetSongImagePath", file, *song).Return(imagePath).Once()
+	storageFilePathProvider.On("GetSongImagePath", file, *mockSong).Return(imagePath).Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 

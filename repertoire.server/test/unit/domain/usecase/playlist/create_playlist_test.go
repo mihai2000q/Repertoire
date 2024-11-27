@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	playlist2 "repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,8 @@ import (
 func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.CreatePlaylist{
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewCreatePlaylist(jwtService, nil)
+
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
 	}
@@ -45,10 +44,8 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.CreatePlaylist{
-		repository: playlistRepository,
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository)
+
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
 	}
@@ -78,10 +75,8 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &playlist2.CreatePlaylist{
-		repository: playlistRepository,
-		jwtService: jwtService,
-	}
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository)
+
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
 	}

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	tuning2 "repertoire/server/domain/usecase/song/guitar/tuning"
+	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,7 @@ import (
 func TestCreateGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &tuning2.CreateGuitarTuning{
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewCreateGuitarTuning(nil, jwtService)
 
 	request := requests.CreateGuitarTuningRequest{
 		Name: "New Guitar Tuning",
@@ -45,10 +43,7 @@ func TestCreateGuitarTuning_WhenGetGuitarTuningsCountFails_ShouldReturnInternalS
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.CreateGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewCreateGuitarTuning(songRepository, jwtService)
 
 	request := requests.CreateGuitarTuningRequest{
 		Name: "New Guitar Tuning",
@@ -79,10 +74,7 @@ func TestCreateGuitarTuning_WhenCreateGuitarTuningFails_ShouldReturnInternalServ
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.CreateGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewCreateGuitarTuning(songRepository, jwtService)
 
 	request := requests.CreateGuitarTuningRequest{
 		Name: "New Guitar Tuning",
@@ -118,16 +110,14 @@ func TestCreateGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.CreateGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewCreateGuitarTuning(songRepository, jwtService)
 
 	request := requests.CreateGuitarTuningRequest{
 		Name: "New Guitar Tuning",
 	}
 	token := "this is a token"
 
+	// given - mocking
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 

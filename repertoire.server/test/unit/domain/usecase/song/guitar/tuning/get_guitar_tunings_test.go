@@ -3,7 +3,7 @@ package tuning
 import (
 	"errors"
 	"net/http"
-	tuning2 "repertoire/server/domain/usecase/song/guitar/tuning"
+	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -18,9 +18,8 @@ import (
 func TestGetGuitarTunings_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &tuning2.GetGuitarTunings{
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewGetGuitarTunings(nil, jwtService)
+
 	token := "this is a token"
 
 	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
@@ -41,10 +40,8 @@ func TestGetGuitarTunings_WhenGetGuitarTuningsFails_ShouldReturnInternalServerEr
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.GetGuitarTunings{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewGetGuitarTunings(songRepository, jwtService)
+
 	token := "this is a token"
 
 	userID := uuid.New()
@@ -70,10 +67,8 @@ func TestGetGuitarTunings_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.GetGuitarTunings{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewGetGuitarTunings(songRepository, jwtService)
+
 	token := "this is a token"
 
 	userID := uuid.New()

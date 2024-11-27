@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
-	section2 "repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -16,9 +16,8 @@ import (
 func TestCreateSongSection_WhenCountSectionsBySongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.CreateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewCreateSongSection(songRepository)
+
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Artist",
@@ -44,9 +43,8 @@ func TestCreateSongSection_WhenCountSectionsBySongFails_ShouldReturnInternalServ
 func TestCreateSongSection_WhenCreateSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.CreateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewCreateSongSection(songRepository)
+
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Artist",
@@ -81,9 +79,8 @@ func TestCreateSongSection_WhenCreateSectionFails_ShouldReturnInternalServerErro
 func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.CreateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewCreateSongSection(songRepository)
+
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Artist",

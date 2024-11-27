@@ -3,7 +3,7 @@ package user
 import (
 	"errors"
 	"net/http"
-	user2 "repertoire/server/domain/usecase/user"
+	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -16,7 +16,7 @@ import (
 func TestDeleteUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
 	// give
 	jwtService := new(service.JwtServiceMock)
-	_uut := user2.DeleteUser{jwtService: jwtService}
+	_uut := user.NewDeleteUser(nil, jwtService)
 
 	token := "This is a token"
 
@@ -37,10 +37,7 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	// give
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.DeleteUser{
-		repository: userRepository,
-		jwtService: jwtService,
-	}
+	_uut := user.NewDeleteUser(userRepository, jwtService)
 
 	token := "This is a token"
 
@@ -62,14 +59,11 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	userRepository.AssertExpectations(t)
 }
 
-func TestDeleteUser_WhenSuccessfull_ShouldNotReturnAnyError(t *testing.T) {
+func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// give
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := user2.DeleteUser{
-		repository: userRepository,
-		jwtService: jwtService,
-	}
+	_uut := user.NewDeleteUser(userRepository, jwtService)
 
 	token := "This is a token"
 

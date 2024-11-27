@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -16,7 +16,7 @@ import (
 func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.AddSongsToArtist{songRepository: songRepository}
+	_uut := artist.NewAddSongsToArtist(songRepository)
 
 	request := requests.AddSongsToArtistRequest{
 		ID:      uuid.New(),
@@ -42,7 +42,7 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.AddSongsToArtist{songRepository: songRepository}
+	_uut := artist.NewAddSongsToArtist(songRepository)
 
 	request := requests.AddSongsToArtistRequest{
 		ID:      uuid.New(),
@@ -73,7 +73,7 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnBadRequestError(t *te
 func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.AddSongsToArtist{songRepository: songRepository}
+	_uut := artist.NewAddSongsToArtist(songRepository)
 
 	request := requests.AddSongsToArtistRequest{
 		ID:      uuid.New(),
@@ -109,7 +109,7 @@ func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerErro
 func TestAddSongsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := artist2.AddSongsToArtist{songRepository: songRepository}
+	_uut := artist.NewAddSongsToArtist(songRepository)
 
 	request := requests.AddSongsToArtistRequest{
 		ID:      uuid.New(),

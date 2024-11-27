@@ -3,7 +3,7 @@ package tuning
 import (
 	"errors"
 	"net/http"
-	tuning2 "repertoire/server/domain/usecase/song/guitar/tuning"
+	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +19,7 @@ import (
 func TestDeleteGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &tuning2.DeleteGuitarTuning{jwtService: jwtService}
+	_uut := tuning.NewDeleteGuitarTuning(nil, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -41,10 +41,7 @@ func TestDeleteGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServer
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.DeleteGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -73,10 +70,7 @@ func TestDeleteGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternal
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.DeleteGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -112,10 +106,7 @@ func TestDeleteGuitarTuning_WhenDeleteGuitarTuningFails_ShouldReturnInternalServ
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.DeleteGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -155,10 +146,7 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.DeleteGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -179,8 +167,8 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 			guitarTunings := slices.DeleteFunc(*newGuitarTunings, func(t model.GuitarTuning) bool {
 				return t.ID == id
 			})
-			for i, tuning := range guitarTunings {
-				assert.Equal(t, i, tuning.Order)
+			for i, tune := range guitarTunings {
+				assert.Equal(t, i, tune.Order)
 			}
 		}).
 		Return(nil).

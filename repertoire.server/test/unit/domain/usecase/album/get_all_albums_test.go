@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	album2 "repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,9 +19,8 @@ import (
 func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &album2.GetAllAlbums{
-		jwtService: jwtService,
-	}
+	_uut := album.NewGetAllAlbums(nil, jwtService)
+
 	request := requests.GetAlbumsRequest{}
 	token := "This is a token"
 
@@ -43,10 +42,8 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &album2.GetAllAlbums{
-		repository: albumRepository,
-		jwtService: jwtService,
-	}
+	_uut := album.NewGetAllAlbums(albumRepository, jwtService)
+
 	request := requests.GetAlbumsRequest{}
 	token := "This is a token"
 
@@ -84,10 +81,8 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &album2.GetAllAlbums{
-		repository: albumRepository,
-		jwtService: jwtService,
-	}
+	_uut := album.NewGetAllAlbums(albumRepository, jwtService)
+
 	request := requests.GetAlbumsRequest{}
 	token := "this is a token"
 
@@ -141,10 +136,8 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := &album2.GetAllAlbums{
-		repository: albumRepository,
-		jwtService: jwtService,
-	}
+	_uut := album.NewGetAllAlbums(albumRepository, jwtService)
+
 	request := requests.GetAlbumsRequest{}
 	token := "this is a token"
 

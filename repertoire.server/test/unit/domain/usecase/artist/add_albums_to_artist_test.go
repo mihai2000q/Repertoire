@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -16,7 +16,7 @@ import (
 func TestAddAlbumsToArtist_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.AddAlbumsToArtist{albumRepository: albumRepository}
+	_uut := artist.NewAddAlbumsToArtist(albumRepository)
 
 	request := requests.AddAlbumsToArtistRequest{
 		ID:       uuid.New(),
@@ -42,7 +42,7 @@ func TestAddAlbumsToArtist_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServe
 func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.AddAlbumsToArtist{albumRepository: albumRepository}
+	_uut := artist.NewAddAlbumsToArtist(albumRepository)
 
 	request := requests.AddAlbumsToArtistRequest{
 		ID:       uuid.New(),
@@ -73,7 +73,7 @@ func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnBadRequestEr
 func TestAddAlbumsToArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.AddAlbumsToArtist{albumRepository: albumRepository}
+	_uut := artist.NewAddAlbumsToArtist(albumRepository)
 
 	request := requests.AddAlbumsToArtistRequest{
 		ID:       uuid.New(),
@@ -104,7 +104,7 @@ func TestAddAlbumsToArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalServerEr
 func TestAddAlbumsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.AddAlbumsToArtist{albumRepository: albumRepository}
+	_uut := artist.NewAddAlbumsToArtist(albumRepository)
 
 	request := requests.AddAlbumsToArtistRequest{
 		ID:       uuid.New(),

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -17,9 +17,8 @@ import (
 func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.UpdateSong{
-		repository: songRepository,
-	}
+	_uut := song.NewUpdateSong(songRepository)
+
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
@@ -42,9 +41,8 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.UpdateSong{
-		repository: songRepository,
-	}
+	_uut := song.NewUpdateSong(songRepository)
+
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
@@ -66,22 +64,23 @@ func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.UpdateSong{
-		repository: songRepository,
-	}
+	_uut := song.NewUpdateSong(songRepository)
+
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
 
-	song := &model.Song{
+	mockSong := &model.Song{
 		ID:    request.ID,
 		Title: "Some Song",
 	}
+	songRepository.On("Get", new(model.Song), request.ID).
+		Return(nil, mockSong).
+		Once()
 
-	songRepository.On("Get", new(model.Song), request.ID).Return(nil, song).Once()
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(song)).
+	songRepository.On("Update", mock.IsType(mockSong)).
 		Return(internalError).
 		Once()
 
@@ -98,21 +97,22 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &song2.UpdateSong{
-		repository: songRepository,
-	}
+	_uut := song.NewUpdateSong(songRepository)
+
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
 		Title: "New Song",
 	}
 
-	song := &model.Song{
+	mockSong := &model.Song{
 		ID:    request.ID,
 		Title: "Some Song",
 	}
+	songRepository.On("Get", new(model.Song), request.ID).
+		Return(nil, mockSong).
+		Once()
 
-	songRepository.On("Get", new(model.Song), request.ID).Return(nil, song).Once()
-	songRepository.On("Update", mock.IsType(song)).
+	songRepository.On("Update", mock.IsType(mockSong)).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 			assertUpdatedSong(t, request, newSong)

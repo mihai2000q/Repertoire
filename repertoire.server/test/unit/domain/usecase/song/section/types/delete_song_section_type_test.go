@@ -3,7 +3,7 @@ package types
 import (
 	"errors"
 	"net/http"
-	types2 "repertoire/server/domain/usecase/song/section/types"
+	"repertoire/server/domain/usecase/song/section/types"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +19,7 @@ import (
 func TestDeleteSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &types2.DeleteSongSectionType{jwtService: jwtService}
+	_uut := types.NewDeleteSongSectionType(nil, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -41,10 +41,7 @@ func TestDeleteSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServ
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.DeleteSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewDeleteSongSectionType(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -73,10 +70,7 @@ func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnIntern
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.DeleteSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewDeleteSongSectionType(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -84,15 +78,15 @@ func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnIntern
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	types := &[]model.SongSectionType{
+	sectionTypes := &[]model.SongSectionType{
 		{ID: id},
 	}
 	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, types).
+		Return(nil, sectionTypes).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateAllSectionTypes", mock.IsType(types)).
+	songRepository.On("UpdateAllSectionTypes", mock.IsType(sectionTypes)).
 		Return(internalError).
 		Once()
 
@@ -112,10 +106,7 @@ func TestDeleteSongSectionType_WhenDeleteSectionTypeFails_ShouldReturnInternalSe
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.DeleteSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewDeleteSongSectionType(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -123,14 +114,14 @@ func TestDeleteSongSectionType_WhenDeleteSectionTypeFails_ShouldReturnInternalSe
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	types := &[]model.SongSectionType{
+	sectionTypes := &[]model.SongSectionType{
 		{ID: id},
 	}
 	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, types).
+		Return(nil, sectionTypes).
 		Once()
 
-	songRepository.On("UpdateAllSectionTypes", mock.IsType(types)).
+	songRepository.On("UpdateAllSectionTypes", mock.IsType(sectionTypes)).
 		Return(nil).
 		Once()
 
@@ -155,10 +146,7 @@ func TestDeleteSongSectionType_WhenSuccessful_ShouldReturnGuitarTunings(t *testi
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &types2.DeleteSongSectionType{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := types.NewDeleteSongSectionType(songRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -166,20 +154,20 @@ func TestDeleteSongSectionType_WhenSuccessful_ShouldReturnGuitarTunings(t *testi
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	types := &[]model.SongSectionType{
+	sectionTypes := &[]model.SongSectionType{
 		{ID: id},
 	}
 	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, types).
+		Return(nil, sectionTypes).
 		Once()
 
-	songRepository.On("UpdateAllSectionTypes", mock.IsType(types)).
+	songRepository.On("UpdateAllSectionTypes", mock.IsType(sectionTypes)).
 		Run(func(args mock.Arguments) {
 			newSectionTypes := args.Get(0).(*[]model.SongSectionType)
-			sectionTypes := slices.DeleteFunc(*newSectionTypes, func(s model.SongSectionType) bool {
+			sortedSectionTypes := slices.DeleteFunc(*newSectionTypes, func(s model.SongSectionType) bool {
 				return s.ID == id
 			})
-			for i, sectionType := range sectionTypes {
+			for i, sectionType := range sortedSectionTypes {
 				assert.Equal(t, i, sectionType.Order)
 			}
 		}).

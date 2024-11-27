@@ -3,7 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -15,9 +15,8 @@ import (
 func TestGetArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.GetArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewGetArtist(artistRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -26,10 +25,10 @@ func TestGetArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing
 		Once()
 
 	// when
-	artist, errCode := _uut.Handle(id)
+	resultArtist, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, artist)
+	assert.Empty(t, resultArtist)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -40,9 +39,8 @@ func TestGetArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing
 func TestGetArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.GetArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewGetArtist(artistRepository)
+
 	id := uuid.New()
 
 	artistRepository.On("GetWithAssociations", new(model.Artist), id).
@@ -50,10 +48,10 @@ func TestGetArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 		Once()
 
 	// when
-	artist, errCode := _uut.Handle(id)
+	resultArtist, errCode := _uut.Handle(id)
 
 	// then
-	assert.Empty(t, artist)
+	assert.Empty(t, resultArtist)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artist not found", errCode.Error.Error())
@@ -64,9 +62,8 @@ func TestGetArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 func TestGetArtist_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := &artist2.GetArtist{
-		repository: artistRepository,
-	}
+	_uut := artist.NewGetArtist(artistRepository)
+
 	id := uuid.New()
 
 	expectedArtist := &model.Artist{
@@ -79,11 +76,11 @@ func TestGetArtist_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 		Once()
 
 	// when
-	artist, errCode := _uut.Handle(id)
+	resultArtist, errCode := _uut.Handle(id)
 
 	// then
-	assert.NotEmpty(t, artist)
-	assert.Equal(t, expectedArtist, &artist)
+	assert.NotEmpty(t, resultArtist)
+	assert.Equal(t, expectedArtist, &resultArtist)
 	assert.Nil(t, errCode)
 
 	artistRepository.AssertExpectations(t)

@@ -3,7 +3,7 @@ package provider
 import (
 	"errors"
 	"net/http"
-	provider2 "repertoire/server/domain/provider"
+	"repertoire/server/domain/provider"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -18,11 +18,7 @@ import (
 func TestCurrentUserProvider_Get_WhenJwtServiceReturnsAnErrorCode_ShouldReturnErrorCode(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	userRepository := new(repository.UserRepositoryMock)
-	_uut := &provider2.currentUserProvider{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := provider.NewCurrentUserProvider(jwtService, nil)
 
 	token := "this is a token"
 
@@ -38,17 +34,13 @@ func TestCurrentUserProvider_Get_WhenJwtServiceReturnsAnErrorCode_ShouldReturnEr
 	assert.Equal(t, internalErrorCode, errCode)
 
 	jwtService.AssertExpectations(t)
-	userRepository.AssertExpectations(t)
 }
 
-func TestCurrentUserProvider_Get_WhenUserRepositoryReturnsAnError_ShouldReturnInternalServerError(t *testing.T) {
+func TestCurrentUserProvider_Get_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	c := &provider2.currentUserProvider{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := provider.NewCurrentUserProvider(jwtService, userRepository)
 
 	token := "this is a token"
 
@@ -59,7 +51,7 @@ func TestCurrentUserProvider_Get_WhenUserRepositoryReturnsAnError_ShouldReturnIn
 	userRepository.On("Get", new(model.User), userID).Return(internalError).Once()
 
 	// when
-	user, errCode := c.Get(token)
+	user, errCode := _uut.Get(token)
 
 	// then
 	assert.Empty(t, user)
@@ -75,10 +67,7 @@ func TestCurrentUserProvider_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *te
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	c := &provider2.currentUserProvider{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := provider.NewCurrentUserProvider(jwtService, userRepository)
 
 	token := "this is a token"
 
@@ -88,7 +77,7 @@ func TestCurrentUserProvider_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *te
 	userRepository.On("Get", new(model.User), userID).Return(nil).Once()
 
 	// when
-	user, errCode := c.Get(token)
+	user, errCode := _uut.Get(token)
 
 	// then
 	assert.Empty(t, user)
@@ -104,10 +93,7 @@ func TestCurrentUserProvider_Get_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	c := &provider2.currentUserProvider{
-		jwtService:     jwtService,
-		userRepository: userRepository,
-	}
+	_uut := provider.NewCurrentUserProvider(jwtService, userRepository)
 
 	token := "this is a token"
 
@@ -122,7 +108,7 @@ func TestCurrentUserProvider_Get_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	userRepository.On("Get", new(model.User), userID).Return(nil, expectedUser).Once()
 
 	// when
-	user, errCode := c.Get(token)
+	user, errCode := _uut.Get(token)
 
 	// then
 	assert.NotEmpty(t, user)

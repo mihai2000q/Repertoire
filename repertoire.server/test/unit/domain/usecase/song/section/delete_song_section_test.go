@@ -3,7 +3,7 @@ package section
 import (
 	"errors"
 	"net/http"
-	section2 "repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -17,9 +17,8 @@ import (
 func TestDeleteSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.DeleteSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewDeleteSongSection(songRepository)
+
 	id := uuid.New()
 	songID := uuid.New()
 
@@ -42,9 +41,8 @@ func TestDeleteSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *t
 func TestDeleteSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.DeleteSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewDeleteSongSection(songRepository)
+
 	id := uuid.New()
 	songID := uuid.New()
 
@@ -66,9 +64,8 @@ func TestDeleteSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testi
 func TestDeleteSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.DeleteSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewDeleteSongSection(songRepository)
+
 	id := uuid.New()
 	songID := uuid.New()
 
@@ -102,9 +99,8 @@ func TestDeleteSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 func TestDeleteSongSection_WhenDeleteSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.DeleteSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewDeleteSongSection(songRepository)
+
 	id := uuid.New()
 	songID := uuid.New()
 
@@ -140,9 +136,8 @@ func TestDeleteSongSection_WhenDeleteSectionFails_ShouldReturnInternalServerErro
 func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section2.DeleteSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewDeleteSongSection(songRepository)
+
 	id := uuid.New()
 	songID := uuid.New()
 
@@ -163,14 +158,14 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 	songRepository.On("UpdateWithAssociations", mock.IsType(song)).
 		Run(func(args mock.Arguments) {
-			song := args.Get(0).(*model.Song)
-			sections := slices.Clone(song.Sections)
+			newSong := args.Get(0).(*model.Song)
+			sections := slices.Clone(newSong.Sections)
 
 			sections = slices.DeleteFunc(sections, func(a model.SongSection) bool {
 				return a.ID == id
 			})
-			for i, section := range sections {
-				assert.Equal(t, uint(i), section.Order)
+			for i, s := range sections {
+				assert.Equal(t, uint(i), s.Order)
 			}
 		}).
 		Return(nil).

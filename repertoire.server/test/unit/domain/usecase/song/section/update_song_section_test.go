@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
-	section2 "repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -16,9 +16,8 @@ import (
 func TestUpdateSongSection_WhenGetSectionsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.UpdateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewUpdateSongSection(songRepository)
+
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       "Some Artist",
@@ -45,9 +44,8 @@ func TestUpdateSongSection_WhenGetSectionsFails_ShouldReturnInternalServerError(
 func TestUpdateSongSection_WhenSectionsIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.UpdateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewUpdateSongSection(songRepository)
+
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       "Some Artist",
@@ -73,9 +71,8 @@ func TestUpdateSongSection_WhenSectionsIsEmpty_ShouldReturnNotFoundError(t *test
 func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.UpdateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewUpdateSongSection(songRepository)
+
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       "Some Artist",
@@ -83,12 +80,13 @@ func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerErro
 		TypeID:     uuid.New(),
 	}
 
-	section := &model.SongSection{
+	// given - mocking
+	mockSection := &model.SongSection{
 		ID:   request.ID,
 		Name: "Old name",
 	}
 	songRepository.On("GetSection", new(model.SongSection), request.ID).
-		Return(nil, section).
+		Return(nil, mockSection).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -114,9 +112,8 @@ func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerErro
 func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &section2.UpdateSongSection{
-		songRepository: songRepository,
-	}
+	_uut := section.NewUpdateSongSection(songRepository)
+
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       "Some Artist",
@@ -124,14 +121,15 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 		TypeID:     uuid.New(),
 	}
 
-	section := &model.SongSection{
+	// given - mocking
+	mockSection := &model.SongSection{
 		ID:   request.ID,
 		Name: "Old name",
 	}
-
 	songRepository.On("GetSection", new(model.SongSection), request.ID).
-		Return(nil, section).
+		Return(nil, mockSection).
 		Once()
+
 	songRepository.On("UpdateSection", mock.IsType(new(model.SongSection))).
 		Run(func(args mock.Arguments) {
 			newSection := args.Get(0).(*model.SongSection)

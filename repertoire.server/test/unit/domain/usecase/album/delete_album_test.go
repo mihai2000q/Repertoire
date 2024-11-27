@@ -3,7 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
-	album2 "repertoire/server/domain/usecase/album"
+	"repertoire/server/domain/usecase/album"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
 
@@ -14,9 +14,8 @@ import (
 func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.DeleteAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewDeleteAlbum(albumRepository)
+
 	id := uuid.New()
 
 	internalError := errors.New("internal error")
@@ -36,9 +35,8 @@ func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *tes
 func TestDeleteAlbum_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := &album2.DeleteAlbum{
-		repository: albumRepository,
-	}
+	_uut := album.NewDeleteAlbum(albumRepository)
+
 	id := uuid.New()
 
 	albumRepository.On("Delete", id).Return(nil).Once()

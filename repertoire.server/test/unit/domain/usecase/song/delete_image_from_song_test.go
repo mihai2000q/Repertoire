@@ -3,7 +3,7 @@ package song
 import (
 	"errors"
 	"net/http"
-	song2 "repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -18,7 +18,7 @@ import (
 func TestDeleteImageFromSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song2.DeleteImageFromSong{repository: songRepository}
+	_uut := song.NewDeleteImageFromSong(songRepository, nil)
 
 	id := uuid.New()
 
@@ -40,7 +40,7 @@ func TestDeleteImageFromSong_WhenGetSongFails_ShouldReturnInternalServerError(t 
 func TestDeleteImageFromSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song2.DeleteImageFromSong{repository: songRepository}
+	_uut := song.NewDeleteImageFromSong(songRepository, nil)
 
 	id := uuid.New()
 
@@ -62,19 +62,16 @@ func TestDeleteImageFromSong_WhenDeleteImageFails_ShouldReturnInternalServerErro
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := song2.DeleteImageFromSong{
-		repository:     songRepository,
-		storageService: storageService,
-	}
+	_uut := song.NewDeleteImageFromSong(songRepository, storageService)
 
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	mockSong := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
 	internalError := errors.New("internal error")
-	storageService.On("Delete", string(*song.ImageURL)).Return(internalError).Once()
+	storageService.On("Delete", string(*mockSong.ImageURL)).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
@@ -92,21 +89,18 @@ func TestDeleteImageFromSong_WhenUpdateSongFails_ShouldReturnInternalServerError
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := song2.DeleteImageFromSong{
-		repository:     songRepository,
-		storageService: storageService,
-	}
+	_uut := song.NewDeleteImageFromSong(songRepository, storageService)
 
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	mockSong := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
-	storageService.On("Delete", string(*song.ImageURL)).Return(nil).Once()
+	storageService.On("Delete", string(*mockSong.ImageURL)).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(song)).
+	songRepository.On("Update", mock.IsType(mockSong)).
 		Return(internalError).
 		Once()
 
@@ -126,20 +120,17 @@ func TestDeleteImageFromSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := song2.DeleteImageFromSong{
-		repository:     songRepository,
-		storageService: storageService,
-	}
+	_uut := song.NewDeleteImageFromSong(songRepository, storageService)
 
 	id := uuid.New()
 
 	// given - mocking
-	song := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
-	songRepository.On("Get", new(model.Song), id).Return(nil, song).Once()
+	mockSong := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
-	storageService.On("Delete", string(*song.ImageURL)).Return(nil).Once()
+	storageService.On("Delete", string(*mockSong.ImageURL)).Return(nil).Once()
 
-	songRepository.On("Update", mock.IsType(song)).
+	songRepository.On("Update", mock.IsType(mockSong)).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 			assert.Nil(t, newSong.ImageURL)

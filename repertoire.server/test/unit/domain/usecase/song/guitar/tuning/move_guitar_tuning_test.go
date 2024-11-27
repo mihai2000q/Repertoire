@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	tuning2 "repertoire/server/domain/usecase/song/guitar/tuning"
+	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -21,7 +21,7 @@ import (
 func TestMoveGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := &tuning2.MoveGuitarTuning{jwtService: jwtService}
+	_uut := tuning.NewMoveGuitarTuning(nil, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -46,10 +46,7 @@ func TestMoveGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServerEr
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.MoveGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -81,10 +78,7 @@ func TestMoveGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.MoveGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -116,10 +110,7 @@ func TestMoveGuitarTuning_WhenOverGuitarTuningIsNotFound_ShouldReturnNotFoundErr
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.MoveGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -153,10 +144,7 @@ func TestMoveGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternalSe
 	// given
 	jwtService := new(service.JwtServiceMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := &tuning2.MoveGuitarTuning{
-		repository: songRepository,
-		jwtService: jwtService,
-	}
+	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -230,10 +218,7 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 			// given
 			jwtService := new(service.JwtServiceMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := &tuning2.MoveGuitarTuning{
-				repository: songRepository,
-				jwtService: jwtService,
-			}
+			_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
 
 			request := requests.MoveGuitarTuningRequest{
 				ID:     (*tt.tunings)[tt.index].ID,
@@ -260,8 +245,8 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 					} else if tt.index > tt.overIndex {
 						assert.Equal(t, tunings[tt.overIndex+1].ID, request.OverID)
 					}
-					for i, tuning := range tunings {
-						assert.Equal(t, uint(i), tuning.Order)
+					for i, tune := range tunings {
+						assert.Equal(t, uint(i), tune.Order)
 					}
 				}).
 				Return(nil).

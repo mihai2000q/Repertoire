@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
-	artist2 "repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -16,7 +16,7 @@ import (
 func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.RemoveAlbumsFromArtist{albumRepository: albumRepository}
+	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository)
 
 	request := requests.RemoveAlbumsFromArtistRequest{
 		ID:       uuid.New(),
@@ -42,7 +42,7 @@ func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerErro
 func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.RemoveAlbumsFromArtist{albumRepository: albumRepository}
+	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository)
 
 	request := requests.RemoveAlbumsFromArtistRequest{
 		ID:       uuid.New(),
@@ -68,7 +68,7 @@ func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnBadRe
 func TestRemoveAlbumsFromArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.RemoveAlbumsFromArtist{albumRepository: albumRepository}
+	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository)
 
 	request := requests.RemoveAlbumsFromArtistRequest{
 		ID:       uuid.New(),
@@ -104,7 +104,7 @@ func TestRemoveAlbumsFromArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalSer
 func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := artist2.RemoveAlbumsFromArtist{albumRepository: albumRepository}
+	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository)
 
 	request := requests.RemoveAlbumsFromArtistRequest{
 		ID:       uuid.New(),
