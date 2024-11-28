@@ -9,6 +9,7 @@ import (
 	"go.uber.org/fx"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"repertoire/server/api"
 	"repertoire/server/data"
@@ -21,8 +22,9 @@ var Dsn string
 var httpServer *http.Server
 
 type TestServer struct {
-	app       *fx.App
-	container *postgresTest.PostgresContainer
+	app           *fx.App
+	container     *postgresTest.PostgresContainer
+	storageServer *httptest.Server
 }
 
 func Start() *TestServer {
@@ -58,6 +60,12 @@ func Start() *TestServer {
 		env.DatabaseSSLMode,
 	)
 
+	// Start Storage Server
+	ts.storageServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
+
 	// Setup application modules and populate the router
 	// Implicitly, the application will connect to the database
 	ts.app = fx.New(
@@ -77,7 +85,7 @@ func Start() *TestServer {
 }
 
 func Stop(ts *TestServer) {
-	// Stop Application
+	ts.storageServer.Close()
 	if err := ts.app.Stop(context.Background()); err != nil {
 		log.Fatal(err)
 	}
