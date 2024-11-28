@@ -8,7 +8,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"net/http"
-	"reflect"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"time"
@@ -16,6 +15,7 @@ import (
 
 type TestHandler interface {
 	WithoutAuthentication() TestHandler
+	WithInvalidToken() TestHandler
 	WithUser(user model.User) TestHandler
 	GET(w http.ResponseWriter, url string)
 	POST(w http.ResponseWriter, url string, body interface{})
@@ -23,27 +23,38 @@ type TestHandler interface {
 	DELETE(w http.ResponseWriter, url string)
 }
 
-type testHandler struct {
-	httpServer     *http.Server
+type settings struct {
 	authentication bool
+	invalidToken   bool
 	user           *model.User
+}
+
+type testHandler struct {
+	httpServer *http.Server
+	settings   *settings
 }
 
 func NewTestHandler() TestHandler {
 	return &testHandler{
 		getHttpServer(),
-		true,
-		nil,
+		&settings{
+			authentication: true,
+		},
 	}
 }
 
 func (t *testHandler) WithoutAuthentication() TestHandler {
-	t.authentication = false
+	t.settings.authentication = false
+	return t
+}
+
+func (t *testHandler) WithInvalidToken() TestHandler {
+	t.settings.invalidToken = true
 	return t
 }
 
 func (t *testHandler) WithUser(user model.User) TestHandler {
-	t.user = &user
+	t.settings.user = &user
 	return t
 }
 
@@ -80,21 +91,40 @@ func (t *testHandler) DELETE(w http.ResponseWriter, url string) {
 }
 
 func (t *testHandler) requestWithAuthentication(req *http.Request) {
-	if !t.authentication {
+	if !t.settings.authentication {
+		return
+	}
+
+	if t.settings.invalidToken {
+		req.Header.Set("Authorization", "bearer "+t.createInvalidToken())
 		return
 	}
 
 	var user model.User
-	if t.user == nil {
+	if t.settings.user == nil {
 		db, _ := gorm.Open(postgres.Open(Dsn))
 		db.First(&user)
-	}
-	if reflect.ValueOf(user).IsZero() {
-		return
+	} else {
+		user = *t.settings.user
 	}
 
 	token := t.createToken(user)
 	req.Header.Set("Authorization", "bearer "+token)
+}
+
+func (t *testHandler) createInvalidToken() string {
+	env := internal.NewEnv()
+
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"jti": uuid.New().String(),
+		"sub": uuid.New().String(),
+		"iss": env.JwtIssuer,
+		"aud": env.JwtAudience,
+		"iat": time.Now().UTC().Unix(),
+		"exp": time.Now().UTC().Add(time.Hour).Unix(),
+	})
+	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
+	return token
 }
 
 func (t *testHandler) createToken(user model.User) string {
