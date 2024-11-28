@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,16 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 )
+
+func TestGetUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().GET(w, "/api/users/"+uuid.New().String())
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
 func TestGetUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	// given
@@ -23,15 +34,16 @@ func TestGetUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	core.NewTestHandler().GET(w, "/api/users/"+user.ID.String())
 
 	// then
-	var returnedUser model.User
-	_ = json.Unmarshal(w.Body.Bytes(), &returnedUser)
-
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, user.ID, returnedUser.ID)
-	assert.Equal(t, user.Email, returnedUser.Email)
+
+	var responseUser model.User
+	_ = json.Unmarshal(w.Body.Bytes(), &responseUser)
+
+	assert.Equal(t, user.ID, responseUser.ID)
+	assert.Equal(t, user.Email, responseUser.Email)
 	if user.ProfilePictureURL == nil {
-		assert.Nil(t, returnedUser.ProfilePictureURL)
+		assert.Nil(t, responseUser.ProfilePictureURL)
 	} else {
-		assert.Equal(t, user.ProfilePictureURL.ToNullableFullURL(), returnedUser.ProfilePictureURL)
+		assert.Equal(t, user.ProfilePictureURL.ToNullableFullURL(), responseUser.ProfilePictureURL)
 	}
 }
