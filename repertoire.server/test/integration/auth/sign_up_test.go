@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -36,7 +37,7 @@ func TestSignUp_WhenUserAlreadyExists(t *testing.T) {
 
 func TestSignUp(t *testing.T) {
 	// given
-	utils.CleanupData(t)
+	utils.SeedAndCleanupData(t, func(*gorm.DB) {})
 
 	request := requests.SignUpRequest{
 		Name:     "Nigel",

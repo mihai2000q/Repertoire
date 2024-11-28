@@ -23,10 +23,6 @@ func SeedAndCleanupData(t *testing.T, seed func(*gorm.DB)) {
 	t.Cleanup(cleanupData)
 }
 
-func CleanupData(t *testing.T) {
-	t.Cleanup(cleanupData)
-}
-
 func seedData(seed func(*gorm.DB)) {
 	db := GetDatabase()
 	seed(db)
