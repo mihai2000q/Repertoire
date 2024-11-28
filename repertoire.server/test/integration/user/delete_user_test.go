@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestDeleteUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
+func TestDeleteUser_WhenSuccessful_ShouldDeleteUser(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, userData.SeedData)
 

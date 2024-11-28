@@ -56,8 +56,7 @@ func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string
 }
 
 func (s storageService) Delete(filePath string) error {
-	res, err := s.httpClient.R().
-		Delete("files/" + filePath)
+	res, err := s.httpClient.R().Delete("files/" + filePath)
 	if err != nil {
 		return err
 	}

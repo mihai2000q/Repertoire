@@ -29,7 +29,7 @@ func TestUpdateUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestUpdateUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
+func TestUpdateUser_WhenSuccessful_ShouldUpdateUser(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, userData.SeedData)
 
