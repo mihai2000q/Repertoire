@@ -16,7 +16,7 @@ import (
 
 func TestSignUp_WhenUserAlreadyExists(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, auth.SeedData)
+	utils.SeedAndCleanupData(t, auth.Users, auth.SeedData)
 
 	user := auth.Users[0]
 	request := requests.SignUpRequest{
@@ -37,7 +37,7 @@ func TestSignUp_WhenUserAlreadyExists(t *testing.T) {
 
 func TestSignUp(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, func(*gorm.DB) {})
+	utils.SeedAndCleanupData(t, []model.User{}, func(*gorm.DB) {})
 
 	request := requests.SignUpRequest{
 		Name:     "Nigel",

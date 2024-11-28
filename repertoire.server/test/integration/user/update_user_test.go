@@ -31,7 +31,7 @@ func TestUpdateUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 
 func TestUpdateUser_WhenSuccessful_ShouldUpdateUser(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, userData.SeedData)
+	utils.SeedAndCleanupData(t, userData.Users, userData.SeedData)
 
 	user := userData.Users[0]
 	request := requests.UpdateUserRequest{

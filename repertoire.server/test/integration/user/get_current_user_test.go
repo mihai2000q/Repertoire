@@ -26,7 +26,7 @@ func TestGetCurrentUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.
 
 func TestGetCurrentUser_WhenSuccessful_ShouldReturnCurrentUser(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, userData.SeedData)
+	utils.SeedAndCleanupData(t, userData.Users, userData.SeedData)
 
 	user := userData.Users[0]
 

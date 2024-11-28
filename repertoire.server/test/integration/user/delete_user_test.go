@@ -12,9 +12,9 @@ import (
 
 func TestDeleteUser_WhenSuccessful_ShouldDeleteUser(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, userData.SeedData)
+	utils.SeedAndCleanupData(t, userData.Users, userData.SeedData)
 
-	user := userData.Users[1]
+	user := userData.Users[0]
 
 	// when
 	w := httptest.NewRecorder()

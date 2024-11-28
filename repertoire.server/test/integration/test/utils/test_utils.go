@@ -3,6 +3,7 @@ package utils
 import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
@@ -18,9 +19,11 @@ func GetEnv() internal.Env {
 	return internal.NewEnv()
 }
 
-func SeedAndCleanupData(t *testing.T, seed func(*gorm.DB)) {
+func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
 	seedData(seed)
-	t.Cleanup(cleanupData)
+	t.Cleanup(func() {
+		cleanupData(users)
+	})
 }
 
 func seedData(seed func(*gorm.DB)) {
@@ -28,18 +31,10 @@ func seedData(seed func(*gorm.DB)) {
 	seed(db)
 }
 
-func cleanupData() {
+func cleanupData(users []model.User) {
 	db := GetDatabase()
 
-	query := "id IS NOT NULL"
-
-	func(models ...interface{}) {
-		for _, m := range models {
-			db.Where(query).Delete(m)
-		}
-	}(
-		&model.SongSectionType{},
-		&model.GuitarTuning{},
-		&model.User{},
-	)
+	for _, user := range users {
+		db.Select(clause.Associations).Delete(user)
+	}
 }

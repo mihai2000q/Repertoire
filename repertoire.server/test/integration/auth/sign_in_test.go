@@ -31,7 +31,7 @@ func TestSignIn_WhenUserIsNotFound_ShouldReturnInvalidCredentials(t *testing.T) 
 
 func TestSignIn_WhenValid_ShouldReturnToken(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, auth.SeedData)
+	utils.SeedAndCleanupData(t, auth.Users, auth.SeedData)
 
 	user := auth.Users[0]
 	request := requests.SignInRequest{

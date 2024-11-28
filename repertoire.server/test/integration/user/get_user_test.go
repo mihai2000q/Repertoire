@@ -15,6 +15,8 @@ import (
 
 func TestGetUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
+	utils.SeedAndCleanupData(t, userData.Users, userData.SeedData)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().GET(w, "/api/users/"+uuid.New().String())
@@ -25,7 +27,7 @@ func TestGetUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 
 func TestGetUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, userData.SeedData)
+	utils.SeedAndCleanupData(t, userData.Users, userData.SeedData)
 
 	user := userData.Users[1]
 
