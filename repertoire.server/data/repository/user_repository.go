@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm/clause"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
@@ -42,5 +43,5 @@ func (u userRepository) Update(user *model.User) error {
 }
 
 func (u userRepository) Delete(id uuid.UUID) error {
-	return u.client.DB.Delete(&model.User{}, id).Error
+	return u.client.DB.Select(clause.Associations).Delete(&model.User{ID: id}).Error
 }
