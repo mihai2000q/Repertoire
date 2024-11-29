@@ -37,7 +37,7 @@ func TestDeleteImageFromPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServer
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(t *testing.T) {
+func TestDeleteImageFromPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewDeleteImageFromPlaylist(playlistRepository, nil)
@@ -58,6 +58,28 @@ func TestDeleteImageFromPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(
 	playlistRepository.AssertExpectations(t)
 }
 
+func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewDeleteImageFromPlaylist(playlistRepository, nil)
+
+	id := uuid.New()
+
+	// given - mocking
+	mockPlaylist := &model.Playlist{ID: id}
+	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
+
+	// when
+	errCode := _uut.Handle(id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, "playlist does not have an image", errCode.Error.Error())
+
+	playlistRepository.AssertExpectations(t)
+}
+
 func TestDeleteImageFromPlaylist_WhenDeleteImageFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
@@ -71,7 +93,7 @@ func TestDeleteImageFromPlaylist_WhenDeleteImageFails_ShouldReturnInternalServer
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
 	internalError := errors.New("internal error")
-	storageService.On("Delete", string(*mockPlaylist.ImageURL)).Return(internalError).Once()
+	storageService.On("DeleteFile", *mockPlaylist.ImageURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
@@ -97,7 +119,7 @@ func TestDeleteImageFromPlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalSer
 	mockPlaylist := &model.Playlist{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	storageService.On("Delete", string(*mockPlaylist.ImageURL)).Return(nil).Once()
+	storageService.On("DeleteFile", *mockPlaylist.ImageURL).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	playlistRepository.On("Update", mock.IsType(mockPlaylist)).
@@ -128,7 +150,7 @@ func TestDeleteImageFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 	mockPlaylist := &model.Playlist{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	storageService.On("Delete", string(*mockPlaylist.ImageURL)).Return(nil).Once()
+	storageService.On("DeleteFile", *mockPlaylist.ImageURL).Return(nil).Once()
 
 	playlistRepository.On("Update", mock.IsType(mockPlaylist)).
 		Run(func(args mock.Arguments) {
