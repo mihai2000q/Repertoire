@@ -15,7 +15,8 @@ func (s StorageRouter) RegisterRoutes() {
 	{
 		api.GET("/files/*filePath", s.handler.Get)
 		api.PUT("/upload", s.handler.Upload)
-		api.DELETE("/files/*filePath", s.handler.Delete)
+		api.DELETE("/files/*filePath", s.handler.DeleteFile)
+		api.DELETE("/directories/*directoryPath", s.handler.DeleteDirectory)
 	}
 }
 
