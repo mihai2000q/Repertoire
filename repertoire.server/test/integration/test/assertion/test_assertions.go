@@ -7,14 +7,20 @@ import (
 	"time"
 )
 
+func Time(t *testing.T, expected *time.Time, actual *time.Time) {
+	if expected != nil {
+		assert.WithinDuration(t, *expected, *actual, 1*time.Second)
+	} else {
+		assert.Nil(t, actual)
+	}
+}
+
+// models
+
 func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withArtist bool, withSongs bool) {
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
-	if album.ReleaseDate != nil {
-		assert.WithinDuration(t, *album.ReleaseDate, *response.ReleaseDate, 1*time.Second)
-	} else {
-		assert.Nil(t, response.ReleaseDate)
-	}
+	Time(t, album.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, album.ImageURL, response.ImageURL)
 
 	if withArtist {
@@ -49,7 +55,7 @@ func ResponseSong(
 	assert.Equal(t, song.ID, response.ID)
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
-	assert.Equal(t, song.ReleaseDate, response.ReleaseDate)
+	Time(t, song.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, song.ImageURL, response.ImageURL)
 	assert.Equal(t, song.IsRecorded, response.IsRecorded)
 	assert.Equal(t, song.Bpm, response.Bpm)
@@ -98,7 +104,7 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 	assert.Equal(t, playlist.Title, response.Title)
 	assert.Equal(t, playlist.Description, response.Description)
 	assert.Equal(t, playlist.ImageURL, response.ImageURL)
-	
+
 	if withSongs {
 		for i := range playlist.Songs {
 			ResponseSong(t, playlist.Songs[i], response.Songs[i], true, true, false)
