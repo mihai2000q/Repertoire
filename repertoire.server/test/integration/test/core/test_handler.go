@@ -20,6 +20,7 @@ type TestHandler interface {
 	GET(w http.ResponseWriter, url string)
 	POST(w http.ResponseWriter, url string, body interface{})
 	PUT(w http.ResponseWriter, url string, body interface{})
+	PUTForm(w http.ResponseWriter, url string, bodyForm *bytes.Buffer, contentType string)
 	DELETE(w http.ResponseWriter, url string)
 }
 
@@ -80,6 +81,14 @@ func (t *testHandler) PUT(w http.ResponseWriter, url string, body interface{}) {
 	req, _ := http.NewRequest("PUT", url, reqBody)
 
 	req.Header.Set("Content-Type", "application/json")
+	t.requestWithAuthentication(req)
+	t.httpServer.Handler.ServeHTTP(w, req)
+}
+
+func (t *testHandler) PUTForm(w http.ResponseWriter, url string, bodyForm *bytes.Buffer, contentType string) {
+	req, _ := http.NewRequest("PUT", url, bodyForm)
+
+	req.Header.Set("Content-Type", contentType)
 	t.requestWithAuthentication(req)
 	t.httpServer.Handler.ServeHTTP(w, req)
 }
