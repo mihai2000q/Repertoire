@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	userData "repertoire/server/test/integration/test/data/user"
 	"repertoire/server/test/integration/test/utils"
@@ -41,11 +42,8 @@ func TestGetUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	var responseUser model.User
 	_ = json.Unmarshal(w.Body.Bytes(), &responseUser)
 
-	assert.Equal(t, user.ID, responseUser.ID)
-	assert.Equal(t, user.Email, responseUser.Email)
-	if user.ProfilePictureURL == nil {
-		assert.Nil(t, responseUser.ProfilePictureURL)
-	} else {
-		assert.Equal(t, user.ProfilePictureURL.ToNullableFullURL(), responseUser.ProfilePictureURL)
-	}
+	db := utils.GetDatabase()
+	db.Find(&user, user.ID)
+
+	assertion.ResponseUser(t, user, responseUser)
 }
