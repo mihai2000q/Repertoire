@@ -9,6 +9,7 @@ import (
 
 type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
+	// Deprecated: Use normal Get instead
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.Artist,

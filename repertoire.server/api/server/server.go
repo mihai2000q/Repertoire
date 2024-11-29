@@ -7,12 +7,18 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"repertoire/server/internal"
 )
 
 func NewServer(lc fx.Lifecycle, handler *RequestHandler, env internal.Env) *http.Server {
+	address := ""
+	if os.Getenv("INTEGRATION_TESTING") == "" {
+		address = fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort)
+	}
+
 	server := &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort),
+		Addr:    address,
 		Handler: handler.Gin,
 	}
 

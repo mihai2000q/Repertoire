@@ -14,13 +14,13 @@ type Song struct {
 	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title         string             `gorm:"size:100; not null" json:"title"`
 	Description   string             `gorm:"not null" json:"description"`
+	ReleaseDate   *time.Time         `json:"releaseDate"`
+	ImageURL      *internal.FilePath `json:"imageUrl"`
 	IsRecorded    bool               `json:"isRecorded"`
 	Bpm           *uint              `json:"bpm"`
+	Difficulty    *enums.Difficulty  `json:"difficulty"`
 	SongsterrLink *string            `json:"songsterrLink"`
 	YoutubeLink   *string            `json:"youtubeLink"`
-	ReleaseDate   *time.Time         `json:"releaseDate"`
-	Difficulty    *enums.Difficulty  `json:"difficulty"`
-	ImageURL      *internal.FilePath `json:"imageUrl"`
 	AlbumTrackNo  *uint              `json:"albumTrackNo"`
 
 	AlbumID        *uuid.UUID    `json:"-"`
@@ -80,7 +80,7 @@ type SongSectionType struct {
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
-var DefaultGuitarTuning = []string{
+var DefaultGuitarTunings = []string{
 	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
 	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
 }

@@ -33,7 +33,7 @@ type artistService struct {
 	getAllArtists          artist.GetAllArtists
 	getArtist              artist.GetArtist
 	removeAlbumsFromArtist artist.RemoveAlbumsFromArtist
-	removeSongsFromArtist  artist.RemoveSongFromArtist
+	removeSongsFromArtist  artist.RemoveSongsFromArtist
 	saveImageToArtist      artist.SaveImageToArtist
 	updateArtist           artist.UpdateArtist
 }
@@ -47,7 +47,7 @@ func NewArtistService(
 	getAllArtists artist.GetAllArtists,
 	getArtist artist.GetArtist,
 	removeAlbumsFromArtist artist.RemoveAlbumsFromArtist,
-	removeSongsFromArtist artist.RemoveSongFromArtist,
+	removeSongsFromArtist artist.RemoveSongsFromArtist,
 	saveImageToArtist artist.SaveImageToArtist,
 	updateArtist artist.UpdateArtist,
 ) ArtistService {

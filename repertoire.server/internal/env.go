@@ -1,10 +1,9 @@
 package internal
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type Env struct {
@@ -30,7 +29,9 @@ type Env struct {
 }
 
 func NewEnv() Env {
-	if os.Getenv("IS_RUNNING_IN_CONTAINER") == "" {
+	if os.Getenv("INTEGRATION_TESTING") != "" {
+		_ = godotenv.Load("../../../.env")
+	} else if os.Getenv("IS_RUNNING_IN_CONTAINER") == "" {
 		err := godotenv.Load()
 		if err != nil {
 			log.Fatalf("Error loading .env file:%v", err)
