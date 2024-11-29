@@ -31,7 +31,7 @@ func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testi
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteSong_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
+func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewDeleteSong(songRepository)

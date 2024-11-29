@@ -32,7 +32,7 @@ func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestDeletePlaylist_WhenSuccessful_ShouldReturnPlaylists(t *testing.T) {
+func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewDeletePlaylist(playlistRepository)
