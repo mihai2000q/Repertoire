@@ -29,7 +29,8 @@ func getGinHandler() *gin.Engine {
 
 	engine.PUT("/upload", storageHandler.Upload)
 	engine.GET("/files/*filePath", storageHandler.Get)
-	engine.DELETE("/files/*filePath", storageHandler.Delete)
+	engine.DELETE("/files/*filePath", storageHandler.DeleteFile)
+	engine.DELETE("/directories/*directoryPath", storageHandler.DeleteDirectory)
 
 	return engine
 }
@@ -86,7 +87,7 @@ func TestStorageHandler_Get_WhenFileIsNotFound_ShouldReturnNotFoundError(t *test
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestStorageHandler_Get_WhenSuccessful_ShouldSaveFile(t *testing.T) {
+func TestStorageHandler_Get_WhenSuccessful_ShouldReturnFile(t *testing.T) {
 	// given
 	t.Cleanup(func() {
 		_ = os.RemoveAll(uploadTestDirectory)
@@ -173,7 +174,7 @@ func TestStorageHandler_Upload_WhenSuccessful_ShouldSaveFile(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestStorageHandler_Delete_WhenFileIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestStorageHandler_DeleteFile_WhenFileIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	filePath := "somewhere/else/test-file.txt"
 
@@ -186,7 +187,7 @@ func TestStorageHandler_Delete_WhenFileIsNotFound_ShouldReturnNotFoundError(t *t
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestStorageHandler_Delete_WhenSuccessful_ShouldSaveFile(t *testing.T) {
+func TestStorageHandler_DeleteFile_WhenSuccessful_ShouldDeleteFile(t *testing.T) {
 	// given
 	t.Cleanup(func() {
 		_ = os.RemoveAll(uploadTestDirectory)
@@ -205,5 +206,41 @@ func TestStorageHandler_Delete_WhenSuccessful_ShouldSaveFile(t *testing.T) {
 
 	// assert file deleted
 	_, err := os.Stat(filepath.Join(uploadTestDirectory, filePath))
+	assert.Error(t, err)
+}
+
+func TestStorageHandler_DeleteDirectory_WhenDirectoryIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	directoryPath := "somewhere/else"
+
+	// when
+	req := httptest.NewRequest(http.MethodDelete, "/directories/"+directoryPath, nil)
+	w := httptest.NewRecorder()
+	getGinHandler().ServeHTTP(w, req)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestStorageHandler_DeleteDirectory_WhenSuccessful_ShouldDeleteDirectory(t *testing.T) {
+	// given
+	t.Cleanup(func() {
+		_ = os.RemoveAll(uploadTestDirectory)
+	})
+
+	directoryPath := "somewhere"
+	filePath := directoryPath + "/else/test-file.txt"
+	createFile(filePath, "")
+
+	// when
+	req := httptest.NewRequest(http.MethodDelete, "/directories/"+directoryPath, nil)
+	w := httptest.NewRecorder()
+	getGinHandler().ServeHTTP(w, req)
+
+	// then
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// assert directory deleted
+	_, err := os.Stat(filepath.Join(uploadTestDirectory, directoryPath))
 	assert.Error(t, err)
 }

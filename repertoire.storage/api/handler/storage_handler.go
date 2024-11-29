@@ -54,7 +54,7 @@ func (s StorageHandler) Upload(c *gin.Context) {
 	})
 }
 
-func (s StorageHandler) Delete(c *gin.Context) {
+func (s StorageHandler) DeleteFile(c *gin.Context) {
 	filePath := c.Param("filePath")
 
 	storagePath := filepath.Join(s.env.UploadDirectory, filePath)
@@ -70,5 +70,26 @@ func (s StorageHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "file has been deleted successfully!",
+	})
+}
+
+func (s StorageHandler) DeleteDirectory(c *gin.Context) {
+	directoryPath := c.Param("directoryPath")
+
+	storagePath := filepath.Join(s.env.UploadDirectory, directoryPath)
+
+	if _, err := os.Stat(storagePath); err != nil {
+		directory := filepath.Base(storagePath)
+		_ = c.AbortWithError(http.StatusNotFound, errors.New(fmt.Sprintf("directory not found: %s", directory)))
+		return
+	}
+
+	if err := os.RemoveAll(storagePath); err != nil {
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "directory has been deleted successfully!",
 	})
 }
