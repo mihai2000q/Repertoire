@@ -48,8 +48,8 @@ func Token(t *testing.T, actual string, user model.User) {
 	assert.Len(t, aud, 1)
 	assert.Equal(t, env.JwtAudience, aud[0])
 	assert.Equal(t, env.JwtIssuer, iss)
-	assert.WithinDuration(t, time.Now(), iat.Time, 10*time.Second)
-	assert.WithinDuration(t, time.Now().Add(time.Hour), exp.Time, 10*time.Second)
+	assert.WithinDuration(t, time.Now().UTC(), iat.Time, 10*time.Second)
+	assert.WithinDuration(t, time.Now().Add(time.Hour).UTC(), exp.Time, 10*time.Second)
 }
 
 // models
