@@ -76,7 +76,7 @@ func TestRefresh_WhenSuccessful_ShouldReturnValidToken(t *testing.T) {
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithoutAuthentication().
-		PUT(w, "/api/auth/sign-in", request)
+		PUT(w, "/api/auth/refresh", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
