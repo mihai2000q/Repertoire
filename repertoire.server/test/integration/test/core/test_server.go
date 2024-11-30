@@ -3,10 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/testcontainers/testcontainers-go"
-	postgresTest "github.com/testcontainers/testcontainers-go/modules/postgres"
-	"github.com/testcontainers/testcontainers-go/wait"
-	"go.uber.org/fx"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +12,12 @@ import (
 	"repertoire/server/domain"
 	"repertoire/server/internal"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/testcontainers/testcontainers-go"
+	postgresTest "github.com/testcontainers/testcontainers-go/modules/postgres"
+	"github.com/testcontainers/testcontainers-go/wait"
+	"go.uber.org/fx"
 )
 
 var Dsn string
@@ -47,6 +49,9 @@ func Start() *TestServer {
 				WithStartupTimeout(5*time.Second)),
 	)
 	ts.container = postgresContainer
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Get Random Port and set the environment variable
 	port, _ := ts.container.MappedPort(context.Background(), "5432/tcp")
@@ -68,6 +73,7 @@ func Start() *TestServer {
 
 	// Setup application modules and populate the router
 	// Implicitly, the application will connect to the database
+	gin.SetMode(gin.TestMode)
 	ts.app = fx.New(
 		internal.Module,
 		data.Module,
