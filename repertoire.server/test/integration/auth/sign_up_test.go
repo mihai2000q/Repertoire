@@ -1,20 +1,23 @@
 package auth
 
 import (
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	"repertoire/server/test/integration/test/data/auth"
 	"repertoire/server/test/integration/test/utils"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
-func TestSignUp_WhenUserAlreadyExists(t *testing.T) {
+func TestSignUp_WhenUserAlreadyExists_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, auth.Users, auth.SeedData)
 
@@ -35,7 +38,7 @@ func TestSignUp_WhenUserAlreadyExists(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
-func TestSignUp(t *testing.T) {
+func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, []model.User{}, func(*gorm.DB) {})
 
@@ -53,11 +56,17 @@ func TestSignUp(t *testing.T) {
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
-	//assert.JSONEq(t, `{"token": ""}`, w.Body.String())
-	assertCreatedUser(t, request)
+
+	user := assertCreatedUser(t, request)
+
+	var response struct{ Token string }
+	_ = json.Unmarshal(w.Body.Bytes(), &response)
+
+	assertion.Token(t, response.Token, user)
+
 }
 
-func assertCreatedUser(t *testing.T, request requests.SignUpRequest) {
+func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User {
 	db := utils.GetDatabase()
 
 	var user model.User
@@ -84,4 +93,6 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) {
 		assert.Equal(t, model.DefaultGuitarTunings[i], guitarTuning.Name)
 		assert.Equal(t, uint(i), guitarTuning.Order)
 	}
+
+	return user
 }
