@@ -44,9 +44,10 @@ func Token(t *testing.T, actual string, user model.User) {
 
 	assert.Equal(t, jwt.SigningMethodHS256, token.Method)
 	assert.NotEmpty(t, jti)
-	assert.Equal(t, sub, user.ID.String())
-	assert.Equal(t, aud, env.JwtAudience)
-	assert.Equal(t, iss, env.JwtIssuer)
+	assert.Equal(t, user.ID.String(), sub)
+	assert.Len(t, aud, 1)
+	assert.Equal(t, env.JwtAudience, aud[0])
+	assert.Equal(t, env.JwtIssuer, iss)
 	assert.WithinDuration(t, time.Now(), iat.Time, 10*time.Second)
 	assert.WithinDuration(t, time.Now().Add(time.Hour), exp.Time, 10*time.Second)
 }
