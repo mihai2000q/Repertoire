@@ -1,17 +1,20 @@
 package auth
 
 import (
-	"github.com/stretchr/testify/assert"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	"repertoire/server/test/integration/test/data/auth"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestSignIn_WhenUserIsNotFound_ShouldReturnInvalidCredentials(t *testing.T) {
+func TestSignIn_WhenUserIsNotFound_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	request := requests.SignInRequest{
 		Email:    "random@email.com",
@@ -26,10 +29,28 @@ func TestSignIn_WhenUserIsNotFound_ShouldReturnInvalidCredentials(t *testing.T) 
 
 	// then
 	assert.Equal(t, http.StatusUnauthorized, w.Code)
-	//assert.JSONEq(t, `{"error": ""}`, w.Body.String())
 }
 
-func TestSignIn_WhenValid_ShouldReturnToken(t *testing.T) {
+func TestSignIn_WhenPasswordIsWrong_ShouldReturnUnauthorizedError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, auth.Users, auth.SeedData)
+
+	request := requests.SignInRequest{
+		Email:    "random@email.com",
+		Password: "WrongPassword123",
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithoutAuthentication().
+		PUT(w, "/api/auth/sign-in", request)
+
+	// then
+	assert.Equal(t, http.StatusUnauthorized, w.Code)
+}
+
+func TestSignIn_WhenSuccessful_ShouldReturnValidToken(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, auth.Users, auth.SeedData)
 
@@ -41,9 +62,15 @@ func TestSignIn_WhenValid_ShouldReturnToken(t *testing.T) {
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/auth/sign-in", request)
+	core.NewTestHandler().
+		WithoutAuthentication().
+		PUT(w, "/api/auth/sign-in", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
-	// assert.JSONEq(t, `{"token": ""}`, w.Body.String())
+
+	var response struct{ Token string }
+	_ = json.Unmarshal(w.Body.Bytes(), &response)
+
+	assertion.Token(t, response.Token, user)
 }
