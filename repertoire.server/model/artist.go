@@ -12,8 +12,8 @@ type Artist struct {
 	ID       uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name     string             `gorm:"size:100; not null" json:"name"`
 	ImageURL *internal.FilePath `json:"imageUrl"`
-	Albums   []Album            `json:"albums"`
-	Songs    []Song             `json:"songs"`
+	Albums   []Album            `gorm:"constraint:OnDelete:SET NULL" json:"albums"`
+	Songs    []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
