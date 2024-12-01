@@ -49,11 +49,11 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		GuitarTuningID: request.GuitarTuningID,
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
-		Artist:         c.createArtist(request, userID),
 		Sections:       c.createSections(request.Sections, songID),
 		UserID:         userID,
 	}
 
+	c.createArtist(&song, request)
 	c.createAlbum(&song, request)
 
 	errCode = c.addToAlbum(&song, request)
@@ -68,16 +68,17 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 	return song.ID, nil
 }
 
-func (c CreateSong) createArtist(request requests.CreateSongRequest, userID uuid.UUID) *model.Artist {
-	var artist *model.Artist
-	if request.ArtistName != nil {
-		artist = &model.Artist{
-			ID:     uuid.New(),
-			Name:   *request.ArtistName,
-			UserID: userID,
-		}
+func (c CreateSong) createArtist(song *model.Song, request requests.CreateSongRequest) {
+	if request.ArtistName == nil {
+		return
 	}
-	return artist
+
+	song.Artist = &model.Artist{
+		ID:     uuid.New(),
+		Name:   *request.ArtistName,
+		UserID: song.UserID,
+	}
+	song.ArtistID = &song.Artist.ID
 }
 
 func (c CreateSong) createSections(request []requests.CreateSectionRequest, songID uuid.UUID) []model.SongSection {
@@ -103,7 +104,7 @@ func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongReq
 		ID:       uuid.New(),
 		Title:    *request.AlbumTitle,
 		UserID:   song.UserID,
-		ArtistID: song.ArtistID, // album inherits that artist from song
+		ArtistID: song.ArtistID, // album inherits the artist from song
 	}
 	song.AlbumTrackNo = &[]uint{1}[0]
 }
