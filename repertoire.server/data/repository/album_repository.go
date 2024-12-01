@@ -126,7 +126,18 @@ func (a albumRepository) UpdateAllWithAssociations(albums *[]model.Album) error 
 }
 
 func (a albumRepository) Delete(id uuid.UUID) error {
-	return a.client.DB.Delete(&model.Album{}, id).Error
+	return a.client.DB.Transaction(func(tx *gorm.DB) error {
+		/*err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
+		if err != nil {
+			return err
+		}*/
+
+		err := tx.Delete(&model.Album{}, id).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func (a albumRepository) RemoveSongs(album *model.Album, songs *[]model.Song) error {
