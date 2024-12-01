@@ -302,6 +302,7 @@ func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 				Run(func(args mock.Arguments) {
 					newSongs := args.Get(0).(*[]model.Song)
 					for i, song := range *newSongs {
+						assert.Equal(t, song.ID, tt.request.SongIDs[i])
 						assert.Equal(t, *song.AlbumID, tt.request.ID)
 						assert.Equal(t, *song.AlbumTrackNo, uint(len(tt.album.Songs)+i)+1)
 						assert.Equal(t, song.ArtistID, tt.album.ArtistID)
