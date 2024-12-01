@@ -15,7 +15,7 @@ type Album struct {
 	ImageURL    *internal.FilePath `json:"imageUrl"`
 	ArtistID    *uuid.UUID         `json:"-"`
 	Artist      *Artist            `json:"artist"`
-	Songs       []Song             `json:"songs"`
+	Songs       []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`

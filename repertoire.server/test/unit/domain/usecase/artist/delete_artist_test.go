@@ -32,7 +32,7 @@ func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *t
 	artistRepository.AssertExpectations(t)
 }
 
-func TestDeleteArtist_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
+func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewDeleteArtist(artistRepository)

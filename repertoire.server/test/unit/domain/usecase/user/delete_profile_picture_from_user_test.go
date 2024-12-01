@@ -64,7 +64,7 @@ func TestDeleteProfilePictureFromUser_WhenGetUserFails_ShouldReturnInternalServe
 	userRepository.AssertExpectations(t)
 }
 
-func TestDeleteProfilePictureFromUser_WhenGetUserFails_ShouldReturnNotFoundError(t *testing.T) {
+func TestDeleteProfilePictureFromUser_WhenUserIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
@@ -90,6 +90,33 @@ func TestDeleteProfilePictureFromUser_WhenGetUserFails_ShouldReturnNotFoundError
 	userRepository.AssertExpectations(t)
 }
 
+func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnBadRequestError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	userRepository := new(repository.UserRepositoryMock)
+	_uut := user.NewDeleteProfilePictureFromUser(userRepository, jwtService, nil)
+
+	token := "this is a token"
+
+	// given - mocking
+	id := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
+
+	mockUser := &model.User{ID: id}
+	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
+
+	// when
+	errCode := _uut.Handle(token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, "user does not have a profile picture", errCode.Error.Error())
+
+	jwtService.AssertExpectations(t)
+	userRepository.AssertExpectations(t)
+}
+
 func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
@@ -107,7 +134,7 @@ func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturn
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
 	internalError := errors.New("internal error")
-	storageService.On("Delete", string(*mockUser.ProfilePictureURL)).Return(internalError).Once()
+	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(token)
@@ -138,7 +165,7 @@ func TestDeleteProfilePictureFromUser_WhenUpdateUserFails_ShouldReturnInternalSe
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"This is some url"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	storageService.On("Delete", string(*mockUser.ProfilePictureURL)).Return(nil).Once()
+	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	userRepository.On("Update", mock.IsType(mockUser)).
@@ -174,7 +201,7 @@ func TestDeleteProfilePictureFromUser_WhenIsValid_ShouldNotReturnAnyError(t *tes
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"This is some url"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	storageService.On("Delete", string(*mockUser.ProfilePictureURL)).Return(nil).Once()
+	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(nil).Once()
 
 	userRepository.On("Update", mock.IsType(mockUser)).
 		Run(func(args mock.Arguments) {

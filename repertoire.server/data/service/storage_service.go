@@ -6,13 +6,14 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"repertoire/server/internal"
 
 	"github.com/go-resty/resty/v2"
 )
 
 type StorageService interface {
 	Upload(fileHeader *multipart.FileHeader, filePath string) error
-	Delete(filePath string) error
+	DeleteFile(filePath internal.FilePath) error
 }
 
 type storageService struct {
@@ -55,13 +56,13 @@ func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string
 	return nil
 }
 
-func (s storageService) Delete(filePath string) error {
-	res, err := s.httpClient.R().Delete("files/" + filePath)
+func (s storageService) DeleteFile(filePath internal.FilePath) error {
+	res, err := s.httpClient.R().Delete("files/" + string(filePath.StripURL()))
 	if err != nil {
 		return err
 	}
 	if res.StatusCode() != http.StatusOK {
-		return errors.New("Storage Service - Delete failed: " + res.String())
+		return errors.New("Storage Service - DeleteFile failed: " + res.String())
 	}
 
 	return nil

@@ -32,7 +32,7 @@ func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *tes
 	albumRepository.AssertExpectations(t)
 }
 
-func TestDeleteAlbum_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
+func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewDeleteAlbum(albumRepository)

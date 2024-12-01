@@ -19,6 +19,11 @@ func (i *FilePath) ToNullableFullURL() *FilePath {
 	return &url
 }
 
+func (i *FilePath) StripURL() FilePath {
+	url := FilePath(strings.Replace(string(*i), i.getFullURL(), "", -1))
+	return url
+}
+
 func (i *FilePath) StripNullableURL() *FilePath {
 	if i == nil {
 		return nil

@@ -221,6 +221,7 @@ func TestRemoveSongFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			newAlbum := args.Get(0).(*model.Album)
 			assert.Len(t, newAlbum.Songs, len(mockAlbum.Songs)-len(request.SongIDs))
 			for i, song := range newAlbum.Songs {
+				assert.NotContains(t, request.SongIDs, song.ID)
 				assert.Equal(t, uint(i)+1, *song.AlbumTrackNo)
 			}
 		}).

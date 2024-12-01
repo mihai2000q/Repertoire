@@ -21,6 +21,20 @@ var Users = []model.User{
 		Name:     "John Doe",
 		Email:    "johndoe@gmail.com",
 		Password: "",
+		SongSectionTypes: []model.SongSectionType{
+			{
+				ID:    uuid.New(),
+				Name:  "Chorus",
+				Order: 0,
+			},
+		},
+		GuitarTunings: []model.GuitarTuning{
+			{
+				ID:    uuid.New(),
+				Name:  "E Standard",
+				Order: 0,
+			},
+		},
 	},
 	{
 		ID:                uuid.New(),
@@ -41,17 +55,29 @@ var Artists = []model.Artist{
 
 var Albums = []model.Album{
 	{
-		ID:     uuid.New(),
-		Title:  "Some Album",
-		UserID: Users[0].ID,
+		ID:       uuid.New(),
+		Title:    "Some Album",
+		UserID:   Users[0].ID,
+		ArtistID: &[]uuid.UUID{Artists[0].ID}[0],
 	},
 }
 
 var Songs = []model.Song{
 	{
-		ID:     uuid.New(),
-		Title:  "Some Song",
-		UserID: Users[0].ID,
+		ID:             uuid.New(),
+		Title:          "Some Song",
+		GuitarTuningID: &[]uuid.UUID{Users[0].GuitarTunings[0].ID}[0],
+		ArtistID:       &[]uuid.UUID{Artists[0].ID}[0],
+		AlbumID:        &[]uuid.UUID{Albums[0].ID}[0],
+		AlbumTrackNo:   &[]uint{1}[0],
+		UserID:         Users[0].ID,
+		Sections: []model.SongSection{
+			{
+				ID:                uuid.New(),
+				Name:              "Chorus 1",
+				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+			},
+		},
 	},
 }
 

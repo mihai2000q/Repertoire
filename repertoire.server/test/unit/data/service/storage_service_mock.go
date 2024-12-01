@@ -2,6 +2,7 @@ package service
 
 import (
 	"mime/multipart"
+	"repertoire/server/internal"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -15,7 +16,7 @@ func (s *StorageServiceMock) Upload(fileHeader *multipart.FileHeader, filePath s
 	return args.Error(0)
 }
 
-func (s *StorageServiceMock) Delete(filePath string) error {
+func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) error {
 	args := s.Called(filePath)
 	return args.Error(0)
 }

@@ -42,7 +42,7 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 
 	songsLength := len(album.Songs) + 1
 	for i, song := range songs {
-		if song.ArtistID != nil && album.ArtistID != nil && song.ArtistID != album.ArtistID {
+		if a.haveDifferentArtists(song, album) {
 			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " and album do not share the same artist"))
 		}
 		if song.AlbumID != nil {
@@ -53,9 +53,12 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		trackNo := uint(songsLength + i)
 		songs[i].AlbumTrackNo = &trackNo
 
-		// synchronize artist
+		// TODO: it doesn't as expected. synchronize artist
+		// (if the first song has no artist and the album has an artist, the album loses the artist)
 		songs[i].ArtistID, album.ArtistID = album.ArtistID, songs[i].ArtistID
 	}
+
+	// TODO: Update the other existent songs too and submit it all to albumRepository instead
 
 	err = a.songRepository.UpdateAll(&songs)
 	if err != nil {
@@ -63,4 +66,8 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 	}
 
 	return nil
+}
+
+func (a AddSongsToAlbum) haveDifferentArtists(song model.Song, album model.Album) bool {
+	return song.ArtistID != nil && album.ArtistID != nil && song.ArtistID != album.ArtistID
 }

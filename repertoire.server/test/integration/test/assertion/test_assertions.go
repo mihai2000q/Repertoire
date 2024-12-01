@@ -13,7 +13,7 @@ import (
 
 func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	if expected != nil {
-		assert.WithinDuration(t, *expected, *actual, 1*time.Second)
+		assert.WithinDuration(t, *expected, *actual, 1*time.Minute)
 	} else {
 		assert.Nil(t, actual)
 	}

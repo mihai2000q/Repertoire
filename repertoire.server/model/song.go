@@ -29,7 +29,7 @@ type Song struct {
 	Album          *Album        `json:"album"`
 	Artist         *Artist       `json:"artist"`
 	GuitarTuning   *GuitarTuning `json:"guitarTuning"`
-	Sections       []SongSection `json:"sections"`
+	Sections       []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Playlists      []Playlist    `gorm:"many2many:playlist_song" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
@@ -51,7 +51,7 @@ type GuitarTuning struct {
 	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name  string    `gorm:"size:16; not null" json:"name"`
 	Order uint      `gorm:"not null" json:"-"`
-	Songs []Song    `json:"-"`
+	Songs []Song    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
@@ -75,7 +75,7 @@ type SongSectionType struct {
 	ID       uuid.UUID     `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name     string        `gorm:"size:16" json:"name"`
 	Order    uint          `gorm:"not null" json:"-"`
-	Sections []SongSection `json:"-"`
+	Sections []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
