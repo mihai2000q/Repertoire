@@ -28,6 +28,16 @@ var Users = []model.User{
 				Name:  "E Standard",
 				Order: 0,
 			},
+			{
+				ID:    uuid.New(),
+				Name:  "Drop C",
+				Order: 1,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Drop B",
+				Order: 2,
+			},
 		},
 		SongSectionTypes: []model.SongSectionType{
 			{
