@@ -1,6 +1,7 @@
 package song
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -11,23 +12,61 @@ import (
 	"testing"
 )
 
-func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
+func TestDeleteSong_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	song := songData.Songs[0]
-
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/"+song.ID.String())
+	core.NewTestHandler().DELETE(w, "/api/songs/"+uuid.New().String())
 
 	// then
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
-	db := utils.GetDatabase()
+func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
+	tests := []struct {
+		name string
+		song model.Song
+	}{
+		{
+			"Normal delete, without album",
+			songData.Songs[4],
+		},
+		{
+			"With Album",
+			songData.Songs[2],
+		},
+	}
 
-	var deletedSong model.Song
-	db.Find(&deletedSong, song.ID)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// given
+			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	assert.Empty(t, deletedSong)
+			// when
+			w := httptest.NewRecorder()
+			core.NewTestHandler().DELETE(w, "/api/songs/"+test.song.ID.String())
+
+			// then
+			assert.Equal(t, http.StatusOK, w.Code)
+
+			db := utils.GetDatabase()
+
+			var deletedSong model.Song
+			db.Find(&deletedSong, test.song.ID)
+
+			assert.Empty(t, deletedSong)
+
+			if test.song.AlbumID != nil {
+				var albumSongs []model.Song
+				db.Find(&albumSongs, model.Song{AlbumID: test.song.AlbumID})
+
+				for i, song := range albumSongs {
+					assert.Equal(t, uint(i+1), *song.AlbumTrackNo)
+				}
+			}
+		})
+	}
+
 }
