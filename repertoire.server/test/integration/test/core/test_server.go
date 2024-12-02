@@ -41,8 +41,6 @@ func Start(envPath ...string) *TestServer {
 
 	env := internal.NewEnv()
 
-	fmt.Println(env)
-
 	// Setup Postgres Docker Container
 	postgresContainer, err := postgresTest.Run(context.Background(),
 		"postgres:17",
