@@ -258,5 +258,5 @@ func (s songRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionT
 }
 
 func (s songRepository) DeleteSectionType(id uuid.UUID) error {
-	return s.client.DB.Delete(&model.SongSection{}, id).Error
+	return s.client.DB.Delete(&model.SongSectionType{}, id).Error
 }

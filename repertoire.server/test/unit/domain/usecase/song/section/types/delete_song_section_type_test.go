@@ -66,6 +66,37 @@ func TestDeleteSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServ
 	songRepository.AssertExpectations(t)
 }
 
+func TestDeleteSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := types.NewDeleteSongSectionType(songRepository, jwtService)
+
+	id := uuid.New()
+	token := "this is a token"
+
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	sectionTypes := &[]model.SongSectionType{
+		{ID: uuid.New()},
+	}
+	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
+		Return(nil, sectionTypes).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id, token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "song section type not found", errCode.Error.Error())
+
+	jwtService.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+}
+
 func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)

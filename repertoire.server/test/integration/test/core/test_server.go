@@ -29,11 +29,15 @@ type TestServer struct {
 	storageServer *httptest.Server
 }
 
-func Start() *TestServer {
+func Start(envPath ...string) *TestServer {
 	ts := &TestServer{}
 
 	// Setup Environment Variable to anything, so that it checks the right path of .env
-	_ = os.Setenv("INTEGRATION_TESTING", "True")
+	if len(envPath) > 0 {
+		_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", envPath[0])
+	} else {
+		_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", "../../../.env")
+	}
 
 	env := internal.NewEnv()
 

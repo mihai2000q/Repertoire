@@ -34,6 +34,9 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 	index := slices.IndexFunc(song.Sections, func(a model.SongSection) bool {
 		return a.ID == id
 	})
+	if index == -1 {
+		return wrapper.NotFoundError(errors.New("song section not found"))
+	}
 
 	for i := index + 1; i < len(song.Sections); i++ {
 		song.Sections[i].Order = song.Sections[i].Order - 1

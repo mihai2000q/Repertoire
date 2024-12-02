@@ -1,6 +1,7 @@
 package tuning
 
 import (
+	"errors"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
@@ -37,9 +38,12 @@ func (d DeleteGuitarTuning) Handle(id uuid.UUID, token string) *wrapper.ErrorCod
 	index := slices.IndexFunc(tunings, func(t model.GuitarTuning) bool {
 		return t.ID == id
 	})
+	if index == -1 {
+		return wrapper.NotFoundError(errors.New("guitar tuning not found"))
+	}
 
 	for i := index + 1; i < len(tunings); i++ {
-		tunings[i].Order = uint(tunings[i].Order - 1)
+		tunings[i].Order = tunings[i].Order - 1
 	}
 
 	err = d.repository.UpdateAllGuitarTunings(&tunings)

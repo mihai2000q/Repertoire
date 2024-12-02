@@ -26,8 +26,8 @@ type Song struct {
 	AlbumID        *uuid.UUID    `json:"-"`
 	ArtistID       *uuid.UUID    `json:"-"`
 	GuitarTuningID *uuid.UUID    `json:"-"`
-	Album          *Album        `json:"album"`
 	Artist         *Artist       `json:"artist"`
+	Album          *Album        `json:"album"`
 	GuitarTuning   *GuitarTuning `json:"guitarTuning"`
 	Sections       []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Playlists      []Playlist    `gorm:"many2many:playlist_song" json:"-"`

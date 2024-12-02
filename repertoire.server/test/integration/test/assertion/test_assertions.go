@@ -118,8 +118,11 @@ func ResponseSong(
 	}
 
 	if withAssociations {
-		assert.Equal(t, song.GuitarTuning.ID, response.GuitarTuning.ID)
-		assert.Equal(t, song.GuitarTuning.Name, response.GuitarTuning.Name)
+		if song.GuitarTuning != nil {
+			ResponseGuitarTuning(t, *song.GuitarTuning, *response.GuitarTuning)
+		} else {
+			assert.Nil(t, response.GuitarTuning)
+		}
 
 		for i := range song.Sections {
 			ResponseSongSection(t, song.Sections[i], response.Sections[i])
@@ -127,13 +130,22 @@ func ResponseSong(
 	}
 }
 
+func ResponseGuitarTuning(t *testing.T, guitarTuning model.GuitarTuning, response model.GuitarTuning) {
+	assert.Equal(t, guitarTuning.ID, response.ID)
+	assert.Equal(t, guitarTuning.Name, response.Name)
+}
+
 func ResponseSongSection(t *testing.T, songSection model.SongSection, response model.SongSection) {
 	assert.Equal(t, songSection.ID, response.ID)
 	assert.Equal(t, songSection.Name, response.Name)
 	assert.Equal(t, songSection.Rehearsals, response.Rehearsals)
 
-	assert.Equal(t, songSection.SongSectionType.ID, response.SongSectionType.ID)
-	assert.Equal(t, songSection.SongSectionType.Name, response.SongSectionType.Name)
+	ResponseSongSectionType(t, songSection.SongSectionType, response.SongSectionType)
+}
+
+func ResponseSongSectionType(t *testing.T, songSectionType model.SongSectionType, response model.SongSectionType) {
+	assert.Equal(t, songSectionType.ID, response.ID)
+	assert.Equal(t, songSectionType.Name, response.Name)
 }
 
 func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongs bool) {
