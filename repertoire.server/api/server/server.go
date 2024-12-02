@@ -13,7 +13,7 @@ import (
 
 func NewServer(lc fx.Lifecycle, handler *RequestHandler, env internal.Env) *http.Server {
 	address := ""
-	if os.Getenv("INTEGRATION_TESTING") == "" {
+	if os.Getenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH") == "" {
 		address = fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort)
 	}
 

@@ -29,8 +29,8 @@ type Env struct {
 }
 
 func NewEnv() Env {
-	if os.Getenv("INTEGRATION_TESTING") != "" {
-		_ = godotenv.Load("../../../.env")
+	if path := os.Getenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH"); path != "" {
+		_ = godotenv.Load(path)
 	} else if os.Getenv("IS_RUNNING_IN_CONTAINER") == "" {
 		err := godotenv.Load()
 		if err != nil {
