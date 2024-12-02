@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
@@ -40,9 +41,12 @@ func (d DeleteSongSectionType) Handle(id uuid.UUID, token string) *wrapper.Error
 	index := slices.IndexFunc(types, func(s model.SongSectionType) bool {
 		return s.ID == id
 	})
+	if index == -1 {
+		return wrapper.NotFoundError(errors.New("song section type not found"))
+	}
 
 	for i := index + 1; i < len(types); i++ {
-		types[i].Order = uint(types[i].Order - 1)
+		types[i].Order = types[i].Order - 1
 	}
 
 	err = d.repository.UpdateAllSectionTypes(&types)

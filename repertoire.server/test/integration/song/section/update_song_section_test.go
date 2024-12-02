@@ -36,7 +36,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSection(t *testing.T) {
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateSongSectionRequest{
-		ID:         uuid.New(),
+		ID:         songData.Songs[0].Sections[0].ID,
 		Name:       "New Chorus Name",
 		Rehearsals: 23,
 		TypeID:     songData.Users[0].SongSectionTypes[0].ID,

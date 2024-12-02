@@ -85,7 +85,7 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(test.user).
-				PUT(w, "/api/songs/section/types/move", request)
+				PUT(w, "/api/songs/sections/types/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)

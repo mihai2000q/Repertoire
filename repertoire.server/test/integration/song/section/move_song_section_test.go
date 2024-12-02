@@ -13,11 +13,31 @@ import (
 	"testing"
 )
 
-func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.MoveSongSectionRequest{
+		SongID: uuid.New(),
+		ID:     uuid.New(),
+		OverID: uuid.New(),
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/sections/move", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	song := songData.Songs[0]
+	request := requests.MoveSongSectionRequest{
+		SongID: song.ID,
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -35,7 +55,8 @@ func TestMoveSongSection_WhenOverSectionIsNotFound_ShouldReturnNotFoundError(t *
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	song := songData.Songs[0]
-	request := requests.MoveSongSectionTypeRequest{
+	request := requests.MoveSongSectionRequest{
+		SongID: song.ID,
 		ID:     song.Sections[0].ID,
 		OverID: uuid.New(),
 	}
@@ -75,13 +96,14 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 			request := requests.MoveSongSectionRequest{
+				SongID: test.song.ID,
 				ID:     test.song.Sections[test.index].ID,
 				OverID: test.song.Sections[test.overIndex].ID,
 			}
 
 			// when
 			w := httptest.NewRecorder()
-			core.NewTestHandler().PUT(w, "/api/songs/section/move", request)
+			core.NewTestHandler().PUT(w, "/api/songs/sections/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)

@@ -66,6 +66,37 @@ func TestDeleteGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServer
 	songRepository.AssertExpectations(t)
 }
 
+func TestDeleteGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
+
+	id := uuid.New()
+	token := "this is a token"
+
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	tunings := &[]model.GuitarTuning{
+		{ID: uuid.New()},
+	}
+	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+		Return(nil, tunings).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id, token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "guitar tuning not found", errCode.Error.Error())
+
+	jwtService.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+}
+
 func TestDeleteGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
