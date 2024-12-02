@@ -134,19 +134,34 @@ var Songs = []model.Song{
 		},
 		UserID: Users[0].ID,
 	},
-
 	{
 		ID:           uuid.New(),
 		Title:        "Test Song 2",
 		ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],
 		AlbumID:      &[]uuid.UUID{Albums[0].ID}[0],
-		AlbumTrackNo: &[]uint{1}[0],
+		AlbumTrackNo: &[]uint{2}[0],
+		UserID:       Users[0].ID,
+	},
+	{
+		ID:           uuid.New(),
+		Title:        "Test Song 3",
+		ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],
+		AlbumID:      &[]uuid.UUID{Albums[0].ID}[0],
+		AlbumTrackNo: &[]uint{3}[0],
+		UserID:       Users[0].ID,
+	},
+	{
+		ID:           uuid.New(),
+		Title:        "Test Song 4",
+		ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],
+		AlbumID:      &[]uuid.UUID{Albums[0].ID}[0],
+		AlbumTrackNo: &[]uint{4}[0],
 		UserID:       Users[0].ID,
 	},
 
 	{
 		ID:     uuid.New(),
-		Title:  "Test Song 3",
+		Title:  "Test Song 5 - No Album",
 		UserID: Users[0].ID,
 	},
 }

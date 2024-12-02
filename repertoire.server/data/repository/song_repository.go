@@ -23,6 +23,7 @@ type SongRepository interface {
 		searchBy []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
+	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	Create(song *model.Song) error
@@ -87,6 +88,14 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 
 func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error {
 	return s.client.DB.Model(&model.Song{}).Find(&songs, ids).Error
+}
+
+func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error {
+	return s.client.DB.Model(&model.Song{}).
+		Where("album_id = ? AND album_track_no > ?", albumID, trackNo).
+		Order("album_track_no").
+		Find(&songs).
+		Error
 }
 
 func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
