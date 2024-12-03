@@ -3,21 +3,28 @@ package user
 import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/domain/provider"
 	"repertoire/server/internal/wrapper"
 )
 
 type DeleteUser struct {
-	repository repository.UserRepository
-	jwtService service.JwtService
+	repository              repository.UserRepository
+	jwtService              service.JwtService
+	storageService          service.StorageService
+	storageFilePathProvider provider.StorageFilePathProvider
 }
 
 func NewDeleteUser(
 	repository repository.UserRepository,
 	jwtService service.JwtService,
+	storageService service.StorageService,
+	storageFilePathProvider provider.StorageFilePathProvider,
 ) DeleteUser {
 	return DeleteUser{
-		repository: repository,
-		jwtService: jwtService,
+		repository:              repository,
+		jwtService:              jwtService,
+		storageService:          storageService,
+		storageFilePathProvider: storageFilePathProvider,
 	}
 }
 
@@ -27,7 +34,13 @@ func (d DeleteUser) Handle(token string) *wrapper.ErrorCode {
 		return errCode
 	}
 
-	err := d.repository.Delete(id)
+	directoryPath := d.storageFilePathProvider.GetUserDirectoryPath(id)
+	err := d.storageService.DeleteDirectory(directoryPath)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	err = d.repository.Delete(id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
