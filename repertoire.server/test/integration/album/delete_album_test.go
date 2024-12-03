@@ -1,6 +1,7 @@
 package album
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -11,23 +12,51 @@ import (
 	"testing"
 )
 
-func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
+func TestDeleteAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
-	album := albumData.Albums[0]
-
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/albums/"+album.ID.String())
+	core.NewTestHandler().DELETE(w, "/api/albums/"+uuid.New().String())
 
 	// then
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
-	db := utils.GetDatabase()
+func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
+	tests := []struct {
+		name  string
+		album model.Album
+	}{
+		{
+			"Without Files",
+			albumData.Albums[0],
+		},
+		{
+			"With Image",
+			albumData.Albums[1],
+		},
+	}
 
-	var deletedAlbum model.Album
-	db.Find(&deletedAlbum, album.ID)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// given
+			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
-	assert.Empty(t, deletedAlbum)
+			// when
+			w := httptest.NewRecorder()
+			core.NewTestHandler().DELETE(w, "/api/albums/"+test.album.ID.String())
+
+			// then
+			assert.Equal(t, http.StatusOK, w.Code)
+
+			db := utils.GetDatabase()
+
+			var deletedAlbum model.Album
+			db.Find(&deletedAlbum, test.album.ID)
+
+			assert.Empty(t, deletedAlbum)
+		})
+	}
 }
