@@ -68,7 +68,7 @@ var Albums = []model.Album{
 			},
 			{
 				ID:           uuid.New(),
-				Title:        "Test 43",
+				Title:        "Test S4",
 				UserID:       Users[0].ID,
 				AlbumTrackNo: &[]uint{4}[0],
 				ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],

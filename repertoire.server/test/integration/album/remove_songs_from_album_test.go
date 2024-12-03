@@ -78,7 +78,7 @@ func TestRemoveSongsFromAlbum_WhenSuccessful_ShouldDeleteSongsFromAlbum(t *testi
 
 	db := utils.GetDatabase()
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
-		return db.Order("album_track_no")
+		return db.Order("songs.album_track_no")
 	}).Find(&album, album.ID)
 	assertRemoveSongsFromAlbum(t, request, album, oldSongsLength)
 }
