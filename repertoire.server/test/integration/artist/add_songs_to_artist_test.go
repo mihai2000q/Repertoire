@@ -85,7 +85,7 @@ func assertAddedSongsToArtist(
 ) {
 	// calculate the number of nested songs, as the whole album is added to artist
 	// (including other non-mentioned songs in the request)
-	nestedSongIDs := []uuid.UUID{}
+	var nestedSongIDs []uuid.UUID
 	for _, s := range albumSongs {
 		for _, albumSong := range s.Album.Songs {
 			if albumSong.ID == s.ID {
@@ -100,7 +100,7 @@ func assertAddedSongsToArtist(
 	totalSongs := int(oldSongsLength) + len(request.SongIDs) + len(nestedSongIDs)
 	assert.Len(t, artist.Songs, totalSongs)
 
-	songIDs := []uuid.UUID{}
+	var songIDs []uuid.UUID
 	for _, song := range artist.Songs {
 		songIDs = append(songIDs, song.ID)
 		assert.Equal(t, artist.ID, *song.ArtistID)

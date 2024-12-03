@@ -72,7 +72,7 @@ func assertAddedAlbumsToArtist(
 	assert.Equal(t, artist.ID, request.ID)
 
 	assert.Len(t, artist.Albums, oldAlbumsLength+len(request.AlbumIDs))
-	albumIDs := []uuid.UUID{}
+	var albumIDs []uuid.UUID
 	for _, album := range artist.Albums {
 		albumIDs = append(albumIDs, album.ID)
 		assert.Equal(t, artist.ID, *album.ArtistID)
