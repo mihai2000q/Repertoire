@@ -18,6 +18,7 @@
     * [Migration](#migration)
   * [Testing](#testing)
     * [Unit Testing](#unit-testing)
+    * [Integration Testing](#integration-testing)
   * [Live Reload](#live-reload)
 
 ## Abstract
@@ -161,13 +162,40 @@ When in development mode, the application will run **Auto Migrate** from GORM on
 
 ### Unit Testing
 
-The unit tests normally reside close to the unit under testing.
+The unit tests reside in the `test/unit` package.
 
-To run the tests you can run:
+The folder structure usually follows the main project structure.
+
+To run the tests you can run, go inside the unit test directory and type the following:
 
 ```sh
-go test
+go test ./...
 ```
+
+### Integration Testing
+
+The integration tests reside in the `test/integration` package.
+
+The folder structure is based on the use cases.
+
+To run the tests you can run, go inside the integration test directory and type the following:
+
+```sh
+go test ./...
+```
+
+### Main Test
+
+Each integration test must have a `main_test` in that directory.
+For that goal, a `Test Server` helper class has been created.
+It initializes the Http Server and a Docker Container with the Database.
+
+Then inside the test it is recommended to use the `Test Handler` helper class.
+
+### Test Data
+
+Each test collection has a testing data package set in `test/integration/test/data`.
+A helper method from the `test-utils` can be used to seed and cleanup data for each test.
 
 ## Live Reload
 
