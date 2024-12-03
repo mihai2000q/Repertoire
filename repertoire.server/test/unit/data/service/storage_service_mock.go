@@ -20,3 +20,8 @@ func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) error {
 	args := s.Called(filePath)
 	return args.Error(0)
 }
+
+func (s *StorageServiceMock) DeleteDirectory(directoryPath string) error {
+	args := s.Called(directoryPath)
+	return args.Error(0)
+}

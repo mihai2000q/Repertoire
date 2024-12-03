@@ -14,6 +14,7 @@ import (
 type StorageService interface {
 	Upload(fileHeader *multipart.FileHeader, filePath string) error
 	DeleteFile(filePath internal.FilePath) error
+	DeleteDirectory(directoryPath string) error
 }
 
 type storageService struct {
@@ -63,6 +64,18 @@ func (s storageService) DeleteFile(filePath internal.FilePath) error {
 	}
 	if res.StatusCode() != http.StatusOK {
 		return errors.New("Storage Service - DeleteFile failed: " + res.String())
+	}
+
+	return nil
+}
+
+func (s storageService) DeleteDirectory(directoryPath string) error {
+	res, err := s.httpClient.R().Delete("directories/" + directoryPath)
+	if err != nil {
+		return err
+	}
+	if res.StatusCode() != http.StatusOK {
+		return errors.New("Storage Service - DeleteDirectory failed: " + res.String())
 	}
 
 	return nil
