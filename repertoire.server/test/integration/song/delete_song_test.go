@@ -30,8 +30,12 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 		song model.Song
 	}{
 		{
-			"Normal delete, without album",
+			"Normal delete, without album or files",
 			songData.Songs[4],
+		},
+		{
+			"With Image",
+			songData.Songs[3],
 		},
 		{
 			"With Album",

@@ -155,6 +155,7 @@ var Songs = []model.Song{
 		Title:        "Test Song 4",
 		ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],
 		AlbumID:      &[]uuid.UUID{Albums[0].ID}[0],
+		ImageURL:     &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
 		AlbumTrackNo: &[]uint{4}[0],
 		UserID:       Users[0].ID,
 	},

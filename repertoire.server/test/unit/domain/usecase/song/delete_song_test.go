@@ -9,6 +9,8 @@ import (
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/data/service"
+	"repertoire/server/test/unit/domain/provider"
 	"slices"
 	"testing"
 )
@@ -16,7 +18,7 @@ import (
 func TestDeleteSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewDeleteSong(songRepository)
+	_uut := song.NewDeleteSong(songRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -37,7 +39,7 @@ func TestDeleteSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 func TestDeleteSong_WhenGetSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewDeleteSong(songRepository)
+	_uut := song.NewDeleteSong(songRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -57,7 +59,7 @@ func TestDeleteSong_WhenGetSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 func TestDeleteSong_WhenGetAllByAlbumAndTrackNoFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewDeleteSong(songRepository)
+	_uut := song.NewDeleteSong(songRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -95,7 +97,7 @@ func TestDeleteSong_WhenGetAllByAlbumAndTrackNoFails_ShouldReturnInternalServerE
 func TestDeleteSong_WhenUpdateAllFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewDeleteSong(songRepository)
+	_uut := song.NewDeleteSong(songRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -135,15 +137,51 @@ func TestDeleteSong_WhenUpdateAllFails_ShouldReturnInternalServerError(t *testin
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteSong_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewDeleteSong(songRepository)
+	storageService := new(service.StorageServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	_uut := song.NewDeleteSong(songRepository, storageService, storageFilePathProvider)
 
 	id := uuid.New()
 
 	mockSong := &model.Song{ID: id}
 	songRepository.On("Get", mock.IsType(mockSong), id).Return(nil, mockSong).Once()
+
+	storageFilePathProvider.On("HasSongFiles", *mockSong).Return(true).Once()
+
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetSongDirectoryPath", *mockSong).Return(directoryPath).Once()
+
+	internalError := errors.New("internal error")
+	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+}
+
+func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	_uut := song.NewDeleteSong(songRepository, nil, storageFilePathProvider)
+
+	id := uuid.New()
+
+	mockSong := &model.Song{ID: id}
+	songRepository.On("Get", mock.IsType(mockSong), id).Return(nil, mockSong).Once()
+
+	storageFilePathProvider.On("HasSongFiles", *mockSong).Return(false).Once()
 
 	internalError := errors.New("internal error")
 	songRepository.On("Delete", id).Return(internalError).Once()
@@ -157,6 +195,7 @@ func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testi
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
 }
 
 func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
@@ -164,13 +203,19 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 		name       string
 		song       model.Song
 		albumSongs []model.Song
+		hasFiles   bool
 	}{
 		{
-			"Normal delete, without album",
-			model.Song{
-				ID: uuid.New(),
-			},
+			"Normal delete, without album or files",
+			model.Song{ID: uuid.New()},
 			[]model.Song{},
+			false,
+		},
+		{
+			"With Files",
+			model.Song{ID: uuid.New()},
+			[]model.Song{},
+			true,
 		},
 		{
 			"With Album",
@@ -184,6 +229,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 				{AlbumTrackNo: &[]uint{4}[0]},
 				{AlbumTrackNo: &[]uint{5}[0]},
 			},
+			false,
 		},
 	}
 
@@ -191,7 +237,9 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := song.NewDeleteSong(songRepository)
+			storageService := new(service.StorageServiceMock)
+			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+			_uut := song.NewDeleteSong(songRepository, storageService, storageFilePathProvider)
 
 			id := tt.song.ID
 
@@ -223,6 +271,19 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 					Once()
 			}
 
+			storageFilePathProvider.On("HasSongFiles", tt.song).Return(tt.hasFiles).Once()
+
+			if tt.hasFiles {
+				directoryPath := "some directory path"
+				storageFilePathProvider.On("GetSongDirectoryPath", tt.song).
+					Return(directoryPath).
+					Once()
+
+				storageService.On("DeleteDirectory", directoryPath).
+					Return(nil).
+					Once()
+			}
+
 			// when
 			errCode := _uut.Handle(id)
 
@@ -230,6 +291,8 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			assert.Nil(t, errCode)
 
 			songRepository.AssertExpectations(t)
+			storageService.AssertExpectations(t)
+			storageFilePathProvider.AssertExpectations(t)
 		})
 	}
 }
