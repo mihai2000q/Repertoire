@@ -94,7 +94,7 @@ func (a *AlbumRepositoryMock) UpdateWithAssociations(album *model.Album) error {
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) UpdateAllWithAssociations(albums *[]model.Album) error {
+func (a *AlbumRepositoryMock) UpdateAllWithSongs(albums *[]model.Album) error {
 	args := a.Called(albums)
 	return args.Error(0)
 }

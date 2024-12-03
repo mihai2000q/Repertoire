@@ -37,8 +37,6 @@ func TestRemoveAlbumsFromArtist_WhenAlbumArtistIsDifferent_ShouldReturnBadReques
 }
 
 func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *testing.T) {
-	t.Skip("Update With Associations - not working")
-
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -64,6 +62,7 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *t
 	db.Preload("Albums").Find(&artist, artist.ID)
 	assertRemoveAlbumsFromArtist(t, request, artist, oldAlbumsLength)
 
+	// all the songs from the albums also lost their artist
 	var albums []model.Album
 	db.Preload("Songs").Find(&albums, request.AlbumIDs)
 	for _, album := range albums {
