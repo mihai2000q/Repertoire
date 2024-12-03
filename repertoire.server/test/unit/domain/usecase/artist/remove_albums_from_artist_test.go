@@ -86,7 +86,7 @@ func TestRemoveAlbumsFromArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalSer
 		Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("UpdateAllWithAssociations", mock.IsType(albums)).
+	albumRepository.On("UpdateAllWithSongs", mock.IsType(albums)).
 		Return(internalError).
 		Once()
 
@@ -126,7 +126,7 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testin
 		Return(nil, &albums).
 		Once()
 
-	albumRepository.On("UpdateAllWithAssociations", mock.IsType(&albums)).
+	albumRepository.On("UpdateAllWithSongs", mock.IsType(&albums)).
 		Run(func(args mock.Arguments) {
 			newAlbums := args.Get(0).(*[]model.Album)
 			for _, album := range *newAlbums {

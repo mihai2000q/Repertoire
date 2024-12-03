@@ -34,7 +34,7 @@ func (r RemoveAlbumsFromArtist) Handle(request requests.RemoveAlbumsFromArtistRe
 		}
 	}
 
-	err = r.albumRepository.UpdateAllWithAssociations(&albums)
+	err = r.albumRepository.UpdateAllWithSongs(&albums)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

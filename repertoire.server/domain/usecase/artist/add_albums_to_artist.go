@@ -35,7 +35,7 @@ func (a AddAlbumsToArtist) Handle(request requests.AddAlbumsToArtistRequest) *wr
 		}
 	}
 
-	err = a.albumRepository.UpdateAllWithAssociations(&albums)
+	err = a.albumRepository.UpdateAllWithSongs(&albums)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
