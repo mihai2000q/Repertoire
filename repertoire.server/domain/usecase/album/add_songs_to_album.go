@@ -25,14 +25,8 @@ func NewAddSongsToAlbum(
 }
 
 func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrapper.ErrorCode {
-	var songs []model.Song
-	err := a.songRepository.GetAllByIDs(&songs, request.SongIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
 	var album model.Album
-	err = a.repository.GetWithSongs(&album, request.ID)
+	err := a.repository.GetWithSongs(&album, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -40,10 +34,18 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
+	var songs []model.Song
+	err = a.songRepository.GetAllByIDs(&songs, request.SongIDs)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
 	songsLength := len(album.Songs) + 1
 	for i, song := range songs {
-		if a.haveDifferentArtists(song, album) {
-			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " and album do not share the same artist"))
+		// if their artists don't match, or the song has an artist but the album doesn't, it results in failure
+		// on the other hand, if the album has an artist and the song doesn't, it will inherit it (pass)
+		if song.ArtistID != nil && (album.ArtistID == nil || *album.ArtistID != *song.ArtistID) {
+			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + song.Title + " and album do not share the same artist"))
 		}
 		if song.AlbumID != nil {
 			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " already has an album"))
@@ -52,13 +54,8 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		songs[i].AlbumID = &request.ID
 		trackNo := uint(songsLength + i)
 		songs[i].AlbumTrackNo = &trackNo
-
-		// TODO: it doesn't as expected. synchronize artist
-		// (if the first song has no artist and the album has an artist, the album loses the artist)
-		songs[i].ArtistID, album.ArtistID = album.ArtistID, songs[i].ArtistID
+		songs[i].ArtistID = album.ArtistID // songs inherit album artist
 	}
-
-	// TODO: Update the other existent songs too and submit it all to albumRepository instead
 
 	err = a.songRepository.UpdateAll(&songs)
 	if err != nil {
@@ -66,8 +63,4 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 	}
 
 	return nil
-}
-
-func (a AddSongsToAlbum) haveDifferentArtists(song model.Song, album model.Album) bool {
-	return song.ArtistID != nil && album.ArtistID != nil && song.ArtistID != album.ArtistID
 }
