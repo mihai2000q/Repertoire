@@ -2,6 +2,7 @@ package requests
 
 import (
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"repertoire/server/internal/enums"
 	"strings"
@@ -15,15 +16,15 @@ import (
 func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request GetSongsRequest
+		request requests.GetSongsRequest
 	}{
 		{
 			"All Null",
-			GetSongsRequest{},
+			requests.GetSongsRequest{},
 		},
 		{
 			"Nothing Null",
-			GetSongsRequest{
+			requests.GetSongsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc", "created_at desc"},
@@ -49,33 +50,33 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              GetSongsRequest
+		request              requests.GetSongsRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetSongsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			requests.GetSongsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetSongsRequest{PageSize: &[]int{1}[0]},
+			requests.GetSongsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetSongsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			requests.GetSongsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetSongsRequest{CurrentPage: &[]int{1}[0]},
+			requests.GetSongsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},
@@ -103,22 +104,22 @@ var validSongTitle = "Justice For All"
 func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request CreateSongRequest
+		request requests.CreateSongRequest
 	}{
 		{
 			"All Null",
-			CreateSongRequest{Title: validSongTitle},
+			requests.CreateSongRequest{Title: validSongTitle},
 		},
 		{
 			"Nothing Null 1",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:          validSongTitle,
 				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
-				Sections: []CreateSectionRequest{
+				Sections: []requests.CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
 				},
@@ -126,7 +127,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		},
 		{
 			"Nothing Null 2",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:          validSongTitle,
 				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
@@ -137,7 +138,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle:     &[]string{"New Album Title"}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
-				Sections: []CreateSectionRequest{
+				Sections: []requests.CreateSectionRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
 				},
@@ -161,27 +162,27 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                  string
-		request               CreateSongRequest
+		request               requests.CreateSongRequest
 		expectedInvalidFields []string
 		expectedFailedTags    []string
 	}{
 		// Title Test Cases
 		{
 			"Title is invalid because it's required",
-			CreateSongRequest{Title: ""},
+			requests.CreateSongRequest{Title: ""},
 			[]string{"Title"},
 			[]string{"required"},
 		},
 		{
 			"Title is invalid because it has more than 100 characters",
-			CreateSongRequest{Title: strings.Repeat("a", 101)},
+			requests.CreateSongRequest{Title: strings.Repeat("a", 101)},
 			[]string{"Title"},
 			[]string{"max"},
 		},
 		// SongsterrLink Test Cases
 		{
 			"Songsterr Link is invalid because it is not an url",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:         validSongTitle,
 				SongsterrLink: &[]string{"scom"}[0],
 			},
@@ -190,7 +191,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		},
 		{
 			"Songsterr Link is invalid because it is not a songsterr link",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:         validSongTitle,
 				SongsterrLink: &[]string{"http://google.com"}[0],
 			},
@@ -200,7 +201,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// YoutubeLink Test Cases
 		{
 			"Youtube Link is invalid because it is not youtube link",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:       validSongTitle,
 				YoutubeLink: &[]string{"https://google.com"}[0],
 			},
@@ -210,7 +211,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Difficulty Test Cases
 		{
 			"Difficulty is invalid because it is not a Difficulty Enum",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:      validSongTitle,
 				Difficulty: &[]enums.Difficulty{"Something else"}[0],
 			},
@@ -220,7 +221,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Album ID
 		{
 			"Album ID is invalid because the Artist Id is also set",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:    validSongTitle,
 				AlbumID:  &[]uuid.UUID{uuid.New()}[0],
 				ArtistID: &[]uuid.UUID{uuid.New()}[0],
@@ -230,7 +231,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		},
 		{
 			"Album ID is invalid because the Artist Name is also set",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:      validSongTitle,
 				AlbumID:    &[]uuid.UUID{uuid.New()}[0],
 				ArtistName: &[]string{"New Artist Name"}[0],
@@ -241,7 +242,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Album Title Test Case
 		{
 			"Album Title is invalid because it has too many characters",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:      validSongTitle,
 				AlbumTitle: &[]string{strings.Repeat("a", 101)}[0],
 			},
@@ -251,7 +252,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Album ID and Album Title Test Case
 		{
 			"Album Title and ID are invalid because only one can be set at a time",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:      validSongTitle,
 				AlbumID:    &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle: &[]string{"New Album Title"}[0],
@@ -262,7 +263,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Artist Name Test Case
 		{
 			"Artist Name is invalid because it has too many characters",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:      validSongTitle,
 				ArtistName: &[]string{strings.Repeat("a", 101)}[0],
 			},
@@ -272,7 +273,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Artist ID and Artist Name Test Case
 		{
 			"Artist Name and ID are invalid because only one can be set at a time",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title:      validSongTitle,
 				ArtistID:   &[]uuid.UUID{uuid.New()}[0],
 				ArtistName: &[]string{"New Artist Name"}[0],
@@ -283,9 +284,9 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Sections - Name Test Cases
 		{
 			"Sections are invalid because the first element has an empty Name",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []CreateSectionRequest{
+				Sections: []requests.CreateSectionRequest{
 					{Name: "", TypeID: uuid.New()},
 				},
 			},
@@ -295,9 +296,9 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Sections - Name Test Cases
 		{
 			"Sections are invalid because the first element has a Name with too many characters",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []CreateSectionRequest{
+				Sections: []requests.CreateSectionRequest{
 					{Name: strings.Repeat("a", 31), TypeID: uuid.New()},
 				},
 			},
@@ -307,9 +308,9 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Sections - Type ID Test Cases
 		{
 			"Sections are invalid because the first element has an empty Type ID",
-			CreateSongRequest{
+			requests.CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []CreateSectionRequest{
+				Sections: []requests.CreateSectionRequest{
 					{Name: "some Name", TypeID: uuid.Nil},
 				},
 			},
@@ -343,18 +344,18 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request UpdateSongRequest
+		request requests.UpdateSongRequest
 	}{
 		{
 			"All Null",
-			UpdateSongRequest{
+			requests.UpdateSongRequest{
 				ID:    uuid.New(),
 				Title: validSongTitle,
 			},
 		},
 		{
 			"Nothing Null",
-			UpdateSongRequest{
+			requests.UpdateSongRequest{
 				ID:             uuid.New(),
 				Title:          validSongTitle,
 				Description:    "Something",
@@ -385,34 +386,34 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              UpdateSongRequest
+		request              requests.UpdateSongRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			UpdateSongRequest{ID: uuid.Nil, Title: validSongTitle},
+			requests.UpdateSongRequest{ID: uuid.Nil, Title: validSongTitle},
 			"ID",
 			"required",
 		},
 		// Title Test Cases
 		{
 			"Title is invalid because it's required",
-			UpdateSongRequest{ID: uuid.New(), Title: ""},
+			requests.UpdateSongRequest{ID: uuid.New(), Title: ""},
 			"Title",
 			"required",
 		},
 		{
 			"Title is invalid because it has more than 100 characters",
-			UpdateSongRequest{ID: uuid.New(), Title: strings.Repeat("a", 101)},
+			requests.UpdateSongRequest{ID: uuid.New(), Title: strings.Repeat("a", 101)},
 			"Title",
 			"max",
 		},
 		// SongsterrLink Test Cases
 		{
 			"Songsterr Link is invalid because it is not an url",
-			UpdateSongRequest{
+			requests.UpdateSongRequest{
 				ID:            uuid.New(),
 				Title:         validSongTitle,
 				SongsterrLink: &[]string{"scom"}[0],
@@ -422,7 +423,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		},
 		{
 			"Songsterr Link is invalid because it is not a songsterr link",
-			UpdateSongRequest{
+			requests.UpdateSongRequest{
 				ID:            uuid.New(),
 				Title:         validSongTitle,
 				SongsterrLink: &[]string{"http://google.com"}[0],
@@ -433,7 +434,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// YoutubeLink Test Cases
 		{
 			"Youtube Link is invalid because it is a youtube link",
-			UpdateSongRequest{
+			requests.UpdateSongRequest{
 				ID:          uuid.New(),
 				Title:       validSongTitle,
 				YoutubeLink: &[]string{"https://google.com"}[0],
@@ -444,7 +445,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		// Difficulty Test Cases
 		{
 			"Difficulty is invalid because it is not a Difficulty Enum",
-			UpdateSongRequest{
+			requests.UpdateSongRequest{
 				ID:         uuid.New(),
 				Title:      validSongTitle,
 				Difficulty: &[]enums.Difficulty{"Something else"}[0],
@@ -479,7 +480,7 @@ func TestValidateCreateGuitarTuningRequest_WhenIsValid_ShouldReturnNil(t *testin
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := CreateGuitarTuningRequest{Name: validGuitarTuningName}
+	request := requests.CreateGuitarTuningRequest{Name: validGuitarTuningName}
 
 	// when
 	errCode := _uut.Validate(request)
@@ -492,14 +493,14 @@ func TestValidateCreateGuitarTuningRequest_WhenIsValid_ShouldReturnNil(t *testin
 func TestValidateCreateGuitarTuningRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              CreateGuitarTuningRequest
+		request              requests.CreateGuitarTuningRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			CreateGuitarTuningRequest{Name: ""},
+			requests.CreateGuitarTuningRequest{Name: ""},
 			"Name",
 			"required",
 		},
@@ -526,7 +527,7 @@ func TestValidateMoveGuitarTuningRequest_WhenIsValid_ShouldReturnNil(t *testing.
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := MoveGuitarTuningRequest{
+	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -542,21 +543,21 @@ func TestValidateMoveGuitarTuningRequest_WhenIsValid_ShouldReturnNil(t *testing.
 func TestValidateMoveGuitarTuningRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              MoveGuitarTuningRequest
+		request              requests.MoveGuitarTuningRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			MoveGuitarTuningRequest{ID: uuid.Nil, OverID: uuid.New()},
+			requests.MoveGuitarTuningRequest{ID: uuid.Nil, OverID: uuid.New()},
 			"ID",
 			"required",
 		},
 		// Over ID Test Cases
 		{
 			"Over ID is invalid because it's required",
-			MoveGuitarTuningRequest{ID: uuid.New(), OverID: uuid.Nil},
+			requests.MoveGuitarTuningRequest{ID: uuid.New(), OverID: uuid.Nil},
 			"OverID",
 			"required",
 		},
@@ -587,7 +588,7 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := CreateSongSectionRequest{
+	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   validSectionName,
 		TypeID: uuid.New(),
@@ -603,14 +604,14 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              CreateSongSectionRequest
+		request              requests.CreateSongSectionRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Song ID Test Cases
 		{
 			"Song ID is invalid because it's required",
-			CreateSongSectionRequest{
+			requests.CreateSongSectionRequest{
 				SongID: uuid.Nil,
 				Name:   validSectionName,
 				TypeID: uuid.New(),
@@ -621,7 +622,7 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			CreateSongSectionRequest{
+			requests.CreateSongSectionRequest{
 				SongID: uuid.New(),
 				Name:   "",
 				TypeID: uuid.New(),
@@ -632,7 +633,7 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		// Name Test Cases
 		{
 			"Name is invalid because it has too many characters",
-			CreateSongSectionRequest{
+			requests.CreateSongSectionRequest{
 				SongID: uuid.New(),
 				Name:   strings.Repeat("a", 31),
 				TypeID: uuid.New(),
@@ -643,7 +644,7 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		// Type ID Test Cases
 		{
 			"Type ID is invalid because it's required",
-			CreateSongSectionRequest{
+			requests.CreateSongSectionRequest{
 				SongID: uuid.New(),
 				Name:   validSectionName,
 				TypeID: uuid.Nil,
@@ -674,7 +675,7 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := UpdateSongSectionRequest{
+	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       validSectionName,
 		Rehearsals: 23,
@@ -691,14 +692,14 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              UpdateSongSectionRequest
+		request              requests.UpdateSongSectionRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"Song ID is invalid because it's required",
-			UpdateSongSectionRequest{
+			requests.UpdateSongSectionRequest{
 				ID:     uuid.Nil,
 				Name:   validSectionName,
 				TypeID: uuid.New(),
@@ -709,7 +710,7 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			UpdateSongSectionRequest{
+			requests.UpdateSongSectionRequest{
 				ID:     uuid.New(),
 				Name:   "",
 				TypeID: uuid.New(),
@@ -720,7 +721,7 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		// Name Test Cases
 		{
 			"Name is invalid because it has too many characters",
-			UpdateSongSectionRequest{
+			requests.UpdateSongSectionRequest{
 				ID:     uuid.New(),
 				Name:   strings.Repeat("a", 31),
 				TypeID: uuid.New(),
@@ -731,7 +732,7 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 		// Type ID Test Cases
 		{
 			"Type ID is invalid because it's required",
-			UpdateSongSectionRequest{
+			requests.UpdateSongSectionRequest{
 				ID:     uuid.New(),
 				Name:   validSectionName,
 				TypeID: uuid.Nil,
@@ -762,7 +763,7 @@ func TestValidateMoveSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := MoveSongSectionRequest{
+	request := requests.MoveSongSectionRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 		SongID: uuid.New(),
@@ -778,28 +779,28 @@ func TestValidateMoveSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T
 func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              MoveSongSectionRequest
+		request              requests.MoveSongSectionRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			MoveSongSectionRequest{ID: uuid.Nil, OverID: uuid.New(), SongID: uuid.New()},
+			requests.MoveSongSectionRequest{ID: uuid.Nil, OverID: uuid.New(), SongID: uuid.New()},
 			"ID",
 			"required",
 		},
 		// Over ID Test Cases
 		{
 			"Over ID is invalid because it's required",
-			MoveSongSectionRequest{ID: uuid.New(), OverID: uuid.Nil, SongID: uuid.New()},
+			requests.MoveSongSectionRequest{ID: uuid.New(), OverID: uuid.Nil, SongID: uuid.New()},
 			"OverID",
 			"required",
 		},
 		// Song ID Test Cases
 		{
 			"Song ID is invalid because it's required",
-			MoveSongSectionRequest{ID: uuid.New(), OverID: uuid.New(), SongID: uuid.Nil},
+			requests.MoveSongSectionRequest{ID: uuid.New(), OverID: uuid.New(), SongID: uuid.Nil},
 			"SongID",
 			"required",
 		},
@@ -830,7 +831,7 @@ func TestValidateCreateSongSectionTypeRequest_WhenIsValid_ShouldReturnNil(t *tes
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := CreateSongSectionTypeRequest{
+	request := requests.CreateSongSectionTypeRequest{
 		Name: validSectionTypeName,
 	}
 
@@ -844,20 +845,20 @@ func TestValidateCreateSongSectionTypeRequest_WhenIsValid_ShouldReturnNil(t *tes
 func TestValidateCreateSongSectionTypeRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              CreateSongSectionTypeRequest
+		request              requests.CreateSongSectionTypeRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			CreateSongSectionTypeRequest{Name: ""},
+			requests.CreateSongSectionTypeRequest{Name: ""},
 			"Name",
 			"required",
 		},
 		{
 			"Name is invalid because it has too many characters",
-			CreateSongSectionTypeRequest{Name: strings.Repeat("a", 31)},
+			requests.CreateSongSectionTypeRequest{Name: strings.Repeat("a", 31)},
 			"Name",
 			"max",
 		},
@@ -884,7 +885,7 @@ func TestValidateMoveSongSectionTypeRequest_WhenIsValid_ShouldReturnNil(t *testi
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := MoveSongSectionTypeRequest{
+	request := requests.MoveSongSectionTypeRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -899,14 +900,14 @@ func TestValidateMoveSongSectionTypeRequest_WhenIsValid_ShouldReturnNil(t *testi
 func TestValidateMoveSongSectionTypeRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              MoveSongSectionTypeRequest
+		request              requests.MoveSongSectionTypeRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			MoveSongSectionTypeRequest{
+			requests.MoveSongSectionTypeRequest{
 				ID:     uuid.Nil,
 				OverID: uuid.New(),
 			},
@@ -916,7 +917,7 @@ func TestValidateMoveSongSectionTypeRequest_WhenSingleFieldIsInvalid_ShouldRetur
 		// Over ID Test Cases
 		{
 			"Over ID is invalid because it's required",
-			MoveSongSectionTypeRequest{
+			requests.MoveSongSectionTypeRequest{
 				ID:     uuid.New(),
 				OverID: uuid.Nil,
 			},

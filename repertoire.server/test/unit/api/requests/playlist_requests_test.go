@@ -2,6 +2,7 @@ package requests
 
 import (
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
@@ -13,15 +14,15 @@ import (
 func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request GetPlaylistsRequest
+		request requests.GetPlaylistsRequest
 	}{
 		{
 			"All Null",
-			GetPlaylistsRequest{},
+			requests.GetPlaylistsRequest{},
 		},
 		{
 			"Nothing Null",
-			GetPlaylistsRequest{
+			requests.GetPlaylistsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc"},
@@ -47,33 +48,33 @@ func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              GetPlaylistsRequest
+		request              requests.GetPlaylistsRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetPlaylistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			requests.GetPlaylistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetPlaylistsRequest{PageSize: &[]int{1}[0]},
+			requests.GetPlaylistsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetPlaylistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			requests.GetPlaylistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetPlaylistsRequest{CurrentPage: &[]int{1}[0]},
+			requests.GetPlaylistsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},
@@ -102,7 +103,7 @@ func TestValidateCreatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := CreatePlaylistRequest{
+	request := requests.CreatePlaylistRequest{
 		Title: validPlaylistTitle,
 	}
 
@@ -116,20 +117,20 @@ func TestValidateCreatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 func TestValidateCreatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              CreatePlaylistRequest
+		request              requests.CreatePlaylistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Title Test Cases
 		{
 			"Title is invalid because it's required",
-			CreatePlaylistRequest{Title: ""},
+			requests.CreatePlaylistRequest{Title: ""},
 			"Title",
 			"required",
 		},
 		{
 			"Title is invalid because it has more than 100 characters",
-			CreatePlaylistRequest{Title: strings.Repeat("a", 101)},
+			requests.CreatePlaylistRequest{Title: strings.Repeat("a", 101)},
 			"Title",
 			"max",
 		},
@@ -156,7 +157,7 @@ func TestValidateAddSongsToPlaylistRequest_WhenIsValid_ShouldReturnNil(t *testin
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := AddSongsToPlaylistRequest{
+	request := requests.AddSongsToPlaylistRequest{
 		ID:      uuid.New(),
 		SongIDs: []uuid.UUID{uuid.New()},
 	}
@@ -171,23 +172,23 @@ func TestValidateAddSongsToPlaylistRequest_WhenIsValid_ShouldReturnNil(t *testin
 func TestValidateAddSongsToPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              AddSongsToPlaylistRequest
+		request              requests.AddSongsToPlaylistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			AddSongsToPlaylistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
+			requests.AddSongsToPlaylistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
 			"ID",
 			"required",
 		},
-		// Song ID Test Cases
+		// Song IDs Test Cases
 		{
-			"Song ID is invalid because it's required",
-			AddSongsToPlaylistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{uuid.Nil}},
-			"SongID",
-			"required",
+			"Song IDs is invalid because it requires at least 1 ID",
+			requests.AddSongsToPlaylistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
+			"SongIDs",
+			"min",
 		},
 	}
 	for _, tt := range tests {
@@ -212,7 +213,7 @@ func TestValidateUpdatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := UpdatePlaylistRequest{
+	request := requests.UpdatePlaylistRequest{
 		ID:    uuid.New(),
 		Title: validPlaylistTitle,
 	}
@@ -227,27 +228,27 @@ func TestValidateUpdatePlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 func TestValidateUpdatePlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              UpdatePlaylistRequest
+		request              requests.UpdatePlaylistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			UpdatePlaylistRequest{ID: uuid.Nil, Title: validPlaylistTitle},
+			requests.UpdatePlaylistRequest{ID: uuid.Nil, Title: validPlaylistTitle},
 			"ID",
 			"required",
 		},
 		// Title Test Cases
 		{
 			"Title is invalid because it's required",
-			UpdatePlaylistRequest{ID: uuid.New(), Title: ""},
+			requests.UpdatePlaylistRequest{ID: uuid.New(), Title: ""},
 			"Title",
 			"required",
 		},
 		{
 			"Title is invalid because it has more than 100 characters",
-			UpdatePlaylistRequest{ID: uuid.New(), Title: strings.Repeat("a", 101)},
+			requests.UpdatePlaylistRequest{ID: uuid.New(), Title: strings.Repeat("a", 101)},
 			"Title",
 			"max",
 		},
@@ -274,7 +275,7 @@ func TestValidateMoveSongFromPlaylistRequest_WhenIsValid_ShouldReturnNil(t *test
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := MoveSongFromPlaylistRequest{
+	request := requests.MoveSongFromPlaylistRequest{
 		ID:         uuid.New(),
 		SongID:     uuid.New(),
 		OverSongID: uuid.New(),
@@ -290,14 +291,14 @@ func TestValidateMoveSongFromPlaylistRequest_WhenIsValid_ShouldReturnNil(t *test
 func TestValidateMoveSongFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              MoveSongFromPlaylistRequest
+		request              requests.MoveSongFromPlaylistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			MoveSongFromPlaylistRequest{
+			requests.MoveSongFromPlaylistRequest{
 				ID:         uuid.Nil,
 				SongID:     uuid.New(),
 				OverSongID: uuid.New(),
@@ -308,7 +309,7 @@ func TestValidateMoveSongFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldRetu
 		// Song ID Test Cases
 		{
 			"Song ID is invalid because it's required",
-			MoveSongFromPlaylistRequest{
+			requests.MoveSongFromPlaylistRequest{
 				ID:         uuid.New(),
 				SongID:     uuid.Nil,
 				OverSongID: uuid.New(),
@@ -319,7 +320,7 @@ func TestValidateMoveSongFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldRetu
 		// Over Song ID Test Cases
 		{
 			"Over Song ID is invalid because it's required",
-			MoveSongFromPlaylistRequest{
+			requests.MoveSongFromPlaylistRequest{
 				ID:         uuid.New(),
 				SongID:     uuid.New(),
 				OverSongID: uuid.Nil,
