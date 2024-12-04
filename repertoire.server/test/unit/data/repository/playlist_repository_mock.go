@@ -22,6 +22,16 @@ func (p *PlaylistRepositoryMock) Get(playlist *model.Playlist, id uuid.UUID) err
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error {
+	args := p.Called(playlistSongs, id)
+
+	if len(args) > 1 {
+		*playlistSongs = *args.Get(1).(*[]model.PlaylistSong)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
 	args := p.Called(playlist, id)
 
@@ -74,13 +84,18 @@ func (p *PlaylistRepositoryMock) Create(playlist *model.Playlist) error {
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) AddSong(playlist *model.Playlist, song *model.Song) error {
-	args := p.Called(playlist, song)
+func (p *PlaylistRepositoryMock) AddSong(playlistSong *model.PlaylistSong) error {
+	args := p.Called(playlistSong)
 	return args.Error(0)
 }
 
 func (p *PlaylistRepositoryMock) Update(playlist *model.Playlist) error {
 	args := p.Called(playlist)
+	return args.Error(0)
+}
+
+func (p *PlaylistRepositoryMock) UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error {
+	args := p.Called(playlistSongs)
 	return args.Error(0)
 }
 

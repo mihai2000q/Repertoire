@@ -23,18 +23,25 @@ type Song struct {
 	YoutubeLink   *string            `json:"youtubeLink"`
 	AlbumTrackNo  *uint              `json:"albumTrackNo"`
 
-	AlbumID        *uuid.UUID    `json:"-"`
-	ArtistID       *uuid.UUID    `json:"-"`
-	GuitarTuningID *uuid.UUID    `json:"-"`
-	Artist         *Artist       `json:"artist"`
-	Album          *Album        `json:"album"`
-	GuitarTuning   *GuitarTuning `json:"guitarTuning"`
-	Sections       []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
-	Playlists      []Playlist    `gorm:"many2many:playlist_song" json:"-"`
+	AlbumID        *uuid.UUID     `json:"-"`
+	ArtistID       *uuid.UUID     `json:"-"`
+	GuitarTuningID *uuid.UUID     `json:"-"`
+	Artist         *Artist        `json:"artist"`
+	Album          *Album         `json:"album"`
+	GuitarTuning   *GuitarTuning  `json:"guitarTuning"`
+	Sections       []SongSection  `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
+	Playlists      []Playlist     `gorm:"many2many:playlist_song" json:"-"`
+	PlaylistSongs  []PlaylistSong `gorm:"foreignKey:SongID" json:"playlist_songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	playlistSongMetadata
+}
+
+type playlistSongMetadata struct {
+	PlaylistTrackNo   uint      `gorm:"-" json:"playlistTrackNo"`
+	PlaylistCreatedAt time.Time `gorm:"-" json:"playlistCreatedAt"`
 }
 
 func (s *Song) BeforeSave(*gorm.DB) error {

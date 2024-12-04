@@ -1,16 +1,16 @@
 package repository
 
 import (
+	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
-
-	"gorm.io/gorm/clause"
 
 	"github.com/google/uuid"
 )
 
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
+	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
 	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.Playlist,
@@ -23,8 +23,9 @@ type PlaylistRepository interface {
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
-	AddSong(playlist *model.Playlist, song *model.Song) error
+	AddSong(playlist *model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
+	UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error
 	Delete(id uuid.UUID) error
 	RemoveSong(playlist *model.Playlist, song *model.Song) error
 }
@@ -43,8 +44,18 @@ func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
 	return p.client.DB.Find(&playlist, model.Playlist{ID: id}).Error
 }
 
+func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error {
+	return p.client.DB.
+		Order("song_track_no").
+		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
+}
+
 func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
-	return p.client.DB.Preload(clause.Associations).Find(&playlist, model.Playlist{ID: id}).Error
+	return p.client.DB.
+		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Song").Order("song_track_no")
+		}).
+		Find(&playlist, model.Playlist{ID: id}).Error
 }
 
 func (p playlistRepository) GetAllByUser(
@@ -83,12 +94,23 @@ func (p playlistRepository) Create(playlist *model.Playlist) error {
 	return p.client.DB.Create(&playlist).Error
 }
 
-func (p playlistRepository) AddSong(playlist *model.Playlist, song *model.Song) error {
-	return p.client.DB.Model(&playlist).Association("Songs").Append(&song)
+func (p playlistRepository) AddSong(playlistSong *model.PlaylistSong) error {
+	return p.client.DB.Create(&playlistSong).Error
 }
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {
 	return p.client.DB.Save(&playlist).Error
+}
+
+func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error {
+	return p.client.DB.Transaction(func(tx *gorm.DB) error {
+		for _, playlistSong := range *playlistSongs {
+			if err := tx.Save(&playlistSong).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func (p playlistRepository) Delete(id uuid.UUID) error {

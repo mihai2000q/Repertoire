@@ -124,6 +124,23 @@ func (p PlaylistHandler) Update(c *gin.Context) {
 	p.SendMessage(c, "playlist has been updated successfully")
 }
 
+func (p PlaylistHandler) MoveSong(c *gin.Context) {
+	var request requests.MoveSongFromPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.MoveSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "song has been moved from playlist successfully")
+}
+
 func (p PlaylistHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

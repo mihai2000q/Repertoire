@@ -9,15 +9,26 @@ import (
 )
 
 type Playlist struct {
-	ID          uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Title       string             `gorm:"size:100; not null" json:"title"`
-	Description string             `gorm:"not null" json:"description"`
-	ImageURL    *internal.FilePath `json:"imageUrl"`
-	Songs       []Song             `gorm:"many2many:playlist_song" json:"songs"`
+	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title         string             `gorm:"size:100; not null" json:"title"`
+	Description   string             `gorm:"not null" json:"description"`
+	ImageURL      *internal.FilePath `json:"imageUrl"`
+	Songs         []Song             `gorm:"many2many:playlist_song" json:"songs"`
+	PlaylistSongs []PlaylistSong     `gorm:"foreignKey:PlaylistID" json:"playlist_songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+}
+
+type PlaylistSong struct {
+	PlaylistID  uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
+	SongID      uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
+	SongTrackNo uint      `gorm:"not null"`
+	CreatedAt   time.Time `gorm:"default:current_timestamp; not null; <-:create"`
+
+	Playlist Playlist `gorm:"foreignKey:PlaylistID; constraint:OnDelete:CASCADE;"`
+	Song     Song     `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE;"`
 }
 
 func (p *Playlist) BeforeSave(*gorm.DB) error {
