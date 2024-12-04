@@ -11,7 +11,7 @@ import (
 )
 
 type PlaylistService interface {
-	AddSong(request requests.AddSongToPlaylistRequest) *wrapper.ErrorCode
+	AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -24,7 +24,7 @@ type PlaylistService interface {
 }
 
 type playlistService struct {
-	addSongToPlaylist       playlist.AddSongToPlaylist
+	addSongToPlaylist       playlist.AddSongsToPlaylist
 	createPlaylist          playlist.CreatePlaylist
 	deletePlaylist          playlist.DeletePlaylist
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist
@@ -37,7 +37,7 @@ type playlistService struct {
 }
 
 func NewPlaylistService(
-	addSongToPlaylist playlist.AddSongToPlaylist,
+	addSongToPlaylist playlist.AddSongsToPlaylist,
 	createPlaylist playlist.CreatePlaylist,
 	deletePlaylist playlist.DeletePlaylist,
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist,
@@ -62,7 +62,7 @@ func NewPlaylistService(
 	}
 }
 
-func (p *playlistService) AddSong(request requests.AddSongToPlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode {
 	return p.addSongToPlaylist.Handle(request)
 }
 

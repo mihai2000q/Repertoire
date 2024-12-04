@@ -17,11 +17,11 @@ import (
 func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(playlistRepository)
+	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
 
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
+	request := requests.AddSongsToPlaylistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// given - mocking
@@ -41,14 +41,14 @@ func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(playlistRepository)
+	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
 
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
+	request := requests.AddSongsToPlaylistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// given - mocking
@@ -58,7 +58,7 @@ func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServer
 		Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("AddSong", mock.IsType(new(model.PlaylistSong))).
+	playlistRepository.On("AddSongs", mock.IsType(new([]model.PlaylistSong))).
 		Return(internalError).
 		Once()
 
@@ -76,11 +76,11 @@ func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServer
 func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(playlistRepository)
+	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
 
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
+	request := requests.AddSongsToPlaylistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
 	// given - mocking
@@ -89,12 +89,14 @@ func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil, count).
 		Once()
 
-	playlistRepository.On("AddSong", mock.IsType(new(model.PlaylistSong))).
+	playlistRepository.On("AddSongs", mock.IsType(new([]model.PlaylistSong))).
 		Run(func(args mock.Arguments) {
-			playlistSong := args.Get(0).(*model.PlaylistSong)
-			assert.Equal(t, request.ID, playlistSong.PlaylistID)
-			assert.Equal(t, request.SongID, playlistSong.SongID)
-			assert.Equal(t, uint(*count), playlistSong.SongTrackNo)
+			playlistSongs := args.Get(0).(*[]model.PlaylistSong)
+			for i, playlistSong := range *playlistSongs {
+				assert.Equal(t, request.ID, playlistSong.PlaylistID)
+				assert.Equal(t, request.SongIDs[i], playlistSong.SongID)
+				assert.Equal(t, uint(int(*count)+i), playlistSong.SongTrackNo)
+			}
 		}).
 		Return(nil).
 		Once()

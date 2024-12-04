@@ -90,15 +90,15 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 	})
 }
 
-func (p PlaylistHandler) AddSong(c *gin.Context) {
-	var request requests.AddSongToPlaylistRequest
+func (p PlaylistHandler) AddSongs(c *gin.Context) {
+	var request requests.AddSongsToPlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = p.service.AddSong(request)
+	errorCode = p.service.AddSongs(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

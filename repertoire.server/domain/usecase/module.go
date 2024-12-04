@@ -48,7 +48,7 @@ var authUseCases = fx.Options(
 )
 
 var playlistUseCases = fx.Options(
-	fx.Provide(playlist.NewAddSongToPlaylist),
+	fx.Provide(playlist.NewAddSongsToPlaylist),
 	fx.Provide(playlist.NewCreatePlaylist),
 	fx.Provide(playlist.NewDeletePlaylist),
 	fx.Provide(playlist.NewDeleteImageFromPlaylist),

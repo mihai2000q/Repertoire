@@ -23,7 +23,7 @@ type PlaylistRepository interface {
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
-	AddSong(playlist *model.PlaylistSong) error
+	AddSongs(playlistSongs *[]model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
 	UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error
 	Delete(id uuid.UUID) error
@@ -94,8 +94,8 @@ func (p playlistRepository) Create(playlist *model.Playlist) error {
 	return p.client.DB.Create(&playlist).Error
 }
 
-func (p playlistRepository) AddSong(playlistSong *model.PlaylistSong) error {
-	return p.client.DB.Create(&playlistSong).Error
+func (p playlistRepository) AddSongs(playlistSongs *[]model.PlaylistSong) error {
+	return p.client.DB.Create(&playlistSongs).Error
 }
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {
