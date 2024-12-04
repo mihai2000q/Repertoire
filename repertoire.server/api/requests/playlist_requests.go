@@ -24,3 +24,9 @@ type UpdatePlaylistRequest struct {
 	Title       string    `validate:"required,max=100"`
 	Description string
 }
+
+type MoveSongFromPlaylistRequest struct {
+	ID         uuid.UUID `validate:"required"`
+	SongID     uuid.UUID `validate:"required"`
+	OverSongID uuid.UUID `validate:"required"`
+}

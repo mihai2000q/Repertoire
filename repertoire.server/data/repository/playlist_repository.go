@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
@@ -9,6 +10,7 @@ import (
 
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
+	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
 	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.Playlist,
@@ -23,6 +25,7 @@ type PlaylistRepository interface {
 	Create(playlist *model.Playlist) error
 	AddSong(playlist *model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
+	UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error
 	Delete(id uuid.UUID) error
 	RemoveSong(playlist *model.Playlist, song *model.Song) error
 }
@@ -39,6 +42,12 @@ func NewPlaylistRepository(client database.Client) PlaylistRepository {
 
 func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
 	return p.client.DB.Find(&playlist, model.Playlist{ID: id}).Error
+}
+
+func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error {
+	return p.client.DB.
+		Order("song_track_no").
+		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
 }
 
 func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
@@ -91,6 +100,17 @@ func (p playlistRepository) AddSong(playlistSong *model.PlaylistSong) error {
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {
 	return p.client.DB.Save(&playlist).Error
+}
+
+func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error {
+	return p.client.DB.Transaction(func(tx *gorm.DB) error {
+		for _, playlistSong := range *playlistSongs {
+			if err := tx.Save(&playlistSong).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func (p playlistRepository) Delete(id uuid.UUID) error {
