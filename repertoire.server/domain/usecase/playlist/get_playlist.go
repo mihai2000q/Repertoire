@@ -28,5 +28,15 @@ func (g GetPlaylist) Handle(id uuid.UUID) (playlist model.Playlist, e *wrapper.E
 	if reflect.ValueOf(playlist).IsZero() {
 		return playlist, wrapper.NotFoundError(errors.New("playlist not found"))
 	}
+	g.LoadSongs(&playlist)
 	return playlist, nil
+}
+
+func (g GetPlaylist) LoadSongs(playlist *model.Playlist) {
+	for _, playlistSong := range playlist.PlaylistSongs {
+		newSong := playlistSong.Song
+		newSong.PlaylistTrackNo = playlistSong.SongTrackNo
+		newSong.PlaylistCreatedAt = playlistSong.CreatedAt
+		playlist.Songs = append(playlist.Songs, newSong)
+	}
 }

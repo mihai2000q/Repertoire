@@ -44,7 +44,11 @@ func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
 }
 
 func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
-	return p.client.DB.Preload(clause.Associations).Find(&playlist, model.Playlist{ID: id}).Error
+	return p.client.DB.
+		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Song").Order("song_track_no")
+		}).
+		Find(&playlist, model.Playlist{ID: id}).Error
 }
 
 func (p playlistRepository) GetAllByUser(
