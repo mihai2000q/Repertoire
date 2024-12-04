@@ -4,8 +4,6 @@ import (
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
-	"gorm.io/gorm/clause"
-
 	"github.com/google/uuid"
 )
 
@@ -23,7 +21,7 @@ type PlaylistRepository interface {
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
-	AddSong(playlist *model.Playlist, song *model.Song) error
+	AddSong(playlist *model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
 	Delete(id uuid.UUID) error
 	RemoveSong(playlist *model.Playlist, song *model.Song) error
@@ -87,8 +85,8 @@ func (p playlistRepository) Create(playlist *model.Playlist) error {
 	return p.client.DB.Create(&playlist).Error
 }
 
-func (p playlistRepository) AddSong(playlist *model.Playlist, song *model.Song) error {
-	return p.client.DB.Model(&playlist).Association("Songs").Append(&song)
+func (p playlistRepository) AddSong(playlistSong *model.PlaylistSong) error {
+	return p.client.DB.Create(&playlistSong).Error
 }
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {

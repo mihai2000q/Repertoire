@@ -74,8 +74,8 @@ func (p *PlaylistRepositoryMock) Create(playlist *model.Playlist) error {
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) AddSong(playlist *model.Playlist, song *model.Song) error {
-	args := p.Called(playlist, song)
+func (p *PlaylistRepositoryMock) AddSong(playlistSong *model.PlaylistSong) error {
+	args := p.Called(playlistSong)
 	return args.Error(0)
 }
 

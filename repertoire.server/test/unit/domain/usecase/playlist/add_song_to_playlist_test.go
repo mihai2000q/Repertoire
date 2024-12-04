@@ -14,131 +14,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestAddSongToPlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(nil, playlistRepository)
-
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
-	}
-
-	// given - mocking
-	internalError := errors.New("internal error")
-	playlistRepository.On("Get", mock.IsType(new(model.Playlist)), request.ID).
-		Return(internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	playlistRepository.AssertExpectations(t)
-}
-
-func TestAddSongToPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
-	// given
-	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(nil, playlistRepository)
-
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
-	}
-
-	// given - mocking
-	playlistRepository.On("Get", mock.IsType(new(model.Playlist)), request.ID).
-		Return(nil).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "playlist not found", errCode.Error.Error())
-
-	playlistRepository.AssertExpectations(t)
-}
-
-func TestAddSongToPlaylist_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	playlistRepository := new(repository.PlaylistRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(songRepository, playlistRepository)
-
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
-	}
-
-	// given - mocking
-	mockPlaylist := &model.Playlist{ID: request.ID}
-	playlistRepository.On("Get", mock.IsType(mockPlaylist), request.ID).
-		Return(nil, mockPlaylist).
-		Once()
-
-	internalError := errors.New("internal error")
-	songRepository.On("Get", mock.IsType(new(model.Song)), request.SongID).
-		Return(internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	playlistRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
-}
-
-func TestAddSongToPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
-	// given
-	playlistRepository := new(repository.PlaylistRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(songRepository, playlistRepository)
-
-	request := requests.AddSongToPlaylistRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
-	}
-
-	// given - mocking
-	mockPlaylist := &model.Playlist{ID: request.ID}
-	playlistRepository.On("Get", mock.IsType(mockPlaylist), request.ID).
-		Return(nil, mockPlaylist).
-		Once()
-
-	songRepository.On("Get", mock.IsType(new(model.Song)), request.SongID).
-		Return(nil).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "song not found", errCode.Error.Error())
-
-	playlistRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
-}
-
 func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(songRepository, playlistRepository)
+	_uut := playlist.NewAddSongToPlaylist(playlistRepository)
 
 	request := requests.AddSongToPlaylistRequest{
 		ID:     uuid.New(),
@@ -146,16 +25,6 @@ func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t
 	}
 
 	// given - mocking
-	mockPlaylist := &model.Playlist{ID: request.ID}
-	playlistRepository.On("Get", mock.IsType(mockPlaylist), request.ID).
-		Return(nil, mockPlaylist).
-		Once()
-
-	mockSong := &model.Song{ID: request.SongID}
-	songRepository.On("Get", mock.IsType(mockSong), request.SongID).
-		Return(nil, mockSong).
-		Once()
-
 	internalError := errors.New("internal error")
 	playlistRepository.On("CountSongs", mock.Anything, request.ID).
 		Return(internalError).
@@ -170,14 +39,12 @@ func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
 }
 
 func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(songRepository, playlistRepository)
+	_uut := playlist.NewAddSongToPlaylist(playlistRepository)
 
 	request := requests.AddSongToPlaylistRequest{
 		ID:     uuid.New(),
@@ -185,23 +52,15 @@ func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServer
 	}
 
 	// given - mocking
-	mockPlaylist := &model.Playlist{ID: request.ID}
-	playlistRepository.On("Get", mock.IsType(mockPlaylist), request.ID).
-		Return(nil, mockPlaylist).
-		Once()
-
-	mockSong := &model.Song{ID: request.SongID}
-	songRepository.On("Get", mock.IsType(mockSong), request.SongID).
-		Return(nil, mockSong).
-		Once()
-
 	count := &[]int64{12}[0]
 	playlistRepository.On("CountSongs", mock.IsType(count), request.ID).
 		Return(nil, count).
 		Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("AddSong", mockPlaylist, mockSong).Return(internalError).Once()
+	playlistRepository.On("AddSong", mock.IsType(new(model.PlaylistSong))).
+		Return(internalError).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -212,14 +71,12 @@ func TestAddSongToPlaylist_WhenAddSongToPlaylistFails_ShouldReturnInternalServer
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
 }
 
 func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := playlist.NewAddSongToPlaylist(songRepository, playlistRepository)
+	_uut := playlist.NewAddSongToPlaylist(playlistRepository)
 
 	request := requests.AddSongToPlaylistRequest{
 		ID:     uuid.New(),
@@ -227,22 +84,18 @@ func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	}
 
 	// given - mocking
-	mockPlaylist := &model.Playlist{ID: request.ID}
-	playlistRepository.On("Get", mock.IsType(mockPlaylist), request.ID).
-		Return(nil, mockPlaylist).
-		Once()
-
-	mockSong := &model.Song{ID: request.SongID}
-	songRepository.On("Get", mock.IsType(mockSong), request.SongID).
-		Return(nil, mockSong).
-		Once()
-
 	count := &[]int64{12}[0]
 	playlistRepository.On("CountSongs", mock.IsType(count), request.ID).
 		Return(nil, count).
 		Once()
 
-	playlistRepository.On("AddSong", mockPlaylist, mockSong).
+	playlistRepository.On("AddSong", mock.IsType(new(model.PlaylistSong))).
+		Run(func(args mock.Arguments) {
+			playlistSong := args.Get(0).(*model.PlaylistSong)
+			assert.Equal(t, request.ID, playlistSong.PlaylistID)
+			assert.Equal(t, request.SongID, playlistSong.SongID)
+			assert.Equal(t, uint(*count), playlistSong.SongTrackNo)
+		}).
 		Return(nil).
 		Once()
 
@@ -253,5 +106,4 @@ func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	playlistRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
 }
