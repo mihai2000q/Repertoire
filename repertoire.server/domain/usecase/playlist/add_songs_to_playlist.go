@@ -22,12 +22,13 @@ func (a AddSongsToPlaylist) Handle(request requests.AddSongsToPlaylistRequest) *
 		return wrapper.InternalServerError(err)
 	}
 
+	songsLength := int(count + 1)
 	var playlistSongs []model.PlaylistSong
 	for i, songID := range request.SongIDs {
 		playlistSong := model.PlaylistSong{
 			PlaylistID:  request.ID,
 			SongID:      songID,
-			SongTrackNo: uint(int(count) + i),
+			SongTrackNo: uint(songsLength + i),
 		}
 		playlistSongs = append(playlistSongs, playlistSong)
 	}
