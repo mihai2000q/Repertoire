@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -72,6 +73,21 @@ func Start(envPath ...string) *TestServer {
 	// Start Storage Server
 	ts.storageServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+
+		// when asking for another auth token, just return something
+		if r.Method == http.MethodPost {
+			response := struct {
+				Token     string
+				TokenType string
+				ExpiresIn string
+			}{
+				"some token",
+				"Bearer",
+				"1h",
+			}
+			bytes, _ := json.Marshal(response)
+			_, _ = w.Write(bytes)
+		}
 	}))
 	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
 
