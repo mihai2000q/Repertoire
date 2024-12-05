@@ -95,7 +95,7 @@ func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			for i, playlistSong := range *playlistSongs {
 				assert.Equal(t, request.ID, playlistSong.PlaylistID)
 				assert.Equal(t, request.SongIDs[i], playlistSong.SongID)
-				assert.Equal(t, uint(int(*count)+i), playlistSong.SongTrackNo)
+				assert.Equal(t, uint(int(*count+1)+i), playlistSong.SongTrackNo)
 			}
 		}).
 		Return(nil).
