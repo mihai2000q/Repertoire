@@ -2,6 +2,7 @@ package requests
 
 import (
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"testing"
 
@@ -14,7 +15,7 @@ func TestValidateUpdateUserRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := UpdateUserRequest{
+	request := requests.UpdateUserRequest{
 		Name: validUserName,
 	}
 
@@ -28,14 +29,14 @@ func TestValidateUpdateUserRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateUpdateUserRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              UpdateUserRequest
+		request              requests.UpdateUserRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			UpdateUserRequest{Name: ""},
+			requests.UpdateUserRequest{Name: ""},
 			"Name",
 			"required",
 		},

@@ -2,6 +2,7 @@ package requests
 
 import (
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
@@ -16,7 +17,7 @@ func TestValidateSignInRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := SignInRequest{
+	request := requests.SignInRequest{
 		Email:    validEmail,
 		Password: validPassword,
 	}
@@ -31,45 +32,45 @@ func TestValidateSignInRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateSignInRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              SignInRequest
+		request              requests.SignInRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Email Test Cases
 		{
 			"Email is invalid because it's required",
-			SignInRequest{Email: "", Password: validPassword},
+			requests.SignInRequest{Email: "", Password: validPassword},
 			"Email",
 			"required",
 		},
 		{
 			"Email is invalid because it has too many characters",
-			SignInRequest{Email: strings.Repeat("a", 257), Password: validPassword},
+			requests.SignInRequest{Email: strings.Repeat("a", 257), Password: validPassword},
 			"Email",
 			"max",
 		},
 		{
 			"Email is invalid because it is not an email",
-			SignInRequest{Email: "someone", Password: validPassword},
+			requests.SignInRequest{Email: "someone", Password: validPassword},
 			"Email",
 			"email",
 		},
 		{
 			"Email is invalid because it is not an email",
-			SignInRequest{Email: "someone@yahoo", Password: validPassword},
+			requests.SignInRequest{Email: "someone@yahoo", Password: validPassword},
 			"Email",
 			"email",
 		},
 		{
 			"Email is invalid because it is not an email",
-			SignInRequest{Email: "someone.com", Password: validPassword},
+			requests.SignInRequest{Email: "someone.com", Password: validPassword},
 			"Email",
 			"email",
 		},
 		// Password Test Cases
 		{
 			"Password is invalid because it's required",
-			SignInRequest{Email: validEmail, Password: ""},
+			requests.SignInRequest{Email: validEmail, Password: ""},
 			"Password",
 			"required",
 		},
@@ -98,7 +99,7 @@ func TestValidateSignUpRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := SignUpRequest{
+	request := requests.SignUpRequest{
 		Name:     validName,
 		Email:    validEmail,
 		Password: validPassword,
@@ -114,76 +115,76 @@ func TestValidateSignUpRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateSignUpRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              SignUpRequest
+		request              requests.SignUpRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			SignUpRequest{Name: "", Email: validEmail, Password: validPassword},
+			requests.SignUpRequest{Name: "", Email: validEmail, Password: validPassword},
 			"Name",
 			"required",
 		},
 		// Email Test Cases
 		{
 			"Email is invalid because it's required",
-			SignUpRequest{Name: validName, Email: "", Password: validPassword},
+			requests.SignUpRequest{Name: validName, Email: "", Password: validPassword},
 			"Email",
 			"required",
 		},
 		{
 			"Email is invalid because it has too many characters",
-			SignUpRequest{Name: validName, Email: strings.Repeat("a", 257), Password: validPassword},
+			requests.SignUpRequest{Name: validName, Email: strings.Repeat("a", 257), Password: validPassword},
 			"Email",
 			"max",
 		},
 		{
 			"Email is invalid because it is not an email",
-			SignUpRequest{Name: validName, Email: "someone", Password: validPassword},
+			requests.SignUpRequest{Name: validName, Email: "someone", Password: validPassword},
 			"Email",
 			"email",
 		},
 		{
 			"Email is invalid because it is not an email",
-			SignUpRequest{Name: validName, Email: "someone@yahoo", Password: validPassword},
+			requests.SignUpRequest{Name: validName, Email: "someone@yahoo", Password: validPassword},
 			"Email",
 			"email",
 		},
 		{
 			"Email is invalid because it is not an email",
-			SignUpRequest{Name: validName, Email: "someone.com", Password: validPassword},
+			requests.SignUpRequest{Name: validName, Email: "someone.com", Password: validPassword},
 			"Email",
 			"email",
 		},
 		// Password Test Cases
 		{
 			"Password is invalid because it's required",
-			SignUpRequest{Name: validName, Email: validEmail, Password: ""},
+			requests.SignUpRequest{Name: validName, Email: validEmail, Password: ""},
 			"Password",
 			"required",
 		},
 		{
 			"Password is invalid because it has less than 8 characters",
-			SignUpRequest{Name: validName, Email: validEmail, Password: "1234567"},
+			requests.SignUpRequest{Name: validName, Email: validEmail, Password: "1234567"},
 			"Password",
 			"min",
 		},
 		{
 			"Password is invalid because it doesn't have an uppercase letter",
-			SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("a", 9)},
+			requests.SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("a", 9)},
 			"Password",
 			"hasUpper",
 		},
 		{
 			"Password is invalid because it doesn't have a lowercase letter",
-			SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("A", 9)},
+			requests.SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("A", 9)},
 			"Password",
 			"hasLower",
 		},
 		{
 			"Password is invalid because it doesn't have any digit",
-			SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("A", 4) + strings.Repeat("a", 4)},
+			requests.SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("A", 4) + strings.Repeat("a", 4)},
 			"Password",
 			"hasDigit",
 		},

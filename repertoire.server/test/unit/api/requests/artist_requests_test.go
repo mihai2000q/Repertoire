@@ -2,6 +2,7 @@ package requests
 
 import (
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
@@ -13,15 +14,15 @@ import (
 func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request GetArtistsRequest
+		request requests.GetArtistsRequest
 	}{
 		{
 			"All Null",
-			GetArtistsRequest{},
+			requests.GetArtistsRequest{},
 		},
 		{
 			"Nothing Null",
-			GetArtistsRequest{
+			requests.GetArtistsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"name asc"},
@@ -47,33 +48,33 @@ func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              GetArtistsRequest
+		request              requests.GetArtistsRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Current Page Test Cases
 		{
 			"Current Page is invalid because it should be greater than 0",
-			GetArtistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			requests.GetArtistsRequest{CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"gt",
 		},
 		{
 			"Current Page is invalid because page size is null",
-			GetArtistsRequest{PageSize: &[]int{1}[0]},
+			requests.GetArtistsRequest{PageSize: &[]int{1}[0]},
 			"CurrentPage",
 			"required_with",
 		},
 		// Page Size Test Cases
 		{
 			"Page Size is invalid because it should be greater than 0",
-			GetArtistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			requests.GetArtistsRequest{PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"gt",
 		},
 		{
 			"Page Size is invalid because current page is null",
-			GetArtistsRequest{CurrentPage: &[]int{1}[0]},
+			requests.GetArtistsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
 		},
@@ -102,7 +103,7 @@ func TestValidateCreateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := CreateArtistRequest{
+	request := requests.CreateArtistRequest{
 		Name: validArtistName,
 	}
 
@@ -116,20 +117,20 @@ func TestValidateCreateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateCreateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              CreateArtistRequest
+		request              requests.CreateArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			CreateArtistRequest{Name: ""},
+			requests.CreateArtistRequest{Name: ""},
 			"Name",
 			"required",
 		},
 		{
 			"Name is invalid because it has more than 100 characters",
-			CreateArtistRequest{Name: strings.Repeat("a", 101)},
+			requests.CreateArtistRequest{Name: strings.Repeat("a", 101)},
 			"Name",
 			"max",
 		},
@@ -156,7 +157,7 @@ func TestValidateAddAlbumsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := AddAlbumsToArtistRequest{
+	request := requests.AddAlbumsToArtistRequest{
 		ID:       uuid.New(),
 		AlbumIDs: []uuid.UUID{uuid.New()},
 	}
@@ -171,21 +172,21 @@ func TestValidateAddAlbumsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing
 func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              AddAlbumsToArtistRequest
+		request              requests.AddAlbumsToArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			AddAlbumsToArtistRequest{ID: uuid.Nil, AlbumIDs: []uuid.UUID{uuid.New()}},
+			requests.AddAlbumsToArtistRequest{ID: uuid.Nil, AlbumIDs: []uuid.UUID{uuid.New()}},
 			"ID",
 			"required",
 		},
 		// Album IDs Test Cases
 		{
 			"Album IDs is invalid because it requires at least one ID",
-			AddAlbumsToArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
+			requests.AddAlbumsToArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
 			"AlbumIDs",
 			"min",
 		},
@@ -212,7 +213,7 @@ func TestValidateAddSongsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := AddSongsToArtistRequest{
+	request := requests.AddSongsToArtistRequest{
 		ID:      uuid.New(),
 		SongIDs: []uuid.UUID{uuid.New()},
 	}
@@ -227,21 +228,21 @@ func TestValidateAddSongsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.
 func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              AddSongsToArtistRequest
+		request              requests.AddSongsToArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			AddSongsToArtistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
+			requests.AddSongsToArtistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
 			"ID",
 			"required",
 		},
 		// Song IDs Test Cases
 		{
 			"Song IDs is invalid because it requires at least one ID",
-			AddSongsToArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
+			requests.AddSongsToArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
 			"SongIDs",
 			"min",
 		},
@@ -268,7 +269,7 @@ func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := UpdateArtistRequest{
+	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
 		Name: validArtistName,
 	}
@@ -283,27 +284,27 @@ func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              UpdateArtistRequest
+		request              requests.UpdateArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			UpdateArtistRequest{ID: uuid.Nil, Name: validArtistName},
+			requests.UpdateArtistRequest{ID: uuid.Nil, Name: validArtistName},
 			"ID",
 			"required",
 		},
 		// Name Test Cases
 		{
 			"Name is invalid because it's required",
-			UpdateArtistRequest{ID: uuid.New(), Name: ""},
+			requests.UpdateArtistRequest{ID: uuid.New(), Name: ""},
 			"Name",
 			"required",
 		},
 		{
 			"Name is invalid because it has more than 100 characters",
-			UpdateArtistRequest{ID: uuid.New(), Name: strings.Repeat("a", 101)},
+			requests.UpdateArtistRequest{ID: uuid.New(), Name: strings.Repeat("a", 101)},
 			"Name",
 			"max",
 		},
@@ -330,7 +331,7 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *te
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := RemoveAlbumsFromArtistRequest{
+	request := requests.RemoveAlbumsFromArtistRequest{
 		ID:       uuid.New(),
 		AlbumIDs: []uuid.UUID{uuid.New()},
 	}
@@ -345,21 +346,21 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *te
 func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              RemoveAlbumsFromArtistRequest
+		request              requests.RemoveAlbumsFromArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			RemoveAlbumsFromArtistRequest{ID: uuid.Nil, AlbumIDs: []uuid.UUID{uuid.New()}},
+			requests.RemoveAlbumsFromArtistRequest{ID: uuid.Nil, AlbumIDs: []uuid.UUID{uuid.New()}},
 			"ID",
 			"required",
 		},
 		// Album IDs Test Cases
 		{
 			"Album IDs is invalid because it requires at least one ID",
-			RemoveAlbumsFromArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
+			requests.RemoveAlbumsFromArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
 			"AlbumIDs",
 			"min",
 		},
@@ -386,7 +387,7 @@ func TestValidateRemoveSongsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *tes
 	// given
 	_uut := validation.NewValidator(nil)
 
-	request := RemoveSongsFromArtistRequest{
+	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
 		SongIDs: []uuid.UUID{uuid.New()},
 	}
@@ -401,21 +402,21 @@ func TestValidateRemoveSongsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *tes
 func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              RemoveSongsFromArtistRequest
+		request              requests.RemoveSongsFromArtistRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			RemoveSongsFromArtistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
+			requests.RemoveSongsFromArtistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
 			"ID",
 			"required",
 		},
 		// Song IDs Test Cases
 		{
 			"Song IDs is invalid because it requires at least one ID",
-			RemoveSongsFromArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
+			requests.RemoveSongsFromArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
 			"SongIDs",
 			"min",
 		},

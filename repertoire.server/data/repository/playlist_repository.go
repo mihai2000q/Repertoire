@@ -23,11 +23,11 @@ type PlaylistRepository interface {
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
-	AddSong(playlist *model.PlaylistSong) error
+	AddSongs(playlistSongs *[]model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
 	UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error
 	Delete(id uuid.UUID) error
-	RemoveSong(playlist *model.Playlist, song *model.Song) error
+	RemoveSongs(playlistSongs *[]model.PlaylistSong) error
 }
 
 type playlistRepository struct {
@@ -94,8 +94,8 @@ func (p playlistRepository) Create(playlist *model.Playlist) error {
 	return p.client.DB.Create(&playlist).Error
 }
 
-func (p playlistRepository) AddSong(playlistSong *model.PlaylistSong) error {
-	return p.client.DB.Create(&playlistSong).Error
+func (p playlistRepository) AddSongs(playlistSongs *[]model.PlaylistSong) error {
+	return p.client.DB.Create(&playlistSongs).Error
 }
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {
@@ -117,6 +117,6 @@ func (p playlistRepository) Delete(id uuid.UUID) error {
 	return p.client.DB.Delete(&model.Playlist{}, id).Error
 }
 
-func (p playlistRepository) RemoveSong(playlist *model.Playlist, song *model.Song) error {
-	return p.client.DB.Model(&playlist).Association("Songs").Delete(&song)
+func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {
+	return p.client.DB.Delete(&playlistSongs).Error
 }

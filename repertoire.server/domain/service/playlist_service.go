@@ -11,59 +11,59 @@ import (
 )
 
 type PlaylistService interface {
-	AddSong(request requests.AddSongToPlaylistRequest) *wrapper.ErrorCode
+	AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
-	RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
+	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode
 }
 
 type playlistService struct {
-	addSongToPlaylist       playlist.AddSongToPlaylist
+	addSongsToPlaylist      playlist.AddSongsToPlaylist
 	createPlaylist          playlist.CreatePlaylist
 	deletePlaylist          playlist.DeletePlaylist
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist
 	getAllPlaylists         playlist.GetAllPlaylists
 	getPlaylist             playlist.GetPlaylist
 	moveSongFromPlaylist    playlist.MoveSongFromPlaylist
-	removeSongFromPlaylist  playlist.RemoveSongFromPlaylist
+	removeSongsFromPlaylist playlist.RemoveSongsFromPlaylist
 	saveImageToPlaylist     playlist.SaveImageToPlaylist
 	updatePlaylist          playlist.UpdatePlaylist
 }
 
 func NewPlaylistService(
-	addSongToPlaylist playlist.AddSongToPlaylist,
+	addSongToPlaylist playlist.AddSongsToPlaylist,
 	createPlaylist playlist.CreatePlaylist,
 	deletePlaylist playlist.DeletePlaylist,
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist,
 	getAllPlaylists playlist.GetAllPlaylists,
 	getPlaylist playlist.GetPlaylist,
 	moveSongFromPlaylist playlist.MoveSongFromPlaylist,
-	removeSongFromPlaylist playlist.RemoveSongFromPlaylist,
+	removeSongFromPlaylist playlist.RemoveSongsFromPlaylist,
 	saveImageToPlaylist playlist.SaveImageToPlaylist,
 	updatePlaylist playlist.UpdatePlaylist,
 ) PlaylistService {
 	return &playlistService{
-		addSongToPlaylist:       addSongToPlaylist,
+		addSongsToPlaylist:      addSongToPlaylist,
 		createPlaylist:          createPlaylist,
 		deletePlaylist:          deletePlaylist,
 		deleteImageFromPlaylist: deleteImageFromPlaylist,
 		getAllPlaylists:         getAllPlaylists,
 		getPlaylist:             getPlaylist,
 		moveSongFromPlaylist:    moveSongFromPlaylist,
-		removeSongFromPlaylist:  removeSongFromPlaylist,
+		removeSongsFromPlaylist: removeSongFromPlaylist,
 		saveImageToPlaylist:     saveImageToPlaylist,
 		updatePlaylist:          updatePlaylist,
 	}
 }
 
-func (p *playlistService) AddSong(request requests.AddSongToPlaylistRequest) *wrapper.ErrorCode {
-	return p.addSongToPlaylist.Handle(request)
+func (p *playlistService) AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode {
+	return p.addSongsToPlaylist.Handle(request)
 }
 
 func (p *playlistService) Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
@@ -90,8 +90,8 @@ func (p *playlistService) MoveSong(request requests.MoveSongFromPlaylistRequest)
 	return p.moveSongFromPlaylist.Handle(request)
 }
 
-func (p *playlistService) RemoveSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	return p.removeSongFromPlaylist.Handle(id, songID)
+func (p *playlistService) RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode {
+	return p.removeSongsFromPlaylist.Handle(request)
 }
 
 func (p *playlistService) SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {

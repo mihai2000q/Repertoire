@@ -14,9 +14,9 @@ type CreatePlaylistRequest struct {
 	Description string
 }
 
-type AddSongToPlaylistRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	SongID uuid.UUID `validate:"required"`
+type AddSongsToPlaylistRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
 }
 
 type UpdatePlaylistRequest struct {
@@ -29,4 +29,9 @@ type MoveSongFromPlaylistRequest struct {
 	ID         uuid.UUID `validate:"required"`
 	SongID     uuid.UUID `validate:"required"`
 	OverSongID uuid.UUID `validate:"required"`
+}
+
+type RemoveSongsFromPlaylistRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
 }

@@ -84,8 +84,8 @@ func (p *PlaylistRepositoryMock) Create(playlist *model.Playlist) error {
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) AddSong(playlistSong *model.PlaylistSong) error {
-	args := p.Called(playlistSong)
+func (p *PlaylistRepositoryMock) AddSongs(playlistSongs *[]model.PlaylistSong) error {
+	args := p.Called(playlistSongs)
 	return args.Error(0)
 }
 
@@ -104,7 +104,7 @@ func (p *PlaylistRepositoryMock) Delete(id uuid.UUID) error {
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) RemoveSong(playlist *model.Playlist, song *model.Song) error {
-	args := p.Called(playlist, song)
+func (p *PlaylistRepositoryMock) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {
+	args := p.Called(playlistSongs)
 	return args.Error(0)
 }
