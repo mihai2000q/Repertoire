@@ -14,7 +14,7 @@ type Playlist struct {
 	Description   string             `gorm:"not null" json:"description"`
 	ImageURL      *internal.FilePath `json:"imageUrl"`
 	Songs         []Song             `gorm:"many2many:playlist_song" json:"songs"`
-	PlaylistSongs []PlaylistSong     `gorm:"foreignKey:PlaylistID" json:"playlist_songs"`
+	PlaylistSongs []PlaylistSong     `gorm:"foreignKey:PlaylistID; constraint:OnDelete:CASCADE" json:"playlist_songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
@@ -27,8 +27,8 @@ type PlaylistSong struct {
 	SongTrackNo uint      `gorm:"not null"`
 	CreatedAt   time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 
-	Playlist Playlist `gorm:"foreignKey:PlaylistID; constraint:OnDelete:CASCADE;"`
-	Song     Song     `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE;"`
+	Playlist Playlist
+	Song     Song
 }
 
 func (p *Playlist) BeforeSave(*gorm.DB) error {

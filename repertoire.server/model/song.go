@@ -31,7 +31,7 @@ type Song struct {
 	GuitarTuning   *GuitarTuning  `json:"guitarTuning"`
 	Sections       []SongSection  `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Playlists      []Playlist     `gorm:"many2many:playlist_song" json:"-"`
-	PlaylistSongs  []PlaylistSong `gorm:"foreignKey:SongID" json:"playlist_songs"`
+	PlaylistSongs  []PlaylistSong `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"playlist_songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
