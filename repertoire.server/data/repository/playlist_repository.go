@@ -53,7 +53,11 @@ func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong
 func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
 	return p.client.DB.
 		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
-			return db.Preload("Song").Order("song_track_no")
+			return db.
+				Preload("Song").
+				Preload("Song.Artist").
+				Preload("Song.Album").
+				Order("song_track_no")
 		}).
 		Find(&playlist, model.Playlist{ID: id}).Error
 }
@@ -83,9 +87,8 @@ func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, se
 }
 
 func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {
-	return p.client.DB.Model(&model.Song{}).
-		Preload("Playlists").
-		Where("playlist_song.playlist_id = ?", id).
+	return p.client.DB.Model(&model.PlaylistSong{}).
+		Where("playlist_id = ?", id).
 		Count(count).
 		Error
 }
