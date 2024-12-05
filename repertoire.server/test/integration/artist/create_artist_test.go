@@ -44,7 +44,7 @@ func assertCreatedArtist(t *testing.T, request requests.CreateArtistRequest, art
 	db := utils.GetDatabase()
 
 	var artist model.Artist
-	db.Preload("Artist").Find(&artist, artistID)
+	db.Find(&artist, artistID)
 
 	assert.Equal(t, request.Name, artist.Name)
 	assert.Nil(t, artist.ImageURL)
