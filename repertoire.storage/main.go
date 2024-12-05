@@ -8,7 +8,7 @@ import (
 
 func main() {
 	fx.New(
-		fx.Provide(internal.NewEnv),
+		internal.Module,
 		api.Module,
 	).Run()
 }
