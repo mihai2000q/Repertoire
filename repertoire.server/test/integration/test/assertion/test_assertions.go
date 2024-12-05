@@ -148,15 +148,19 @@ func ResponseSongSectionType(t *testing.T, songSectionType model.SongSectionType
 	assert.Equal(t, songSectionType.Name, response.Name)
 }
 
-func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongs bool) {
+func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongsMetadata bool) {
 	assert.Equal(t, playlist.ID, response.ID)
 	assert.Equal(t, playlist.Title, response.Title)
 	assert.Equal(t, playlist.Description, response.Description)
 	assert.Equal(t, playlist.ImageURL, response.ImageURL)
 
-	if withSongs {
-		for i := range playlist.Songs {
-			ResponseSong(t, playlist.Songs[i], response.Songs[i], true, true, false)
+	for i := range playlist.Songs {
+		ResponseSong(t, playlist.Songs[i], response.Songs[i], withSongsMetadata, withSongsMetadata, false)
+		if withSongsMetadata {
+			// making sure the After Find hook works
+			assert.Equal(t, playlist.PlaylistSongs[i].SongID, response.Songs[i].ID)
+			assert.Equal(t, playlist.PlaylistSongs[i].SongTrackNo, response.Songs[i].PlaylistTrackNo)
+			assert.Equal(t, playlist.PlaylistSongs[i].CreatedAt, response.Songs[i].PlaylistCreatedAt)
 		}
 	}
 }
