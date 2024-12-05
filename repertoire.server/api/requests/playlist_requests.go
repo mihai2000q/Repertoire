@@ -30,3 +30,8 @@ type MoveSongFromPlaylistRequest struct {
 	SongID     uuid.UUID `validate:"required"`
 	OverSongID uuid.UUID `validate:"required"`
 }
+
+type RemoveSongsFromPlaylistRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	SongIDs []uuid.UUID `validate:"min=1"`
+}
