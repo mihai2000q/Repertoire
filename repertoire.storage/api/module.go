@@ -11,6 +11,7 @@ import (
 )
 
 var Module = fx.Options(
+	fx.Provide(middleware.NewAuthMiddleware),
 	fx.Provide(middleware.NewCorsMiddleware),
 	fx.Provide(middleware.NewErrorHandlerMiddleware),
 	fx.Provide(server.NewRequestHandler),
