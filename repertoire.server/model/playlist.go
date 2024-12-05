@@ -38,5 +38,11 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
 	p.ImageURL = p.ImageURL.ToNullableFullURL()
+	for _, playlistSong := range p.PlaylistSongs {
+		newSong := playlistSong.Song
+		newSong.PlaylistTrackNo = playlistSong.SongTrackNo
+		newSong.PlaylistCreatedAt = playlistSong.CreatedAt
+		p.Songs = append(p.Songs, newSong)
+	}
 	return nil
 }
