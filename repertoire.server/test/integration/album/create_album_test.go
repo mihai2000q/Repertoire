@@ -76,6 +76,7 @@ func assertCreatedAlbum(t *testing.T, request requests.CreateAlbumRequest, album
 
 	assert.Equal(t, request.Title, album.Title)
 	assertion.Time(t, request.ReleaseDate, album.ReleaseDate)
+	assert.Nil(t, album.ImageURL)
 	assert.Equal(t, userID, album.UserID)
 
 	if request.ArtistID != nil {
