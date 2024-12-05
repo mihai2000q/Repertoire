@@ -160,7 +160,7 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 			// making sure the After Find hook works
 			assert.Equal(t, playlist.PlaylistSongs[i].SongID, response.Songs[i].ID)
 			assert.Equal(t, playlist.PlaylistSongs[i].SongTrackNo, response.Songs[i].PlaylistTrackNo)
-			assert.Equal(t, playlist.PlaylistSongs[i].CreatedAt, response.Songs[i].PlaylistCreatedAt)
+			Time(t, &playlist.PlaylistSongs[i].CreatedAt, &response.Songs[i].PlaylistCreatedAt)
 		}
 	}
 }
