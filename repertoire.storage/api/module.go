@@ -11,10 +11,13 @@ import (
 )
 
 var Module = fx.Options(
+	fx.Provide(middleware.NewAuthMiddleware),
 	fx.Provide(middleware.NewCorsMiddleware),
 	fx.Provide(middleware.NewErrorHandlerMiddleware),
 	fx.Provide(server.NewRequestHandler),
+	fx.Provide(handler.NewAuthHandler),
 	fx.Provide(handler.NewStorageHandler),
+	fx.Provide(router.NewAuthRouter),
 	fx.Provide(router.NewStorageRouter),
 	fx.Provide(routes.NewRoutes),
 	fx.Provide(server.NewServer),

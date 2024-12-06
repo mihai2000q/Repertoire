@@ -6,13 +6,15 @@ import (
 )
 
 type RequestHandler struct {
-	Gin    *gin.Engine
-	Router *gin.RouterGroup
+	Gin           *gin.Engine
+	PrivateRouter *gin.RouterGroup
+	PublicRouter  *gin.RouterGroup
 }
 
 func NewRequestHandler(
 	corsMiddleware middleware.CorsMiddleware,
 	errorHandlerMiddleware middleware.ErrorHandlerMiddleware,
+	authMiddleware middleware.AuthMiddleware,
 ) *RequestHandler {
 	engine := gin.New()
 	engine.Use(gin.Logger())
@@ -20,10 +22,15 @@ func NewRequestHandler(
 	engine.Use(corsMiddleware.Handler())
 	engine.Use(errorHandlerMiddleware.Handler())
 
-	router := engine.Group("")
+	publicRouter := engine.Group("")
+
+	var privateRouter = &gin.RouterGroup{}
+	*privateRouter = *publicRouter
+	privateRouter.Use(authMiddleware.Handler())
 
 	return &RequestHandler{
-		Gin:    engine,
-		Router: router,
+		Gin:           engine,
+		PublicRouter:  publicRouter,
+		PrivateRouter: publicRouter,
 	}
 }

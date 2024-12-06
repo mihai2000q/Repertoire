@@ -11,12 +11,16 @@ type StorageRouter struct {
 }
 
 func (s StorageRouter) RegisterRoutes() {
-	api := s.requestHandler.Router.Group("/storage")
+	api := s.requestHandler.PublicRouter.Group("/storage")
 	{
 		api.GET("/files/*filePath", s.handler.Get)
-		api.PUT("/upload", s.handler.Upload)
-		api.DELETE("/files/*filePath", s.handler.DeleteFile)
-		api.DELETE("/directories/*directoryPath", s.handler.DeleteDirectory)
+	}
+
+	privateApi := s.requestHandler.PrivateRouter.Group("/storage")
+	{
+		privateApi.PUT("/upload", s.handler.Upload)
+		privateApi.DELETE("/files/*filePath", s.handler.DeleteFile)
+		privateApi.DELETE("/directories/*directoryPath", s.handler.DeleteDirectory)
 	}
 }
 
