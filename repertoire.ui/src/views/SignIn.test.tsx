@@ -4,7 +4,7 @@ import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import SignInRequest from '../types/requests/AuthRequests.ts'
+import { SignInRequest } from '../types/requests/AuthRequests.ts'
 import TokenResponse from '../types/responses/TokenResponse.ts'
 import { EnhancedStore } from '@reduxjs/toolkit'
 import { expect } from 'vitest'
@@ -25,8 +25,8 @@ describe('Sign In', () => {
     expect(screen.getByRole('heading', { name: /welcome/i })).toBeVisible()
     expect(screen.getByRole('textbox', { name: /email/i })).toBeVisible()
     expect(container.querySelector('input[type=password]')).toBeVisible()
-    expect(screen.getByRole('button', { name: /create account/i })).toBeVisible()
-    expect(screen.getByRole('button', { name: /forgot password/i })).toBeVisible()
+    expect(screen.getByRole('link', { name: /create account/i })).toBeVisible()
+    expect(screen.getByRole('link', { name: /forgot password/i })).toBeVisible()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeVisible()
   })
 
