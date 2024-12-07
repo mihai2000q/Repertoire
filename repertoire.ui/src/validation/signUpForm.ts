@@ -11,9 +11,9 @@ export const signUpValidation = z.object({
   password: z
     .string()
     .trim()
-    .min(8, 'Password should be at least 8 characters')
-    .refine((val) => /[A-Z]/.test(val), 'Password should have at least 1 upper character')
-    .refine((val) => /[a-z]/.test(val), 'Password should have at least 1 lower character')
-    .refine((val) => /[0-9]/.test(val), 'Password should have at least 1 digit'),
+    .refine((val) => /[A-Z]/.test(val), 'Password must have at least 1 upper character')
+    .refine((val) => /[a-z]/.test(val), 'Password must have at least 1 lower character')
+    .refine((val) => /[0-9]/.test(val), 'Password must have at least 1 digit')
+    .refine((val) => val.length >= 8, 'Password must have at least 8 characters'),
   name: z.string().min(1, 'Name cannot be empty')
 })
