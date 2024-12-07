@@ -15,7 +15,7 @@ import { useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
 import { setToken } from '../state/authSlice'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
 
@@ -57,7 +57,7 @@ function SignIn(): ReactElement {
         </Title>
         <Text c="dimmed" size="sm" ta="center" mt={5}>
           Do not have an account yet?{' '}
-          <Anchor size="sm" component="button">
+          <Anchor c={'cyan.5'} size="sm" component={Link} to={'/sign-up'}>
             Create account
           </Anchor>
         </Text>
@@ -84,7 +84,14 @@ function SignIn(): ReactElement {
                   disabled={isLoading}
                 />
               </Stack>
-              <Anchor component="button" size="sm" mt={6} style={{ alignSelf: 'flex-end' }}>
+              <Anchor
+                c={'cyan.5'}
+                component={Link}
+                to={'/forgot-pass'}
+                size="sm"
+                mt={6}
+                style={{ alignSelf: 'flex-end' }}
+              >
                 Forgot password?
               </Anchor>
               <Button type={'submit'} fullWidth mt={'sm'} disabled={isLoading}>

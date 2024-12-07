@@ -1,11 +1,11 @@
-import { mantineRender } from '../test-utils.tsx'
+import { reduxRouterRender } from '../test-utils.tsx'
 import SignUp from './SignUp.tsx'
 import { screen } from '@testing-library/react'
 
 describe('Sign Up', () => {
   it('should render', () => {
-    mantineRender(<SignUp />)
+    reduxRouterRender(<SignUp />)
 
-    expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument()
   })
 })
