@@ -1,8 +1,8 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { queryWithRedirection } from './api.query'
 import TokenResponse from '../types/responses/TokenResponse'
-import SignInRequest from '../types/requests/AuthRequests'
 import User from '../types/models/User'
+import { SignInRequest, SignUpRequest } from '../types/requests/AuthRequests.ts'
 
 export const api = createApi({
   baseQuery: queryWithRedirection,
@@ -11,6 +11,13 @@ export const api = createApi({
   endpoints: (build) => {
     return {
       // Auth
+      signUp: build.mutation<TokenResponse, SignUpRequest>({
+        query: (body) => ({
+          url: `auth/sign-up`,
+          method: 'POST',
+          body: body
+        })
+      }),
       signIn: build.mutation<TokenResponse, SignInRequest>({
         query: (body) => ({
           url: `auth/sign-in`,
@@ -27,4 +34,4 @@ export const api = createApi({
   }
 })
 
-export const { useSignInMutation, useGetCurrentUserQuery } = api
+export const { useSignUpMutation, useSignInMutation, useGetCurrentUserQuery } = api
