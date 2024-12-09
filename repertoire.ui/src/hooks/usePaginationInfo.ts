@@ -3,17 +3,13 @@ export default function usePaginationInfo(
   pageSize: number,
   currentPage: number
 ): {
-  startCount: number,
-  endCount: number,
+  startCount: number
+  endCount: number
   totalPages: number
 } {
   const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 0
 
-  const startCount = totalCount === 0
-    ? 0
-    : currentPage === 1
-      ? 1
-      : pageSize * (currentPage - 1)
+  const startCount = totalCount === 0 ? 0 : currentPage === 1 ? 1 : pageSize * (currentPage - 1)
 
   const endCount = totalCount
     ? totalCount === 0
@@ -23,5 +19,5 @@ export default function usePaginationInfo(
         : currentPage * pageSize
     : 0
 
-  return {startCount, endCount, totalPages}
+  return { startCount, endCount, totalPages }
 }

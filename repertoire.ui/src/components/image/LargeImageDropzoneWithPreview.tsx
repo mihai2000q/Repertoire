@@ -12,7 +12,13 @@ function LargeImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPre
   if (image) {
     return (
       <Group justify={'center'} align={'center'}>
-        <Image src={URL.createObjectURL(image)} h={200} w={320} radius={'md'} alt={'image-preview'} />
+        <Image
+          src={URL.createObjectURL(image)}
+          h={200}
+          w={320}
+          radius={'md'}
+          alt={'image-preview'}
+        />
 
         <Stack>
           <FileButton onChange={setImage} accept="image/png,image/jpeg">

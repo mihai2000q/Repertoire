@@ -104,9 +104,11 @@ function Album() {
             gap={4}
             style={{ ...(!isUnknownAlbum && { alignSelf: 'start', paddingTop: '10px' }) }}
           >
-            {!isUnknownAlbum && <Text fw={500} inline>
-              Album
-            </Text>}
+            {!isUnknownAlbum && (
+              <Text fw={500} inline>
+                Album
+              </Text>
+            )}
             {isUnknownAlbum ? (
               <Title order={3} fw={200} fs={'italic'}>
                 Unknown

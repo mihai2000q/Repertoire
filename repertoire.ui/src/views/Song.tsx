@@ -41,7 +41,7 @@ import EditSongInformationModal from '../components/song/modal/EditSongInformati
 import EditSongLinksModal from '../components/song/modal/EditSongLinksModal.tsx'
 import EditSongHeaderModal from '../components/song/modal/EditSongHeaderModal.tsx'
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 const NotSet = () => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>

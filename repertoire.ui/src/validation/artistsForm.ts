@@ -29,5 +29,5 @@ export interface EditArtistHeaderForm {
 }
 
 export const editArtistHeaderValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank'),
+  name: z.string().trim().min(1, 'Name cannot be blank')
 })

@@ -38,10 +38,10 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
         cursor: 'default',
         borderRadius: '8px',
         transition: '0.3s',
-        ...isSelected && {
+        ...(isSelected && {
           boxShadow: theme.shadows.xl,
           backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-        }
+        })
       })}
       px={'md'}
       py={'xs'}
@@ -75,9 +75,11 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>
-          {!isUnknownArtist && <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
-            Remove from Artist
-          </Menu.Item>}
+          {!isUnknownArtist && (
+            <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              Remove from Artist
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
     </Group>

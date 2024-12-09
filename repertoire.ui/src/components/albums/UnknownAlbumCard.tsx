@@ -16,7 +16,11 @@ function UnknownArtistCard() {
     <Stack
       align={'center'}
       gap={0}
-      style={{ alignSelf: 'start', transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
+      style={{
+        alignSelf: 'start',
+        transition: '0.3s',
+        ...(isImageHovered && { transform: 'scale(1.1)' })
+      }}
       w={150}
     >
       <AspectRatio>

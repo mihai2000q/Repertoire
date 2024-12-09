@@ -1,12 +1,12 @@
-import {ActionIcon, Box, Card, Tooltip} from '@mantine/core'
+import { ActionIcon, Box, Card, Tooltip } from '@mantine/core'
 import { ReactElement } from 'react'
 import { IconPencil } from '@tabler/icons-react'
-import {useHover} from "@mantine/hooks";
+import { useHover } from '@mantine/hooks'
 
 interface EditPanelCardProps {
   children: ReactElement
-  onEditClick: () => void,
-  p?: string,
+  onEditClick: () => void
+  p?: string
 }
 
 function EditPanelCard({ children, onEditClick, p }: EditPanelCardProps) {

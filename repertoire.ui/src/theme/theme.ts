@@ -19,7 +19,7 @@ export const theme = createTheme({
 
   shadows: {
     xxl: 'rgba(0, 0, 0, 0.2) 0px 10px 36px 0px',
-    xxl_hover: 'rgba(0, 0, 0, 0.4) 0px 10px 36px 0px',
+    xxl_hover: 'rgba(0, 0, 0, 0.4) 0px 10px 36px 0px'
   },
 
   // typography

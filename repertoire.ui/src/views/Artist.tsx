@@ -169,13 +169,16 @@ function Artist() {
       >
         <Group>
           <Avatar
-            src={isUnknownArtist ? unknownPlaceholder : artist?.imageUrl ?? artistPlaceholder}
+            src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
             size={125}
             style={(theme) => ({
               boxShadow: theme.shadows.md
             })}
           />
-          <Stack gap={4} style={{ ...!isUnknownArtist && {alignSelf: 'start', paddingTop: '16px'} }}>
+          <Stack
+            gap={4}
+            style={{ ...(!isUnknownArtist && { alignSelf: 'start', paddingTop: '16px' }) }}
+          >
             {!isUnknownArtist && (
               <Text fw={500} inline>
                 Artist
@@ -220,12 +223,14 @@ function Artist() {
                       </ActionIcon>
                     </Menu.Target>
                     <Menu.Dropdown>
-                      {!isUnknownArtist && <Menu.Item
-                        leftSection={<IconPlus size={15} />}
-                        onClick={openAddExistingAlbums}
-                      >
-                        Add Existing Albums
-                      </Menu.Item>}
+                      {!isUnknownArtist && (
+                        <Menu.Item
+                          leftSection={<IconPlus size={15} />}
+                          onClick={openAddExistingAlbums}
+                        >
+                          Add Existing Albums
+                        </Menu.Item>
+                      )}
                       <Menu.Item leftSection={<IconDisc size={15} />} onClick={openAddNewAlbum}>
                         Add New Album
                       </Menu.Item>

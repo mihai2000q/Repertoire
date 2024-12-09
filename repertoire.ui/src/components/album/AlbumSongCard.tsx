@@ -32,9 +32,11 @@ function AlbumSongCard({ song, isUnknownAlbum }: AlbumSongCardProps) {
       py={'xs'}
       onClick={handleClick}
     >
-      {!isUnknownAlbum && <Text fw={500} w={35} ta={'center'}>
-        {song.albumTrackNo}
-      </Text>}
+      {!isUnknownAlbum && (
+        <Text fw={500} w={35} ta={'center'}>
+          {song.albumTrackNo}
+        </Text>
+      )}
       <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
       <Stack style={{ overflow: 'hidden' }}>
         <Text fw={500} truncate={'end'}>

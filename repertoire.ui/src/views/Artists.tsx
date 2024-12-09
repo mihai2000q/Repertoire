@@ -19,8 +19,8 @@ import AddNewArtistModal from '../components/artists/modal/AddNewArtistModal.tsx
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
-import UnknownArtistCard from "../components/artists/UnknownArtistCard.tsx";
-import useShowUnknownArtist from "../hooks/useShowUnknownArtist.ts";
+import UnknownArtistCard from '../components/artists/UnknownArtistCard.tsx'
+import useShowUnknownArtist from '../hooks/useShowUnknownArtist.ts'
 
 function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -61,7 +61,8 @@ function Artists() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} artists out of {artists?.totalCount + (showUnknownArtist ? 1 : 0)}
+          {startCount} - {endCount} artists out of{' '}
+          {artists?.totalCount + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 

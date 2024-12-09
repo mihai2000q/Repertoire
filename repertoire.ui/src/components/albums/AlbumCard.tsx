@@ -1,14 +1,14 @@
 import Album from '../../types/models/Album.ts'
-import {AspectRatio, Image, Menu, Stack, Text} from '@mantine/core'
+import { AspectRatio, Image, Menu, Stack, Text } from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from "../../hooks/useContextMenu.ts";
-import {IconTrash} from "@tabler/icons-react";
-import {toast} from "react-toastify";
-import {useDeleteAlbumMutation} from "../../state/albumsApi.ts";
+import useContextMenu from '../../hooks/useContextMenu.ts'
+import { IconTrash } from '@tabler/icons-react'
+import { toast } from 'react-toastify'
+import { useDeleteAlbumMutation } from '../../state/albumsApi.ts'
 
 interface AlbumCardProps {
   album: Album

@@ -19,8 +19,8 @@ import AddNewAlbumModal from '../components/albums/modal/AddNewAlbumModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
-import useShowUnknownAlbum from "../hooks/useShowUnknownAlbum.ts";
-import UnknownAlbumCard from "../components/albums/UnknownAlbumCard.tsx";
+import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
+import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
 
 function Albums() {
   const [currentPage, setCurrentPage] = useState(1)

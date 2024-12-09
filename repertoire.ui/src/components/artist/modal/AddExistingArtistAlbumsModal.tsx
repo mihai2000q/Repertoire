@@ -13,10 +13,9 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedState } from '@mantine/hooks'
+import { useDebouncedState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddAlbumsToArtistMutation } from '../../../state/artistsApi.ts'
-import { useListState } from '@mantine/hooks'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -33,9 +32,10 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
 
   const { data: albums, isLoading: albumsIsLoading } = useGetAlbumsQuery({
     orderBy: ['title asc'],
-    searchBy: searchValue.trim() !== ''
-      ? ['artist_id IS NULL', `title ~* ${searchValue}`]
-      : ['artist_id IS NULL']
+    searchBy:
+      searchValue.trim() !== ''
+        ? ['artist_id IS NULL', `title ~* ${searchValue}`]
+        : ['artist_id IS NULL']
   })
 
   const [addAlbumMutation, { isLoading: addAlbumIsLoading }] = useAddAlbumsToArtistMutation()
@@ -106,36 +106,36 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
           <Stack w={'100%'} gap={0} style={{ overflow: 'auto', maxHeight: '50vh' }}>
             {albumsIsLoading
               ? Array.from(Array(5)).map((_, i) => (
-                <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                  <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                  <Skeleton width={37} height={37} radius={'md'} />
-                  <Skeleton width={160} height={18} />
-                </Group>
-              ))
+                  <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+                    <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+                    <Skeleton width={37} height={37} radius={'md'} />
+                    <Skeleton width={160} height={18} />
+                  </Group>
+                ))
               : albums.models.map((album) => (
-                <Group
-                  key={album.id}
-                  align={'center'}
-                  sx={(theme) => ({
-                    transition: '0.3s',
-                    '&:hover': {
-                      boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-                    }
-                  })}
-                  w={'100%'}
-                  px={'xl'}
-                  py={'xs'}
-                >
-                  <Checkbox
-                    checked={albumIds.includes(album.id)}
-                    onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
-                    pr={'sm'}
-                  />
-                  <Avatar radius={'md'} src={album.imageUrl ?? albumPlaceholder} />
-                  <Text fw={500}>{album.title}</Text>
-                </Group>
-              ))}
+                  <Group
+                    key={album.id}
+                    align={'center'}
+                    sx={(theme) => ({
+                      transition: '0.3s',
+                      '&:hover': {
+                        boxShadow: theme.shadows.xl,
+                        backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      }
+                    })}
+                    w={'100%'}
+                    px={'xl'}
+                    py={'xs'}
+                  >
+                    <Checkbox
+                      checked={albumIds.includes(album.id)}
+                      onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
+                      pr={'sm'}
+                    />
+                    <Avatar radius={'md'} src={album.imageUrl ?? albumPlaceholder} />
+                    <Text fw={500}>{album.title}</Text>
+                  </Group>
+                ))}
           </Stack>
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={albumIds.length > 0} label="Select albums">
