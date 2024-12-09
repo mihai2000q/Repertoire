@@ -12,7 +12,13 @@ function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWi
   if (image) {
     return (
       <Box pos={'relative'}>
-        <Image src={URL.createObjectURL(image)} w={92} h={92} radius={'50%'} alt={'image-preview'} />
+        <Image
+          src={URL.createObjectURL(image)}
+          w={92}
+          h={92}
+          radius={'50%'}
+          alt={'image-preview'}
+        />
 
         <Box pos={'absolute'} top={70} left={-8}>
           <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>

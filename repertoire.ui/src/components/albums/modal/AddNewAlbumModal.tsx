@@ -9,7 +9,7 @@ import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPre
 import { DatePickerInput } from '@mantine/dates'
 import ArtistAutocomplete from '../../form/input/ArtistAutocomplete.tsx'
 import Artist from '../../../types/models/Artist.ts'
-import {IconCalendarFilled} from "@tabler/icons-react";
+import { IconCalendarFilled } from '@tabler/icons-react'
 
 interface AddNewAlbumModalProps {
   opened: boolean

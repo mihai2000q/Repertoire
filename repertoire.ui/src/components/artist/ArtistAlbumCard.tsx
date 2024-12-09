@@ -11,9 +11,10 @@ import { IconDots, IconTrash } from '@tabler/icons-react'
 interface ArtistAlbumCardProps {
   album: Album
   handleRemove: () => void
+  isUnknownArtist: boolean
 }
 
-function ArtistAlbumCard({ album, handleRemove }: ArtistAlbumCardProps) {
+function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCardProps) {
   const dispatch = useAppDispatch()
   const { ref, hovered } = useHover()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -37,10 +38,10 @@ function ArtistAlbumCard({ album, handleRemove }: ArtistAlbumCardProps) {
         cursor: 'default',
         borderRadius: '8px',
         transition: '0.3s',
-        ...isSelected && {
+        ...(isSelected && {
           boxShadow: theme.shadows.xl,
           backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-        }
+        })
       })}
       px={'md'}
       py={'xs'}
@@ -74,9 +75,11 @@ function ArtistAlbumCard({ album, handleRemove }: ArtistAlbumCardProps) {
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
-            Remove from Artist
-          </Menu.Item>
+          {!isUnknownArtist && (
+            <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              Remove from Artist
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
     </Group>

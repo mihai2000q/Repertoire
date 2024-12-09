@@ -9,7 +9,7 @@ describe('useErrorRedirection', () => {
         errorPath: undefined,
         songDrawer: undefined,
         albumDrawer: undefined,
-        artistDrawer: undefined,
+        artistDrawer: undefined
       }
     })
 
@@ -26,7 +26,7 @@ describe('useErrorRedirection', () => {
         errorPath: errorPath,
         songDrawer: undefined,
         albumDrawer: undefined,
-        artistDrawer: undefined,
+        artistDrawer: undefined
       }
     })
 

@@ -11,9 +11,10 @@ import { useHover } from '@mantine/hooks'
 interface ArtistSongCardProps {
   song: Song
   handleRemove: () => void
+  isUnknownArtist: boolean
 }
 
-function ArtistSongCard({ song, handleRemove }: ArtistSongCardProps) {
+function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardProps) {
   const dispatch = useAppDispatch()
   const { ref, hovered } = useHover()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -41,10 +42,10 @@ function ArtistSongCard({ song, handleRemove }: ArtistSongCardProps) {
       sx={(theme) => ({
         cursor: 'default',
         transition: '0.3s',
-        ...isSelected && {
+        ...(isSelected && {
           boxShadow: theme.shadows.xl,
           backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-        }
+        })
       })}
       px={'md'}
       py={'xs'}
@@ -93,10 +94,13 @@ function ArtistSongCard({ song, handleRemove }: ArtistSongCardProps) {
             <IconDots size={15} />
           </ActionIcon>
         </Menu.Target>
+
         <Menu.Dropdown>
-          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
-            Remove from Artist
-          </Menu.Item>
+          {!isUnknownArtist && (
+            <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              Remove from Artist
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
     </Group>

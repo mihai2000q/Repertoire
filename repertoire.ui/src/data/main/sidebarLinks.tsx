@@ -10,7 +10,7 @@ import {
 interface SidebarLink {
   icon: ReactElement
   label: string
-  link: string,
+  link: string
   subLinks: string[]
 }
 
@@ -19,5 +19,10 @@ export const sidebarLinks: SidebarLink[] = [
   { icon: <IconUserFilled />, label: 'Artists', link: '/artists', subLinks: ['/artist'] },
   { icon: <IconAlbum />, label: 'Albums', link: '/albums', subLinks: ['/album'] },
   { icon: <IconMusic stroke={1.75} />, label: 'Songs', link: '/songs', subLinks: ['/song'] },
-  { icon: <IconPlaylist stroke={1.75} />, label: 'Playlists', link: '/playlists', subLinks: ['/playlist'] }
+  {
+    icon: <IconPlaylist stroke={1.75} />,
+    label: 'Playlists',
+    link: '/playlists',
+    subLinks: ['/playlist']
+  }
 ]

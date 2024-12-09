@@ -13,7 +13,7 @@ import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
 interface AddNewArtistSongModalProps {
   opened: boolean
   onClose: () => void
-  artistId: string
+  artistId: string | undefined
 }
 
 function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongModalProps) {

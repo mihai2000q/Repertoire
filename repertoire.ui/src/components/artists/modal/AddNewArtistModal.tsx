@@ -1,4 +1,4 @@
-import {Button, Group, Modal, Stack, TextInput} from '@mantine/core'
+import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'

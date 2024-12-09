@@ -24,5 +24,5 @@ export interface EditAlbumHeaderForm {
 }
 
 export const editAlbumHeaderValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank'),
+  title: z.string().trim().min(1, 'Title cannot be blank')
 })

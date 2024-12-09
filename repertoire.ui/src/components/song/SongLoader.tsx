@@ -1,4 +1,4 @@
-import {Group, Skeleton, Stack} from "@mantine/core";
+import { Group, Skeleton, Stack } from '@mantine/core'
 
 function SongLoader() {
   return (
@@ -8,7 +8,7 @@ function SongLoader() {
         <Skeleton w={200} h={35} />
       </Group>
     </Stack>
-  );
+  )
 }
 
-export default SongLoader;
+export default SongLoader

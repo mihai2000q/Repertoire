@@ -1,6 +1,6 @@
 import { useCreateSongSectionMutation, useGetSongSectionTypesQuery } from '../../state/songsApi.ts'
 import { Button, Collapse, ComboboxItem, Group, Select, TextInput } from '@mantine/core'
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 

@@ -13,9 +13,8 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedState } from '@mantine/hooks'
+import { useDebouncedState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useListState } from '@mantine/hooks'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -29,14 +28,24 @@ interface AddNewAlbumSongModalProps {
   artistId: string
 }
 
-function AddExistingAlbumSongsModal({ opened, onClose, albumId, artistId }: AddNewAlbumSongModalProps) {
+function AddExistingAlbumSongsModal({
+  opened,
+  onClose,
+  albumId,
+  artistId
+}: AddNewAlbumSongModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
     orderBy: ['title asc'],
-    searchBy: searchValue.trim() !== ''
-      ? ['album_id IS NULL', `artist_id IS NULL${artistId ? ' OR artist_id = ' + artistId : ''}`, `title ~* ${searchValue}`]
-      : ['album_id IS NULL', `artist_id IS NULL${artistId ? ' OR artist_id = ' + artistId : ''}`]
+    searchBy:
+      searchValue.trim() !== ''
+        ? [
+            'album_id IS NULL',
+            `artist_id IS NULL${artistId ? ' OR artist_id = ' + artistId : ''}`,
+            `title ~* ${searchValue}`
+          ]
+        : ['album_id IS NULL', `artist_id IS NULL${artistId ? ' OR artist_id = ' + artistId : ''}`]
   })
 
   const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()
@@ -106,36 +115,39 @@ function AddExistingAlbumSongsModal({ opened, onClose, albumId, artistId }: AddN
           <Stack w={'100%'} gap={0} style={{ overflow: 'auto', maxHeight: '50vh' }}>
             {songsIsLoading
               ? Array.from(Array(5)).map((_, i) => (
-                <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                  <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                  <Skeleton width={37} height={37} radius={'md'} />
-                  <Skeleton width={160} height={18} />
-                </Group>
-              ))
+                  <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+                    <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+                    <Skeleton width={37} height={37} radius={'md'} />
+                    <Skeleton width={160} height={18} />
+                  </Group>
+                ))
               : songs.models.map((song) => (
-                <Group
-                  key={song.id}
-                  align={'center'}
-                  sx={(theme) => ({
-                    transition: '0.3s',
-                    '&:hover': {
-                      boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-                    }
-                  })}
-                  w={'100%'}
-                  px={'xl'}
-                  py={'xs'}
-                >
-                  <Checkbox
-                    checked={songIds.includes(song.id)}
-                    onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
-                    pr={'sm'}
-                  />
-                  <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
-                  <Text fw={500}>{song.title}</Text>
-                </Group>
-              ))}
+                  <Group
+                    key={song.id}
+                    align={'center'}
+                    sx={(theme) => ({
+                      transition: '0.3s',
+                      '&:hover': {
+                        boxShadow: theme.shadows.xl,
+                        backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      }
+                    })}
+                    w={'100%'}
+                    px={'xl'}
+                    py={'xs'}
+                  >
+                    <Checkbox
+                      checked={songIds.includes(song.id)}
+                      onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
+                      pr={'sm'}
+                    />
+                    <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
+                    <Stack gap={0}>
+                      <Text fw={500}>{song.title}</Text>
+                      {song.artist && <Text fz={'sm'}>{song.artist.name}</Text>}
+                    </Stack>
+                  </Group>
+                ))}
           </Stack>
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={songIds.length > 0} label="Select songs">
