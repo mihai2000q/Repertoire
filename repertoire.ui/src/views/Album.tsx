@@ -178,6 +178,7 @@ function Album() {
         opened={openedAddExistingSongs}
         onClose={closeAddExistingSongs}
         albumId={albumId}
+        artistId={album?.artist?.id}
       />
     </Stack>
   )
