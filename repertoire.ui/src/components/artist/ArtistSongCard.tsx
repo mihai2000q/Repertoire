@@ -17,7 +17,9 @@ interface ArtistSongCardProps {
 function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardProps) {
   const dispatch = useAppDispatch()
   const { ref, hovered } = useHover()
+
   const [isMenuOpened, setIsMenuOpened] = useState(false)
+
   const isSelected = hovered || isMenuOpened
 
   function handleClick() {
