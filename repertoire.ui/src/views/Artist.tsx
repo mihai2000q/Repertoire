@@ -15,8 +15,14 @@ import {
   Title
 } from '@mantine/core'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useDeleteArtistMutation, useGetArtistQuery, useRemoveAlbumsFromArtistMutation, useRemoveSongsFromArtistMutation } from '../state/artistsApi.ts'
+import {
+  useDeleteArtistMutation,
+  useGetArtistQuery,
+  useRemoveAlbumsFromArtistMutation,
+  useRemoveSongsFromArtistMutation
+} from '../state/artistsApi.ts'
 import artistPlaceholder from '../assets/user-placeholder.jpg'
+import unknownPlaceholder from '../assets/unknown-placeholder.png'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
 import { useGetAlbumsQuery } from '../state/albumsApi.ts'
 import { useGetSongsQuery } from '../state/songsApi.ts'
@@ -88,21 +94,30 @@ function Artist() {
 
   const params = useParams()
   const artistId = params['id'] ?? ''
+  const isUnknownArtist = artistId === 'unknown'
 
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
-  const { data: artist, isLoading } = useGetArtistQuery(artistId)
+  const { data: artist, isLoading } = useGetArtistQuery(artistId, { skip: isUnknownArtist })
 
   const [albumsOrder, setAlbumsOrder] = useState<Order>(artistAlbumsOrders[0])
   const [songsOrder, setSongsOrder] = useState<Order>(artistSongsOrders[0])
 
-  const { data: albums, isLoading: isAlbumsLoading, isFetching: isAlbumsFetching } = useGetAlbumsQuery({
+  const {
+    data: albums,
+    isLoading: isAlbumsLoading,
+    isFetching: isAlbumsFetching
+  } = useGetAlbumsQuery({
     orderBy: [albumsOrder.value],
-    searchBy: [`artist_id = ${artistId}`]
+    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = ${artistId}`]
   })
-  const { data: songs, isLoading: isSongsLoading, isFetching: isSongsFetching } = useGetSongsQuery({
+  const {
+    data: songs,
+    isLoading: isSongsLoading,
+    isFetching: isSongsFetching
+  } = useGetSongsQuery({
     orderBy: [songsOrder.value],
-    searchBy: [`artist_id = ${artistId}`]
+    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = ${artistId}`]
   })
 
   const [removeAlbumsFromArtist] = useRemoveAlbumsFromArtistMutation()
@@ -150,22 +165,31 @@ function Artist() {
             </Menu.Item>
           </>
         }
+        disableMenus={isUnknownArtist}
       >
         <Group>
           <Avatar
-            src={artist.imageUrl ?? artistPlaceholder}
+            src={isUnknownArtist ? unknownPlaceholder : artist?.imageUrl ?? artistPlaceholder}
             size={125}
             style={(theme) => ({
               boxShadow: theme.shadows.md
             })}
           />
-          <Stack gap={4} style={{ alignSelf: 'start' }} pt={'md'}>
-            <Text fw={500} inline>
-              Artist
-            </Text>
-            <Title order={1} fw={700}>
-              {artist.name}
-            </Title>
+          <Stack gap={4} style={{ ...!isUnknownArtist && {alignSelf: 'start', paddingTop: '16px'} }}>
+            {!isUnknownArtist && (
+              <Text fw={500} inline>
+                Artist
+              </Text>
+            )}
+            {isUnknownArtist ? (
+              <Title order={3} fw={200} fs={'italic'} mb={2}>
+                Unknown
+              </Title>
+            ) : (
+              <Title order={1} fw={700}>
+                {artist?.name}
+              </Title>
+            )}
           </Stack>
         </Group>
       </HeaderPanelCard>
@@ -173,7 +197,7 @@ function Artist() {
       <Divider />
 
       <Grid align={'flex-start'}>
-        <Grid.Col span={{ sm: 12, md: 7 }}>
+        <Grid.Col span={{ sm: 12, md: 6.5 }}>
           <Card variant={'panel'} p={0} h={'100%'} flex={1}>
             {isAlbumsLoading ? (
               <ArtistAlbumsLoader />
@@ -196,9 +220,12 @@ function Artist() {
                       </ActionIcon>
                     </Menu.Target>
                     <Menu.Dropdown>
-                      <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingAlbums}>
+                      {!isUnknownArtist && <Menu.Item
+                        leftSection={<IconPlus size={15} />}
+                        onClick={openAddExistingAlbums}
+                      >
                         Add Existing Albums
-                      </Menu.Item>
+                      </Menu.Item>}
                       <Menu.Item leftSection={<IconDisc size={15} />} onClick={openAddNewAlbum}>
                         Add New Album
                       </Menu.Item>
@@ -216,10 +243,14 @@ function Artist() {
                       key={album.id}
                       album={album}
                       handleRemove={() => handleRemoveAlbumsFromArtist([album.id])}
+                      isUnknownArtist={isUnknownArtist}
                     />
                   ))}
                   {albums.models.length === albums.totalCount && (
-                    <NewHorizontalCard onClick={openAddExistingAlbums} borderRadius={'8px'}>
+                    <NewHorizontalCard
+                      borderRadius={'8px'}
+                      onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
+                    >
                       Add New Albums
                     </NewHorizontalCard>
                   )}
@@ -229,7 +260,7 @@ function Artist() {
           </Card>
         </Grid.Col>
 
-        <Grid.Col span={{ sm: 12, md: 5 }}>
+        <Grid.Col span={{ sm: 12, md: 5.5 }}>
           <Card variant={'panel'} p={0} h={'100%'} flex={1.05}>
             {isSongsLoading ? (
               <ArtistSongsLoader />
@@ -252,9 +283,14 @@ function Artist() {
                       </ActionIcon>
                     </Menu.Target>
                     <Menu.Dropdown>
-                      <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
-                        Add Existing Songs
-                      </Menu.Item>
+                      {!isUnknownArtist && (
+                        <Menu.Item
+                          leftSection={<IconPlus size={15} />}
+                          onClick={openAddExistingSongs}
+                        >
+                          Add Existing Songs
+                        </Menu.Item>
+                      )}
                       <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
                         Add New Song
                       </Menu.Item>
@@ -267,10 +303,13 @@ function Artist() {
                       key={song.id}
                       song={song}
                       handleRemove={() => handleRemoveSongsFromArtist([song.id])}
+                      isUnknownArtist={isUnknownArtist}
                     />
                   ))}
                   {songs.models.length === songs.totalCount && (
-                    <NewHorizontalCard onClick={openAddExistingSongs}>
+                    <NewHorizontalCard
+                      onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
+                    >
                       Add New Songs
                     </NewHorizontalCard>
                   )}
@@ -281,15 +320,17 @@ function Artist() {
         </Grid.Col>
       </Grid>
 
-      <EditArtistHeaderModal
-        artist={artist}
-        opened={openedEditArtistHeader}
-        onClose={closeEditArtistHeader}
-      />
+      {artist && (
+        <EditArtistHeaderModal
+          artist={artist}
+          opened={openedEditArtistHeader}
+          onClose={closeEditArtistHeader}
+        />
+      )}
       <AddNewArtistSongModal
         opened={openedAddNewSong}
         onClose={closeAddNewSong}
-        artistId={artistId}
+        artistId={artist?.id}
       />
       <AddExistingArtistSongsModal
         opened={openedAddExistingSongs}
@@ -299,7 +340,7 @@ function Artist() {
       <AddNewArtistAlbumModal
         opened={openedAddNewAlbum}
         onClose={closeAddNewAlbum}
-        artistId={artistId}
+        artistId={artist?.id}
       />
       <AddExistingArtistAlbumsModal
         opened={openedAddExistingAlbums}
