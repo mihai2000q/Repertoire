@@ -64,7 +64,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 
 			if test.song.AlbumID != nil {
 				var albumSongs []model.Song
-				db.Find(&albumSongs, model.Song{AlbumID: test.song.AlbumID})
+				db.Order("album_track_no").Find(&albumSongs, model.Song{AlbumID: test.song.AlbumID})
 
 				for i, song := range albumSongs {
 					assert.Equal(t, uint(i+1), *song.AlbumTrackNo)
