@@ -133,7 +133,10 @@ function AddExistingAlbumSongsModal({ opened, onClose, albumId, artistId }: AddN
                     pr={'sm'}
                   />
                   <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
-                  <Text fw={500}>{song.title}</Text>
+                  <Stack gap={0}>
+                    <Text fw={500}>{song.title}</Text>
+                    {song.artist && <Text fz={'sm'}>{song.artist.name}</Text>}
+                  </Stack>
                 </Group>
               ))}
           </Stack>
