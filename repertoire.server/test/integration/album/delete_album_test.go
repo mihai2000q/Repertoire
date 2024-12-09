@@ -42,7 +42,7 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// given
-			utils.SeedData(albumData.SeedData)
+			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 			// when
 			w := httptest.NewRecorder()
@@ -57,8 +57,6 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 			db.Find(&deletedAlbum, test.album.ID)
 
 			assert.Empty(t, deletedAlbum)
-
-			utils.CleanupData(albumData.Users)
 		})
 	}
 }

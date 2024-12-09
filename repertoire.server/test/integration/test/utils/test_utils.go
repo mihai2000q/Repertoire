@@ -74,18 +74,18 @@ func CreateCustomToken(sub string, jti string) string {
 }
 
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
-	SeedData(seed)
+	seedData(seed)
 	t.Cleanup(func() {
-		CleanupData(users)
+		cleanupData(users)
 	})
 }
 
-func SeedData(seed func(*gorm.DB)) {
+func seedData(seed func(*gorm.DB)) {
 	db := GetDatabase()
 	seed(db)
 }
 
-func CleanupData(users []model.User) {
+func cleanupData(users []model.User) {
 	db := GetDatabase()
 
 	for _, user := range users {

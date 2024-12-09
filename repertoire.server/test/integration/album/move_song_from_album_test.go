@@ -94,7 +94,7 @@ func TestMoveSongFromAlbum_WhenSuccessful_ShouldMoveSongs(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// given
-			utils.SeedData(albumData.SeedData)
+			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 			request := requests.MoveSongFromAlbumRequest{
 				ID:         test.album.ID,
@@ -116,8 +116,6 @@ func TestMoveSongFromAlbum_WhenSuccessful_ShouldMoveSongs(t *testing.T) {
 			}).Find(&album, request.ID)
 
 			assertMovedSongs(t, request, album, test.index, test.overIndex)
-
-			utils.CleanupData(albumData.Users)
 		})
 	}
 }

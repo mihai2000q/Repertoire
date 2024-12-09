@@ -46,7 +46,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// given
-			utils.SeedData(songData.SeedData)
+			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 			// when
 			w := httptest.NewRecorder()
@@ -70,8 +70,6 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 					assert.Equal(t, uint(i+1), *song.AlbumTrackNo)
 				}
 			}
-
-			utils.CleanupData(songData.Users)
 		})
 	}
 
