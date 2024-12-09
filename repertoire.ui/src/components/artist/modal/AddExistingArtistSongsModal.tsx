@@ -12,13 +12,14 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
+import { useDebouncedState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddSongsToArtistMutation } from '../../../state/artistsApi.ts'
 import { useListState } from '@mantine/hooks'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {useState, MouseEvent} from "react";
+import { MouseEvent } from "react";
 
 interface AddNewArtistSongModalProps {
   opened: boolean
@@ -27,9 +28,14 @@ interface AddNewArtistSongModalProps {
 }
 
 function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtistSongModalProps) {
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({})
+  const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
+    orderBy: ['title asc'],
+    searchBy: searchValue.trim() !== ''
+      ? ['artist_id IS NULL', `title ~* ${searchValue}`]
+      : ['artist_id IS NULL']
+  })
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToArtistMutation()
 
@@ -61,6 +67,7 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
     toast.success(`Songs added to artist!`)
     onClose()
     songIdsHandlers.setState([])
+    setSearchValue('')
   }
 
   return (
@@ -80,7 +87,7 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
           <TextInput
             leftSection={<IconSearch size={15} />}
             placeholder={'Search by title'}
-            value={searchValue}
+            defaultValue={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
           {songs?.totalCount === 0 && <Text>There are no songs without artist</Text>}
