@@ -19,6 +19,8 @@ import AddNewArtistModal from '../components/artists/modal/AddNewArtistModal.tsx
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
+import UnknownArtistCard from "../components/artists/UnknownArtistCard.tsx";
+import useShowUnknownArtist from "../hooks/useShowUnknownArtist.ts";
 
 function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -27,8 +29,10 @@ function Artists() {
     currentPage: currentPage
   })
 
+  const showUnknownArtist = useShowUnknownArtist()
+
   const { startCount, endCount, totalPages } = usePaginationInfo(
-    artists?.totalCount,
+    artists?.totalCount + (showUnknownArtist ? 1 : 0),
     20,
     currentPage
   )
@@ -57,7 +61,7 @@ function Artists() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} artists out of {artists?.totalCount}
+          {startCount} - {endCount} artists out of {artists?.totalCount + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 
@@ -65,6 +69,7 @@ function Artists() {
       <Group gap={'xl'}>
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
+        {showUnknownArtist && <UnknownArtistCard />}
         {artists?.totalCount > 0 && currentPage == totalPages && (
           <Card
             data-testid={'new-artist-card'}
