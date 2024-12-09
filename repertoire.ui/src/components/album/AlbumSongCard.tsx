@@ -1,23 +1,38 @@
 import Song from '../../types/models/Song.ts'
-import { alpha, Avatar, Group, Stack, Text } from '@mantine/core'
+import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/globalSlice.ts'
+import { useHover } from '@mantine/hooks'
+import { MouseEvent, useState } from 'react'
+import { IconDots, IconTrash } from '@tabler/icons-react'
 
 interface AlbumSongCardProps {
   song: Song
+  handleRemove: () => void
   isUnknownAlbum: boolean
 }
 
-function AlbumSongCard({ song, isUnknownAlbum }: AlbumSongCardProps) {
+function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
+  const { ref, hovered } = useHover()
+
+  const [isMenuOpened, setIsMenuOpened] = useState(false)
+
+  const isSelected = hovered || isMenuOpened
 
   function handleClick() {
     dispatch(openSongDrawer(song.id))
   }
 
+  function handleDelete(e: MouseEvent) {
+    e.stopPropagation()
+    handleRemove()
+  }
+
   return (
     <Group
+      ref={ref}
       align={'center'}
       wrap={'nowrap'}
       sx={(theme) => ({
@@ -38,11 +53,36 @@ function AlbumSongCard({ song, isUnknownAlbum }: AlbumSongCardProps) {
         </Text>
       )}
       <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
-      <Stack style={{ overflow: 'hidden' }}>
+
+      <Stack flex={1} style={{ overflow: 'hidden' }}>
         <Text fw={500} truncate={'end'}>
           {song.title}
         </Text>
       </Stack>
+
+      <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+        <Menu.Target>
+          <ActionIcon
+            size={'md'}
+            variant={'grey'}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              transition: '0.3s',
+              opacity: isSelected ? 1 : 0
+            }}
+          >
+            <IconDots size={15} />
+          </ActionIcon>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          {!isUnknownAlbum && (
+            <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              Remove from Album
+            </Menu.Item>
+          )}
+        </Menu.Dropdown>
+      </Menu>
     </Group>
   )
 }

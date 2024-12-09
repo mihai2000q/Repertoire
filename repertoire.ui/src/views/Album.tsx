@@ -6,6 +6,7 @@ import {
   Divider,
   Group,
   Image,
+  LoadingOverlay,
   Menu,
   Space,
   Stack,
@@ -14,7 +15,11 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useDeleteAlbumMutation, useGetAlbumQuery } from '../state/albumsApi.ts'
+import {
+  useDeleteAlbumMutation,
+  useGetAlbumQuery,
+  useRemoveSongsFromAlbumMutation
+} from '../state/albumsApi.ts'
 import AlbumLoader from '../components/album/AlbumLoader.tsx'
 import albumPlaceholder from '../assets/image-placeholder-1.jpg'
 import unknownPlaceholder from '../assets/unknown-placeholder.png'
@@ -44,15 +49,21 @@ function Album() {
 
   const isUnknownAlbum = albumId === 'unknown'
 
-  const { data: album, isLoading } = useGetAlbumQuery(albumId, { skip: isUnknownAlbum })
+  const { data: album, isLoading, isFetching } = useGetAlbumQuery(albumId, { skip: isUnknownAlbum })
 
-  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery(
+  const {
+    data: songs,
+    isLoading: isSongsLoading,
+    isFetching: isSongsFetching
+  } = useGetSongsQuery(
     {
       orderBy: ['title'],
       searchBy: ['album_id IS NULL']
     },
     { skip: !isUnknownAlbum }
   )
+
+  const [removeSongsFromAlbum] = useRemoveSongsFromAlbumMutation()
 
   const [openedEditAlbumHeader, { open: openEditAlbumHeader, close: closeEditAlbumHeader }] =
     useDisclosure(false)
@@ -68,6 +79,10 @@ function Album() {
     deleteAlbumMutation(album.id)
     navigate(`/albums`, { replace: true })
     toast.success(`${album.title} deleted!`)
+  }
+
+  function handleRemoveSongsFromAlbum(songIds: string[]) {
+    removeSongsFromAlbum({ id: albumId, songIds })
   }
 
   if (isLoading || isSongsLoading) return <AlbumLoader />
@@ -160,6 +175,8 @@ function Album() {
       <Divider />
 
       <Card variant={'panel'} h={'100%'} p={0} mx={'xs'}>
+        <LoadingOverlay visible={isSongsFetching || isFetching} />
+
         <Stack gap={0}>
           <Group px={'md'} pt={'md'} pb={'xs'}>
             <Text fw={600}>Songs</Text>
@@ -185,7 +202,12 @@ function Album() {
 
           <Stack gap={0}>
             {(isUnknownAlbum ? songs.models : album.songs).map((song) => (
-              <AlbumSongCard key={song.id} song={song} isUnknownAlbum={isUnknownAlbum} />
+              <AlbumSongCard
+                key={song.id}
+                song={song}
+                handleRemove={() => handleRemoveSongsFromAlbum([song.id])}
+                isUnknownAlbum={isUnknownAlbum}
+              />
             ))}
             {(isUnknownAlbum || album.songs.length === 0) && (
               <NewHorizontalCard onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}>
