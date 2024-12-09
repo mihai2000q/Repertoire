@@ -125,7 +125,7 @@ function ArtistAutocomplete({
       </Combobox.Target>
 
       <Combobox.Dropdown style={(theme) => ({ boxShadow: theme.shadows.lg })}>
-        <LoadingOverlay visible={!isFetching} />
+        <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
