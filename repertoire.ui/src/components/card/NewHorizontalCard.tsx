@@ -1,10 +1,10 @@
 import { alpha, Box, Group, Text } from '@mantine/core'
 import { IconMusicPlus } from '@tabler/icons-react'
-import { MouseEvent } from 'react'
+import {MouseEvent, ReactNode} from 'react'
 
 interface NewHorizontalCardProps {
-  children?: string
-  onClick?: (e: MouseEvent) => void,
+  children?: ReactNode
+  onClick?: (e: MouseEvent) => void
   borderRadius?: string
 }
 
