@@ -39,7 +39,7 @@ const albumsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Albums']
+      invalidatesTags: ['Albums', 'Songs']
     }),
     saveImageToAlbum: build.mutation<HttpMessageResponse, SaveImageToAlbumRequest>({
       query: (request) => ({
@@ -48,19 +48,19 @@ const albumsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Albums']
+      invalidatesTags: ['Albums', 'Songs']
     }),
     deleteAlbum: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `albums/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Albums']
+      invalidatesTags: ['Albums', 'Songs']
     }),
 
     addSongsToAlbum: build.mutation<HttpMessageResponse, AddSongsToAlbumRequest>({
       query: (body) => ({
-        url: `artists/add-songs`,
+        url: `albums/add-songs`,
         method: 'POST',
         body: body
       }),
@@ -68,7 +68,7 @@ const albumsApi = api.injectEndpoints({
     }),
     removeSongsFromAlbum: build.mutation<HttpMessageResponse, RemoveSongsFromAlbumRequest>({
       query: (body) => ({
-        url: `artists/remove-songs`,
+        url: `albums/remove-songs`,
         method: 'PUT',
         body: body
       }),

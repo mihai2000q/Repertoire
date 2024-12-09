@@ -4,7 +4,8 @@ import Difficulty from "../../utils/enums/Difficulty.ts";
 export interface GetSongsRequest {
   currentPage?: number
   pageSize?: number
-  orderBy?: string[]
+  orderBy?: string[],
+  searchBy?: string[],
 }
 
 export interface CreateSongRequest {
