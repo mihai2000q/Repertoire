@@ -1,5 +1,5 @@
 import Song from '../../types/models/Song.ts'
-import { ActionIcon, alpha, Avatar, Group, Menu, Space, Stack, Text } from '@mantine/core'
+import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'

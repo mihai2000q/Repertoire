@@ -1,5 +1,5 @@
 import Album from '../../types/models/Album.ts'
-import { ActionIcon, alpha, Avatar, Group, Menu, Space, Stack, Text } from '@mantine/core'
+import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
