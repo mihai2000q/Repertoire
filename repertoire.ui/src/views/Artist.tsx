@@ -165,7 +165,7 @@ function Artist() {
             </Menu.Item>
           </>
         }
-        disableMenus={isUnknownArtist}
+        hideIcons={isUnknownArtist}
       >
         <Group>
           <Avatar
