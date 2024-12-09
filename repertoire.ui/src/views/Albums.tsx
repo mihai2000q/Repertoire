@@ -19,6 +19,8 @@ import AddNewAlbumModal from '../components/albums/modal/AddNewAlbumModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
+import useShowUnknownAlbum from "../hooks/useShowUnknownAlbum.ts";
+import UnknownAlbumCard from "../components/albums/UnknownAlbumCard.tsx";
 
 function Albums() {
   const [currentPage, setCurrentPage] = useState(1)
@@ -27,8 +29,10 @@ function Albums() {
     currentPage: currentPage
   })
 
+  const showUnknownAlbum = useShowUnknownAlbum()
+
   const { startCount, endCount, totalPages } = usePaginationInfo(
-    albums?.totalCount,
+    albums?.totalCount + (showUnknownAlbum ? 1 : 0),
     20,
     currentPage
   )
@@ -57,7 +61,7 @@ function Albums() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} albums out of {albums?.totalCount}
+          {startCount} - {endCount} albums out of {albums?.totalCount + (showUnknownAlbum ? 1 : 0)}
         </Text>
       )}
 
@@ -65,6 +69,7 @@ function Albums() {
       <Group gap={'xl'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
+        {showUnknownAlbum && <UnknownAlbumCard />}
         {albums?.totalCount > 0 && currentPage == totalPages && (
           <Card
             data-testid={'new-album-card'}

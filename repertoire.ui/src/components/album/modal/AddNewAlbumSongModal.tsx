@@ -11,7 +11,7 @@ import { AddNewAlbumSongForm, addNewAlbumSongValidation } from '../../../validat
 interface AddNewAlbumSongModalProps {
   opened: boolean
   onClose: () => void
-  albumId: string
+  albumId: string | undefined
 }
 
 function AddNewAlbumSongModal({ opened, onClose, albumId }: AddNewAlbumSongModalProps) {

@@ -17,6 +17,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useDeleteAlbumMutation, useGetAlbumQuery } from '../state/albumsApi.ts'
 import AlbumLoader from '../components/album/AlbumLoader.tsx'
 import albumPlaceholder from '../assets/image-placeholder-1.jpg'
+import unknownPlaceholder from '../assets/unknown-placeholder.png'
 import AlbumSongCard from '../components/album/AlbumSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconDots, IconEdit, IconMusicPlus, IconPlus, IconTrash } from '@tabler/icons-react'
@@ -30,6 +31,7 @@ import NewHorizontalCard from '../components/card/NewHorizontalCard.tsx'
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import { toast } from 'react-toastify'
 import EditAlbumHeaderModal from '../components/album/modal/EditAlbumHeaderModal.tsx'
+import { useGetSongsQuery } from '../state/songsApi.ts'
 
 function Album() {
   const dispatch = useAppDispatch()
@@ -40,7 +42,17 @@ function Album() {
 
   const [deleteAlbumMutation] = useDeleteAlbumMutation()
 
-  const { data: album, isLoading } = useGetAlbumQuery(albumId)
+  const isUnknownAlbum = albumId === 'unknown'
+
+  const { data: album, isLoading } = useGetAlbumQuery(albumId, { skip: isUnknownAlbum })
+
+  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery(
+    {
+      orderBy: ['title'],
+      searchBy: ['album_id IS NULL']
+    },
+    { skip: !isUnknownAlbum }
+  )
 
   const [openedEditAlbumHeader, { open: openEditAlbumHeader, close: closeEditAlbumHeader }] =
     useDisclosure(false)
@@ -58,7 +70,7 @@ function Album() {
     toast.success(`${album.title} deleted!`)
   }
 
-  if (isLoading) return <AlbumLoader />
+  if (isLoading || isSongsLoading) return <AlbumLoader />
 
   return (
     <Stack>
@@ -74,12 +86,13 @@ function Album() {
             </Menu.Item>
           </>
         }
+        hideIcons={isUnknownAlbum}
       >
         <Group>
           <AspectRatio>
             <Image
               h={150}
-              src={album.imageUrl}
+              src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
               fallbackSrc={albumPlaceholder}
               radius={'lg'}
               style={(theme) => ({
@@ -87,15 +100,24 @@ function Album() {
               })}
             />
           </AspectRatio>
-          <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
-            <Text fw={500} inline>
+          <Stack
+            gap={4}
+            style={{ ...(!isUnknownAlbum && { alignSelf: 'start', paddingTop: '10px' }) }}
+          >
+            {!isUnknownAlbum && <Text fw={500} inline>
               Album
-            </Text>
-            <Title order={1} fw={700}>
-              {album.title}
-            </Title>
+            </Text>}
+            {isUnknownAlbum ? (
+              <Title order={3} fw={200} fs={'italic'}>
+                Unknown
+              </Title>
+            ) : (
+              <Title order={1} fw={700}>
+                {album.title}
+              </Title>
+            )}
             <Group gap={4}>
-              {album.artist && (
+              {album?.artist && (
                 <>
                   <Group gap={'xs'}>
                     <Avatar size={35} src={album.artist.imageUrl ?? userPlaceholder} />
@@ -114,7 +136,7 @@ function Album() {
                   <Text c={'dimmed'}>•</Text>
                 </>
               )}
-              {album.releaseDate && (
+              {album?.releaseDate && (
                 <Tooltip
                   label={'Released on ' + dayjs(album.releaseDate).format('DD MMMM YYYY')}
                   openDelay={200}
@@ -126,7 +148,7 @@ function Album() {
                 </Tooltip>
               )}
               <Text fw={500} c={'dimmed'}>
-                {album.songs.length} songs
+                {isUnknownAlbum ? songs.totalCount : album.songs.length} songs
               </Text>
             </Group>
           </Stack>
@@ -147,9 +169,11 @@ function Album() {
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
-                  Add Existing Songs
-                </Menu.Item>
+                {!isUnknownAlbum && (
+                  <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
+                    Add Existing Songs
+                  </Menu.Item>
+                )}
                 <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
                   Add New Song
                 </Menu.Item>
@@ -158,22 +182,30 @@ function Album() {
           </Group>
 
           <Stack gap={0}>
-            {album.songs.map((song) => (
-              <AlbumSongCard key={song.id} song={song} />
+            {(isUnknownAlbum ? songs.models : album.songs).map((song) => (
+              <AlbumSongCard key={song.id} song={song} isUnknownAlbum={isUnknownAlbum} />
             ))}
-            {album.songs.length === 0 && (
-              <NewHorizontalCard onClick={openAddExistingSongs}>Add New Songs</NewHorizontalCard>
+            {(isUnknownAlbum || album.songs.length === 0) && (
+              <NewHorizontalCard onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}>
+                Add New Song{isUnknownAlbum ? '' : 's'}
+              </NewHorizontalCard>
             )}
           </Stack>
         </Stack>
       </Card>
 
-      <EditAlbumHeaderModal
-        album={album}
-        opened={openedEditAlbumHeader}
-        onClose={closeEditAlbumHeader}
+      {!isUnknownAlbum && (
+        <EditAlbumHeaderModal
+          album={album}
+          opened={openedEditAlbumHeader}
+          onClose={closeEditAlbumHeader}
+        />
+      )}
+      <AddNewAlbumSongModal
+        opened={openedAddNewSong}
+        onClose={closeAddNewSong}
+        albumId={album?.id}
       />
-      <AddNewAlbumSongModal opened={openedAddNewSong} onClose={closeAddNewSong} albumId={albumId} />
       <AddExistingAlbumSongsModal
         opened={openedAddExistingSongs}
         onClose={closeAddExistingSongs}

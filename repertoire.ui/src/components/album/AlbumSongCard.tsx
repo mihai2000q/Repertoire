@@ -6,9 +6,10 @@ import { openSongDrawer } from '../../state/globalSlice.ts'
 
 interface AlbumSongCardProps {
   song: Song
+  isUnknownAlbum: boolean
 }
 
-function AlbumSongCard({ song }: AlbumSongCardProps) {
+function AlbumSongCard({ song, isUnknownAlbum }: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
 
   function handleClick() {
@@ -31,9 +32,9 @@ function AlbumSongCard({ song }: AlbumSongCardProps) {
       py={'xs'}
       onClick={handleClick}
     >
-      <Text fw={500} w={35} ta={'center'}>
+      {!isUnknownAlbum && <Text fw={500} w={35} ta={'center'}>
         {song.albumTrackNo}
-      </Text>
+      </Text>}
       <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
       <Stack style={{ overflow: 'hidden' }}>
         <Text fw={500} truncate={'end'}>
