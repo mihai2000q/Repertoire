@@ -1,17 +1,23 @@
 import Song from '../../types/models/Song.ts'
-import { alpha, Avatar, Group, Space, Stack, Text } from '@mantine/core'
+import { ActionIcon, alpha, Avatar, Group, Menu, Space, Stack, Text } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/globalSlice.ts'
-import { MouseEvent } from 'react'
+import { MouseEvent, useState } from 'react'
+import { IconDots, IconTrash } from '@tabler/icons-react'
+import { useHover } from '@mantine/hooks'
 
 interface ArtistSongCardProps {
   song: Song
+  handleRemove: () => void
 }
 
-function ArtistSongCard({ song }: ArtistSongCardProps) {
+function ArtistSongCard({ song, handleRemove }: ArtistSongCardProps) {
   const dispatch = useAppDispatch()
+  const { ref, hovered } = useHover()
+  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const isSelected = hovered || isMenuOpened
 
   function handleClick() {
     dispatch(openSongDrawer(song.id))
@@ -22,14 +28,20 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
     dispatch(openAlbumDrawer(song.album.id))
   }
 
+  function handleDelete(e: MouseEvent) {
+    e.stopPropagation()
+    handleRemove()
+  }
+
   return (
     <Group
+      ref={ref}
       align={'center'}
       wrap={'nowrap'}
       sx={(theme) => ({
         cursor: 'default',
         transition: '0.3s',
-        '&:hover': {
+        ...isSelected && {
           boxShadow: theme.shadows.xl,
           backgroundColor: alpha(theme.colors.cyan[0], 0.15)
         }
@@ -39,7 +51,8 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
       onClick={handleClick}
     >
       <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
-      <Stack gap={0} style={{ overflow: 'hidden' }}>
+
+      <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
         <Group gap={4}>
           <Text fw={500} truncate={'end'}>
             {song.title}
@@ -65,7 +78,27 @@ function ArtistSongCard({ song }: ArtistSongCardProps) {
           </Text>
         )}
       </Stack>
-      <Space flex={1} />
+
+      <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+        <Menu.Target>
+          <ActionIcon
+            size={'md'}
+            variant={'grey'}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              transition: '0.3s',
+              opacity: isSelected ? 1 : 0
+            }}
+          >
+            <IconDots size={15} />
+          </ActionIcon>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+            Remove from Artist
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </Group>
   )
 }
