@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -43,7 +44,11 @@ func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &responseAlbum)
 
 	db := utils.GetDatabase()
-	db.Preload("Songs").Preload("Artist").Find(&album, album.ID)
+	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
+		return db.Order("songs.album_track_no")
+	}).
+		Preload("Artist").
+		Find(&album, album.ID)
 
 	assertion.ResponseAlbum(t, album, responseAlbum, true, true)
 }
