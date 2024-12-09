@@ -43,7 +43,7 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// given
-			utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+			utils.SeedData(artistData.SeedData)
 
 			// when
 			w := httptest.NewRecorder()
@@ -58,6 +58,8 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			db.Find(&deletedArtist, test.artist.ID)
 
 			assert.Empty(t, deletedArtist)
+
+			utils.CleanupData(artistData.Users)
 		})
 	}
 }
