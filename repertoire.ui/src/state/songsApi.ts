@@ -41,7 +41,7 @@ const songsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Songs']
+      invalidatesTags: ['Songs', 'Albums']
     }),
     saveImageToSong: build.mutation<HttpMessageResponse, SaveImageToSongRequest>({
       query: (request) => ({
@@ -50,14 +50,14 @@ const songsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Songs']
+      invalidatesTags: ['Songs', 'Albums']
     }),
     deleteSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Songs']
+      invalidatesTags: ['Songs', 'Albums']
     }),
 
     getGuitarTunings: build.query<GuitarTuning[], void>({
