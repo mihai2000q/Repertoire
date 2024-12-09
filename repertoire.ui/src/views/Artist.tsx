@@ -320,7 +320,7 @@ function Artist() {
         </Grid.Col>
       </Grid>
 
-      {artist && (
+      {!isUnknownArtist && (
         <EditArtistHeaderModal
           artist={artist}
           opened={openedEditArtistHeader}
