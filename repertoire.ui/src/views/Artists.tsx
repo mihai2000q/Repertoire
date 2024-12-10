@@ -70,7 +70,7 @@ function Artists() {
       <Group gap={'xl'}>
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
-        {showUnknownArtist && <UnknownArtistCard />}
+        {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
         {artists?.totalCount > 0 && currentPage == totalPages && (
           <Card
             data-testid={'new-artist-card'}

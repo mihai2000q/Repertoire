@@ -69,7 +69,7 @@ function Albums() {
       <Group gap={'xl'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
-        {showUnknownAlbum && <UnknownAlbumCard />}
+        {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
         {albums?.totalCount > 0 && currentPage == totalPages && (
           <Card
             data-testid={'new-album-card'}
