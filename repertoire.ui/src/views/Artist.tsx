@@ -54,6 +54,7 @@ import NewHorizontalCard from '../components/card/NewHorizontalCard.tsx'
 import { toast } from 'react-toastify'
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import EditArtistHeaderModal from '../components/artist/modal/EditArtistHeaderModal.tsx'
+import plural from '../utils/plural.ts'
 
 const SortButton = ({
   order,
@@ -194,6 +195,10 @@ function Artist() {
                 {artist?.name}
               </Title>
             )}
+            <Text fw={500} fz={'sm'} c={'dimmed'}>
+              {albums?.totalCount} album{plural(albums?.totalCount)} • {songs?.totalCount} song
+              {plural(songs?.totalCount)}
+            </Text>
           </Stack>
         </Group>
       </HeaderPanelCard>
@@ -202,7 +207,7 @@ function Artist() {
 
       <Grid align={'flex-start'}>
         <Grid.Col span={{ sm: 12, md: 6.5 }}>
-          <Card variant={'panel'} p={0} h={'100%'} flex={1}>
+          <Card variant={'panel'} p={0} h={'100%'}>
             {isAlbumsLoading ? (
               <ArtistAlbumsLoader />
             ) : (
@@ -210,7 +215,7 @@ function Artist() {
                 <LoadingOverlay visible={isAlbumsFetching} />
 
                 <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
-                  <Text fw={500}>Albums</Text>
+                  <Text fw={600}>Albums</Text>
                   <SortButton
                     order={albumsOrder}
                     setOrder={setAlbumsOrder}
@@ -269,7 +274,7 @@ function Artist() {
         </Grid.Col>
 
         <Grid.Col span={{ sm: 12, md: 5.5 }}>
-          <Card variant={'panel'} p={0} h={'100%'} flex={1.05}>
+          <Card variant={'panel'} p={0} h={'100%'}>
             {isSongsLoading ? (
               <ArtistSongsLoader />
             ) : (

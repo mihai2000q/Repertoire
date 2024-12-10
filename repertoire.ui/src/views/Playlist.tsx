@@ -39,6 +39,7 @@ import AddExistingPlaylistSongsModal from '../components/playlist/modal/AddExist
 import { useState } from 'react'
 import Order from '../types/Order.ts'
 import playlistSongsOrders from '../data/playlist/playlistSongsOrders.ts'
+import plural from "../utils/plural.ts";
 
 function Playlist() {
   const navigate = useNavigate()
@@ -110,7 +111,7 @@ function Playlist() {
             </Title>
 
             <Text fw={500} fz={'sm'} c={'dimmed'} inline>
-              {playlist.songs.length} songs
+              {playlist.songs.length} song{plural(playlist.songs)}
             </Text>
 
             <Text fz={'sm'} c={'dimmed'} lineClamp={3}>

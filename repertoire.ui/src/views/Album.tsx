@@ -37,6 +37,7 @@ import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import { toast } from 'react-toastify'
 import EditAlbumHeaderModal from '../components/album/modal/EditAlbumHeaderModal.tsx'
 import { useGetSongsQuery } from '../state/songsApi.ts'
+import plural from '../utils/plural.ts'
 
 function Album() {
   const dispatch = useAppDispatch()
@@ -165,7 +166,8 @@ function Album() {
                 </Tooltip>
               )}
               <Text fw={500} c={'dimmed'}>
-                {isUnknownAlbum ? songs.totalCount : album.songs.length} songs
+                {isUnknownAlbum ? songs.totalCount : album.songs.length} song
+                {plural(isUnknownAlbum ? songs.totalCount : album.songs)}
               </Text>
             </Group>
           </Stack>
