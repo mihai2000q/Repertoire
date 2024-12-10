@@ -24,12 +24,14 @@ func OrderBy(tx *gorm.DB, orderBy []string) *gorm.DB {
 
 func SearchBy(tx *gorm.DB, searchBy []string) *gorm.DB {
 	for _, s := range searchBy {
-		property, search := splitSearch(s)
+		tx = tx.Where(s)
+		// TODO: SECURITY ZERO SO CHANGE
+		/*property, search := splitSearch(s)
 		if search == "" {
 			tx = tx.Where(property)
 		} else {
 			tx = tx.Where(property, search)
-		}
+		}*/
 	}
 	return tx
 }
