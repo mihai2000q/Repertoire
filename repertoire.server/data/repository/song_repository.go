@@ -12,6 +12,7 @@ import (
 
 type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
+	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
@@ -64,6 +65,13 @@ func NewSongRepository(client database.Client) SongRepository {
 
 func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.Find(&song, model.Song{ID: id}).Error
+}
+
+func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error {
+	return s.client.DB.
+		Preload("Playlists").
+		Preload("Playlists.PlaylistSongs").
+		Find(&song, model.Song{ID: id}).Error
 }
 
 func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {

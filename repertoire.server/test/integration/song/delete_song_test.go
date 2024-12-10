@@ -3,6 +3,7 @@ package song
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -41,12 +42,19 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			"With Album",
 			songData.Songs[2],
 		},
+		{
+			"With Playlist",
+			songData.Songs[6],
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+			db := utils.GetDatabase()
+			db.Preload("Playlists").Preload("PlaylistSongs").Find(&test.song, test.song.ID)
 
 			// when
 			w := httptest.NewRecorder()
@@ -55,7 +63,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db := utils.GetDatabase()
+			db = db.Session(&gorm.Session{NewDB: true})
 
 			var deletedSong model.Song
 			db.Find(&deletedSong, test.song.ID)
@@ -70,7 +78,13 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 					assert.Equal(t, uint(i+1), *song.AlbumTrackNo)
 				}
 			}
+
+			for _, playlist := range test.song.Playlists {
+				for i, playlistSong := range playlist.PlaylistSongs {
+					assert.NotEqual(t, test.song.ID, playlistSong.SongID)
+					assert.Equal(t, uint(i+1), playlistSong.SongTrackNo)
+				}
+			}
 		})
 	}
-
 }

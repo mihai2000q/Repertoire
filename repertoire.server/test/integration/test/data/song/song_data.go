@@ -11,9 +11,24 @@ import (
 
 func SeedData(db *gorm.DB) {
 	db.Create(&Users)
+	db.Create(&Playlists)
 	db.Create(&Artists)
 	db.Create(&Albums)
 	db.Create(&Songs)
+	db.Create(&PlaylistSongs)
+}
+
+var Playlists = []model.Playlist{
+	{
+		ID:     uuid.New(),
+		Title:  "Test Playlist 1",
+		UserID: Users[0].ID,
+	},
+	{
+		ID:     uuid.New(),
+		Title:  "Test Playlist 2",
+		UserID: Users[0].ID,
+	},
 }
 
 var Users = []model.User{
@@ -164,5 +179,55 @@ var Songs = []model.Song{
 		ID:     uuid.New(),
 		Title:  "Test Song 5 - No Album",
 		UserID: Users[0].ID,
+	},
+
+	{
+		ID:     uuid.New(),
+		Title:  "Test Song 6 - In Playlist",
+		UserID: Users[0].ID,
+	},
+	{
+		ID:     uuid.New(),
+		Title:  "Test Song 7 - In Playlist",
+		UserID: Users[0].ID,
+	},
+	{
+		ID:     uuid.New(),
+		Title:  "Test Song 8 - In Playlist",
+		UserID: Users[0].ID,
+	},
+	{
+		ID:     uuid.New(),
+		Title:  "Test Song 9 - In Playlist",
+		UserID: Users[0].ID,
+	},
+}
+
+var PlaylistSongs = []model.PlaylistSong{
+	{
+		PlaylistID:  Playlists[0].ID,
+		SongID:      Songs[0].ID,
+		SongTrackNo: 1,
+	},
+
+	{
+		PlaylistID:  Playlists[1].ID,
+		SongID:      Songs[5].ID,
+		SongTrackNo: 1,
+	},
+	{
+		PlaylistID:  Playlists[1].ID,
+		SongID:      Songs[6].ID,
+		SongTrackNo: 2,
+	},
+	{
+		PlaylistID:  Playlists[1].ID,
+		SongID:      Songs[7].ID,
+		SongTrackNo: 3,
+	},
+	{
+		PlaylistID:  Playlists[1].ID,
+		SongID:      Songs[8].ID,
+		SongTrackNo: 4,
 	},
 }

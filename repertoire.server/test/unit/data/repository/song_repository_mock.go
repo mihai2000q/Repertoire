@@ -22,7 +22,7 @@ func (s *SongRepositoryMock) Get(song *model.Song, id uuid.UUID) error {
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetWithSongs(song *model.Song, id uuid.UUID) error {
+func (s *SongRepositoryMock) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error {
 	args := s.Called(song, id)
 
 	if len(args) > 1 {
