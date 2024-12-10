@@ -19,7 +19,7 @@ import { useAddAlbumsToArtistMutation } from '../../../state/artistsApi.ts'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import { MouseEvent } from 'react'
+import {MouseEvent, useEffect} from 'react'
 
 interface AddNewArtistAlbumModalProps {
   opened: boolean
@@ -43,6 +43,12 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
   const [addAlbumMutation, { isLoading: addAlbumIsLoading }] = useAddAlbumsToArtistMutation()
 
   const [albumIds, albumIdsHandlers] = useListState<string>([])
+
+  useEffect(() => {
+    albumIdsHandlers.filter(albumId =>
+      albums.models.some(album => album.id === albumId)
+    )
+  }, [searchValue, albums])
 
   function checkAllAlbums(check: boolean) {
     albumIdsHandlers.setState([])
@@ -91,6 +97,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
             w={250}
             leftSection={<IconSearch size={15} />}
             placeholder={'Search by title'}
+            disabled={albumsIsLoading}
             defaultValue={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />

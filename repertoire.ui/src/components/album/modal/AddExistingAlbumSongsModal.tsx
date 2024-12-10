@@ -18,7 +18,7 @@ import { toast } from 'react-toastify'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import { MouseEvent } from 'react'
+import {MouseEvent, useEffect} from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
 
 interface AddNewAlbumSongModalProps {
@@ -53,6 +53,12 @@ function AddExistingAlbumSongsModal({
   const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()
 
   const [songIds, songIdsHandlers] = useListState<string>([])
+
+  useEffect(() => {
+    songIdsHandlers.filter(songId =>
+      songs.models.some(song => song.id === songId)
+    )
+  }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
     songIdsHandlers.setState([])
@@ -101,6 +107,7 @@ function AddExistingAlbumSongsModal({
             w={250}
             leftSection={<IconSearch size={15} />}
             placeholder={'Search by title'}
+            disabled={songsIsLoading}
             defaultValue={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
