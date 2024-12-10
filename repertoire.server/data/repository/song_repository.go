@@ -4,10 +4,8 @@ import (
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
-
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type SongRepository interface {
@@ -89,7 +87,10 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 			return db.Order("song_sections.order")
 		}).
 		Preload("Sections.SongSectionType").
-		Preload(clause.Associations).
+		Preload("Playlists").
+		Joins("GuitarTuning").
+		Joins("Artist").
+		Joins("Album").
 		Find(&song, model.Song{ID: id}).
 		Error
 }
@@ -123,9 +124,13 @@ func (s songRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := s.client.DB.Model(&model.Song{}).
+		Preload("Sections").
 		Preload("Sections.SongSectionType").
-		Preload(clause.Associations).
-		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id").
+		Preload("Playlists").
+		Joins("GuitarTuning").
+		Joins("Artist").
+		Joins("Album").
+		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
 		Where(model.Song{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)
