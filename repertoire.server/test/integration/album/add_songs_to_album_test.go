@@ -11,6 +11,7 @@ import (
 	"repertoire/server/test/integration/test/core"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
+	"slices"
 	"testing"
 )
 
@@ -99,7 +100,17 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 		request requests.AddSongsToAlbumRequest
 	}{
 		{
-			"When the album has an artist, new songs will inherit",
+			"Normal Add",
+			requests.AddSongsToAlbumRequest{
+				ID: albumData.Albums[1].ID,
+				SongIDs: []uuid.UUID{
+					albumData.Songs[0].ID,
+					albumData.Songs[1].ID,
+				},
+			},
+		},
+		{
+			"When the album has an artist and release date, new songs will inherit",
 			requests.AddSongsToAlbumRequest{
 				ID: albumData.Albums[0].ID,
 				SongIDs: []uuid.UUID{
@@ -147,5 +158,8 @@ func assertSongsAddedToAlbum(t *testing.T, request requests.AddSongsToAlbumReque
 		assert.Equal(t, uint(i+1), *song.AlbumTrackNo)
 		assert.Equal(t, album.ID, *song.AlbumID)
 		assert.Equal(t, album.ArtistID, song.ArtistID)
+		if album.ReleaseDate != nil && slices.Contains(request.SongIDs, song.ID) {
+			assert.NotNil(t, song.ReleaseDate)
+		}
 	}
 }

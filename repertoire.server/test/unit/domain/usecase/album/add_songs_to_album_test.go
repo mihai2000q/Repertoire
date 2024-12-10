@@ -8,6 +8,7 @@ import (
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -260,8 +261,9 @@ func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			},
 			&[]model.Song{{ID: songID}},
 			&model.Album{
-				ID:    id,
-				Songs: []model.Song{{}, {}, {}},
+				ID:          id,
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+				Songs:       []model.Song{{}, {}, {}},
 			},
 		},
 		{
@@ -270,11 +272,12 @@ func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 				ID:      id,
 				SongIDs: []uuid.UUID{songID},
 			},
-			&[]model.Song{{ID: songID}},
+			&[]model.Song{{ID: songID, ReleaseDate: &[]time.Time{time.Now()}[0]}},
 			&model.Album{
-				ID:       id,
-				Songs:    []model.Song{{}, {}, {}},
-				ArtistID: &artistID,
+				ID:          id,
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+				Songs:       []model.Song{{}, {}, {}},
+				ArtistID:    &artistID,
 			},
 		},
 		{
@@ -306,7 +309,7 @@ func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			albumRepository.On("GetWithSongs", mock.IsType(tt.album), tt.request.ID).
 				Return(nil, tt.album).
 				Once()
-			
+
 			songRepository.On("GetAllByIDs", mock.IsType(tt.songs), tt.request.SongIDs).
 				Return(nil, tt.songs).
 				Once()
@@ -319,6 +322,11 @@ func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 						assert.Equal(t, *song.AlbumID, tt.request.ID)
 						assert.Equal(t, *song.AlbumTrackNo, uint(len(tt.album.Songs)+i)+1)
 						assert.Equal(t, song.ArtistID, tt.album.ArtistID)
+						if (*tt.songs)[i].ReleaseDate != nil {
+							assert.Equal(t, (*tt.songs)[i].ReleaseDate, song.ReleaseDate)
+						} else {
+							assert.Equal(t, tt.album.ReleaseDate, song.ReleaseDate)
+						}
 					}
 				}).
 				Return(nil).
