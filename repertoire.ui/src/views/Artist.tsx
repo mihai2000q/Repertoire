@@ -34,6 +34,7 @@ import { Dispatch, SetStateAction, useState } from 'react'
 import Order from '../types/Order.ts'
 import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 import {
+  IconAlbum,
   IconCaretDownFilled,
   IconCheck,
   IconDisc,
@@ -255,6 +256,8 @@ function Artist() {
                     <NewHorizontalCard
                       borderRadius={'8px'}
                       onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
+                      icon={<IconAlbum size={16} />}
+                      p={'10px 9px 6px 9px'}
                     >
                       Add New Albums
                     </NewHorizontalCard>
