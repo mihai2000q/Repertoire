@@ -38,6 +38,8 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
 	p.ImageURL = p.ImageURL.ToNullableFullURL()
+
+	p.Songs = []Song{} // in case there are no playlist songs
 	for _, playlistSong := range p.PlaylistSongs {
 		newSong := playlistSong.Song
 		newSong.PlaylistTrackNo = playlistSong.SongTrackNo
