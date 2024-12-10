@@ -1,14 +1,16 @@
 import { alpha, Box, Group, Text } from '@mantine/core'
 import { IconMusicPlus } from '@tabler/icons-react'
-import { MouseEvent, ReactNode } from 'react'
+import { MouseEvent, ReactElement, ReactNode } from 'react'
 
 interface NewHorizontalCardProps {
   children?: ReactNode
   onClick?: (e: MouseEvent) => void
   borderRadius?: string
+  icon?: ReactElement,
+  p?: string
 }
 
-function NewHorizontalCard({ children, onClick, borderRadius }: NewHorizontalCardProps) {
+function NewHorizontalCard({ children, onClick, borderRadius, icon, p }: NewHorizontalCardProps) {
   return (
     <Group
       align={'center'}
@@ -28,8 +30,8 @@ function NewHorizontalCard({ children, onClick, borderRadius }: NewHorizontalCar
       })}
       onClick={onClick}
     >
-      <Box bd={'1px dashed gray'} p={'11px 9px 7px 9px'} style={{ borderRadius: '8px' }}>
-        <IconMusicPlus size={18} />
+      <Box bd={'1px dashed gray'} p={p ? p : '11px 9px 7px 9px'} style={{ borderRadius: '8px' }}>
+        {icon ? icon : <IconMusicPlus size={18} />}
       </Box>
       <Text fw={500} c={'inherit'} truncate={'end'}>
         {children}
