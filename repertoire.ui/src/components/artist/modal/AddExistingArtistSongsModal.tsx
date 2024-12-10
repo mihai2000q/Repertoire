@@ -31,6 +31,8 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
+    currentPage: 1,
+    pageSize: 20,
     orderBy: ['title asc'],
     searchBy:
       searchValue.trim() !== ''
@@ -86,6 +88,7 @@ function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddNewArtist
             Choose songs
           </Text>
           <TextInput
+            w={250}
             leftSection={<IconSearch size={15} />}
             placeholder={'Search by title'}
             defaultValue={searchValue}

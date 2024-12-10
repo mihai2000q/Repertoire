@@ -31,6 +31,8 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: albums, isLoading: albumsIsLoading } = useGetAlbumsQuery({
+    currentPage: 1,
+    pageSize: 20,
     orderBy: ['title asc'],
     searchBy:
       searchValue.trim() !== ''
