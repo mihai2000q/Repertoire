@@ -50,7 +50,7 @@ func TestSaveImageFromPlaylist_WhenSuccessful_ShouldUpdatePlaylistAndSaveImage(t
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&playlist, playlist.ID)
 
 	assert.NotNil(t, playlist.ImageURL)

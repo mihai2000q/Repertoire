@@ -38,7 +38,7 @@ func TestDeleteSongSectionType_WhenSuccessful_ShouldDeleteType(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var sectionTypes []model.SongSectionType
 	db.Order("\"order\"").Find(&sectionTypes, &model.SongSectionType{UserID: sectionType.UserID})

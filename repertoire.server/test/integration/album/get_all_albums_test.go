@@ -27,7 +27,7 @@ func TestGetAllAlbums_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
 	var responseAlbums []model.Album
 	_ = json.Unmarshal(w.Body.Bytes(), &responseAlbums)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var albums []model.Album
 	db.Preload("Artist").Find(&albums)

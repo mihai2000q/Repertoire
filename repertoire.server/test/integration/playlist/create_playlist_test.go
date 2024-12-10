@@ -59,7 +59,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 }
 
 func assertCreatedPlaylist(t *testing.T, request requests.CreatePlaylistRequest, playlistID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var playlist model.Playlist
 	db.Find(&playlist, playlistID)

@@ -41,7 +41,7 @@ func TestCreateArtist_WhenSuccessful_ShouldCreateArtist(t *testing.T) {
 }
 
 func assertCreatedArtist(t *testing.T, request requests.CreateArtistRequest, artistID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var artist model.Artist
 	db.Find(&artist, artistID)

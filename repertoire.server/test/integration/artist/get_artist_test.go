@@ -43,7 +43,7 @@ func TestGetArtist_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 	var responseArtist model.Artist
 	_ = json.Unmarshal(w.Body.Bytes(), &responseArtist)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&artist, artist.ID)
 
 	assertion.ResponseArtist(t, artist, responseArtist)

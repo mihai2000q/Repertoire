@@ -52,7 +52,7 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 
 			var deletedArtist model.Artist
 			db.Find(&deletedArtist, test.artist.ID)

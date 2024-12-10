@@ -16,8 +16,12 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func GetDatabase() *gorm.DB {
+func GetDatabase(t *testing.T) *gorm.DB {
 	db, _ := gorm.Open(postgres.Open(core.Dsn))
+	t.Cleanup(func() {
+		d, _ := db.DB()
+		_ = d.Close()
+	})
 	return db
 }
 
@@ -74,21 +78,11 @@ func CreateCustomToken(sub string, jti string) string {
 }
 
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
-	seedData(seed)
-	t.Cleanup(func() {
-		cleanupData(users)
-	})
-}
-
-func seedData(seed func(*gorm.DB)) {
-	db := GetDatabase()
+	db := GetDatabase(t)
 	seed(db)
-}
-
-func cleanupData(users []model.User) {
-	db := GetDatabase()
-
-	for _, user := range users {
-		db.Select(clause.Associations).Delete(user)
-	}
+	t.Cleanup(func() {
+		for _, user := range users {
+			db.Select(clause.Associations).Delete(user)
+		}
+	})
 }

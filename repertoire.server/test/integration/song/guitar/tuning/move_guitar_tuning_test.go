@@ -91,7 +91,7 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldMoveTunings(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			var tunings []model.GuitarTuning
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 			db.Order("\"order\"").Find(&tunings, &model.GuitarTuning{UserID: test.user.ID})
 
 			assertMovedTunings(t, request, tunings, test.index, test.overIndex)

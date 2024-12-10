@@ -55,7 +55,7 @@ func TestDeleteProfilePictureFromUser_WhenSuccessful_ShouldUpdateUserAndDeletePr
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&user, user.ID)
 
 	assert.Nil(t, user.ProfilePictureURL)

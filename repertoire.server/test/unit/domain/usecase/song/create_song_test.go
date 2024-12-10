@@ -10,6 +10,7 @@ import (
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -161,9 +162,10 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		{
 			"Create song with new album and artist",
 			requests.CreateSongRequest{
-				Title:      "Some Song",
-				AlbumTitle: &[]string{"New Album Title"}[0],
-				ArtistName: &[]string{"New Artist Name"}[0],
+				Title:       "Some Song",
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+				AlbumTitle:  &[]string{"New Album Title"}[0],
+				ArtistName:  &[]string{"New Artist Name"}[0],
 			},
 		},
 		{
@@ -210,9 +212,10 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			var album *model.Album
 			if tt.request.AlbumID != nil {
 				album = &model.Album{
-					ID:       *tt.request.AlbumID,
-					Songs:    []model.Song{{}, {}, {}, {}, {}},
-					ArtistID: &[]uuid.UUID{uuid.New()}[0],
+					ID:          *tt.request.AlbumID,
+					ReleaseDate: &[]time.Time{time.Now()}[0],
+					Songs:       []model.Song{{}, {}, {}, {}, {}},
+					ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 				}
 				albumRepository.On("GetWithSongs", mock.IsType(album), *tt.request.AlbumID).
 					Return(nil, album).
@@ -255,8 +258,10 @@ func assertCreatedSong(
 	assert.Equal(t, request.Bpm, song.Bpm)
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
-	assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
+	if request.ReleaseDate != nil {
+		assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
+	}
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, request.AlbumID, song.AlbumID)
@@ -276,6 +281,7 @@ func assertCreatedSong(
 		assert.Equal(t, *request.AlbumTitle, song.Album.Title)
 		assert.Equal(t, song.ArtistID, song.Album.ArtistID)
 		assert.Equal(t, song.UserID, song.Album.UserID)
+		assert.Equal(t, song.ReleaseDate, song.Album.ReleaseDate)
 		assert.Equal(t, uint(1), *song.AlbumTrackNo)
 	}
 	if request.ArtistName != nil {
@@ -291,6 +297,9 @@ func assertCreatedSong(
 	if request.AlbumID != nil {
 		assert.Equal(t, &[]uint{uint(len(album.Songs)) + 1}[0], song.AlbumTrackNo)
 		assert.Equal(t, album.ArtistID, song.ArtistID)
+		if request.ReleaseDate == nil {
+			assert.Equal(t, album.ReleaseDate, song.ReleaseDate)
+		}
 	}
 	if request.AlbumID == nil && request.AlbumTitle == nil {
 		assert.Nil(t, song.AlbumTrackNo)

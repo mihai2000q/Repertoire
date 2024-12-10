@@ -50,7 +50,7 @@ func TestUpdateUser_WhenSuccessful_ShouldUpdateUser(t *testing.T) {
 }
 
 func assertUpdatedUser(t *testing.T, request requests.UpdateUserRequest, userID uuid.UUID) {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var user model.User
 	db.Find(&user, userID)

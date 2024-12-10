@@ -43,7 +43,7 @@ func TestGetPlaylist_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 	var responsePlaylist model.Playlist
 	_ = json.Unmarshal(w.Body.Bytes(), &responsePlaylist)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 		return db.
 			Preload("Song").

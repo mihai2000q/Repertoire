@@ -58,7 +58,7 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *t
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Preload("Albums").Find(&artist, artist.ID)
 	assertRemoveAlbumsFromArtist(t, request, artist, oldAlbumsLength)
 

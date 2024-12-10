@@ -29,7 +29,7 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var section model.SongSection
 	db.Find(&section, &model.SongSection{Name: request.Name})

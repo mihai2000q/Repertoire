@@ -43,7 +43,7 @@ func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 	var responseAlbum model.Album
 	_ = json.Unmarshal(w.Body.Bytes(), &responseAlbum)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
 		return db.Order("songs.album_track_no")
 	}).

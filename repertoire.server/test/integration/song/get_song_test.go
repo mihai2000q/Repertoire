@@ -42,7 +42,7 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	var responseSong model.Song
 	_ = json.Unmarshal(w.Body.Bytes(), &responseSong)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Preload("Album").
 		Preload("Artist").
 		Preload("GuitarTuning").

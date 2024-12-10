@@ -49,7 +49,7 @@ func TestUpdateArtist_WhenSuccessful_ShouldUpdateArtist(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&artist, artist.ID)
 
 	assertUpdatedArtist(t, request, artist)

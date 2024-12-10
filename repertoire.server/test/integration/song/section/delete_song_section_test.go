@@ -52,7 +52,7 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var sections []model.SongSection
 	db.Order("\"order\"").Find(&sections, &model.SongSection{SongID: section.SongID})

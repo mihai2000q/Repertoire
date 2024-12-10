@@ -27,7 +27,7 @@ func TestGetAllPlaylists_WhenSuccessful_ShouldReturnPlaylists(t *testing.T) {
 	var responsePlaylists []model.Playlist
 	_ = json.Unmarshal(w.Body.Bytes(), &responsePlaylists)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var playlists []model.Playlist
 	db.Preload("Songs").

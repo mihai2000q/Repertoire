@@ -49,7 +49,7 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldUpdatePlaylist(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&playlist, playlist.ID)
 
 	assertUpdatedPlaylist(t, request, playlist)

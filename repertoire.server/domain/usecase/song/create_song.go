@@ -101,10 +101,11 @@ func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongReq
 	}
 
 	song.Album = &model.Album{
-		ID:       uuid.New(),
-		Title:    *request.AlbumTitle,
-		UserID:   song.UserID,
-		ArtistID: song.ArtistID, // album inherits the artist from song
+		ID:          uuid.New(),
+		Title:       *request.AlbumTitle,
+		UserID:      song.UserID,
+		ArtistID:    song.ArtistID,    // album inherits the artist from song
+		ReleaseDate: song.ReleaseDate, // also the release date
 	}
 	song.AlbumTrackNo = &[]uint{1}[0]
 }
@@ -128,6 +129,9 @@ func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequ
 	song.AlbumTrackNo = &trackNo
 	// song inherits the artist from album
 	song.ArtistID = album.ArtistID
+	if song.ReleaseDate == nil {
+		song.ReleaseDate = album.ReleaseDate
+	}
 
 	return nil
 }

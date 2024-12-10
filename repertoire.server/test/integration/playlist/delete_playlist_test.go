@@ -51,7 +51,7 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 
 			var deletedPlaylist model.Playlist
 			db.Find(&deletedPlaylist, test.playlist.ID)

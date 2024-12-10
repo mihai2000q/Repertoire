@@ -32,7 +32,7 @@ func TestCreateGuitarTuning_WhenSuccessful_ShouldCreateTuning(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var guitarTuning model.GuitarTuning
 	db.Find(&guitarTuning, &model.GuitarTuning{Name: request.Name})

@@ -67,7 +67,7 @@ func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 }
 
 func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var user model.User
 	db.Preload("SongSectionTypes").

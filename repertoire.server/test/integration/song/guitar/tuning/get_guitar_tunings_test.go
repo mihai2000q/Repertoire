@@ -31,7 +31,7 @@ func TestGetGuitarTunings_WhenSuccessful_ShouldGetTunings(t *testing.T) {
 	var responseTunings []model.GuitarTuning
 	_ = json.Unmarshal(w.Body.Bytes(), &responseTunings)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var tunings []model.GuitarTuning
 	db.Find(&tunings, model.GuitarTuning{UserID: user.ID})

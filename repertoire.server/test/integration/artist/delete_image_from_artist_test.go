@@ -51,7 +51,7 @@ func TestDeleteImageFromArtist_WhenSuccessful_ShouldUpdateArtistAndDeleteImage(t
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&artist, artist.ID)
 
 	assert.Nil(t, artist.ImageURL)

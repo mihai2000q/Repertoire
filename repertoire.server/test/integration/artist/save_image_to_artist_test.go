@@ -51,7 +51,7 @@ func TestSaveImageFromArtist_WhenSuccessful_ShouldUpdateArtistAndSaveImage(t *te
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&artist, artist.ID)
 
 	assert.NotNil(t, artist.ImageURL)

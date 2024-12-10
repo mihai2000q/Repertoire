@@ -62,7 +62,7 @@ func TestRemoveSongsFromPlaylist_WhenSuccessful_ShouldDeleteSongsFromPlaylist(t 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 		return db.Order("song_track_no")
 	}).Find(&playlist, playlist.ID)

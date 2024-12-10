@@ -31,7 +31,7 @@ func TestGetSongSectionTypes_WhenSuccessful_ShouldGetTypes(t *testing.T) {
 	var responseTypes []model.SongSectionType
 	_ = json.Unmarshal(w.Body.Bytes(), &responseTypes)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var sectionTypes []model.SongSectionType
 	db.Find(&sectionTypes, model.SongSectionType{UserID: user.ID})

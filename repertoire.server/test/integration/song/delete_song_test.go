@@ -53,7 +53,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 			db.Preload("Playlists").Preload("PlaylistSongs").Find(&test.song, test.song.ID)
 
 			// when

@@ -55,6 +55,9 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		trackNo := uint(songsLength + i)
 		songs[i].AlbumTrackNo = &trackNo
 		songs[i].ArtistID = album.ArtistID // songs inherit album artist
+		if songs[i].ReleaseDate == nil {
+			songs[i].ReleaseDate = album.ReleaseDate // also inherit the release date if there is none
+		}
 	}
 
 	err = a.songRepository.UpdateAll(&songs)

@@ -49,7 +49,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSection(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var section model.SongSection
 	db.Find(&section, &model.SongSection{ID: request.ID})
