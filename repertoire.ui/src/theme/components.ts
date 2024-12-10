@@ -7,6 +7,7 @@ import {
   CardFactory,
   LoadingOverlay,
   Menu,
+  Modal,
   NavLink,
   StylesApiProps,
   Text,
@@ -83,6 +84,20 @@ export const components = {
         }
       }
     }
+  }),
+  Modal: Modal.extend({
+    defaultProps: {
+      closeButtonProps: {
+        iconSize: 20,
+      }
+    },
+    styles: (theme) => ({
+      title: {
+        fontSize: theme.fontSizes.lg,
+        fontWeight: 600,
+        color: theme.colors.gray[7]
+      },
+    })
   }),
   NavLink: NavLink.extend({
     defaultProps: {
