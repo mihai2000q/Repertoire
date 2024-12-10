@@ -36,7 +36,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     }
   })
 
-  async function updateAlbum({ title, releaseDate }) {
+  async function updateAlbum({ title, releaseDate }: EditAlbumHeaderForm) {
     await updateAlbumMutation({
       ...album,
       id: album.id,

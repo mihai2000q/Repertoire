@@ -33,7 +33,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     }
   })
 
-  async function updateArtist({ name }) {
+  async function updateArtist({ name }: EditArtistHeaderForm) {
     await updateArtistMutation({
       ...artist,
       id: artist.id,

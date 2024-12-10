@@ -36,7 +36,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     }
   })
 
-  async function updateSong({ title, releaseDate }) {
+  async function updateSong({ title, releaseDate }: EditSongHeaderForm) {
     await updateSongMutation({
       ...song,
       guitarTuningId: song.guitarTuning?.id,
