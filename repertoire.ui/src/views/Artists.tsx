@@ -26,7 +26,8 @@ function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
   const { data: artists, isLoading } = useGetArtistsQuery({
     pageSize: 20,
-    currentPage: currentPage
+    currentPage: currentPage,
+    orderBy: ['created_at DESC']
   })
 
   const showUnknownArtist = useShowUnknownArtist()

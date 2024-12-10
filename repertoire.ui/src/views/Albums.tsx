@@ -26,7 +26,8 @@ function Albums() {
   const [currentPage, setCurrentPage] = useState(1)
   const { data: albums, isLoading } = useGetAlbumsQuery({
     pageSize: 20,
-    currentPage: currentPage
+    currentPage: currentPage,
+    orderBy: ['created_at DESC']
   })
 
   const showUnknownAlbum = useShowUnknownAlbum()
