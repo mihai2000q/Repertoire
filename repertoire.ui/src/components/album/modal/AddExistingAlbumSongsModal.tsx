@@ -44,10 +44,10 @@ function AddExistingAlbumSongsModal({
       searchValue.trim() !== ''
         ? [
             'album_id IS NULL',
-            `artist_id IS NULL${artistId ? ' OR artist_id = ' + artistId : ''}`,
-            `title ~* ${searchValue}`
+            `artist_id IS NULL${artistId ? ` OR artist_id = '${artistId}'`: ''}`,
+            `title ~* '${searchValue}'`
           ]
-        : ['album_id IS NULL', `artist_id IS NULL${artistId ? ' OR artist_id = ' + artistId : ''}`]
+        : ['album_id IS NULL', `artist_id IS NULL${artistId ? ` OR artist_id = '${artistId}'`: ''}`]
   })
 
   const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()

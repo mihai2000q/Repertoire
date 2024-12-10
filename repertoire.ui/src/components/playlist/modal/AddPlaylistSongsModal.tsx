@@ -19,7 +19,7 @@ import { useAddSongsToPlaylistMutation } from '../../../state/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {MouseEvent, useEffect} from 'react'
+import { MouseEvent, useEffect } from 'react'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -36,8 +36,11 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     orderBy: ['title asc'],
     searchBy:
       searchValue.trim() !== ''
-        ? [`title ~* ${searchValue}`]
-        : []
+        ? [
+            `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
+            `title ~* '${searchValue}'`
+          ]
+        : [`playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`]
   })
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToPlaylistMutation()
@@ -45,9 +48,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   const [songIds, songIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    songIdsHandlers.filter(songId =>
-      songs.models.some(song => song.id === songId)
-    )
+    songIdsHandlers.filter((songId) => songs.models.some((song) => song.id === songId))
   }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
@@ -144,10 +145,20 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={4}>
-                        <Text fw={500} truncate={'end'}>{song.title}</Text>
-                        {song.album && <Text fz={'sm'} c={'dimmed'} truncate={'end'}>- {song.album.title}</Text>}
+                        <Text fw={500} truncate={'end'}>
+                          {song.title}
+                        </Text>
+                        {song.album && (
+                          <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                            - {song.album.title}
+                          </Text>
+                        )}
                       </Group>
-                      {song.artist && <Text fz={'sm'} c={'dimmed'}>{song.artist.name}</Text>}
+                      {song.artist && (
+                        <Text fz={'sm'} c={'dimmed'}>
+                          {song.artist.name}
+                        </Text>
+                      )}
                     </Stack>
                   </Group>
                 ))}

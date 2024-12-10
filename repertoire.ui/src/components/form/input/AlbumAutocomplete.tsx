@@ -46,9 +46,9 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
     orderBy: ['title asc'],
     searchBy:
       searchValue.trim() !== ''
-        ? [`title ~* ${searchValue}`]
+        ? [`title ~* '${searchValue}'`]
         : album
-          ? [`title ~* ${album.title}`]
+          ? [`title ~* '${album.title}'`]
           : []
   })
 

@@ -36,7 +36,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExisting
     orderBy: ['title asc'],
     searchBy:
       searchValue.trim() !== ''
-        ? ['artist_id IS NULL', `title ~* ${searchValue}`]
+        ? ['artist_id IS NULL', `title ~* '${searchValue}'`]
         : ['artist_id IS NULL']
   })
 
