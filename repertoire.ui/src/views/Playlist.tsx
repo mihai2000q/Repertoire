@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   AspectRatio,
+  Button,
   Card,
   Divider,
   Group,
@@ -22,12 +23,22 @@ import PlaylistLoader from '../components/playlist/PlaylistLoader.tsx'
 import playlistPlaceholder from '../assets/image-placeholder-1.jpg'
 import PlaylistSongCard from '../components/playlist/PlaylistSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import {IconDots, IconEdit, IconPlus, IconTrash} from '@tabler/icons-react'
+import {
+  IconCaretDownFilled,
+  IconCheck,
+  IconDots,
+  IconEdit,
+  IconPlus,
+  IconTrash
+} from '@tabler/icons-react'
 import NewHorizontalCard from '../components/card/NewHorizontalCard.tsx'
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import { toast } from 'react-toastify'
 import EditPlaylistHeaderModal from '../components/playlist/modal/EditPlaylistHeaderModal.tsx'
-import AddExistingPlaylistSongsModal from "../components/playlist/modal/AddExistingPlaylistSongsModal.tsx";
+import AddExistingPlaylistSongsModal from '../components/playlist/modal/AddExistingPlaylistSongsModal.tsx'
+import { useState } from 'react'
+import Order from '../types/Order.ts'
+import playlistSongsOrders from '../data/playlist/playlistSongsOrders.ts'
 
 function Playlist() {
   const navigate = useNavigate()
@@ -36,6 +47,8 @@ function Playlist() {
   const playlistId = params['id'] ?? ''
 
   const [deletePlaylistMutation] = useDeletePlaylistMutation()
+
+  const [songsOrder, setSongsOrder] = useState<Order>(playlistSongsOrders[0])
 
   const { data: playlist, isLoading, isFetching } = useGetPlaylistQuery(playlistId)
 
@@ -96,11 +109,13 @@ function Playlist() {
               {playlist.title}
             </Title>
 
-            <Text fw={500} fz={'sm'} c={'dimmed'}>
+            <Text fw={500} fz={'sm'} c={'dimmed'} inline>
               {playlist.songs.length} songs
             </Text>
 
-            <Text fz={'sm'} c={'dimmed'} lineClamp={3}>{playlist.description}</Text>
+            <Text fz={'sm'} c={'dimmed'} lineClamp={3}>
+              {playlist.description}
+            </Text>
           </Stack>
         </Group>
       </HeaderPanelCard>
@@ -111,9 +126,36 @@ function Playlist() {
         <LoadingOverlay visible={isFetching} />
 
         <Stack gap={0}>
-          <Group px={'md'} pt={'md'} pb={'xs'}>
+          <Group px={'md'} pt={'md'} pb={'xs'} align={'center'}>
             <Text fw={600}>Songs</Text>
+
+            <Menu shadow={'sm'}>
+              <Menu.Target>
+                <Button
+                  variant={'subtle'}
+                  size={'compact-xs'}
+                  rightSection={<IconCaretDownFilled size={11} />}
+                  styles={{ section: { marginLeft: 4 } }}
+                >
+                  {songsOrder.label}
+                </Button>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                {playlistSongsOrders.map((o) => (
+                  <Menu.Item
+                    key={o.value}
+                    leftSection={songsOrder === o && <IconCheck size={12} />}
+                    onClick={() => setSongsOrder(o)}
+                  >
+                    {o.label}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+
             <Space flex={1} />
+
             <Menu position={'bottom-end'}>
               <Menu.Target>
                 <ActionIcon size={'md'} variant={'grey'}>
@@ -137,9 +179,7 @@ function Playlist() {
               />
             ))}
             {playlist.songs.length === 0 && (
-              <NewHorizontalCard onClick={openAddExistingSongs}>
-                Add New Song
-              </NewHorizontalCard>
+              <NewHorizontalCard onClick={openAddExistingSongs}>Add New Song</NewHorizontalCard>
             )}
           </Stack>
         </Stack>
