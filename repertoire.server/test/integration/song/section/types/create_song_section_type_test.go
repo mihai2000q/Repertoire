@@ -32,7 +32,7 @@ func TestCreateSongSectionType_WhenSuccessful_ShouldCreateType(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var sectionType model.SongSectionType
 	db.Find(&sectionType, &model.SongSectionType{Name: request.Name})

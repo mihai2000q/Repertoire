@@ -110,7 +110,7 @@ func TestMoveSongFromAlbum_WhenSuccessful_ShouldMoveSongs(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			var album model.Album
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 			db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
 				return db.Order("songs.album_track_no")
 			}).Find(&album, request.ID)

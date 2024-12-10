@@ -91,7 +91,7 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			var sectionTypes []model.SongSectionType
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 			db.Order("\"order\"").Find(&sectionTypes, &model.SongSectionType{UserID: test.user.ID})
 
 			assertMovedTunings(t, request, sectionTypes, test.index, test.overIndex)

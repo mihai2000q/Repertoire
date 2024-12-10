@@ -140,7 +140,11 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 }
 
 func assertSongsAddedToAlbum(t *testing.T, request requests.AddSongsToAlbumRequest) {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
+	t.Cleanup(func() {
+		d, _ := db.DB()
+		_ = d.Close()
+	})
 
 	var album model.Album
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {

@@ -26,7 +26,7 @@ func TestDeleteUser_WhenSuccessful_ShouldDeleteUser(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var deletedUser model.User
 	db.Find(&deletedUser, user.ID)

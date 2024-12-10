@@ -38,7 +38,7 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldDeleteTuning(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var tunings []model.GuitarTuning
 	db.Order("\"order\"").Find(&tunings, &model.GuitarTuning{UserID: tuning.UserID})

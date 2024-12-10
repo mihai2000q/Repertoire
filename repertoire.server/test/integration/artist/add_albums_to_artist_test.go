@@ -58,7 +58,7 @@ func TestAddAlbumsToArtist_WhenSuccessful_ShouldAddAlbumsToArtist(t *testing.T) 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Preload("Albums").Preload("Albums.Songs").Find(&artist, artist.ID)
 	assertAddedAlbumsToArtist(t, request, artist, oldAlbumsLength)
 }

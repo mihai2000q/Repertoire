@@ -37,7 +37,7 @@ func TestAddSongsToPlaylist_WhenSuccessful_ShouldHaveSongsOnPlaylist(t *testing.
 }
 
 func assertSongsAddedToPlaylist(t *testing.T, request requests.AddSongsToPlaylistRequest) {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var playlist model.Playlist
 	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {

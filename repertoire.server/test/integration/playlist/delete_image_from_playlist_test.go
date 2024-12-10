@@ -50,7 +50,7 @@ func TestDeleteImageFromPlaylist_WhenSuccessful_ShouldUpdatePlaylistAndDeleteIma
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&playlist, playlist.ID)
 
 	assert.Nil(t, playlist.ImageURL)

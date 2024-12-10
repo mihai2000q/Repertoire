@@ -51,7 +51,7 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&album, album.ID)
 
 	assertUpdatedAlbum(t, request, album)

@@ -110,7 +110,7 @@ func TestMoveSongFromPlaylist_WhenSuccessful_ShouldMoveSongs(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			var playlist model.Playlist
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 			db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("Song").Order("song_track_no")
 			}).Find(&playlist, request.ID)

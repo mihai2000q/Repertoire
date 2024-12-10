@@ -50,7 +50,7 @@ func TestSaveImageFromAlbum_WhenSuccessful_ShouldUpdateAlbumAndSaveImage(t *test
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&album, album.ID)
 
 	assert.NotNil(t, album.ImageURL)

@@ -42,7 +42,7 @@ func TestGetUser_WhenSuccessful_ShouldReturnUser(t *testing.T) {
 	var responseUser model.User
 	_ = json.Unmarshal(w.Body.Bytes(), &responseUser)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 	db.Find(&user, user.ID)
 
 	assertion.ResponseUser(t, user, responseUser)

@@ -51,7 +51,7 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db := utils.GetDatabase()
+			db := utils.GetDatabase(t)
 
 			var deletedAlbum model.Album
 			db.Find(&deletedAlbum, test.album.ID)

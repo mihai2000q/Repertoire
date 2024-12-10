@@ -28,7 +28,7 @@ func TestGetAllArtists_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 	var responseArtists []model.Artist
 	_ = json.Unmarshal(w.Body.Bytes(), &responseArtists)
 
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var artists []model.Artist
 	db.Find(&artists)

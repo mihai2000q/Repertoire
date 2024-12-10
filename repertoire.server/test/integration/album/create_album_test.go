@@ -69,7 +69,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 }
 
 func assertCreatedAlbum(t *testing.T, request requests.CreateAlbumRequest, albumID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase()
+	db := utils.GetDatabase(t)
 
 	var album model.Album
 	db.Preload("Artist").Find(&album, albumID)

@@ -117,7 +117,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			assert.NotEmpty(t, response)
 
 			var song model.Song
-			utils.GetDatabase().
+			utils.GetDatabase(t).
 				Preload("Artist").
 				Preload("Album").
 				Preload("Album.Songs").
