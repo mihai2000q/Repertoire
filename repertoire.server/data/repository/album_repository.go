@@ -4,10 +4,8 @@ import (
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
-
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AlbumRepository interface {
@@ -60,7 +58,7 @@ func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID) e
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
-		Preload(clause.Associations).
+		Joins("Artist").
 		Find(&album, model.Album{ID: id}).
 		Error
 }
@@ -83,7 +81,7 @@ func (a albumRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := a.client.DB.Model(&model.Album{}).
-		Preload("Artist").
+		Joins("Artist").
 		Where(model.Album{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)

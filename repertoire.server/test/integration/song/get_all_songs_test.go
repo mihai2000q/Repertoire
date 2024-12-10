@@ -35,6 +35,7 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 		Preload("GuitarTuning").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
+		Preload("Playlists").
 		Find(&songs)
 
 	for i := range responseSongs {

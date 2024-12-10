@@ -13,7 +13,7 @@ type Playlist struct {
 	Title         string             `gorm:"size:100; not null" json:"title"`
 	Description   string             `gorm:"not null" json:"description"`
 	ImageURL      *internal.FilePath `json:"imageUrl"`
-	Songs         []Song             `gorm:"many2many:playlist_song" json:"songs"`
+	Songs         []Song             `gorm:"many2many:playlist_songs" json:"songs"`
 	PlaylistSongs []PlaylistSong     `gorm:"foreignKey:PlaylistID; constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`

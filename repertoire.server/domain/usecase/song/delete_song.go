@@ -13,17 +13,20 @@ import (
 
 type DeleteSong struct {
 	repository              repository.SongRepository
+	playlistRepository      repository.PlaylistRepository
 	storageService          service.StorageService
 	storageFilePathProvider provider.StorageFilePathProvider
 }
 
 func NewDeleteSong(
 	repository repository.SongRepository,
+	playlistRepository repository.PlaylistRepository,
 	storageService service.StorageService,
 	storageFilePathProvider provider.StorageFilePathProvider,
 ) DeleteSong {
 	return DeleteSong{
 		repository:              repository,
+		playlistRepository:      playlistRepository,
 		storageService:          storageService,
 		storageFilePathProvider: storageFilePathProvider,
 	}
@@ -31,7 +34,7 @@ func NewDeleteSong(
 
 func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	var song model.Song
-	err := d.repository.Get(&song, id)
+	err := d.repository.GetWithPlaylistsAndSongs(&song, id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -39,6 +42,7 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
+	// TODO: RUN IN PARALLEL (GOROUTINES)
 	if song.AlbumID != nil {
 		errCode := d.reorderAlbum(song)
 		if errCode != nil {
@@ -52,6 +56,11 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
+	}
+
+	errCode := d.reorderSongsInPlaylists(song)
+	if errCode != nil {
+		return errCode
 	}
 
 	err = d.repository.Delete(id)
@@ -78,5 +87,27 @@ func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
 		return wrapper.InternalServerError(err)
 	}
 
+	return nil
+}
+
+func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode {
+	for _, playlist := range song.Playlists {
+		songFound := false
+		var playlistSongsToUpdate []model.PlaylistSong
+		for _, playlistSong := range playlist.PlaylistSongs {
+			if songFound {
+				playlistSong.SongTrackNo = playlistSong.SongTrackNo - 1
+				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
+			}
+
+			if playlistSong.SongID == song.ID {
+				songFound = true
+			}
+		}
+		err := d.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+	}
 	return nil
 }
