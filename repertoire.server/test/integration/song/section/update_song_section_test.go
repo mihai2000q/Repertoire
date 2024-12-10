@@ -38,6 +38,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSection(t *testing.T) {
 	request := requests.UpdateSongSectionRequest{
 		ID:         songData.Songs[0].Sections[0].ID,
 		Name:       "New Chorus Name",
+		Confidence: 99,
 		Rehearsals: 23,
 		TypeID:     songData.Users[0].SongSectionTypes[0].ID,
 	}
@@ -63,6 +64,7 @@ func assertUpdatedSongSection(
 	request requests.UpdateSongSectionRequest,
 ) {
 	assert.Equal(t, request.Name, songSection.Name)
+	assert.Equal(t, request.Confidence, songSection.Confidence)
 	assert.Equal(t, request.Rehearsals, songSection.Rehearsals)
 	assert.Equal(t, request.TypeID, songSection.SongSectionTypeID)
 }
