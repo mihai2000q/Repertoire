@@ -678,6 +678,7 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       validSectionName,
+		Confidence: 100,
 		Rehearsals: 23,
 		TypeID:     uuid.New(),
 	}
@@ -718,7 +719,6 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			"Name",
 			"required",
 		},
-		// Name Test Cases
 		{
 			"Name is invalid because it has too many characters",
 			requests.UpdateSongSectionRequest{
@@ -727,6 +727,18 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 				TypeID: uuid.New(),
 			},
 			"Name",
+			"max",
+		},
+		// Confidence Test Cases
+		{
+			"Confidence is invalid because it is greater than 100",
+			requests.UpdateSongSectionRequest{
+				ID:         uuid.New(),
+				Name:       validSectionName,
+				Confidence: 101,
+				TypeID:     uuid.New(),
+			},
+			"Confidence",
 			"max",
 		},
 		// Type ID Test Cases

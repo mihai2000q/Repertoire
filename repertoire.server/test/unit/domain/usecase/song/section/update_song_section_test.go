@@ -117,6 +117,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
 		Name:       "Some Artist",
+		Confidence: 55,
 		Rehearsals: 120,
 		TypeID:     uuid.New(),
 	}
@@ -149,6 +150,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 func assertUpdatedSongSection(t *testing.T, request requests.UpdateSongSectionRequest, section model.SongSection) {
 	assert.Equal(t, request.Name, section.Name)
+	assert.Equal(t, request.Confidence, section.Confidence)
 	assert.Equal(t, request.Rehearsals, section.Rehearsals)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
 }

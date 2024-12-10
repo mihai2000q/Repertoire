@@ -30,6 +30,7 @@ func (c UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 	}
 
 	section.Name = request.Name
+	section.Confidence = request.Confidence
 	section.Rehearsals = request.Rehearsals
 	section.SongSectionTypeID = request.TypeID
 

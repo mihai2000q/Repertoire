@@ -67,6 +67,7 @@ type SongSection struct {
 	ID         uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name       string    `gorm:"size:30" json:"name"`
 	Rehearsals uint      `json:"rehearsals"`
+	Confidence uint      `gorm:"size:100" json:"confidence"`
 	Order      uint      `gorm:"not null" json:"-"`
 
 	SongID            uuid.UUID       `gorm:"not null" json:"-"`
@@ -86,6 +87,8 @@ type SongSectionType struct {
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
+
+var DefaultSongSectionConfidence = 50
 
 var DefaultGuitarTunings = []string{
 	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",

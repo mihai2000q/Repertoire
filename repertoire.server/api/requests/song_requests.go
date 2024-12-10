@@ -70,6 +70,7 @@ type CreateSongSectionRequest struct {
 type UpdateSongSectionRequest struct {
 	ID         uuid.UUID `validate:"required"`
 	Name       string    `validate:"required,max=30"`
+	Confidence uint      `validate:"max=100"`
 	Rehearsals uint
 	TypeID     uuid.UUID `validate:"required"`
 }
