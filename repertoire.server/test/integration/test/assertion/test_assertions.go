@@ -127,6 +127,10 @@ func ResponseSong(
 		for i := range song.Sections {
 			ResponseSongSection(t, song.Sections[i], response.Sections[i])
 		}
+
+		for i := range song.Playlists {
+			ResponsePlaylist(t, song.Playlists[i], response.Playlists[i], false)
+		}
 	}
 }
 

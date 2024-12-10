@@ -48,6 +48,7 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 		Preload("GuitarTuning").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
+		Preload("Playlists").
 		Find(&song, song.ID)
 
 	assertion.ResponseSong(t, song, responseSong, true, true, true)
