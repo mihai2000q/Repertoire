@@ -14,7 +14,7 @@ type Playlist struct {
 	Description   string             `gorm:"not null" json:"description"`
 	ImageURL      *internal.FilePath `json:"imageUrl"`
 	Songs         []Song             `gorm:"many2many:playlist_song" json:"songs"`
-	PlaylistSongs []PlaylistSong     `gorm:"foreignKey:PlaylistID; constraint:OnDelete:CASCADE" json:"playlist_songs"`
+	PlaylistSongs []PlaylistSong     `gorm:"foreignKey:PlaylistID; constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
@@ -38,6 +38,8 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
 	p.ImageURL = p.ImageURL.ToNullableFullURL()
+
+	p.Songs = []Song{} // in case there are no playlist songs
 	for _, playlistSong := range p.PlaylistSongs {
 		newSong := playlistSong.Song
 		newSong.PlaylistTrackNo = playlistSong.SongTrackNo

@@ -15,25 +15,19 @@ import {
 } from '@mantine/core'
 import { useDebouncedState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
+import { useAddSongsToPlaylistMutation } from '../../../state/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {MouseEvent, useEffect} from 'react'
-import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
+import { MouseEvent, useEffect } from 'react'
 
-interface AddExistingAlbumSongsModalProps {
+interface AddPlaylistSongsModalProps {
   opened: boolean
   onClose: () => void
-  albumId: string
-  artistId: string
+  playlistId: string
 }
 
-function AddExistingAlbumSongsModal({
-  opened,
-  onClose,
-  albumId,
-  artistId
-}: AddExistingAlbumSongsModalProps) {
+function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
@@ -43,21 +37,18 @@ function AddExistingAlbumSongsModal({
     searchBy:
       searchValue.trim() !== ''
         ? [
-            'album_id IS NULL',
-            `artist_id IS NULL${artistId ? ` OR artist_id = '${artistId}'`: ''}`,
+            `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
             `title ~* '${searchValue}'`
           ]
-        : ['album_id IS NULL', `artist_id IS NULL${artistId ? ` OR artist_id = '${artistId}'`: ''}`]
+        : [`playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`]
   })
 
-  const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()
+  const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToPlaylistMutation()
 
   const [songIds, songIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    songIdsHandlers.filter(songId =>
-      songs.models.some(song => song.id === songId)
-    )
+    songIdsHandlers.filter((songId) => songs.models.some((song) => song.id === songId))
   }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
@@ -81,9 +72,9 @@ function AddExistingAlbumSongsModal({
       return
     }
 
-    await addSongsMutation({ id: albumId, songIds }).unwrap()
+    await addSongMutation({ id: playlistId, songIds }).unwrap()
 
-    toast.success(`Songs added to album!`)
+    toast.success(`Songs added to playlist!`)
     onClose()
     songIdsHandlers.setState([])
     setSearchValue('')
@@ -111,7 +102,7 @@ function AddExistingAlbumSongsModal({
             defaultValue={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
-          {songs?.totalCount === 0 && <Text>There are no songs without album</Text>}
+          {songs?.totalCount === 0 && <Text>There are no songs without playlist</Text>}
           {songs?.totalCount > 0 && (
             <Group w={'100%'} px={'xl'}>
               <Checkbox
@@ -152,9 +143,22 @@ function AddExistingAlbumSongsModal({
                       pr={'sm'}
                     />
                     <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
-                    <Stack gap={0}>
-                      <Text fw={500}>{song.title}</Text>
-                      {song.artist && <Text fz={'sm'}>{song.artist.name}</Text>}
+                    <Stack gap={0} style={{ overflow: 'hidden' }}>
+                      <Group gap={4}>
+                        <Text fw={500} truncate={'end'}>
+                          {song.title}
+                        </Text>
+                        {song.album && (
+                          <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                            - {song.album.title}
+                          </Text>
+                        )}
+                      </Group>
+                      {song.artist && (
+                        <Text fz={'sm'} c={'dimmed'}>
+                          {song.artist.name}
+                        </Text>
+                      )}
                     </Stack>
                   </Group>
                 ))}
@@ -172,4 +176,4 @@ function AddExistingAlbumSongsModal({
   )
 }
 
-export default AddExistingAlbumSongsModal
+export default AddPlaylistSongsModal

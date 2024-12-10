@@ -14,6 +14,8 @@ export default interface Song {
   difficulty?: Difficulty
   imageUrl?: string
   albumTrackNo?: number
+  playlistTrackNo?: number
+  playlistCreatedAt?: string
 
   album?: Album
   artist?: Artist

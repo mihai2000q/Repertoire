@@ -9,6 +9,7 @@ import {
 import { toast } from 'react-toastify'
 import { useCreateAlbumMutation, useSaveImageToAlbumMutation } from '../../../state/albumsApi.ts'
 import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
+import { IconAlbum } from '@tabler/icons-react'
 
 interface AddNewArtistAlbumModalProps {
   opened: boolean
@@ -58,7 +59,11 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
         <form onSubmit={form.onSubmit(addAlbum)}>
           <Stack>
             <Group align={'center'}>
-              <ImageDropzoneWithPreview image={image} setImage={setImage} />
+              <ImageDropzoneWithPreview
+                image={image}
+                setImage={setImage}
+                icon={<IconAlbum size={45} />}
+              />
               <TextInput
                 flex={1}
                 withAsterisk={true}

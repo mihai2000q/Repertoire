@@ -7,7 +7,7 @@ import { SignInRequest, SignUpRequest } from '../types/requests/AuthRequests.ts'
 export const api = createApi({
   baseQuery: queryWithRedirection,
   reducerPath: 'api',
-  tagTypes: ['Songs', 'Albums', 'Artists', 'GuitarTunings', 'SongSectionTypes'],
+  tagTypes: ['Songs', 'Albums', 'Artists', 'Playlists', 'GuitarTunings', 'SongSectionTypes'],
   endpoints: (build) => {
     return {
       // Auth

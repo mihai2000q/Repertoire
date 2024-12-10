@@ -49,9 +49,9 @@ function ArtistAutocomplete({
     orderBy: ['name asc'],
     searchBy:
       searchValue.trim() !== ''
-        ? [`name ~* ${searchValue}`]
+        ? [`name ~* '${searchValue}'`]
         : artist
-          ? [`name ~* ${artist.name}`]
+          ? [`name ~* '${artist.name}'`]
           : []
   })
 

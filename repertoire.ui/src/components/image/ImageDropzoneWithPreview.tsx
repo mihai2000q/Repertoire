@@ -1,26 +1,31 @@
-import { Dispatch, SetStateAction } from 'react'
+import {Dispatch, ReactElement, SetStateAction} from 'react'
 import { ActionIcon, alpha, Box, FileButton, Group, Image, Tooltip } from '@mantine/core'
 import { IconMusic, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
-interface RoundImageDropzoneWithPreviewProps {
+interface ImageDropzoneWithPreviewProps {
   image: FileWithPath
   setImage: Dispatch<SetStateAction<FileWithPath>>
+  w?: number
+  h?: number
+  icon?: ReactElement
+  iconSizes?: number
 }
 
-function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWithPreviewProps) {
+function ImageDropzoneWithPreview({
+  image,
+  setImage,
+  icon,
+  w = 92,
+  h = 92,
+  iconSizes = 45
+}: ImageDropzoneWithPreviewProps) {
   if (image) {
     return (
       <Box pos={'relative'}>
-        <Image
-          src={URL.createObjectURL(image)}
-          w={92}
-          h={92}
-          radius={'32px'}
-          alt={'image-preview'}
-        />
+        <Image src={URL.createObjectURL(image)} w={w} h={h} radius={'32px'} alt={'image-preview'} />
 
-        <Box pos={'absolute'} top={70} left={-8}>
+        <Box pos={'absolute'} top={h - 22} left={-8}>
           <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
             <ActionIcon
               c={'white'}
@@ -38,7 +43,7 @@ function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWi
             </ActionIcon>
           </Tooltip>
         </Box>
-        <Box pos={'absolute'} top={70} right={-8}>
+        <Box pos={'absolute'} top={h - 22} right={-8}>
           <FileButton onChange={setImage} accept="image/png,image/jpeg">
             {(props) => (
               <Tooltip label={'Reload Image'} openDelay={300} position={'bottom'}>
@@ -71,8 +76,8 @@ function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWi
       onDrop={(files) => setImage(files[0])}
       accept={IMAGE_MIME_TYPE}
       multiple={false}
-      w={92}
-      h={92}
+      w={w}
+      h={h}
       styles={{
         inner: {
           height: 'calc(100% - 5px)'
@@ -103,17 +108,17 @@ function RoundImageDropzoneWithPreview({ image, setImage }: RoundImageDropzoneWi
     >
       <Group justify="center" style={{ pointerEvents: 'none' }} h={'100%'}>
         <Dropzone.Accept>
-          <IconUpload size={45} />
+          <IconUpload size={iconSizes} />
         </Dropzone.Accept>
         <Dropzone.Reject>
-          <IconX size={45} />
+          <IconX size={iconSizes} />
         </Dropzone.Reject>
         <Dropzone.Idle>
-          <IconMusic size={45} />
+          {icon ? icon : <IconMusic size={iconSizes} />}
         </Dropzone.Idle>
       </Group>
     </Dropzone>
   )
 }
 
-export default RoundImageDropzoneWithPreview
+export default ImageDropzoneWithPreview

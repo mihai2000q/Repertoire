@@ -19,28 +19,36 @@ import { useAddAlbumsToArtistMutation } from '../../../state/artistsApi.ts'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import { MouseEvent } from 'react'
+import {MouseEvent, useEffect} from 'react'
 
-interface AddNewArtistAlbumModalProps {
+interface AddExistingArtistAlbumsModalProps {
   opened: boolean
   onClose: () => void
   artistId: string
 }
 
-function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtistAlbumModalProps) {
+function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExistingArtistAlbumsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: albums, isLoading: albumsIsLoading } = useGetAlbumsQuery({
+    currentPage: 1,
+    pageSize: 20,
     orderBy: ['title asc'],
     searchBy:
       searchValue.trim() !== ''
-        ? ['artist_id IS NULL', `title ~* ${searchValue}`]
+        ? ['artist_id IS NULL', `title ~* '${searchValue}'`]
         : ['artist_id IS NULL']
   })
 
   const [addAlbumMutation, { isLoading: addAlbumIsLoading }] = useAddAlbumsToArtistMutation()
 
   const [albumIds, albumIdsHandlers] = useListState<string>([])
+
+  useEffect(() => {
+    albumIdsHandlers.filter(albumId =>
+      albums.models.some(album => album.id === albumId)
+    )
+  }, [searchValue, albums])
 
   function checkAllAlbums(check: boolean) {
     albumIdsHandlers.setState([])
@@ -89,6 +97,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtis
             w={250}
             leftSection={<IconSearch size={15} />}
             placeholder={'Search by title'}
+            disabled={albumsIsLoading}
             defaultValue={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
