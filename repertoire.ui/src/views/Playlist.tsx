@@ -35,7 +35,7 @@ import NewHorizontalCard from '../components/card/NewHorizontalCard.tsx'
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import { toast } from 'react-toastify'
 import EditPlaylistHeaderModal from '../components/playlist/modal/EditPlaylistHeaderModal.tsx'
-import AddExistingPlaylistSongsModal from '../components/playlist/modal/AddExistingPlaylistSongsModal.tsx'
+import AddPlaylistSongsModal from '../components/playlist/modal/AddPlaylistSongsModal.tsx'
 import { useState } from 'react'
 import Order from '../types/Order.ts'
 import playlistSongsOrders from '../data/playlist/playlistSongsOrders.ts'
@@ -54,8 +54,7 @@ function Playlist() {
   const { data: playlist, isLoading, isFetching } = useGetPlaylistQuery(playlistId)
 
   const [removeSongsFromPlaylist] = useRemoveSongsFromPlaylistMutation()
-  const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
-    useDisclosure(false)
+  const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 
   const [
     openedEditPlaylistHeader,
@@ -164,8 +163,8 @@ function Playlist() {
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
-                  Add Existing Songs
+                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddSongs}>
+                  Add Songs
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
@@ -180,7 +179,7 @@ function Playlist() {
               />
             ))}
             {playlist.songs.length === 0 && (
-              <NewHorizontalCard onClick={openAddExistingSongs}>Add New Song</NewHorizontalCard>
+              <NewHorizontalCard onClick={openAddSongs}>Add Song</NewHorizontalCard>
             )}
           </Stack>
         </Stack>
@@ -191,9 +190,9 @@ function Playlist() {
         opened={openedEditPlaylistHeader}
         onClose={closeEditPlaylistHeader}
       />
-      <AddExistingPlaylistSongsModal
-        opened={openedAddExistingSongs}
-        onClose={closeAddExistingSongs}
+      <AddPlaylistSongsModal
+        opened={openedAddSongs}
+        onClose={closeAddSongs}
         playlistId={playlistId}
       />
     </Stack>

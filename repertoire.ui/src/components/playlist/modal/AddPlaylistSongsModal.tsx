@@ -21,13 +21,13 @@ import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {MouseEvent, useEffect} from 'react'
 
-interface AddNewPlaylistSongModalProps {
+interface AddPlaylistSongsModalProps {
   opened: boolean
   onClose: () => void
   playlistId: string
 }
 
-function AddExistingPlaylistSongsModal({ opened, onClose, playlistId }: AddNewPlaylistSongModalProps) {
+function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
@@ -165,4 +165,4 @@ function AddExistingPlaylistSongsModal({ opened, onClose, playlistId }: AddNewPl
   )
 }
 
-export default AddExistingPlaylistSongsModal
+export default AddPlaylistSongsModal

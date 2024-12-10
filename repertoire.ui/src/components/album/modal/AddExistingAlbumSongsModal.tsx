@@ -21,7 +21,7 @@ import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {MouseEvent, useEffect} from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
 
-interface AddNewAlbumSongModalProps {
+interface AddExistingAlbumSongsModalProps {
   opened: boolean
   onClose: () => void
   albumId: string
@@ -33,7 +33,7 @@ function AddExistingAlbumSongsModal({
   onClose,
   albumId,
   artistId
-}: AddNewAlbumSongModalProps) {
+}: AddExistingAlbumSongsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({

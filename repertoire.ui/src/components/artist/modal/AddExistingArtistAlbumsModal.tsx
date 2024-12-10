@@ -21,13 +21,13 @@ import { IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {MouseEvent, useEffect} from 'react'
 
-interface AddNewArtistAlbumModalProps {
+interface AddExistingArtistAlbumsModalProps {
   opened: boolean
   onClose: () => void
   artistId: string
 }
 
-function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddNewArtistAlbumModalProps) {
+function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExistingArtistAlbumsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
   const { data: albums, isLoading: albumsIsLoading } = useGetAlbumsQuery({
