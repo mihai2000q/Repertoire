@@ -75,6 +75,8 @@ type SongSection struct {
 	Song              Song            `json:"-"`
 	SongSectionType   SongSectionType `json:"songSectionType"`
 
+	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
@@ -88,10 +90,26 @@ type SongSectionType struct {
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
+type SongSectionHistory struct {
+	ID            uuid.UUID           `gorm:"primaryKey; type:uuid; <-:create"`
+	Property      SongSectionProperty `gorm:"size:255; not null"`
+	From          uint                `gorm:"not null"`
+	To            uint                `gorm:"not null"`
+	SongSectionID uuid.UUID           `gorm:"not null"`
 
 var DefaultGuitarTunings = []string{
 	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
 	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 }
+
+type SongSectionProperty string
+
+const (
+	ConfidenceProperty SongSectionProperty = "Confidence"
+	RehearsalsProperty SongSectionProperty = "Rehearsals"
+)
+
 var DefaultSongSectionConfidence uint = 0
+
 var DefaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}
