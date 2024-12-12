@@ -2,7 +2,6 @@ package service
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"github.com/patrickmn/go-cache"
 	"io"
@@ -132,13 +131,15 @@ type tokenResponse struct {
 }
 
 func (s storageService) fetchToken() (tokenResponse, error) {
+	var result tokenResponse
 	response, err := s.httpClient.R().
 		SetFormData(map[string]string{
 			"grant_type":    "client_credentials",
 			"client_id":     s.env.StorageClientID,
 			"client_secret": s.env.StorageClientSecret,
 		}).
-		Post("oauth/token")
+		SetResult(&result).
+		Post(s.env.AuthStorageUrl)
 
 	if err != nil {
 		return tokenResponse{}, err
@@ -147,10 +148,5 @@ func (s storageService) fetchToken() (tokenResponse, error) {
 		return tokenResponse{}, errors.New("Storage Service - oauth token failed: " + response.String())
 	}
 
-	var result tokenResponse
-	err = json.Unmarshal(response.Body(), &result)
-	if err != nil {
-		return tokenResponse{}, err
-	}
 	return result, nil
 }

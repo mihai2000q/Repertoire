@@ -89,6 +89,7 @@ func Start(envPath ...string) *TestServer {
 			_, _ = w.Write(bytes)
 		}
 	}))
+	_ = os.Setenv("AUTH_STORAGE_URL", ts.storageServer.URL)
 	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
 
 	// Setup application modules and populate the router
