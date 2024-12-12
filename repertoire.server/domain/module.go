@@ -1,11 +1,16 @@
 package domain
 
 import (
+	"repertoire/server/domain/processor"
 	"repertoire/server/domain/provider"
 	"repertoire/server/domain/service"
 	"repertoire/server/domain/usecase"
 
 	"go.uber.org/fx"
+)
+
+var processors = fx.Options(
+	fx.Provide(processor.NewProgressProcessor),
 )
 
 var providers = fx.Options(
@@ -23,6 +28,7 @@ var services = fx.Options(
 )
 
 var Module = fx.Options(
+	processors,
 	providers,
 	usecase.Module,
 	services,
