@@ -25,6 +25,7 @@ type Env struct {
 	JwtAudience  string
 	JwtSecretKey string
 
+	AuthStorageUrl      string
 	StorageUrl          string
 	StorageClientID     string
 	StorageClientSecret string
@@ -59,6 +60,7 @@ func NewEnv() Env {
 		JwtAudience:  os.Getenv("JWT_AUDIENCE"),
 		JwtSecretKey: os.Getenv("JWT_SECRET_KEY"),
 
+		AuthStorageUrl:      os.Getenv("AUTH_STORAGE_URL"),
 		StorageUrl:          os.Getenv("UPLOAD_STORAGE_URL"),
 		StorageClientID:     os.Getenv("STORAGE_CLIENT_ID"),
 		StorageClientSecret: os.Getenv("STORAGE_CLIENT_SECRET"),
