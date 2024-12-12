@@ -259,3 +259,24 @@ func (s *SongRepositoryMock) DeleteSectionType(id uuid.UUID) error {
 	args := s.Called(id)
 	return args.Error(0)
 }
+
+// History
+
+func (s *SongRepositoryMock) GetSongSectionHistory(
+	history *[]model.SongSectionHistory,
+	sectionID uuid.UUID,
+	property model.SongSectionProperty,
+) error {
+	args := s.Called(history, sectionID, property)
+
+	if len(args) > 1 {
+		*history = *args.Get(1).(*[]model.SongSectionHistory)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) CreateSongSectionHistory(history *model.SongSectionHistory) error {
+	args := s.Called(history)
+	return args.Error(0)
+}
