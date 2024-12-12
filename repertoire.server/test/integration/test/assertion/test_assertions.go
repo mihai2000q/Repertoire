@@ -100,6 +100,9 @@ func ResponseSong(
 	assert.Equal(t, song.SongsterrLink, response.SongsterrLink)
 	assert.Equal(t, song.YoutubeLink, response.YoutubeLink)
 	assert.Equal(t, song.AlbumTrackNo, response.AlbumTrackNo)
+	assert.Equal(t, song.Rehearsals, response.Rehearsals)
+	assert.Equal(t, song.Confidence, response.Confidence)
+	assert.Equal(t, song.Progress, response.Progress)
 
 	if withAlbum {
 		if song.Album != nil {
@@ -143,6 +146,10 @@ func ResponseSongSection(t *testing.T, songSection model.SongSection, response m
 	assert.Equal(t, songSection.ID, response.ID)
 	assert.Equal(t, songSection.Name, response.Name)
 	assert.Equal(t, songSection.Rehearsals, response.Rehearsals)
+	assert.Equal(t, songSection.Confidence, response.Confidence)
+	assert.Equal(t, songSection.RehearsalsScore, response.RehearsalsScore)
+	assert.Equal(t, songSection.ConfidenceScore, response.ConfidenceScore)
+	assert.Equal(t, songSection.Progress, response.Progress)
 
 	ResponseSongSectionType(t, songSection.SongSectionType, response.SongSectionType)
 }
