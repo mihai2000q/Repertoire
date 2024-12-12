@@ -155,7 +155,7 @@ func assertCreatedSong(
 	for i, sectionRequest := range request.Sections {
 		assert.NotEmpty(t, song.Sections[i].ID)
 		assert.Equal(t, sectionRequest.Name, song.Sections[i].Name)
-		assert.Equal(t, uint(model.DefaultSongSectionConfidence), song.Sections[i].Confidence)
+		assert.Equal(t, model.DefaultSongSectionConfidence, song.Sections[i].Confidence)
 		assert.Zero(t, song.Sections[i].Rehearsals)
 		assert.Equal(t, uint(i), song.Sections[i].Order)
 		assert.Equal(t, sectionRequest.TypeID, song.Sections[i].SongSectionTypeID)

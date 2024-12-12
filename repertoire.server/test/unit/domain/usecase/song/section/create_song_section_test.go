@@ -118,7 +118,7 @@ func assertCreatedSongSection(
 	assert.NotEmpty(t, section.ID)
 	assert.Equal(t, request.Name, section.Name)
 	assert.Zero(t, section.Rehearsals)
-	assert.Equal(t, uint(model.DefaultSongSectionConfidence), section.Confidence)
+	assert.Equal(t, model.DefaultSongSectionConfidence, section.Confidence)
 	assert.Equal(t, uint(count), section.Order)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
 	assert.Equal(t, request.SongID, section.SongID)

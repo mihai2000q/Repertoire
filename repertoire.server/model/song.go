@@ -88,10 +88,10 @@ type SongSectionType struct {
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
-var DefaultSongSectionConfidence = 50
 
 var DefaultGuitarTunings = []string{
 	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
 	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
 }
+var DefaultSongSectionConfidence uint = 0
 var DefaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}
