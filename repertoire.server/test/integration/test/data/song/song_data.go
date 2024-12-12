@@ -126,6 +126,30 @@ var Songs = []model.Song{
 				Name:              "Verse 1",
 				SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
 				Order:             0,
+				Confidence:        10,
+				Rehearsals:        10,
+				ConfidenceScore:   12,
+				RehearsalsScore:   45,
+				History: []model.SongSectionHistory{
+					{
+						ID:       uuid.New(),
+						From:     0,
+						To:       5,
+						Property: model.RehearsalsProperty,
+					},
+					{
+						ID:       uuid.New(),
+						From:     5,
+						To:       10,
+						Property: model.RehearsalsProperty,
+					},
+					{
+						ID:       uuid.New(),
+						From:     0,
+						To:       10,
+						Property: model.ConfidenceProperty,
+					},
+				},
 			},
 			{
 				ID:                uuid.New(),
