@@ -49,6 +49,13 @@ type SongRepository interface {
 	CreateSectionType(sectionType *model.SongSectionType) error
 	UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error
 	DeleteSectionType(id uuid.UUID) error
+
+	GetSongSectionHistory(
+		history *[]model.SongSectionHistory,
+		sectionID uuid.UUID,
+		property model.SongSectionProperty,
+	) error
+	CreateSongSectionHistory(history *model.SongSectionHistory) error
 }
 
 type songRepository struct {
@@ -283,4 +290,21 @@ func (s songRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionT
 
 func (s songRepository) DeleteSectionType(id uuid.UUID) error {
 	return s.client.DB.Delete(&model.SongSectionType{}, id).Error
+}
+
+// Song Section History
+
+func (s songRepository) GetSongSectionHistory(
+	history *[]model.SongSectionHistory,
+	sectionID uuid.UUID,
+	property model.SongSectionProperty,
+) error {
+	return s.client.DB.
+		Order("created_at").
+		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
+		Error
+}
+
+func (s songRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
+	return s.client.DB.Create(&history).Error
 }

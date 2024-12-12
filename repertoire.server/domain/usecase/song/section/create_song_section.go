@@ -28,7 +28,7 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 	section := model.SongSection{
 		ID:                uuid.New(),
 		Name:              request.Name,
-		Confidence:        uint(model.DefaultSongSectionConfidence),
+		Confidence:        model.DefaultSongSectionConfidence,
 		SongSectionTypeID: request.TypeID,
 		Order:             uint(count),
 		SongID:            request.SongID,
