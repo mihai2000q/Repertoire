@@ -1,10 +1,12 @@
 import Song from '../../../types/models/Song.ts'
 import {
   Button,
+  Checkbox,
   ComboboxItem,
+  Group,
   LoadingOverlay,
   Modal,
-  NumberInput,
+  NumberInput, Space,
   Stack,
   Tooltip
 } from '@mantine/core'
@@ -42,11 +44,13 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
       : null
   )
   const [bpm, setBpm] = useInputState<string | number>(song.bpm)
+  const [isRecorded, setIsRecorded] = useInputState<boolean>(song.isRecorded)
 
   const hasChanged =
     (typeof bpm === 'number' && bpm !== song.bpm) ||
     (difficulty?.value !== song.difficulty && (song.difficulty !== null || difficulty !== null)) ||
-    guitarTuning?.value !== song.guitarTuning?.id
+    guitarTuning?.value !== song.guitarTuning?.id ||
+    isRecorded !== song.isRecorded
 
   async function updateSong(e: MouseEvent) {
     if (!hasChanged) {
@@ -61,7 +65,8 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
       id: song.id,
       difficulty: difficulty?.value as Difficulty,
       guitarTuningId: guitarTuning?.value,
-      bpm: parsedBpm
+      bpm: parsedBpm,
+      isRecorded: isRecorded
     }).unwrap()
 
     onClose()
@@ -73,19 +78,32 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
         <LoadingOverlay visible={isLoading} />
 
         <Stack>
-          <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
+          <Group align={'center'}>
+            <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
 
-          <DifficultySelect option={difficulty} onChange={setDifficulty} />
+            <DifficultySelect option={difficulty} onChange={setDifficulty} />
+          </Group>
 
-          <NumberInput
-            flex={1}
-            min={1}
-            leftSection={<IconBmp size={20} />}
-            label="Bpm"
-            placeholder="Enter Bpm"
-            value={bpm}
-            onChange={setBpm}
-          />
+          <Group align={'center'}>
+            <NumberInput
+              min={1}
+              leftSection={<IconBmp size={20} />}
+              label="Bpm"
+              placeholder="Enter Bpm"
+              value={bpm}
+              onChange={setBpm}
+            />
+
+            <Space flex={0.4} />
+
+            <Checkbox
+              mt={'18px'}
+              label={'Recorded'}
+              checked={isRecorded}
+              onChange={setIsRecorded}
+              size={'md'}
+            />
+          </Group>
 
           <Tooltip
             disabled={hasChanged}
