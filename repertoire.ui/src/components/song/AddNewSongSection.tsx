@@ -1,8 +1,9 @@
-import { useCreateSongSectionMutation, useGetSongSectionTypesQuery } from '../../state/songsApi.ts'
-import { Button, Collapse, ComboboxItem, Group, Select, TextInput } from '@mantine/core'
+import { useCreateSongSectionMutation } from '../../state/songsApi.ts'
+import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
+import SongSectionTypeSelect from '../form/select/SongSectionTypeSelect.tsx'
 
 interface AddNewSongSectionProps {
   songId: string
@@ -13,12 +14,6 @@ interface AddNewSongSectionProps {
 function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) {
   const [createSongSectionMutation, { isLoading: isCreateSongSectionLoading }] =
     useCreateSongSectionMutation()
-
-  const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
-  const songSectionTypes = songSectionTypesData?.map((type) => ({
-    value: type.id,
-    label: type.name
-  }))
 
   const [name, setName] = useInputState('')
   const [nameError, setNameError] = useState(false)
@@ -56,16 +51,7 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
   return (
     <Collapse in={opened}>
       <Group align={'center'} gap={'xs'} py={'xs'} px={'md'}>
-        <Select
-          clearable={false}
-          w={95}
-          placeholder={'Type'}
-          data={songSectionTypes}
-          value={type ? type.value : null}
-          onChange={(_, option) => setType(option)}
-          maxDropdownHeight={150}
-          error={typeError}
-        />
+        <SongSectionTypeSelect option={type} onChange={setType} error={typeError} />
 
         <TextInput
           ref={nameInputRef}
