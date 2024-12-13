@@ -30,6 +30,8 @@ export interface SongSection {
   id: string
   name: string
   rehearsals: number
+  confidence: number
+  progress: number
   songSectionType: SongSectionType
 }
 

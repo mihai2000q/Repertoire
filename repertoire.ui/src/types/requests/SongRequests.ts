@@ -59,6 +59,7 @@ export interface UpdateSongSectionRequest {
   typeId: string
   name: string
   rehearsals: number
+  confidence: number
 }
 
 export interface MoveSongSectionRequest {
