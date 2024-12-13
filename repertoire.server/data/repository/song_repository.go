@@ -3,6 +3,7 @@ package repository
 import (
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -27,6 +28,7 @@ type SongRepository interface {
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	Create(song *model.Song) error
 	Update(song *model.Song) error
+	UpdateLastTimePlayed(songID uuid.UUID, lastTimePlayed time.Time) error
 	UpdateAll(songs *[]model.Song) error
 	UpdateWithAssociations(song *model.Song) error
 	UpdateAllWithAssociations(songs *[]model.Song) error
@@ -159,6 +161,13 @@ func (s songRepository) Create(song *model.Song) error {
 
 func (s songRepository) Update(song *model.Song) error {
 	return s.client.DB.Save(&song).Error
+}
+
+func (s songRepository) UpdateLastTimePlayed(songID uuid.UUID, lastTimePlayed time.Time) error {
+	return s.client.DB.Model(&model.Song{}).
+		Where("id = ?", songID).
+		Update("last_time_played", lastTimePlayed).
+		Error
 }
 
 func (s songRepository) UpdateAll(songs *[]model.Song) error {

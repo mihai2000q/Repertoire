@@ -2,6 +2,7 @@ package repository
 
 import (
 	"repertoire/server/model"
+	"time"
 
 	"github.com/stretchr/testify/mock"
 
@@ -126,6 +127,11 @@ func (s *SongRepositoryMock) Create(song *model.Song) error {
 
 func (s *SongRepositoryMock) Update(song *model.Song) error {
 	args := s.Called(song)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) UpdateLastTimePlayed(songID uuid.UUID, lastTimePlayed time.Time) error {
+	args := s.Called(songID, lastTimePlayed)
 	return args.Error(0)
 }
 
