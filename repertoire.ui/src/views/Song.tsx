@@ -4,12 +4,14 @@ import {
   AspectRatio,
   Avatar,
   Button,
+  Card,
   Divider,
   Grid,
   Group,
   HoverCard,
   Image,
   Menu,
+  NumberFormatter,
   Progress,
   Stack,
   Text,
@@ -311,6 +313,62 @@ function Song() {
               </Grid>
             </Stack>
           </EditPanelCard>
+
+          <Card variant={'panel'} p={'md'}>
+            <Stack>
+              <Tooltip label={'This panel is calculated based on sections\' data'} openDelay={300} position={'top-start'}>
+                <Text fw={600}>Overall</Text>
+              </Tooltip>
+
+              <Grid align={'center'} gutter={'sm'}>
+                <Grid.Col span={6}>
+                  <Tooltip
+                    label={'Median of total number of rehearsals'}
+                    openDelay={200}
+                    position={'top-start'}
+                  >
+                    <Text fw={500} c={'dimmed'} truncate={'end'}>
+                      Rehearsals:
+                    </Text>
+                  </Tooltip>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Text fw={600}>{song.rehearsals}</Text>
+                </Grid.Col>
+
+                <Grid.Col span={6}>
+                  <Tooltip label={'Median of confidence'} openDelay={200} position={'top-start'}>
+                    <Text fw={500} c={'dimmed'} truncate={'end'}>
+                      Confidence:
+                    </Text>
+                  </Tooltip>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Tooltip.Floating label={`${song.confidence}%`}>
+                    <Progress flex={1} size={'sm'} value={song.confidence} />
+                  </Tooltip.Floating>
+                </Grid.Col>
+
+                <Grid.Col span={6}>
+                  <Tooltip label={'Median of progress'} openDelay={200} position={'top-start'}>
+                    <Text fw={500} c={'dimmed'} truncate={'end'}>
+                      Progress:
+                    </Text>
+                  </Tooltip>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Tooltip.Floating label={<NumberFormatter value={song.progress} />}>
+                    <Progress
+                      flex={1}
+                      size={'sm'}
+                      value={Math.min(song.progress / 10, 100)}
+                      color={'green'}
+                    />
+                  </Tooltip.Floating>
+                </Grid.Col>
+              </Grid>
+            </Stack>
+          </Card>
 
           <EditPanelCard p={'md'} onEditClick={openEditSongLinks}>
             <Stack>

@@ -15,6 +15,10 @@ export default interface Song {
   imageUrl?: string
   lastTimePlayed?: string
 
+  rehearsals: number
+  confidence: number
+  progress: number
+
   albumTrackNo?: number
 
   playlistTrackNo?: number
