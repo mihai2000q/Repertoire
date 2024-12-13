@@ -259,6 +259,7 @@ func assertCreatedSong(
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
+	assert.Nil(t, song.LastTimePlayed)
 	if request.ReleaseDate != nil {
 		assert.Equal(t, request.ReleaseDate, song.ReleaseDate)
 	}

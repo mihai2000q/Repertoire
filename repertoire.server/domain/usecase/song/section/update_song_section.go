@@ -9,6 +9,7 @@ import (
 	"repertoire/server/domain/processor"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"time"
 )
 
 type UpdateSongSection struct {
@@ -46,11 +47,18 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 		if errCode != nil {
 			return errCode
 		}
+
 		errCode = u.updateRehearsalsScore(&section)
 		if errCode != nil {
 			return errCode
 		}
+
 		section.Progress = uint64(section.ConfidenceScore) * section.RehearsalsScore
+
+		err = u.songRepository.UpdateLastTimePlayed(section.SongID, time.Now())
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
 	}
 
 	if hasConfidenceChanged {

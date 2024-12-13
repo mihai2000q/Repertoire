@@ -12,6 +12,7 @@ import (
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/domain/processor"
 	"testing"
+	"time"
 )
 
 func TestUpdateSongSection_WhenGetSectionsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -256,6 +257,62 @@ func TestUpdateSongSection_WhenGetHistoryFails_ShouldReturnInternalServerError(t
 	}
 }
 
+func TestUpdateSongSection_WhenUpdateLastTimePlayedFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	progressProcessor := new(processor.ProgressProcessorMock)
+	_uut := section.NewUpdateSongSection(songRepository, progressProcessor)
+
+	request := requests.UpdateSongSectionRequest{
+		ID:         uuid.New(),
+		Name:       "Some Artist",
+		Rehearsals: 23,
+		TypeID:     uuid.New(),
+	}
+
+	// given - mocking
+	mockSection := &model.SongSection{
+		ID:   request.ID,
+		Name: "Old name",
+	}
+	songRepository.On("GetSection", new(model.SongSection), request.ID).
+		Return(nil, mockSection).
+		Once()
+
+	var history []model.SongSectionHistory
+	songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+		Return(nil).
+		Once()
+
+	songRepository.
+		On(
+			"GetSongSectionHistory",
+			mock.IsType(new([]model.SongSectionHistory)),
+			mockSection.ID,
+			model.RehearsalsProperty,
+		).
+		Return(nil, &history).
+		Once()
+
+	var rehearsalScore uint64 = 125
+	progressProcessor.On("ComputeRehearsalsScore", history).Return(rehearsalScore).Once()
+
+	internalError := errors.New("internal error")
+	songRepository.On("UpdateLastTimePlayed", mockSection.SongID, mock.IsType(time.Time{})).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
@@ -344,8 +401,9 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 			// given - mocking
 			mockSection := &model.SongSection{
-				ID:   tt.request.ID,
-				Name: "Old name",
+				ID:     tt.request.ID,
+				Name:   "Old name",
+				SongID: uuid.New(),
 			}
 			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
 				Return(nil, mockSection).
@@ -361,6 +419,10 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 				songSectionHistoryTimes++
 				rehearsalScore = 125
 				progressProcessor.On("ComputeRehearsalsScore", history).Return(rehearsalScore).Once()
+
+				songRepository.On("UpdateLastTimePlayed", mockSection.SongID, mock.IsType(time.Time{})).
+					Return(nil).
+					Once()
 			}
 
 			if mockSection.Confidence != tt.request.Confidence {

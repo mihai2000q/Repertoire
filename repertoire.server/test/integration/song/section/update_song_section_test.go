@@ -12,6 +12,7 @@ import (
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+	"time"
 )
 
 func TestUpdateSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -101,9 +102,11 @@ func TestUpdateSongSection_WhenSuccessfulWithRehearsals_ShouldUpdateSectionAddHi
 	db := utils.GetDatabase(t)
 
 	var newSection model.SongSection
-	db.Preload("History", func(*gorm.DB) *gorm.DB {
-		return db.Order("created_at")
-	}).Find(&newSection, &model.SongSection{ID: request.ID})
+	db.Preload("Song").
+		Preload("History", func(*gorm.DB) *gorm.DB {
+			return db.Order("created_at")
+		}).
+		Find(&newSection, &model.SongSection{ID: request.ID})
 
 	assertUpdatedSongSection(t, newSection, request)
 
@@ -115,6 +118,9 @@ func TestUpdateSongSection_WhenSuccessfulWithRehearsals_ShouldUpdateSectionAddHi
 	assert.Equal(t, section.Rehearsals, newSection.History[len(newSection.History)-1].From)
 	assert.Equal(t, request.Rehearsals, newSection.History[len(newSection.History)-1].To)
 	assert.Equal(t, model.RehearsalsProperty, newSection.History[len(newSection.History)-1].Property)
+
+	assert.NotNil(t, newSection.Song.LastTimePlayed)
+	assert.WithinDuration(t, time.Now(), *newSection.Song.LastTimePlayed, 1*time.Minute)
 }
 
 func TestUpdateSongSection_WhenSuccessfulWithConfidence_ShouldUpdateSectionAddHistoryAndChangeScore(t *testing.T) {
