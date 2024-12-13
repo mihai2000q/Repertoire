@@ -88,8 +88,11 @@ function SongSections({ sections, songId }: SongSectionsProps) {
                       {(provided, snapshot) => (
                         <SongSection
                           section={section}
+                          songId={songId}
                           draggableProvided={provided}
                           isDragging={snapshot.isDragging}
+                          showDetails={showDetails}
+                          maxSectionProgress={maxSectionProgress}
                         />
                       )}
                     </Draggable>
