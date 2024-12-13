@@ -35,6 +35,7 @@ type Song struct {
 	Artist         *Artist        `json:"artist"`
 	Album          *Album         `json:"album"`
 	GuitarTuning   *GuitarTuning  `json:"guitarTuning"`
+	Instruments    []Instrument   `gorm:"constraint:OnDelete:CASCADE" json:"instruments"`
 	Sections       []SongSection  `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Playlists      []Playlist     `gorm:"many2many:playlist_songs" json:"playlists"`
 	PlaylistSongs  []PlaylistSong `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"-"`
@@ -97,6 +98,33 @@ var DefaultGuitarTunings = []string{
 	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
 }
 
+// Instrument
+
+type Instrument struct {
+	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name  string    `gorm:"size:30" json:"name"`
+	Order uint      `gorm:"not null" json:"-"`
+
+	SongID           uuid.UUID      `gorm:"not null" json:"-"`
+	InstrumentTypeID uuid.UUID      `gorm:"not null" json:"-"`
+	Song             Song           `json:"-"`
+	InstrumentType   InstrumentType `json:"instrumentType"`
+
+	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+}
+
+type InstrumentType struct {
+	ID          uuid.UUID    `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name        string       `gorm:"size:26" json:"name"`
+	Order       uint         `gorm:"not null" json:"-"`
+	Instruments []Instrument `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+
+	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+}
+
 // Song Sections
 
 type SongSection struct {
@@ -112,7 +140,9 @@ type SongSection struct {
 
 	SongID            uuid.UUID       `gorm:"not null" json:"-"`
 	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
+	InstrumentID      *uuid.UUID      `json:"-"`
 	Song              Song            `json:"-"`
+	Instrument        Instrument      `json:"instrument"`
 	SongSectionType   SongSectionType `json:"songSectionType"`
 
 	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
