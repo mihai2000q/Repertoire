@@ -12,17 +12,18 @@ import (
 )
 
 type Song struct {
-	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Title         string             `gorm:"size:100; not null" json:"title"`
-	Description   string             `gorm:"not null" json:"description"`
-	ReleaseDate   *time.Time         `json:"releaseDate"`
-	ImageURL      *internal.FilePath `json:"imageUrl"`
-	IsRecorded    bool               `json:"isRecorded"`
-	Bpm           *uint              `json:"bpm"`
-	Difficulty    *enums.Difficulty  `json:"difficulty"`
-	SongsterrLink *string            `json:"songsterrLink"`
-	YoutubeLink   *string            `json:"youtubeLink"`
-	AlbumTrackNo  *uint              `json:"albumTrackNo"`
+	ID             uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title          string             `gorm:"size:100; not null" json:"title"`
+	Description    string             `gorm:"not null" json:"description"`
+	ReleaseDate    *time.Time         `json:"releaseDate"`
+	ImageURL       *internal.FilePath `json:"imageUrl"`
+	IsRecorded     bool               `json:"isRecorded"`
+	Bpm            *uint              `json:"bpm"`
+	Difficulty     *enums.Difficulty  `json:"difficulty"`
+	SongsterrLink  *string            `json:"songsterrLink"`
+	YoutubeLink    *string            `json:"youtubeLink"`
+	AlbumTrackNo   *uint              `json:"albumTrackNo"`
+	LastTimePlayed *time.Time         `json:"lastTimePlayed"`
 
 	Rehearsals *uint   `gorm:"-" json:"rehearsals"`
 	Confidence *uint   `gorm:"-" json:"confidence"`
