@@ -297,6 +297,11 @@ func TestUpdateSongSection_WhenUpdateLastTimePlayedFails_ShouldReturnInternalSer
 	var rehearsalScore uint64 = 125
 	progressProcessor.On("ComputeRehearsalsScore", history).Return(rehearsalScore).Once()
 
+	var progress uint64 = 780
+	progressProcessor.On("ComputeProgress", mock.IsType(*mockSection)).
+		Return(progress).
+		Once()
+
 	internalError := errors.New("internal error")
 	songRepository.On("UpdateLastTimePlayed", mockSection.SongID, mock.IsType(time.Time{})).
 		Return(internalError).
@@ -414,6 +419,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 			var rehearsalScore uint64
 			var confidenceScore uint
+			var progress uint64
 
 			if mockSection.Rehearsals != tt.request.Rehearsals {
 				songSectionHistoryTimes++
@@ -465,12 +471,21 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 					}).
 					Return(nil, &history).
 					Times(songSectionHistoryTimes)
+
+				progress = 780
+				progressProcessor.On("ComputeProgress", mock.IsType(*mockSection)).
+					Run(func(args mock.Arguments) {
+						newSection := args.Get(0).(model.SongSection)
+						assert.Equal(t, mockSection.ID, newSection.ID)
+					}).
+					Return(progress).
+					Times(songSectionHistoryTimes)
 			}
 
 			songRepository.On("UpdateSection", mock.IsType(new(model.SongSection))).
 				Run(func(args mock.Arguments) {
 					newSection := args.Get(0).(*model.SongSection)
-					assertUpdatedSongSection(t, tt.request, *newSection, rehearsalScore, confidenceScore)
+					assertUpdatedSongSection(t, tt.request, *newSection, rehearsalScore, confidenceScore, progress)
 				}).
 				Return(nil).
 				Once()
@@ -493,12 +508,13 @@ func assertUpdatedSongSection(
 	section model.SongSection,
 	rehearsalsScore uint64,
 	confidenceScore uint,
+	progress uint64,
 ) {
 	assert.Equal(t, request.Name, section.Name)
 	assert.Equal(t, request.Confidence, section.Confidence)
 	assert.Equal(t, request.Rehearsals, section.Rehearsals)
 	assert.Equal(t, rehearsalsScore, section.RehearsalsScore)
 	assert.Equal(t, confidenceScore, section.ConfidenceScore)
-	assert.Equal(t, section.RehearsalsScore*uint64(section.ConfidenceScore), section.Progress)
+	assert.Equal(t, progress, section.Progress)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
 }

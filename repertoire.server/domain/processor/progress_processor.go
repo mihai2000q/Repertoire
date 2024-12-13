@@ -9,6 +9,7 @@ import (
 type ProgressProcessor interface {
 	ComputeRehearsalsScore(history []model.SongSectionHistory) uint64
 	ComputeConfidenceScore(history []model.SongSectionHistory) uint
+	ComputeProgress(section model.SongSection) uint64
 }
 
 type progressProcessor struct{}
@@ -93,4 +94,12 @@ func (progressProcessor) ComputeConfidenceScore(history []model.SongSectionHisto
 	confidenceScore := uint(math.Min(math.Max(math.Round(finalScore), 0), 100))
 
 	return confidenceScore
+}
+
+func (progressProcessor) ComputeProgress(section model.SongSection) uint64 {
+	progress := float64(section.ConfidenceScore) * float64(section.RehearsalsScore) / 100
+	if progress < 0.5 {
+		return 1
+	}
+	return uint64(math.Round(progress))
 }

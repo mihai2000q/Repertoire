@@ -13,10 +13,10 @@ func TestComputeRehearsalsScore_WhenHistoryLengthIs0_ShouldReturn0(t *testing.T)
 	_uut := processor.NewProgressProcessor()
 
 	// when
-	result := _uut.ComputeRehearsalsScore([]model.SongSectionHistory{})
+	rehearsalsScore := _uut.ComputeRehearsalsScore([]model.SongSectionHistory{})
 
 	// then
-	assert.Zero(t, result)
+	assert.Zero(t, rehearsalsScore)
 }
 
 func TestComputeRehearsalsScore_WhenHistoryLengthIs1_ShouldReturnLatestRehearsalsValue(t *testing.T) {
@@ -27,10 +27,10 @@ func TestComputeRehearsalsScore_WhenHistoryLengthIs1_ShouldReturnLatestRehearsal
 	}
 
 	// when
-	result := _uut.ComputeRehearsalsScore(history)
+	rehearsalsScore := _uut.ComputeRehearsalsScore(history)
 
 	// then
-	assert.Equal(t, uint64(history[0].To), result)
+	assert.Equal(t, uint64(history[0].To), rehearsalsScore)
 }
 
 func TestComputeRehearsalsScore_WhenSuccessful_ShouldComputeAndReturnRehearsalsScore(t *testing.T) {
@@ -108,10 +108,10 @@ func TestComputeConfidenceScore_WhenHistoryLengthIs0_ShouldReturnDefaultConfiden
 	_uut := processor.NewProgressProcessor()
 
 	// when
-	result := _uut.ComputeConfidenceScore([]model.SongSectionHistory{})
+	confidenceScore := _uut.ComputeConfidenceScore([]model.SongSectionHistory{})
 
 	// then
-	assert.Equal(t, model.DefaultSongSectionConfidence, result)
+	assert.Equal(t, model.DefaultSongSectionConfidence, confidenceScore)
 }
 
 func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceScore(t *testing.T) {
@@ -277,6 +277,52 @@ func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceS
 
 			// then
 			assert.Equal(t, tt.expectedResult, confidenceScore)
+		})
+	}
+}
+
+func TestComputeProgress_WhenSuccessful_ShouldComputeAndReturnProgress(t *testing.T) {
+	tests := []struct {
+		name             string
+		section          model.SongSection
+		expectedProgress uint64
+	}{
+		{
+			"Use Case 1",
+			model.SongSection{
+				ConfidenceScore: 60,
+				RehearsalsScore: 50,
+			},
+			30,
+		},
+		{
+			"Use Case 2",
+			model.SongSection{
+				ConfidenceScore: 15,
+				RehearsalsScore: 5,
+			},
+			1,
+		},
+		{
+			"Use Case 3",
+			model.SongSection{
+				ConfidenceScore: 15,
+				RehearsalsScore: 15,
+			},
+			2,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := processor.NewProgressProcessor()
+
+			// when
+			progress := _uut.ComputeProgress(tt.section)
+
+			// then
+			assert.Equal(t, tt.expectedProgress, progress)
 		})
 	}
 }
