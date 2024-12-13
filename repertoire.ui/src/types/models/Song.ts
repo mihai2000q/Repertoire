@@ -13,7 +13,10 @@ export default interface Song {
   releaseDate?: string
   difficulty?: Difficulty
   imageUrl?: string
+  lastTimePlayed?: string
+
   albumTrackNo?: number
+
   playlistTrackNo?: number
   playlistCreatedAt?: string
 
@@ -27,6 +30,8 @@ export interface SongSection {
   id: string
   name: string
   rehearsals: number
+  confidence: number
+  progress: number
   songSectionType: SongSectionType
 }
 

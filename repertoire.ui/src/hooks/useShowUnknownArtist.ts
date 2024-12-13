@@ -5,7 +5,7 @@ export default function useShowUnknownArtist(): boolean {
   const { data: songs } = useGetSongsQuery({
     currentPage: 1,
     pageSize: 1,
-    searchBy: ['artist_id IS NULL']
+    searchBy: ['songs.artist_id IS NULL']
   })
 
   const { data: albums } = useGetAlbumsQuery({

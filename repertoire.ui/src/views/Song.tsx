@@ -43,9 +43,9 @@ import EditSongHeaderModal from '../components/song/modal/EditSongHeaderModal.ts
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import { toast } from 'react-toastify'
 
-const NotSet = () => (
+const NotSet = ({ label }: { label?: string }) => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
-    not set
+    {label ? label : 'not set'}
   </Text>
 )
 
@@ -275,17 +275,37 @@ function Song() {
                 <Grid.Col span={6}>
                   {song.isRecorded ? (
                     <ActionIcon
-                      size={'sm'}
+                      size={'20px'}
                       sx={(theme) => ({
                         cursor: 'default',
                         backgroundColor: theme.colors.cyan[5],
                         '&:hover': { backgroundColor: theme.colors.cyan[5] }
                       })}
                     >
-                      <IconCheck size={17} />
+                      <IconCheck size={14} />
                     </ActionIcon>
                   ) : (
                     <Text fw={600}>No</Text>
+                  )}
+                </Grid.Col>
+
+                <Grid.Col span={6}>
+                  <Tooltip
+                    label={"This field is calculated based on sections' rehearsals"}
+                    openDelay={200}
+                    position={'top-start'}
+                  >
+                    <Text fw={500} c={'dimmed'}>
+                      Last Played On:
+                    </Text>
+                  </Tooltip>
+                </Grid.Col>
+
+                <Grid.Col span={6}>
+                  {song.lastTimePlayed ? (
+                    <Text fw={600}>{dayjs(song.lastTimePlayed).format('DD MMM YYYY')}</Text>
+                  ) : (
+                    <NotSet label={'never'} />
                   )}
                 </Grid.Col>
               </Grid>
@@ -297,7 +317,7 @@ function Song() {
               <Text fw={600}>Links</Text>
               <Stack gap={'xs'}>
                 {!song.youtubeLink && !song.songsterrLink && (
-                  <Text fw={500} c={'dimmed'} ta={'center'}>
+                  <Text fw={500} c={'dimmed'} ta={'center'} fs={'italic'}>
                     No links to display
                   </Text>
                 )}
@@ -355,7 +375,7 @@ function Song() {
               {song.description ? (
                 <Text>{song.description}</Text>
               ) : (
-                <Text fw={500} c={'dimmed'}>
+                <Text fw={500} c={'dimmed'} fs={'italic'}>
                   No Description
                 </Text>
               )}

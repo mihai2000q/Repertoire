@@ -111,7 +111,7 @@ function Artist() {
     isFetching: isAlbumsFetching
   } = useGetAlbumsQuery({
     orderBy: [albumsOrder.value],
-    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = ${artistId}`]
+    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = '${artistId}'`]
   })
   const {
     data: songs,
@@ -119,7 +119,7 @@ function Artist() {
     isFetching: isSongsFetching
   } = useGetSongsQuery({
     orderBy: [songsOrder.value],
-    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = ${artistId}`]
+    searchBy: [isUnknownArtist ? 'songs.artist_id IS NULL' : `songs.artist_id = '${artistId}'`]
   })
 
   const [removeAlbumsFromArtist] = useRemoveAlbumsFromArtistMutation()

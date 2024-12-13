@@ -9,10 +9,12 @@ import {
   Menu,
   Modal,
   NavLink,
+  NumberFormatter,
   StylesApiProps,
   Text,
   Title,
-  Tooltip
+  Tooltip,
+  TooltipFloating
 } from '@mantine/core'
 
 export const components = {
@@ -88,7 +90,7 @@ export const components = {
   Modal: Modal.extend({
     defaultProps: {
       closeButtonProps: {
-        iconSize: 20,
+        iconSize: 20
       }
     },
     styles: (theme) => ({
@@ -96,7 +98,7 @@ export const components = {
         fontSize: theme.fontSizes.lg,
         fontWeight: 600,
         color: theme.colors.gray[7]
-      },
+      }
     })
   }),
   NavLink: NavLink.extend({
@@ -130,6 +132,12 @@ export const components = {
       })
     }
   }),
+  NumberFormatter: NumberFormatter.extend({
+    defaultProps: {
+      thousandSeparator: ' ',
+      decimalSeparator: ','
+    }
+  }),
   Text: Text.extend({
     defaultProps: {
       c: 'dark'
@@ -141,6 +149,11 @@ export const components = {
     }
   }),
   Tooltip: Tooltip.extend({
+    defaultProps: {
+      bg: 'cyan.9'
+    }
+  }),
+  TooltipFloating: TooltipFloating.extend({
     defaultProps: {
       bg: 'cyan.9'
     }

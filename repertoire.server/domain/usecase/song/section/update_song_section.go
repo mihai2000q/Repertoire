@@ -53,7 +53,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 			return errCode
 		}
 
-		section.Progress = uint64(section.ConfidenceScore) * section.RehearsalsScore
+		section.Progress = u.progressProcessor.ComputeProgress(section)
 
 		err = u.songRepository.UpdateLastTimePlayed(section.SongID, time.Now())
 		if err != nil {
@@ -66,11 +66,13 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 		if errCode != nil {
 			return errCode
 		}
+
 		errCode = u.updateConfidenceScore(&section)
 		if errCode != nil {
 			return errCode
 		}
-		section.Progress = uint64(section.ConfidenceScore) * section.RehearsalsScore
+
+		section.Progress = u.progressProcessor.ComputeProgress(section)
 	}
 
 	section.Name = request.Name

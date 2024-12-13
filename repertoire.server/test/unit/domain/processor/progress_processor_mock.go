@@ -18,3 +18,8 @@ func (p *ProgressProcessorMock) ComputeConfidenceScore(history []model.SongSecti
 	args := p.Called(history)
 	return args.Get(0).(uint)
 }
+
+func (p *ProgressProcessorMock) ComputeProgress(section model.SongSection) uint64 {
+	args := p.Called(section)
+	return args.Get(0).(uint64)
+}

@@ -65,3 +65,14 @@ export const editSongLinksValidation = z.object({
     )
     .nullish()
 })
+
+export interface EditSongSectionForm {
+  name: string
+  rehearsals: number | string
+  confidence: number
+  typeId: string
+}
+
+export const editSongSectionValidation = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+})

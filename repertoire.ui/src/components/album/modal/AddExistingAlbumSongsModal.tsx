@@ -18,7 +18,7 @@ import { toast } from 'react-toastify'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {MouseEvent, useEffect} from 'react'
+import { MouseEvent, useEffect } from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
 
 interface AddExistingAlbumSongsModalProps {
@@ -44,10 +44,13 @@ function AddExistingAlbumSongsModal({
       searchValue.trim() !== ''
         ? [
             'album_id IS NULL',
-            `artist_id IS NULL${artistId ? ` OR artist_id = '${artistId}'`: ''}`,
+            `songs.artist_id IS NULL${artistId ? ` OR songs.artist_id = '${artistId}'` : ''}`,
             `title ~* '${searchValue}'`
           ]
-        : ['album_id IS NULL', `artist_id IS NULL${artistId ? ` OR artist_id = '${artistId}'`: ''}`]
+        : [
+            'album_id IS NULL',
+            `songs.artist_id IS NULL${artistId ? ` OR songs.artist_id = '${artistId}'` : ''}`
+          ]
   })
 
   const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()
@@ -55,9 +58,7 @@ function AddExistingAlbumSongsModal({
   const [songIds, songIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    songIdsHandlers.filter(songId =>
-      songs.models.some(song => song.id === songId)
-    )
+    songIdsHandlers.filter((songId) => songs.models.some((song) => song.id === songId))
   }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
