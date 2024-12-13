@@ -5,12 +5,12 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
-import { SongSection as SongSectionType } from '../../types/models/Song.ts'
+import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
 import SongSection from './SongSection.tsx'
 import { useState } from 'react'
 
 interface SongSectionsProps {
-  sections: SongSectionType[]
+  sections: SongSectionModel[]
   songId: string
 }
 
@@ -20,14 +20,17 @@ function SongSections({ sections, songId }: SongSectionsProps) {
   const [openedAddSongSection, { open: openAddSongSection, close: closeAddSongSection }] =
     useDisclosure(false)
 
-  const [internalSections, { reorder, setState }] = useListState<SongSectionType>(sections)
+  const [internalSections, { reorder, setState }] = useListState<SongSectionModel>(sections)
   useDidUpdate(() => {
     setState(sections)
   }, [sections])
 
-  const maxSectionProgress = sections.reduce((accumulator, currentValue) => {
-    return Math.max(accumulator, currentValue.progress);
-  }, sections[0].progress)
+  const maxSectionProgress =
+    sections.length > 0
+      ? sections.reduce((accumulator, currentValue) => {
+          return Math.max(accumulator, currentValue.progress)
+        }, sections[0].progress)
+      : 0
 
   const [showDetails, setShowDetails] = useState(false)
 
