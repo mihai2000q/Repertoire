@@ -8,6 +8,31 @@ import (
 	"time"
 )
 
+func TestComputeRehearsalsScore_WhenHistoryLengthIs0_ShouldReturn0(t *testing.T) {
+	// given
+	_uut := processor.NewProgressProcessor()
+
+	// when
+	result := _uut.ComputeRehearsalsScore([]model.SongSectionHistory{})
+
+	// then
+	assert.Zero(t, result)
+}
+
+func TestComputeRehearsalsScore_WhenHistoryLengthIs1_ShouldReturnLatestRehearsalsValue(t *testing.T) {
+	// given
+	_uut := processor.NewProgressProcessor()
+	history := []model.SongSectionHistory{
+		{To: 1},
+	}
+
+	// when
+	result := _uut.ComputeRehearsalsScore(history)
+
+	// then
+	assert.Equal(t, uint64(history[0].To), result)
+}
+
 func TestComputeRehearsalsScore_WhenSuccessful_ShouldComputeAndReturnRehearsalsScore(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -76,6 +101,17 @@ func TestComputeRehearsalsScore_WhenSuccessful_ShouldComputeAndReturnRehearsalsS
 			assert.Equal(t, tt.expectedResult, rehearsalsScore)
 		})
 	}
+}
+
+func TestComputeConfidenceScore_WhenHistoryLengthIs0_ShouldReturnDefaultConfidence(t *testing.T) {
+	// given
+	_uut := processor.NewProgressProcessor()
+
+	// when
+	result := _uut.ComputeConfidenceScore([]model.SongSectionHistory{})
+
+	// then
+	assert.Equal(t, model.DefaultSongSectionConfidence, result)
 }
 
 func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceScore(t *testing.T) {

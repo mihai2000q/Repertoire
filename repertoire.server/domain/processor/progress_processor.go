@@ -17,21 +17,28 @@ func NewProgressProcessor() ProgressProcessor {
 	return &progressProcessor{}
 }
 
-func (u progressProcessor) ComputeRehearsalsScore(history []model.SongSectionHistory) uint64 {
+func (progressProcessor) ComputeRehearsalsScore(history []model.SongSectionHistory) uint64 {
+	if len(history) == 0 {
+		return 0
+	}
+	if len(history) == 1 {
+		return uint64(history[0].To)
+	}
+
 	var rehearsalsScore uint64 = 0
 	for i := 1; i < len(history); i++ {
 		previousRehearsal := history[i-1]
 		currentRehearsal := history[i]
 
 		daysDifference := currentRehearsal.CreatedAt.Add(24 * time.Hour).Sub(previousRehearsal.CreatedAt)
-		daysValue := uint(math.Round(30 / (daysDifference.Hours() / 24)))
+		daysValue := 30 / (daysDifference.Hours() / 24)
 		rehearsalsDifference := currentRehearsal.To - currentRehearsal.From
-		rehearsalsScore += uint64(rehearsalsDifference * daysValue)
+		rehearsalsScore += uint64(math.Round(float64(rehearsalsDifference) * daysValue))
 	}
 	return rehearsalsScore
 }
 
-func (u progressProcessor) ComputeConfidenceScore(history []model.SongSectionHistory) uint {
+func (progressProcessor) ComputeConfidenceScore(history []model.SongSectionHistory) uint {
 	historyLength := len(history)
 	if historyLength == 0 {
 		return model.DefaultSongSectionConfidence
