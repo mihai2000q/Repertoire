@@ -74,5 +74,5 @@ export interface EditSongSectionForm {
 }
 
 export const editSongSectionValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank'),
+  name: z.string().trim().min(1, 'Name cannot be blank')
 })

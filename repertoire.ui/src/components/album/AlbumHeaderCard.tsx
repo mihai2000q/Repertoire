@@ -1,20 +1,20 @@
-import Album from "../../types/models/Album.ts";
-import {AspectRatio, Avatar, Group, Image, Menu, Stack, Text, Title, Tooltip} from "@mantine/core";
-import {IconEdit, IconInfoSquareRounded, IconTrash} from "@tabler/icons-react";
-import unknownPlaceholder from "../../assets/unknown-placeholder.png";
-import albumPlaceholder from "../../assets/image-placeholder-1.jpg";
-import userPlaceholder from "../../assets/user-placeholder.jpg";
-import dayjs from "dayjs";
-import plural from "../../utils/plural.ts";
-import HeaderPanelCard from "../card/HeaderPanelCard.tsx";
-import {openArtistDrawer} from "../../state/globalSlice.ts";
-import {toast} from "react-toastify";
-import {useDisclosure} from "@mantine/hooks";
-import {useDeleteAlbumMutation} from "../../state/albumsApi.ts";
-import {useAppDispatch} from "../../state/store.ts";
-import {useNavigate} from "react-router-dom";
-import AlbumInfoModal from "./modal/AlbumInfoModal.tsx";
-import EditAlbumHeaderModal from "./modal/EditAlbumHeaderModal.tsx";
+import Album from '../../types/models/Album.ts'
+import { AspectRatio, Avatar, Group, Image, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
+import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
+import unknownPlaceholder from '../../assets/unknown-placeholder.png'
+import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import userPlaceholder from '../../assets/user-placeholder.jpg'
+import dayjs from 'dayjs'
+import plural from '../../utils/plural.ts'
+import HeaderPanelCard from '../card/HeaderPanelCard.tsx'
+import { openArtistDrawer } from '../../state/globalSlice.ts'
+import { toast } from 'react-toastify'
+import { useDisclosure } from '@mantine/hooks'
+import { useDeleteAlbumMutation } from '../../state/albumsApi.ts'
+import { useAppDispatch } from '../../state/store.ts'
+import { useNavigate } from 'react-router-dom'
+import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
+import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -141,7 +141,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
         </>
       )}
     </HeaderPanelCard>
-  );
+  )
 }
 
-export default AlbumHeaderCard;
+export default AlbumHeaderCard

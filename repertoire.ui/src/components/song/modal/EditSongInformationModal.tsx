@@ -6,7 +6,8 @@ import {
   Group,
   LoadingOverlay,
   Modal,
-  NumberInput, Space,
+  NumberInput,
+  Space,
   Stack,
   Tooltip
 } from '@mantine/core'

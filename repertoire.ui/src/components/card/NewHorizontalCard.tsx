@@ -6,7 +6,7 @@ interface NewHorizontalCardProps {
   children?: ReactNode
   onClick?: (e: MouseEvent) => void
   borderRadius?: string
-  icon?: ReactElement,
+  icon?: ReactElement
   p?: string
 }
 

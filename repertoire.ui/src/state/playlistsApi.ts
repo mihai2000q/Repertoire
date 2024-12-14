@@ -4,7 +4,8 @@ import Playlist from '../types/models/Playlist.ts'
 import {
   AddSongsToPlaylistRequest,
   CreatePlaylistRequest,
-  GetPlaylistsRequest, MoveSongFromPlaylistRequest,
+  GetPlaylistsRequest,
+  MoveSongFromPlaylistRequest,
   RemoveSongsFromPlaylistRequest,
   SaveImageToPlaylistRequest,
   UpdatePlaylistRequest

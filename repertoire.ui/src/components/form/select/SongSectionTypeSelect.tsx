@@ -10,7 +10,14 @@ interface SongSectionTypeSelectProps {
   flex?: number
 }
 
-function SongSectionTypeSelect({ option, onChange, error, label, placeholder, flex }: SongSectionTypeSelectProps) {
+function SongSectionTypeSelect({
+  option,
+  onChange,
+  error,
+  label,
+  placeholder,
+  flex
+}: SongSectionTypeSelectProps) {
   const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
   const songSectionTypes = songSectionTypesData?.map((type) => ({
     value: type.id,

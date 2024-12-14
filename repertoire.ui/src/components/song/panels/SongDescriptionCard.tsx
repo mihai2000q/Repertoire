@@ -1,8 +1,8 @@
-import {Stack, Text} from "@mantine/core";
-import EditPanelCard from "../../card/EditPanelCard.tsx";
-import Song from "../../../types/models/Song.ts";
-import EditSongDescriptionModal from "../modal/EditSongDescriptionModal.tsx";
-import {useDisclosure} from "@mantine/hooks";
+import { Stack, Text } from '@mantine/core'
+import EditPanelCard from '../../card/EditPanelCard.tsx'
+import Song from '../../../types/models/Song.ts'
+import EditSongDescriptionModal from '../modal/EditSongDescriptionModal.tsx'
+import { useDisclosure } from '@mantine/hooks'
 
 interface SongDescriptionCardProps {
   song: Song
@@ -24,13 +24,9 @@ function SongDescriptionCard({ song }: SongDescriptionCardProps) {
         )}
       </Stack>
 
-      <EditSongDescriptionModal
-        song={song}
-        opened={openedEdit}
-        onClose={closeEdit}
-      />
+      <EditSongDescriptionModal song={song} opened={openedEdit} onClose={closeEdit} />
     </EditPanelCard>
-  );
+  )
 }
 
-export default SongDescriptionCard;
+export default SongDescriptionCard

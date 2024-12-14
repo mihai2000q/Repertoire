@@ -25,8 +25,8 @@ import Artists from './views/Artists.tsx'
 import Artist from './views/Artist.tsx'
 import Album from './views/Album.tsx'
 import Song from './views/Song.tsx'
-import Playlists from "./views/Playlists.tsx";
-import Playlist from "./views/Playlist.tsx";
+import Playlists from './views/Playlists.tsx'
+import Playlist from './views/Playlist.tsx'
 
 function App(): ReactElement {
   return (

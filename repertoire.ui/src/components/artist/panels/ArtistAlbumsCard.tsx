@@ -28,8 +28,8 @@ import { useRemoveAlbumsFromArtistMutation } from '../../../state/artistsApi.ts'
 import Order from '../../../types/Order.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Album from '../../../types/models/Album.ts'
-import AddNewArtistAlbumModal from "../modal/AddNewArtistAlbumModal.tsx";
-import AddExistingArtistAlbumsModal from "../modal/AddExistingArtistAlbumsModal.tsx";
+import AddNewArtistAlbumModal from '../modal/AddNewArtistAlbumModal.tsx'
+import AddExistingArtistAlbumsModal from '../modal/AddExistingArtistAlbumsModal.tsx'
 
 interface ArtistAlbumsCardProps {
   albums: WithTotalCountResponse<Album>

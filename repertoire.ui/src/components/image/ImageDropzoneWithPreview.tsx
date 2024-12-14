@@ -1,4 +1,4 @@
-import {Dispatch, ReactElement, SetStateAction} from 'react'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 import { ActionIcon, alpha, Box, FileButton, Group, Image, Tooltip } from '@mantine/core'
 import { IconMusic, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
@@ -113,9 +113,7 @@ function ImageDropzoneWithPreview({
         <Dropzone.Reject>
           <IconX size={iconSizes} />
         </Dropzone.Reject>
-        <Dropzone.Idle>
-          {icon ? icon : <IconMusic size={iconSizes} />}
-        </Dropzone.Idle>
+        <Dropzone.Idle>{icon ? icon : <IconMusic size={iconSizes} />}</Dropzone.Idle>
       </Group>
     </Dropzone>
   )

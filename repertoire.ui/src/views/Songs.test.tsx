@@ -19,7 +19,7 @@ describe.skip('Songs', () => {
       confidence: 0,
       progress: 0,
       createdAt: '',
-      updatedAt: '',
+      updatedAt: ''
     },
     {
       id: '2',
@@ -31,7 +31,7 @@ describe.skip('Songs', () => {
       confidence: 0,
       progress: 0,
       createdAt: '',
-      updatedAt: '',
+      updatedAt: ''
     }
   ]
 

@@ -34,17 +34,15 @@ function AddExistingArtistSongsModal({
 }: AddExistingArtistSongsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery(
-    {
-      currentPage: 1,
-      pageSize: 20,
-      orderBy: ['title asc'],
-      searchBy:
-        searchValue.trim() !== ''
-          ? ['songs.artist_id IS NULL', `title ~* '${searchValue}'`]
-          : ['songs.artist_id IS NULL']
-    }
-  )
+  const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
+    currentPage: 1,
+    pageSize: 20,
+    orderBy: ['title asc'],
+    searchBy:
+      searchValue.trim() !== ''
+        ? ['songs.artist_id IS NULL', `title ~* '${searchValue}'`]
+        : ['songs.artist_id IS NULL']
+  })
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToArtistMutation()
 

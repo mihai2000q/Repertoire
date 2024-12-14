@@ -1,5 +1,5 @@
-import {Card, Grid, NumberFormatter, Progress, Stack, Text, Tooltip} from "@mantine/core";
-import Song from "../../../types/models/Song.ts";
+import { Card, Grid, NumberFormatter, Progress, Stack, Text, Tooltip } from '@mantine/core'
+import Song from '../../../types/models/Song.ts'
 
 interface SongOverallCardProps {
   song: Song
@@ -61,7 +61,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
         </Grid>
       </Stack>
     </Card>
-  );
+  )
 }
 
-export default SongOverallCard;
+export default SongOverallCard

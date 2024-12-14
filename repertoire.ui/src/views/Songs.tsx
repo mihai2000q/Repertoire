@@ -25,7 +25,7 @@ function Songs(): ReactElement {
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: currentPage,
-    orderBy: ['created_at DESC'],
+    orderBy: ['created_at DESC']
   })
 
   const { startCount, endCount, totalPages } = usePaginationInfo(songs?.totalCount, 20, currentPage)

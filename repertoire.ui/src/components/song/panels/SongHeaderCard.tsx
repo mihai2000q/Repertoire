@@ -23,7 +23,7 @@ import { toast } from 'react-toastify'
 import { useDeleteSongMutation } from '../../../state/songsApi.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
-import SongInfoModal from "../modal/SongInfoModal.tsx";
+import SongInfoModal from '../modal/SongInfoModal.tsx'
 
 interface SongHeaderCardProps {
   song: Song

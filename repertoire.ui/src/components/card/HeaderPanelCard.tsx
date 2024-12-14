@@ -1,4 +1,4 @@
-import {ReactNode, useState} from 'react'
+import { ReactNode, useState } from 'react'
 import { ActionIcon, Box, Menu, Tooltip } from '@mantine/core'
 import { IconDots, IconPencil } from '@tabler/icons-react'
 import { useHover } from '@mantine/hooks'
@@ -21,7 +21,12 @@ function HeaderPanelCard({ children, onEditClick, menuDropdown, hideIcons }: Hea
 
       {hideIcons !== true && (
         <Box pos={'absolute'} right={0} top={0} p={0}>
-          <Menu opened={isMenuOpened} onChange={setIsMenuOpened} position={'bottom-end'} shadow={'md'}>
+          <Menu
+            opened={isMenuOpened}
+            onChange={setIsMenuOpened}
+            position={'bottom-end'}
+            shadow={'md'}
+          >
             <Menu.Target>
               <ActionIcon
                 variant={'grey'}

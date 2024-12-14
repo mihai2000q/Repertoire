@@ -1,4 +1,4 @@
-import Song from "./Song.ts";
+import Song from './Song.ts'
 
 export default interface Playlist {
   id: string
