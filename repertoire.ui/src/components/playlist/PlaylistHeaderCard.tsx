@@ -1,5 +1,5 @@
 import { AspectRatio, Group, Image, Menu, Stack, Text, Title } from '@mantine/core'
-import { IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
 import plural from '../../utils/plural.ts'
 import HeaderPanelCard from '../card/HeaderPanelCard.tsx'
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
+import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -19,6 +20,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
 
   const [deletePlaylistMutation] = useDeletePlaylistMutation()
 
+  const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
 
   function handleDelete() {
@@ -32,6 +34,9 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
       onEditClick={openEdit}
       menuDropdown={
         <>
+          <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openInfo}>
+            Edit
+          </Menu.Item>
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
@@ -72,6 +77,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
         </Stack>
       </Group>
 
+      <PlaylistInfoModal playlist={playlist} opened={openedInfo} onClose={closeInfo} />
       <EditPlaylistHeaderModal playlist={playlist} opened={openedEdit} onClose={closeEdit} />
     </HeaderPanelCard>
   )
