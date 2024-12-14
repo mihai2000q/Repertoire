@@ -25,9 +25,9 @@ type Song struct {
 	AlbumTrackNo   *uint              `json:"albumTrackNo"`
 	LastTimePlayed *time.Time         `json:"lastTimePlayed"`
 
-	Rehearsals *uint   `gorm:"-" json:"rehearsals"`
-	Confidence *uint   `gorm:"-" json:"confidence"`
-	Progress   *uint64 `gorm:"-" json:"progress"`
+	Rehearsals uint   `gorm:"-" json:"rehearsals"`
+	Confidence uint   `gorm:"-" json:"confidence"`
+	Progress   uint64 `gorm:"-" json:"progress"`
 
 	AlbumID        *uuid.UUID     `json:"-"`
 	ArtistID       *uuid.UUID     `json:"-"`
@@ -70,13 +70,13 @@ func (s *Song) AfterFind(*gorm.DB) error {
 		confidence += section.Confidence
 		progress += section.Progress
 	}
-	rehearsals = uint(math.Round(float64(int(rehearsals) / len(s.Sections))))
-	confidence = uint(math.Round(float64(int(confidence) / len(s.Sections))))
-	progress = uint64(math.Round(float64(int(progress) / len(s.Sections))))
+	rehearsals = uint(math.Round(float64(rehearsals) / float64(len(s.Sections))))
+	confidence = uint(math.Round(float64(confidence) / float64(len(s.Sections))))
+	progress = uint64(math.Round(float64(progress) / float64(len(s.Sections))))
 
-	s.Rehearsals = &rehearsals
-	s.Confidence = &confidence
-	s.Progress = &progress
+	s.Rehearsals = rehearsals
+	s.Confidence = confidence
+	s.Progress = progress
 
 	return nil
 }

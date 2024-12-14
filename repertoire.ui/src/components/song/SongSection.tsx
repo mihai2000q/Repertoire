@@ -1,4 +1,4 @@
-import { SongSection as SongSectionType } from '../../types/models/Song.ts'
+import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
@@ -25,7 +25,7 @@ import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../.
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 
 interface SongSectionProps {
-  section: SongSectionType
+  section: SongSectionModel
   songId: string
   isDragging: boolean
   draggableProvided: DraggableProvided
