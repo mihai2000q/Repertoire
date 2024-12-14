@@ -1,17 +1,29 @@
-import Song from "../../../types/models/Song.ts";
-import {AspectRatio, Avatar, Group, HoverCard, Image, Menu, Stack, Text, Title, Tooltip} from "@mantine/core";
-import {IconEdit, IconTrash} from "@tabler/icons-react";
-import songPlaceholder from "../../../assets/image-placeholder-1.jpg";
-import userPlaceholder from "../../../assets/user-placeholder.jpg";
-import dayjs from "dayjs";
-import HeaderPanelCard from "../../card/HeaderPanelCard.tsx";
-import EditSongHeaderModal from "../modal/EditSongHeaderModal.tsx";
-import {useDisclosure} from "@mantine/hooks";
-import {openAlbumDrawer, openArtistDrawer} from "../../../state/globalSlice.ts";
-import {toast} from "react-toastify";
-import {useDeleteSongMutation} from "../../../state/songsApi.ts";
-import {useAppDispatch} from "../../../state/store.ts";
-import {useNavigate} from "react-router-dom";
+import Song from '../../../types/models/Song.ts'
+import {
+  AspectRatio,
+  Avatar,
+  Group,
+  HoverCard,
+  Image,
+  Menu,
+  Stack,
+  Text,
+  Title,
+  Tooltip
+} from '@mantine/core'
+import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
+import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import userPlaceholder from '../../../assets/user-placeholder.jpg'
+import dayjs from 'dayjs'
+import HeaderPanelCard from '../../card/HeaderPanelCard.tsx'
+import EditSongHeaderModal from '../modal/EditSongHeaderModal.tsx'
+import { useDisclosure } from '@mantine/hooks'
+import { openAlbumDrawer, openArtistDrawer } from '../../../state/globalSlice.ts'
+import { toast } from 'react-toastify'
+import { useDeleteSongMutation } from '../../../state/songsApi.ts'
+import { useAppDispatch } from '../../../state/store.ts'
+import { useNavigate } from 'react-router-dom'
+import SongInfoModal from "../modal/SongInfoModal.tsx";
 
 interface SongHeaderCardProps {
   song: Song
@@ -25,6 +37,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
 
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
 
+  const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
 
   function handleAlbumClick() {
     dispatch(openAlbumDrawer(song.album.id))
@@ -45,6 +58,9 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
       onEditClick={openEdit}
       menuDropdown={
         <>
+          <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openInfo}>
+            Info
+          </Menu.Item>
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
@@ -157,13 +173,10 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         </Stack>
       </Group>
 
-      <EditSongHeaderModal
-        song={song}
-        opened={openedEdit}
-        onClose={closeEdit}
-      />
+      <SongInfoModal opened={openedInfo} onClose={closeInfo} song={song} />
+      <EditSongHeaderModal song={song} opened={openedEdit} onClose={closeEdit} />
     </HeaderPanelCard>
-  );
+  )
 }
 
-export default SongHeaderCard;
+export default SongHeaderCard
