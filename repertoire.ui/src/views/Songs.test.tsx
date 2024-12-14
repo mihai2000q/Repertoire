@@ -14,14 +14,20 @@ describe.skip('Songs', () => {
       title: 'All for justice',
       description: '',
       isRecorded: false,
-      sections: []
+      sections: [],
+      rehearsals: 0,
+      confidence: 0,
+      progress: 0
     },
     {
       id: '2',
       description: '',
       title: 'Seek and Destroy',
       isRecorded: true,
-      sections: []
+      sections: [],
+      rehearsals: 0,
+      confidence: 0,
+      progress: 0
     }
   ]
 

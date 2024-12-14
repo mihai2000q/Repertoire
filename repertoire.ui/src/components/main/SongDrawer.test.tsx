@@ -11,7 +11,10 @@ describe('Song Drawer', () => {
     title: 'Justice for all',
     description: '',
     isRecorded: false,
-    sections: []
+    sections: [],
+    rehearsals: 0,
+    confidence: 0,
+    progress: 0
   }
 
   const handlers = [
