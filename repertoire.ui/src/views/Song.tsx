@@ -316,7 +316,11 @@ function Song() {
 
           <Card variant={'panel'} p={'md'}>
             <Stack>
-              <Tooltip label={'This panel is calculated based on sections\' data'} openDelay={300} position={'top-start'}>
+              <Tooltip
+                label={"This panel is calculated based on sections' data"}
+                openDelay={300}
+                position={'top-start'}
+              >
                 <Text fw={600}>Overall</Text>
               </Tooltip>
 
@@ -358,12 +362,7 @@ function Song() {
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <Tooltip.Floating label={<NumberFormatter value={song.progress} />}>
-                    <Progress
-                      flex={1}
-                      size={'sm'}
-                      value={Math.min(song.progress / 10, 100)}
-                      color={'green'}
-                    />
+                    <Progress flex={1} size={'sm'} value={song.progress / 10} color={'green'} />
                   </Tooltip.Floating>
                 </Grid.Col>
               </Grid>
