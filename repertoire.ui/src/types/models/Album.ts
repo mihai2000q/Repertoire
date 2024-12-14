@@ -8,4 +8,7 @@ export default interface Album {
   releaseDate: string
   artist: Artist
   songs: Song[]
+
+  createdAt: string
+  updatedAt: string
 }

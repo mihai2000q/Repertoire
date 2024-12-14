@@ -25,7 +25,14 @@ import albumPlaceholder from '../assets/image-placeholder-1.jpg'
 import unknownPlaceholder from '../assets/unknown-placeholder.png'
 import AlbumSongCard from '../components/album/AlbumSongCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconDots, IconEdit, IconMusicPlus, IconPlus, IconTrash } from '@tabler/icons-react'
+import {
+  IconDots,
+  IconEdit,
+  IconInfoSquareRounded,
+  IconMusicPlus,
+  IconPlus,
+  IconTrash
+} from '@tabler/icons-react'
 import AddNewAlbumSongModal from '../components/album/modal/AddNewAlbumSongModal.tsx'
 import AddExistingAlbumSongsModal from '../components/album/modal/AddExistingAlbumSongsModal.tsx'
 import userPlaceholder from '../assets/user-placeholder.jpg'
@@ -38,6 +45,7 @@ import { toast } from 'react-toastify'
 import EditAlbumHeaderModal from '../components/album/modal/EditAlbumHeaderModal.tsx'
 import { useGetSongsQuery } from '../state/songsApi.ts'
 import plural from '../utils/plural.ts'
+import AlbumInfoModal from '../components/album/modal/AlbumInfoModal.tsx'
 
 function Album() {
   const dispatch = useAppDispatch()
@@ -66,6 +74,7 @@ function Album() {
 
   const [removeSongsFromAlbum] = useRemoveSongsFromAlbumMutation()
 
+  const [openedAlbumInfo, { open: openAlbumInfo, close: closeAlbumInfo }] = useDisclosure(false)
   const [openedEditAlbumHeader, { open: openEditAlbumHeader, close: closeEditAlbumHeader }] =
     useDisclosure(false)
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
@@ -94,6 +103,9 @@ function Album() {
         onEditClick={openEditAlbumHeader}
         menuDropdown={
           <>
+            <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openAlbumInfo}>
+              Info
+            </Menu.Item>
             <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditAlbumHeader}>
               Edit
             </Menu.Item>
@@ -221,11 +233,15 @@ function Album() {
       </Card>
 
       {!isUnknownAlbum && (
-        <EditAlbumHeaderModal
-          album={album}
-          opened={openedEditAlbumHeader}
-          onClose={closeEditAlbumHeader}
-        />
+        <>
+          <AlbumInfoModal opened={openedAlbumInfo} onClose={closeAlbumInfo} album={album} />
+
+          <EditAlbumHeaderModal
+            album={album}
+            opened={openedEditAlbumHeader}
+            onClose={closeEditAlbumHeader}
+          />
+        </>
       )}
       <AddNewAlbumSongModal
         opened={openedAddNewSong}
