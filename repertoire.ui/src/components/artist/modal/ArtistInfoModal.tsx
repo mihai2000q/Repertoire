@@ -1,6 +1,6 @@
 import Artist from '../../../types/models/Artist.ts'
-import {Grid, Modal, Stack, Text} from '@mantine/core'
-import dayjs from "dayjs";
+import { Grid, Modal, Stack, Text } from '@mantine/core'
+import dayjs from 'dayjs'
 
 interface ArtistInfoModalProps {
   opened: boolean
@@ -20,9 +20,7 @@ function ArtistInfoModal({ opened, onClose, artist }: ArtistInfoModalProps) {
               </Text>
             </Grid.Col>
             <Grid.Col span={7}>
-              <Text fw={600}>
-                {dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm')}
-              </Text>
+              <Text fw={600}>{dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm')}</Text>
             </Grid.Col>
 
             <Grid.Col span={5}>
@@ -31,9 +29,7 @@ function ArtistInfoModal({ opened, onClose, artist }: ArtistInfoModalProps) {
               </Text>
             </Grid.Col>
             <Grid.Col span={7}>
-              <Text fw={600}>
-                {dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm')}
-              </Text>
+              <Text fw={600}>{dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm')}</Text>
             </Grid.Col>
           </Grid>
         </Stack>

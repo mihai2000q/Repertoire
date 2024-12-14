@@ -1,6 +1,6 @@
 import Album from '../../../types/models/Album.ts'
-import {Grid, Modal, Stack, Text} from '@mantine/core'
-import dayjs from "dayjs";
+import { Grid, Modal, Stack, Text } from '@mantine/core'
+import dayjs from 'dayjs'
 
 interface AlbumInfoModalProps {
   opened: boolean
@@ -20,9 +20,7 @@ function AlbumInfoModal({ opened, onClose, album }: AlbumInfoModalProps) {
               </Text>
             </Grid.Col>
             <Grid.Col span={7}>
-              <Text fw={600}>
-                {dayjs(album.createdAt).format('DD MMMM YYYY, HH:mm')}
-              </Text>
+              <Text fw={600}>{dayjs(album.createdAt).format('DD MMMM YYYY, HH:mm')}</Text>
             </Grid.Col>
 
             <Grid.Col span={5}>
@@ -31,9 +29,7 @@ function AlbumInfoModal({ opened, onClose, album }: AlbumInfoModalProps) {
               </Text>
             </Grid.Col>
             <Grid.Col span={7}>
-              <Text fw={600}>
-                {dayjs(album.updatedAt).format('DD MMMM YYYY, HH:mm')}
-              </Text>
+              <Text fw={600}>{dayjs(album.updatedAt).format('DD MMMM YYYY, HH:mm')}</Text>
             </Grid.Col>
           </Grid>
         </Stack>
