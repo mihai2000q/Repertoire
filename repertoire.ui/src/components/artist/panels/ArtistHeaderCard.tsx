@@ -13,7 +13,7 @@ import { useDeleteArtistMutation } from '../../../state/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 
 interface ArtistHeaderCardProps {
-  artist: Artist
+  artist: Artist | undefined
   songsTotalCount: number | undefined
   albumsTotalCount: number | undefined
   isUnknownArtist: boolean

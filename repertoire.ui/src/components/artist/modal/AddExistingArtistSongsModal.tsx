@@ -19,7 +19,7 @@ import { useAddSongsToArtistMutation } from '../../../state/artistsApi.ts'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {MouseEvent, useEffect} from 'react'
+import { MouseEvent, useEffect } from 'react'
 
 interface AddExistingArtistSongsModalProps {
   opened: boolean
@@ -27,27 +27,31 @@ interface AddExistingArtistSongsModalProps {
   artistId: string
 }
 
-function AddExistingArtistSongsModal({ opened, onClose, artistId }: AddExistingArtistSongsModalProps) {
+function AddExistingArtistSongsModal({
+  opened,
+  onClose,
+  artistId
+}: AddExistingArtistSongsModalProps) {
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery({
-    currentPage: 1,
-    pageSize: 20,
-    orderBy: ['title asc'],
-    searchBy:
-      searchValue.trim() !== ''
-        ? ['songs.artist_id IS NULL', `title ~* '${searchValue}'`]
-        : ['songs.artist_id IS NULL']
-  })
+  const { data: songs, isLoading: songsIsLoading } = useGetSongsQuery(
+    {
+      currentPage: 1,
+      pageSize: 20,
+      orderBy: ['title asc'],
+      searchBy:
+        searchValue.trim() !== ''
+          ? ['songs.artist_id IS NULL', `title ~* '${searchValue}'`]
+          : ['songs.artist_id IS NULL']
+    }
+  )
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToArtistMutation()
 
   const [songIds, songIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    songIdsHandlers.filter(songId =>
-      songs.models.some(song => song.id === songId)
-    )
+    songIdsHandlers.filter((songId) => songs.models.some((song) => song.id === songId))
   }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
