@@ -7,4 +7,7 @@ export default interface Artist {
   imageUrl: string
   albums: Album[]
   songs: Song[]
+
+  createdAt: string
+  updatedAt: string
 }

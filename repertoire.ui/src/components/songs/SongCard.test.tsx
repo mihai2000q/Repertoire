@@ -14,7 +14,9 @@ describe('Song Card', () => {
       sections: [],
       rehearsals: 0,
       confidence: 0,
-      progress: 0
+      progress: 0,
+      createdAt: '',
+      updatedAt: ''
     }
 
     // Act
@@ -35,7 +37,9 @@ describe('Song Card', () => {
       sections: [],
       rehearsals: 0,
       confidence: 0,
-      progress: 0
+      progress: 0,
+      createdAt: '',
+      updatedAt: ''
     }
 
     // Act

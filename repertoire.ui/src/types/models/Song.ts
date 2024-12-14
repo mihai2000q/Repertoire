@@ -28,6 +28,9 @@ export default interface Song {
   artist?: Artist
   guitarTuning?: GuitarTuning
   sections: SongSection[]
+
+  createdAt: string
+  updatedAt: string
 }
 
 export interface SongSection {

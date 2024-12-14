@@ -1,4 +1,4 @@
-import Song from "./Song.ts";
+import Song from './Song.ts'
 
 export default interface Playlist {
   id: string
@@ -6,4 +6,7 @@ export default interface Playlist {
   description: string
   imageUrl?: string
   songs: Song[]
+
+  createdAt: string
+  updatedAt: string
 }

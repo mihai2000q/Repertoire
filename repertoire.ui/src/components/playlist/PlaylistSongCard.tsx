@@ -54,10 +54,20 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
 
       <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
         <Group gap={4}>
-          <Text fw={500} truncate={'end'}>{song.title}</Text>
-          {song.album && <Text fz={'sm'} c={'dimmed'} truncate={'end'}>- {song.album.title}</Text>}
+          <Text fw={500} truncate={'end'}>
+            {song.title}
+          </Text>
+          {song.album && (
+            <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+              - {song.album.title}
+            </Text>
+          )}
         </Group>
-        {song.artist && <Text fz={'sm'} c={'dimmed'}>{song.artist.name}</Text>}
+        {song.artist && (
+          <Text fz={'sm'} c={'dimmed'}>
+            {song.artist.name}
+          </Text>
+        )}
       </Stack>
 
       <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>

@@ -6,7 +6,7 @@ import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
-import {useState} from "react";
+import { useState } from 'react'
 
 interface PlaylistCardProps {
   playlist: Playlist

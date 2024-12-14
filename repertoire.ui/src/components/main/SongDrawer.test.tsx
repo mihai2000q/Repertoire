@@ -14,7 +14,9 @@ describe('Song Drawer', () => {
     sections: [],
     rehearsals: 0,
     confidence: 0,
-    progress: 0
+    progress: 0,
+    createdAt: '',
+    updatedAt: ''
   }
 
   const handlers = [

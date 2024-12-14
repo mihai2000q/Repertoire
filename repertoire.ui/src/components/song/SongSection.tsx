@@ -41,7 +41,7 @@ function SongSection({
   showDetails,
   maxSectionProgress
 }: SongSectionProps) {
-  const [updateSongSectionMutation] = useUpdateSongSectionMutation()
+  const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
 
   const [openedEditSongSection, { open: openEditSongSection, close: closeEditSongSection }] =
@@ -95,7 +95,12 @@ function SongSection({
 
         <Group gap={2} align={'center'}>
           <Tooltip label={'Add Rehearsal'} openDelay={200}>
-            <ActionIcon variant={'subtle'} size={'md'} onClick={handleAddRehearsal}>
+            <ActionIcon
+              variant={'subtle'}
+              size={'md'}
+              disabled={isUpdateLoading}
+              onClick={handleAddRehearsal}
+            >
               <IconLocationPlus size={15} />
             </ActionIcon>
           </Tooltip>
