@@ -39,7 +39,7 @@ import {
   IconCheck,
   IconDisc,
   IconDots,
-  IconEdit,
+  IconEdit, IconInfoSquareRounded,
   IconMusicPlus,
   IconPlus,
   IconTrash
@@ -55,6 +55,7 @@ import { toast } from 'react-toastify'
 import HeaderPanelCard from '../components/card/HeaderPanelCard.tsx'
 import EditArtistHeaderModal from '../components/artist/modal/EditArtistHeaderModal.tsx'
 import plural from '../utils/plural.ts'
+import ArtistInfoModal from "../components/artist/modal/ArtistInfoModal.tsx";
 
 const SortButton = ({
   order,
@@ -125,6 +126,8 @@ function Artist() {
   const [removeAlbumsFromArtist] = useRemoveAlbumsFromArtistMutation()
   const [removeSongsFromArtist] = useRemoveSongsFromArtistMutation()
 
+  const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] =
+    useDisclosure(false)
   const [openedEditArtistHeader, { open: openEditArtistHeader, close: closeEditArtistHeader }] =
     useDisclosure(false)
 
@@ -159,6 +162,9 @@ function Artist() {
         onEditClick={openEditArtistHeader}
         menuDropdown={
           <>
+            <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openArtistInfo}>
+              Info
+            </Menu.Item>
             <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditArtistHeader}>
               Edit
             </Menu.Item>
@@ -334,11 +340,15 @@ function Artist() {
       </Grid>
 
       {!isUnknownArtist && (
-        <EditArtistHeaderModal
-          artist={artist}
-          opened={openedEditArtistHeader}
-          onClose={closeEditArtistHeader}
-        />
+        <>
+          <ArtistInfoModal opened={openedArtistInfo} onClose={closeArtistInfo} artist={artist} />
+
+          <EditArtistHeaderModal
+            artist={artist}
+            opened={openedEditArtistHeader}
+            onClose={closeEditArtistHeader}
+          />
+        </>
       )}
       <AddNewArtistSongModal
         opened={openedAddNewSong}
