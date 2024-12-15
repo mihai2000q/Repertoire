@@ -5,7 +5,7 @@ import Artist from '../../../types/models/Artist.ts'
 import AlbumAutocomplete from '../../form/input/AlbumAutocomplete.tsx'
 import Album from '../../../types/models/Album.ts'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
-import { IconInfoCircle } from '@tabler/icons-react'
+import { IconInfoCircleFilled } from '@tabler/icons-react'
 import { useEffect } from 'react'
 
 interface AddNewSongModalFirstStepProps {
@@ -57,14 +57,14 @@ function AddNewSongModalFirstStep({
             {...form.getInputProps('artistName')}
           />
           {album && (
-            <Box c={'cyan.9'} mt={'lg'} ml={4}>
+            <Box c={'cyan.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
                 ta={'center'}
                 label={'Song will inherit artist from album (even if it has one or not)'}
               >
-                <IconInfoCircle size={15} />
+                <IconInfoCircleFilled size={18} />
               </Tooltip>
             </Box>
           )}

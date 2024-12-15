@@ -1,6 +1,7 @@
 import {
   ActionIcon,
-  alpha, Box,
+  alpha,
+  Box,
   Button,
   ComboboxItem,
   Group,
@@ -8,13 +9,15 @@ import {
   Select,
   Stack,
   Text,
-  TextInput, Tooltip
+  TextInput,
+  Tooltip
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import {
   IconActivityHeartbeat,
   IconCalendarFilled,
-  IconGripVertical, IconInfoCircle,
+  IconGripVertical,
+  IconInfoCircleFilled,
   IconMinus
 } from '@tabler/icons-react'
 import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
@@ -27,7 +30,7 @@ import { UseListStateHandlers } from '@mantine/hooks'
 import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
 import DifficultySelect from '../../form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
-import Album from "../../../types/models/Album.ts";
+import Album from '../../../types/models/Album.ts'
 
 interface AddNewSongModalSecondStepProps {
   form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
@@ -91,14 +94,14 @@ function AddNewSongModalSecondStep({
             {...form.getInputProps('releaseDate')}
           />
           {album?.releaseDate && (
-            <Box c={'cyan.9'} mt={'lg'} ml={4}>
+            <Box c={'cyan.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
                 ta={'center'}
                 label={'If the release date is not set, then it will be inherited from the album'}
               >
-                <IconInfoCircle size={15} />
+                <IconInfoCircleFilled size={18} />
               </Tooltip>
             </Box>
           )}
