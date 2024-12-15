@@ -96,7 +96,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
               c={'red.5'}
               onClick={handleOpenRemoveWarning}
             >
-              Remove from Playlist
+              Remove
             </Menu.Item>
           </Menu.Dropdown>
         </Menu>

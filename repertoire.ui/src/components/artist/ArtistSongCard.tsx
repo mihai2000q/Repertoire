@@ -105,7 +105,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
           <Menu.Dropdown>
             {!isUnknownArtist && (
               <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleOpenRemoveWarning}>
-                Remove from Artist
+                Remove
               </Menu.Item>
             )}
           </Menu.Dropdown>

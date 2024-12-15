@@ -87,7 +87,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
                 c={'red.5'}
                 onClick={handleOpenRemoveWarning}
               >
-                Remove from Album
+                Remove
               </Menu.Item>
             )}
           </Menu.Dropdown>

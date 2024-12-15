@@ -86,7 +86,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
                 c={'red.5'}
                 onClick={handleOpenRemoveWarning}
               >
-                Remove from Artist
+                Remove
               </Menu.Item>
             )}
           </Menu.Dropdown>
