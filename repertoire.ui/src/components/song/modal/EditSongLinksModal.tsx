@@ -47,6 +47,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (

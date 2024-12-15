@@ -46,6 +46,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (
