@@ -11,6 +11,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useDeleteArtistMutation } from '../../../state/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
+import WarningModal from '../../modal/WarningModal.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -30,6 +31,8 @@ function ArtistHeaderCard({
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
   const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] = useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
   const [openedEditArtistHeader, { open: openEditArtistHeader, close: closeEditArtistHeader }] =
     useDisclosure(false)
 
@@ -50,7 +53,7 @@ function ArtistHeaderCard({
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditArtistHeader}>
             Edit
           </Menu.Item>
-          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
         </>
@@ -98,6 +101,14 @@ function ArtistHeaderCard({
             artist={artist}
             opened={openedEditArtistHeader}
             onClose={closeEditArtistHeader}
+          />
+
+          <WarningModal
+            opened={openedDeleteWarning}
+            onClose={closeDeleteWarning}
+            title={'Delete Artist'}
+            description={`Are you sure you want to delete this artist?`}
+            onYes={handleDelete}
           />
         </>
       )}
