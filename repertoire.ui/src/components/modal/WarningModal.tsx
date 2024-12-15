@@ -11,7 +11,7 @@ interface WarningModalProps {
 
 function WarningModal({ opened, onClose, title, description, onYes }: WarningModalProps) {
   return (
-    <Modal opened={opened} onClose={onClose} title={title}>
+    <Modal opened={opened} onClose={onClose} title={title} centered>
       <Modal.Body px={'xs'} py={0}>
         <Stack>
           {typeof description === 'string' ? <Text fw={500}>{description}</Text> : description}
