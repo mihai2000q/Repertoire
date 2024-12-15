@@ -43,6 +43,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (

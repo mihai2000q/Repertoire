@@ -41,6 +41,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (

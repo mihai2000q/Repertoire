@@ -45,6 +45,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (
