@@ -142,9 +142,14 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                       src={album.imageUrl ?? albumPlaceholder}
                       alt={album.title}
                     />
-                    <Text inline fw={500} lineClamp={2}>
-                      {album.title}
-                    </Text>
+                    <Stack gap={0}>
+                      <Text inline fw={500} lineClamp={2}>
+                        {album.title}
+                      </Text>
+                      {album.artist && <Text inline c={'dimmed'} fz={'xs'} fw={500} truncate={'end'}>
+                        {album.artist.name}
+                      </Text>}
+                    </Stack>
                   </Group>
                 </Combobox.Option>
               ))
