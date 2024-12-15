@@ -1,5 +1,5 @@
 import Artist from '../../types/models/Artist.ts'
-import {Avatar, Group, Menu, Stack, Text} from '@mantine/core'
+import { Avatar, Group, Menu, Stack, Text } from '@mantine/core'
 import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,8 +7,8 @@ import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDeleteArtistMutation } from '../../state/artistsApi.ts'
-import WarningModal from "../modal/WarningModal.tsx";
-import {useDisclosure} from "@mantine/hooks";
+import WarningModal from '../modal/WarningModal.tsx'
+import { useDisclosure } from '@mantine/hooks'
 
 interface ArtistCardProps {
   artist: Artist
@@ -77,17 +77,13 @@ function ArtistCard({ artist }: ArtistCardProps) {
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         title={`Delete ${artist.name}`}
-        description={<Group gap={4}>
-          <Text fw={400}>
-            Are you sure you want to delete
-          </Text>
-          <Text fw={600}>
-            {artist.name}
-          </Text>
-          <Text>
-            ?
-          </Text>
-        </Group>}
+        description={
+          <Group gap={4}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{artist.name}</Text>
+            <Text>?</Text>
+          </Group>
+        }
         onYes={handleDelete}
       />
     </Stack>
