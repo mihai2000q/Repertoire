@@ -82,6 +82,7 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (

@@ -22,7 +22,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     mode: 'uncontrolled',
     initialValues: {
       title: album.title,
-      releaseDate: new Date(album.releaseDate)
+      releaseDate: album?.releaseDate && new Date(album.releaseDate)
     } as EditAlbumHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -45,6 +45,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     }).unwrap()
 
     onClose()
+    setHasChanged(false)
   }
 
   return (

@@ -3,7 +3,6 @@ import {
   Combobox,
   Group,
   HoverCard,
-  Loader,
   LoadingOverlay,
   ScrollArea,
   Text,
@@ -39,11 +38,7 @@ function ArtistAutocomplete({
 
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const {
-    data: artists,
-    isLoading,
-    isFetching
-  } = useGetArtistsQuery({
+  const { data: artists, isFetching } = useGetArtistsQuery({
     currentPage: 1,
     pageSize: 10,
     orderBy: ['name asc'],
@@ -77,14 +72,7 @@ function ArtistAutocomplete({
     </HoverCard>
   )
 
-  return isLoading ? (
-    <Group gap={'xs'} flex={1}>
-      <Loader size={25} />
-      <Text fz={'sm'} c={'dimmed'}>
-        Loading Artists...
-      </Text>
-    </Group>
-  ) : (
+  return (
     <Combobox
       onOptionSubmit={(optionValue) => {
         if (setValue) setValue(optionValue)

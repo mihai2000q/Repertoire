@@ -28,7 +28,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
   const isLoading = isCreateSongLoading || isSaveImageLoading
 
-  const [artist, setArtist] = useState<Artist>(null)
+  const [artist, setArtist] = useState<Artist>(undefined)
   const [album, setAlbum] = useState<Album>(null)
 
   const [guitarTuning, setGuitarTuning] = useState<ComboboxItem>(null)
@@ -152,6 +152,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
                 setGuitarTuning={setGuitarTuning}
                 difficulty={difficulty}
                 setDifficulty={setDifficulty}
+                album={album}
               />
             </Stepper.Step>
 

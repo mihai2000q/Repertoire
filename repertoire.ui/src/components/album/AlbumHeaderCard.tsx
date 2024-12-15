@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
+import WarningModal from '../modal/WarningModal.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -30,6 +31,8 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
   const [openedAlbumInfo, { open: openAlbumInfo, close: closeAlbumInfo }] = useDisclosure(false)
   const [openedEditAlbumHeader, { open: openEditAlbumHeader, close: closeEditAlbumHeader }] =
+    useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   function handleArtistClick() {
@@ -53,7 +56,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditAlbumHeader}>
             Edit
           </Menu.Item>
-          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
         </>
@@ -137,6 +140,14 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             album={album}
             opened={openedEditAlbumHeader}
             onClose={closeEditAlbumHeader}
+          />
+
+          <WarningModal
+            opened={openedDeleteWarning}
+            onClose={closeDeleteWarning}
+            title={'Delete Album'}
+            description={`Are you sure you want to delete this album?`}
+            onYes={handleDelete}
           />
         </>
       )}

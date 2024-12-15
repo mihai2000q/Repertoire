@@ -31,6 +31,8 @@ import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
 import { useDeleteSongMutation } from '../../state/songsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
+import { useDisclosure } from '@mantine/hooks'
+import WarningModal from '../modal/WarningModal.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -67,6 +69,9 @@ function SongCard({ song }: SongCardProps) {
   const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
 
   const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
 
   function handleClick() {
     navigate(`/song/${song.id}`)
@@ -193,10 +198,24 @@ function SongCard({ song }: SongCardProps) {
       </Menu.Target>
 
       <Menu.Dropdown {...menuDropdownProps}>
-        <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={handleDelete}>
+        <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
           Delete
         </Menu.Item>
       </Menu.Dropdown>
+
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={`Delete Song`}
+        description={
+          <Group gap={4}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
+        }
+        onYes={handleDelete}
+      />
     </Menu>
   )
 }

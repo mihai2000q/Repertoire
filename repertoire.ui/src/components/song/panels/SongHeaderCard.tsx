@@ -24,6 +24,7 @@ import { useDeleteSongMutation } from '../../../state/songsApi.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
+import WarningModal from '../../modal/WarningModal.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -36,8 +37,9 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const [deleteSongMutation] = useDeleteSongMutation()
 
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
-
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
 
   function handleAlbumClick() {
     dispatch(openAlbumDrawer(song.album.id))
@@ -64,7 +66,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
-          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
         </>
@@ -145,7 +147,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         </Text>
                         {song.album.releaseDate && (
                           <Text fw={500} c={'dimmed'} fz={'sm'} inline>
-                            {dayjs(song.album.releaseDate).format('MMM YYYY')}
+                            {dayjs(song.album.releaseDate).format('DD MMM YYYY')}
                           </Text>
                         )}
                       </Stack>
@@ -175,6 +177,14 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
 
       <SongInfoModal opened={openedInfo} onClose={closeInfo} song={song} />
       <EditSongHeaderModal song={song} opened={openedEdit} onClose={closeEdit} />
+
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={'Delete Song'}
+        description={`Are you sure you want to delete this song?`}
+        onYes={handleDelete}
+      />
     </HeaderPanelCard>
   )
 }

@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   alpha,
+  Box,
   Button,
   ComboboxItem,
   Group,
@@ -8,13 +9,15 @@ import {
   Select,
   Stack,
   Text,
-  TextInput
+  TextInput,
+  Tooltip
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import {
   IconActivityHeartbeat,
   IconCalendarFilled,
   IconGripVertical,
+  IconInfoCircleFilled,
   IconMinus
 } from '@tabler/icons-react'
 import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
@@ -27,6 +30,7 @@ import { UseListStateHandlers } from '@mantine/hooks'
 import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
 import DifficultySelect from '../../form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
+import Album from '../../../types/models/Album.ts'
 
 interface AddNewSongModalSecondStepProps {
   form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
@@ -36,6 +40,7 @@ interface AddNewSongModalSecondStepProps {
   setGuitarTuning: Dispatch<SetStateAction<ComboboxItem | null>>
   difficulty: ComboboxItem | null
   setDifficulty: Dispatch<SetStateAction<ComboboxItem | null>>
+  album: Album | null
 }
 
 function AddNewSongModalSecondStep({
@@ -45,7 +50,8 @@ function AddNewSongModalSecondStep({
   guitarTuning,
   setGuitarTuning,
   difficulty,
-  setDifficulty
+  setDifficulty,
+  album
 }: AddNewSongModalSecondStepProps) {
   const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
   const songSectionTypes = songSectionTypesData?.map((type) => ({
@@ -78,14 +84,28 @@ function AddNewSongModalSecondStep({
           {...form.getInputProps('bpm')}
         />
 
-        <DatePickerInput
-          flex={1}
-          leftSection={<IconCalendarFilled size={20} />}
-          label={'Release Date'}
-          placeholder={'Choose the release date'}
-          key={form.key('releaseDate')}
-          {...form.getInputProps('releaseDate')}
-        />
+        <Group flex={1} gap={4} align={'center'}>
+          <DatePickerInput
+            flex={1}
+            leftSection={<IconCalendarFilled size={20} />}
+            label={'Release Date'}
+            placeholder={'Choose the release date'}
+            key={form.key('releaseDate')}
+            {...form.getInputProps('releaseDate')}
+          />
+          {album?.releaseDate && (
+            <Box c={'cyan.8'} mt={'lg'} ml={4}>
+              <Tooltip
+                multiline
+                w={210}
+                ta={'center'}
+                label={'If the release date is not set, then it will be inherited from the album'}
+              >
+                <IconInfoCircleFilled size={18} />
+              </Tooltip>
+            </Box>
+          )}
+        </Group>
       </Group>
 
       <Stack gap={4}>

@@ -17,7 +17,7 @@ import { useDebouncedState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddAlbumsToArtistMutation } from '../../../state/artistsApi.ts'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
-import { IconSearch } from '@tabler/icons-react'
+import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
 
@@ -92,9 +92,21 @@ function AddExistingArtistAlbumsModal({
         <LoadingOverlay visible={addAlbumIsLoading} />
 
         <Stack align={'center'} w={'100%'}>
-          <Text fw={500} fz={'lg'}>
-            Choose albums
-          </Text>
+          <Group gap={4} align={'start'}>
+            <Text fw={500} ta={'center'} fz={'lg'}>
+              Choose albums
+            </Text>
+            <Tooltip
+              w={230}
+              multiline
+              ta={'center'}
+              label={'All the songs related to the added album will be added to the artist too'}
+            >
+              <Box c={'cyan.8'}>
+                <IconInfoCircleFilled size={15} />
+              </Box>
+            </Tooltip>
+          </Group>
           <TextInput
             w={250}
             leftSection={<IconSearch size={15} />}

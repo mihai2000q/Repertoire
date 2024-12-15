@@ -3,7 +3,6 @@ import {
   Combobox,
   Group,
   HoverCard,
-  Loader,
   LoadingOverlay,
   ScrollArea,
   Stack,
@@ -36,11 +35,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
 
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const {
-    data: albums,
-    isLoading,
-    isFetching
-  } = useGetAlbumsQuery({
+  const { data: albums, isFetching } = useGetAlbumsQuery({
     currentPage: 1,
     pageSize: 10,
     orderBy: ['title asc'],
@@ -71,7 +66,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} align={'center'} wrap={'nowrap'}>
           <Avatar
-            size={'md'}
+            size={'lg'}
             radius={'md'}
             src={album.imageUrl ?? albumPlaceholder}
             alt={album.title}
@@ -80,9 +75,14 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             <Text inline fw={500} lineClamp={2}>
               {album.title}
             </Text>
+            {album.artist && (
+              <Text inline fw={500} fz={'xs'} c={'dimmed'}>
+                {album.artist.name}
+              </Text>
+            )}
             {album.releaseDate && (
-              <Text inline fz={'xs'} c={'dimmed'}>
-                {dayjs(album.releaseDate).year()}
+              <Text inline fz={'xxs'} c={'dimmed'}>
+                {dayjs(album.releaseDate).format('DD MMM YYYY')}
               </Text>
             )}
           </Stack>
@@ -91,14 +91,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
     </HoverCard>
   )
 
-  return isLoading ? (
-    <Group gap={'xs'} flex={1}>
-      <Loader size={25} />
-      <Text fz={'sm'} c={'dimmed'}>
-        Loading Albums...
-      </Text>
-    </Group>
-  ) : (
+  return (
     <Combobox
       onOptionSubmit={(optionValue) => {
         if (setValue) setValue(optionValue)
@@ -154,9 +147,16 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                       src={album.imageUrl ?? albumPlaceholder}
                       alt={album.title}
                     />
-                    <Text inline fw={500} lineClamp={2}>
-                      {album.title}
-                    </Text>
+                    <Stack gap={0}>
+                      <Text inline fw={500} lineClamp={2}>
+                        {album.title}
+                      </Text>
+                      {album.artist && (
+                        <Text inline c={'dimmed'} fz={'xs'} fw={500} truncate={'end'}>
+                          {album.artist.name}
+                        </Text>
+                      )}
+                    </Stack>
                   </Group>
                 </Combobox.Option>
               ))
