@@ -10,7 +10,7 @@ import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
-import WarningModal from "../modal/WarningModal.tsx";
+import WarningModal from '../modal/WarningModal.tsx'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist

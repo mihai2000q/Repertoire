@@ -23,7 +23,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
-import WarningModal from "../modal/WarningModal.tsx";
+import WarningModal from '../modal/WarningModal.tsx'
 
 interface SongSectionProps {
   section: SongSectionModel
@@ -120,7 +120,11 @@ function SongSection({
               <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongSection}>
                 Edit
               </Menu.Item>
-              <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
+              <Menu.Item
+                leftSection={<IconTrash size={14} />}
+                c={'red.5'}
+                onClick={openDeleteWarning}
+              >
                 Delete
               </Menu.Item>
             </Menu.Dropdown>

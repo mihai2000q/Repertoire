@@ -6,7 +6,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconTrash } from '@tabler/icons-react'
-import {useDisclosure, useHover} from '@mantine/hooks'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import WarningModal from '../modal/WarningModal.tsx'
 
 interface ArtistSongCardProps {
@@ -104,7 +104,11 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
 
           <Menu.Dropdown>
             {!isUnknownArtist && (
-              <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleOpenRemoveWarning}>
+              <Menu.Item
+                leftSection={<IconTrash size={14} />}
+                c={'red.5'}
+                onClick={handleOpenRemoveWarning}
+              >
                 Remove
               </Menu.Item>
             )}

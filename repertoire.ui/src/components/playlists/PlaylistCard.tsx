@@ -1,14 +1,14 @@
 import Playlist from '../../types/models/Playlist'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
-import {AspectRatio, Group, Image, Menu, Stack, Text} from '@mantine/core'
+import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useState } from 'react'
-import WarningModal from "../modal/WarningModal.tsx";
-import {useDisclosure} from "@mantine/hooks";
+import WarningModal from '../modal/WarningModal.tsx'
+import { useDisclosure } from '@mantine/hooks'
 
 interface PlaylistCardProps {
   playlist: Playlist

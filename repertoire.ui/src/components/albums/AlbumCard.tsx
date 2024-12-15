@@ -1,5 +1,5 @@
 import Album from '../../types/models/Album.ts'
-import {AspectRatio, Group, Image, Menu, Stack, Text} from '@mantine/core'
+import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
@@ -9,8 +9,8 @@ import useContextMenu from '../../hooks/useContextMenu.ts'
 import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeleteAlbumMutation } from '../../state/albumsApi.ts'
-import WarningModal from "../modal/WarningModal.tsx";
-import {useDisclosure} from "@mantine/hooks";
+import WarningModal from '../modal/WarningModal.tsx'
+import { useDisclosure } from '@mantine/hooks'
 
 interface AlbumCardProps {
   album: Album

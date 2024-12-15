@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
-import WarningModal from "../modal/WarningModal.tsx";
+import WarningModal from '../modal/WarningModal.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
