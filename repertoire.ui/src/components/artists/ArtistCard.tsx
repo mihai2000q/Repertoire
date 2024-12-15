@@ -1,5 +1,5 @@
 import Artist from '../../types/models/Artist.ts'
-import { Avatar, Menu, Stack, Text } from '@mantine/core'
+import {Avatar, Group, Menu, Stack, Text} from '@mantine/core'
 import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -7,6 +7,8 @@ import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDeleteArtistMutation } from '../../state/artistsApi.ts'
+import WarningModal from "../modal/WarningModal.tsx";
+import {useDisclosure} from "@mantine/hooks";
 
 interface ArtistCardProps {
   artist: Artist
@@ -20,6 +22,9 @@ function ArtistCard({ artist }: ArtistCardProps) {
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
 
   const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
 
   function handleClick() {
     navigate(`/artist/${artist.id}`)
@@ -59,7 +64,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={handleDelete}>
+          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
         </Menu.Dropdown>
@@ -67,6 +72,24 @@ function ArtistCard({ artist }: ArtistCardProps) {
       <Text fw={600} ta={'center'} lineClamp={2}>
         {artist.name}
       </Text>
+
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={`Delete ${artist.name}`}
+        description={<Group gap={4}>
+          <Text fw={400}>
+            Are you sure you want to delete
+          </Text>
+          <Text fw={600}>
+            {artist.name}
+          </Text>
+          <Text>
+            ?
+          </Text>
+        </Group>}
+        onYes={handleDelete}
+      />
     </Stack>
   )
 }
