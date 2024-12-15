@@ -10,6 +10,7 @@ import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
+import WarningModal from "../modal/WarningModal.tsx";
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -22,6 +23,8 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
 
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
 
   function handleDelete() {
     deletePlaylistMutation(playlist.id)
@@ -40,7 +43,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
-          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+          <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
         </>
@@ -79,6 +82,13 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
 
       <PlaylistInfoModal playlist={playlist} opened={openedInfo} onClose={closeInfo} />
       <EditPlaylistHeaderModal playlist={playlist} opened={openedEdit} onClose={closeEdit} />
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={'Delete Playlist'}
+        description={`Are you sure you want to delete this playlist?`}
+        onYes={handleDelete}
+      />
     </HeaderPanelCard>
   )
 }
