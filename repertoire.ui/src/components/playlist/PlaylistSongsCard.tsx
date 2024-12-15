@@ -41,7 +41,7 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'} align={'center'}>
+        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'} align={'center'}>
           <Text fw={600}>Songs</Text>
 
           <Menu shadow={'sm'}>
@@ -94,7 +94,7 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
             />
           ))}
           {playlist.songs.length === 0 && (
-            <NewHorizontalCard onClick={openAddSongs}>Add Song</NewHorizontalCard>
+            <NewHorizontalCard onClick={openAddSongs}>Add Songs</NewHorizontalCard>
           )}
         </Stack>
       </Stack>
