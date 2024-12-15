@@ -66,7 +66,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} align={'center'} wrap={'nowrap'}>
           <Avatar
-            size={'md'}
+            size={'lg'}
             radius={'md'}
             src={album.imageUrl ?? albumPlaceholder}
             alt={album.title}
@@ -75,9 +75,14 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             <Text inline fw={500} lineClamp={2}>
               {album.title}
             </Text>
+            {album.artist && (
+              <Text inline fw={500} fz={'xs'} c={'dimmed'}>
+                {album.artist.name}
+              </Text>
+            )}
             {album.releaseDate && (
-              <Text inline fz={'xs'} c={'dimmed'}>
-                {dayjs(album.releaseDate).year()}
+              <Text inline fz={'xxs'} c={'dimmed'}>
+                {dayjs(album.releaseDate).format('DD MMM YYYY')}
               </Text>
             )}
           </Stack>
