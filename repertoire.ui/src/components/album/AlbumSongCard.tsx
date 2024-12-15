@@ -97,7 +97,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
-        title={`Remove ${song.title}`}
+        title={`Remove Song`}
         description={
           <Stack gap={4}>
             <Group gap={4}>

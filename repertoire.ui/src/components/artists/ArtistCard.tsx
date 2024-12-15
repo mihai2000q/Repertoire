@@ -76,7 +76,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete ${artist.name}`}
+        title={`Delete Artist`}
         description={
           <Group gap={4}>
             <Text>Are you sure you want to delete</Text>

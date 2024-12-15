@@ -96,7 +96,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
-        title={`Remove ${album.title}`}
+        title={`Remove Album`}
         description={
           <Stack gap={4}>
             <Group gap={4}>

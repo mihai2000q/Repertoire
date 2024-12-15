@@ -206,7 +206,7 @@ function SongCard({ song }: SongCardProps) {
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete ${song.title}`}
+        title={`Delete Song`}
         description={
           <Group gap={4}>
             <Text>Are you sure you want to delete</Text>

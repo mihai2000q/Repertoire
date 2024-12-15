@@ -80,7 +80,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete ${playlist.title}`}
+        title={`Delete Playlist`}
         description={
           <Group gap={4}>
             <Text>Are you sure you want to delete</Text>
