@@ -3,7 +3,6 @@ import {
   Combobox,
   Group,
   HoverCard,
-  Loader,
   LoadingOverlay,
   ScrollArea,
   Stack,
@@ -36,11 +35,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
 
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const {
-    data: albums,
-    isLoading,
-    isFetching
-  } = useGetAlbumsQuery({
+  const { data: albums, isFetching } = useGetAlbumsQuery({
     currentPage: 1,
     pageSize: 10,
     orderBy: ['title asc'],
@@ -91,14 +86,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
     </HoverCard>
   )
 
-  return isLoading ? (
-    <Group gap={'xs'} flex={1}>
-      <Loader size={25} />
-      <Text fz={'sm'} c={'dimmed'}>
-        Loading Albums...
-      </Text>
-    </Group>
-  ) : (
+  return (
     <Combobox
       onOptionSubmit={(optionValue) => {
         if (setValue) setValue(optionValue)
