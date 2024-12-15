@@ -152,6 +152,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
                 setGuitarTuning={setGuitarTuning}
                 difficulty={difficulty}
                 setDifficulty={setDifficulty}
+                album={album}
               />
             </Stepper.Step>
 
