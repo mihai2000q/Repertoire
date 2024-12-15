@@ -22,7 +22,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     mode: 'uncontrolled',
     initialValues: {
       title: song.title,
-      releaseDate: new Date(song.releaseDate)
+      releaseDate: song.releaseDate && new Date(song.releaseDate)
     } as EditSongHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
