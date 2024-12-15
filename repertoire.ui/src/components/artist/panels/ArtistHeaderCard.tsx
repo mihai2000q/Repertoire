@@ -31,9 +31,9 @@ function ArtistHeaderCard({
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
   const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] = useDisclosure(false)
-  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
-    useDisclosure(false)
   const [openedEditArtistHeader, { open: openEditArtistHeader, close: closeEditArtistHeader }] =
+    useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   function handleDelete() {
