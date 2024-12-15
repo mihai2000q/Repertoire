@@ -23,6 +23,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
+import WarningModal from "../modal/WarningModal.tsx";
 
 interface SongSectionProps {
   section: SongSectionModel
@@ -45,6 +46,9 @@ function SongSection({
   const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
 
   const [openedEditSongSection, { open: openEditSongSection, close: closeEditSongSection }] =
+    useDisclosure(false)
+
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   function handleAddRehearsal() {
@@ -116,7 +120,7 @@ function SongSection({
               <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongSection}>
                 Edit
               </Menu.Item>
-              <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={handleDelete}>
+              <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
                 Delete
               </Menu.Item>
             </Menu.Dropdown>
@@ -157,6 +161,19 @@ function SongSection({
         opened={openedEditSongSection}
         onClose={closeEditSongSection}
         section={section}
+      />
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={`Delete Section`}
+        description={
+          <Group gap={4}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{section.name}</Text>
+            <Text>?</Text>
+          </Group>
+        }
+        onYes={handleDelete}
       />
     </Stack>
   )
