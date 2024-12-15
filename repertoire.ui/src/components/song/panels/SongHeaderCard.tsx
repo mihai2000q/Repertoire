@@ -145,7 +145,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         </Text>
                         {song.album.releaseDate && (
                           <Text fw={500} c={'dimmed'} fz={'sm'} inline>
-                            {dayjs(song.album.releaseDate).format('MMM YYYY')}
+                            {dayjs(song.album.releaseDate).format('DD MMM YYYY')}
                           </Text>
                         )}
                       </Stack>
