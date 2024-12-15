@@ -56,7 +56,13 @@ function TitleBar() {
           >
             <IconArrowsDiagonal />
           </ActionIcon>
-          <ActionIcon aria-label={'close'} variant={'subtle'} size={'lg'} onClick={handleClose}>
+          <ActionIcon
+            aria-label={'close'}
+            variant={'subtle'}
+            size={'lg'}
+            onClick={handleClose}
+            sx={(theme) => ({ '&:hover': { backgroundColor: theme.colors.red[4], color: theme.white } })}
+          >
             <IconX />
           </ActionIcon>
         </Group>
