@@ -30,9 +30,9 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 	db := utils.GetDatabase(t)
 
 	var songs []model.Song
-	db.Preload("Album").
-		Preload("Artist").
-		Preload("GuitarTuning").
+	db.Joins("Album").
+		Joins("Artist").
+		Joins("GuitarTuning").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Preload("Playlists").
