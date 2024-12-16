@@ -43,9 +43,9 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &responseSong)
 
 	db := utils.GetDatabase(t)
-	db.Preload("Album").
-		Preload("Artist").
-		Preload("GuitarTuning").
+	db.Joins("Album").
+		Joins("Artist").
+		Joins("GuitarTuning").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Preload("Playlists").
