@@ -33,6 +33,18 @@ export const components = {
             backgroundColor: theme.colors.gray[2],
             shadows: theme.shadows.lg
           }
+        },
+
+        '&[data-variant="grey-subtle"]': {
+          color: theme.colors.gray[2],
+          backgroundColor: alpha(theme.colors.gray[6], 0.4),
+          shadows: theme.shadows.xs,
+
+          '&:hover': {
+            color: theme.white,
+            backgroundColor: alpha(theme.colors.gray[4], 0.4),
+            shadows: theme.shadows.lg
+          }
         }
       }
     })
@@ -162,7 +174,7 @@ export const components = {
 declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
-    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey'
+    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle'
   }
 
   // noinspection JSUnusedGlobalSymbols
