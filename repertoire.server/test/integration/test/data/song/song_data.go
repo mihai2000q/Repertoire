@@ -76,9 +76,10 @@ var Users = []model.User{
 
 var Artists = []model.Artist{
 	{
-		ID:     uuid.New(),
-		Name:   "Arduino",
-		UserID: Users[0].ID,
+		ID:       uuid.New(),
+		Name:     "Arduino",
+		ImageURL: &[]internal.FilePath{"userId/Some artist image path/somewhere.jpeg"}[0],
+		UserID:   Users[0].ID,
 	},
 	{
 		ID:     uuid.New(),
@@ -92,6 +93,7 @@ var Albums = []model.Album{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
 		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ImageURL:    &[]internal.FilePath{"userId/Some album image path/somewhere.jpeg"}[0],
 		UserID:      Users[0].ID,
 		ArtistID:    &[]uuid.UUID{Artists[0].ID}[0],
 	},
