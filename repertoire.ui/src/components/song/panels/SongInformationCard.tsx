@@ -14,6 +14,9 @@ const NotSet = ({ label }: { label?: string }) => (
   </Text>
 )
 
+const firstColSize = 6
+const secondColSize = 6
+
 interface SongInformationCardProps {
   song: Song
 }
@@ -28,12 +31,12 @@ function SongInformationCard({ song }: SongInformationCardProps) {
       <Stack gap={'xs'}>
         <Text fw={600}>Information</Text>
         <Grid align={'center'} gutter={'sm'}>
-          <Grid.Col span={6}>
+          <Grid.Col span={firstColSize}>
             <Text fw={500} c={'dimmed'}>
               Difficulty:
             </Text>
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span={secondColSize}>
             {song.difficulty ? (
               <Tooltip label={`This song is ${song.difficulty}`} openDelay={400} position={'top'}>
                 <Group grow gap={4}>
@@ -53,30 +56,30 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             )}
           </Grid.Col>
 
-          <Grid.Col span={6}>
+          <Grid.Col span={firstColSize}>
             <Text fw={500} c={'dimmed'} truncate={'end'}>
               Guitar Tuning:
             </Text>
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span={secondColSize}>
             {song.guitarTuning ? <Text fw={600}>{song.guitarTuning.name}</Text> : <NotSet />}
           </Grid.Col>
 
-          <Grid.Col span={6}>
+          <Grid.Col span={firstColSize}>
             <Tooltip label={'Beats Per Minute'} openDelay={200} position={'top-start'}>
               <Text fw={500} c={'dimmed'}>
                 Bpm:
               </Text>
             </Tooltip>
           </Grid.Col>
-          <Grid.Col span={6}>{song.bpm ? <Text fw={600}>{song.bpm}</Text> : <NotSet />}</Grid.Col>
+          <Grid.Col span={secondColSize}>{song.bpm ? <Text fw={600}>{song.bpm}</Text> : <NotSet />}</Grid.Col>
 
-          <Grid.Col span={6}>
+          <Grid.Col span={firstColSize}>
             <Text fw={500} c={'dimmed'}>
               Recorded:
             </Text>
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span={secondColSize}>
             {song.isRecorded ? (
               <ActionIcon
                 size={'20px'}
@@ -93,7 +96,7 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             )}
           </Grid.Col>
 
-          <Grid.Col span={6}>
+          <Grid.Col span={firstColSize}>
             <Tooltip
               label={"This field is calculated based on sections' rehearsals"}
               openDelay={200}
@@ -105,7 +108,7 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             </Tooltip>
           </Grid.Col>
 
-          <Grid.Col span={6}>
+          <Grid.Col span={secondColSize}>
             {song.lastTimePlayed ? (
               <Text fw={600}>{dayjs(song.lastTimePlayed).format('DD MMM YYYY')}</Text>
             ) : (
