@@ -2,7 +2,7 @@ import Song from '../../types/models/Song.ts'
 import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
-import { openSongDrawer } from '../../state/globalSlice.ts'
+import {openAlbumDrawer, openArtistDrawer, openSongDrawer} from '../../state/globalSlice.ts'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconTrash } from '@tabler/icons-react'
@@ -26,6 +26,16 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
 
   function handleClick() {
     dispatch(openSongDrawer(song.id))
+  }
+
+  function handleAlbumClick(e: MouseEvent) {
+    e.stopPropagation()
+    dispatch(openAlbumDrawer(song.album.id))
+  }
+
+  function handleArtistClick(e: MouseEvent) {
+    e.stopPropagation()
+    dispatch(openArtistDrawer(song.artist.id))
   }
 
   function handleOpenRemoveWarning(e: MouseEvent) {
@@ -63,13 +73,29 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
               {song.title}
             </Text>
             {song.album && (
-              <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
-                - {song.album.title}
-              </Text>
+              <>
+                <Text fz={'sm'}>-</Text>
+                <Text
+                  fz={'sm'}
+                  c={'dimmed'}
+                  truncate={'end'}
+                  sx={{ '&:hover': { textDecoration: 'underline' } }}
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleAlbumClick}
+                >
+                  {song.album.title}
+                </Text>
+              </>
             )}
           </Group>
           {song.artist && (
-            <Text fz={'sm'} c={'dimmed'}>
+            <Text
+              fz={'sm'}
+              c={'dimmed'}
+              sx={{ '&:hover': { textDecoration: 'underline' } }}
+              style={{ cursor: 'pointer', alignSelf: 'start' }}
+              onClick={handleArtistClick}
+            >
               {song.artist.name}
             </Text>
           )}
