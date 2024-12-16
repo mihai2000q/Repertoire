@@ -57,6 +57,13 @@ func (s *Song) BeforeSave(*gorm.DB) error {
 
 func (s *Song) AfterFind(*gorm.DB) error {
 	s.ImageURL = s.ImageURL.ToNullableFullURL()
+	// When Joins instead of Preload, AfterFind Hook is not used
+	if s.Artist != nil {
+		s.Artist.ImageURL = s.Artist.ImageURL.ToNullableFullURL()
+	}
+	if s.Album != nil {
+		s.Album.ImageURL = s.Album.ImageURL.ToNullableFullURL()
+	}
 
 	if len(s.Sections) == 0 {
 		return nil

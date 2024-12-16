@@ -47,7 +47,7 @@ func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
 		return db.Order("songs.album_track_no")
 	}).
-		Preload("Artist").
+		Joins("Artist").
 		Find(&album, album.ID)
 
 	assertion.ResponseAlbum(t, album, responseAlbum, true, true)
