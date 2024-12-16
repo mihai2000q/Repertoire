@@ -37,12 +37,12 @@ export const components = {
 
         '&[data-variant="grey-subtle"]': {
           color: theme.colors.gray[2],
-          backgroundColor: alpha(theme.colors.gray[6], 0.4),
+          backgroundColor: alpha(theme.colors.gray[6], 0.3),
           shadows: theme.shadows.xs,
 
           '&:hover': {
             color: theme.white,
-            backgroundColor: alpha(theme.colors.gray[4], 0.4),
+            backgroundColor: alpha(theme.colors.gray[4], 0.3),
             shadows: theme.shadows.lg
           }
         }
