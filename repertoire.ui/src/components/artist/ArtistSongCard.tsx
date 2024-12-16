@@ -73,6 +73,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
                   c={'dimmed'}
                   truncate={'end'}
                   sx={{ '&:hover': { textDecoration: 'underline' } }}
+                  style={{ cursor: 'pointer' }}
                   onClick={handleAlbumClick}
                 >
                   {song.album.title}
