@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useState } from 'react'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 
 interface PlaylistCardProps {

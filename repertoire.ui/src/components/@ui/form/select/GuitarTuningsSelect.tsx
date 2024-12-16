@@ -1,5 +1,5 @@
 import { ComboboxItem, Group, Loader, Select, Text } from '@mantine/core'
-import { useGetGuitarTuningsQuery } from '../../../state/songsApi.ts'
+import { useGetGuitarTuningsQuery } from '../../../../state/songsApi.ts'
 import { IconMichelinStarFilled } from '@tabler/icons-react'
 
 interface GuitarTuningsSelectProps {

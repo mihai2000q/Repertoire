@@ -5,7 +5,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewArtistForm, addNewArtistValidation } from '../../../validation/artistsForm.ts'
 import { useCreateArtistMutation, useSaveImageToArtistMutation } from '../../../state/artistsApi.ts'
-import RoundImageDropzoneWithPreview from '../../image/RoundImageDropzoneWithPreview.tsx'
+import RoundImageDropzoneWithPreview from '../../@ui/image/RoundImageDropzoneWithPreview.tsx'
 
 interface AddNewArtistModalProps {
   opened: boolean

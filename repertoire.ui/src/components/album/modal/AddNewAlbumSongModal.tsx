@@ -5,7 +5,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { AddNewArtistSongForm } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
-import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import { AddNewAlbumSongForm, addNewAlbumSongValidation } from '../../../validation/albumsForm.ts'
 
 interface AddNewAlbumSongModalProps {

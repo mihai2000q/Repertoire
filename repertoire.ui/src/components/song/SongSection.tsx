@@ -23,7 +23,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 
 interface SongSectionProps {
   section: SongSectionModel

@@ -10,9 +10,9 @@ import {
   TextInput,
   useCombobox
 } from '@mantine/core'
-import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
-import Album from '../../../types/models/Album.ts'
+import albumPlaceholder from '../../../../assets/image-placeholder-1.jpg'
+import { useGetAlbumsQuery } from '../../../../state/albumsApi.ts'
+import Album from '../../../../types/models/Album.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'

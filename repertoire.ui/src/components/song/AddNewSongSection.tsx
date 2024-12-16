@@ -3,7 +3,7 @@ import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import SongSectionTypeSelect from '../form/select/SongSectionTypeSelect.tsx'
+import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
 
 interface AddNewSongSectionProps {
   songId: string

@@ -15,7 +15,7 @@ import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
-import HeaderPanelCard from '../../card/HeaderPanelCard.tsx'
+import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import EditSongHeaderModal from '../modal/EditSongHeaderModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { openAlbumDrawer, openArtistDrawer } from '../../../state/globalSlice.ts'
@@ -24,7 +24,7 @@ import { useDeleteSongMutation } from '../../../state/songsApi.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
-import WarningModal from '../../modal/WarningModal.tsx'
+import WarningModal from '../../@ui/modal/WarningModal.tsx'
 
 interface SongHeaderCardProps {
   song: Song

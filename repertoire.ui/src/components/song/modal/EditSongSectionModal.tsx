@@ -16,7 +16,7 @@ import {
 import { SongSection } from '../../../types/models/Song.ts'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditSongSectionForm, editSongSectionValidation } from '../../../validation/songsForm.ts'
-import SongSectionTypeSelect from '../../form/select/SongSectionTypeSelect.tsx'
+import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 
 interface EditSongSectionModalProps {

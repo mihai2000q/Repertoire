@@ -15,8 +15,8 @@ import { useUpdateSongMutation } from '../../../state/songsApi.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
-import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
-import DifficultySelect from '../../form/select/DifficultySelect.tsx'
+import GuitarTuningsSelect from '../../@ui/form/select/GuitarTuningsSelect.tsx'
+import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { IconBmp } from '@tabler/icons-react'
 
 interface EditSongInformationModalProps {

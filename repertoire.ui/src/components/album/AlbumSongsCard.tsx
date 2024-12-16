@@ -1,7 +1,7 @@
 import { ActionIcon, Card, Group, LoadingOverlay, Menu, Space, Stack, Text } from '@mantine/core'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import AlbumSongCard from './AlbumSongCard.tsx'
-import NewHorizontalCard from '../card/NewHorizontalCard.tsx'
+import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewAlbumSongModal from './modal/AddNewAlbumSongModal.tsx'
 import AddExistingAlbumSongsModal from './modal/AddExistingAlbumSongsModal.tsx'
 import { useRemoveSongsFromAlbumMutation } from '../../state/albumsApi.ts'

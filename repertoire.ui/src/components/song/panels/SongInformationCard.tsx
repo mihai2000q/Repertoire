@@ -2,7 +2,7 @@ import { ActionIcon, Grid, Group, Progress, Stack, Text, Tooltip } from '@mantin
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { IconCheck } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import EditPanelCard from '../../card/EditPanelCard.tsx'
+import EditPanelCard from '../../@ui/card/EditPanelCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { useDisclosure } from '@mantine/hooks'
 import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
