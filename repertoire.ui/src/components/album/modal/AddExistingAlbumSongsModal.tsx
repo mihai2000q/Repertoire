@@ -16,7 +16,7 @@ import {
 import { useDebouncedState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
-import { IconSearch } from '@tabler/icons-react'
+import {IconInfoCircleFilled, IconSearch} from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
@@ -101,9 +101,16 @@ function AddExistingAlbumSongsModal({
         <LoadingOverlay visible={addSongIsLoading} />
 
         <Stack align={'center'} w={'100%'}>
-          <Text fw={500} fz={'lg'}>
-            Choose songs
-          </Text>
+          <Group gap={4} align={'start'}>
+            <Text fw={500} ta={'center'} fz={'lg'}>
+              Choose songs
+            </Text>
+            <Tooltip label={'All songs will inherit the artist of the album'}>
+              <Box c={'cyan.8'}>
+                <IconInfoCircleFilled size={15} />
+              </Box>
+            </Tooltip>
+          </Group>
           <TextInput
             w={250}
             leftSection={<IconSearch size={15} />}
