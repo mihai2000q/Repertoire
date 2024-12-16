@@ -16,7 +16,7 @@ import {
 import { useDebouncedState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
-import {IconInfoCircleFilled, IconSearch} from '@tabler/icons-react'
+import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'

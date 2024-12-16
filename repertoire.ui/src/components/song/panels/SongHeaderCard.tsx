@@ -160,7 +160,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
 
             {song.releaseDate && (
               <>
-                {(song.album || song.artist) && <Text c={'dimmed'} inline>•</Text>}
+                {(song.album || song.artist) && (
+                  <Text c={'dimmed'} inline>
+                    •
+                  </Text>
+                )}
                 <Tooltip
                   label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
                   openDelay={200}

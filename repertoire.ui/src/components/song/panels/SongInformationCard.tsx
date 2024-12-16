@@ -72,7 +72,9 @@ function SongInformationCard({ song }: SongInformationCardProps) {
               </Text>
             </Tooltip>
           </Grid.Col>
-          <Grid.Col span={secondColSize}>{song.bpm ? <Text fw={600}>{song.bpm}</Text> : <NotSet />}</Grid.Col>
+          <Grid.Col span={secondColSize}>
+            {song.bpm ? <Text fw={600}>{song.bpm}</Text> : <NotSet />}
+          </Grid.Col>
 
           <Grid.Col span={firstColSize}>
             <Text fw={500} c={'dimmed'}>
