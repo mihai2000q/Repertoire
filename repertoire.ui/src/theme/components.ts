@@ -84,7 +84,8 @@ export const components = {
         item: {
           transition: '0.25s'
         }
-      }
+      },
+      transitionProps: { transition: 'pop-top-right', duration: 200 }
     }
   }),
   Modal: Modal.extend({
@@ -105,11 +106,9 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
-      style: {
-        borderRadius: '16px'
-      },
       styles: (theme) => ({
         root: {
+          borderRadius: '16px',
           transition: '0.25s',
           color: theme.colors.gray[6],
           '&:hover': {
