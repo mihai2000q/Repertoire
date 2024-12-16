@@ -102,6 +102,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                     cursor: 'pointer',
                     '&:hover': { textDecoration: 'underline' }
                   }}
+                  inline
                   onClick={handleArtistClick}
                 >
                   {song.artist.name}
@@ -159,13 +160,13 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
 
             {song.releaseDate && (
               <>
-                {(song.album || song.artist) && <Text c={'dimmed'}>•</Text>}
+                {(song.album || song.artist) && <Text c={'dimmed'} inline>•</Text>}
                 <Tooltip
                   label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
                   openDelay={200}
                   position={'bottom'}
                 >
-                  <Text fw={500} c={'dimmed'}>
+                  <Text fw={500} c={'dimmed'} inline>
                     {dayjs(song.releaseDate).format('YYYY')}
                   </Text>
                 </Tooltip>
