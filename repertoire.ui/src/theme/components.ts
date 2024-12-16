@@ -97,7 +97,7 @@ export const components = {
           transition: '0.25s'
         }
       },
-      transitionProps: { transition: 'pop-top-right', duration: 200 }
+      transitionProps: { transition: 'pop-top-right', duration: 150 }
     }
   }),
   Modal: Modal.extend({
