@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { reduxRouterRender } from '../../test-utils.tsx'
 import SongDrawer from './SongDrawer.tsx'
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
@@ -34,13 +34,13 @@ describe('Song Drawer', () => {
   afterAll(() => server.close())
 
   it('should render and display the loader', () => {
-    reduxRender(<SongDrawer opened={true} close={() => {}} />)
+    reduxRouterRender(<SongDrawer opened={true} onClose={() => {}} />)
 
     expect(screen.getByTestId('song-drawer-loader')).toBeInTheDocument()
   })
 
   it('should display song details when the songId exists', async () => {
-    reduxRender(<SongDrawer opened={true} close={() => {}} />, {
+    reduxRouterRender(<SongDrawer opened={true} onClose={() => {}} />, {
       global: {
         songDrawer: { songId: '1', open: false },
         albumDrawer: undefined,

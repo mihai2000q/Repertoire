@@ -5,7 +5,7 @@ import { useGetSongQuery } from '../state/songsApi.ts'
 import SongSections from '../components/song/SongSections.tsx'
 import SongInformationCard from '../components/song/panels/SongInformationCard.tsx'
 import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'
-import SongOverallCard from '../components/song/panels/SongsOverallCard.tsx'
+import SongOverallCard from '../components/song/panels/SongOverallCard.tsx'
 import SongDescriptionCard from '../components/song/panels/SongDescriptionCard.tsx'
 import SongHeaderCard from '../components/song/panels/SongHeaderCard.tsx'
 

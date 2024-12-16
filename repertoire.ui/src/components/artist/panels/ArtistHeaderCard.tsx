@@ -4,14 +4,14 @@ import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import unknownPlaceholder from '../../../assets/unknown-placeholder.png'
 import artistPlaceholder from '../../../assets/user-placeholder.jpg'
 import plural from '../../../utils/plural.ts'
-import HeaderPanelCard from '../../card/HeaderPanelCard.tsx'
+import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import ArtistInfoModal from '../modal/ArtistInfoModal.tsx'
 import EditArtistHeaderModal from '../modal/EditArtistHeaderModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useDeleteArtistMutation } from '../../../state/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
-import WarningModal from '../../modal/WarningModal.tsx'
+import WarningModal from '../../@ui/modal/WarningModal.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined

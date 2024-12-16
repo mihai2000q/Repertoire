@@ -9,9 +9,9 @@ import {
   TextInput,
   useCombobox
 } from '@mantine/core'
-import artistPlaceholder from '../../../assets/user-placeholder.jpg'
-import { useGetArtistsQuery } from '../../../state/artistsApi.ts'
-import Artist from '../../../types/models/Artist.ts'
+import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
+import { useGetArtistsQuery } from '../../../../state/artistsApi.ts'
+import Artist from '../../../../types/models/Artist.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import { IconUserFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'

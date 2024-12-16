@@ -3,7 +3,7 @@ import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-reac
 import { FileWithPath } from '@mantine/dropzone'
 import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
-import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 
 interface AddNewSongModalFinalStepProps {

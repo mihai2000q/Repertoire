@@ -12,7 +12,7 @@ import {
 import { IconCaretDownFilled, IconCheck, IconDots, IconPlus } from '@tabler/icons-react'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
-import NewHorizontalCard from '../card/NewHorizontalCard.tsx'
+import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import Playlist from '../../types/models/Playlist.ts'
 import { useState } from 'react'

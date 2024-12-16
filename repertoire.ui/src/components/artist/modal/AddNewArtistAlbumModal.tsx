@@ -8,7 +8,7 @@ import {
 } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import { useCreateAlbumMutation, useSaveImageToAlbumMutation } from '../../../state/albumsApi.ts'
-import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import { IconAlbum } from '@tabler/icons-react'
 
 interface AddNewArtistAlbumModalProps {

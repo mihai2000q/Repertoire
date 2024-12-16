@@ -32,7 +32,7 @@ import { toast } from 'react-toastify'
 import { useDeleteSongMutation } from '../../state/songsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDisclosure } from '@mantine/hooks'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (

@@ -1,8 +1,8 @@
 import { Stack, Text } from '@mantine/core'
-import EditPanelCard from '../../card/EditPanelCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import EditSongDescriptionModal from '../modal/EditSongDescriptionModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import EditPanelCard from '../../@ui/card/EditPanelCard.tsx'
 
 interface SongDescriptionCardProps {
   song: Song

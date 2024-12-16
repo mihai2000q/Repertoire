@@ -22,7 +22,7 @@ import {
   IconPlus
 } from '@tabler/icons-react'
 import ArtistAlbumCard from '../ArtistAlbumCard.tsx'
-import NewHorizontalCard from '../../card/NewHorizontalCard.tsx'
+import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { useRemoveAlbumsFromArtistMutation } from '../../../state/artistsApi.ts'
 import Order from '../../../types/Order.ts'

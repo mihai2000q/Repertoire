@@ -2,7 +2,7 @@ import { AspectRatio, Group, Image, Menu, Stack, Text, Title } from '@mantine/co
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
 import plural from '../../utils/plural.ts'
-import HeaderPanelCard from '../card/HeaderPanelCard.tsx'
+import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
 import Playlist from '../../types/models/Playlist.ts'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
@@ -10,7 +10,7 @@ import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist

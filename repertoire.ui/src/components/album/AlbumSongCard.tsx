@@ -6,7 +6,7 @@ import { openSongDrawer } from '../../state/globalSlice.ts'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconTrash } from '@tabler/icons-react'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 
 interface AlbumSongCardProps {
   song: Song

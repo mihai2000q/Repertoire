@@ -7,7 +7,7 @@ import { openAlbumDrawer } from '../../state/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { IconDots, IconTrash } from '@tabler/icons-react'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 
 interface ArtistAlbumCardProps {
   album: Album

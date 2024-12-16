@@ -100,7 +100,7 @@ function AddExistingArtistAlbumsModal({
               w={230}
               multiline
               ta={'center'}
-              label={'All the songs related to the added album will be added to the artist too'}
+              label={'All songs related to the added album will be added to the artist too'}
             >
               <Box c={'cyan.8'}>
                 <IconInfoCircleFilled size={15} />

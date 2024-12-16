@@ -33,6 +33,18 @@ export const components = {
             backgroundColor: theme.colors.gray[2],
             shadows: theme.shadows.lg
           }
+        },
+
+        '&[data-variant="grey-subtle"]': {
+          color: theme.colors.gray[2],
+          backgroundColor: alpha(theme.colors.gray[6], 0.3),
+          shadows: theme.shadows.xs,
+
+          '&:hover': {
+            color: theme.white,
+            backgroundColor: alpha(theme.colors.gray[4], 0.3),
+            shadows: theme.shadows.lg
+          }
         }
       }
     })
@@ -84,7 +96,8 @@ export const components = {
         item: {
           transition: '0.25s'
         }
-      }
+      },
+      transitionProps: { transition: 'pop-top-right', duration: 150 }
     }
   }),
   Modal: Modal.extend({
@@ -105,11 +118,9 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
-      style: {
-        borderRadius: '16px'
-      },
       styles: (theme) => ({
         root: {
+          borderRadius: '16px',
           transition: '0.25s',
           color: theme.colors.gray[6],
           '&:hover': {
@@ -163,7 +174,7 @@ export const components = {
 declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
-    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey'
+    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle'
   }
 
   // noinspection JSUnusedGlobalSymbols

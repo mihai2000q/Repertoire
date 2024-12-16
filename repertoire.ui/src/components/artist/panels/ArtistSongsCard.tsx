@@ -23,7 +23,7 @@ import {
   IconPlus
 } from '@tabler/icons-react'
 import ArtistSongCard from '../ArtistSongCard.tsx'
-import NewHorizontalCard from '../../card/NewHorizontalCard.tsx'
+import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewArtistSongModal from '../modal/AddNewArtistSongModal.tsx'
 import AddExistingArtistSongsModal from '../modal/AddExistingArtistSongsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'

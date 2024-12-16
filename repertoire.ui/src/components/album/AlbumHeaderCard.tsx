@@ -6,7 +6,7 @@ import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import userPlaceholder from '../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../utils/plural.ts'
-import HeaderPanelCard from '../card/HeaderPanelCard.tsx'
+import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
 import { openArtistDrawer } from '../../state/globalSlice.ts'
 import { toast } from 'react-toastify'
 import { useDisclosure } from '@mantine/hooks'
@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
-import WarningModal from '../modal/WarningModal.tsx'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined

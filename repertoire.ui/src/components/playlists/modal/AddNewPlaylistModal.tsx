@@ -7,7 +7,7 @@ import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
-import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import { AddNewPlaylistForm, addNewPlaylistValidation } from '../../../validation/playlistsForm.ts'
 import { IconPlaylist } from '@tabler/icons-react'
 

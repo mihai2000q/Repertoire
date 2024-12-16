@@ -58,9 +58,9 @@ function Main(): ReactElement {
         </AppShell.Main>
       </AppShell>
 
-      <ArtistDrawer opened={openedArtistDrawer} close={closeArtistDrawer} />
-      <AlbumDrawer opened={openedAlbumDrawer} close={closeAlbumDrawer} />
-      <SongDrawer opened={openedSongDrawer} close={closeSongDrawer} />
+      <ArtistDrawer opened={openedArtistDrawer} onClose={closeArtistDrawer} />
+      <AlbumDrawer opened={openedAlbumDrawer} onClose={closeAlbumDrawer} />
+      <SongDrawer opened={openedSongDrawer} onClose={closeSongDrawer} />
     </Box>
   )
 }

@@ -1,69 +1,197 @@
-import { Drawer, Image, Stack, Text, Title } from '@mantine/core'
-import { useGetArtistQuery } from '../../state/artistsApi.ts'
+import {
+  ActionIcon,
+  AspectRatio,
+  Avatar,
+  Box,
+  Divider,
+  Group,
+  Image,
+  Menu,
+  SimpleGrid,
+  Stack,
+  Text,
+  Title
+} from '@mantine/core'
+import { useDeleteArtistMutation, useGetArtistQuery } from '../../state/artistsApi.ts'
 import { useAppSelector } from '../../state/store.ts'
 import ArtistDrawerLoader from './loader/ArtistDrawerLoader.tsx'
-import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
-import useTitleBarHeight from '../../hooks/useTitleBarHeight.ts'
+import imagePlaceholder from '../../assets/user-placeholder.jpg'
+import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import songPlaceholder from '../../assets/image-placeholder-1.jpg'
+import { useNavigate } from 'react-router-dom'
+import { useDisclosure } from '@mantine/hooks'
+import { useState } from 'react'
+import { toast } from 'react-toastify'
+import RightSideEntityDrawer from '../@ui/drawer/RightSideEntityDrawer.tsx'
+import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
+import plural from '../../utils/plural.ts'
+import WarningModal from '../@ui/modal/WarningModal.tsx'
+import { useGetAlbumsQuery } from '../../state/albumsApi.ts'
+import { useGetSongsQuery } from '../../state/songsApi.ts'
+import dayjs from 'dayjs'
 
 interface ArtistDrawerProps {
   opened: boolean
-  close: () => void
+  onClose: () => void
 }
 
-function ArtistDrawer({ opened, close }: ArtistDrawerProps) {
-  const titleBarHeight = useTitleBarHeight()
+function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
+  const navigate = useNavigate()
 
   const artistId = useAppSelector((state) => state.global.artistDrawer.artistId)
+  const [deleteArtistMutation] = useDeleteArtistMutation()
 
-  const artist = useGetArtistQuery(artistId, { skip: !artistId })?.data
+  const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
+  const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery({
+    orderBy: ['release_date desc', 'title asc'],
+    searchBy: [`artist_id = '${artistId}'`]
+  })
+  const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery({
+    orderBy: ['release_date desc', 'title asc'],
+    searchBy: [`songs.artist_id = '${artistId}'`]
+  })
+
+  const [isHovered, setIsHovered] = useState(false)
+  const [isMenuOpened, setIsMenuOpened] = useState(false)
+
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
+
+  function handleViewDetails() {
+    onClose()
+    navigate(`/artist/${artist.id}`)
+  }
+
+  function handleDelete() {
+    deleteArtistMutation(artist.id)
+    onClose()
+    toast.success(`${artist.name} deleted!`)
+  }
+
+  if (!artist || !songs || !albums)
+    return (
+      <RightSideEntityDrawer
+        opened={opened}
+        onClose={onClose}
+        isLoading={true}
+        loader={<ArtistDrawerLoader />}
+      />
+    )
 
   return (
-    <Drawer
-      withCloseButton={false}
+    <RightSideEntityDrawer
       opened={opened}
-      onClose={close}
-      position="right"
-      overlayProps={{ backgroundOpacity: 0.1 }}
-      shadow="xl"
-      radius={'8 0 0 8'}
-      styles={{
-        overlay: {
-          height: `calc(100% - ${titleBarHeight})`,
-          marginTop: titleBarHeight
-        },
-        inner: {
-          height: `calc(100% - ${titleBarHeight})`,
-          marginTop: titleBarHeight
-        },
-        body: {
-          padding: 0,
-          margin: 0
-        }
-      }}
+      onClose={onClose}
+      isLoading={isFetching || isSongsFetching || isAlbumsFetching}
+      loader={<ArtistDrawerLoader />}
     >
-      {!artist ? (
-        <ArtistDrawerLoader />
-      ) : (
-        <Stack gap={'xs'}>
-          <Image
-            src={artist.imageUrl}
-            fallbackSrc={imagePlaceholder}
-            mah={400}
-            alt={artist.name}
-            style={{ alignSelf: 'center' }}
-          />
+      <Stack gap={'xs'}>
+        <Box
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          pos={'relative'}
+        >
+          <AspectRatio ratio={4 / 3}>
+            <Image src={artist.imageUrl} fallbackSrc={imagePlaceholder} alt={artist.name} />
+          </AspectRatio>
 
-          <Stack px={'md'} gap={4}>
-            <Title order={5} fw={600}>
-              {artist.name}
-            </Title>
-            <Text size="sm" c="dimmed">
-              With Fjord Tours you can explore more of the
+          <Box pos={'absolute'} top={0} right={0} p={7}>
+            <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
+              <Menu.Target>
+                <ActionIcon
+                  variant={'grey-subtle'}
+                  style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
+                >
+                  <IconDotsVertical size={20} />
+                </ActionIcon>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+                  View Details
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconTrash size={14} />}
+                  c={'red.5'}
+                  onClick={openDeleteWarning}
+                >
+                  Delete
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Box>
+        </Box>
+
+        <Stack px={'md'} pb={'md'} gap={4}>
+          <Title order={5} fw={700} lh={1}>
+            {artist.name}
+          </Title>
+
+          <Group ml={2} gap={4}>
+            <Text fw={500} fz={'sm'} c={'dimmed'}>
+              {albums.totalCount} album{plural(albums.totalCount)} • {songs.totalCount} song
+              {plural(songs.totalCount)}
             </Text>
+          </Group>
+
+          <Stack gap={0} my={6}>
+            <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+              Albums
+            </Text>
+            <Divider />
           </Stack>
+
+          <SimpleGrid cols={2} px={'xs'}>
+            {albums.models.map((album) => (
+              <Group key={album.id} align={'center'} wrap={'nowrap'} gap={'xs'}>
+                <Avatar radius={'8px'} size={28} src={album.imageUrl ?? albumPlaceholder} />
+                <Stack gap={1} style={{ overflow: 'hidden' }}>
+                  <Text fw={500} truncate={'end'} inline>
+                    {album.title}
+                  </Text>
+                  <Text fw={500} fz={'xs'} c={'dimmed'} inline>
+                    {dayjs(album.releaseDate).format('DD MMM YYYY')}
+                  </Text>
+                </Stack>
+              </Group>
+            ))}
+          </SimpleGrid>
+
+          <Stack gap={0} my={6}>
+            <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+              Songs
+            </Text>
+            <Divider />
+          </Stack>
+
+          <SimpleGrid cols={2} px={'xs'}>
+            {songs.models.map((song) => (
+              <Group key={song.id} align={'center'} gap={'xs'} wrap={'nowrap'}>
+                <Avatar radius={'8px'} size={28} src={song.imageUrl ?? songPlaceholder} />
+                <Stack gap={1}>
+                  <Text fw={500} truncate={'end'} inline>
+                    {song.title}
+                  </Text>
+                  {song.album && (
+                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} inline>
+                      {song.album.title}
+                    </Text>
+                  )}
+                </Stack>
+              </Group>
+            ))}
+          </SimpleGrid>
         </Stack>
-      )}
-    </Drawer>
+      </Stack>
+
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={'Delete Artist'}
+        description={`Are you sure you want to delete this artist?`}
+        onYes={handleDelete}
+      />
+    </RightSideEntityDrawer>
   )
 }
 
