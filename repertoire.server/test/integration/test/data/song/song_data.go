@@ -104,6 +104,64 @@ var Albums = []model.Album{
 	},
 }
 
+var songSections = []model.SongSection{
+	{
+		ID:                uuid.New(),
+		Name:              "Verse 1 - used on update",
+		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
+		Order:             0,
+		Confidence:        10,
+		Rehearsals:        10,
+		ConfidenceScore:   12,
+		RehearsalsScore:   45,
+		Progress:          5,
+		History: []model.SongSectionHistory{
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       5,
+				Property: model.RehearsalsProperty,
+			},
+			{
+				ID:       uuid.New(),
+				From:     5,
+				To:       10,
+				Property: model.RehearsalsProperty,
+			},
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       10,
+				Property: model.ConfidenceProperty,
+			},
+		},
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Chorus 1 - used on delete",
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		Order:             1,
+		Confidence:        25,
+		Rehearsals:        50,
+		ConfidenceScore:   30,
+		RehearsalsScore:   550,
+		Progress:          99,
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Verse 2",
+		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
+		Order:             2,
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Solo",
+		SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
+		Rehearsals:        10,
+		Order:             3,
+	},
+}
+
 var Songs = []model.Song{
 	{
 		ID:            uuid.New(),
@@ -117,63 +175,17 @@ var Songs = []model.Song{
 		SongsterrLink: &[]string{"https://songster.com/some-song"}[0],
 		YoutubeLink:   &[]string{"https://youtube.com/some-song"}[0],
 
+		Confidence: 8.75,
+		Rehearsals: 15,
+		Progress:   26,
+
 		GuitarTuningID: &[]uuid.UUID{Users[0].GuitarTunings[0].ID}[0],
 		ArtistID:       &[]uuid.UUID{Artists[0].ID}[0],
 		AlbumID:        &[]uuid.UUID{Albums[0].ID}[0],
 		AlbumTrackNo:   &[]uint{1}[0],
 
-		Sections: []model.SongSection{
-			{
-				ID:                uuid.New(),
-				Name:              "Verse 1",
-				SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
-				Order:             0,
-				Confidence:        10,
-				Rehearsals:        10,
-				ConfidenceScore:   12,
-				RehearsalsScore:   45,
-				History: []model.SongSectionHistory{
-					{
-						ID:       uuid.New(),
-						From:     0,
-						To:       5,
-						Property: model.RehearsalsProperty,
-					},
-					{
-						ID:       uuid.New(),
-						From:     5,
-						To:       10,
-						Property: model.RehearsalsProperty,
-					},
-					{
-						ID:       uuid.New(),
-						From:     0,
-						To:       10,
-						Property: model.ConfidenceProperty,
-					},
-				},
-			},
-			{
-				ID:                uuid.New(),
-				Name:              "Chorus 1",
-				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-				Order:             1,
-			},
-			{
-				ID:                uuid.New(),
-				Name:              "Verse 2",
-				SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
-				Order:             2,
-			},
-			{
-				ID:                uuid.New(),
-				Name:              "Solo",
-				SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
-				Rehearsals:        10,
-				Order:             3,
-			},
-		},
-		UserID: Users[0].ID,
+		Sections: songSections,
+		UserID:   Users[0].ID,
 	},
 	{
 		ID:           uuid.New(),

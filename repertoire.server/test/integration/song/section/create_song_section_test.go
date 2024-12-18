@@ -16,8 +16,10 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
+	// song with sections and previous stats
+	song := songData.Songs[0]
 	request := requests.CreateSongSectionRequest{
-		SongID: songData.Songs[0].ID,
+		SongID: song.ID,
 		Name:   "Chorus 1-New",
 		TypeID: songData.Users[0].SongSectionTypes[0].ID,
 	}
@@ -32,9 +34,13 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 	db := utils.GetDatabase(t)
 
 	var section model.SongSection
-	db.Find(&section, &model.SongSection{Name: request.Name})
+	db.Preload("Song").Find(&section, &model.SongSection{Name: request.Name})
 
-	assertCreatedSongSection(t, section, request, len(songData.Songs[0].Sections))
+	assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
+	assert.LessOrEqual(t, section.Song.Rehearsals, song.Rehearsals)
+	assert.LessOrEqual(t, section.Song.Progress, song.Progress)
+
+	assertCreatedSongSection(t, section, request, len(song.Sections))
 }
 
 func assertCreatedSongSection(

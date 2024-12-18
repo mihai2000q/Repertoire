@@ -38,8 +38,20 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 		return wrapper.NotFoundError(errors.New("song section not found"))
 	}
 
-	for i := index + 1; i < len(song.Sections); i++ {
+	sectionsLength := len(song.Sections)
+	for i := index + 1; i < sectionsLength; i++ {
 		song.Sections[i].Order = song.Sections[i].Order - 1
+	}
+
+	// update song's new confidence, rehearsals and progress medians
+	if sectionsLength == 1 {
+		song.Confidence = 0
+		song.Rehearsals = 0
+		song.Progress = 0
+	} else {
+		song.Confidence = (song.Confidence*float64(sectionsLength) - float64(song.Sections[index].Confidence)) / float64(sectionsLength-1)
+		song.Rehearsals = (song.Rehearsals*float64(sectionsLength) - float64(song.Sections[index].Rehearsals)) / float64(sectionsLength-1)
+		song.Progress = (song.Progress*float64(sectionsLength) - float64(song.Sections[index].Progress)) / float64(sectionsLength-1)
 	}
 
 	err = d.songRepository.UpdateWithAssociations(&song)
