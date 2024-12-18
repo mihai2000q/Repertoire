@@ -117,6 +117,10 @@ var Songs = []model.Song{
 		SongsterrLink: &[]string{"https://songster.com/some-song"}[0],
 		YoutubeLink:   &[]string{"https://youtube.com/some-song"}[0],
 
+		Confidence: 5,
+		Rehearsals: 10,
+		Progress:   14,
+
 		GuitarTuningID: &[]uuid.UUID{Users[0].GuitarTunings[0].ID}[0],
 		ArtistID:       &[]uuid.UUID{Artists[0].ID}[0],
 		AlbumID:        &[]uuid.UUID{Albums[0].ID}[0],
