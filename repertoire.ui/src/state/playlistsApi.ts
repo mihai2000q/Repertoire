@@ -51,6 +51,13 @@ const playlistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Playlists']
     }),
+    deleteImageFromPlaylist: build.mutation<HttpMessageResponse, string>({
+      query: (arg) => ({
+        url: `playlists/images/${arg}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Playlists']
+    }),
     deletePlaylist: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `playlists/${arg}`,
@@ -92,6 +99,7 @@ export const {
   useCreatePlaylistMutation,
   useUpdatePlaylistMutation,
   useSaveImageToPlaylistMutation,
+  useDeleteImageFromPlaylistMutation,
   useDeletePlaylistMutation,
   useAddSongsToPlaylistMutation,
   useMoveSongFromPlaylistMutation,

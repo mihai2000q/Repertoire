@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { FileWithPath } from '@mantine/dropzone'
 
 export interface AddNewArtistForm {
   name: string
@@ -26,6 +27,7 @@ export const addNewArtistSongValidation = z.object({
 
 export interface EditArtistHeaderForm {
   name: string
+  image: string | FileWithPath | null
 }
 
 export const editArtistHeaderValidation = z.object({

@@ -30,7 +30,9 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Tooltip>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Text fw={600}>{song.rehearsals}</Text>
+            <Text fw={600}>
+              <NumberFormatter value={song.rehearsals} />
+            </Text>
           </Grid.Col>
 
           <Grid.Col span={6}>
@@ -41,7 +43,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Tooltip>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Tooltip.Floating label={`${song.confidence}%`}>
+            <Tooltip.Floating label={<><NumberFormatter value={song.confidence} />%</>}>
               <Progress flex={1} size={'sm'} value={song.confidence} />
             </Tooltip.Floating>
           </Grid.Col>

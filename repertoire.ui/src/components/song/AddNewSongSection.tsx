@@ -41,7 +41,7 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
 
     await createSongSectionMutation({ typeId: type.value, name: nameTrimmed, songId }).unwrap()
 
-    toast.success(name + ' added!')
+    toast.success(nameTrimmed + ' added!')
 
     onClose()
     setName('')

@@ -333,7 +333,9 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Text fw={600}>{song.rehearsals}</Text>
+                  <Text fw={600}>
+                    <NumberFormatter value={song.rehearsals} />
+                  </Text>
                 </Grid.Col>
               </>
             )}
@@ -346,7 +348,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating label={`${song.confidence}%`}>
+                  <Tooltip.Floating label={<><NumberFormatter value={song.confidence} />%</>}>
                     <Progress flex={1} size={7} value={song.confidence} />
                   </Tooltip.Floating>
                 </Grid.Col>

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import {FileWithPath} from "@mantine/dropzone";
 
 const youtubeRegex =
   /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%?]{11})$/
@@ -32,6 +33,7 @@ export const addNewSongValidation = z.object({
 export interface EditSongHeaderForm {
   title: string
   releaseDate: Date
+  image: string | FileWithPath | null
 }
 
 export const editSongHeaderValidation = z.object({

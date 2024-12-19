@@ -71,6 +71,8 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
   }, [type])
 
   async function updateSongSection({ name, rehearsals, confidence }) {
+    name = name.trim()
+
     if (rehearsalsError) return
 
     await updateSongSectionMutation({

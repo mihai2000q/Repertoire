@@ -42,14 +42,20 @@ function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
-  const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery({
-    orderBy: ['release_date desc', 'title asc'],
-    searchBy: [`artist_id = '${artistId}'`]
-  })
-  const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery({
-    orderBy: ['release_date desc', 'title asc'],
-    searchBy: [`songs.artist_id = '${artistId}'`]
-  })
+  const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
+    {
+      orderBy: ['release_date desc', 'title asc'],
+      searchBy: [`artist_id = '${artistId}'`]
+    },
+    { skip: !artistId }
+  )
+  const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
+    {
+      orderBy: ['release_date desc', 'title asc'],
+      searchBy: [`songs.artist_id = '${artistId}'`]
+    },
+    { skip: !artistId }
+  )
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
