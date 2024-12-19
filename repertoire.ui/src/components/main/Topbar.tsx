@@ -26,6 +26,8 @@ import { useAppDispatch } from '../../state/store.ts'
 import { signOut } from '../../state/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
+import { useDisclosure } from '@mantine/hooks'
+import AccountModal from './modal/AccountModal.tsx'
 
 function Topbar(): ReactElement {
   const dispatch = useAppDispatch()
@@ -33,6 +35,8 @@ function Topbar(): ReactElement {
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
   })
+
+  const [openedAccount, { open: openAccount, close: closeAccount }] = useDisclosure(false)
 
   function handleSignOut() {
     dispatch(signOut())
@@ -122,13 +126,16 @@ function Topbar(): ReactElement {
 
               <Menu.Divider />
 
-              <Menu.Item leftSection={<IconUser size={14} />}>Account</Menu.Item>
+              <Menu.Item leftSection={<IconUser size={14} />} onClick={openAccount}>
+                Account
+              </Menu.Item>
               <Menu.Item leftSection={<IconSettings size={14} />}>Settings</Menu.Item>
-
               <Menu.Item leftSection={<IconLogout2 size={14} />} onClick={handleSignOut}>
                 Sign Out
               </Menu.Item>
             </Menu.Dropdown>
+
+            <AccountModal opened={openedAccount} onClose={closeAccount} user={user} />
           </Menu>
         )}
       </Group>
