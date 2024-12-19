@@ -1,53 +1,97 @@
 import { Dispatch, SetStateAction } from 'react'
-import { ActionIcon, alpha, FileButton, Group, Image, Stack, Text, Tooltip } from '@mantine/core'
-import { IconPhoto, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
+import {
+  ActionIcon,
+  alpha,
+  AspectRatio,
+  FileButton,
+  Group,
+  Image,
+  Stack,
+  Text,
+  Tooltip
+} from '@mantine/core'
+import { IconPhoto, IconPhotoDown, IconRestore, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
 interface ImageDropzoneWithPreviewProps {
-  image: FileWithPath
-  setImage: Dispatch<SetStateAction<FileWithPath>>
+  image: FileWithPath | string | null
+  setImage: Dispatch<SetStateAction<FileWithPath | string | null>>
+  defaultValue?: string | null
 }
 
-function LargeImageDropzoneWithPreview({ image, setImage }: ImageDropzoneWithPreviewProps) {
+function LargeImageDropzoneWithPreview({
+  image,
+  setImage,
+  defaultValue
+}: ImageDropzoneWithPreviewProps) {
+  function handleRemoveImage() {
+    setImage(null)
+  }
+
+  function handleResetImage() {
+    setImage(defaultValue)
+  }
+
   if (image) {
     return (
       <Group justify={'center'} align={'center'}>
-        <Image
-          src={URL.createObjectURL(image)}
-          h={200}
-          w={320}
-          radius={'md'}
-          alt={'image-preview'}
-        />
+        <AspectRatio w={'50%'} ratio={1}>
+          <Image
+            src={typeof image === 'string' ? image : URL.createObjectURL(image)}
+            radius={'md'}
+            alt={'image-preview'}
+          />
+        </AspectRatio>
 
-        <Stack>
-          <FileButton onChange={setImage} accept="image/png,image/jpeg">
+        <Stack gap={'xs'}>
+          {defaultValue && (
+            <Tooltip
+              label={
+                image === defaultValue
+                  ? 'Original Image can be restored after re-upload'
+                  : 'Reset Image'
+              }
+              openDelay={300}
+              position={'right'}
+            >
+              <ActionIcon
+                variant={'subtle'}
+                aria-label={'reset-image-button'}
+                size={'lg'}
+                disabled={image === defaultValue}
+                onClick={handleResetImage}
+              >
+                <IconRestore size={18} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+
+          <FileButton onChange={setImage} accept={IMAGE_MIME_TYPE.join(',')}>
             {(props) => (
-              <Tooltip label={'Reload Image'} openDelay={300} position={'right'}>
+              <Tooltip label={'Upload another image'} openDelay={300} position={'right'}>
                 <ActionIcon
                   c={'dark'}
                   variant={'subtle'}
-                  aria-label={'add-image-button'}
-                  size={'xl'}
+                  aria-label={'upload-image-button'}
+                  size={'lg'}
                   {...props}
                 >
-                  <IconPhotoDown size={20} />
+                  <IconPhotoDown size={18} />
                 </ActionIcon>
               </Tooltip>
             )}
           </FileButton>
 
-          <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
+          <Tooltip label={'Remove Image'} openDelay={300} position={'right'}>
             <ActionIcon
               variant={'subtle'}
               color={'red.6'}
               aria-label={'remove-image-button'}
-              size={'xl'}
+              size={'lg'}
               sx={(theme) => ({
-                transition: '0.15s',
-                '&:hover': { backgroundColor: alpha(theme.colors.red[5], 0.2) }
+                '&:hover': { backgroundColor: alpha(theme.colors.red[2], 0.7) }
               })}
-              onClick={() => setImage(null)}
+              onClick={handleRemoveImage}
             >
               <IconX size={18} />
             </ActionIcon>
