@@ -1,12 +1,17 @@
 import Artist from '../../../types/models/Artist.ts'
 import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
-import { useUpdateArtistMutation } from '../../../state/artistsApi.ts'
-import { useState } from 'react'
+import {
+  useDeleteImageFromArtistMutation,
+  useSaveImageToArtistMutation,
+  useUpdateArtistMutation
+} from '../../../state/artistsApi.ts'
+import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import {
   EditArtistHeaderForm,
   editArtistHeaderValidation
 } from '../../../validation/artistsForm.ts'
+import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 
 interface EditArtistHeaderModalProps {
   artist: Artist
@@ -15,30 +20,49 @@ interface EditArtistHeaderModalProps {
 }
 
 function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModalProps) {
-  const [updateArtistMutation, { isLoading }] = useUpdateArtistMutation()
+  const [updateArtistMutation, { isLoading: isUpdateLoading }] = useUpdateArtistMutation()
+  const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToArtistMutation()
+  const [deleteImageMutation, { isLoading: isDeleteImageLoading }] =
+    useDeleteImageFromArtistMutation()
+  const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
   const [hasChanged, setHasChanged] = useState(false)
 
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      name: artist.name
+      name: artist.name,
+      image: artist?.imageUrl ?? null
     } as EditArtistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
     validate: zodResolver(editArtistHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(values.name !== artist.name)
+      setHasChanged(values.name !== artist.name || values.image !== artist.imageUrl)
     }
   })
 
-  async function updateArtist({ name }: EditArtistHeaderForm) {
+  const [image, setImage] = useState(artist?.imageUrl ?? null)
+  useEffect(() => form.setFieldValue('image', image), [image])
+
+  async function updateArtist({ name, image }: EditArtistHeaderForm) {
+    name = name.trim()
+
     await updateArtistMutation({
       ...artist,
       id: artist.id,
       name: name
     }).unwrap()
+
+    if (image !== null && typeof image !== 'string') {
+      await saveImageMutation({
+        id: artist.id,
+        image: image
+      })
+    } else if (image === null && artist.imageUrl) {
+      await deleteImageMutation(artist.id)
+    }
 
     onClose()
     setHasChanged(false)
@@ -51,6 +75,12 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
 
         <form onSubmit={form.onSubmit(updateArtist)}>
           <Stack>
+            <LargeImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              defaultValue={artist?.imageUrl}
+            />
+
             <TextInput
               withAsterisk={true}
               maxLength={100}
