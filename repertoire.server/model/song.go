@@ -49,18 +49,18 @@ type playlistSongMetadata struct {
 }
 
 func (s *Song) BeforeSave(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.StripNullableURL()
+	s.ImageURL = s.ImageURL.StripURL()
 	return nil
 }
 
 func (s *Song) AfterFind(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.ToNullableFullURL()
+	s.ImageURL = s.ImageURL.ToFullURL(&s.UpdatedAt)
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if s.Artist != nil {
-		s.Artist.ImageURL = s.Artist.ImageURL.ToNullableFullURL()
+		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(&s.Artist.UpdatedAt)
 	}
 	if s.Album != nil {
-		s.Album.ImageURL = s.Album.ImageURL.ToNullableFullURL()
+		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(&s.Album.UpdatedAt)
 	}
 
 	return nil

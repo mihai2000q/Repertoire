@@ -32,12 +32,12 @@ type PlaylistSong struct {
 }
 
 func (p *Playlist) BeforeSave(*gorm.DB) error {
-	p.ImageURL = p.ImageURL.StripNullableURL()
+	p.ImageURL = p.ImageURL.StripURL()
 	return nil
 }
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
-	p.ImageURL = p.ImageURL.ToNullableFullURL()
+	p.ImageURL = p.ImageURL.ToFullURL(&p.UpdatedAt)
 
 	p.Songs = []Song{} // in case there are no playlist songs
 	for _, playlistSong := range p.PlaylistSongs {

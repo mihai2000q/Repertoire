@@ -27,11 +27,11 @@ type User struct {
 }
 
 func (u *User) BeforeSave(*gorm.DB) error {
-	u.ProfilePictureURL = u.ProfilePictureURL.StripNullableURL()
+	u.ProfilePictureURL = u.ProfilePictureURL.StripURL()
 	return nil
 }
 
 func (u *User) AfterFind(*gorm.DB) error {
-	u.ProfilePictureURL = u.ProfilePictureURL.ToNullableFullURL()
+	u.ProfilePictureURL = u.ProfilePictureURL.ToFullURL(&u.UpdatedAt)
 	return nil
 }

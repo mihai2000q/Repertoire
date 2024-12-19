@@ -77,7 +77,7 @@ func (s storageService) DeleteFile(filePath internal.FilePath) error {
 
 	res, err := s.httpClient.R().
 		SetAuthToken(token).
-		Delete("files/" + string(filePath.StripURL()))
+		Delete("files/" + string(*filePath.StripURL()))
 	if err != nil {
 		return err
 	}
