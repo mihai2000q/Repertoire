@@ -146,7 +146,8 @@ export const components = {
   NumberFormatter: NumberFormatter.extend({
     defaultProps: {
       thousandSeparator: ' ',
-      decimalSeparator: ','
+      decimalSeparator: ',',
+      decimalScale: 0
     }
   }),
   Text: Text.extend({
