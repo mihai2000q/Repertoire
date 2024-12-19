@@ -31,8 +31,8 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     mode: 'uncontrolled',
     initialValues: {
       title: album.title,
-      releaseDate: album?.releaseDate && new Date(album.releaseDate),
-      image: album?.imageUrl ?? null
+      releaseDate: album.releaseDate && new Date(album.releaseDate),
+      image: album.imageUrl ?? null
     } as EditAlbumHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -47,7 +47,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     }
   })
 
-  const [image, setImage] = useState(album?.imageUrl ?? null)
+  const [image, setImage] = useState(album.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
 
   async function updateAlbum({ title, releaseDate, image }: EditAlbumHeaderForm) {
@@ -83,7 +83,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
             <LargeImageDropzoneWithPreview
               image={image}
               setImage={setImage}
-              defaultValue={album?.imageUrl}
+              defaultValue={album.imageUrl}
             />
 
             <TextInput

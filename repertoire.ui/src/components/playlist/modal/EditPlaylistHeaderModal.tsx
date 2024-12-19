@@ -33,7 +33,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     initialValues: {
       title: playlist.title,
       description: playlist.description,
-      image: playlist?.imageUrl ?? null
+      image: playlist.imageUrl ?? null
     } as EditPlaylistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -48,7 +48,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     }
   })
 
-  const [image, setImage] = useState(playlist?.imageUrl ?? null)
+  const [image, setImage] = useState(playlist.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
@@ -84,7 +84,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
             <LargeImageDropzoneWithPreview
               image={image}
               setImage={setImage}
-              defaultValue={playlist?.imageUrl}
+              defaultValue={playlist.imageUrl}
             />
 
             <TextInput

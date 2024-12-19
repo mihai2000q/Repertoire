@@ -32,7 +32,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     mode: 'uncontrolled',
     initialValues: {
       name: artist.name,
-      image: artist?.imageUrl ?? null
+      image: artist.imageUrl ?? null
     } as EditArtistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -43,7 +43,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     }
   })
 
-  const [image, setImage] = useState(artist?.imageUrl ?? null)
+  const [image, setImage] = useState(artist.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
 
   async function updateArtist({ name, image }: EditArtistHeaderForm) {
@@ -78,7 +78,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
             <LargeImageDropzoneWithPreview
               image={image}
               setImage={setImage}
-              defaultValue={artist?.imageUrl}
+              defaultValue={artist.imageUrl}
             />
 
             <TextInput
