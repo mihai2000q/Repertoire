@@ -50,6 +50,13 @@ const albumsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Albums', 'Songs']
     }),
+    deleteImageFromAlbum: build.mutation<HttpMessageResponse, string>({
+      query: (arg) => ({
+        url: `albums/images/${arg}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Songs', 'Albums']
+    }),
     deleteAlbum: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `albums/${arg}`,
@@ -83,6 +90,7 @@ export const {
   useCreateAlbumMutation,
   useUpdateAlbumMutation,
   useSaveImageToAlbumMutation,
+  useDeleteImageFromAlbumMutation,
   useDeleteAlbumMutation,
   useAddSongsToAlbumMutation,
   useRemoveSongsFromAlbumMutation

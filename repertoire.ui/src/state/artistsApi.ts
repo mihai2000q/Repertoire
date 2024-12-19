@@ -52,6 +52,13 @@ const artistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Artists', 'Songs', 'Albums']
     }),
+    deleteImageFromArtist: build.mutation<HttpMessageResponse, string>({
+      query: (arg) => ({
+        url: `artists/images/${arg}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Artists', 'Songs', 'Albums']
+    }),
     deleteArtist: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `artists/${arg}`,
@@ -102,6 +109,7 @@ export const {
   useCreateArtistMutation,
   useUpdateArtistMutation,
   useSaveImageToArtistMutation,
+  useDeleteImageFromArtistMutation,
   useDeleteArtistMutation,
   useAddSongsToArtistMutation,
   useRemoveSongsFromArtistMutation,

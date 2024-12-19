@@ -52,6 +52,13 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs', 'Albums']
     }),
+    deleteImageFromSong: build.mutation<HttpMessageResponse, string>({
+      query: (arg) => ({
+        url: `songs/images/${arg}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Songs', 'Albums']
+    }),
     deleteSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/${arg}`,
@@ -109,6 +116,7 @@ export const {
   useCreateSongMutation,
   useUpdateSongMutation,
   useSaveImageToSongMutation,
+  useDeleteImageFromSongMutation,
   useDeleteSongMutation,
   useGetGuitarTuningsQuery,
   useGetSongSectionTypesQuery,
