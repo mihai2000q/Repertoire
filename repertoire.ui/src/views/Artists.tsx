@@ -67,7 +67,9 @@ function Artists() {
         </Text>
       )}
 
-      {artists?.totalCount === 0 && <Text mt={'sm'}>There are no artists yet. Try to add one</Text>}
+      {artists?.totalCount === 0 && !showUnknownArtist && (
+        <Text mt={'sm'}>There are no artists yet. Try to add one</Text>
+      )}
       <Group gap={'xl'}>
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}

@@ -21,11 +21,11 @@ type Artist struct {
 }
 
 func (a *Artist) BeforeSave(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.StripNullableURL()
+	a.ImageURL = a.ImageURL.StripURL()
 	return nil
 }
 
 func (a *Artist) AfterFind(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.ToNullableFullURL()
+	a.ImageURL = a.ImageURL.ToFullURL(&a.UpdatedAt)
 	return nil
 }

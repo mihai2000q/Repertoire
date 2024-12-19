@@ -3,35 +3,28 @@ package internal
 import (
 	"os"
 	"strings"
+	"time"
 )
 
 type FilePath string
 
-func (i *FilePath) ToFullURL() FilePath {
-	return FilePath(i.getFullURL() + string(*i))
-}
-
-func (i *FilePath) ToNullableFullURL() *FilePath {
-	if i == nil {
+func (f *FilePath) ToFullURL(lastModifiedAt *time.Time) *FilePath {
+	if f == nil {
 		return nil
 	}
-	url := FilePath(i.getFullURL() + string(*i))
+	url := FilePath(f.getFullURL() + string(*f) + "?lastModifiedAt=" + lastModifiedAt.String())
 	return &url
 }
 
-func (i *FilePath) StripURL() FilePath {
-	url := FilePath(strings.Replace(string(*i), i.getFullURL(), "", -1))
-	return url
-}
-
-func (i *FilePath) StripNullableURL() *FilePath {
-	if i == nil {
+func (f *FilePath) StripURL() *FilePath {
+	if f == nil {
 		return nil
 	}
-	url := FilePath(strings.Replace(string(*i), i.getFullURL(), "", -1))
+	url := FilePath(strings.Replace(string(*f), f.getFullURL(), "", -1))
+	url = FilePath(strings.Split(string(url), "?")[0])
 	return &url
 }
 
-func (i *FilePath) getFullURL() string {
+func (f *FilePath) getFullURL() string {
 	return os.Getenv("FETCH_STORAGE_URL") + "/files/"
 }

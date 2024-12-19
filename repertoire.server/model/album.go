@@ -23,15 +23,15 @@ type Album struct {
 }
 
 func (a *Album) BeforeSave(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.StripNullableURL()
+	a.ImageURL = a.ImageURL.StripURL()
 	return nil
 }
 
 func (a *Album) AfterFind(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.ToNullableFullURL()
+	a.ImageURL = a.ImageURL.ToFullURL(&a.UpdatedAt)
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if a.Artist != nil {
-		a.Artist.ImageURL = a.Artist.ImageURL.ToNullableFullURL()
+		a.Artist.ImageURL = a.Artist.ImageURL.ToFullURL(&a.Artist.UpdatedAt)
 	}
 	return nil
 }

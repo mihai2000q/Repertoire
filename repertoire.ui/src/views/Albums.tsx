@@ -66,7 +66,9 @@ function Albums() {
         </Text>
       )}
 
-      {albums?.totalCount === 0 && <Text mt={'sm'}>There are no albums yet. Try to add one</Text>}
+      {albums?.totalCount === 0 && !showUnknownAlbum && (
+        <Text mt={'sm'}>There are no albums yet. Try to add one</Text>
+      )}
       <Group gap={'xl'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
