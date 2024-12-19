@@ -1,11 +1,16 @@
 import Album from '../../../types/models/Album.ts'
 import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
-import { useUpdateAlbumMutation } from '../../../state/albumsApi.ts'
-import { useState } from 'react'
+import {
+  useDeleteImageFromAlbumMutation,
+  useSaveImageToAlbumMutation,
+  useUpdateAlbumMutation
+} from '../../../state/albumsApi.ts'
+import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarFilled } from '@tabler/icons-react'
+import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -14,7 +19,11 @@ interface EditAlbumHeaderModalProps {
 }
 
 function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalProps) {
-  const [updateAlbumMutation, { isLoading }] = useUpdateAlbumMutation()
+  const [updateAlbumMutation, { isLoading: isUpdateLoading }] = useUpdateAlbumMutation()
+  const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToAlbumMutation()
+  const [deleteImageMutation, { isLoading: isDeleteImageLoading }] =
+    useDeleteImageFromAlbumMutation()
+  const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
   const [hasChanged, setHasChanged] = useState(false)
 
@@ -22,7 +31,8 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     mode: 'uncontrolled',
     initialValues: {
       title: album.title,
-      releaseDate: album?.releaseDate && new Date(album.releaseDate)
+      releaseDate: album?.releaseDate && new Date(album.releaseDate),
+      image: album?.imageUrl ?? null
     } as EditAlbumHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -31,18 +41,33 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== album.title ||
-          values.releaseDate.toISOString() !== new Date(album.releaseDate).toISOString()
+          values.releaseDate.toISOString() !== new Date(album.releaseDate).toISOString() ||
+          values.image !== album.imageUrl
       )
     }
   })
 
-  async function updateAlbum({ title, releaseDate }: EditAlbumHeaderForm) {
+  const [image, setImage] = useState(album?.imageUrl ?? null)
+  useEffect(() => form.setFieldValue('image', image), [image])
+
+  async function updateAlbum({ title, releaseDate, image }: EditAlbumHeaderForm) {
+    title = title.trim()
+
     await updateAlbumMutation({
       ...album,
       id: album.id,
       title: title,
       releaseDate: releaseDate
     }).unwrap()
+
+    if (image !== null && typeof image !== 'string') {
+      await saveImageMutation({
+        id: album.id,
+        image: image
+      })
+    } else if (image === null && album.imageUrl) {
+      await deleteImageMutation(album.id)
+    }
 
     onClose()
     setHasChanged(false)
@@ -55,6 +80,12 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
         <form onSubmit={form.onSubmit(updateAlbum)}>
           <Stack>
+            <LargeImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              defaultValue={album?.imageUrl}
+            />
+
             <TextInput
               withAsterisk={true}
               maxLength={100}
