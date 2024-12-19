@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -39,6 +40,12 @@ func TestValidateUpdateUserRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			requests.UpdateUserRequest{Name: ""},
 			"Name",
 			"required",
+		},
+		{
+			"Name is invalid because it has too many characters",
+			requests.UpdateUserRequest{Name: strings.Repeat("a", 101)},
+			"Name",
+			"max",
 		},
 	}
 	for _, tt := range tests {

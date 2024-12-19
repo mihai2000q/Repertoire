@@ -13,21 +13,21 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../state/albumsApi.ts'
-import { useAppSelector } from '../../state/store.ts'
-import AlbumDrawerLoader from './loader/AlbumDrawerLoader.tsx'
-import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
-import RightSideEntityDrawer from '../@ui/drawer/RightSideEntityDrawer.tsx'
+import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/albumsApi.ts'
+import { useAppSelector } from '../../../state/store.ts'
+import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
+import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
+import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
+import WarningModal from '../../@ui/modal/WarningModal.tsx'
+import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
-import plural from '../../utils/plural.ts'
+import plural from '../../../utils/plural.ts'
 
 interface AlbumDrawerProps {
   opened: boolean

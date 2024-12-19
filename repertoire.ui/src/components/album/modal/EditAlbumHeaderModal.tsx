@@ -49,6 +49,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
   const [image, setImage] = useState(album.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
+  useEffect(() => setImage(album.imageUrl), [album])
 
   async function updateAlbum({ title, releaseDate, image }: EditAlbumHeaderForm) {
     title = title.trim()
