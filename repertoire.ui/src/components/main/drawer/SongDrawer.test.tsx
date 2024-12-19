@@ -1,8 +1,8 @@
-import { reduxRouterRender } from '../../test-utils.tsx'
+import { reduxRouterRender } from '../../../test-utils.tsx'
 import SongDrawer from './SongDrawer.tsx'
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
-import Song from '../../types/models/Song.ts'
+import Song from '../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 
 describe('Song Drawer', () => {

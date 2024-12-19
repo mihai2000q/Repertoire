@@ -8,15 +8,15 @@ import TitleBar from '../components/main/TitleBar'
 import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
 import useTitleBarHeight from '../hooks/useTitleBarHeight'
-import SongDrawer from '../components/main/SongDrawer.tsx'
+import SongDrawer from '../components/main/drawer/SongDrawer.tsx'
 import { useAppDispatch, useAppSelector } from '../state/store.ts'
 import {
   closeAlbumDrawer as closeAlbumDrawerRedux,
   closeArtistDrawer as closeArtistDrawerRedux,
   closeSongDrawer as closeSongDrawerRedux
 } from '../state/globalSlice.ts'
-import AlbumDrawer from '../components/main/AlbumDrawer.tsx'
-import ArtistDrawer from '../components/main/ArtistDrawer.tsx'
+import AlbumDrawer from '../components/main/drawer/AlbumDrawer.tsx'
+import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
 
 function Main(): ReactElement {
   useErrorRedirection()

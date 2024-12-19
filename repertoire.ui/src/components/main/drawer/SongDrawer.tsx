@@ -16,12 +16,12 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteSongMutation, useGetSongQuery } from '../../state/songsApi.ts'
-import { useAppSelector } from '../../state/store.ts'
-import SongDrawerLoader from './loader/SongDrawerLoader.tsx'
-import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
-import Difficulty from '../../utils/enums/Difficulty.ts'
+import { useDeleteSongMutation, useGetSongQuery } from '../../../state/songsApi.ts'
+import { useAppSelector } from '../../../state/store.ts'
+import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
+import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
+import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import Difficulty from '../../../utils/enums/Difficulty.ts'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -31,14 +31,14 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
+import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 import { useDisclosure } from '@mantine/hooks'
 import { useState } from 'react'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
+import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
-import RightSideEntityDrawer from '../@ui/drawer/RightSideEntityDrawer.tsx'
+import userPlaceholder from '../../../assets/user-placeholder.jpg'
+import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
