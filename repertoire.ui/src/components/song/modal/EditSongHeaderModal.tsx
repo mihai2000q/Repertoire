@@ -49,6 +49,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
   const [image, setImage] = useState(song.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
+  useEffect(() => setImage(song.imageUrl), [song])
 
   async function updateSong({ title, releaseDate, image }: EditSongHeaderForm) {
     title = title.trim()

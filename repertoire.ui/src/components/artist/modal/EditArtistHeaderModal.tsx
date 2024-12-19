@@ -45,6 +45,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
 
   const [image, setImage] = useState(artist.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
+  useEffect(() => setImage(artist.imageUrl), [artist])
 
   async function updateArtist({ name, image }: EditArtistHeaderForm) {
     name = name.trim()

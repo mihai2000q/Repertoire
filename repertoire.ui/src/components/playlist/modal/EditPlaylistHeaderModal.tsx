@@ -50,6 +50,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
 
   const [image, setImage] = useState(playlist.imageUrl ?? null)
   useEffect(() => form.setFieldValue('image', image), [image])
+  useEffect(() => setImage(playlist.imageUrl), [playlist])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
     title = title.trim()
