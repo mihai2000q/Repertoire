@@ -1,15 +1,27 @@
-import { Dispatch, ReactElement, SetStateAction } from 'react'
-import { ActionIcon, alpha, Box, FileButton, Group, Image, Tooltip } from '@mantine/core'
-import { IconMusic, IconPhotoDown, IconUpload, IconX } from '@tabler/icons-react'
+import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
+import {
+  ActionIcon,
+  alpha,
+  AspectRatio,
+  Box,
+  FileButton,
+  Group,
+  Image,
+  Menu,
+  Stack,
+  Tooltip
+} from '@mantine/core'
+import { IconMusic, IconPhotoFilled, IconTrashFilled, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
 interface ImageDropzoneWithPreviewProps {
-  image: FileWithPath
-  setImage: Dispatch<SetStateAction<FileWithPath>>
+  image: FileWithPath | null
+  setImage: Dispatch<SetStateAction<FileWithPath | null>>
   w?: number
   h?: number
   icon?: ReactElement
   iconSizes?: number
+  radius?: string
 }
 
 function ImageDropzoneWithPreview({
@@ -18,54 +30,88 @@ function ImageDropzoneWithPreview({
   icon,
   w = 92,
   h = 92,
-  iconSizes = 45
+  iconSizes = 45,
+  radius = '24px'
 }: ImageDropzoneWithPreviewProps) {
+  const [isMenuOpened, setIsMenuOpened] = useState(false)
+
+  function handleRemoveImage() {
+    setImage(null)
+  }
+
+  function handleImageChange(image: FileWithPath) {
+    setImage(image)
+    setIsMenuOpened(false)
+  }
+
   if (image) {
     return (
       <Box pos={'relative'}>
-        <Image src={URL.createObjectURL(image)} w={w} h={h} radius={'32px'} alt={'image-preview'} />
+        <AspectRatio>
+          <Image
+            src={URL.createObjectURL(image)}
+            w={w}
+            h={h}
+            radius={radius}
+            alt={'image-preview'}
+          />
+        </AspectRatio>
 
-        <Box pos={'absolute'} top={h - 22} left={-8}>
-          <Tooltip label={'Remove Image'} openDelay={300} position={'bottom'}>
-            <ActionIcon
-              c={'white'}
-              radius={'50%'}
-              aria-label={'remove-image-button'}
-              size={'md'}
-              sx={(theme) => ({
-                transition: '0.15s',
-                backgroundColor: alpha(theme.colors.red[5], 0.5),
-                '&:hover': { backgroundColor: alpha(theme.colors.red[5], 0.7) }
-              })}
-              onClick={() => setImage(null)}
+        <Box pos={'absolute'} top={0} right={0} h={h} w={h}>
+          <Stack gap={0} align={'center'} h={'100%'} justify={'center'}>
+            <Menu
+              opened={isMenuOpened}
+              onChange={setIsMenuOpened}
+              withArrow
+              offset={-iconSizes / 2}
+              transitionProps={{ transition: 'fade-up', duration: 150 }}
             >
-              <IconX size={15} />
-            </ActionIcon>
-          </Tooltip>
-        </Box>
-        <Box pos={'absolute'} top={h - 22} right={-8}>
-          <FileButton onChange={setImage} accept="image/png,image/jpeg">
-            {(props) => (
-              <Tooltip label={'Reload Image'} openDelay={300} position={'bottom'}>
-                <ActionIcon
-                  c={'dark'}
-                  radius={'50%'}
-                  aria-label={'add-image-button'}
-                  size={'md'}
-                  {...props}
-                  sx={(theme) => ({
-                    transition: '0.15s',
-                    backgroundColor: alpha(theme.colors.gray[4], 0.5),
-                    '&:hover': {
-                      backgroundColor: alpha(theme.colors.gray[4], 0.7)
-                    }
-                  })}
+              <Menu.Target>
+                <Tooltip label={'Open photo options menu'} openDelay={500}>
+                  <ActionIcon
+                    aria-label={'photo-options'}
+                    h={'100%'}
+                    w={'100%'}
+                    radius={radius}
+                    style={(theme) => ({
+                      transition: '0.3s',
+                      backgroundColor: alpha(theme.black, 0.5),
+                      color: theme.white
+                    })}
+                    sx={{
+                      opacity: isMenuOpened ? 1 : 0,
+                      '&:hover': {
+                        opacity: 1
+                      }
+                    }}
+                  >
+                    <IconPhotoFilled size={iconSizes / 1.2} />
+                  </ActionIcon>
+                </Tooltip>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <FileButton onChange={handleImageChange} accept={IMAGE_MIME_TYPE.join(',')}>
+                  {(props) => (
+                    <Menu.Item
+                      leftSection={<IconUpload size={18} />}
+                      closeMenuOnClick={false}
+                      {...props}
+                    >
+                      Upload Image
+                    </Menu.Item>
+                  )}
+                </FileButton>
+                <Menu.Item
+                  c={'red'}
+                  leftSection={<IconTrashFilled size={18} />}
+                  onClick={handleRemoveImage}
                 >
-                  <IconPhotoDown size={15} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </FileButton>
+                  Remove Image
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Stack>
         </Box>
       </Box>
     )
@@ -85,7 +131,7 @@ function ImageDropzoneWithPreview({
       }}
       sx={(theme) => ({
         cursor: 'pointer',
-        borderRadius: '32px',
+        borderRadius: radius,
         border: `1px solid ${theme.colors.gray[4]}`,
         transition: '0.3s',
         color: theme.colors.gray[6],
