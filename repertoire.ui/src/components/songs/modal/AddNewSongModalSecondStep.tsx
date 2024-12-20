@@ -14,7 +14,6 @@ import {
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import {
-  IconActivityHeartbeat,
   IconCalendarFilled,
   IconGripVertical,
   IconInfoCircleFilled,
@@ -31,6 +30,7 @@ import GuitarTuningsSelect from '../../@ui/form/select/GuitarTuningsSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import Album from '../../../types/models/Album.ts'
+import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
 
 interface AddNewSongModalSecondStepProps {
   form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
@@ -77,7 +77,7 @@ function AddNewSongModalSecondStep({
         <NumberInput
           flex={1}
           min={1}
-          leftSection={<IconActivityHeartbeat size={20} />}
+          leftSection={<CustomIconMetronome size={20} />}
           label="Bpm"
           placeholder="Enter Bpm"
           key={form.key('bpm')}

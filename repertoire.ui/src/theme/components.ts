@@ -32,6 +32,11 @@ export const components = {
             color: theme.colors.gray[6],
             backgroundColor: theme.colors.gray[2],
             shadows: theme.shadows.lg
+          },
+
+          '&[data-disabled="true"]': {
+            color: theme.colors.gray[3],
+            backgroundColor: 'transparent'
           }
         },
 

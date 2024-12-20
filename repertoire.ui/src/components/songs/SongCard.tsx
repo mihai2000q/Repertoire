@@ -22,7 +22,6 @@ import {
   IconBombFilled,
   IconBrandYoutubeFilled,
   IconGuitarPickFilled,
-  IconMichelinStarFilled,
   IconMicrophoneFilled,
   IconStarFilled,
   IconTrash
@@ -33,6 +32,8 @@ import { useDeleteSongMutation } from '../../state/songsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
+import CustomIconLightningTrio from "../@ui/icons/CustomIconLightningTrio.tsx";
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -49,7 +50,7 @@ const LocalAnchor = ({ link, children }: { link: string; children: ReactElement 
 )
 
 const LocalTooltip = ({ label, children }: { label: string; children: ReactElement }) => (
-  <Tooltip label={label} openDelay={200} position="bottom">
+  <Tooltip label={label} position="bottom">
     {children}
   </Tooltip>
 )
@@ -142,55 +143,57 @@ function SongCard({ song }: SongCardProps) {
                 )}
               </Box>
               <Group c={'cyan.9'} gap={4} align={'end'} pb={1}>
-                {song.isRecorded && (
-                  <LocalTooltip label={'This song is recorded'}>
-                    <IconMicrophoneFilled size={iconSize - 2} />
-                  </LocalTooltip>
-                )}
-                {song.guitarTuning && (
-                  <LocalTooltip label={`This song is tuned in ${song.guitarTuning.name}`}>
-                    <IconMichelinStarFilled size={iconSize} />
-                  </LocalTooltip>
-                )}
-                {riffs > 1 && (
-                  <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
-                    <IconBombFilled size={iconSize} />
-                  </LocalTooltip>
-                )}
-                {solos > 0 && (
-                  <LocalTooltip
-                    label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
-                  >
-                    <Center c={solos === 1 ? 'yellow' : 'cyan'}>
-                      <IconBoltFilled size={iconSize} />
-                    </Center>
-                  </LocalTooltip>
-                )}
-                {song.difficulty && (
-                  <LocalTooltip label={`This song is ${song.difficulty}`}>
-                    <Center c={difficultyColor}>
-                      <IconStarFilled size={iconSize} />
-                    </Center>
-                  </LocalTooltip>
-                )}
-                {song.songsterrLink && (
-                  <LocalAnchor link={song.songsterrLink}>
-                    <LocalTooltip label={'This song has a songsterr link'}>
-                      <Center c={'blue.7'}>
-                        <IconGuitarPickFilled size={iconSize} />
+                <Tooltip.Group openDelay={200}>
+                  {song.isRecorded && (
+                    <LocalTooltip label={'This song is recorded'}>
+                      <IconMicrophoneFilled size={iconSize - 2} />
+                    </LocalTooltip>
+                  )}
+                  {song.guitarTuning && (
+                    <LocalTooltip label={`This song is tuned in ${song.guitarTuning.name}`}>
+                      <CustomIconGuitarHead size={iconSize} />
+                    </LocalTooltip>
+                  )}
+                  {riffs > 1 && (
+                    <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
+                      <IconBombFilled size={iconSize} />
+                    </LocalTooltip>
+                  )}
+                  {solos > 0 && (
+                    <LocalTooltip
+                      label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
+                    >
+                      <Center c={solos === 1 ? 'yellow.4' : 'yellow.5'}>
+                        {solos > 1 ? <CustomIconLightningTrio size={iconSize} /> : <IconBoltFilled size={iconSize} />}
                       </Center>
                     </LocalTooltip>
-                  </LocalAnchor>
-                )}
-                {song.youtubeLink && (
-                  <LocalAnchor link={song.youtubeLink}>
-                    <LocalTooltip label={'This song has a youtube link'}>
-                      <Center c={'red.7'}>
-                        <IconBrandYoutubeFilled size={iconSize} />
+                  )}
+                  {song.difficulty && (
+                    <LocalTooltip label={`This song is ${song.difficulty}`}>
+                      <Center c={difficultyColor}>
+                        <IconStarFilled size={iconSize} />
                       </Center>
                     </LocalTooltip>
-                  </LocalAnchor>
-                )}
+                  )}
+                  {song.songsterrLink && (
+                    <LocalAnchor link={song.songsterrLink}>
+                      <LocalTooltip label={'This song has a songsterr link'}>
+                        <Center c={'blue.7'}>
+                          <IconGuitarPickFilled size={iconSize} />
+                        </Center>
+                      </LocalTooltip>
+                    </LocalAnchor>
+                  )}
+                  {song.youtubeLink && (
+                    <LocalAnchor link={song.youtubeLink}>
+                      <LocalTooltip label={'This song has a youtube link'}>
+                        <Center c={'red.7'}>
+                          <IconBrandYoutubeFilled size={iconSize} />
+                        </Center>
+                      </LocalTooltip>
+                    </LocalAnchor>
+                  )}
+                </Tooltip.Group>
               </Group>
             </Stack>
           </Stack>

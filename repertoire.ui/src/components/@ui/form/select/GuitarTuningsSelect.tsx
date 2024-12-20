@@ -1,6 +1,6 @@
 import { ComboboxItem, Group, Loader, Select, Text } from '@mantine/core'
 import { useGetGuitarTuningsQuery } from '../../../../state/songsApi.ts'
-import { IconMichelinStarFilled } from '@tabler/icons-react'
+import CustomIconGuitarHead from '../../icons/CustomIconGuitarHead.tsx'
 
 interface GuitarTuningsSelectProps {
   option: ComboboxItem
@@ -24,7 +24,7 @@ function GuitarTuningsSelect({ option, onChange }: GuitarTuningsSelectProps) {
   ) : (
     <Select
       flex={1.25}
-      leftSection={<IconMichelinStarFilled size={20} />}
+      leftSection={<CustomIconGuitarHead size={20} />}
       label={'Guitar Tuning'}
       placeholder={'Select Guitar Tuning'}
       data={guitarTunings}
