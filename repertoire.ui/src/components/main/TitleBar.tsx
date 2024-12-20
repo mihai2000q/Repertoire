@@ -1,6 +1,7 @@
 import { ActionIcon, Avatar, Group, Space, Stack, Text } from '@mantine/core'
 import { IconArrowDownLeft, IconArrowsDiagonal, IconX } from '@tabler/icons-react'
 import useTitleBarHeight from '../../hooks/useTitleBarHeight'
+import logo from '../../assets/logo.png'
 
 function TitleBar() {
   function handleMinimize() {
@@ -34,8 +35,8 @@ function TitleBar() {
       style={{ zIndex: 2, WebkitAppRegion: 'drag' }}
     >
       <Group gap={0} h={height} px={'xs'} align={'center'}>
-        <Avatar size={35} />
-        <Text pl={4}>Repertoire</Text>
+        <Avatar src={logo} size={25} />
+        <Text c={'gray.7'} fw={600} pl={6}>{window.document.title}</Text>
 
         <Space flex={1} />
 
