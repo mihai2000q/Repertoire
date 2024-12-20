@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { reduxRouterRender } from '../../test-utils.tsx'
 import Topbar from './Topbar.tsx'
 import { AppShell } from '@mantine/core'
 import { screen } from '@testing-library/react'
@@ -9,7 +9,7 @@ import { userEvent } from '@testing-library/user-event'
 
 describe('Topbar', () => {
   const render = (token?: string | null) =>
-    reduxRender(
+    reduxRouterRender(
       <AppShell>
         <Topbar />
       </AppShell>,
