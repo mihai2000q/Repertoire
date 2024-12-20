@@ -69,6 +69,9 @@ If you decide that you only want the database from the docker compose file, you 
 docker compose up -d database
 ```
 
+No matter where the database instance runs, please be aware that it is empty and you need to run the migrations.
+A helper shell script, `apply-migrations.sh`, is provided.
+
 If you decide to run the backend application locally, follow the next steps.
 
 ### Restore dependencies
@@ -156,7 +159,10 @@ One way to add one inside Postman is to go to the *Authorization* tab and under 
 
 ### Migration
 
-When in development mode, the application will run **Auto Migrate** from GORM on startup.
+`Goose` is the database migration tool that is in use for this purpose. 
+
+To update the database schema, please use the provided `apply-migrations.sh` shell script.
+It sets environment variables for the `goose up` command to run accordingly.
 
 ## Testing
 

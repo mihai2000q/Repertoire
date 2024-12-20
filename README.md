@@ -34,7 +34,7 @@ Otherwise, a full setup on each project has to be made
 (except for Desktop or Web, depending on where you prefer to host the app).
 
 Additionally, if you prefer to run everything in containers and not install GO or Node, 
-you can run the `run-container.sh` script to run all the docker containers.
+you can run the `run-container.sh` script to run all the docker containers and apply the database migrations.
 
 ### Server
 

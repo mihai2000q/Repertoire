@@ -7,7 +7,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	ts := core.Start("../../../../../.env")
+	ts := core.Start("../../../../../")
 
 	code := m.Run()
 
