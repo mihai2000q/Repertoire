@@ -178,6 +178,7 @@ function SongCard({ song }: SongCardProps) {
                     <LocalTooltip label={'This song has a songsterr link'}>
                       <Center c={'blue.7'}>
                         <IconGuitarPickFilled size={iconSize} />
+                      <CustomIconGuitarHead size={iconSize} />
                       </Center>
                     </LocalTooltip>
                   </LocalAnchor>
