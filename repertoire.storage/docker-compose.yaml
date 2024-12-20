@@ -12,3 +12,5 @@ services:
       - SERVER_HOST=0.0.0.0
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ${UPLOAD_DIRECTORY}:/${UPLOAD_DIRECTORY}

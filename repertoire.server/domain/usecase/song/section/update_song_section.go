@@ -129,7 +129,7 @@ func (u UpdateSongSection) rehearsalsHasChanged(
 	song.Progress = (song.Progress + float64(section.Progress)) / float64(sectionsCount)
 
 	// update song's last time played
-	song.LastTimePlayed = &[]time.Time{time.Now()}[0]
+	song.LastTimePlayed = &[]time.Time{time.Now().UTC()}[0]
 
 	return nil
 }
