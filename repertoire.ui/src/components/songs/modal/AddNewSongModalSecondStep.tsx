@@ -59,7 +59,8 @@ function AddNewSongModalSecondStep({
     label: type.name
   }))
 
-  const handleAddSection = () => sectionsHandlers.append({ id: uuid(), name: '', type: null })
+  const handleAddSection = () =>
+    sectionsHandlers.append({ id: uuid(), name: '', type: null, errors: [] })
 
   function onSectionsDragEnd({ destination, source }) {
     sectionsHandlers.reorder({ from: source.index, to: destination?.index || 0 })
@@ -152,9 +153,17 @@ function AddNewSongModalSecondStep({
                             data={songSectionTypes}
                             value={section.type ? section.type.value : null}
                             onChange={(_, option) =>
-                              sectionsHandlers.setItem(index, { ...section, type: option })
+                              sectionsHandlers.setItem(index, {
+                                ...section,
+                                type: option,
+                                errors: [
+                                  ...section.errors.filter((e) => e.property !== 'type'),
+                                  ...(!option ? [{ property: 'type' }] : [])
+                                ]
+                              })
                             }
                             maxDropdownHeight={150}
+                            error={section.errors.some((e) => e.property === 'type')}
                           />
 
                           <TextInput
@@ -163,8 +172,16 @@ function AddNewSongModalSecondStep({
                             placeholder={'Name of Section'}
                             value={section.name}
                             onChange={(e) =>
-                              sectionsHandlers.setItem(index, { ...section, name: e.target.value })
+                              sectionsHandlers.setItem(index, {
+                                ...section,
+                                name: e.target.value,
+                                errors: [
+                                  ...section.errors.filter((e) => e.property !== 'name'),
+                                  ...(e.target.value.trim() === '' ? [{ property: 'name' }] : [])
+                                ]
+                              })
                             }
+                            error={section.errors.some((e) => e.property === 'name')}
                           />
 
                           <ActionIcon

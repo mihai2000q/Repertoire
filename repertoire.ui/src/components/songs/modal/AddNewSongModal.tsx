@@ -16,6 +16,7 @@ export interface AddNewSongModalSongSection {
   id: string
   name: string
   type: ComboboxItem | null
+  errors: { property: string }[]
 }
 
 interface AddNewSongModalProps {
@@ -64,7 +65,15 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
 
   const [activeStep, setActiveStep] = useState(0)
   const handleActiveStepChange = (activeStep: ((prevState: number) => number) | number) => {
-    if (form.validate().hasErrors) return
+    const localSections = sections.map((s) => ({
+      ...s,
+      errors: [
+        ...(s.name.trim() === '' ? [{ property: 'name' }] : []),
+        ...(!s.type ? [{ property: 'type' }] : [])
+      ]
+    }))
+    sectionsHandlers.setState(localSections)
+    if (form.validate().hasErrors || localSections.some((s) => s.errors.length > 0)) return
     setActiveStep(activeStep)
   }
   const prevStep = () => handleActiveStepChange((current) => current - 1)
@@ -95,7 +104,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
       releaseDate: releaseDate,
       songsterrLink: songsterrLink,
       youtubeLink: youtubeLink,
-      sections: sections.map((s) => ({ name: s.name, typeId: s.type.value })),
+      sections: sections.map((s) => ({ name: s.name.trim(), typeId: s.type.value })),
       guitarTuningId: guitarTuning?.value,
       albumId: album?.id,
       artistId: album || albumTitle ? null : artist?.id,
