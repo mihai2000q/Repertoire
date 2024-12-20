@@ -37,11 +37,11 @@ func Start(envPath ...string) *TestServer {
 	ts := &TestServer{}
 
 	// Setup Environment Variable to anything, so that it checks the right path of .env
+	relativePath := "../../../"
 	if len(envPath) > 0 {
-		_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", envPath[0])
-	} else {
-		_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", "../../../.env")
+		relativePath = envPath[0]
 	}
+	_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", relativePath+".env")
 
 	env := internal.NewEnv()
 
@@ -76,7 +76,7 @@ func Start(envPath ...string) *TestServer {
 	// apply migrations to database
 	postgresDB, _ := gorm.Open(postgres.Open(Dsn))
 	db, _ := postgresDB.DB()
-	if err = goose.Up(db, "../../../migrations/"); err != nil {
+	if err = goose.Up(db, relativePath+"migrations/"); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 	_ = db.Close()
