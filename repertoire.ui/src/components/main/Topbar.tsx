@@ -28,13 +28,27 @@ import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
 import { useDisclosure } from '@mantine/hooks'
 import AccountModal from './modal/AccountModal.tsx'
+import { useNavigate } from 'react-router-dom'
+import useIsDesktop from '../../hooks/useIsDesktop.ts'
+import CustomIconArrowLeft from '../@ui/icons/CustomIconArrowLeft.tsx'
+import CustomIconArrowRight from '../@ui/icons/CustomIconArrowRight.tsx'
 
 function Topbar(): ReactElement {
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const isDesktop = useIsDesktop()
 
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
   })
+
+  function handleGoBack() {
+    navigate(-1)
+  }
+
+  function handleGoForward() {
+    navigate(1)
+  }
 
   const [openedAccount, { open: openAccount, close: closeAccount }] = useDisclosure(false)
 
@@ -66,6 +80,32 @@ function Topbar(): ReactElement {
           })}
         />
 
+        {isDesktop && (
+          <Group gap={0} ml={'xs'}>
+            <ActionIcon
+              aria-label={'back-button'}
+              size={'lg'}
+              variant={'grey'}
+              radius={'50%'}
+              disabled={window.history.state?.idx < 1}
+              onClick={handleGoBack}
+            >
+              <CustomIconArrowLeft />
+            </ActionIcon>
+
+            <ActionIcon
+              aria-label={'forward-button'}
+              size={'lg'}
+              variant={'grey'}
+              radius={'50%'}
+              disabled={window.history.state?.idx >= window.history.length - 1}
+              onClick={handleGoForward}
+            >
+              <CustomIconArrowRight />
+            </ActionIcon>
+          </Group>
+        )}
+
         <Space flex={1} />
 
         <ActionIcon
@@ -73,7 +113,6 @@ function Topbar(): ReactElement {
           size={'lg'}
           sx={(theme) => ({
             borderRadius: '50%',
-            transition: '0.175s',
             color: theme.colors.gray[6],
             '&:hover': {
               boxShadow: theme.shadows.sm,
