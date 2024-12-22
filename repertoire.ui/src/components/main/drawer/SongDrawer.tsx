@@ -146,91 +146,89 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
             {song.title}
           </Title>
 
-          <Group>
-            <Group gap={4}>
-              {song.artist && (
-                <Group gap={'xs'}>
-                  <Avatar size={28} src={song.artist.imageUrl ?? userPlaceholder} />
-                  <Text
-                    fw={700}
-                    fz={'lg'}
-                    sx={{
-                      cursor: 'pointer',
-                      '&:hover': { textDecoration: 'underline' }
-                    }}
-                    inline
-                  >
-                    {song.artist.name}
+          <Group gap={4}>
+            {song.artist && (
+              <Group gap={'xs'}>
+                <Avatar size={28} src={song.artist.imageUrl ?? userPlaceholder} />
+                <Text
+                  fw={700}
+                  fz={'lg'}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:hover': { textDecoration: 'underline' }
+                  }}
+                  inline
+                >
+                  {song.artist.name}
+                </Text>
+              </Group>
+            )}
+
+            {song.album && (
+              <Group gap={0}>
+                {song.artist && (
+                  <Text fw={500} c={'dimmed'} inline pr={4}>
+                    on
                   </Text>
-                </Group>
-              )}
-
-              {song.album && (
-                <Group gap={0}>
-                  {song.artist && (
-                    <Text fw={500} c={'dimmed'} inline pr={4}>
-                      on
+                )}
+                <HoverCard shadow={'lg'} withArrow>
+                  <HoverCard.Target>
+                    <Text
+                      fw={600}
+                      inline
+                      c={'dark'}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': { textDecoration: 'underline' }
+                      }}
+                    >
+                      {song.album.title}
                     </Text>
-                  )}
-                  <HoverCard shadow={'lg'} withArrow>
-                    <HoverCard.Target>
-                      <Text
-                        fw={600}
-                        inline
-                        c={'dark'}
-                        sx={{
-                          cursor: 'pointer',
-                          '&:hover': { textDecoration: 'underline' }
-                        }}
-                      >
-                        {song.album.title}
-                      </Text>
-                    </HoverCard.Target>
-                    <HoverCard.Dropdown maw={300}>
-                      <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
-                        <Avatar
-                          size={45}
-                          radius={'md'}
-                          src={song.album.imageUrl ?? songPlaceholder}
-                        />
-                        <Stack gap={2}>
-                          <Text fw={500} fz={'xs'} inline>
-                            Album
+                  </HoverCard.Target>
+                  <HoverCard.Dropdown maw={300}>
+                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                      <Avatar
+                        size={45}
+                        radius={'md'}
+                        src={song.album.imageUrl ?? songPlaceholder}
+                      />
+                      <Stack gap={2}>
+                        <Text fw={500} fz={'xs'} inline>
+                          Album
+                        </Text>
+                        <Text fw={600} fz={'md'} inline lineClamp={2}>
+                          {song.album.title}
+                        </Text>
+                        {song.album.releaseDate && (
+                          <Text fw={500} c={'dimmed'} fz={'sm'} inline>
+                            {dayjs(song.album.releaseDate).format('DD MMM YYYY')}
                           </Text>
-                          <Text fw={600} fz={'md'} inline lineClamp={2}>
-                            {song.album.title}
-                          </Text>
-                          {song.album.releaseDate && (
-                            <Text fw={500} c={'dimmed'} fz={'sm'} inline>
-                              {dayjs(song.album.releaseDate).format('DD MMM YYYY')}
-                            </Text>
-                          )}
-                        </Stack>
-                      </Group>
-                    </HoverCard.Dropdown>
-                  </HoverCard>
-                </Group>
-              )}
+                        )}
+                      </Stack>
+                    </Group>
+                  </HoverCard.Dropdown>
+                </HoverCard>
+              </Group>
+            )}
 
-              {song.releaseDate && (
-                <>
-                  {(song.album || song.artist) && (
-                    <Text c={'dimmed'} inline>
-                      •
-                    </Text>
-                  )}
-                  <Tooltip
-                    label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
-                    openDelay={200}
-                    position={'bottom'}
-                  >
-                    <Text fw={500} c={'dimmed'} inline>
-                      {dayjs(song.releaseDate).format('YYYY')}
-                    </Text>
-                  </Tooltip>
-                </>
-              )}
-            </Group>
+            {song.releaseDate && (
+              <>
+                {(song.album || song.artist) && (
+                  <Text c={'dimmed'} inline>
+                    •
+                  </Text>
+                )}
+                <Tooltip
+                  label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
+                  openDelay={200}
+                  position={'bottom'}
+                >
+                  <Text fw={500} c={'dimmed'} inline>
+                    {dayjs(song.releaseDate).format('YYYY')}
+                  </Text>
+                </Tooltip>
+              </>
+            )}
           </Group>
 
           {song.description.trim() !== '' && (
