@@ -59,7 +59,7 @@ function ArtistSongsCard({
   }
 
   return (
-    <Card variant={'panel'} p={0} h={'100%'}>
+    <Card variant={'panel'} p={0} h={'100%'} mb={'xs'}>
       {isLoading ? (
         <ArtistSongsLoader />
       ) : (
@@ -114,7 +114,7 @@ function ArtistSongsCard({
               </Menu.Dropdown>
             </Menu>
           </Group>
-          <Stack gap={0} style={{ overflow: 'auto', maxHeight: '55vh' }}>
+          <Stack gap={0}>
             {songs.models.map((song) => (
               <ArtistSongCard
                 key={song.id}

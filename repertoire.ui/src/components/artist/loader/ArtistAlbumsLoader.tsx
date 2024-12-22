@@ -13,7 +13,6 @@ function ArtistAlbumsLoader() {
         cols={{ sm: 1, md: 2, xl: 3 }}
         spacing={0}
         verticalSpacing={0}
-        style={{ overflow: 'auto', maxHeight: '55vh' }}
       >
         {Array.from(Array(3)).map((_, i) => (
           <Group key={i} align={'center'} px={'md'} py={'xs'} wrap={'nowrap'}>

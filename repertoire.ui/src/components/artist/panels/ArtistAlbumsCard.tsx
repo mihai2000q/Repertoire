@@ -62,7 +62,7 @@ function ArtistAlbumsCard({
   }
 
   return (
-    <Card variant={'panel'} p={0} h={'100%'}>
+    <Card variant={'panel'} p={0} h={'100%'} mb={'xs'}>
       {isLoading ? (
         <ArtistAlbumsLoader />
       ) : (
@@ -119,10 +119,9 @@ function ArtistAlbumsCard({
           </Group>
 
           <SimpleGrid
-            cols={{ sm: 1, md: 2 }}
+            cols={{ sm: 1, md: 2, xl: 3 }}
             spacing={0}
             verticalSpacing={0}
-            style={{ overflow: 'auto', maxHeight: '55vh' }}
           >
             {albums.models.map((album) => (
               <ArtistAlbumCard

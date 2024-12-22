@@ -9,8 +9,8 @@ function ArtistSongsLoader() {
         <Space flex={1} />
         <Skeleton radius={'sm'} w={20} h={20} />
       </Group>
-      <Stack gap={0} style={{ overflow: 'auto', maxHeight: '55vh' }}>
         {Array.from(Array(5)).map((_, i) => (
+      <Stack gap={0}>
           <Group key={i} align={'center'} px={'md'} py={'xs'}>
             <Skeleton radius={'md'} w={40} h={40} />
             <Stack gap={4}>
