@@ -60,7 +60,7 @@ function ArtistHeaderCard({
       }
       hideIcons={isUnknownArtist}
     >
-      <Group>
+      <Group wrap={'nowrap'}>
         <Avatar
           src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
           size={125}
@@ -82,7 +82,7 @@ function ArtistHeaderCard({
               Unknown
             </Title>
           ) : (
-            <Title order={1} fw={700}>
+            <Title order={1} fw={700} lineClamp={2}>
               {artist?.name}
             </Title>
           )}

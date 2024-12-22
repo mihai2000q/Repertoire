@@ -49,7 +49,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
         </>
       }
     >
-      <Group>
+      <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
             h={150}
@@ -66,7 +66,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             Playlist
           </Text>
 
-          <Title order={1} fw={700}>
+          <Title order={1} fw={700} lineClamp={2}>
             {playlist.title}
           </Title>
 
