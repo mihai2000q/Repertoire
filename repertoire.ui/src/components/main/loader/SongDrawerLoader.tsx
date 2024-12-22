@@ -3,7 +3,7 @@ import {Divider, Grid, Group, Skeleton, Stack} from '@mantine/core'
 function SongDrawerLoader() {
   return (
     <Stack gap={'xs'} data-testid={'song-drawer-loader'}>
-      <Skeleton radius={0} w={'100%'} h={300} />
+      <Skeleton radius={0} w={'100%'} h={330} />
 
       <Stack px={'md'} pb={'xs'} gap={4}>
         <Skeleton w={220} h={25} />
