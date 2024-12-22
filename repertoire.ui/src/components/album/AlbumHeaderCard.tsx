@@ -63,7 +63,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
       }
       hideIcons={isUnknownAlbum}
     >
-      <Group>
+      <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
             h={150}
@@ -89,7 +89,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               Unknown
             </Title>
           ) : (
-            <Title order={1} fw={700}>
+            <Title order={1} fw={700} lineClamp={2}>
               {album.title}
             </Title>
           )}

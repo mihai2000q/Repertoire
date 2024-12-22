@@ -72,7 +72,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         </>
       }
     >
-      <Group>
+      <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
             h={150}
@@ -88,7 +88,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Text fw={500} inline>
             Song
           </Text>
-          <Title order={1} fw={700}>
+          <Title order={1} fw={700} lineClamp={2}>
             {song.title}
           </Title>
           <Group gap={4}>
