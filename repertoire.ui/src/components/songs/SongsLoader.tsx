@@ -4,19 +4,14 @@ function SongsLoader() {
   return (
     <Group data-testid="songs-loader">
       {Array.from(Array(20)).map((_, i) => (
-        <Card key={i} p="sm" shadow="md" h={253} w={175}>
-          <Card.Section>
-            <Skeleton h={150} />
-          </Card.Section>
+        <Card key={i} p={0} radius={'lg'} shadow={'md'} w={175}>
+          <Stack gap={0}>
+            <Skeleton radius={'16px'} h={175 * 7 / 8} />
 
-          <Group justify="space-between" mt="sm" mb="xs">
-            <Skeleton w={80} h={12} />
-          </Group>
-
-          <Stack gap={4}>
-            <Skeleton w={150} h={8} />
-            <Skeleton w={150} h={8} />
-            <Skeleton w={80} h={8} />
+            <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
+              <Skeleton w={110} h={16} />
+              <Skeleton w={80} h={12} my={4} />
+            </Stack>
           </Stack>
         </Card>
       ))}
