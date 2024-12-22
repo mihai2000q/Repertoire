@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   AspectRatio,
   Avatar,
   Box,
@@ -377,17 +378,31 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
             <Tooltip.Group openDelay={200}>
               {song.songsterrLink && (
                 <Tooltip label={'Open Songsterr'}>
-                  <ActionIcon variant={'transparent'} c={'blue.7'}>
-                    <IconGuitarPickFilled size={23} />
-                  </ActionIcon>
+                  <Anchor
+                    underline={'never'}
+                    href={song.songsterrLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ActionIcon variant={'transparent'} c={'blue.7'}>
+                      <IconGuitarPickFilled size={23} />
+                    </ActionIcon>
+                  </Anchor>
                 </Tooltip>
               )}
 
               {song.youtubeLink && (
                 <Tooltip label={'Open Youtube'}>
-                  <ActionIcon variant={'transparent'} c={'red.7'}>
-                    <IconBrandYoutubeFilled size={25} />
-                  </ActionIcon>
+                  <Anchor
+                    underline={'never'}
+                    href={song.youtubeLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ActionIcon variant={'transparent'} c={'red.7'}>
+                      <IconBrandYoutubeFilled size={25} />
+                    </ActionIcon>
+                  </Anchor>
                 </Tooltip>
               )}
             </Tooltip.Group>
