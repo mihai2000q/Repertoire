@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Anchor,
   AspectRatio,
   Avatar,
   Box,
@@ -60,6 +61,17 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
   const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(song?.difficulty)
+
+  const showInfo =
+    song &&
+    (song.difficulty ||
+      song.guitarTuning ||
+      song.bpm ||
+      song.isRecorded ||
+      song.lastTimePlayed ||
+      song.rehearsals != 0 ||
+      song.confidence != 0 ||
+      song.progress != 0)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -221,20 +233,15 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
             </Group>
           </Group>
 
-          <Text size="sm" c="dimmed" my={'xs'} px={'xs'}>
-            {song.description}
-          </Text>
+          {song.description.trim() !== '' && (
+            <Text size="sm" c="dimmed" my={'xs'} px={'xs'} lineClamp={3}>
+              {song.description}
+            </Text>
+          )}
 
-          {(song.difficulty ||
-            song.guitarTuning ||
-            song.bpm ||
-            song.isRecorded ||
-            song.lastTimePlayed ||
-            song.rehearsals != 0 ||
-            song.confidence != 0 ||
-            song.progress != 0) && <Divider />}
+          {showInfo && <Divider />}
 
-          <Grid align={'center'} gutter={'sm'} p={'xs'}>
+          <Grid align={'center'} gutter={'sm'} p={showInfo ? 'xs' : 0}>
             {song.difficulty && (
               <>
                 <Grid.Col span={firstColumnSize}>
@@ -348,7 +355,13 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating label={<><NumberFormatter value={song.confidence} />%</>}>
+                  <Tooltip.Floating
+                    label={
+                      <>
+                        <NumberFormatter value={song.confidence} />%
+                      </>
+                    }
+                  >
                     <Progress flex={1} size={7} value={song.confidence} />
                   </Tooltip.Floating>
                 </Grid.Col>
@@ -377,17 +390,31 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
             <Tooltip.Group openDelay={200}>
               {song.songsterrLink && (
                 <Tooltip label={'Open Songsterr'}>
-                  <ActionIcon variant={'transparent'} c={'blue.7'}>
-                    <IconGuitarPickFilled size={23} />
-                  </ActionIcon>
+                  <Anchor
+                    underline={'never'}
+                    href={song.songsterrLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ActionIcon variant={'transparent'} c={'blue.7'}>
+                      <IconGuitarPickFilled size={23} />
+                    </ActionIcon>
+                  </Anchor>
                 </Tooltip>
               )}
 
               {song.youtubeLink && (
                 <Tooltip label={'Open Youtube'}>
-                  <ActionIcon variant={'transparent'} c={'red.7'}>
-                    <IconBrandYoutubeFilled size={25} />
-                  </ActionIcon>
+                  <Anchor
+                    underline={'never'}
+                    href={song.youtubeLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ActionIcon variant={'transparent'} c={'red.7'}>
+                      <IconBrandYoutubeFilled size={25} />
+                    </ActionIcon>
+                  </Anchor>
                 </Tooltip>
               )}
             </Tooltip.Group>

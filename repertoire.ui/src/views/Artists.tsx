@@ -74,7 +74,7 @@ function Artists() {
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
-        {artists?.totalCount > 0 && currentPage == totalPages && (
+        {((artists?.totalCount > 0 && currentPage == totalPages) || showUnknownArtist) && (
           <Card
             data-testid={'new-artist-card'}
             w={125}
