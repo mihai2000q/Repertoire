@@ -28,6 +28,7 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 	}
 
 	album.Title = request.Title
+	album.ReleaseDate = request.ReleaseDate
 
 	err = u.repository.Update(&album)
 	if err != nil {
