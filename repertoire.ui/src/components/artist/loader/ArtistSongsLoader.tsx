@@ -1,4 +1,4 @@
-import { Group, Skeleton, Space, Stack } from '@mantine/core'
+import { Group, Skeleton, Stack } from '@mantine/core'
 
 function ArtistSongsLoader() {
   return (
@@ -6,11 +6,9 @@ function ArtistSongsLoader() {
       <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
         <Skeleton w={60} h={15} />
         <Skeleton w={100} h={11} />
-        <Space flex={1} />
-        <Skeleton radius={'sm'} w={20} h={20} />
       </Group>
-        {Array.from(Array(5)).map((_, i) => (
       <Stack gap={0}>
+        {Array.from(Array(8)).map((_, i) => (
           <Group key={i} align={'center'} px={'md'} py={'xs'}>
             <Skeleton radius={'md'} w={40} h={40} />
             <Stack gap={4}>
