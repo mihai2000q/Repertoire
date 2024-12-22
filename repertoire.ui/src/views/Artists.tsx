@@ -70,7 +70,7 @@ function Artists() {
       {artists?.totalCount === 0 && !showUnknownArtist && (
         <Text mt={'sm'}>There are no artists yet. Try to add one</Text>
       )}
-      <Group gap={'xl'}>
+      <Group gap={'xl'} align={'start'}>
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
@@ -81,7 +81,6 @@ function Artists() {
             h={125}
             radius={'50%'}
             onClick={openAddNewArtistModal}
-            style={{ alignSelf: 'start' }}
             variant={'add-new'}
           >
             <Center h={'100%'}>

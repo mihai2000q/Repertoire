@@ -69,7 +69,7 @@ function Albums() {
       {albums?.totalCount === 0 && !showUnknownAlbum && (
         <Text mt={'sm'}>There are no albums yet. Try to add one</Text>
       )}
-      <Group gap={'xl'}>
+      <Group gap={'xl'} align={'start'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
@@ -80,7 +80,6 @@ function Albums() {
             h={150}
             radius={'lg'}
             onClick={openAddNewAlbumModal}
-            style={{ alignSelf: 'start' }}
             variant={'add-new'}
           >
             <Center h={'100%'}>
