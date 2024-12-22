@@ -61,7 +61,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             })}
           />
         </AspectRatio>
-        <Stack gap={4} style={{ alignSelf: 'start', paddingTop: '10px' }}>
+        <Stack gap={4} pt={'md'} style={{ alignSelf: 'start' }}>
           <Text fw={500} inline>
             Playlist
           </Text>
