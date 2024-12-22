@@ -69,7 +69,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Text fw={600} ta={'center'} lineClamp={2}>
+      <Text maw={120} fw={600} ta={'center'} lineClamp={2}>
         {artist.name}
       </Text>
 
