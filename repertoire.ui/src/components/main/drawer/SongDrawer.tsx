@@ -63,14 +63,15 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
   const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(song?.difficulty)
 
   const showInfo =
-    song.difficulty ||
-    song.guitarTuning ||
-    song.bpm ||
-    song.isRecorded ||
-    song.lastTimePlayed ||
-    song.rehearsals != 0 ||
-    song.confidence != 0 ||
-    song.progress != 0
+    song &&
+    (song.difficulty ||
+      song.guitarTuning ||
+      song.bpm ||
+      song.isRecorded ||
+      song.lastTimePlayed ||
+      song.rehearsals != 0 ||
+      song.confidence != 0 ||
+      song.progress != 0)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
