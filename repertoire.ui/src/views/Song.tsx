@@ -1,4 +1,4 @@
-import { Divider, Group, Stack } from '@mantine/core'
+import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from '../components/song/SongLoader.tsx'
 import { useGetSongQuery } from '../state/songsApi.ts'
@@ -23,21 +23,25 @@ function Song() {
 
       <Divider />
 
-      <Group align="start" mb={'lg'}>
-        <Stack flex={1}>
-          <SongInformationCard song={song} />
+      <Grid align="start" mb={'lg'}>
+        <Grid.Col span={{ sm: 12, md: 4.5 }}>
+          <Stack>
+            <SongInformationCard song={song} />
 
-          <SongOverallCard song={song} />
+            <SongOverallCard song={song} />
 
-          <SongLinksCard song={song} />
-        </Stack>
+            <SongLinksCard song={song} />
+          </Stack>
+        </Grid.Col>
 
-        <Stack flex={1.75}>
-          <SongDescriptionCard song={song} />
+        <Grid.Col span={{ sm: 12, md: 7.5 }}>
+          <Stack>
+            <SongDescriptionCard song={song} />
 
-          <SongSections songId={songId} sections={song.sections} />
-        </Stack>
-      </Group>
+            <SongSections songId={songId} sections={song.sections} />
+          </Stack>
+        </Grid.Col>
+      </Grid>
     </Stack>
   )
 }
