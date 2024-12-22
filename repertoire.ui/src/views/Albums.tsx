@@ -73,7 +73,7 @@ function Albums() {
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
-        {albums?.totalCount > 0 && currentPage == totalPages && (
+        {((albums?.totalCount > 0 && currentPage == totalPages) || showUnknownAlbum) && (
           <Card
             data-testid={'new-album-card'}
             w={150}
