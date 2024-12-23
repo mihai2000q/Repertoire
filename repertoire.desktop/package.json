@@ -1,8 +1,7 @@
 {
-  "name": "repertoire.desktop",
+  "name": "repertoire",
   "version": "1.0.0",
-  "description": "A Music Application developed entirely in Electron with React and TypeScript",
-  "author": "example.com",
+  "author": "Misul",
   "homepage": "https://electron-vite.org",
   "license": "MIT",
   "main": "./out/main/index.js",
