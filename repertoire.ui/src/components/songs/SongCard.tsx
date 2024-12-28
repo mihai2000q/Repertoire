@@ -92,7 +92,7 @@ function SongCard({ song }: SongCardProps) {
     <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
       <Menu.Target>
         <Card
-          data-testid={`song-card-${song.id}`}
+          aria-label={`song-card-${song.id}`}
           p={0}
           radius={'lg'}
           w={175}

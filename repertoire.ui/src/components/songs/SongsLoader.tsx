@@ -2,7 +2,7 @@ import { Card, Group, Skeleton, Stack } from '@mantine/core'
 
 function SongsLoader() {
   return (
-    <Group data-testid="songs-loader">
+    <Group data-testid={'songs-loader'}>
       {Array.from(Array(20)).map((_, i) => (
         <Card key={i} p={0} radius={'lg'} shadow={'md'} w={175}>
           <Stack gap={0}>
