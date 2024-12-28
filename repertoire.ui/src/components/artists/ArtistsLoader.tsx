@@ -2,7 +2,7 @@ import { Group, Skeleton, Stack } from '@mantine/core'
 
 function ArtistsLoader() {
   return (
-    <Group gap={'xl'} data-testid="artists-loader">
+    <Group gap={'xl'} data-testid={'artists-loader'}>
       {Array.from(Array(20)).map((_, i) => (
         <Stack key={i} gap={'xs'} align={'center'}>
           <Skeleton

@@ -14,6 +14,7 @@ function UnknownArtistCard() {
 
   return (
     <Stack
+      aria-label="unknown-artist-card"
       align={'center'}
       gap={'xs'}
       style={{
