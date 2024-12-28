@@ -36,6 +36,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
 
   return (
     <Stack
+      aria-label={`playlist-card-${playlist.id}`}
       align={'center'}
       gap={0}
       style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
