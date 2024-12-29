@@ -26,7 +26,7 @@ import { UseFormReturnType } from '@mantine/form'
 import { AddNewSongModalSongSection } from './AddNewSongModal.tsx'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { UseListStateHandlers } from '@mantine/hooks'
-import GuitarTuningsSelect from '../../@ui/form/select/GuitarTuningsSelect.tsx'
+import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import Album from '../../../types/models/Album.ts'
@@ -69,7 +69,7 @@ function AddNewSongModalSecondStep({
   return (
     <Stack>
       <Group justify={'space-between'} align={'center'}>
-        <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
+        <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
         <DifficultySelect option={difficulty} onChange={setDifficulty} />
       </Group>

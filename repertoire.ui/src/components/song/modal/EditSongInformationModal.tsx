@@ -15,7 +15,7 @@ import { useUpdateSongMutation } from '../../../state/songsApi.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
-import GuitarTuningsSelect from '../../@ui/form/select/GuitarTuningsSelect.tsx'
+import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
 
@@ -80,7 +80,7 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
 
         <Stack>
           <Group align={'center'}>
-            <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
+            <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
             <DifficultySelect option={difficulty} onChange={setDifficulty} />
           </Group>
