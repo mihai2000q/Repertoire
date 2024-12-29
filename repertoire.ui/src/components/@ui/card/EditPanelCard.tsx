@@ -13,12 +13,13 @@ function EditPanelCard({ children, onEditClick, p }: EditPanelCardProps) {
   const { ref, hovered } = useHover()
 
   return (
-    <Card ref={ref} variant={'panel'} p={p}>
+    <Card aria-label={'edit-panel-card'} ref={ref} variant={'panel'} p={p}>
       {children}
 
       <Box pos={'absolute'} right={0} top={0} p={4}>
         <Tooltip label={'Edit Panel'} openDelay={500}>
           <ActionIcon
+            aria-label={'edit-panel'}
             variant={'grey'}
             size={'md'}
             style={{ transition: '0.25s', opacity: hovered ? 1 : 0 }}

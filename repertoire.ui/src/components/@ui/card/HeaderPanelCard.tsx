@@ -16,7 +16,7 @@ function HeaderPanelCard({ children, onEditClick, menuDropdown, hideIcons }: Hea
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
   return (
-    <Box ref={ref} pos={'relative'}>
+    <Box aria-label={'header-panel-card'} ref={ref} pos={'relative'}>
       {children}
 
       {hideIcons !== true && (
@@ -29,6 +29,7 @@ function HeaderPanelCard({ children, onEditClick, menuDropdown, hideIcons }: Hea
           >
             <Menu.Target>
               <ActionIcon
+                aria-label={'more-menu'}
                 variant={'grey'}
                 style={{ transition: '0.25s', opacity: hovered || isMenuOpened ? 1 : 0 }}
               >
@@ -45,6 +46,7 @@ function HeaderPanelCard({ children, onEditClick, menuDropdown, hideIcons }: Hea
         <Box pos={'absolute'} right={0} bottom={-12} p={0}>
           <Tooltip label={'Edit Header'} openDelay={500}>
             <ActionIcon
+              aria-label={'edit-header'}
               variant={'grey'}
               style={{ transition: '0.25s', opacity: hovered ? 1 : 0 }}
               onClick={onEditClick}
