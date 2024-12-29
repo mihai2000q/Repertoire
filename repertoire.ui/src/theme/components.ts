@@ -5,17 +5,20 @@ import {
   Button,
   Card,
   CardFactory,
+  Combobox,
   LoadingOverlay,
   Menu,
   Modal,
   NavLink,
   NumberFormatter,
+  Select,
   StylesApiProps,
   Text,
   Title,
   Tooltip,
   TooltipFloating
 } from '@mantine/core'
+import { DatePickerInput } from '@mantine/dates'
 
 export const components = {
   ActionIcon: ActionIcon.extend({
@@ -89,6 +92,27 @@ export const components = {
       }
     })
   }),
+  Combobox: Combobox.extend({
+    defaultProps: {
+      shadow: 'sm',
+      transitionProps: {
+        transition: 'scale-y',
+        duration: 160
+      }
+    }
+  }),
+  DatePickerInput: DatePickerInput.extend({
+    defaultProps: {
+      dropdownType: 'popover',
+      popoverProps: {
+        shadow: 'sm',
+        transitionProps: {
+          transition: 'pop-top-left',
+          duration: 160
+        }
+      }
+    }
+  }),
   LoadingOverlay: LoadingOverlay.extend({
     defaultProps: {
       overlayProps: { radius: 'md', blur: 2 },
@@ -153,6 +177,17 @@ export const components = {
       thousandSeparator: ' ',
       decimalSeparator: ',',
       decimalScale: 0
+    }
+  }),
+  Select: Select.extend({
+    defaultProps: {
+      comboboxProps: {
+        shadow: 'sm',
+        transitionProps: {
+          transition: 'scale-y',
+          duration: 160
+        }
+      }
     }
   }),
   Text: Text.extend({
