@@ -10,6 +10,11 @@ interface WarningModalProps {
 }
 
 function WarningModal({ opened, onClose, title, description, onYes }: WarningModalProps) {
+  function internalOnYes() {
+    onClose()
+    onYes()
+  }
+
   return (
     <Modal opened={opened} onClose={onClose} title={title} centered>
       <Modal.Body px={'xs'} py={0}>
@@ -19,7 +24,7 @@ function WarningModal({ opened, onClose, title, description, onYes }: WarningMod
             <Button variant={'subtle'} onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={onYes}>Yes</Button>
+            <Button onClick={internalOnYes}>Yes</Button>
           </Group>
         </Stack>
       </Modal.Body>
