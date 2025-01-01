@@ -12,16 +12,14 @@ describe('New Horizontal Card', () => {
     const onClick = vitest.fn()
 
     const testId = 'children-mock'
-    const children = <div data-testid={testId}>Children</div>
+    const children = <span data-testid={testId}>Children</span>
 
     // Act
     mantineRender(<NewHorizontalCard onClick={onClick}>{children}</NewHorizontalCard>)
 
     // Assert
     expect(screen.getByTestId(testId)).toBeInTheDocument()
-
-    const card = screen.getByLabelText('edit-panel-card')
-    await user.click(card)
+    await user.click(screen.getByTestId(testId))
     expect(onClick).toHaveBeenCalledOnce()
   })
 })
