@@ -19,8 +19,8 @@ import { IconDiscFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
 
 interface AlbumsAutocompleteProps {
-  album: Album
-  setAlbum: (album: Album) => void
+  album: Album | null
+  setAlbum: (album: Album | null) => void
   setValue: (value: string) => void
   value?: string
   defaultValue?: string
@@ -130,7 +130,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown style={(theme) => ({ boxShadow: theme.shadows.lg })}>
+      <Combobox.Dropdown>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
@@ -139,7 +139,12 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
               <Combobox.Empty>No album found</Combobox.Empty>
             ) : (
               albums?.models?.map((album) => (
-                <Combobox.Option value={album.title} key={album.id} onClick={() => setAlbum(album)}>
+                <Combobox.Option
+                  key={album.id}
+                  value={album.title}
+                  aria-label={album.title}
+                  onClick={() => setAlbum(album)}
+                >
                   <Group gap={'xs'} align={'center'} wrap={'nowrap'}>
                     <Avatar
                       size={'sm'}
