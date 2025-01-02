@@ -1,36 +1,28 @@
 import Difficulty from '../utils/enums/Difficulty.ts'
-import { useMemo } from 'react'
-import { useMantineTheme } from '@mantine/core'
+import { MantineTheme, useMantineTheme } from '@mantine/core'
 
-export default function useDifficultyInfo(difficulty: Difficulty): {
+interface useDifficultyInfoResult {
   number: number
   color: string
-} {
+}
+
+interface difficultyInfoMapResult {
+  number: number
+  getColor: (theme: MantineTheme) => string
+}
+
+const difficultyInfoMap = new Map<Difficulty, difficultyInfoMapResult>([
+  [Difficulty.Easy, { number: 1, getColor: (theme) => theme.colors.green[5] }],
+  [Difficulty.Medium, { number: 2, getColor: (theme) => theme.colors.yellow[5] }],
+  [Difficulty.Hard, { number: 3, getColor: (theme) => theme.colors.orange[5] }],
+  [Difficulty.Impossible, { number: 4, getColor: (theme) => theme.colors.red[6] }]
+])
+
+export default function useDifficultyInfo(difficulty: Difficulty): useDifficultyInfoResult {
   const theme = useMantineTheme()
-
-  return useMemo(() => {
-    let number: number
-    let color: string
-
-    switch (difficulty) {
-      case Difficulty.Easy:
-        number = 1
-        color = theme.colors.green[5]
-        break
-      case Difficulty.Medium:
-        number = 2
-        color = theme.colors.yellow[5]
-        break
-      case Difficulty.Hard:
-        number = 3
-        color = theme.colors.orange[5]
-        break
-      case Difficulty.Impossible:
-        number = 4
-        color = theme.colors.red[6]
-        break
-    }
-
-    return { number, color }
-  }, [difficulty])
+  const result = difficultyInfoMap.get(difficulty)
+  return {
+    number: result.number,
+    color: result.getColor(theme)
+  }
 }

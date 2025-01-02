@@ -81,6 +81,14 @@ export function reduxRouterRender(
 
 // Hooks
 
+export function mantineRenderHook(hook: (props: unknown) => unknown) {
+  return renderHook(hook, {
+    wrapper: ({ children }: { children: ReactNode }) => (
+      <MantineProviderComponent>{children}</MantineProviderComponent>
+    )
+  })
+}
+
 export function reduxRenderHook(
   hook: (props: unknown) => unknown,
   preloadedState?: Partial<RootState>
