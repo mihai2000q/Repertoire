@@ -206,7 +206,7 @@ describe('Albums', () => {
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/album-card-/)).toHaveLength(totalCount - pageSize)
     expect(
-      screen.getByText(`${pageSize} - ${totalCount} albums out of ${totalCount}`)
+      screen.getByText(`${pageSize + 1} - ${totalCount} albums out of ${totalCount}`)
     ).toBeInTheDocument()
   })
 
@@ -271,7 +271,7 @@ describe('Albums', () => {
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('unknown-album-card')).toBeInTheDocument()
     expect(
-      screen.getByText(`${pageSize} - ${totalCount + 1} albums out of ${totalCount + 1}`)
+      screen.getByText(`${pageSize + 1} - ${totalCount + 1} albums out of ${totalCount + 1}`)
     ).toBeInTheDocument()
   })
 })

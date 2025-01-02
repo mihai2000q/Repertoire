@@ -162,7 +162,7 @@ describe('Playlists', () => {
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/playlist-card-/)).toHaveLength(totalCount - pageSize)
     expect(
-      screen.getByText(`${pageSize} - ${totalCount} playlists out of ${totalCount}`)
+      screen.getByText(`${pageSize + 1} - ${totalCount} playlists out of ${totalCount}`)
     ).toBeInTheDocument()
   })
 
