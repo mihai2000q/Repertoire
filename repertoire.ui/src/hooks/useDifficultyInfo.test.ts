@@ -22,4 +22,13 @@ describe('use Difficulty Info', () => {
       color: output.getColor(theme.current as MantineTheme)
     })
   })
+
+  it('should return default values when the difficulty is undefined', () => {
+    const { result } = mantineRenderHook(() => useDifficultyInfo(undefined))
+
+    expect(result.current).toStrictEqual({
+      number: 0,
+      color: ''
+    })
+  })
 })

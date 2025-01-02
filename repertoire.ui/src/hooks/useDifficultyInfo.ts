@@ -19,6 +19,7 @@ const difficultyInfoMap = new Map<Difficulty, difficultyInfoMapResult>([
 ])
 
 export default function useDifficultyInfo(difficulty: Difficulty): useDifficultyInfoResult {
+  if (!difficulty) return { number: 0, color: '' }
   const theme = useMantineTheme()
   const result = difficultyInfoMap.get(difficulty)
   return {
