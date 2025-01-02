@@ -146,7 +146,7 @@ describe('Artists', () => {
       screen.getByText(`${initialCurrentPage} - ${artists.length} artists out of ${totalCount}`)
     ).toBeInTheDocument()
     artists.forEach((artist) =>
-      expect(screen.getByLabelText(`artist-card-${artist.id}`)).toBeInTheDocument()
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('artists-pagination')).toBeInTheDocument()
   })

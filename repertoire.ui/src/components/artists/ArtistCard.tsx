@@ -37,7 +37,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
   return (
     <Stack
-      aria-label={`artist-card-${artist.id}`}
+      aria-label={`artist-card-${artist.name}`}
       align={'center'}
       gap={'xs'}
       style={{

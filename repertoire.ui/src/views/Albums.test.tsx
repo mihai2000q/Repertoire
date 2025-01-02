@@ -123,7 +123,7 @@ describe('Albums', () => {
       screen.getByText(`${initialCurrentPage} - ${albums.length} albums out of ${totalCount}`)
     ).toBeInTheDocument()
     albums.forEach((album) =>
-      expect(screen.getByLabelText(`album-card-${album.id}`)).toBeInTheDocument()
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('albums-pagination')).toBeInTheDocument()
   })

@@ -113,7 +113,7 @@ describe('Songs', () => {
       screen.getByText(`${initialCurrentPage} - ${songs.length} songs out of ${totalCount}`)
     ).toBeInTheDocument()
     songs.forEach((song) =>
-      expect(screen.getByLabelText(`song-card-${song.id}`)).toBeInTheDocument()
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('songs-pagination')).toBeInTheDocument()
   })

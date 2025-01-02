@@ -87,7 +87,7 @@ describe('Playlists', () => {
       screen.getByText(`${initialCurrentPage} - ${playlists.length} playlists out of ${totalCount}`)
     ).toBeInTheDocument()
     playlists.forEach((playlist) =>
-      expect(screen.getByLabelText(`playlist-card-${playlist.id}`)).toBeInTheDocument()
+      expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('playlists-pagination')).toBeInTheDocument()
   })

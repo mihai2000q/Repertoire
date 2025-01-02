@@ -43,7 +43,7 @@ function AlbumCard({ album }: AlbumCardProps) {
 
   return (
     <Stack
-      aria-label={`album-card-${album.id}`}
+      aria-label={`album-card-${album.title}`}
       align={'center'}
       gap={0}
       style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
