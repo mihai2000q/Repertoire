@@ -12,11 +12,11 @@ import Song from '../../types/models/Song.ts'
 interface AlbumSongsCardProps {
   album: Album | undefined
   songs: Song[] | undefined
-  isFetching: boolean
   isUnknownAlbum: boolean
+  isFetching?: boolean
 }
 
-function AlbumSongsCard({ album, songs, isFetching, isUnknownAlbum }: AlbumSongsCardProps) {
+function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongsCardProps) {
   const [removeSongsFromAlbum] = useRemoveSongsFromAlbumMutation()
 
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
@@ -28,7 +28,7 @@ function AlbumSongsCard({ album, songs, isFetching, isUnknownAlbum }: AlbumSongs
   }
 
   return (
-    <Card variant={'panel'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
+    <Card aria-label={'songs-card'} variant={'panel'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
@@ -37,7 +37,7 @@ function AlbumSongsCard({ album, songs, isFetching, isUnknownAlbum }: AlbumSongs
           <Space flex={1} />
           <Menu position={'bottom-end'}>
             <Menu.Target>
-              <ActionIcon size={'md'} variant={'grey'}>
+              <ActionIcon aria-label={'songs-more-menu'} size={'md'} variant={'grey'}>
                 <IconDots size={15} />
               </ActionIcon>
             </Menu.Target>
@@ -64,7 +64,10 @@ function AlbumSongsCard({ album, songs, isFetching, isUnknownAlbum }: AlbumSongs
             />
           ))}
           {(isUnknownAlbum || album.songs.length === 0) && (
-            <NewHorizontalCard onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}>
+            <NewHorizontalCard
+              ariaLabel={`new-song-card`}
+              onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}
+            >
               Add New Song{isUnknownAlbum ? '' : 's'}
             </NewHorizontalCard>
           )}

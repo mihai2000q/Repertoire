@@ -41,7 +41,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== album.title ||
-          values.releaseDate.toISOString() !== new Date(album.releaseDate).toISOString() ||
+          values.releaseDate?.toISOString() !== new Date(album.releaseDate).toISOString() ||
           values.image !== album.imageUrl
       )
     }
