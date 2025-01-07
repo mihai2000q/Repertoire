@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit'
 import { reducer, RootState } from './state/store'
 import { api } from './state/api'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 
 const MantineProviderComponent = ({ children }: { children: ReactNode }) => (
@@ -72,6 +72,36 @@ export function reduxRouterRender(
           <BrowserRouter>
             <MantineProviderComponent>{children}</MantineProviderComponent>
           </BrowserRouter>
+        </Provider>
+      )
+    }),
+    store
+  ]
+}
+
+export function reduxMemoryRouterRender(
+  ui: ReactNode,
+  path: string,
+  initialEntries: string[],
+  preloadedState?: Partial<RootState>
+): [RenderResult, EnhancedStore] {
+  const store = configureStore({
+    reducer: reducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
+    preloadedState
+  })
+
+  return [
+    render(ui, {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <Provider store={store}>
+          <MantineProviderComponent>
+            <MemoryRouter initialEntries={initialEntries}>
+              <Routes>
+                <Route path={path} element={children} />
+              </Routes>
+            </MemoryRouter>
+          </MantineProviderComponent>
         </Provider>
       )
     }),
