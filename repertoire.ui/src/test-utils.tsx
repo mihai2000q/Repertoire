@@ -8,12 +8,22 @@ import { reducer, RootState } from './state/store'
 import { api } from './state/api'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
+import { ToastContainer } from 'react-toastify'
 
 const MantineProviderComponent = ({ children }: { children: ReactNode }) => (
   <MantineProvider theme={theme} stylesTransform={emotionTransform}>
     <MantineEmotionProvider>{children}</MantineEmotionProvider>
   </MantineProvider>
 )
+
+export function withToastify(ui: ReactNode) {
+  return (
+    <>
+      <ToastContainer />
+      {ui}
+    </>
+  )
+}
 
 export function mantineRender(ui: ReactNode) {
   return render(ui, {

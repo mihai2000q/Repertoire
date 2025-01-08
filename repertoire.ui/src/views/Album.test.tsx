@@ -36,7 +36,7 @@ describe('Album', () => {
 
   const album: AlbumType = {
     id: '1',
-    title: 'Song 1',
+    title: 'Album 1',
     createdAt: '',
     updatedAt: '',
     releaseDate: null,

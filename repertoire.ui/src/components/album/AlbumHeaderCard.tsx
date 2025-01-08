@@ -70,6 +70,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
             fallbackSrc={albumPlaceholder}
             radius={'lg'}
+            alt={isUnknownAlbum ? 'unknown-album' : album.title}
             style={(theme) => ({
               boxShadow: theme.shadows.lg
             })}
@@ -97,7 +98,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             {album?.artist && (
               <>
                 <Group gap={'xs'}>
-                  <Avatar size={35} src={album.artist.imageUrl ?? userPlaceholder} />
+                  <Avatar size={35} src={album.artist.imageUrl ?? userPlaceholder} alt={album.artist.name} />
                   <Text
                     fw={600}
                     fz={'lg'}
