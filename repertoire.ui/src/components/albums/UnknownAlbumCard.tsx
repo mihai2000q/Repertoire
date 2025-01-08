@@ -31,6 +31,7 @@ function UnknownArtistCard() {
           radius={'lg'}
           src={unknownPlaceholder}
           onClick={handleClick}
+          alt={'unknown-album'}
           sx={(theme) => ({
             cursor: 'pointer',
             transition: '0.3s',

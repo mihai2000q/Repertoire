@@ -32,8 +32,8 @@ function AlbumCard({ album }: AlbumCardProps) {
     navigate(`/album/${album.id}`)
   }
 
-  function handleArtistClick(artistId: string) {
-    dispatch(openArtistDrawer(artistId))
+  function handleArtistClick() {
+    dispatch(openArtistDrawer(album.artist.id))
   }
 
   function handleDelete() {
@@ -58,6 +58,7 @@ function AlbumCard({ album }: AlbumCardProps) {
               radius={'lg'}
               src={album.imageUrl}
               fallbackSrc={albumPlaceholder}
+              alt={album.title}
               onClick={handleClick}
               onContextMenu={openMenu}
               sx={(theme) => ({
@@ -89,7 +90,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             ta={'center'}
             c={'dimmed'}
             truncate={'end'}
-            onClick={() => handleArtistClick(album.artist.id)}
+            onClick={handleArtistClick}
             sx={{
               cursor: 'pointer',
               '&:hover': {
