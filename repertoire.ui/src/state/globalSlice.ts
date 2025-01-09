@@ -16,7 +16,6 @@ interface SongDrawer {
 }
 
 export interface GlobalState {
-  userId?: string | undefined
   errorPath?: string | undefined
   artistDrawer: ArtistDrawer
   albumDrawer: AlbumDrawer
@@ -39,9 +38,6 @@ export const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
-    setUserId: (state, action: PayloadAction<string | undefined>) => {
-      state.userId = action.payload
-    },
     setErrorPath: (state, action: PayloadAction<string | undefined>) => {
       state.errorPath = action.payload
     },
@@ -52,6 +48,11 @@ export const globalSlice = createSlice({
     closeArtistDrawer: (state) => {
       state.artistDrawer.open = false
     },
+    deleteArtistDrawer: (state) => {
+      state.artistDrawer.open = false
+      state.artistDrawer.artistId = undefined
+    },
+
     openAlbumDrawer: (state, action: PayloadAction<string | undefined>) => {
       state.albumDrawer.albumId = action.payload
       state.albumDrawer.open = true
@@ -59,25 +60,36 @@ export const globalSlice = createSlice({
     closeAlbumDrawer: (state) => {
       state.albumDrawer.open = false
     },
+    deleteAlbumDrawer: (state) => {
+      state.albumDrawer.open = false
+      state.albumDrawer.albumId = undefined
+    },
+
     openSongDrawer: (state, action: PayloadAction<string | undefined>) => {
       state.songDrawer.songId = action.payload
       state.songDrawer.open = true
     },
     closeSongDrawer: (state) => {
       state.songDrawer.open = false
+    },
+    deleteSongDrawer: (state) => {
+      state.songDrawer.open = false
+      state.songDrawer.songId = undefined
     }
   }
 })
 
 export const {
-  setUserId,
   setErrorPath,
   openArtistDrawer,
   closeArtistDrawer,
+  deleteArtistDrawer,
   openAlbumDrawer,
   closeAlbumDrawer,
+  deleteAlbumDrawer,
   openSongDrawer,
-  closeSongDrawer
+  closeSongDrawer,
+  deleteSongDrawer
 } = globalSlice.actions
 
 export default globalSlice.reducer
