@@ -7,7 +7,7 @@ interface CustomIconMetronomeProps extends SVGProps<SVGSVGElement> {
 }
 
 const CustomIconMetronome = forwardRef<SVGSVGElement, CustomIconMetronomeProps>(
-  ({ color, size = 24, strokeWidth = 2 }, ref) => (
+  ({ color, size = 24, strokeWidth = 2, ...props }, ref) => (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
@@ -21,6 +21,7 @@ const CustomIconMetronome = forwardRef<SVGSVGElement, CustomIconMetronomeProps>(
       strokeLinejoin="round"
       viewBox="0 0 512 512"
       xmlSpace={'preserve'}
+      {...props}
     >
       <g>
         <g>

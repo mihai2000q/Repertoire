@@ -6,7 +6,7 @@ interface CustomIconLesPaulGuitarOutlinedProps extends SVGProps<SVGSVGElement> {
 }
 
 const CustomIconLesPaulGuitarOutlined = forwardRef<SVGSVGElement, CustomIconLesPaulGuitarOutlinedProps>(
-  ({ color, size = 24 }, ref) => (
+  ({ color, size = 24, ...props }, ref) => (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
@@ -18,6 +18,7 @@ const CustomIconLesPaulGuitarOutlined = forwardRef<SVGSVGElement, CustomIconLesP
       strokeLinejoin="round"
       viewBox="0 0 64 64"
       preserveAspectRatio="xMidYMid meet"
+      {...props}
     >
       <circle cx="17.067" cy="56.547" r="1.844" />
       <path d="M24.759 44.225l-4.987-4.982l2.443-2.445L27.2 41.78z" />

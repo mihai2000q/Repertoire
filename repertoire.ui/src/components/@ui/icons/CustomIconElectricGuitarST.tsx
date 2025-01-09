@@ -6,7 +6,7 @@ interface CustomIconElectricGuitarSTProps extends SVGProps<SVGSVGElement> {
 }
 
 const CustomIconElectricGuitarST = forwardRef<SVGSVGElement, CustomIconElectricGuitarSTProps>(
-  ({ color, size = 24 }, ref) => (
+  ({ color, size = 24, ...props }, ref) => (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
@@ -18,6 +18,7 @@ const CustomIconElectricGuitarST = forwardRef<SVGSVGElement, CustomIconElectricG
       strokeLinejoin="round"
       viewBox="0 0 512 512"
       xmlSpace="preserve"
+      {...props}
     >
       <g>
         <path

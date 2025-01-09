@@ -6,7 +6,7 @@ interface CustomIconFlyingV2GuitarProps extends SVGProps<SVGSVGElement> {
 }
 
 const CustomIconFlyingV2Guitar = forwardRef<SVGSVGElement, CustomIconFlyingV2GuitarProps>(
-  ({ color, size = 24 }, ref) => (
+  ({ color, size = 24, ...props }, ref) => (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
@@ -19,6 +19,7 @@ const CustomIconFlyingV2Guitar = forwardRef<SVGSVGElement, CustomIconFlyingV2Gui
       strokeLinejoin="round"
       viewBox="0 0 512 512"
       xmlSpace="preserve"
+      {...props}
     >
       <g>
         <g>
