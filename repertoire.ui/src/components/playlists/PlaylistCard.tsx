@@ -50,6 +50,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
               onMouseLeave={() => setIsImageHovered(false)}
               radius={'lg'}
               src={playlist.imageUrl}
+              alt={playlist.title}
               fallbackSrc={albumPlaceholder}
               onClick={handleClick}
               onContextMenu={openMenu}
