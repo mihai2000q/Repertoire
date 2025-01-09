@@ -61,8 +61,6 @@ describe('Album Header Card', () => {
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText('0 songs')).toBeInTheDocument()
-
-    await user.hover(screen.getByLabelText('header-panel-card'))
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
@@ -104,13 +102,11 @@ describe('Album Header Card', () => {
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
     expect(screen.getByText(/2024/)).toBeInTheDocument()
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
     await user.hover(screen.getByText(/2024/))
     expect(await screen.findByText(/21 October 2024/)).toBeInTheDocument()
-
-    await user.hover(screen.getByLabelText('header-panel-card'))
-    expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
@@ -120,8 +116,6 @@ describe('Album Header Card', () => {
 
   it('should render and display info when the album is unknown', async () => {
     // Arrange
-    const user = userEvent.setup()
-
     const songsTotalCount = 10
 
     // Act
@@ -131,68 +125,65 @@ describe('Album Header Card', () => {
     expect(screen.getByRole('img', { name: 'unknown-album' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
     expect(screen.getByText(`${songsTotalCount} songs`)).toBeInTheDocument()
-
-    await user.hover(screen.getByLabelText('header-panel-card'))
     expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'edit-header' })).not.toBeInTheDocument()
   })
 
-  it('should display info modal', async () => {
-    // Arrange
-    const user = userEvent.setup()
+  describe('on menu', () => {
+    it('should display info modal', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    // Act
-    reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+      // Act
+      reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-    // Assert
-    await user.hover(screen.getByLabelText('header-panel-card'))
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /info/i }))
+      // Assert
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /info/i }))
 
-    expect(screen.getByRole('heading', { name: /album info/i })).toBeInTheDocument()
-  })
+      expect(screen.getByRole('heading', { name: /album info/i })).toBeInTheDocument()
+    })
 
-  it('should display edit header modal from menu', async () => {
-    // Arrange
-    const user = userEvent.setup()
+    it('should display edit header modal', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    // Act
-    reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+      // Act
+      reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-    // Assert
-    await user.hover(screen.getByLabelText('header-panel-card'))
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /edit/i }))
+      // Assert
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-    expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
-  })
+      expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
+    })
 
-  it('should display warning modal and delete album', async () => {
-    // Arrange
-    const user = userEvent.setup()
+    it('should display warning modal and delete album', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    server.use(
-      http.delete(`/albums/${album.id}`, async () => {
-        return HttpResponse.json({ message: 'it worked' })
-      })
-    )
+      server.use(
+        http.delete(`/albums/${album.id}`, async () => {
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
 
-    // Act
-    reduxRouterRender(
-      withToastify(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
-    )
+      // Act
+      reduxRouterRender(
+        withToastify(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+      )
 
-    // Assert
-    await user.hover(screen.getByLabelText('header-panel-card'))
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+      // Assert
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-    expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /yes/i }))
+      await user.click(screen.getByRole('button', { name: /yes/i }))
 
-    expect(window.location.pathname).toBe('/albums')
-    expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
+      expect(window.location.pathname).toBe('/albums')
+      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
+    })
   })
 
   it('should display edit header modal from edit button', async () => {
@@ -203,7 +194,6 @@ describe('Album Header Card', () => {
     reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
     // Assert
-    await user.hover(screen.getByLabelText('header-panel-card'))
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
     expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()

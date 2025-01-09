@@ -23,7 +23,7 @@ describe('Album Song Card', () => {
     // Arrange
 
     // Act
-    reduxRender(<AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} />)
+    reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={false} />)
 
     // Assert
     expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
@@ -37,7 +37,7 @@ describe('Album Song Card', () => {
     const user = userEvent.setup()
 
     // Act
-    reduxRender(<AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} />)
+    reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={false} />)
 
     // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -45,28 +45,27 @@ describe('Album Song Card', () => {
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
 
-  it('should display warning modal which triggers the removal of the item, when clicking the remove button on the menu', async () => {
-    // Arrange
-    const user = userEvent.setup()
+  describe('on menu', () => {
+    it('should display warning modal and remove, when clicking on remove', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    const handleRemove = vitest.fn()
+      const handleRemove = vitest.fn()
 
-    // Act
-    reduxRender(<AlbumSongCard song={song} handleRemove={handleRemove} isUnknownAlbum={false} />)
+      // Act
+      reduxRender(<AlbumSongCard song={song} handleRemove={handleRemove} isUnknownAlbum={false} />)
 
-    // Assert
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /remove/i }))
+      // Assert
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /remove/i }))
 
-    expect(screen.getByText('Remove Song')).toBeInTheDocument()
-    expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /remove song/i })).toBeInTheDocument()
+      expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 
-    expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /yes/i })).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /yes/i }))
 
-    await user.click(screen.getByRole('button', { name: /yes/i }))
-
-    expect(handleRemove).toHaveBeenCalledOnce()
+      expect(handleRemove).toHaveBeenCalledOnce()
+    })
   })
 
   it('should not display the tracking number and some menu options, when the album is unknown', async () => {
@@ -74,7 +73,7 @@ describe('Album Song Card', () => {
     const user = userEvent.setup()
 
     // Act
-    reduxRender(<AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={true} />)
+    reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={true} />)
 
     // Assert
     expect(screen.queryByText(song.albumTrackNo)).not.toBeInTheDocument()

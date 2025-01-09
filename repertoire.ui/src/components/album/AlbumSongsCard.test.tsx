@@ -2,12 +2,12 @@ import { reduxRender } from '../../test-utils.tsx'
 import AlbumSongsCard from './AlbumSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Album from '../../types/models/Album.ts'
-import {screen, within} from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import {RemoveSongsFromAlbumRequest} from "../../types/requests/AlbumRequests.ts";
+import { RemoveSongsFromAlbumRequest } from "../../types/requests/AlbumRequests.ts";
 
 describe('Album Songs Card', () => {
   const emptySong: Song = {
@@ -117,36 +117,38 @@ describe('Album Songs Card', () => {
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it('should open add existing songs modal when clicking on the menu item', async () => {
-    // Arrange
-    const user = userEvent.setup()
+  describe('on menu', () => {
+    it('should open add existing songs modal', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    // Act
-    reduxRender(
-      <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
-    )
+      // Act
+      reduxRender(
+        <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
+      )
 
-    // Assert
-    await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
+      // Assert
+      await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
 
-    expect(screen.getByRole('heading', { name: /add existing songs/i })).toBeInTheDocument()
-  })
+      expect(screen.getByRole('heading', { name: /add existing songs/i })).toBeInTheDocument()
+    })
 
-  it('should open add existing songs modal when clicking on the menu item', async () => {
-    // Arrange
-    const user = userEvent.setup()
+    it('should open add new song modal', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    // Act
-    reduxRender(
-      <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
-    )
+      // Act
+      reduxRender(
+        <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
+      )
 
-    // Assert
-    await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
+      // Assert
+      await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
 
-    expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+    })
   })
 
   it('should display new song card when there are no album songs and open Add existing songs modal', async () => {
@@ -183,7 +185,7 @@ describe('Album Songs Card', () => {
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it('should display send remove song from album request when clicking on the more menu of a song card', async () => {
+  it('should send \'remove song from album request\' when clicking on the more menu of a song card', async () => {
     // Arrange
     const user = userEvent.setup()
 

@@ -34,26 +34,16 @@ describe('Album Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render minimal info', async () => {
-    // Arrange
-    const user = userEvent.setup()
-
-    // Act
+  it('should render minimal info', () => {
     reduxRouterRender(<AlbumCard album={album} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText(album.title)).toBeInTheDocument()
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
-
-    await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: album.title }) })
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should render maximal info', async () => {
     // Arrange
-    const user = userEvent.setup()
-
     const localAlbum = {
       ...album,
       artist: artist
@@ -66,7 +56,16 @@ describe('Album Card', () => {
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
+  })
 
+  it('should display menu on right click', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    // Act
+    reduxRouterRender(<AlbumCard album={album} />)
+
+    // Assert
     await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: album.title }) })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
