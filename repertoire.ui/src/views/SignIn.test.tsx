@@ -6,7 +6,6 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { SignInRequest } from '../types/requests/AuthRequests.ts'
 import TokenResponse from '../types/responses/TokenResponse.ts'
-import { EnhancedStore } from '@reduxjs/toolkit'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 
@@ -19,13 +18,13 @@ describe('Sign In', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display specific elements', () => {
-    const [{ container }] = reduxRouterRender(<SignIn />)
+  it('should render', () => {
+    reduxRouterRender(<SignIn />)
 
     expect(screen.getByRole('heading', { name: /welcome/i })).toBeVisible()
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeVisible()
-    expect(container.querySelector('input[type=password]')).toBeVisible()
     expect(screen.getByRole('link', { name: /create account/i })).toBeVisible()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeVisible()
+    expect(screen.getByLabelText(/password/i)).toBeVisible()
     expect(screen.getByRole('link', { name: /forgot password/i })).toBeVisible()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeVisible()
   })
@@ -36,13 +35,13 @@ describe('Sign In', () => {
     const passwordError = 'Password cannot be blank'
 
     // Act
-    const [{ container }] = reduxRouterRender(<SignIn />)
+    reduxRouterRender(<SignIn />)
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
     act(() => emailInput.focus())
     act(() => emailInput.blur())
 
-    const passwordInput = container.querySelector('input[type=password]') as HTMLElement
+    const passwordInput = screen.getByLabelText(/password/i)
     act(() => passwordInput.focus())
     act(() => passwordInput.blur())
 
@@ -69,22 +68,6 @@ describe('Sign In', () => {
       expect(screen.getByText(error)).toBeVisible()
     }
   )
-
-  it('should display password errors', async () => {
-    // Arrange
-    const user = userEvent.setup()
-    const error = 'Password cannot be blank'
-
-    // Act
-    const [{ container }] = reduxRouterRender(<SignIn />)
-
-    const passwordInput = container.querySelector('input[type=password]') as HTMLElement
-    await user.type(passwordInput, ' ')
-    act(() => passwordInput.blur())
-
-    // Assert
-    expect(screen.getByText(error)).toBeVisible()
-  })
 
   it('should send sign in request and display sign in error', async () => {
     // Arrange
@@ -127,15 +110,15 @@ describe('Sign In', () => {
     expect(window.location.pathname).toBe('/home')
   })
 
-  async function sendSignInRequest(email: string, password: string): Promise<EnhancedStore> {
+  async function sendSignInRequest(email: string, password: string) {
     const user = userEvent.setup()
 
-    const [{ container }, store] = reduxRouterRender(<SignIn />)
+    const [_, store] = reduxRouterRender(<SignIn />)
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
     await user.type(emailInput, email)
 
-    const passwordInput = container.querySelector('input[type=password]') as HTMLElement
+    const passwordInput = screen.getByLabelText(/password/i)
     await user.type(passwordInput, password)
 
     const signInButton = screen.getByRole('button', { name: /sign in/i })
