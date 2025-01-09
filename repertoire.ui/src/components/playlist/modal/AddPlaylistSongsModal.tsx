@@ -142,7 +142,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                       onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
                       pr={'sm'}
                     />
-                    <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
+                    <Avatar radius={'md'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={4}>
                         <Text fw={500} truncate={'end'}>

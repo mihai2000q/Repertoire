@@ -1,5 +1,15 @@
 import Song from '../../../types/models/Song.ts'
-import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
 import {
   useDeleteImageFromSongMutation,
   useSaveImageToSongMutation,
@@ -9,7 +19,7 @@ import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validation/songsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
-import { IconCalendarFilled } from '@tabler/icons-react'
+import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 
 interface EditSongHeaderModalProps {
@@ -87,6 +97,18 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
               setImage={setImage}
               defaultValue={song.imageUrl}
             />
+
+            {!image && song.album?.imageUrl && (
+              <Group gap={6}>
+                <Box c={'cyan.8'} mt={3}>
+                  <IconInfoCircleFilled size={15} />
+                </Box>
+
+                <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                  The song image is inherited from the album
+                </Text>
+              </Group>
+            )}
 
             <TextInput
               withAsterisk={true}

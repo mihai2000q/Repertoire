@@ -59,7 +59,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
         py={'xs'}
         onClick={handleClick}
       >
-        <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} alt={song.title} />
+        <Avatar radius={'8px'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} alt={song.title} />
 
         <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
           <Group gap={4}>

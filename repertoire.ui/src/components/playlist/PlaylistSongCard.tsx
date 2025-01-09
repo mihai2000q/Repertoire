@@ -65,7 +65,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
           {song.playlistTrackNo}
         </Text>
 
-        <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
+        <Avatar radius={'8px'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
 
         <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
           <Group gap={4}>
