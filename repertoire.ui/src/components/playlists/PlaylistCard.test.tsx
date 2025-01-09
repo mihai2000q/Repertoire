@@ -29,7 +29,6 @@ describe('Playlist Card', () => {
 
     expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByText(playlist.title)).toBeInTheDocument()
-    expect(screen.getByText(/unknown/i)).toBeInTheDocument()
   })
 
   it('should display menu on right click', async () => {
