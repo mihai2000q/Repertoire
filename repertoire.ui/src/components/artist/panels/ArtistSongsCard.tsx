@@ -32,21 +32,21 @@ import { useRemoveSongsFromArtistMutation } from '../../../state/artistsApi.ts'
 interface ArtistSongsCardProps {
   songs: WithTotalCountResponse<Song>
   isLoading: boolean
-  isFetching: boolean
   isUnknownArtist: boolean
   order: Order
   setOrder: Dispatch<SetStateAction<Order>>
   artistId: string | undefined
+  isFetching?: boolean
 }
 
 function ArtistSongsCard({
   songs,
   isLoading,
-  isFetching,
   isUnknownArtist,
   order,
   setOrder,
-  artistId
+  artistId,
+  isFetching
 }: ArtistSongsCardProps) {
   const [removeSongsFromArtist] = useRemoveSongsFromArtistMutation()
 
@@ -58,79 +58,80 @@ function ArtistSongsCard({
     removeSongsFromArtist({ songIds: songIds, id: artistId })
   }
 
+  if (isLoading) return <ArtistSongsLoader />
+
   return (
-    <Card variant={'panel'} p={0} h={'100%'} mb={'xs'}>
-      {isLoading ? (
-        <ArtistSongsLoader />
-      ) : (
-        <Stack gap={0}>
-          <LoadingOverlay visible={isFetching} />
+    <Card variant={'panel'} aria-label={'songs-card'} p={0} h={'100%'} mb={'xs'}>
+      <Stack gap={0}>
+        <LoadingOverlay visible={isFetching} />
 
-          <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
-            <Text fw={600}>Songs</Text>
+        <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
+          <Text fw={600}>Songs</Text>
 
-            <Menu shadow={'sm'}>
-              <Menu.Target>
-                <Button
-                  variant={'subtle'}
-                  size={'compact-xs'}
-                  rightSection={<IconCaretDownFilled size={11} />}
-                  styles={{ section: { marginLeft: 4 } }}
+          <Menu shadow={'sm'}>
+            <Menu.Target>
+              <Button
+                variant={'subtle'}
+                size={'compact-xs'}
+                rightSection={<IconCaretDownFilled size={11} />}
+                styles={{ section: { marginLeft: 4 } }}
+              >
+                {order.label}
+              </Button>
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              {artistSongsOrders.map((o) => (
+                <Menu.Item
+                  key={o.value}
+                  leftSection={order === o && <IconCheck size={12} />}
+                  onClick={() => setOrder(o)}
                 >
-                  {order.label}
-                </Button>
-              </Menu.Target>
-
-              <Menu.Dropdown>
-                {artistSongsOrders.map((o) => (
-                  <Menu.Item
-                    key={o.value}
-                    leftSection={order === o && <IconCheck size={12} />}
-                    onClick={() => setOrder(o)}
-                  >
-                    {o.label}
-                  </Menu.Item>
-                ))}
-              </Menu.Dropdown>
-            </Menu>
-
-            <Space flex={1} />
-
-            <Menu position={'bottom-end'}>
-              <Menu.Target>
-                <ActionIcon size={'md'} variant={'grey'}>
-                  <IconDots size={15} />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {!isUnknownArtist && (
-                  <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
-                    Add Existing Songs
-                  </Menu.Item>
-                )}
-                <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
-                  Add New Song
+                  {o.label}
                 </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Group>
-          <Stack gap={0}>
-            {songs.models.map((song) => (
-              <ArtistSongCard
-                key={song.id}
-                song={song}
-                handleRemove={() => handleRemoveSongsFromArtist([song.id])}
-                isUnknownArtist={isUnknownArtist}
-              />
-            ))}
-            {songs.models.length === songs.totalCount && (
-              <NewHorizontalCard onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}>
-                Add New Songs
-              </NewHorizontalCard>
-            )}
-          </Stack>
+              ))}
+            </Menu.Dropdown>
+          </Menu>
+
+          <Space flex={1} />
+
+          <Menu position={'bottom-end'}>
+            <Menu.Target>
+              <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
+                <IconDots size={15} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              {!isUnknownArtist && (
+                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
+                  Add Existing Songs
+                </Menu.Item>
+              )}
+              <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
+                Add New Song
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
+        <Stack gap={0}>
+          {songs.models.map((song) => (
+            <ArtistSongCard
+              key={song.id}
+              song={song}
+              handleRemove={() => handleRemoveSongsFromArtist([song.id])}
+              isUnknownArtist={isUnknownArtist}
+            />
+          ))}
+          {songs.models.length === songs.totalCount && (
+            <NewHorizontalCard
+              ariaLabel={'new-songs-card'}
+              onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
+            >
+              Add New Songs
+            </NewHorizontalCard>
+          )}
         </Stack>
-      )}
+      </Stack>
 
       <AddNewArtistSongModal
         opened={openedAddNewSong}

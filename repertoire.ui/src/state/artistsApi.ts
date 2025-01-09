@@ -6,7 +6,7 @@ import {
   AddSongsToArtistRequest,
   CreateArtistRequest,
   GetArtistsRequest,
-  RemoveAlbumsFromAristRequest,
+  RemoveAlbumsFromArtistRequest,
   RemoveSongsFromArtistRequest,
   SaveImageToArtistRequest,
   UpdateArtistRequest
@@ -75,7 +75,7 @@ const artistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Artists', 'Albums', 'Songs']
     }),
-    removeAlbumsFromArtist: build.mutation<HttpMessageResponse, RemoveAlbumsFromAristRequest>({
+    removeAlbumsFromArtist: build.mutation<HttpMessageResponse, RemoveAlbumsFromArtistRequest>({
       query: (body) => ({
         url: `artists/remove-albums`,
         method: 'PUT',

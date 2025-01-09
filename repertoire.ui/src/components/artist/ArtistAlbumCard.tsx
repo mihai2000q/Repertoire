@@ -39,6 +39,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
         ref={ref}
         align={'center'}
         wrap={'nowrap'}
+        aria-label={`album-card-${album.title}`}
         sx={(theme) => ({
           cursor: 'default',
           borderRadius: '8px',
@@ -52,7 +53,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
         py={'xs'}
         onClick={handleClick}
       >
-        <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} />
+        <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} alt={album.title} />
 
         <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
           <Text fw={500} truncate={'end'}>
@@ -70,6 +71,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
             <ActionIcon
               size={'md'}
               variant={'grey'}
+              aria-label={'more-menu'}
               onClick={(e) => e.stopPropagation()}
               style={{
                 transition: '0.3s',
