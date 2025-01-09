@@ -37,8 +37,6 @@ describe('Artist Song Card', () => {
 
   it('should render and display maximal information', async () => {
     // Arrange
-    const user = userEvent.setup()
-
     const localSong: Song = {
       ...song,
       releaseDate: '2024-10-11',

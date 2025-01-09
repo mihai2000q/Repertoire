@@ -6,7 +6,6 @@ import { setupServer } from 'msw/node'
 import Song from 'src/types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
-import { RootState } from 'src/state/store.ts'
 
 describe('Artist Header Card', () => {
   const emptySong: Song = {

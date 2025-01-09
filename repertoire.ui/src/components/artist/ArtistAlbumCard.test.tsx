@@ -14,13 +14,8 @@ describe('Artist Album Card', () => {
   }
 
   it('should render and display minimal information', async () => {
-    // Arrange
-    const user = userEvent.setup()
-
-    // Act
     reduxRender(<ArtistAlbumCard album={album} handleRemove={() => { }} isUnknownArtist={false} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText(album.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
@@ -28,8 +23,6 @@ describe('Artist Album Card', () => {
 
   it('should render and display maximal information', async () => {
     // Arrange
-    const user = userEvent.setup()
-
     const localAlbum: Album = {
       ...album,
       releaseDate: '2024-10-11'
