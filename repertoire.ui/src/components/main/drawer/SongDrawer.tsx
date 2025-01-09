@@ -111,7 +111,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
           pos={'relative'}
         >
           <AspectRatio ratio={4 / 3}>
-            <Image src={song.imageUrl} fallbackSrc={imagePlaceholder} alt={song.title} />
+            <Image src={song.imageUrl ?? song.album?.imageUrl} fallbackSrc={imagePlaceholder} alt={song.title} />
           </AspectRatio>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>

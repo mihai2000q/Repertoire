@@ -155,7 +155,7 @@ function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={1.4}>
-                  <Avatar radius={'8px'} size={28} src={song.imageUrl ?? songPlaceholder} />
+                  <Avatar radius={'8px'} size={28} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
                 </Grid.Col>
                 <Grid.Col span={9.6}>
                   <Text fw={500} truncate={'end'}>
