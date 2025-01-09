@@ -7,13 +7,14 @@ interface EditPanelCardProps {
   children: ReactNode
   onEditClick: () => void
   p?: string
+  ariaLabel?: string
 }
 
-function EditPanelCard({ children, onEditClick, p }: EditPanelCardProps) {
+function EditPanelCard({ children, onEditClick, p, ariaLabel }: EditPanelCardProps) {
   const { ref, hovered } = useHover()
 
   return (
-    <Card aria-label={'edit-panel-card'} ref={ref} variant={'panel'} p={p}>
+    <Card aria-label={ariaLabel} ref={ref} variant={'panel'} p={p}>
       {children}
 
       <Box pos={'absolute'} right={0} top={0} p={4}>

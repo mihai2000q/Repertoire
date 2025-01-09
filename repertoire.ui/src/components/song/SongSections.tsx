@@ -51,7 +51,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
   }
 
   return (
-    <Card variant={'panel'} p={0}>
+    <Card variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
         <Group align={'center'} p={'md'} gap={4}>
           <Text fw={600} inline>

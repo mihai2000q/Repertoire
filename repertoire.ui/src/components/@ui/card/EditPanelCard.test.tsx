@@ -24,8 +24,7 @@ describe('Edit Panel Card', () => {
 
     expect(button).not.toBeVisible()
 
-    const card = screen.getByLabelText('edit-panel-card')
-    await user.hover(card)
+    await user.hover(screen.getByTestId(testId))
 
     expect(button).toBeVisible()
 

@@ -7,7 +7,7 @@ interface SongOverallCardProps {
 
 function SongOverallCard({ song }: SongOverallCardProps) {
   return (
-    <Card variant={'panel'} p={'md'}>
+    <Card variant={'panel'} aria-label={'song-overall-card'} p={'md'}>
       <Stack>
         <Tooltip
           label={"This panel is calculated based on sections' data"}

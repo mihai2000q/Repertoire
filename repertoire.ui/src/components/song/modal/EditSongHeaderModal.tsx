@@ -51,7 +51,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== song.title ||
-          values.releaseDate.toISOString() !== new Date(song.releaseDate).toISOString() ||
+          values.releaseDate?.toISOString() !== new Date(song.releaseDate).toISOString() ||
           values.image !== song.imageUrl
       )
     }

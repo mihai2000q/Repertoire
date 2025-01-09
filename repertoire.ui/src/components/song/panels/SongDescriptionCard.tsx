@@ -12,7 +12,7 @@ function SongDescriptionCard({ song }: SongDescriptionCardProps) {
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
 
   return (
-    <EditPanelCard p={'md'} onEditClick={openEdit}>
+    <EditPanelCard p={'md'} ariaLabel={'song-description-card'} onEditClick={openEdit}>
       <Stack gap={'xs'}>
         <Text fw={600}>Description</Text>
         {song.description ? (
