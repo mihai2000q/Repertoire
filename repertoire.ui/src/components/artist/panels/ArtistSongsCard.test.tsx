@@ -286,7 +286,7 @@ describe('Artist Songs Card', () => {
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it('should send \'remove song from artist request\' when clicking on the more menu of a song card', async () => {
+  it('should send \'remove songs from artist request\' when clicking on the more menu of a song card', async () => {
     // Arrange
     const user = userEvent.setup()
 

@@ -54,6 +54,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
           <Image
             h={150}
             src={playlist.imageUrl}
+            alt={playlist.title}
             fallbackSrc={playlistPlaceholder}
             radius={'lg'}
             style={(theme) => ({

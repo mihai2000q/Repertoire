@@ -84,7 +84,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     <Modal
       opened={opened}
       onClose={onClose}
-      title={'Add Existing Songs'}
+      title={'Add Playlist Songs'}
       styles={{ body: { padding: 0 } }}
     >
       <Modal.Body p={0} pos={'relative'}>

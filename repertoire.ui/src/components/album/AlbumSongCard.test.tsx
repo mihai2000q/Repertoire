@@ -20,12 +20,8 @@ describe('Album Song Card', () => {
   }
 
   it('should render and display information, when the album is not unknown', () => {
-    // Arrange
-
-    // Act
     reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={false} />)
 
-    // Assert
     expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()

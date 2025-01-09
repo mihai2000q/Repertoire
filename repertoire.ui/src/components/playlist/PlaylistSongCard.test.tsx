@@ -1,12 +1,13 @@
 import { reduxRender } from '../../test-utils.tsx'
-import ArtistSongCard from './ArtistSongCard.tsx'
+import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Album from 'src/types/models/Album.ts'
+import Artist from '../../types/models/Artist.ts'
+import Album from '../../types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
 
-describe('Artist Song Card', () => {
+describe('Playlist Song Card', () => {
   const song: Song = {
     id: '1',
     title: 'Song 1',
@@ -17,7 +18,8 @@ describe('Artist Song Card', () => {
     progress: 0,
     sections: [],
     createdAt: '',
-    updatedAt: ''
+    updatedAt: '',
+    playlistTrackNo: 1
   }
 
   const album: Album = {
@@ -28,30 +30,41 @@ describe('Artist Song Card', () => {
     songs: []
   }
 
-  it('should render and display minimal information', async () => {
-    reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} />)
+  const artist: Artist = {
+    id: '1',
+    name: 'Artist 1',
+    createdAt: '',
+    updatedAt: '',
+    albums: [],
+    songs: []
+  }
 
+  it('should render and display minimal info', () => {
+    reduxRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+
+    expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
 
-  it('should render and display maximal information', async () => {
+  it('should render and display maximal info', () => {
     // Arrange
-    const localSong: Song = {
+    const localSong = {
       ...song,
-      releaseDate: '2024-10-11',
+      artist: artist,
       album: album
     }
 
     // Act
-    reduxRender(<ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
 
     // Assert
+    expect(screen.getByText(localSong.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
-    expect(screen.getByText('11 Oct 2024')).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
+    expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
 
@@ -60,7 +73,7 @@ describe('Artist Song Card', () => {
     const user = userEvent.setup()
 
     // Act
-    reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
 
     // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -68,30 +81,15 @@ describe('Artist Song Card', () => {
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
 
-  it('should display less information on the menu when the artist is unknown', async () => {
-    // Arrange
-    const user = userEvent.setup()
-
-    // Act
-    reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={true} />)
-
-    // Assert
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-
-    expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
-  })
-
   describe('on menu', () => {
-    it('should display warning modal and remove song, when clicking on remove', async () => {
+    it('should display warning modal and remove, when clicking on remove', async () => {
       // Arrange
       const user = userEvent.setup()
 
       const handleRemove = vitest.fn()
 
       // Act
-      reduxRender(
-        <ArtistSongCard song={song} handleRemove={handleRemove} isUnknownArtist={false} />
-      )
+      reduxRender(<PlaylistSongCard song={song} handleRemove={handleRemove} />)
 
       // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -116,14 +114,31 @@ describe('Artist Song Card', () => {
     }
 
     // Act
-    const [_, store] = reduxRender(
-      <ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />
-    )
+    const [_, store] = reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
 
     // Assert
     await user.click(screen.getByText(localSong.album.title))
 
     expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(localSong.album.id)
+  })
+
+  it('should open artist drawer on artist name click', async () => {
+    // Arrange
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      artist: artist
+    }
+
+    // Act
+    const [_, store] = reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
+
+    // Assert
+    await user.click(screen.getByText(localSong.artist.name))
+
+    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
+    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
   })
 })
