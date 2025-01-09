@@ -21,6 +21,21 @@ describe('Main', () => {
     expect(screen.queryByTestId('title-bar')).not.toBeInTheDocument() // env not desktop
   })
 
+  it('should render and display just the outlet and title bar when user is not authenticated', () => {
+    // Arrange
+    import.meta.env.VITE_PLATFORM = 'desktop'
+
+    // Act
+    render()
+
+    // Assert
+    expect(screen.getByText('Outlet')).toBeInTheDocument()
+    expect(screen.getByTestId('title-bar')).toBeInTheDocument()
+
+    // restore
+    import.meta.env.VITE_PLATFORM = ''
+  })
+
   it('should render and display topbar, sidebar and outlet when user is authenticated', () => {
     render('some token')
 
