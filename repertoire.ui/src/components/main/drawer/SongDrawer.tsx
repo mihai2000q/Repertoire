@@ -22,7 +22,6 @@ import { useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -32,7 +31,6 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 import { useDisclosure } from '@mantine/hooks'
 import { useState } from 'react'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
@@ -40,6 +38,7 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
+import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -59,8 +58,6 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
-
-  const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(song?.difficulty)
 
   const showInfo =
     song &&
@@ -248,23 +245,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip
-                    label={`This song is ${song.difficulty}`}
-                    openDelay={400}
-                    position={'top'}
-                  >
-                    <Group grow gap={4}>
-                      {Array.from(Array(Object.entries(Difficulty).length)).map((_, i) => (
-                        <Progress
-                          key={i}
-                          size={5}
-                          maw={40}
-                          value={i + 1 <= difficultyNumber ? 100 : 0}
-                          color={difficultyColor}
-                        />
-                      ))}
-                    </Group>
-                  </Tooltip>
+                  <DifficultyBar difficulty={song.difficulty} />
                 </Grid.Col>
               </>
             )}

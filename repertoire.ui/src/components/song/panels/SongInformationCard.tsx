@@ -1,12 +1,11 @@
 import { ActionIcon, Grid, Group, Progress, Stack, Text, Tooltip } from '@mantine/core'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { IconCheck } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import EditPanelCard from '../../@ui/card/EditPanelCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { useDisclosure } from '@mantine/hooks'
-import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 import EditSongInformationModal from '../modal/EditSongInformationModal.tsx'
+import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 
 const NotSet = ({ label }: { label?: string }) => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
@@ -24,8 +23,6 @@ interface SongInformationCardProps {
 function SongInformationCard({ song }: SongInformationCardProps) {
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
 
-  const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(song?.difficulty)
-
   return (
     <EditPanelCard p={'md'} onEditClick={openEdit}>
       <Stack gap={'xs'}>
@@ -37,23 +34,7 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             </Text>
           </Grid.Col>
           <Grid.Col span={secondColSize}>
-            {song.difficulty ? (
-              <Tooltip label={`This song is ${song.difficulty}`} openDelay={400} position={'top'}>
-                <Group grow gap={4}>
-                  {Array.from(Array(Object.entries(Difficulty).length)).map((_, i) => (
-                    <Progress
-                      key={i}
-                      size={5}
-                      maw={40}
-                      value={i + 1 <= difficultyNumber ? 100 : 0}
-                      color={difficultyColor}
-                    />
-                  ))}
-                </Group>
-              </Tooltip>
-            ) : (
-              <NotSet />
-            )}
+            {song.difficulty ? <DifficultyBar difficulty={song.difficulty} /> : <NotSet />}
           </Grid.Col>
 
           <Grid.Col span={firstColSize}>
