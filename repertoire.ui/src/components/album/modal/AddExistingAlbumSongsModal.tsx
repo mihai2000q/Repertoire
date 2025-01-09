@@ -159,7 +159,7 @@ function AddExistingAlbumSongsModal({
                       onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
                       pr={'sm'}
                     />
-                    <Avatar radius={'md'} src={song.imageUrl ?? songPlaceholder} />
+                    <Avatar radius={'md'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
                     <Stack gap={0}>
                       <Text fw={500}>{song.title}</Text>
                       {song.artist && <Text fz={'sm'}>{song.artist.name}</Text>}

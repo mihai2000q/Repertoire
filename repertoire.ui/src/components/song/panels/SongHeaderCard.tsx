@@ -76,7 +76,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         <AspectRatio>
           <Image
             h={150}
-            src={song.imageUrl}
+            src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
             radius={'lg'}
             style={(theme) => ({

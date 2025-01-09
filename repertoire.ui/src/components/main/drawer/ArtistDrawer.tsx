@@ -173,7 +173,7 @@ function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
               <Group key={song.id} align={'center'} gap={'xs'} wrap={'nowrap'}>
-                <Avatar radius={'8px'} size={28} src={song.imageUrl ?? songPlaceholder} />
+                <Avatar radius={'8px'} size={28} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
                 <Stack gap={1}>
                   <Text fw={500} truncate={'end'} inline>
                     {song.title}
