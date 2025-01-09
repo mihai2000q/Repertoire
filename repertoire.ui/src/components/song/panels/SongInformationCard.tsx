@@ -1,4 +1,4 @@
-import { ActionIcon, Grid, Group, Progress, Stack, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Grid, Stack, Text, Tooltip } from '@mantine/core'
 import { IconCheck } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import EditPanelCard from '../../@ui/card/EditPanelCard.tsx'
@@ -65,11 +65,14 @@ function SongInformationCard({ song }: SongInformationCardProps) {
           <Grid.Col span={secondColSize}>
             {song.isRecorded ? (
               <ActionIcon
+                component={'div'}
                 size={'20px'}
+                aria-label={'recorded-icon'}
                 sx={(theme) => ({
                   cursor: 'default',
                   backgroundColor: theme.colors.cyan[5],
-                  '&:hover': { backgroundColor: theme.colors.cyan[5] }
+                  '&:hover': { backgroundColor: theme.colors.cyan[5] },
+                  '&:active': { transform: 'none' }
                 })}
               >
                 <IconCheck size={14} />

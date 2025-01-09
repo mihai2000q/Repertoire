@@ -18,7 +18,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useDeleteSongMutation, useGetSongQuery } from '../../../state/songsApi.ts'
-import { useAppSelector } from '../../../state/store.ts'
+import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -38,20 +38,19 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
+import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts'
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
 
-interface SongDrawerProps {
-  opened: boolean
-  onClose: () => void
-}
-
-function SongDrawer({ opened, onClose }: SongDrawerProps) {
+function SongDrawer() {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
+  const opened = useAppSelector((state) => state.global.songDrawer.open)
   const songId = useAppSelector((state) => state.global.songDrawer.songId)
+  const onClose = () => dispatch(closeSongDrawer())
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
   const [deleteSongMutation] = useDeleteSongMutation()
@@ -80,7 +79,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
 
   function handleDelete() {
     deleteSongMutation(song.id)
-    onClose()
+    dispatch(deleteSongDrawer())
     toast.success(`${song.title} deleted!`)
   }
 
@@ -108,7 +107,11 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
           pos={'relative'}
         >
           <AspectRatio ratio={4 / 3}>
-            <Image src={song.imageUrl ?? song.album?.imageUrl} fallbackSrc={imagePlaceholder} alt={song.title} />
+            <Image
+              src={song.imageUrl ?? song.album?.imageUrl}
+              fallbackSrc={imagePlaceholder}
+              alt={song.title}
+            />
           </AspectRatio>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
@@ -116,6 +119,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
+                  aria-label={'more-menu'}
                   style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
                 >
                   <IconDotsVertical size={20} />
@@ -146,7 +150,11 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
           <Group gap={4}>
             {song.artist && (
               <Group gap={'xs'}>
-                <Avatar size={28} src={song.artist.imageUrl ?? userPlaceholder} />
+                <Avatar
+                  size={28}
+                  src={song.artist.imageUrl ?? userPlaceholder}
+                  alt={song.artist.name}
+                />
                 <Text
                   fw={700}
                   fz={'lg'}
@@ -188,6 +196,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                         size={45}
                         radius={'md'}
                         src={song.album.imageUrl ?? songPlaceholder}
+                        alt={song.album.title}
                       />
                       <Stack gap={2}>
                         <Text fw={500} fz={'xs'} inline>
@@ -285,11 +294,14 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
                   <ActionIcon
+                    component={'div'}
                     size={'20px'}
+                    aria-label={'recorded-icon'}
                     sx={(theme) => ({
                       cursor: 'default',
                       backgroundColor: theme.colors.cyan[5],
-                      '&:hover': { backgroundColor: theme.colors.cyan[5] }
+                      '&:hover': { backgroundColor: theme.colors.cyan[5] },
+                      '&:active': { transform: 'none' }
                     })}
                   >
                     <IconCheck size={14} />
@@ -335,13 +347,14 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
                   <Tooltip.Floating
+                    role={'tooltip'}
                     label={
                       <>
                         <NumberFormatter value={song.confidence} />%
                       </>
                     }
                   >
-                    <Progress flex={1} size={7} value={song.confidence} />
+                    <Progress aria-label={'confidence'} flex={1} size={7} value={song.confidence} />
                   </Tooltip.Floating>
                 </Grid.Col>
               </>
@@ -355,8 +368,14 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating label={<NumberFormatter value={song.progress} />}>
-                    <Progress flex={1} size={7} value={song.progress / 10} color={'green'} />
+                  <Tooltip.Floating role={'tooltip'} label={<NumberFormatter value={song.progress} />}>
+                    <Progress
+                      aria-label={'progress'}
+                      flex={1}
+                      size={7}
+                      value={song.progress / 10}
+                      color={'green'}
+                    />
                   </Tooltip.Floating>
                 </Grid.Col>
               </>
@@ -375,7 +394,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <ActionIcon variant={'transparent'} c={'blue.7'}>
+                    <ActionIcon variant={'transparent'} c={'blue.7'} aria-label={'songsterr'}>
                       <IconGuitarPickFilled size={23} />
                     </ActionIcon>
                   </Anchor>
@@ -390,7 +409,7 @@ function SongDrawer({ opened, onClose }: SongDrawerProps) {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <ActionIcon variant={'transparent'} c={'red.7'}>
+                    <ActionIcon variant={'transparent'} c={'red.7'} aria-label={'youtube'}>
                       <IconBrandYoutubeFilled size={25} />
                     </ActionIcon>
                   </Anchor>

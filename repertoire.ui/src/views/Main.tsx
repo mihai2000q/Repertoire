@@ -9,12 +9,6 @@ import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
 import useTitleBarHeight from '../hooks/useTitleBarHeight'
 import SongDrawer from '../components/main/drawer/SongDrawer.tsx'
-import { useAppDispatch, useAppSelector } from '../state/store.ts'
-import {
-  closeAlbumDrawer as closeAlbumDrawerRedux,
-  closeArtistDrawer as closeArtistDrawerRedux,
-  closeSongDrawer as closeSongDrawerRedux
-} from '../state/globalSlice.ts'
 import AlbumDrawer from '../components/main/drawer/AlbumDrawer.tsx'
 import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
 
@@ -23,16 +17,6 @@ function Main(): ReactElement {
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
-  const dispatch = useAppDispatch()
-
-  const openedArtistDrawer = useAppSelector((state) => state.global.artistDrawer.open)
-  const closeArtistDrawer = () => dispatch(closeArtistDrawerRedux())
-
-  const openedAlbumDrawer = useAppSelector((state) => state.global.albumDrawer.open)
-  const closeAlbumDrawer = () => dispatch(closeAlbumDrawerRedux())
-
-  const openedSongDrawer = useAppSelector((state) => state.global.songDrawer.open)
-  const closeSongDrawer = () => dispatch(closeSongDrawerRedux())
 
   return (
     <Box w={'100%'} h={'100%'}>
@@ -58,9 +42,9 @@ function Main(): ReactElement {
         </AppShell.Main>
       </AppShell>
 
-      <ArtistDrawer opened={openedArtistDrawer} onClose={closeArtistDrawer} />
-      <AlbumDrawer opened={openedAlbumDrawer} onClose={closeAlbumDrawer} />
-      <SongDrawer opened={openedSongDrawer} onClose={closeSongDrawer} />
+      <ArtistDrawer />
+      <AlbumDrawer />
+      <SongDrawer />
     </Box>
   )
 }

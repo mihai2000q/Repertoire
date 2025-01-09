@@ -131,7 +131,7 @@ function Topbar(): ReactElement {
             <Menu.Target>
               <UnstyledButton
                 p={'4px'}
-                data-testid={'user-button'}
+                aria-label={'user'}
                 sx={(theme) => ({
                   borderRadius: '16px',
                   cursor: 'pointer',
