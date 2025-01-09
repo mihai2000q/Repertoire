@@ -91,6 +91,7 @@ describe('Album', () => {
     reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
 
     // Assert
+    expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
   })
@@ -103,6 +104,7 @@ describe('Album', () => {
     reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
 
     // Assert
+    expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
   })
