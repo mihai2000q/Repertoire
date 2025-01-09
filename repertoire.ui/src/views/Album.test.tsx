@@ -57,9 +57,6 @@ describe('Album', () => {
         totalCount: songs.length
       }
       return HttpResponse.json(response)
-    }),
-    http.get(`/albums/${album.id}`, async () => {
-      return HttpResponse.json(album)
     })
   ]
 

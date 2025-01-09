@@ -26,17 +26,11 @@ describe('Artist', () => {
     totalCount: 0
   }
 
-  const handlers = [
-    http.get(`/artists/${artist.id}`, async () => {
-      return HttpResponse.json(artist)
-    })
-  ]
-
   const getArtist = http.get(`/artists/${artist.id}`, async () => {
     return HttpResponse.json(artist)
   })
 
-  const server = setupServer(...handlers)
+  const server = setupServer()
 
   beforeAll(() => server.listen())
 
