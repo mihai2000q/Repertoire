@@ -14,7 +14,7 @@ function UnknownArtistCard() {
 
   return (
     <Stack
-      aria-label="unknown-artist-card"
+      aria-label={'unknown-artist-card'}
       align={'center'}
       gap={'xs'}
       style={{
@@ -28,6 +28,7 @@ function UnknownArtistCard() {
         onMouseEnter={() => setIsAvatarHovered(true)}
         onMouseLeave={() => setIsAvatarHovered(false)}
         src={unknownPlaceholder}
+        alt={'unknown-artist'}
         size={125}
         style={(theme) => ({
           cursor: 'pointer',

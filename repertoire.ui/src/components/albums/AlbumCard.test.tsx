@@ -70,27 +70,29 @@ describe('Album Card', () => {
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
-  it('should display warning modal when clicking on delete', async () => {
-    // Arrange
-    const user = userEvent.setup()
+  describe('on menu', () => {
+    it('should display warning modal when clicking on delete', async () => {
+      // Arrange
+      const user = userEvent.setup()
 
-    server.use(
-      http.delete(`/albums/${album.id}`, async () => {
-        return HttpResponse.json({ message: 'it worked' })
-      })
-    )
+      server.use(
+        http.delete(`/albums/${album.id}`, async () => {
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
 
-    // Act
-    reduxRouterRender(withToastify(<AlbumCard album={album} />))
+      // Act
+      reduxRouterRender(withToastify(<AlbumCard album={album} />))
 
-    // Assert
-    await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: album.title }) })
-    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+      // Assert
+      await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: album.title }) })
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-    expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: /yes/i }))
+      expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /yes/i }))
 
-    expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
+      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
+    })
   })
 
   it('should navigate on click', async () => {
