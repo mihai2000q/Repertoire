@@ -72,14 +72,13 @@ describe('Playlists', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are playlists', async () => {
-    const [{ container }] = reduxRouterRender(<Playlists />)
+    reduxRouterRender(<Playlists />)
 
     expect(screen.getByRole('heading', { name: /playlists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-playlists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-playlists/i })).toBeInTheDocument()
     expect(screen.getByTestId('playlists-loader')).toBeInTheDocument()
-    expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-playlist-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/playlist-card-/)).toHaveLength(playlists.length)

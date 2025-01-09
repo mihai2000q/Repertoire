@@ -108,14 +108,13 @@ describe('Albums', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are albums', async () => {
-    const [{ container }] = reduxRouterRender(<Albums />)
+    reduxRouterRender(<Albums />)
 
     expect(screen.getByRole('heading', { name: /albums/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-album/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-albums/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-albums/i })).toBeInTheDocument()
     expect(screen.getByTestId('albums-loader')).toBeInTheDocument()
-    expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-album-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/album-card-/)).toHaveLength(albums.length)

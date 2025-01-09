@@ -163,7 +163,7 @@ describe('Album Header Card', () => {
       const user = userEvent.setup()
 
       server.use(
-        http.delete(`/albums/${album.id}`, async () => {
+        http.delete(`/albums/${album.id}`, () => {
           return HttpResponse.json({ message: 'it worked' })
         })
       )
@@ -178,7 +178,6 @@ describe('Album Header Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
-
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
       expect(window.location.pathname).toBe('/albums')

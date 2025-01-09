@@ -131,14 +131,13 @@ describe('Artists', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are artists', async () => {
-    const [{ container }] = reduxRouterRender(<Artists />)
+    reduxRouterRender(<Artists />)
 
     expect(screen.getByRole('heading', { name: /artists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-artist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-artists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-artists/i })).toBeInTheDocument()
     expect(screen.getByTestId('artists-loader')).toBeInTheDocument()
-    expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-artist-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/artist-card-/)).toHaveLength(artists.length)

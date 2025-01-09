@@ -115,15 +115,18 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               </>
             )}
             {album?.releaseDate && (
-              <Tooltip
-                label={'Released on ' + dayjs(album.releaseDate).format('DD MMMM YYYY')}
-                openDelay={200}
-                position={'bottom'}
-              >
-                <Text fw={500} c={'dimmed'}>
-                  {dayjs(album.releaseDate).format('YYYY')} •
-                </Text>
-              </Tooltip>
+              <>
+                <Tooltip
+                  label={'Released on ' + dayjs(album.releaseDate).format('DD MMMM YYYY')}
+                  openDelay={200}
+                  position={'bottom'}
+                >
+                  <Text fw={500} c={'dimmed'}>
+                    {dayjs(album.releaseDate).format('YYYY')}
+                  </Text>
+                </Tooltip>
+                <Text fw={500} c={'dimmed'}>•</Text>
+              </>
             )}
             <Text fw={500} c={'dimmed'}>
               {isUnknownAlbum ? songsTotalCount : album.songs.length} song
