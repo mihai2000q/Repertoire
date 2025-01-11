@@ -20,7 +20,7 @@ function DifficultySelect({ option, onChange }: DifficultySelectProps) {
       label={'Difficulty'}
       placeholder={'Select Difficulty'}
       data={difficulties}
-      value={option?.value}
+      value={option?.value ?? null}
       onChange={(_, option) => onChange(option)}
       clearable
     />

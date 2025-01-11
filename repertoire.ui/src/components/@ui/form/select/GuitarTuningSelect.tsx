@@ -28,7 +28,7 @@ function GuitarTuningSelect({ option, onChange }: GuitarTuningSelectProps) {
       label={'Guitar Tuning'}
       placeholder={'Select Guitar Tuning'}
       data={guitarTunings}
-      value={option?.value}
+      value={option?.value ?? null}
       onChange={(_, option) => onChange(option)}
       maxDropdownHeight={150}
       clearable

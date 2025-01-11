@@ -32,12 +32,13 @@ function SongSectionTypeSelect({
       disabled={isLoading}
       placeholder={placeholder}
       data={songSectionTypes}
-      value={option?.value}
+      value={option?.value ?? null}
       onChange={(_, option) => onChange(option)}
       error={error}
       maxDropdownHeight={150}
       clearable={false}
       searchable
+      aria-label={label ?? 'song-section-type'}
     />
   )
 }
