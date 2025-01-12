@@ -43,8 +43,15 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Tooltip>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Tooltip.Floating label={<><NumberFormatter value={song.confidence} />%</>}>
-              <Progress flex={1} size={'sm'} value={song.confidence} />
+            <Tooltip.Floating
+              role={'tooltip'}
+              label={
+                <>
+                  <NumberFormatter value={song.confidence} />%
+                </>
+              }
+            >
+              <Progress aria-label={'confidence'} flex={1} size={'sm'} value={song.confidence} />
             </Tooltip.Floating>
           </Grid.Col>
 
@@ -56,8 +63,14 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Tooltip>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Tooltip.Floating label={<NumberFormatter value={song.progress} />}>
-              <Progress flex={1} size={'sm'} value={song.progress / 10} color={'green'} />
+            <Tooltip.Floating role={'tooltip'} label={<NumberFormatter value={song.progress} />}>
+              <Progress
+                aria-label={'progress'}
+                flex={1}
+                size={'sm'}
+                value={song.progress / 10}
+                color={'green'}
+              />
             </Tooltip.Floating>
           </Grid.Col>
         </Grid>

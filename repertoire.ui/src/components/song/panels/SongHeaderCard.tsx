@@ -78,6 +78,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
             h={150}
             src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
+            alt={song.title}
             radius={'lg'}
             style={(theme) => ({
               boxShadow: theme.shadows.lg
@@ -94,7 +95,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Group gap={4}>
             {song.artist && (
               <Group gap={'xs'}>
-                <Avatar size={35} src={song.artist.imageUrl ?? userPlaceholder} />
+                <Avatar
+                  size={35}
+                  src={song.artist.imageUrl ?? userPlaceholder}
+                  alt={song.artist.name}
+                />
                 <Text
                   fw={700}
                   fz={'lg'}
@@ -138,6 +143,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         size={45}
                         radius={'md'}
                         src={song.album.imageUrl ?? songPlaceholder}
+                        alt={song.album.title}
                       />
                       <Stack gap={2}>
                         <Text fw={500} fz={'xs'} inline>

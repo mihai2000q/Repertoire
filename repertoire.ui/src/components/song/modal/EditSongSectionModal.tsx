@@ -18,6 +18,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { EditSongSectionForm, editSongSectionValidation } from '../../../validation/songsForm.ts'
 import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
+import {toast} from "react-toastify";
 
 interface EditSongSectionModalProps {
   opened: boolean
@@ -67,7 +68,7 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
     label: section.songSectionType.name
   })
   useEffect(() => {
-    form.setFieldValue('typeId', type.value)
+    form.setFieldValue('typeId', type?.value ?? null)
   }, [type])
 
   async function updateSongSection({ name, rehearsals, confidence }) {
@@ -85,13 +86,14 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
 
     onClose()
     setHasChanged(false)
+    toast.info(`${name} updated!`)
   }
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Section'}>
       <Modal.Body px={'xs'} py={0}>
         <form onSubmit={form.onSubmit(updateSongSection)}>
-          <LoadingOverlay visible={isLoading} />
+          <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
           <Stack>
             <TextInput
@@ -127,9 +129,10 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
                 Confidence
               </Text>
               <Slider
+                thumbLabel={'confidence'}
+                label={(value) => `${value}%`}
                 key={form.key('confidence')}
                 {...form.getInputProps('confidence')}
-                label={(value) => `${value}%`}
               />
             </Stack>
 

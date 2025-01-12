@@ -53,6 +53,7 @@ function AddNewSongModalSecondStep({
   setDifficulty,
   album
 }: AddNewSongModalSecondStepProps) {
+  // TODO: Use Song Section Select
   const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
   const songSectionTypes = songSectionTypesData?.map((type) => ({
     value: type.id,

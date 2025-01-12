@@ -37,6 +37,7 @@ function SongSectionTypeSelect({
       error={error}
       maxDropdownHeight={150}
       clearable={false}
+      allowDeselect={false}
       searchable
       aria-label={label ?? 'song-section-type'}
     />

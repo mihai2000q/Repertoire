@@ -2,17 +2,17 @@ import { ComboboxItem, Select } from '@mantine/core'
 import Difficulty from '../../../../utils/enums/Difficulty.ts'
 import { IconStarFilled } from '@tabler/icons-react'
 
+const difficulties = Object.entries(Difficulty).map(([key, value]) => ({
+  value: value,
+  label: key
+}))
+
 interface DifficultySelectProps {
   option: ComboboxItem | null
   onChange: (option: ComboboxItem | null) => void
 }
 
 function DifficultySelect({ option, onChange }: DifficultySelectProps) {
-  const difficulties = Object.entries(Difficulty).map(([key, value]) => ({
-    value: value,
-    label: key
-  }))
-
   return (
     <Select
       flex={1}
