@@ -11,11 +11,12 @@ describe('Difficulty Select', () => {
     const user = userEvent.setup()
 
     const [difficultyLabel, difficultyValue] = Object.entries(Difficulty)[1]
+    const newOption = { label: difficultyLabel, value: difficultyValue }
 
     const onChange = vitest.fn()
 
     // Act
-    mantineRender(<DifficultySelect option={null} onChange={onChange} />)
+    const { rerender } = mantineRender(<DifficultySelect option={null} onChange={onChange} />)
 
     // Assert
     expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue('')
@@ -31,7 +32,9 @@ describe('Difficulty Select', () => {
     await user.click(selectedOption)
 
     expect(onChange).toHaveBeenCalledOnce()
-    expect(onChange).toHaveBeenCalledWith({ label: difficultyLabel, value: difficultyValue })
+    expect(onChange).toHaveBeenCalledWith(newOption)
+
+    rerender(<DifficultySelect option={newOption} onChange={onChange} />)
 
     expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue(difficultyLabel)
   })

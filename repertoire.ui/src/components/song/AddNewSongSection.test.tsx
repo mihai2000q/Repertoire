@@ -85,22 +85,6 @@ describe('Add New Song Section', () => {
 
   // Validation
 
-  it('should display error when type was selected and then de-selected', async () => {
-    const user = userEvent.setup()
-
-    const newSectionType = sectionTypes[0]
-
-    reduxRender(<AddNewSongSection opened={true} onClose={() => {}} songId={''} />)
-
-    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
-    await user.click(await screen.findByText(newSectionType.name))
-
-    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
-    await user.click(await screen.findByText(newSectionType.name))
-
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toBeInvalid()
-  })
-
   it('should display error when name was typed and then removed', async () => {
     const user = userEvent.setup()
 

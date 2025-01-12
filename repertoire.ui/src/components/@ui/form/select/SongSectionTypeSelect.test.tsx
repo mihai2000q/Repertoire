@@ -42,13 +42,14 @@ describe('Song Section Type Select', () => {
     const user = userEvent.setup()
 
     const type = sectionTypes[0]
+    const newOption = { label: type.name, value: type.id }
 
     const onChange = vitest.fn()
 
     const label = 'label'
 
     // Act
-    reduxRender(<SongSectionTypeSelect label={label} option={null} onChange={onChange} />)
+    const [{ rerender }] = reduxRender(<SongSectionTypeSelect label={label} option={null} onChange={onChange} />)
 
     // Assert
     expect(screen.getByRole('textbox', { name: label })).toHaveValue('')
@@ -64,7 +65,9 @@ describe('Song Section Type Select', () => {
     await user.click(selectedOption)
 
     expect(onChange).toHaveBeenCalledOnce()
-    expect(onChange).toHaveBeenCalledWith({ label: type.name, value: type.id })
+    expect(onChange).toHaveBeenCalledWith(newOption)
+
+    rerender(<SongSectionTypeSelect label={label} option={newOption} onChange={onChange} />)
 
     expect(screen.getByRole('textbox', { name: label })).toHaveValue(type.name)
   })

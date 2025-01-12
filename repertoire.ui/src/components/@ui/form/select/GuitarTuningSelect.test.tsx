@@ -42,14 +42,14 @@ describe('Guitar Tuning Select', () => {
     const user = userEvent.setup()
 
     const guitarTuning = guitarTunings[0]
+    const newOption = { label: guitarTuning.name, value: guitarTuning.id }
 
     const onChange = vitest.fn()
 
     // Act
-    reduxRender(<GuitarTuningSelect option={null} onChange={onChange} />)
+    const [{ rerender }] = reduxRender(<GuitarTuningSelect option={null} onChange={onChange} />)
 
     // Assert
-    // first is loading
     expect(screen.getByText(/loading/i)).toBeInTheDocument()
 
     expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toHaveValue('')
@@ -65,7 +65,9 @@ describe('Guitar Tuning Select', () => {
     await user.click(selectedOption)
 
     expect(onChange).toHaveBeenCalledOnce()
-    expect(onChange).toHaveBeenCalledWith({ label: guitarTuning.name, value: guitarTuning.id })
+    expect(onChange).toHaveBeenCalledWith(newOption)
+
+    rerender(<GuitarTuningSelect option={newOption} onChange={onChange} />)
 
     expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toHaveValue(guitarTuning.name)
   })
