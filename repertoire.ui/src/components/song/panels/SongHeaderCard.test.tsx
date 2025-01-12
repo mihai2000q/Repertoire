@@ -70,7 +70,6 @@ describe('Song Header Card', () => {
   })
 
   it('should render and display maximal info', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -80,10 +79,8 @@ describe('Song Header Card', () => {
       album: album
     }
 
-    // Act
     reduxRouterRender(<SongHeaderCard song={localSong} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.artist.name })).toBeInTheDocument()
@@ -107,13 +104,10 @@ describe('Song Header Card', () => {
   })
 
   it('should display menu on click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<SongHeaderCard song={song} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
@@ -175,20 +169,16 @@ describe('Song Header Card', () => {
   })
 
   it('should display edit header modal from edit button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<SongHeaderCard song={song} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
     expect(screen.getByRole('heading', { name: /edit song header/i })).toBeInTheDocument()
   })
 
   it('should open artist drawer on artist click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -196,10 +186,8 @@ describe('Song Header Card', () => {
       artist: artist
     }
 
-    // Act
     const [_, store] = reduxRouterRender(<SongHeaderCard song={localSong} />)
 
-    // Assert
     await user.click(screen.getByText(localSong.artist.name))
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
@@ -207,7 +195,6 @@ describe('Song Header Card', () => {
   })
 
   it('should open album drawer on album click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -215,10 +202,8 @@ describe('Song Header Card', () => {
       album: album
     }
 
-    // Act
     const [_, store] = reduxRouterRender(<SongHeaderCard song={localSong} />)
 
-    // Assert
     await user.click(screen.getByText(localSong.album.title))
 
     expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()

@@ -51,13 +51,10 @@ describe('Album Header Card', () => {
 
 
   it('should render and display minimal info when the album is not unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText('0 songs')).toBeInTheDocument()
@@ -71,7 +68,6 @@ describe('Album Header Card', () => {
   })
 
   it('should render and display maximal info when the album is not unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localAlbum: Album = {
@@ -92,10 +88,8 @@ describe('Album Header Card', () => {
       ]
     }
 
-    // Act
     reduxRouterRender(<AlbumHeaderCard album={localAlbum} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
@@ -115,13 +109,10 @@ describe('Album Header Card', () => {
   })
 
   it('should render and display info when the album is unknown', async () => {
-    // Arrange
     const songsTotalCount = 10
 
-    // Act
     reduxRouterRender(<AlbumHeaderCard album={undefined} isUnknownAlbum={true} songsTotalCount={songsTotalCount} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: 'unknown-album' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
     expect(screen.getByText(`${songsTotalCount} songs`)).toBeInTheDocument()
@@ -186,20 +177,16 @@ describe('Album Header Card', () => {
   })
 
   it('should display edit header modal from edit button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
     expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
   })
 
   it('should open artist drawer on artist click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localAlbum: Album = {
@@ -207,10 +194,8 @@ describe('Album Header Card', () => {
       artist: artist
     }
 
-    // Act
     const [_, store] = reduxRouterRender(<AlbumHeaderCard album={localAlbum} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-    // Assert
     await user.click(screen.getByText(localAlbum.artist.name))
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()

@@ -7,7 +7,6 @@ import { expect } from 'vitest'
 
 describe('Difficulty Select', () => {
   it('should render and change difficulties', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const [difficultyLabel, difficultyValue] = Object.entries(Difficulty)[1]
@@ -15,10 +14,8 @@ describe('Difficulty Select', () => {
 
     const onChange = vitest.fn()
 
-    // Act
     const { rerender } = mantineRender(<DifficultySelect option={null} onChange={onChange} />)
 
-    // Assert
     expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue('')
 
     const select = screen.getByRole('textbox', { name: /difficulty/i })

@@ -26,35 +26,26 @@ describe('use Show Unknown Album', () => {
   })
 
   it('should return true when there are songs without an album', async () => {
-    // Arrange
     server.use(getSongsWithoutAnAlbum)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownAlbum())
 
-    // Assert
     await waitFor(() => expect(result.current).toBeTruthy())
   })
 
   it('should return false when there are no songs without an album', async () => {
-    // Arrange
     server.use(getEmptySongs)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownAlbum())
 
-    // Assert
     await waitFor(() => expect(result.current).toBeFalsy())
   })
 
   it('should return false on first render', async () => {
-    // Arrange
     server.use(getSongsWithoutAnAlbum)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownAlbum())
 
-    // Assert
     expect(result.current).toBeFalsy()
   })
 })

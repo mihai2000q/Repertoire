@@ -37,57 +37,42 @@ describe('use Show Unknown Artist', () => {
   })
 
   it('should return true when there are songs without an artist', async () => {
-    // Arrange
     server.use(getSongsWithoutAnArtist, getEmptyAlbums)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownArtist())
 
-    // Assert
     await waitFor(() => expect(result.current).toBeTruthy())
   })
 
   it('should return true when there are albums without an artist', async () => {
-    // Arrange
     server.use(getAlbumsWithoutAnArtist, getEmptySongs)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownArtist())
 
-    // Assert
     await waitFor(() => expect(result.current).toBeTruthy())
   })
 
   it('should return true when there are albums and songs without an artist', async () => {
-    // Arrange
     server.use(getAlbumsWithoutAnArtist, getSongsWithoutAnArtist)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownArtist())
 
-    // Assert
     await waitFor(() => expect(result.current).toBeTruthy())
   })
 
   it('should return false when there are no songs or albums without an artist', async () => {
-    // Arrange
     server.use(getEmptySongs, getEmptyAlbums)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownArtist())
 
-    // Assert
     await waitFor(() => expect(result.current).toBeFalsy())
   })
 
   it('should return false on first render', async () => {
-    // Arrange
     server.use(getSongsWithoutAnArtist, getAlbumsWithoutAnArtist)
 
-    // Act
     const [{ result }] = reduxRenderHook(() => useShowUnknownArtist())
 
-    // Assert
     expect(result.current).toBeFalsy()
   })
 })

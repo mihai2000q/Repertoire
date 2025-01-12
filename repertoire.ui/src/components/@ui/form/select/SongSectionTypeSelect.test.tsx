@@ -38,7 +38,6 @@ describe('Song Section Type Select', () => {
   afterAll(() => server.close())
 
   it('should render and change types', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const type = sectionTypes[0]
@@ -48,10 +47,8 @@ describe('Song Section Type Select', () => {
 
     const label = 'label'
 
-    // Act
     const [{ rerender }] = reduxRender(<SongSectionTypeSelect label={label} option={null} onChange={onChange} />)
 
-    // Assert
     expect(screen.getByRole('textbox', { name: label })).toHaveValue('')
 
     const select = screen.getByRole('textbox', { name: label })

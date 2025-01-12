@@ -74,13 +74,10 @@ describe('Playlist Songs Card', () => {
   })
 
   it('should display menu', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<PlaylistSongsCard playlist={playlist} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /add songs/i })).toBeInTheDocument()
@@ -103,13 +100,10 @@ describe('Playlist Songs Card', () => {
   })
 
   it('should display new song card when there are no playlist songs and open Add playlist songs modal', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<PlaylistSongsCard playlist={{ ...playlist, songs: [] }} />)
 
-    // Assert
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText('new-song-card'))
@@ -118,7 +112,6 @@ describe('Playlist Songs Card', () => {
   })
 
   it('should send \'remove songs from playlist request\' when clicking on the more menu of a song card', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const song = playlist.songs[0]
@@ -131,10 +124,8 @@ describe('Playlist Songs Card', () => {
       })
     )
 
-    // Act
     reduxRender(<PlaylistSongsCard playlist={playlist} />)
 
-    // Assert
     const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
 
     await user.click(within(songCard1).getByRole('button', { name: 'more-menu' }))

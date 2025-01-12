@@ -12,13 +12,10 @@ describe('Unknown Artist Card', () => {
   })
 
   it('should navigate on click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     routerRender(<UnknownArtistCard />)
 
-    // Assert
     await user.click(screen.getByRole('img', { name: 'unknown-artist' }))
 
     expect(window.location.pathname).toBe('/artist/unknown')

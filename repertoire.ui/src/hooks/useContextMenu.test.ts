@@ -4,16 +4,13 @@ import React from 'react'
 
 describe('useAuth', () => {
   it('should return change menu state on open', () => {
-    // Arrange
     const expectedClientX = 10
     const expectedClientY = 10
 
-    // Act
     const { result, rerender } = renderHook(() => useContextMenu())
 
     const [opened, props, { openMenu }] = result.current
-
-    // Assert - open menu
+ - open menu
     expect(opened).toBeFalsy()
     expect(props).toStrictEqual({
       style: {
@@ -32,8 +29,7 @@ describe('useAuth', () => {
       )
     )
     rerender()
-
-    // Assert - on menu change
+ - on menu change
     const [opened2, props2, { onMenuChange }] = result.current
 
     expect(opened2).toBeTruthy()

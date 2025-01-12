@@ -30,11 +30,9 @@ describe('Sign In', () => {
   })
 
   it('should display validation errors when the fields are empty', async () => {
-    // Arrange
     const emailError = 'Email is invalid'
     const passwordError = 'Password cannot be blank'
 
-    // Act
     reduxRouterRender(<SignIn />)
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
@@ -45,7 +43,6 @@ describe('Sign In', () => {
     act(() => passwordInput.focus())
     act(() => passwordInput.blur())
 
-    // Assert
     expect(screen.getByText(emailError)).toBeVisible()
     expect(screen.getByText(passwordError)).toBeVisible()
   })
@@ -70,22 +67,18 @@ describe('Sign In', () => {
   )
 
   it('should send sign in request and display sign in error', async () => {
-    // Arrange
     const email = 'someone@else.com'
     const password = 'ThisIsAGoodPassword123'
     const error = 'Invalid credentials'
 
     server.use(http.put('/auth/sign-in', async () => HttpResponse.json({ error }, { status: 401 })))
 
-    // Act
     await sendSignInRequest(email, password)
 
-    // Assert
     screen.getAllByText(error).forEach((e) => expect(e).toBeVisible())
   })
 
   it('should send sign in request and save token', async () => {
-    // Arrange
     const email = 'someone@else.com'
     const password = 'ThisIsAGoodPassword123'
 
@@ -101,10 +94,8 @@ describe('Sign In', () => {
       })
     )
 
-    // Act
     const store = await sendSignInRequest(email, password)
 
-    // Assert
     expect(capturedSignInRequest).toStrictEqual({ email, password })
     expect((store.getState() as RootState).auth.token).toBe(expectedToken)
     expect(window.location.pathname).toBe('/home')

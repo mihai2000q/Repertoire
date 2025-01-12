@@ -22,16 +22,13 @@ describe('Artist Album Card', () => {
   })
 
   it('should render and display maximal information', async () => {
-    // Arrange
     const localAlbum: Album = {
       ...album,
       releaseDate: '2024-10-11'
     }
 
-    // Act
     reduxRender(<ArtistAlbumCard album={localAlbum} handleRemove={() => { }} isUnknownArtist={false} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText('11 Oct 2024')).toBeInTheDocument()
@@ -39,26 +36,20 @@ describe('Artist Album Card', () => {
   })
 
   it('should display menu by clicking on the dots button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<ArtistAlbumCard album={album} handleRemove={() => { }} isUnknownArtist={false} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
 
   it('should display less information on the menu when the artist is unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<ArtistAlbumCard album={album} handleRemove={() => { }} isUnknownArtist={true} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()

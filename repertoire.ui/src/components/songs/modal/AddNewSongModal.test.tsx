@@ -40,14 +40,11 @@ describe.skip('Add New Song Modal', () => {
   })
 
   it('should display error if the title is invalid', async ({ expect }) => {
-    // Arrange
     const user = userEvent.setup()
     const error = 'Title cannot be blank'
 
-    // Act
     reduxRender(<AddNewSongModal opened={true} onClose={vi.fn()} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: /add song/i }))
     expect(screen.getByText(error)).toBeInTheDocument()
 
@@ -57,15 +54,12 @@ describe.skip('Add New Song Modal', () => {
   })
 
   it('should send POST request when valid', async ({ expect }) => {
-    // Arrange
     const onClose = vi.fn()
     const user = userEvent.setup()
     const title = 'New Title'
 
-    // Act
     reduxRender(<AddNewSongModal opened={true} onClose={onClose} />)
 
-    // Assert
     await user.type(screen.getByRole('textbox', { name: /title/i }), title)
     await user.click(screen.getByRole('button', { name: /add song/i }))
 

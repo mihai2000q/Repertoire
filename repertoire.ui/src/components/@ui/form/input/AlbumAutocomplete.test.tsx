@@ -52,7 +52,6 @@ describe('Album Autocomplete', () => {
   afterAll(() => server.close())
 
   it('should render and change albums', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const albumToSelect = albums[0]
@@ -60,10 +59,8 @@ describe('Album Autocomplete', () => {
     const setAlbum = vitest.fn()
     const setValue = vitest.fn()
 
-    // Act
     reduxRender(<AlbumAutocomplete album={null} setAlbum={setAlbum} setValue={setValue} />)
 
-    // Assert
     expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue('')
 
     const autocomplete = screen.getByRole('textbox', { name: /album/i })

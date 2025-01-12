@@ -29,13 +29,10 @@ describe('Album Song Card', () => {
   })
 
   it('should display menu by clicking on the dots button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={false} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
@@ -65,13 +62,10 @@ describe('Album Song Card', () => {
   })
 
   it('should not display the tracking number and some menu options, when the album is unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={true} />)
 
-    // Assert
     expect(screen.queryByText(song.albumTrackNo)).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))

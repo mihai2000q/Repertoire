@@ -43,10 +43,8 @@ describe('Artist Header Card', () => {
 
 
   it('should render and display minimal info when the artist is not unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(
       <ArtistHeaderCard
         artist={artist}
@@ -56,7 +54,6 @@ describe('Artist Header Card', () => {
       />
     )
 
-    // Assert
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)).toBeInTheDocument()
@@ -70,7 +67,6 @@ describe('Artist Header Card', () => {
   })
 
   it('should render and display maximal info when the artist is not unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localArtist: Artist = {
@@ -92,7 +88,6 @@ describe('Artist Header Card', () => {
     const albumsTotalCount = 1
     const songsTotalCount = 1
 
-    // Act
     reduxRouterRender(
       <ArtistHeaderCard
         artist={localArtist}
@@ -102,7 +97,6 @@ describe('Artist Header Card', () => {
       />
     )
 
-    // Assert
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: localArtist.name })).toBeInTheDocument()
     expect(screen.getByText(`${albumsTotalCount} album • ${songsTotalCount} song`)).toBeInTheDocument()
@@ -213,10 +207,8 @@ describe('Artist Header Card', () => {
   })
 
   it('should display edit header modal from edit button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(
       <ArtistHeaderCard
         artist={artist}
@@ -226,7 +218,6 @@ describe('Artist Header Card', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
     expect(screen.getByRole('heading', { name: /edit artist header/i })).toBeInTheDocument()

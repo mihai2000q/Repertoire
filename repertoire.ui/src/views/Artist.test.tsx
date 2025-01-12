@@ -39,7 +39,6 @@ describe('Artist', () => {
   afterAll(() => server.close())
 
   it('should render and display artist info when the artist is not unknown', async () => {
-    // Arrange
     let albumsParams: URLSearchParams
     let songsParams: URLSearchParams
     server.use(
@@ -58,10 +57,8 @@ describe('Artist', () => {
       })
     )
 
-    // Act
     reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${artist.id}`])
 
-    // Assert
     expect(screen.getByTestId('artist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(await screen.findByLabelText('albums-card')).toBeInTheDocument()
@@ -72,7 +69,6 @@ describe('Artist', () => {
   })
 
   it('should render and display only songs and albums when the artist is unknown', async () => {
-    // Arrange
     let albumsParams: URLSearchParams
     let songsParams: URLSearchParams
     server.use(
@@ -90,10 +86,8 @@ describe('Artist', () => {
       })
     )
 
-    // Act
     reduxMemoryRouterRender(<Artist />, '/artist/:id', ['/artist/unknown'])
 
-    // Assert
     expect(screen.getByLabelText('header-panel-card')).toBeInTheDocument()
     expect(await screen.findByLabelText('albums-card')).toBeInTheDocument()
     expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()

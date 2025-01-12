@@ -6,7 +6,6 @@ import HeaderPanelCard from './HeaderPanelCard.tsx'
 
 describe('Header Panel Card', () => {
   it('should render, display content and buttons on hover', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const onEditClick = vitest.fn()
@@ -17,14 +16,12 @@ describe('Header Panel Card', () => {
     const menuTestId = 'menu-mock'
     const menuDropdown = <div data-testid={menuTestId}>This is the menu</div>
 
-    // Act
     mantineRender(
       <HeaderPanelCard menuDropdown={menuDropdown} onEditClick={onEditClick}>
         {children}
       </HeaderPanelCard>
     )
 
-    // Assert
     expect(screen.getByTestId(childrenTestId)).toBeInTheDocument()
 
     const moreButton = await screen.findByRole('button', { name: 'more-menu' })
@@ -48,17 +45,14 @@ describe('Header Panel Card', () => {
   })
 
   it('should hide icons', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     mantineRender(
       <HeaderPanelCard menuDropdown={<></>} onEditClick={() => {}} hideIcons={true}>
         Children
       </HeaderPanelCard>
     )
 
-    // Assert
     expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'edit-header' })).not.toBeInTheDocument()
 

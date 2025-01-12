@@ -59,11 +59,9 @@ describe('Song Section', () => {
   })
 
   it('should show details', async () => {
-    // Arrange
     const user = userEvent.setup()
     const maxSectionProgress = 67
 
-    // Act
     reduxRender(
       <SongSection
         section={section}
@@ -75,7 +73,6 @@ describe('Song Section', () => {
       />
     )
 
-    // Assert
     expect(screen.getByText(section.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(section.confidence)
@@ -101,10 +98,8 @@ describe('Song Section', () => {
   })
 
   it('should display menu', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <SongSection
         section={section}
@@ -116,7 +111,6 @@ describe('Song Section', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
@@ -183,7 +177,6 @@ describe('Song Section', () => {
   })
 
   it('should add 1 rehearsal', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     let capturedRequest: UpdateSongSectionRequest
@@ -194,7 +187,6 @@ describe('Song Section', () => {
       })
     )
 
-    // Act
     reduxRender(
       withToastify(
         <SongSection
@@ -208,7 +200,6 @@ describe('Song Section', () => {
       )
     )
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'add-rehearsal' }))
 
     expect(capturedRequest).toStrictEqual({

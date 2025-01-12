@@ -92,30 +92,24 @@ describe('Playlists', () => {
   })
 
   it('should open the add new playlist modal when clicking the new playlist button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<Playlists />)
 
     const newSongButton = screen.getByRole('button', { name: /new-playlist/i })
     await user.click(newSongButton)
 
-    // Assert
     expect(await screen.findByRole('heading', { name: /add new playlist/i })).toBeInTheDocument()
   })
 
   it('should open the add new playlist modal when clicking the new playlist card button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<Playlists />)
 
     const newSongCardButton = await screen.findByLabelText('new-playlist-card')
     await user.click(newSongCardButton)
 
-    // Assert
     expect(await screen.findByRole('heading', { name: /add new playlist/i })).toBeInTheDocument()
   })
 
@@ -136,17 +130,14 @@ describe('Playlists', () => {
   })
 
   it('should paginate the playlists', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const totalCount = 30
 
     server.use(getSongsWithPagination(totalCount))
 
-    // Act
     reduxRouterRender(<Playlists />)
 
-    // Assert
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/playlist-card-/)).toHaveLength(pageSize)
     expect(
@@ -166,15 +157,12 @@ describe('Playlists', () => {
   })
 
   it('the new playlist card should not be displayed on first page, but on the last', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     server.use(getSongsWithPagination())
 
-    // Act
     reduxRouterRender(<Playlists />)
 
-    // Assert
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-playlist-card')).not.toBeInTheDocument()
 

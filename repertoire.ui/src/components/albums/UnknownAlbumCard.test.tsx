@@ -12,13 +12,10 @@ describe('Unknown Album Card', () => {
   })
 
   it('should navigate on click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     routerRender(<UnknownAlbumCard />)
 
-    // Assert
     await user.click(screen.getByRole('img', { name: 'unknown-album' }))
 
     expect(window.location.pathname).toBe('/album/unknown')

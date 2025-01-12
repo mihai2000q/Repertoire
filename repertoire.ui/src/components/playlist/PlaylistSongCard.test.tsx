@@ -49,17 +49,14 @@ describe('Playlist Song Card', () => {
   })
 
   it('should render and display maximal info', () => {
-    // Arrange
     const localSong = {
       ...song,
       artist: artist,
       album: album
     }
 
-    // Act
     reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
 
-    // Assert
     expect(screen.getByText(localSong.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
@@ -69,13 +66,10 @@ describe('Playlist Song Card', () => {
   })
 
   it('should display menu by clicking on the dots button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
@@ -105,7 +99,6 @@ describe('Playlist Song Card', () => {
   })
 
   it('should open album drawer on album title click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong = {
@@ -113,10 +106,8 @@ describe('Playlist Song Card', () => {
       album: album
     }
 
-    // Act
     const [_, store] = reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
 
-    // Assert
     await user.click(screen.getByText(localSong.album.title))
 
     expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
@@ -124,7 +115,6 @@ describe('Playlist Song Card', () => {
   })
 
   it('should open artist drawer on artist name click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong = {
@@ -132,10 +122,8 @@ describe('Playlist Song Card', () => {
       artist: artist
     }
 
-    // Act
     const [_, store] = reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
 
-    // Assert
     await user.click(screen.getByText(localSong.artist.name))
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()

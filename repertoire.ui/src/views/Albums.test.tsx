@@ -128,30 +128,24 @@ describe('Albums', () => {
   })
 
   it('should open the add new album modal when clicking the new album button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<Albums />)
 
     const newAlbumButton = screen.getByRole('button', { name: /new-album/i })
     await user.click(newAlbumButton)
 
-    // Assert
     expect(await screen.findByRole('heading', { name: /add new album/i })).toBeInTheDocument()
   })
 
   it('should open the add new album modal when clicking the new album card button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<Albums />)
 
     const newAlbumCardButton = await screen.findByLabelText('new-album-card')
     await user.click(newAlbumCardButton)
 
-    // Assert
     expect(await screen.findByRole('heading', { name: /add new album/i })).toBeInTheDocument()
   })
 
@@ -180,17 +174,14 @@ describe('Albums', () => {
   })
 
   it('should paginate the albums', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const totalCount = 30
 
     server.use(getAlbumsWithPagination(totalCount))
 
-    // Act
     reduxRouterRender(<Albums />)
 
-    // Assert
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/album-card-/)).toHaveLength(pageSize)
     expect(
@@ -210,15 +201,12 @@ describe('Albums', () => {
   })
 
   it('the new album card should not be displayed on first page, but on the last', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     server.use(getAlbumsWithPagination())
 
-    // Act
     reduxRouterRender(<Albums />)
 
-    // Assert
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-album-card')).not.toBeInTheDocument()
 
@@ -230,13 +218,10 @@ describe('Albums', () => {
   })
 
   it('should display unknown album card when there are songs without album', async () => {
-    // Arrange
     server.use(getSongsWithoutAlbums())
 
-    // Act
     reduxRouterRender(<Albums />)
 
-    // Assert
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('unknown-album-card')).toBeInTheDocument()
     expect(
@@ -247,17 +232,14 @@ describe('Albums', () => {
   })
 
   it('should display unknown album card when there are songs without album on the last page, but not on the first', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const totalCount = 30
 
     server.use(getSongsWithoutAlbums(), getAlbumsWithPagination(totalCount))
 
-    // Act
     reduxRouterRender(<Albums />)
 
-    // Assert
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('unknown-album-card')).not.toBeInTheDocument()
     expect(

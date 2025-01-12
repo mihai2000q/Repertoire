@@ -48,7 +48,6 @@ describe('Song Card', () => {
   })
 
   it('should render and display icons when the song is recorded, has guitar tuning, and songsterr and youtube links', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -64,10 +63,8 @@ describe('Song Card', () => {
       youtubeLink: 'this is a link'
     }
 
-    // Act
     reduxRouterRender(<SongCard song={localSong} />)
 
-    // Assert
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
     expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
@@ -93,7 +90,6 @@ describe('Song Card', () => {
   })
 
   it('should render and display solo icon when the song has exactly one Solo section', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -113,10 +109,8 @@ describe('Song Card', () => {
       ]
     }
 
-    // Act
     reduxRouterRender(<SongCard song={localSong} />)
 
-    // Assert
     expect(screen.getByLabelText('solo-icon')).toBeInTheDocument()
 
     await user.hover(screen.getByLabelText('solo-icon'))
@@ -124,7 +118,6 @@ describe('Song Card', () => {
   })
 
   it('should render and display solos icon when the song has more than one Solo section', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -155,10 +148,8 @@ describe('Song Card', () => {
       ]
     }
 
-    // Act
     reduxRouterRender(<SongCard song={localSong} />)
 
-    // Assert
     expect(screen.getByLabelText('solos-icon')).toBeInTheDocument()
 
     await user.hover(screen.getByLabelText('solos-icon'))
@@ -166,7 +157,6 @@ describe('Song Card', () => {
   })
 
   it('should render and display riffs icon when the song has Riff sections', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong: Song = {
@@ -197,10 +187,8 @@ describe('Song Card', () => {
       ]
     }
 
-    // Act
     reduxRouterRender(<SongCard song={localSong} />)
 
-    // Assert
     expect(screen.getByLabelText('riffs-icon')).toBeInTheDocument()
 
     await user.hover(screen.getByLabelText('riffs-icon'))
@@ -208,13 +196,10 @@ describe('Song Card', () => {
   })
 
   it('should display menu on right click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<SongCard song={song} />)
 
-    // Assert
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByRole('img', { name: song.title })
@@ -251,19 +236,15 @@ describe('Song Card', () => {
   })
 
   it('should navigate on click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<SongCard song={song} />)
 
-    // Assert
     await user.click(screen.getByRole('img', { name: song.title }))
     expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 
   it('should open artist drawer on artist name click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong = {
@@ -271,10 +252,8 @@ describe('Song Card', () => {
       artist: artist
     }
 
-    // Act
     const [_, store] = reduxRouterRender(<SongCard song={localSong} />)
 
-    // Assert
     await user.click(screen.getByText(localSong.artist.name))
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()

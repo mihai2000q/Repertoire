@@ -70,15 +70,12 @@ describe('Album Songs Card', () => {
   afterAll(() => server.close())
 
   it("should render and display album's songs when the album is not unknown", async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
     )
 
-    // Assert
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
     expect(screen.getAllByLabelText(/song-card-/)).toHaveLength(album.songs.length)
@@ -94,15 +91,12 @@ describe('Album Songs Card', () => {
   })
 
   it('should render and display the songs when the album is unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <AlbumSongsCard album={album} songs={songs} isUnknownAlbum={true} />
     )
 
-    // Assert
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
     expect(screen.getAllByLabelText(/song-card-/)).toHaveLength(songs.length)
@@ -152,15 +146,12 @@ describe('Album Songs Card', () => {
   })
 
   it('should display new song card when there are no album songs and open Add existing songs modal', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <AlbumSongsCard album={{ ...album, songs: [] }} songs={[]} isUnknownAlbum={false} />
     )
 
-    // Assert
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText('new-song-card'))
@@ -169,15 +160,12 @@ describe('Album Songs Card', () => {
   })
 
   it('should display new song card when the album is unknown and open Add new song modal', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <AlbumSongsCard album={album} songs={songs} isUnknownAlbum={true} />
     )
 
-    // Assert
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText('new-song-card'))
@@ -186,7 +174,6 @@ describe('Album Songs Card', () => {
   })
 
   it('should send \'remove songs from album request\' when clicking on the more menu of a song card', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const song = album.songs[0]
@@ -199,12 +186,10 @@ describe('Album Songs Card', () => {
       })
     )
 
-    // Act
     reduxRender(
       <AlbumSongsCard album={album} songs={songs} isUnknownAlbum={false} />
     )
 
-    // Assert
     const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
 
     await user.click(within(songCard1).getByRole('button', { name: 'more-menu' }))

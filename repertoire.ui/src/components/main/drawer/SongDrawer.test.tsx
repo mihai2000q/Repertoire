@@ -80,7 +80,6 @@ describe('Song Drawer', () => {
   })
 
   it('should render and display maximal info', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong = {
@@ -106,10 +105,8 @@ describe('Song Drawer', () => {
 
     server.use(getSong(localSong))
 
-    // Act
     render()
 
-    // Assert
     // Header
     expect(screen.getByTestId('song-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
@@ -176,18 +173,14 @@ describe('Song Drawer', () => {
   it('should render the loader when there is no song', async () => {
     render(null)
 
-    // Assert
     expect(screen.getByTestId('song-drawer-loader')).toBeInTheDocument()
   })
 
   it('should display menu when clicking on more', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     render()
 
-    // Assert
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()

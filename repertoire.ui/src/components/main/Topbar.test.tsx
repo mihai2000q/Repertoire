@@ -48,16 +48,13 @@ describe('Topbar', () => {
   )
 
   it('should display menu when clicking on the user button', async () => {
-    // Arrange
     const userEventDispatcher = userEvent.setup()
 
-    // Act
     render()
 
     const userButton = await screen.findByRole('button', { name: 'user' })
     await userEventDispatcher.click(userButton)
 
-    // Assert
     expect(screen.getByText(user.email)).toBeInTheDocument()
     expect(screen.getByText(user.name)).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /settings/i })).toBeInTheDocument()

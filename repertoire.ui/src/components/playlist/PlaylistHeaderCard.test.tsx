@@ -51,13 +51,10 @@ describe('Playlist Header Card', () => {
 
 
   it('should render and display minimal info', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByText(playlist.description)).toBeInTheDocument()
@@ -129,13 +126,10 @@ describe('Playlist Header Card', () => {
   })
 
   it('should display edit header modal from edit button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
     expect(screen.getByRole('heading', { name: /edit playlist header/i })).toBeInTheDocument()

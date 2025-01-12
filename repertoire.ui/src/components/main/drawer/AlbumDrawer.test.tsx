@@ -100,7 +100,6 @@ describe('Album Drawer', () => {
   })
 
   it('should render and display maximal info', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localAlbum = {
@@ -111,10 +110,8 @@ describe('Album Drawer', () => {
 
     server.use(getAlbum(localAlbum))
 
-    // Act
     render()
 
-    // Assert
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
@@ -137,18 +134,14 @@ describe('Album Drawer', () => {
   it('should render the loader when there is no album', async () => {
     render(null)
 
-    // Assert
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
   })
 
   it('should display menu when clicking on more', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     render()
 
-    // Assert
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()

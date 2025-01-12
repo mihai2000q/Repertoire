@@ -46,7 +46,6 @@ describe('Song Information Card', () => {
   })
 
   it('should render when there is information', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong = {
@@ -61,10 +60,8 @@ describe('Song Information Card', () => {
       lastTimePlayed: '2024-10-30'
     }
 
-    // Act
     reduxRender(<SongInformationCard song={localSong} />)
 
-    // Assert
     expect(screen.getByRole('button', { name: 'edit-panel' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
     expect(screen.getByText(localSong.guitarTuning.name)).toBeInTheDocument()
@@ -81,13 +78,10 @@ describe('Song Information Card', () => {
   })
 
   it('should open edit song information modal on edit panel click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<SongInformationCard song={song} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'edit-panel' }))
     expect(screen.getByRole('dialog', { name: /edit song information/i })).toBeInTheDocument()
   })

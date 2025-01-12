@@ -37,17 +37,14 @@ describe('Artist Song Card', () => {
   })
 
   it('should render and display maximal information', async () => {
-    // Arrange
     const localSong: Song = {
       ...song,
       releaseDate: '2024-10-11',
       album: album
     }
 
-    // Act
     reduxRender(<ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
     expect(screen.getByText('11 Oct 2024')).toBeInTheDocument()
@@ -56,26 +53,20 @@ describe('Artist Song Card', () => {
   })
 
   it('should display menu by clicking on the dots button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
 
   it('should display less information on the menu when the artist is unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={true} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
@@ -107,7 +98,6 @@ describe('Artist Song Card', () => {
   })
 
   it('should open album drawer on album title click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localSong = {
@@ -115,12 +105,10 @@ describe('Artist Song Card', () => {
       album: album
     }
 
-    // Act
     const [_, store] = reduxRender(
       <ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />
     )
 
-    // Assert
     await user.click(screen.getByText(localSong.album.title))
 
     expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()

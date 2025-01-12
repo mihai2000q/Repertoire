@@ -145,18 +145,14 @@ describe('Artist Drawer', () => {
   it('should render the loader when there is no artist', async () => {
     render(null)
 
-    // Assert
     expect(screen.getByTestId('artist-drawer-loader')).toBeInTheDocument()
   })
 
   it('should display menu when clicking on more', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     render()
 
-    // Assert
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()

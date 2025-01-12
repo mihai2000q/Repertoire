@@ -63,10 +63,8 @@ describe('Artist Albums Card', () => {
   afterAll(() => server.close())
 
   it("should render and display albums", async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -78,7 +76,6 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     expect(screen.queryByTestId('albums-loader')).not.toBeInTheDocument()
     expect(screen.getByLabelText('albums-card')).toBeInTheDocument()
     expect(screen.getByText('Albums')).toBeInTheDocument()
@@ -113,13 +110,11 @@ describe('Artist Albums Card', () => {
   })
 
   it("should display orders and be able to change it", async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const newOrder = artistAlbumsOrders[0]
     const setOrder = vitest.fn()
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -131,7 +126,6 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByRole('button', { name: order.label }))
 
     artistAlbumsOrders.forEach(o => (
@@ -144,10 +138,8 @@ describe('Artist Albums Card', () => {
   })
 
   it("should display more menu", async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -159,7 +151,6 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /add existing albums/i })).toBeInTheDocument()
@@ -167,10 +158,8 @@ describe('Artist Albums Card', () => {
   })
 
   it("should display less information on the more menu, when the artist is unknown", async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -182,7 +171,6 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
 
     expect(screen.queryByRole('menuitem', { name: /add existing albums/i })).not.toBeInTheDocument()
@@ -238,10 +226,8 @@ describe('Artist Albums Card', () => {
   })
 
   it('should open Add existing albums modal, when clicking new album card and the artist is not unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -253,17 +239,14 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByLabelText('new-albums-card'))
 
     expect(screen.getByRole('heading', { name: /add existing albums/i })).toBeInTheDocument()
   })
 
   it('should open Add new album modal, when clicking new album card and the artist is unknown', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -275,14 +258,12 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     await user.click(screen.getByLabelText('new-albums-card'))
 
     expect(screen.getByRole('heading', { name: /add new album/i })).toBeInTheDocument()
   })
 
   it('should send \'remove album from artist request\' when clicking on the more menu of a album card', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const album = albums.models[0]
@@ -295,7 +276,6 @@ describe('Artist Albums Card', () => {
       })
     )
 
-    // Act
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
@@ -307,7 +287,6 @@ describe('Artist Albums Card', () => {
       />
     )
 
-    // Assert
     const albumCard1 = screen.getByLabelText(`album-card-${album.title}`)
 
     await user.click(within(albumCard1).getByRole('button', { name: 'more-menu' }))

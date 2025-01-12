@@ -27,10 +27,8 @@ describe('Sidebar', () => {
     //Arrange
     const user = userEvent.setup()
 
-    // Act
     render()
 
-    // Assert
     await navigateAndAssert(user, /home/i)
     await navigateAndAssert(user, /artists/i)
     await navigateAndAssert(user, /albums/i)

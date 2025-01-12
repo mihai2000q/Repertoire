@@ -38,13 +38,10 @@ describe('Song Links Card', () => {
   })
 
   it('should open edit song links modal on edit panel click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRender(<SongLinksCard song={song} />)
 
-    // Assert
     await user.click(screen.getByRole('button', { name: 'edit-panel' }))
     expect(screen.getByRole('dialog', { name: /edit song links/i })).toBeInTheDocument()
   })

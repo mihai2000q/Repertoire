@@ -55,7 +55,6 @@ describe('Artist Autocomplete', () => {
   afterAll(() => server.close())
 
   it('should render and change artists', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const artistToSelect = artists[0]
@@ -63,10 +62,8 @@ describe('Artist Autocomplete', () => {
     const setArtist = vitest.fn()
     const setValue = vitest.fn()
 
-    // Act
     reduxRender(<ArtistAutocomplete artist={null} setArtist={setArtist} setValue={setValue} />)
 
-    // Assert
     expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
 
     const autocomplete = screen.getByRole('textbox', { name: /artist/i })

@@ -32,13 +32,10 @@ describe('Playlist Card', () => {
   })
 
   it('should display menu on right click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<PlaylistCard playlist={playlist} />)
 
-    // Assert
     await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: playlist.title }) })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
@@ -69,13 +66,10 @@ describe('Playlist Card', () => {
   })
 
   it('should navigate on click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<PlaylistCard playlist={playlist} />)
 
-    // Assert
     await user.click(screen.getByRole('img', { name: playlist.title }))
     expect(window.location.pathname).toBe(`/playlist/${playlist.id}`)
   })

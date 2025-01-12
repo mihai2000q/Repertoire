@@ -43,29 +43,23 @@ describe('Album Card', () => {
   })
 
   it('should render maximal info', async () => {
-    // Arrange
     const localAlbum = {
       ...album,
       artist: artist
     }
 
-    // Act
     reduxRouterRender(<AlbumCard album={localAlbum} />)
 
-    // Assert
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
   })
 
   it('should display menu on right click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<AlbumCard album={album} />)
 
-    // Assert
     await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: album.title }) })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
@@ -96,19 +90,15 @@ describe('Album Card', () => {
   })
 
   it('should navigate on click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
     reduxRouterRender(<AlbumCard album={album} />)
 
-    // Assert
     await user.click(screen.getByRole('img', { name: album.title }))
     expect(window.location.pathname).toBe(`/album/${album.id}`)
   })
 
   it('should open artist drawer on artist name click', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const localAlbum = {
@@ -116,10 +106,8 @@ describe('Album Card', () => {
       artist: artist
     }
 
-    // Act
     const [_, store] = reduxRouterRender(<AlbumCard album={localAlbum} />)
 
-    // Assert
     await user.click(screen.getByText(localAlbum.artist.name))
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()

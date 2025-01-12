@@ -81,26 +81,20 @@ describe('Album', () => {
   afterAll(() => server.close())
 
   it('should render and display info from album when the album is not unknown', async () => {
-    // Arrange
     server.use(getAlbum)
 
-    // Act
     reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
 
-    // Assert
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
   })
 
   it('should render and display info from songs when the album is unknown', async () => {
-    // Arrange
     server.use(getSongs)
 
-    // Act
     reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
 
-    // Assert
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()

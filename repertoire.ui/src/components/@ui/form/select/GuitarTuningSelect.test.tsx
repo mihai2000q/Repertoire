@@ -38,7 +38,6 @@ describe('Guitar Tuning Select', () => {
   afterAll(() => server.close())
 
   it('should render and change tunings', async () => {
-    // Arrange
     const user = userEvent.setup()
 
     const guitarTuning = guitarTunings[0]
@@ -46,10 +45,8 @@ describe('Guitar Tuning Select', () => {
 
     const onChange = vitest.fn()
 
-    // Act
     const [{ rerender }] = reduxRender(<GuitarTuningSelect option={null} onChange={onChange} />)
 
-    // Assert
     expect(screen.getByText(/loading/i)).toBeInTheDocument()
 
     expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toHaveValue('')
