@@ -10,7 +10,8 @@ describe('useAuth', () => {
     const { result, rerender } = renderHook(() => useContextMenu())
 
     const [opened, props, { openMenu }] = result.current
- - open menu
+
+    // open menu
     expect(opened).toBeFalsy()
     expect(props).toStrictEqual({
       style: {
@@ -29,7 +30,8 @@ describe('useAuth', () => {
       )
     )
     rerender()
- - on menu change
+
+    // on menu change
     const [opened2, props2, { onMenuChange }] = result.current
 
     expect(opened2).toBeTruthy()

@@ -9,7 +9,7 @@ describe('use Difficulty Info', () => {
     [Difficulty.Medium, { number: 2, getColor: (theme: MantineTheme) => theme.colors.yellow[5] }],
     [Difficulty.Hard, { number: 3, getColor: (theme: MantineTheme) => theme.colors.orange[5] }],
     [Difficulty.Impossible, { number: 4, getColor: (theme: MantineTheme) => theme.colors.red[6] }]
-  ])('should return difficulty info based on difficulty', (difficulty, output) => { - parameterized
+  ])('should return difficulty info based on difficulty', (difficulty, output) => {
     const { result } = mantineRenderHook(() => useDifficultyInfo(difficulty))
 
     const { result: theme } = mantineRenderHook(() => useMantineTheme())

@@ -25,7 +25,7 @@ describe('Title Bar', () => {
     } as unknown as ElectronAPI
 
     mantineRender(<TitleBar />)
- & Assert
+
     await user.click(screen.getByRole('button', { name: 'minimize' }))
     expect(window.electron.ipcRenderer.send).toHaveBeenCalledWith('minimize')
 
