@@ -160,7 +160,6 @@ describe('Artist Drawer', () => {
 
   describe('on menu', () => {
     it('should navigate to artist when clicking on view details', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -176,7 +175,6 @@ describe('Artist Drawer', () => {
     })
 
     it('should display warning modal and delete the artist when clicking delete', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       server.use(

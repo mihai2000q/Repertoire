@@ -70,7 +70,6 @@ describe('Playlist Header Card', () => {
 
   describe('on menu', () => {
     it('should display info modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -84,7 +83,6 @@ describe('Playlist Header Card', () => {
     })
 
     it('should display edit header modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -98,7 +96,6 @@ describe('Playlist Header Card', () => {
     })
 
     it('should display warning modal and delete playlist', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       server.use(

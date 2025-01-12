@@ -42,7 +42,6 @@ describe('Artist Card', () => {
 
   describe('on menu', () => {
     it('should display warning modal when clicking on delete', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       server.use(

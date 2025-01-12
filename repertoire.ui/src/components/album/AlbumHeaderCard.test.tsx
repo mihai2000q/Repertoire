@@ -122,7 +122,6 @@ describe('Album Header Card', () => {
 
   describe('on menu', () => {
     it('should display info modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -136,7 +135,6 @@ describe('Album Header Card', () => {
     })
 
     it('should display edit header modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -150,7 +148,6 @@ describe('Album Header Card', () => {
     })
 
     it('should display warning modal and delete album', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       server.use(

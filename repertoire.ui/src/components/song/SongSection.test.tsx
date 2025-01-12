@@ -118,7 +118,6 @@ describe('Song Section', () => {
 
   describe('on menu', () => {
     it('should open edit song section modal when clicking edit', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -140,7 +139,6 @@ describe('Song Section', () => {
     })
 
     it('should display warning modal and delete section, when clicking delete', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       const songId = 'some-song-id'

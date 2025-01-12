@@ -179,7 +179,6 @@ describe('Artist Albums Card', () => {
 
   describe('on menu', () => {
     it('should open add existing albums modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -202,7 +201,6 @@ describe('Artist Albums Card', () => {
     })
 
     it('should open add new album modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act

@@ -40,7 +40,6 @@ describe('Album Song Card', () => {
 
   describe('on menu', () => {
     it('should display warning modal and remove, when clicking on remove', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       const handleRemove = vitest.fn()

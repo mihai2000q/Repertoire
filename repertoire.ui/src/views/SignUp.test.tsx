@@ -68,7 +68,6 @@ describe('Sign Up', () => {
   it.each([['  '], ['email'], ['email@yahoo'], ['email.com']])(
     'should display email errors',
     async (email) => {
-      // Arrange
       const error = 'Email is invalid'
       const user = userEvent.setup()
 

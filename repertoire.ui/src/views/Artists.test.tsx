@@ -247,7 +247,6 @@ describe('Artists', () => {
   ])(
     'should display unknown artist card when there are songs or albums without artist',
     async (withAlbum, withSong) => {
-      // Arrange
       if (withAlbum) {
         server.use(getAlbumsWithoutArtists())
       }
@@ -276,7 +275,6 @@ describe('Artists', () => {
   ])(
     'should display unknown artist card when there are songs or albums without artist on the last page, but not on the first',
     async (withAlbum, withSong) => {
-      // Arrange
       const user = userEvent.setup()
 
       const totalCount = 30

@@ -188,7 +188,6 @@ describe('Song Drawer', () => {
 
   describe('on menu', () => {
     it('should navigate to song when clicking on view details', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -204,7 +203,6 @@ describe('Song Drawer', () => {
     })
 
     it('should display warning modal and delete the song when clicking delete', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       server.use(

@@ -85,7 +85,6 @@ describe('Playlist Songs Card', () => {
 
   describe('on menu', () => {
     it('should open add playlist songs modal', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act

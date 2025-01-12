@@ -26,13 +26,10 @@ describe('use Pagination Info', () => {
   ])(
     'should return pagination info based on total count, page size and current page',
     (input, output) => {
-      // Arrange - parameterized
-      // Act
       const { result } = renderHook(() =>
         usePaginationInfo(input.totalCount, input.pageSize, input.currentPage)
       )
 
-      // Assert
       expect(result.current).toStrictEqual(output)
     }
   )

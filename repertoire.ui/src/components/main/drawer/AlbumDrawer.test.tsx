@@ -149,7 +149,6 @@ describe('Album Drawer', () => {
 
   describe('on menu', () => {
     it('should navigate to album when clicking on view details', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       // Act
@@ -165,7 +164,6 @@ describe('Album Drawer', () => {
     })
 
     it('should display warning modal and delete the album when clicking delete', async () => {
-      // Arrange
       const user = userEvent.setup()
 
       server.use(

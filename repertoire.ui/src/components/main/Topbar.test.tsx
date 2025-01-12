@@ -64,7 +64,6 @@ describe('Topbar', () => {
 
   describe('on menu', () => {
     it('should display account modal when clicking on account', async () => {
-      // Arrange
       const userEventDispatcher = userEvent.setup()
 
       // Act
@@ -78,7 +77,6 @@ describe('Topbar', () => {
     })
 
     it('should sign out when clicking on sign out', async () => {
-      // Arrange
       const userEventDispatcher = userEvent.setup()
 
       // Act

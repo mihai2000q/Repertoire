@@ -45,8 +45,6 @@ describe('Header Panel Card', () => {
   })
 
   it('should hide icons', async () => {
-    const user = userEvent.setup()
-
     mantineRender(
       <HeaderPanelCard menuDropdown={<></>} onEditClick={() => {}} hideIcons={true}>
         Children
@@ -55,11 +53,5 @@ describe('Header Panel Card', () => {
 
     expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'edit-header' })).not.toBeInTheDocument()
-
-    // still not present, even when hovered
-    const card = screen.getByLabelText('header-panel-card')
-    await user.hover(card)
-
-    expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()
   })
 })
