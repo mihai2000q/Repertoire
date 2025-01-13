@@ -1,14 +1,16 @@
 import { reduxRender, withToastify } from '../../../test-utils.tsx'
-import AddExistingAlbumSongsModal from './AddExistingAlbumSongsModal.tsx'
+import AddPlaylistSongsModal from './AddPlaylistSongsModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import {screen, waitFor, within} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { AddSongsToAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
+import { AddSongsToPlaylistRequest } from '../../../types/requests/PlaylistRequests.ts'
+import Artist from '../../../types/models/Artist.ts'
+import Album from '../../../types/models/Album.ts'
 
-describe('Add Existing Album Songs Modal', () => {
+describe('Add Playlist Songs Modal', () => {
   const emptySong: Song = {
     id: '',
     title: '',
@@ -22,29 +24,42 @@ describe('Add Existing Album Songs Modal', () => {
     updatedAt: ''
   }
 
+  const album: Album = {
+    id: '1',
+    title: 'Album',
+    songs: [],
+    createdAt: '',
+    updatedAt: ''
+  }
+
+  const artist: Artist = {
+    id: '1',
+    name: 'Artist',
+    albums: [],
+    songs: [],
+    createdAt: '',
+    updatedAt: ''
+  }
+
   const songs: Song[] = [
     {
       ...emptySong,
       id: '1',
-      title: 'Song 1'
+      title: 'Song 1',
+      artist: artist
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
-      artist: {
-        id: '1',
-        name: 'Artist',
-        albums: [],
-        songs: [],
-        createdAt: '',
-        updatedAt: ''
-      }
+      album: album,
+      artist: artist
     },
     {
       ...emptySong,
       id: '3',
-      title: 'Song 11'
+      title: 'Song 11',
+      album: album
     },
     {
       ...emptySong,
@@ -57,8 +72,8 @@ describe('Add Existing Album Songs Modal', () => {
     http.get('/songs', (req) => {
       const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
       let localSongs = songs
-      if (searchBy.length === 3) {
-        const searchValue = searchBy[2].replace('title ~* ', '').replaceAll("'", '')
+      if (searchBy.length === 2) {
+        const searchValue = searchBy[1].replace('title ~* ', '').replaceAll("'", '')
         localSongs = localSongs.filter((song) => song.title.startsWith(searchValue))
       }
       const response: WithTotalCountResponse<Song> = {
@@ -80,14 +95,11 @@ describe('Add Existing Album Songs Modal', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
-    )
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
-    expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /add existing songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /add playlist songs/i })).toBeInTheDocument()
     expect(screen.getByText(/choose songs/i)).toBeInTheDocument()
-    expect(screen.getByLabelText('info-icon')).toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).toBeDisabled()
     expect(screen.getByRole('searchbox', { name: /search/i })).toHaveValue('')
@@ -112,6 +124,7 @@ describe('Add Existing Album Songs Modal', () => {
       expect(screen.getByRole('checkbox', { name: song.title })).not.toBeChecked()
       expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      if (song.album) expect(within(renderedSong).getByText(song.album.title)).toBeInTheDocument()
       if (song.artist) expect(within(renderedSong).getByText(song.artist.name)).toBeInTheDocument()
     }
   })
@@ -127,9 +140,7 @@ describe('Add Existing Album Songs Modal', () => {
       })
     )
 
-    reduxRender(
-      <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
-    )
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
     expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
@@ -137,6 +148,8 @@ describe('Add Existing Album Songs Modal', () => {
 
   it('should send updated query when the search box is filled', async () => {
     const user = userEvent.setup()
+
+    const playlistId = 'some-playlist-id'
 
     let capturedSearchBy: URLSearchParams
     server.use(
@@ -150,70 +163,49 @@ describe('Add Existing Album Songs Modal', () => {
       })
     )
 
-    const [{ rerender }] = reduxRender(
-      <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
-    )
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={playlistId} />)
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
 
     expect(capturedSearchBy.get('currentPage')).toBe('1')
     expect(capturedSearchBy.get('pageSize')).toBe('20')
     expect(capturedSearchBy.get('orderBy')).match(/title ASC/i)
-    expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-    expect(capturedSearchBy.getAll('searchBy')[0]).match(/album_id IS NULL/i)
-    expect(capturedSearchBy.getAll('searchBy')[1]).match(/songs.artist_id IS NULL/i)
-
-    // rerender with artist
-    const artistId = 'some-artist-id'
-
-    rerender(
-      <AddExistingAlbumSongsModal
-        opened={true}
-        onClose={() => {}}
-        albumId={''}
-        artistId={artistId}
-      />
-    )
-
-    await waitFor(() => {
-      expect(capturedSearchBy.getAll('searchBy')[1]).match(
-        new RegExp(`songs.artist_id IS NULL OR songs.artist_id = '${artistId}'`, 'i')
+    expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
+    expect(capturedSearchBy.getAll('searchBy')[0]).match(
+      new RegExp(
+        `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
+        'i'
       )
-    })
+    )
 
     // search
     const searchValue = 'Song 1'
     await user.type(screen.getByRole('searchbox', { name: /search/i }), searchValue)
 
     await waitFor(() => {
-      expect(capturedSearchBy.getAll('searchBy')).toHaveLength(3)
-      expect(capturedSearchBy.getAll('searchBy')[2]).toBe(`title ~* '${searchValue}'`)
+      expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
+      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`title ~* '${searchValue}'`)
     })
   })
 
   it('should search, select songs and send request when clicking add', async () => {
     const user = userEvent.setup()
 
-    const albumId = 'some-album-id'
+    const playlistId = 'some-playlist-id'
     const songsToSelect = [songs[0], songs[3]]
     const onClose = vitest.fn()
 
-    let capturedRequest: AddSongsToAlbumRequest
+    let capturedRequest: AddSongsToPlaylistRequest
     server.use(
-      http.post('/albums/add-songs', async (req) => {
-        capturedRequest = (await req.request.json()) as AddSongsToAlbumRequest
+      http.post('/playlists/add-songs', async (req) => {
+        capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
     reduxRender(
       withToastify(
-        <AddExistingAlbumSongsModal
-          opened={true}
-          onClose={onClose}
-          albumId={albumId}
-          artistId={''}
-        />
+        <AddPlaylistSongsModal opened={true} onClose={onClose} playlistId={playlistId} />
       )
     )
 
@@ -231,11 +223,11 @@ describe('Add Existing Album Songs Modal', () => {
     expect(addButton).not.toHaveAttribute('data-disabled')
     await user.click(addButton)
 
-    expect(await screen.findByText(/songs added to album/i)).toBeInTheDocument()
+    expect(await screen.findByText(/songs added to playlist/i)).toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).toHaveValue('')
 
     expect(capturedRequest).toStrictEqual({
-      id: albumId,
+      id: playlistId,
       songIds: songsToSelect.map((song) => song.id)
     })
     expect(onClose).toHaveBeenCalledOnce()
@@ -244,9 +236,7 @@ describe('Add Existing Album Songs Modal', () => {
   it('should select all songs and then deselect them', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
-    )
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
     await user.click(await screen.findByRole('checkbox', { name: 'select-all' }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).toBeChecked())
@@ -261,9 +251,7 @@ describe('Add Existing Album Songs Modal', () => {
   it('should search for songs based on title', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
-    )
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
     expect(await screen.findAllByLabelText(/song-/i)).toHaveLength(songs.length)
 
@@ -294,9 +282,7 @@ describe('Add Existing Album Songs Modal', () => {
     const songToNotDeselect = songs[0].title
     const songToDeselect = songs[1].title
 
-    reduxRender(
-      <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
-    )
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
     const searchBox = screen.getByRole('searchbox', { name: /search/i })
 
