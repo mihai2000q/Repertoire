@@ -56,7 +56,7 @@ function LargeImageDropzoneWithPreview({
             >
               <ActionIcon
                 variant={'subtle'}
-                aria-label={'reset-image-button'}
+                aria-label={'reset-image'}
                 size={'lg'}
                 disabled={image === defaultValue}
                 onClick={handleResetImage}
@@ -66,13 +66,19 @@ function LargeImageDropzoneWithPreview({
             </Tooltip>
           )}
 
-          <FileButton onChange={setImage} accept={IMAGE_MIME_TYPE.join(',')}>
+          <FileButton
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            inputProps={{ 'data-testid': 'upload-image-input' }}
+            onChange={setImage}
+            accept={IMAGE_MIME_TYPE.join(',')}
+          >
             {(props) => (
               <Tooltip label={'Upload another image'} openDelay={300} position={'right'}>
                 <ActionIcon
                   c={'dark'}
                   variant={'subtle'}
-                  aria-label={'upload-image-button'}
+                  aria-label={'upload-image'}
                   size={'lg'}
                   {...props}
                 >
@@ -86,7 +92,7 @@ function LargeImageDropzoneWithPreview({
             <ActionIcon
               variant={'subtle'}
               color={'red.6'}
-              aria-label={'remove-image-button'}
+              aria-label={'remove-image'}
               size={'lg'}
               sx={(theme) => ({
                 '&:hover': { backgroundColor: alpha(theme.colors.red[2], 0.7) }
@@ -103,6 +109,10 @@ function LargeImageDropzoneWithPreview({
 
   return (
     <Dropzone
+      aria-label={'image-dropzone'}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      inputProps={{ 'data-testid': 'image-dropzone-input' }}
       onDrop={(files) => setImage(files[0])}
       accept={IMAGE_MIME_TYPE}
       multiple={false}
