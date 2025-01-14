@@ -12,6 +12,8 @@ import {
   editPlaylistHeaderValidation
 } from '../../../validation/playlistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import {useDidUpdate} from "@mantine/hooks";
+import {toast} from "react-toastify";
 
 interface EditPlaylistHeaderModalProps {
   playlist: Playlist
@@ -33,7 +35,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     initialValues: {
       title: playlist.title,
       description: playlist.description,
-      image: playlist.imageUrl ?? null
+      image: playlist.imageUrl
     } as EditPlaylistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -48,15 +50,14 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     }
   })
 
-  const [image, setImage] = useState(playlist.imageUrl ?? null)
+  const [image, setImage] = useState(playlist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useEffect(() => setImage(playlist.imageUrl), [playlist])
+  useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
     title = title.trim()
 
     await updatePlaylistMutation({
-      ...playlist,
       id: playlist.id,
       title: title,
       description: description
@@ -71,6 +72,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
       await deleteImageMutation(playlist.id)
     }
 
+    toast.info('Playlist updated!')
     onClose()
     setHasChanged(false)
   }
@@ -78,7 +80,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Playlist Header'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <form onSubmit={form.onSubmit(updatePlaylist)}>
           <Stack>
