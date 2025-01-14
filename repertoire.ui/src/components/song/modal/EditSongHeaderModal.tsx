@@ -21,6 +21,7 @@ import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validatio
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import {toast} from "react-toastify";
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -81,6 +82,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
       await deleteImageMutation(song.id)
     }
 
+    toast.info('Song header updated!')
     onClose()
     setHasChanged(false)
   }
