@@ -163,7 +163,7 @@ function ArtistDrawer() {
                   </Text>
                   {album.releaseDate && (
                     <Text fw={500} fz={'xs'} c={'dimmed'} inline>
-                      {dayjs(album.releaseDate).format('DD MMM YYYY')}
+                      {dayjs(album.releaseDate).format('D MMM YYYY')}
                     </Text>
                   )}
                 </Stack>

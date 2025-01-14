@@ -103,6 +103,7 @@ export const components = {
   }),
   DatePickerInput: DatePickerInput.extend({
     defaultProps: {
+      valueFormat: 'D MMMM YYYY',
       dropdownType: 'popover',
       popoverProps: {
         shadow: 'sm',

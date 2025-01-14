@@ -122,7 +122,7 @@ describe('Album Drawer', () => {
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()
 
     await user.hover(screen.getByText(dayjs(localAlbum.releaseDate).format('YYYY')))
-    expect(await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('DD MMMM YYYY')))).toBeInTheDocument()
+    expect(await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))).toBeInTheDocument()
 
     localAlbum.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()

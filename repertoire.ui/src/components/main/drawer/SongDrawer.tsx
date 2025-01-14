@@ -207,7 +207,7 @@ function SongDrawer() {
                         </Text>
                         {song.album.releaseDate && (
                           <Text fw={500} c={'dimmed'} fz={'sm'} inline>
-                            {dayjs(song.album.releaseDate).format('DD MMM YYYY')}
+                            {dayjs(song.album.releaseDate).format('D MMM YYYY')}
                           </Text>
                         )}
                       </Stack>
@@ -225,7 +225,7 @@ function SongDrawer() {
                   </Text>
                 )}
                 <Tooltip
-                  label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
+                  label={'Released on ' + dayjs(song.releaseDate).format('D MMMM YYYY')}
                   openDelay={200}
                   position={'bottom'}
                 >
@@ -318,7 +318,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('DD MMM YYYY')}</Text>
+                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMM YYYY')}</Text>
                 </Grid.Col>
               </>
             )}

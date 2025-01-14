@@ -61,7 +61,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
           </Text>
           {album.releaseDate && (
             <Text fz={'xs'} c={'dimmed'}>
-              {dayjs(album.releaseDate).format('DD MMM YYYY')}
+              {dayjs(album.releaseDate).format('D MMM YYYY')}
             </Text>
           )}
         </Stack>

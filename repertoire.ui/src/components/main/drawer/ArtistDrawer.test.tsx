@@ -130,7 +130,7 @@ describe('Artist Drawer', () => {
       expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
       expect(screen.getByText(album.title)).toBeInTheDocument()
       if (album.releaseDate) {
-        expect(screen.getByText(dayjs(album.releaseDate).format('DD MMM YYYY'))).toBeInTheDocument()
+        expect(screen.getByText(dayjs(album.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
       }
     })
     songs.forEach((song) => {

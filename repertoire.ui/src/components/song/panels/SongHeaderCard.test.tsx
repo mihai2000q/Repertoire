@@ -92,14 +92,14 @@ describe('Song Header Card', () => {
 
     await user.hover(screen.getByText(dayjs(localSong.releaseDate).format('YYYY')))
     expect(
-      await screen.findByText(new RegExp(dayjs(localSong.releaseDate).format('DD MMMM YYYY')))
+      await screen.findByText(new RegExp(dayjs(localSong.releaseDate).format('D MMMM YYYY')))
     ).toBeInTheDocument()
 
     await user.hover(screen.getByText(localSong.album.title))
     expect(await screen.findByRole('img', { name: localSong.album.title })).toBeInTheDocument()
     expect(screen.getAllByText(localSong.album.title)).toHaveLength(2)
     expect(
-      screen.getByText(dayjs(localSong.album.releaseDate).format('DD MMM YYYY'))
+      screen.getByText(dayjs(localSong.album.releaseDate).format('D MMM YYYY'))
     ).toBeInTheDocument()
   })
 

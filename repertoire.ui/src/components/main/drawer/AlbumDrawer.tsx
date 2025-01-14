@@ -138,7 +138,7 @@ function AlbumDrawer() {
             {album.releaseDate && (
               <>
                 <Tooltip
-                  label={'Released on ' + dayjs(album.releaseDate).format('DD MMMM YYYY')}
+                  label={'Released on ' + dayjs(album.releaseDate).format('D MMMM YYYY')}
                   openDelay={200}
                   position={'bottom'}
                 >

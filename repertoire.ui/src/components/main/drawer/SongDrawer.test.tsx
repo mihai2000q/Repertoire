@@ -121,7 +121,7 @@ describe('Song Drawer', () => {
     await user.hover(screen.getByText(dayjs(localSong.releaseDate).format('YYYY')))
     expect(
       await screen.findByRole('tooltip', {
-        name: new RegExp(dayjs(localSong.releaseDate).format('DD MMMM YYYY'))
+        name: new RegExp(dayjs(localSong.releaseDate).format('D MMMM YYYY'))
       })
     ).toBeInTheDocument()
 
@@ -131,7 +131,7 @@ describe('Song Drawer', () => {
     expect(screen.getByRole('img', { name: localSong.album.title })).toBeInTheDocument()
     expect(screen.getAllByText(localSong.album.title)).toHaveLength(2)
     expect(
-      screen.getByText(new RegExp(dayjs(localSong.album.releaseDate).format('DD MMM YYYY')))
+      screen.getByText(new RegExp(dayjs(localSong.album.releaseDate).format('D MMM YYYY')))
     ).toBeInTheDocument()
 
     // Details
@@ -141,7 +141,7 @@ describe('Song Drawer', () => {
     expect(screen.getByText(localSong.bpm)).toBeInTheDocument()
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
     expect(
-      screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
+      screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
     ).toBeInTheDocument()
     expect(screen.getByText(localSong.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()

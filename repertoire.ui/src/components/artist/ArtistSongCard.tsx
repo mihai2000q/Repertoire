@@ -84,7 +84,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
           </Group>
           {song.releaseDate && (
             <Text fz={'xs'} c={'dimmed'}>
-              {dayjs(song.releaseDate).format('DD MMM YYYY')}
+              {dayjs(song.releaseDate).format('D MMM YYYY')}
             </Text>
           )}
         </Stack>

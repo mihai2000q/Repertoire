@@ -82,7 +82,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             )}
             {album.releaseDate && (
               <Text inline fz={'xxs'} c={'dimmed'}>
-                {dayjs(album.releaseDate).format('DD MMM YYYY')}
+                {dayjs(album.releaseDate).format('D MMM YYYY')}
               </Text>
             )}
           </Stack>
