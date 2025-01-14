@@ -12,7 +12,7 @@ describe('Edit Song Header Modal', () => {
   const song: Song = {
     id: '1',
     title: 'Song 1',
-    releaseDate: '2024-12-11T23:00:00.000Z',
+    releaseDate: '2024-12-12T00:00:00',
     imageUrl: 'some-image.png',
     confidence: 0,
     isRecorded: false,

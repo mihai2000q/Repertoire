@@ -1,7 +1,7 @@
 import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditAlbumHeaderModal from './EditAlbumHeaderModal.tsx'
 import Album from '../../../types/models/Album.ts'
-import {act, screen} from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
@@ -15,7 +15,7 @@ describe('Edit Album Header Modal', () => {
     songs: [],
     createdAt: '',
     updatedAt: '',
-    releaseDate: '2024-12-11T23:00:00.000Z',
+    releaseDate: '2024-12-12T00:00:00',
     imageUrl: 'some-image.png'
   }
 
@@ -153,7 +153,13 @@ describe('Edit Album Header Modal', () => {
     )
 
     reduxRender(
-      withToastify(<EditAlbumHeaderModal opened={true} onClose={onClose} album={{ ...album, imageUrl: undefined }} />)
+      withToastify(
+        <EditAlbumHeaderModal
+          opened={true}
+          onClose={onClose}
+          album={{ ...album, imageUrl: undefined }}
+        />
+      )
     )
 
     const saveButton = screen.getByRole('button', { name: /save/i })
