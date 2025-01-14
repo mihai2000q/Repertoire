@@ -12,6 +12,8 @@ import {
   editArtistHeaderValidation
 } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import {toast} from "react-toastify";
+import {useDidUpdate} from "@mantine/hooks";
 
 interface EditArtistHeaderModalProps {
   artist: Artist
@@ -32,7 +34,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     mode: 'uncontrolled',
     initialValues: {
       name: artist.name,
-      image: artist.imageUrl ?? null
+      image: artist.imageUrl
     } as EditArtistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -43,15 +45,14 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     }
   })
 
-  const [image, setImage] = useState(artist.imageUrl ?? null)
+  const [image, setImage] = useState(artist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useEffect(() => setImage(artist.imageUrl), [artist])
+  useDidUpdate(() => setImage(artist.imageUrl), [artist])
 
   async function updateArtist({ name, image }: EditArtistHeaderForm) {
     name = name.trim()
 
     await updateArtistMutation({
-      ...artist,
       id: artist.id,
       name: name
     }).unwrap()
@@ -65,6 +66,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
       await deleteImageMutation(artist.id)
     }
 
+    toast.info('Artist updated!')
     onClose()
     setHasChanged(false)
   }
@@ -72,7 +74,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Artist Header'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <form onSubmit={form.onSubmit(updateArtist)}>
           <Stack>
