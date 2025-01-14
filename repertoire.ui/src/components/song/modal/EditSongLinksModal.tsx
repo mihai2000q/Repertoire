@@ -25,7 +25,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
       youtubeLink: song.youtubeLink
     } as EditSongLinksForm,
     validateInputOnBlur: true,
-    validateInputOnChange: true,
+    validateInputOnChange: false,
     clearInputErrorOnChange: true,
     validate: zodResolver(editSongLinksValidation),
     onValuesChange: (values) => {

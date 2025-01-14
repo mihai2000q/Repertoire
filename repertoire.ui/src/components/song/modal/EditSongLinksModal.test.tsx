@@ -1,7 +1,7 @@
 import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import Song from '../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
-import { screen } from '@testing-library/react'
+import {act, screen} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
@@ -165,6 +165,7 @@ describe('Edit Song Links Modal', () => {
     // invalidate Youtube link
     await user.clear(youtubeTextBox)
     await user.type(youtubeTextBox, 'some invalid link')
+    act(() => youtubeTextBox.blur())
     expect(youtubeTextBox).toBeInvalid()
 
     await user.clear(youtubeTextBox)
@@ -173,6 +174,7 @@ describe('Edit Song Links Modal', () => {
     // invalidate Songsterr link
     await user.clear(songsterrTextBox)
     await user.type(songsterrTextBox, 'some songsterr invalid link')
+    act(() => songsterrTextBox.blur())
     expect(songsterrTextBox).toBeInvalid()
 
     await user.clear(songsterrTextBox)
