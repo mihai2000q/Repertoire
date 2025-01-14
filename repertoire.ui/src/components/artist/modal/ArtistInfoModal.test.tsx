@@ -17,6 +17,7 @@ describe('Artist Info Modal', () => {
   it('should render', () => {
     mantineRender(<ArtistInfoModal opened={true} onClose={() => {}} artist={artist} />)
 
+    expect(screen.getByRole('dialog', { name: /artist info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /artist info/i })).toBeInTheDocument()
     expect(screen.getByText(dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
     expect(screen.getByText(dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()

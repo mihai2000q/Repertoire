@@ -17,6 +17,7 @@ describe('Playlist Info Modal', () => {
   it('should render', () => {
     mantineRender(<PlaylistInfoModal opened={true} onClose={() => {}} playlist={playlist} />)
 
+    expect(screen.getByRole('dialog', { name: /playlist info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /playlist info/i })).toBeInTheDocument()
     expect(screen.getByText(dayjs(playlist.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
     expect(screen.getByText(dayjs(playlist.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()

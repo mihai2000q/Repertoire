@@ -16,6 +16,7 @@ describe('Album Info Modal', () => {
   it('should render', () => {
     mantineRender(<AlbumInfoModal opened={true} onClose={() => {}} album={album} />)
 
+    expect(screen.getByRole('dialog', { name: /album info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /album info/i })).toBeInTheDocument()
     expect(screen.getByText(dayjs(album.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
     expect(screen.getByText(dayjs(album.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
