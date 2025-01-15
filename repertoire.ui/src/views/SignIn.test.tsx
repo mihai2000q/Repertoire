@@ -75,7 +75,10 @@ describe('Sign In', () => {
     await sendSignInRequest(email, password)
 
     expect(screen.getByRole('textbox', { name: /email/i })).toBeInvalid()
-    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute('data-invalid', 'true')
+    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute(
+      'data-invalid',
+      'true'
+    )
     expect(screen.getAllByText(error)).toHaveLength(2)
   })
 

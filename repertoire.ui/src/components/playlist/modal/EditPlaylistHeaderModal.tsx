@@ -12,8 +12,8 @@ import {
   editPlaylistHeaderValidation
 } from '../../../validation/playlistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
-import {useDidUpdate} from "@mantine/hooks";
-import {toast} from "react-toastify";
+import { useDidUpdate } from '@mantine/hooks'
+import { toast } from 'react-toastify'
 
 interface EditPlaylistHeaderModalProps {
   playlist: Playlist

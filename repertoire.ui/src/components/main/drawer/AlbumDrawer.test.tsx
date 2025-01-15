@@ -1,14 +1,14 @@
-import {reduxRouterRender, withToastify} from '../../../test-utils.tsx'
+import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
 import AlbumDrawer from './AlbumDrawer.tsx'
 import Album from '../../../types/models/Album.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { screen } from '@testing-library/react'
 import Song from '../../../types/models/Song.ts'
-import Artist from "../../../types/models/Artist.ts";
-import {userEvent} from "@testing-library/user-event";
-import {RootState} from "../../../state/store.ts";
-import dayjs from "dayjs";
+import Artist from '../../../types/models/Artist.ts'
+import { userEvent } from '@testing-library/user-event'
+import { RootState } from '../../../state/store.ts'
+import dayjs from 'dayjs'
 
 describe('Album Drawer', () => {
   const emptySong: Song = {
@@ -122,7 +122,9 @@ describe('Album Drawer', () => {
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()
 
     await user.hover(screen.getByText(dayjs(localAlbum.releaseDate).format('YYYY')))
-    expect(await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))).toBeInTheDocument()
+    expect(
+      await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))
+    ).toBeInTheDocument()
 
     localAlbum.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
@@ -174,7 +176,7 @@ describe('Album Drawer', () => {
         global: {
           albumDrawer: {
             open: true,
-            albumId: album.id,
+            albumId: album.id
           },
           artistDrawer: undefined,
           songDrawer: undefined

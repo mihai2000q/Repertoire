@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveSongsFromPlaylistRequest } from "../../types/requests/PlaylistRequests.ts";
+import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 
 describe('Playlist Songs Card', () => {
   const emptySong: Song = {
@@ -108,7 +108,7 @@ describe('Playlist Songs Card', () => {
     expect(screen.getByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
   })
 
-  it('should send \'remove songs from playlist request\' when clicking on the more menu of a song card', async () => {
+  it("should send 'remove songs from playlist request' when clicking on the more menu of a song card", async () => {
     const user = userEvent.setup()
 
     const song = playlist.songs[0]

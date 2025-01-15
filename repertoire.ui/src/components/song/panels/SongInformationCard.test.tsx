@@ -5,8 +5,8 @@ import { userEvent } from '@testing-library/user-event'
 import SongInformationCard from './SongInformationCard.tsx'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import dayjs from 'dayjs'
-import {http, HttpResponse} from "msw";
-import {setupServer} from "msw/node";
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 
 describe('Song Information Card', () => {
   const song: Song = {

@@ -26,7 +26,7 @@ describe('Add Existing Artist Albums Modal', () => {
     {
       ...emptyAlbum,
       id: '2',
-      title: 'Album 2',
+      title: 'Album 2'
     },
     {
       ...emptyAlbum,
@@ -37,7 +37,7 @@ describe('Add Existing Artist Albums Modal', () => {
       ...emptyAlbum,
       id: '4',
       title: 'Album 12'
-    },
+    }
   ]
 
   const handlers = [

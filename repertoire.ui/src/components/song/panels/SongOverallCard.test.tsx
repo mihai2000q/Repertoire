@@ -2,7 +2,7 @@ import Song from '../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { mantineRender } from '../../../test-utils.tsx'
 import SongOverallCard from './SongOverallCard.tsx'
-import {userEvent} from "@testing-library/user-event";
+import { userEvent } from '@testing-library/user-event'
 
 describe('Song Overall Card', () => {
   const song: Song = {

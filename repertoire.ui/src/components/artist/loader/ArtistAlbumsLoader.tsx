@@ -8,11 +8,7 @@ function ArtistAlbumsLoader() {
           <Skeleton w={60} h={15} />
           <Skeleton w={100} h={11} />
         </Group>
-        <SimpleGrid
-          cols={{ sm: 1, md: 2, xl: 3 }}
-          spacing={0}
-          verticalSpacing={0}
-        >
+        <SimpleGrid cols={{ sm: 1, md: 2, xl: 3 }} spacing={0} verticalSpacing={0}>
           {Array.from(Array(8)).map((_, i) => (
             <Group key={i} align={'center'} px={'md'} py={'xs'} wrap={'nowrap'}>
               <Skeleton radius={'md'} w={40} h={40} />

@@ -22,7 +22,11 @@ import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 
 function Songs(): ReactElement {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data: songs, isLoading, isFetching } = useGetSongsQuery({
+  const {
+    data: songs,
+    isLoading,
+    isFetching
+  } = useGetSongsQuery({
     pageSize: 20,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
@@ -39,7 +43,12 @@ function Songs(): ReactElement {
         <Title order={3} fw={800}>
           Songs
         </Title>
-        <ActionIcon aria-label={'new-song'} variant={'grey'} size={'lg'} onClick={openAddNewSongModal}>
+        <ActionIcon
+          aria-label={'new-song'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewSongModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />

@@ -55,7 +55,7 @@ const songsApi = api.injectEndpoints({
     deleteImageFromSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/images/${arg}`,
-        method: 'DELETE',
+        method: 'DELETE'
       }),
       invalidatesTags: ['Songs', 'Albums']
     }),
@@ -110,7 +110,7 @@ const songsApi = api.injectEndpoints({
     getGuitarTunings: build.query<GuitarTuning[], void>({
       query: () => 'songs/guitar-tunings',
       providesTags: ['GuitarTunings']
-    }),
+    })
   })
 })
 

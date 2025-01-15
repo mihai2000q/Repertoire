@@ -5,7 +5,7 @@ import { EditSongLinksForm, editSongLinksValidation } from '../../../validation/
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
 import { useUpdateSongMutation } from '../../../state/songsApi.ts'
 import { useState } from 'react'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 interface EditSongLinksModalProps {
   song: Song

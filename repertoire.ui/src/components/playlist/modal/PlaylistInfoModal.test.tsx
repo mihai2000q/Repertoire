@@ -1,8 +1,8 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import PlaylistInfoModal from './PlaylistInfoModal.tsx'
 import Playlist from '../../../types/models/Playlist.ts'
-import {screen} from "@testing-library/react";
-import dayjs from "dayjs";
+import { screen } from '@testing-library/react'
+import dayjs from 'dayjs'
 
 describe('Playlist Info Modal', () => {
   const playlist: Playlist = {
@@ -19,7 +19,11 @@ describe('Playlist Info Modal', () => {
 
     expect(screen.getByRole('dialog', { name: /playlist info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /playlist info/i })).toBeInTheDocument()
-    expect(screen.getByText(dayjs(playlist.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
-    expect(screen.getByText(dayjs(playlist.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(playlist.createdAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(playlist.updatedAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
   })
 })

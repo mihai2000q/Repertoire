@@ -47,7 +47,9 @@ describe('Song Section Type Select', () => {
 
     const label = 'label'
 
-    const [{ rerender }] = reduxRender(<SongSectionTypeSelect label={label} option={null} onChange={onChange} />)
+    const [{ rerender }] = reduxRender(
+      <SongSectionTypeSelect label={label} option={null} onChange={onChange} />
+    )
 
     expect(screen.getByRole('textbox', { name: label })).toHaveValue('')
 

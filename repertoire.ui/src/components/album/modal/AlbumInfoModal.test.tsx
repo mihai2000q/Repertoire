@@ -1,8 +1,8 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import AlbumInfoModal from './AlbumInfoModal.tsx'
 import Album from '../../../types/models/Album.ts'
-import {screen} from "@testing-library/react";
-import dayjs from "dayjs";
+import { screen } from '@testing-library/react'
+import dayjs from 'dayjs'
 
 describe('Album Info Modal', () => {
   const album: Album = {
@@ -18,7 +18,11 @@ describe('Album Info Modal', () => {
 
     expect(screen.getByRole('dialog', { name: /album info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /album info/i })).toBeInTheDocument()
-    expect(screen.getByText(dayjs(album.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
-    expect(screen.getByText(dayjs(album.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(album.createdAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(album.updatedAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
   })
 })

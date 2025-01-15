@@ -6,7 +6,7 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveSongsFromArtistRequest } from "../../../types/requests/ArtistRequests.ts";
+import { RemoveSongsFromArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 
@@ -39,13 +39,13 @@ describe('Artist Songs Card', () => {
 
   const songs: WithTotalCountResponse<Song> = {
     models: songModels,
-    totalCount: 2,
+    totalCount: 2
   }
 
   const artistId = '1'
 
   const order: Order = {
-    label: 'Songs\' order',
+    label: "Songs' order",
     value: 'order value'
   }
 
@@ -67,7 +67,7 @@ describe('Artist Songs Card', () => {
 
   afterAll(() => server.close())
 
-  it("should render and display songs", async () => {
+  it('should render and display songs', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -76,7 +76,7 @@ describe('Artist Songs Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -98,14 +98,14 @@ describe('Artist Songs Card', () => {
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it("should display loader on loading", async () => {
+  it('should display loader on loading', async () => {
     reduxRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
         isLoading={true}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -114,7 +114,7 @@ describe('Artist Songs Card', () => {
     expect(screen.queryByLabelText('songs-card')).not.toBeInTheDocument()
   })
 
-  it("should display orders and be able to change it", async () => {
+  it('should display orders and be able to change it', async () => {
     const user = userEvent.setup()
 
     const newOrder = artistSongsOrders[0]
@@ -133,16 +133,16 @@ describe('Artist Songs Card', () => {
 
     await user.click(screen.getByRole('button', { name: order.label }))
 
-    artistSongsOrders.forEach(o => (
+    artistSongsOrders.forEach((o) =>
       expect(screen.getByRole('menuitem', { name: o.label })).toBeInTheDocument()
-    ))
+    )
 
     await user.click(screen.getByRole('menuitem', { name: newOrder.label }))
 
     expect(setOrder).toHaveBeenCalledWith(newOrder)
   })
 
-  it("should display more menu", async () => {
+  it('should display more menu', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -151,7 +151,7 @@ describe('Artist Songs Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -162,7 +162,7 @@ describe('Artist Songs Card', () => {
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it("should display less information on the more menu, when the artist is unknown", async () => {
+  it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -171,7 +171,7 @@ describe('Artist Songs Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={true}
       />
     )
@@ -192,7 +192,7 @@ describe('Artist Songs Card', () => {
           artistId={artistId}
           isLoading={false}
           order={order}
-          setOrder={() => { }}
+          setOrder={() => {}}
           isUnknownArtist={false}
         />
       )
@@ -212,7 +212,7 @@ describe('Artist Songs Card', () => {
           artistId={artistId}
           isLoading={false}
           order={order}
-          setOrder={() => { }}
+          setOrder={() => {}}
           isUnknownArtist={false}
         />
       )
@@ -233,7 +233,7 @@ describe('Artist Songs Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -252,7 +252,7 @@ describe('Artist Songs Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={true}
       />
     )
@@ -262,7 +262,7 @@ describe('Artist Songs Card', () => {
     expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it('should send \'remove songs from artist request\' when clicking on the more menu of a song card', async () => {
+  it("should send 'remove songs from artist request' when clicking on the more menu of a song card", async () => {
     const user = userEvent.setup()
 
     const song = songs.models[0]
@@ -281,7 +281,7 @@ describe('Artist Songs Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )

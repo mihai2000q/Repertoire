@@ -1,5 +1,5 @@
-import { mantineRender } from "../../test-utils"
-import ArtistsLoader from "./ArtistsLoader"
+import { mantineRender } from '../../test-utils'
+import ArtistsLoader from './ArtistsLoader'
 
 describe('Artists Loader', () => {
   it('should render', () => {

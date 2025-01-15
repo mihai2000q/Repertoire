@@ -98,7 +98,11 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             {album?.artist && (
               <>
                 <Group gap={'xs'}>
-                  <Avatar size={35} src={album.artist.imageUrl ?? userPlaceholder} alt={album.artist.name} />
+                  <Avatar
+                    size={35}
+                    src={album.artist.imageUrl ?? userPlaceholder}
+                    alt={album.artist.name}
+                  />
                   <Text
                     fw={600}
                     fz={'lg'}
@@ -125,7 +129,9 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                     {dayjs(album.releaseDate).format('YYYY')}
                   </Text>
                 </Tooltip>
-                <Text fw={500} c={'dimmed'}>•</Text>
+                <Text fw={500} c={'dimmed'}>
+                  •
+                </Text>
               </>
             )}
             <Text fw={500} c={'dimmed'}>

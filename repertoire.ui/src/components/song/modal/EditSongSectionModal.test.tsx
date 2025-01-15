@@ -226,7 +226,9 @@ describe('Edit Song Description Modal', () => {
       <EditSongSectionModal opened={true} onClose={() => {}} section={section} />
     )
 
-    expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(section.rehearsals.toString())
+    expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
+      section.rehearsals.toString()
+    )
 
     rerender(
       <EditSongSectionModal
@@ -236,6 +238,8 @@ describe('Edit Song Description Modal', () => {
       />
     )
 
-    expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue((section.rehearsals + 1).toString())
+    expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
+      (section.rehearsals + 1).toString()
+    )
   })
 })

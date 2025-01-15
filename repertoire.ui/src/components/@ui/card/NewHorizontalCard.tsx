@@ -11,7 +11,14 @@ interface NewHorizontalCardProps {
   ariaLabel?: string
 }
 
-function NewHorizontalCard({ children, onClick, borderRadius, icon, p, ariaLabel }: NewHorizontalCardProps) {
+function NewHorizontalCard({
+  children,
+  onClick,
+  borderRadius,
+  icon,
+  p,
+  ariaLabel
+}: NewHorizontalCardProps) {
   return (
     <Group
       align={'center'}

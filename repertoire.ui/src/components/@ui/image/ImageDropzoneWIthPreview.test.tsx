@@ -1,6 +1,6 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import ImageDropzoneWithPreview from './ImageDropzoneWithPreview.tsx'
-import {screen} from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 describe('Image Dropzone With Preview', () => {
@@ -66,7 +66,9 @@ describe('Image Dropzone With Preview', () => {
       const image = new File([''], 'image.png', { type: 'image/png' })
       const setImage = vitest.fn()
 
-      const { rerender } = mantineRender(<ImageDropzoneWithPreview image={image} setImage={setImage} />)
+      const { rerender } = mantineRender(
+        <ImageDropzoneWithPreview image={image} setImage={setImage} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'image-options' }))
       await user.click(screen.getByRole('menuitem', { name: /remove image/i }))

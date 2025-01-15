@@ -22,7 +22,11 @@ import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
 
 function Playlists() {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data: playlists, isLoading, isFetching } = useGetPlaylistsQuery({
+  const {
+    data: playlists,
+    isLoading,
+    isFetching
+  } = useGetPlaylistsQuery({
     pageSize: 20,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
@@ -45,7 +49,12 @@ function Playlists() {
         <Title order={3} fw={800}>
           Playlists
         </Title>
-        <ActionIcon aria-label={'new-playlist'} variant={'grey'} size={'lg'} onClick={openAddNewPlaylistModal}>
+        <ActionIcon
+          aria-label={'new-playlist'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewPlaylistModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />

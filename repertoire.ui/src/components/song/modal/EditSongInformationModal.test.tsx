@@ -145,7 +145,10 @@ describe('Edit Song Information Modal', () => {
         }}
       />
     )
-    expect(await screen.findByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(await screen.findByRole('button', { name: /save/i })).toHaveAttribute(
+      'data-disabled',
+      'true'
+    )
   })
 
   it('should send update request when all the information has changed to empty values', async () => {

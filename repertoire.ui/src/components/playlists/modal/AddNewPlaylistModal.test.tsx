@@ -51,7 +51,7 @@ describe('Add New Playlist Modal', () => {
     await waitFor(() =>
       expect(capturedRequest).toStrictEqual({
         title: newTitle,
-        description: newDescription,
+        description: newDescription
       })
     )
     expect(onClose).toHaveBeenCalledOnce()

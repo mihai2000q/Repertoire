@@ -60,7 +60,7 @@ describe('Playlists', () => {
         totalCount: totalCount
       }
       return HttpResponse.json(response)
-    }),
+    })
   ]
 
   const server = setupServer(...handlers)

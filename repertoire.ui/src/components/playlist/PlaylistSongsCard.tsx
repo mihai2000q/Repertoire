@@ -94,7 +94,9 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
             />
           ))}
           {playlist.songs.length === 0 && (
-            <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>Add Songs</NewHorizontalCard>
+            <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>
+              Add Songs
+            </NewHorizontalCard>
           )}
         </Stack>
       </Stack>

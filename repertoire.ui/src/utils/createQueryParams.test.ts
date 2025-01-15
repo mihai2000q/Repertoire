@@ -1,4 +1,4 @@
-import createQueryParams from "./createQueryParams.ts";
+import createQueryParams from './createQueryParams.ts'
 
 describe('create Query Params', () => {
   it('should create query params', () => {
@@ -6,10 +6,11 @@ describe('create Query Params', () => {
       id: '1',
       name: 'John',
       searchBy: ['description IS NOT NULL', 'sku IS NOT NULL'],
-      orderBy: ['name ASC', 'created_at DESC'],
+      orderBy: ['name ASC', 'created_at DESC']
     }
 
-    let expected = `?id=${input.id}` +
+    let expected =
+      `?id=${input.id}` +
       `&name=${input.name}` +
       `&searchBy=${input.searchBy[0]}` +
       `&searchBy=${input.searchBy[1]}` +

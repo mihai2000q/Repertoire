@@ -77,14 +77,24 @@ describe('Large Image Dropzone With Preview', () => {
     const setImage = vitest.fn()
 
     const { rerender } = mantineRender(
-      <LargeImageDropzoneWithPreview image={defaultImage} setImage={setImage} defaultValue={defaultImage} />
+      <LargeImageDropzoneWithPreview
+        image={defaultImage}
+        setImage={setImage}
+        defaultValue={defaultImage}
+      />
     )
 
     let resetImageButton = screen.getByRole('button', { name: 'reset-image' })
     expect(resetImageButton).toBeInTheDocument()
     expect(resetImageButton).toBeDisabled()
 
-    rerender(<LargeImageDropzoneWithPreview image={newImage} setImage={setImage} defaultValue={defaultImage} />)
+    rerender(
+      <LargeImageDropzoneWithPreview
+        image={newImage}
+        setImage={setImage}
+        defaultValue={defaultImage}
+      />
+    )
 
     resetImageButton = screen.getByRole('button', { name: 'reset-image' })
     expect(resetImageButton).not.toBeDisabled()

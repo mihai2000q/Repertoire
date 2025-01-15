@@ -145,9 +145,13 @@ describe('Song Drawer', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(localSong.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
-    expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(localSong.confidence)
+    expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(
+      localSong.confidence
+    )
     expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
-    expect(screen.getByRole('progressbar', { name: 'progress' })).toHaveValue(localSong.progress / 10)
+    expect(screen.getByRole('progressbar', { name: 'progress' })).toHaveValue(
+      localSong.progress / 10
+    )
 
     // hover difficulty, confidence and progress bars
     await user.hover(screen.getByRole('progressbar', { name: 'difficulty' }))

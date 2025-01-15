@@ -24,6 +24,6 @@ const CustomIconArrowLeft = forwardRef<SVGSVGElement, CustomIconArrowLeftProps>(
   )
 )
 
-CustomIconArrowLeft.displayName = "CustomIconArrowLeft";
+CustomIconArrowLeft.displayName = 'CustomIconArrowLeft'
 
 export default CustomIconArrowLeft

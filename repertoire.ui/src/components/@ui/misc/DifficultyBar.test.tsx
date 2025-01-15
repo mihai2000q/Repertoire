@@ -14,12 +14,14 @@ describe('Difficulty Bar', () => {
     expect(progressBars).toHaveLength(difficulties.length + 1)
 
     const parentProgressBar = screen.getByRole('progressbar', { name: 'difficulty' })
-    progressBars = progressBars.filter(p => p !== parentProgressBar)
+    progressBars = progressBars.filter((p) => p !== parentProgressBar)
     expect(progressBars).toHaveLength(difficulties.length)
 
     const difficultyIndex = difficulties.indexOf(difficulty)
     progressBars.slice(0, difficultyIndex).forEach((p) => expect(p).toHaveValue(100))
-    progressBars.slice(difficultyIndex + 1, progressBars.length).forEach((p) => expect(p).toHaveValue(0))
+    progressBars
+      .slice(difficultyIndex + 1, progressBars.length)
+      .forEach((p) => expect(p).toHaveValue(0))
   })
 
   it.each([...difficulties])('should show tooltip', async (difficulty) => {

@@ -368,7 +368,10 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating role={'tooltip'} label={<NumberFormatter value={song.progress} />}>
+                  <Tooltip.Floating
+                    role={'tooltip'}
+                    label={<NumberFormatter value={song.progress} />}
+                  >
                     <Progress
                       aria-label={'progress'}
                       flex={1}

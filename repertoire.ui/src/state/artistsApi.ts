@@ -55,7 +55,7 @@ const artistsApi = api.injectEndpoints({
     deleteImageFromArtist: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `artists/images/${arg}`,
-        method: 'DELETE',
+        method: 'DELETE'
       }),
       invalidatesTags: ['Artists', 'Songs', 'Albums']
     }),

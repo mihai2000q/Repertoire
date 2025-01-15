@@ -117,11 +117,7 @@ function ArtistAlbumsCard({
           </Menu>
         </Group>
 
-        <SimpleGrid
-          cols={{ sm: 1, md: 2, xl: 3 }}
-          spacing={0}
-          verticalSpacing={0}
-        >
+        <SimpleGrid cols={{ sm: 1, md: 2, xl: 3 }} spacing={0} verticalSpacing={0}>
           {albums.models.map((album) => (
             <ArtistAlbumCard
               key={album.id}

@@ -24,19 +24,19 @@ describe('Playlist Header Card', () => {
   const playlist: Playlist = {
     id: '1',
     title: 'Playlist 1',
-    description: 'This is the playlist\'s description',
+    description: "This is the playlist's description",
     createdAt: '',
     updatedAt: '',
     songs: [
       {
         ...emptySong,
         id: '1',
-        title: 'Song 1',
+        title: 'Song 1'
       },
       {
         ...emptySong,
         id: '2',
-        title: 'Song 2',
+        title: 'Song 2'
       }
     ]
   }
@@ -48,7 +48,6 @@ describe('Playlist Header Card', () => {
   afterEach(() => server.resetHandlers())
 
   afterAll(() => server.close())
-
 
   it('should render and display minimal info', async () => {
     const user = userEvent.setup()
@@ -100,9 +99,7 @@ describe('Playlist Header Card', () => {
         })
       )
 
-      reduxRouterRender(
-        withToastify(<PlaylistHeaderCard playlist={playlist} />)
-      )
+      reduxRouterRender(withToastify(<PlaylistHeaderCard playlist={playlist} />))
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))

@@ -58,7 +58,11 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
             {song.albumTrackNo}
           </Text>
         )}
-        <Avatar radius={'8px'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} alt={song.title} />
+        <Avatar
+          radius={'8px'}
+          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+          alt={song.title}
+        />
 
         <Stack flex={1} style={{ overflow: 'hidden' }}>
           <Text fw={500} truncate={'end'}>

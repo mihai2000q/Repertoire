@@ -7,7 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveSongsFromAlbumRequest } from "../../types/requests/AlbumRequests.ts";
+import { RemoveSongsFromAlbumRequest } from '../../types/requests/AlbumRequests.ts'
 
 describe('Album Songs Card', () => {
   const emptySong: Song = {
@@ -72,9 +72,7 @@ describe('Album Songs Card', () => {
   it("should render and display album's songs when the album is not unknown", async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
-    )
+    reduxRender(<AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />)
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -93,9 +91,7 @@ describe('Album Songs Card', () => {
   it('should render and display the songs when the album is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <AlbumSongsCard album={album} songs={songs} isUnknownAlbum={true} />
-    )
+    reduxRender(<AlbumSongsCard album={album} songs={songs} isUnknownAlbum={true} />)
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -115,9 +111,7 @@ describe('Album Songs Card', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
-        <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
-      )
+      reduxRender(<AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />)
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
@@ -128,9 +122,7 @@ describe('Album Songs Card', () => {
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
-        <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
-      )
+      reduxRender(<AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />)
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
@@ -156,9 +148,7 @@ describe('Album Songs Card', () => {
   it('should display new song card when the album is unknown and open Add new song modal', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <AlbumSongsCard album={album} songs={songs} isUnknownAlbum={true} />
-    )
+    reduxRender(<AlbumSongsCard album={album} songs={songs} isUnknownAlbum={true} />)
 
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
@@ -167,7 +157,7 @@ describe('Album Songs Card', () => {
     expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it('should send \'remove songs from album request\' when clicking on the more menu of a song card', async () => {
+  it("should send 'remove songs from album request' when clicking on the more menu of a song card", async () => {
     const user = userEvent.setup()
 
     const song = album.songs[0]
@@ -180,9 +170,7 @@ describe('Album Songs Card', () => {
       })
     )
 
-    reduxRender(
-      <AlbumSongsCard album={album} songs={songs} isUnknownAlbum={false} />
-    )
+    reduxRender(<AlbumSongsCard album={album} songs={songs} isUnknownAlbum={false} />)
 
     const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
 

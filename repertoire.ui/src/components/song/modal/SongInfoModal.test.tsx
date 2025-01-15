@@ -1,9 +1,9 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import SongInfoModal from './SongInfoModal.tsx'
-import Song from "../../../types/models/Song.ts";
-import {setupServer} from "msw/node";
-import {screen} from "@testing-library/react";
-import dayjs from "dayjs";
+import Song from '../../../types/models/Song.ts'
+import { setupServer } from 'msw/node'
+import { screen } from '@testing-library/react'
+import dayjs from 'dayjs'
 
 describe('Song Info Modal', () => {
   const song: Song = {
@@ -32,7 +32,11 @@ describe('Song Info Modal', () => {
 
     expect(screen.getByRole('dialog', { name: /song info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /song info/i })).toBeInTheDocument()
-    expect(screen.getByText(dayjs(song.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
-    expect(screen.getByText(dayjs(song.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(song.createdAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(song.updatedAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
   })
 })

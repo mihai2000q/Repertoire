@@ -12,8 +12,8 @@ import {
   editArtistHeaderValidation
 } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
-import {toast} from "react-toastify";
-import {useDidUpdate} from "@mantine/hooks";
+import { toast } from 'react-toastify'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditArtistHeaderModalProps {
   artist: Artist

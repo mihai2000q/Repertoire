@@ -5,7 +5,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 describe('Artist Song Card', () => {
   const song: Song = {

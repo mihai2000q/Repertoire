@@ -1,4 +1,4 @@
-import {FileWithPath} from "@mantine/dropzone";
+import { FileWithPath } from '@mantine/dropzone'
 
 export interface UpdateUserRequest {
   name: string

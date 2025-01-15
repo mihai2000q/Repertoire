@@ -18,7 +18,7 @@ import { useForm, zodResolver } from '@mantine/form'
 import { EditSongSectionForm, editSongSectionValidation } from '../../../validation/songsForm.ts'
 import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 interface EditSongSectionModalProps {
   opened: boolean

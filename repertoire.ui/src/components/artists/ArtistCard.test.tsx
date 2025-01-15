@@ -36,7 +36,10 @@ describe('Artist Card', () => {
 
     reduxRouterRender(<ArtistCard artist={artist} />)
 
-    await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: artist.name }) })
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByRole('img', { name: artist.name })
+    })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -52,7 +55,10 @@ describe('Artist Card', () => {
 
       reduxRouterRender(withToastify(<ArtistCard artist={artist} />))
 
-      await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: artist.name }) })
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByRole('img', { name: artist.name })
+      })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()

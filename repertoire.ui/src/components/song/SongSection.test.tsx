@@ -5,7 +5,7 @@ import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
-import {UpdateSongSectionRequest} from "../../types/requests/SongRequests.ts";
+import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
 
 describe('Song Section', () => {
   const section: SongSectionModel = {
@@ -177,7 +177,7 @@ describe('Song Section', () => {
     let capturedRequest: UpdateSongSectionRequest
     server.use(
       http.put(`/songs/sections`, async (req) => {
-        capturedRequest = await req.request.json() as UpdateSongSectionRequest
+        capturedRequest = (await req.request.json()) as UpdateSongSectionRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
@@ -200,9 +200,11 @@ describe('Song Section', () => {
     expect(capturedRequest).toStrictEqual({
       ...section,
       typeId: section.songSectionType.id,
-      rehearsals: section.rehearsals + 1,
+      rehearsals: section.rehearsals + 1
     })
 
-    expect(screen.getByText(new RegExp(`${section.name} rehearsals' .* increased`))).toBeInTheDocument()
+    expect(
+      screen.getByText(new RegExp(`${section.name} rehearsals' .* increased`))
+    ).toBeInTheDocument()
   })
 })

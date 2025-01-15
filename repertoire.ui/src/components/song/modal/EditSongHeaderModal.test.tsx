@@ -228,7 +228,7 @@ describe('Edit Song Header Modal', () => {
         songs: [],
         createdAt: '',
         updatedAt: '',
-        imageUrl: 'something.png',
+        imageUrl: 'something.png'
       }
     }
 

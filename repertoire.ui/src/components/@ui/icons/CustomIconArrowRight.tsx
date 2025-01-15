@@ -1,4 +1,4 @@
-import {forwardRef, SVGProps} from "react";
+import { forwardRef, SVGProps } from 'react'
 
 interface CustomIconArrowRightProps extends SVGProps<SVGSVGElement> {
   color?: string

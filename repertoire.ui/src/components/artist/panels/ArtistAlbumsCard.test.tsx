@@ -6,7 +6,7 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveAlbumsFromArtistRequest } from "../../../types/requests/ArtistRequests.ts";
+import { RemoveAlbumsFromArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import Order from 'src/types/Order.ts'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
 
@@ -34,13 +34,13 @@ describe('Artist Albums Card', () => {
 
   const albums: WithTotalCountResponse<Album> = {
     models: albumModels,
-    totalCount: 2,
+    totalCount: 2
   }
 
   const artistId = '1'
 
   const order: Order = {
-    label: 'Albums\' order',
+    label: "Albums' order",
     value: 'order value'
   }
 
@@ -62,7 +62,7 @@ describe('Artist Albums Card', () => {
 
   afterAll(() => server.close())
 
-  it("should render and display albums", async () => {
+  it('should render and display albums', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -71,7 +71,7 @@ describe('Artist Albums Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -93,14 +93,14 @@ describe('Artist Albums Card', () => {
     expect(screen.getByRole('menuitem', { name: /add new album/i })).toBeInTheDocument()
   })
 
-  it("should display loader on loading", async () => {
+  it('should display loader on loading', async () => {
     reduxRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
         isLoading={true}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -109,7 +109,7 @@ describe('Artist Albums Card', () => {
     expect(screen.queryByLabelText('albums-card')).not.toBeInTheDocument()
   })
 
-  it("should display orders and be able to change it", async () => {
+  it('should display orders and be able to change it', async () => {
     const user = userEvent.setup()
 
     const newOrder = artistAlbumsOrders[0]
@@ -128,16 +128,16 @@ describe('Artist Albums Card', () => {
 
     await user.click(screen.getByRole('button', { name: order.label }))
 
-    artistAlbumsOrders.forEach(o => (
+    artistAlbumsOrders.forEach((o) =>
       expect(screen.getByRole('menuitem', { name: o.label })).toBeInTheDocument()
-    ))
+    )
 
     await user.click(screen.getByRole('menuitem', { name: newOrder.label }))
 
     expect(setOrder).toHaveBeenCalledWith(newOrder)
   })
 
-  it("should display more menu", async () => {
+  it('should display more menu', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -146,7 +146,7 @@ describe('Artist Albums Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -157,7 +157,7 @@ describe('Artist Albums Card', () => {
     expect(screen.getByRole('menuitem', { name: /add new album/i })).toBeInTheDocument()
   })
 
-  it("should display less information on the more menu, when the artist is unknown", async () => {
+  it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -166,7 +166,7 @@ describe('Artist Albums Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={true}
       />
     )
@@ -187,7 +187,7 @@ describe('Artist Albums Card', () => {
           artistId={artistId}
           isLoading={false}
           order={order}
-          setOrder={() => { }}
+          setOrder={() => {}}
           isUnknownArtist={false}
         />
       )
@@ -207,7 +207,7 @@ describe('Artist Albums Card', () => {
           artistId={artistId}
           isLoading={false}
           order={order}
-          setOrder={() => { }}
+          setOrder={() => {}}
           isUnknownArtist={false}
         />
       )
@@ -228,7 +228,7 @@ describe('Artist Albums Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )
@@ -247,7 +247,7 @@ describe('Artist Albums Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={true}
       />
     )
@@ -257,7 +257,7 @@ describe('Artist Albums Card', () => {
     expect(screen.getByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
   })
 
-  it('should send \'remove album from artist request\' when clicking on the more menu of a album card', async () => {
+  it("should send 'remove album from artist request' when clicking on the more menu of a album card", async () => {
     const user = userEvent.setup()
 
     const album = albums.models[0]
@@ -276,7 +276,7 @@ describe('Artist Albums Card', () => {
         artistId={artistId}
         isLoading={false}
         order={order}
-        setOrder={() => { }}
+        setOrder={() => {}}
         isUnknownArtist={false}
       />
     )

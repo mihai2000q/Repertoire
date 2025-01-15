@@ -20,7 +20,7 @@ describe('Album Song Card', () => {
   }
 
   it('should render and display information, when the album is not unknown', () => {
-    reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={false} />)
+    reduxRender(<AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} />)
 
     expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
@@ -31,7 +31,7 @@ describe('Album Song Card', () => {
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={false} />)
+    reduxRender(<AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} />)
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -62,7 +62,7 @@ describe('Album Song Card', () => {
   it('should not display the tracking number and some menu options, when the album is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<AlbumSongCard song={song} handleRemove={() => { }} isUnknownAlbum={true} />)
+    reduxRender(<AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={true} />)
 
     expect(screen.queryByText(song.albumTrackNo)).not.toBeInTheDocument()
 

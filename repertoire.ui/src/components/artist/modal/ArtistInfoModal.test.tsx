@@ -1,8 +1,8 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import ArtistInfoModal from './ArtistInfoModal.tsx'
 import Artist from '../../../types/models/Artist.ts'
-import {screen} from "@testing-library/react";
-import dayjs from "dayjs";
+import { screen } from '@testing-library/react'
+import dayjs from 'dayjs'
 
 describe('Artist Info Modal', () => {
   const artist: Artist = {
@@ -19,7 +19,11 @@ describe('Artist Info Modal', () => {
 
     expect(screen.getByRole('dialog', { name: /artist info/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /artist info/i })).toBeInTheDocument()
-    expect(screen.getByText(dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
-    expect(screen.getByText(dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm'))).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm'))
+    ).toBeInTheDocument()
   })
 })

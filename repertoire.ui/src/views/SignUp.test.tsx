@@ -84,7 +84,10 @@ describe('Sign Up', () => {
   it.each([
     ['1234567', /password must have at least 8 characters/i],
     ['This is long', /password must have at least 1 digit/i],
-    ['THIS PASSWORD IS MISSING 1 LOWER CHARACTER', /password must have at least 1 lower character/i],
+    [
+      'THIS PASSWORD IS MISSING 1 LOWER CHARACTER',
+      /password must have at least 1 lower character/i
+    ],
     ['this password is missing 1 upper character', /Password must have at least 1 upper character/i]
   ])('should display password errors', async (password, error) => {
     const user = userEvent.setup()
@@ -112,7 +115,10 @@ describe('Sign Up', () => {
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
     expect(screen.getByRole('textbox', { name: /email/i })).toBeInvalid()
-    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute('data-invalid', 'true')
+    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute(
+      'data-invalid',
+      'true'
+    )
     expect(screen.getAllByText(error)).toHaveLength(3)
   })
 

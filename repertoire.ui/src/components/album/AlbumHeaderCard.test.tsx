@@ -8,7 +8,7 @@ import Song from 'src/types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 describe('Album Header Card', () => {
   const emptySong: Song = {
@@ -50,11 +50,12 @@ describe('Album Header Card', () => {
 
   afterAll(() => server.close())
 
-
   it('should render and display minimal info when the album is not unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+    reduxRouterRender(
+      <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+    )
 
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
@@ -89,7 +90,9 @@ describe('Album Header Card', () => {
       ]
     }
 
-    reduxRouterRender(<AlbumHeaderCard album={localAlbum} isUnknownAlbum={false} songsTotalCount={undefined} />)
+    reduxRouterRender(
+      <AlbumHeaderCard album={localAlbum} isUnknownAlbum={false} songsTotalCount={undefined} />
+    )
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
@@ -101,7 +104,9 @@ describe('Album Header Card', () => {
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
     await user.hover(screen.getByText(dayjs(localAlbum.releaseDate).year().toString()))
-    expect(await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))).toBeInTheDocument()
+    expect(
+      await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))
+    ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
@@ -112,7 +117,9 @@ describe('Album Header Card', () => {
   it('should render and display info when the album is unknown', async () => {
     const songsTotalCount = 10
 
-    reduxRouterRender(<AlbumHeaderCard album={undefined} isUnknownAlbum={true} songsTotalCount={songsTotalCount} />)
+    reduxRouterRender(
+      <AlbumHeaderCard album={undefined} isUnknownAlbum={true} songsTotalCount={songsTotalCount} />
+    )
 
     expect(screen.getByRole('img', { name: 'unknown-album' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
@@ -125,7 +132,9 @@ describe('Album Header Card', () => {
     it('should display info modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+      reduxRouterRender(
+        <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /info/i }))
@@ -136,7 +145,9 @@ describe('Album Header Card', () => {
     it('should display edit header modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+      reduxRouterRender(
+        <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
@@ -154,7 +165,9 @@ describe('Album Header Card', () => {
       )
 
       reduxRouterRender(
-        withToastify(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+        withToastify(
+          <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -172,7 +185,9 @@ describe('Album Header Card', () => {
   it('should display edit header modal from edit button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
+    reduxRouterRender(
+      <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+    )
 
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
@@ -187,7 +202,9 @@ describe('Album Header Card', () => {
       artist: artist
     }
 
-    const [_, store] = reduxRouterRender(<AlbumHeaderCard album={localAlbum} isUnknownAlbum={false} songsTotalCount={undefined} />)
+    const [_, store] = reduxRouterRender(
+      <AlbumHeaderCard album={localAlbum} isUnknownAlbum={false} songsTotalCount={undefined} />
+    )
 
     await user.click(screen.getByText(localAlbum.artist.name))
 

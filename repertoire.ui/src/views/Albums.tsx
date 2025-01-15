@@ -24,7 +24,11 @@ import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
 
 function Albums() {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data: albums, isLoading, isFetching } = useGetAlbumsQuery({
+  const {
+    data: albums,
+    isLoading,
+    isFetching
+  } = useGetAlbumsQuery({
     pageSize: 20,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
@@ -47,7 +51,12 @@ function Albums() {
         <Title order={3} fw={800}>
           Albums
         </Title>
-        <ActionIcon aria-label={'new-album'} variant={'grey'} size={'lg'} onClick={openAddNewAlbumModal}>
+        <ActionIcon
+          aria-label={'new-album'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewAlbumModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />

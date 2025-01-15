@@ -41,7 +41,6 @@ describe('Artist Header Card', () => {
 
   afterAll(() => server.close())
 
-
   it('should render and display minimal info when the artist is not unknown', async () => {
     const user = userEvent.setup()
 
@@ -56,7 +55,9 @@ describe('Artist Header Card', () => {
 
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
-    expect(screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
@@ -99,7 +100,9 @@ describe('Artist Header Card', () => {
 
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: localArtist.name })).toBeInTheDocument()
-    expect(screen.getByText(`${albumsTotalCount} album • ${songsTotalCount} song`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`${albumsTotalCount} album • ${songsTotalCount} song`)
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
@@ -121,7 +124,9 @@ describe('Artist Header Card', () => {
 
     expect(screen.getByRole('img', { name: 'unknown-artist' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
-    expect(screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)
+    ).toBeInTheDocument()
 
     expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'edit-header' })).not.toBeInTheDocument()

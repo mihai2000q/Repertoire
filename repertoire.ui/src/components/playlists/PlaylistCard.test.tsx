@@ -36,7 +36,10 @@ describe('Playlist Card', () => {
 
     reduxRouterRender(<PlaylistCard playlist={playlist} />)
 
-    await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: playlist.title }) })
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByRole('img', { name: playlist.title })
+    })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -52,7 +55,10 @@ describe('Playlist Card', () => {
 
       reduxRouterRender(withToastify(<PlaylistCard playlist={playlist} />))
 
-      await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: playlist.title }) })
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByRole('img', { name: playlist.title })
+      })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()

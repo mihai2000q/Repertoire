@@ -6,7 +6,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import User from '../../types/models/User.ts'
 import { userEvent } from '@testing-library/user-event'
-import {RootState} from "../../state/store.ts";
+import { RootState } from '../../state/store.ts'
 
 describe('Topbar', () => {
   const render = (token: string | null = 'some token') =>

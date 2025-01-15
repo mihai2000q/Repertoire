@@ -18,7 +18,7 @@ import { useInputState } from '@mantine/hooks'
 import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 interface EditSongInformationModalProps {
   song: Song
@@ -65,7 +65,7 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
     await updateSongMutation({
       ...song,
       id: song.id,
-      difficulty: difficulty ? difficulty.value as Difficulty : null,
+      difficulty: difficulty ? (difficulty.value as Difficulty) : null,
       guitarTuningId: guitarTuning?.value,
       bpm: parsedBpm,
       isRecorded: isRecorded

@@ -5,8 +5,8 @@ import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { CreateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
-import Artist from "../../../types/models/Artist.ts";
-import WithTotalCountResponse from "../../../types/responses/WithTotalCountResponse.ts";
+import Artist from '../../../types/models/Artist.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 describe('Add New Album Modal', () => {
   const artists: Artist[] = [
@@ -82,9 +82,7 @@ describe('Add New Album Modal', () => {
         })
       )
 
-      reduxRender(
-        withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />)
-      )
+      reduxRender(withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />))
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.click(screen.getByRole('button', { name: /submit/i }))
@@ -118,9 +116,7 @@ describe('Add New Album Modal', () => {
         })
       )
 
-      reduxRender(
-        withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />)
-      )
+      reduxRender(withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />))
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
@@ -159,9 +155,7 @@ describe('Add New Album Modal', () => {
         })
       )
 
-      reduxRender(
-        withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />)
-      )
+      reduxRender(withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />))
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.click(screen.getByRole('textbox', { name: /artist/i }))
@@ -171,7 +165,7 @@ describe('Add New Album Modal', () => {
       await waitFor(() =>
         expect(capturedRequest).toEqual({
           title: newTitle,
-          artistId: artist.id,
+          artistId: artist.id
         })
       )
       expect(onClose).toHaveBeenCalledOnce()
@@ -205,9 +199,7 @@ describe('Add New Album Modal', () => {
       })
     )
 
-    reduxRender(
-      withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />)
-    )
+    reduxRender(withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />))
 
     await user.upload(screen.getByTestId('image-dropzone-input'), newImage)
     await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
@@ -240,7 +232,7 @@ describe('Add New Album Modal', () => {
     await user.upload(screen.getByTestId('image-dropzone-input'), newImage)
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
 
-    await user.click(screen.getAllByRole('button').find(b => b.className.includes('CloseButton')))
+    await user.click(screen.getAllByRole('button').find((b) => b.className.includes('CloseButton')))
 
     expect(await screen.findByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(onClose).toHaveBeenCalledOnce()

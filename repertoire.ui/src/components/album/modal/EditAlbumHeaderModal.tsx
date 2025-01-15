@@ -5,7 +5,7 @@ import {
   useSaveImageToAlbumMutation,
   useUpdateAlbumMutation
 } from '../../../state/albumsApi.ts'
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'

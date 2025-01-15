@@ -86,7 +86,12 @@ function SongSection({
       {...draggableProvided.draggableProps}
     >
       <Group align={'center'} gap={'xs'}>
-        <ActionIcon aria-label={'drag-handle'} variant={'subtle'} size={'lg'} {...draggableProvided.dragHandleProps}>
+        <ActionIcon
+          aria-label={'drag-handle'}
+          variant={'subtle'}
+          size={'lg'}
+          {...draggableProvided.dragHandleProps}
+        >
           <IconGripVertical size={20} />
         </ActionIcon>
 

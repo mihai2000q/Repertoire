@@ -24,7 +24,11 @@ import useShowUnknownArtist from '../hooks/useShowUnknownArtist.ts'
 
 function Artists() {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data: artists, isLoading, isFetching } = useGetArtistsQuery({
+  const {
+    data: artists,
+    isLoading,
+    isFetching
+  } = useGetArtistsQuery({
     pageSize: 20,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
@@ -47,7 +51,12 @@ function Artists() {
         <Title order={3} fw={800}>
           Artists
         </Title>
-        <ActionIcon aria-label={'new-artist'} variant={'grey'} size={'lg'} onClick={openAddNewArtistModal}>
+        <ActionIcon
+          aria-label={'new-artist'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewArtistModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />

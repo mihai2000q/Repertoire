@@ -120,7 +120,7 @@ describe('Add New Artist Album Modal', () => {
     await user.upload(screen.getByTestId('image-dropzone-input'), newImage)
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
 
-    await user.click(screen.getAllByRole('button').find(b => b.className.includes('CloseButton')))
+    await user.click(screen.getAllByRole('button').find((b) => b.className.includes('CloseButton')))
 
     expect(await screen.findByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(onClose).toHaveBeenCalledOnce()
