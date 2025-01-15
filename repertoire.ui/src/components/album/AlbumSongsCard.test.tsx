@@ -116,7 +116,7 @@ describe('Album Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
 
-      expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
     })
 
     it('should open add new song modal', async () => {
