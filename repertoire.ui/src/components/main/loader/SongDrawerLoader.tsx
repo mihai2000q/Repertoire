@@ -1,4 +1,4 @@
-import {Divider, Grid, Group, Skeleton, Stack} from '@mantine/core'
+import { Divider, Grid, Group, Skeleton, Stack } from '@mantine/core'
 
 function SongDrawerLoader() {
   return (

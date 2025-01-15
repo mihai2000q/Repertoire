@@ -22,7 +22,7 @@ import { useDisclosure } from '@mantine/hooks'
 
 interface PlaylistSongsCardProps {
   playlist: Playlist
-  isFetching: boolean
+  isFetching?: boolean
 }
 
 function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
@@ -37,7 +37,7 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
   }
 
   return (
-    <Card variant={'panel'} h={'100%'} p={0} mx={'xs'}>
+    <Card variant={'panel'} aria-label={'songs-card'} h={'100%'} p={0} mx={'xs'}>
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
@@ -73,7 +73,7 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
 
           <Menu position={'bottom-end'}>
             <Menu.Target>
-              <ActionIcon size={'md'} variant={'grey'}>
+              <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
                 <IconDots size={15} />
               </ActionIcon>
             </Menu.Target>
@@ -94,7 +94,9 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
             />
           ))}
           {playlist.songs.length === 0 && (
-            <NewHorizontalCard onClick={openAddSongs}>Add Songs</NewHorizontalCard>
+            <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>
+              Add Songs
+            </NewHorizontalCard>
           )}
         </Stack>
       </Stack>

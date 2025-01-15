@@ -37,6 +37,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
   return (
     <>
       <Group
+        aria-label={`song-card-${song.title}`}
         ref={ref}
         align={'center'}
         wrap={'nowrap'}
@@ -57,7 +58,11 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
             {song.albumTrackNo}
           </Text>
         )}
-        <Avatar radius={'8px'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
+        <Avatar
+          radius={'8px'}
+          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+          alt={song.title}
+        />
 
         <Stack flex={1} style={{ overflow: 'hidden' }}>
           <Text fw={500} truncate={'end'}>
@@ -68,6 +73,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
         <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
           <Menu.Target>
             <ActionIcon
+              aria-label={'more-menu'}
               size={'md'}
               variant={'grey'}
               onClick={(e) => e.stopPropagation()}

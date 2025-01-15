@@ -11,6 +11,8 @@ import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validat
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import { toast } from 'react-toastify'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -32,7 +34,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     initialValues: {
       title: album.title,
       releaseDate: album.releaseDate && new Date(album.releaseDate),
-      image: album.imageUrl ?? null
+      image: album.imageUrl
     } as EditAlbumHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -41,35 +43,35 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== album.title ||
-          values.releaseDate.toISOString() !== new Date(album.releaseDate).toISOString() ||
+          values.releaseDate?.toISOString() !== new Date(album.releaseDate).toISOString() ||
           values.image !== album.imageUrl
       )
     }
   })
 
-  const [image, setImage] = useState(album.imageUrl ?? null)
+  const [image, setImage] = useState(album.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useEffect(() => setImage(album.imageUrl), [album])
+  useDidUpdate(() => setImage(album.imageUrl), [album])
 
   async function updateAlbum({ title, releaseDate, image }: EditAlbumHeaderForm) {
     title = title.trim()
 
     await updateAlbumMutation({
-      ...album,
       id: album.id,
       title: title,
       releaseDate: releaseDate
     }).unwrap()
 
-    if (image !== null && typeof image !== 'string') {
+    if (image && typeof image !== 'string') {
       await saveImageMutation({
         id: album.id,
         image: image
       })
-    } else if (image === null && album.imageUrl) {
+    } else if (!image && album.imageUrl) {
       await deleteImageMutation(album.id)
     }
 
+    toast.info('Album updated!')
     onClose()
     setHasChanged(false)
   }
@@ -77,7 +79,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Album Header'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <form onSubmit={form.onSubmit(updateAlbum)}>
           <Stack>

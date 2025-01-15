@@ -47,7 +47,6 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
     toast.success(`${title} added!`)
-
     onCloseWithImage()
     form.reset()
   }

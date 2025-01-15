@@ -26,7 +26,7 @@ export interface AddAlbumsToArtistRequest {
   albumIds: string[]
 }
 
-export interface RemoveAlbumsFromAristRequest {
+export interface RemoveAlbumsFromArtistRequest {
   id: string
   albumIds: string[]
 }

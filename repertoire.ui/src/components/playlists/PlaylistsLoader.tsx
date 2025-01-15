@@ -2,7 +2,7 @@ import { Group, Skeleton, Stack } from '@mantine/core'
 
 function PlaylistsLoader() {
   return (
-    <Group data-testid="playlists-loader">
+    <Group data-testid={'playlists-loader'}>
       {Array.from(Array(20)).map((_, i) => (
         <Stack key={i} gap={'xs'} align={'center'}>
           <Skeleton

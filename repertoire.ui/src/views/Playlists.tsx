@@ -22,7 +22,11 @@ import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
 
 function Playlists() {
   const [currentPage, setCurrentPage] = useState(1)
-  const { data: playlists, isLoading } = useGetPlaylistsQuery({
+  const {
+    data: playlists,
+    isLoading,
+    isFetching
+  } = useGetPlaylistsQuery({
     pageSize: 20,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
@@ -41,24 +45,27 @@ function Playlists() {
 
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <AddNewPlaylistModal opened={openedAddNewPlaylistModal} onClose={closeAddNewPlaylistModal} />
-
       <Group align={'center'} gap={4}>
         <Title order={3} fw={800}>
           Playlists
         </Title>
-        <ActionIcon variant={'grey'} size={'lg'} onClick={openAddNewPlaylistModal}>
+        <ActionIcon
+          aria-label={'new-playlist'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewPlaylistModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'order-playlists'} variant={'grey'} size={'lg'}>
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'filter-playlists'} variant={'grey'} size={'lg'}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
-      {!isLoading && (
+      {!isFetching && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} playlists out of {playlists?.totalCount}
         </Text>
@@ -74,7 +81,7 @@ function Playlists() {
         ))}
         {playlists?.totalCount > 0 && currentPage == totalPages && (
           <Card
-            data-testid={'new-playlist-card'}
+            aria-label={'new-playlist-card'}
             variant={'add-new'}
             radius={'lg'}
             w={150}
@@ -91,7 +98,7 @@ function Playlists() {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'xs'}>
-        {!isLoading ? (
+        {!isFetching ? (
           <Pagination
             data-testid={'playlists-pagination'}
             value={currentPage}
@@ -102,6 +109,8 @@ function Playlists() {
           <Loader size={25} />
         )}
       </Box>
+
+      <AddNewPlaylistModal opened={openedAddNewPlaylistModal} onClose={closeAddNewPlaylistModal} />
     </Stack>
   )
 }

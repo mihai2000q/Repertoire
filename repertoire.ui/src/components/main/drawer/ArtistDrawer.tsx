@@ -13,7 +13,7 @@ import {
   Title
 } from '@mantine/core'
 import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/artistsApi.ts'
-import { useAppSelector } from '../../../state/store.ts'
+import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/user-placeholder.jpg'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -29,16 +29,16 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import dayjs from 'dayjs'
+import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/globalSlice.ts'
 
-interface ArtistDrawerProps {
-  opened: boolean
-  onClose: () => void
-}
-
-function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
+function ArtistDrawer() {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
+  const opened = useAppSelector((state) => state.global.artistDrawer.open)
   const artistId = useAppSelector((state) => state.global.artistDrawer.artistId)
+  const onClose = () => dispatch(closeArtistDrawer())
+
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
@@ -70,7 +70,7 @@ function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
 
   function handleDelete() {
     deleteArtistMutation(artist.id)
-    onClose()
+    dispatch(deleteArtistDrawer())
     toast.success(`${artist.name} deleted!`)
   }
 
@@ -106,6 +106,7 @@ function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
+                  aria-label={'more-menu'}
                   style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
                 >
                   <IconDotsVertical size={20} />
@@ -150,14 +151,21 @@ function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
               <Group key={album.id} align={'center'} wrap={'nowrap'} gap={'xs'}>
-                <Avatar radius={'8px'} size={28} src={album.imageUrl ?? albumPlaceholder} />
+                <Avatar
+                  radius={'8px'}
+                  size={28}
+                  src={album.imageUrl ?? albumPlaceholder}
+                  alt={album.title}
+                />
                 <Stack gap={1} style={{ overflow: 'hidden' }}>
                   <Text fw={500} truncate={'end'} inline>
                     {album.title}
                   </Text>
-                  <Text fw={500} fz={'xs'} c={'dimmed'} inline>
-                    {dayjs(album.releaseDate).format('DD MMM YYYY')}
-                  </Text>
+                  {album.releaseDate && (
+                    <Text fw={500} fz={'xs'} c={'dimmed'} inline>
+                      {dayjs(album.releaseDate).format('D MMM YYYY')}
+                    </Text>
+                  )}
                 </Stack>
               </Group>
             ))}
@@ -173,7 +181,12 @@ function ArtistDrawer({ opened, onClose }: ArtistDrawerProps) {
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
               <Group key={song.id} align={'center'} gap={'xs'} wrap={'nowrap'}>
-                <Avatar radius={'8px'} size={28} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
+                <Avatar
+                  radius={'8px'}
+                  size={28}
+                  src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+                  alt={song.title}
+                />
                 <Stack gap={1}>
                   <Text fw={500} truncate={'end'} inline>
                     {song.title}

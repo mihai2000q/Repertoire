@@ -33,7 +33,7 @@ import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
-import CustomIconLightningTrio from "../@ui/icons/CustomIconLightningTrio.tsx";
+import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -92,7 +92,7 @@ function SongCard({ song }: SongCardProps) {
     <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
       <Menu.Target>
         <Card
-          data-testid={`song-card-${song.id}`}
+          aria-label={`song-card-${song.title}`}
           p={0}
           radius={'lg'}
           w={175}
@@ -146,17 +146,17 @@ function SongCard({ song }: SongCardProps) {
                 <Tooltip.Group openDelay={200}>
                   {song.isRecorded && (
                     <LocalTooltip label={'This song is recorded'}>
-                      <IconMicrophoneFilled size={iconSize - 2} />
+                      <IconMicrophoneFilled size={iconSize - 2} aria-label={'recorded-icon'} />
                     </LocalTooltip>
                   )}
                   {song.guitarTuning && (
                     <LocalTooltip label={`This song is tuned in ${song.guitarTuning.name}`}>
-                      <CustomIconGuitarHead size={iconSize} />
+                      <CustomIconGuitarHead size={iconSize} aria-label={'guitar-tuning-icon'} />
                     </LocalTooltip>
                   )}
                   {riffs > 1 && (
                     <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
-                      <IconBombFilled size={iconSize} />
+                      <IconBombFilled size={iconSize} aria-label={'riffs-icon'} />
                     </LocalTooltip>
                   )}
                   {solos > 0 && (
@@ -164,14 +164,18 @@ function SongCard({ song }: SongCardProps) {
                       label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
                     >
                       <Center c={solos === 1 ? 'yellow.4' : 'yellow.5'}>
-                        {solos > 1 ? <CustomIconLightningTrio size={iconSize} /> : <IconBoltFilled size={iconSize} />}
+                        {solos > 1 ? (
+                          <CustomIconLightningTrio size={iconSize} aria-label={'solos-icon'} />
+                        ) : (
+                          <IconBoltFilled size={iconSize} aria-label={'solo-icon'} />
+                        )}
                       </Center>
                     </LocalTooltip>
                   )}
                   {song.difficulty && (
                     <LocalTooltip label={`This song is ${song.difficulty}`}>
                       <Center c={difficultyColor}>
-                        <IconStarFilled size={iconSize} />
+                        <IconStarFilled size={iconSize} aria-label={'difficulty-icon'} />
                       </Center>
                     </LocalTooltip>
                   )}
@@ -179,7 +183,7 @@ function SongCard({ song }: SongCardProps) {
                     <LocalAnchor link={song.songsterrLink}>
                       <LocalTooltip label={'This song has a songsterr link'}>
                         <Center c={'blue.7'}>
-                          <IconGuitarPickFilled size={iconSize} />
+                          <IconGuitarPickFilled size={iconSize} aria-label={'songsterr-icon'} />
                         </Center>
                       </LocalTooltip>
                     </LocalAnchor>
@@ -188,7 +192,7 @@ function SongCard({ song }: SongCardProps) {
                     <LocalAnchor link={song.youtubeLink}>
                       <LocalTooltip label={'This song has a youtube link'}>
                         <Center c={'red.7'}>
-                          <IconBrandYoutubeFilled size={iconSize} />
+                          <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
                         </Center>
                       </LocalTooltip>
                     </LocalAnchor>

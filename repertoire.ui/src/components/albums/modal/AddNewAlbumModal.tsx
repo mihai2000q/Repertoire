@@ -49,7 +49,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
       title: title,
       releaseDate: releaseDate,
       artistId: artist?.id,
-      artistName: artist ? null : artistName
+      artistName: artist ? undefined : artistName
     }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()

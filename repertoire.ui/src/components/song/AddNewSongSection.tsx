@@ -12,8 +12,7 @@ interface AddNewSongSectionProps {
 }
 
 function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) {
-  const [createSongSectionMutation, { isLoading: isCreateSongSectionLoading }] =
-    useCreateSongSectionMutation()
+  const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
 
   const [name, setName] = useInputState('')
   const [nameError, setNameError] = useState(false)
@@ -32,14 +31,18 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
 
   async function addSection() {
     if (!type || name.trim().length === 0) {
-      setTypeError(true)
-      setNameError(true)
+      setTypeError(!type)
+      setNameError(name.trim().length === 0)
       return
     }
 
     const nameTrimmed = name.trim()
 
-    await createSongSectionMutation({ typeId: type.value, name: nameTrimmed, songId }).unwrap()
+    await createSongSectionMutation({
+      typeId: type.value,
+      name: nameTrimmed,
+      songId: songId
+    }).unwrap()
 
     toast.success(nameTrimmed + ' added!')
 
@@ -50,20 +53,21 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
 
   return (
     <Collapse in={opened}>
-      <Group align={'center'} gap={'xs'} py={'xs'} px={'md'}>
+      <Group align={'center'} gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-section'}>
         <SongSectionTypeSelect option={type} onChange={setType} error={typeError} />
 
         <TextInput
           ref={nameInputRef}
           flex={1}
           maxLength={30}
+          aria-label={'name'}
           placeholder={'Name of Section'}
           value={name}
           onChange={setName}
           error={nameError}
         />
 
-        <Button disabled={isCreateSongSectionLoading} onClick={addSection}>
+        <Button disabled={isLoading} onClick={addSection}>
           Add
         </Button>
       </Group>

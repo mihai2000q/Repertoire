@@ -36,7 +36,9 @@ function TitleBar() {
     >
       <Group gap={0} h={height} px={'xs'} align={'center'}>
         <Avatar src={logo} size={25} />
-        <Text c={'gray.7'} fw={600} pl={6}>{window.document.title}</Text>
+        <Text c={'gray.7'} fw={600} pl={6}>
+          {window.document.title}
+        </Text>
 
         <Space flex={1} />
 

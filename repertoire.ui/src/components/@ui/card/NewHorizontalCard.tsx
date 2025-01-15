@@ -8,9 +8,17 @@ interface NewHorizontalCardProps {
   borderRadius?: string
   icon?: ReactElement
   p?: string
+  ariaLabel?: string
 }
 
-function NewHorizontalCard({ children, onClick, borderRadius, icon, p }: NewHorizontalCardProps) {
+function NewHorizontalCard({
+  children,
+  onClick,
+  borderRadius,
+  icon,
+  p,
+  ariaLabel
+}: NewHorizontalCardProps) {
   return (
     <Group
       align={'center'}
@@ -29,6 +37,7 @@ function NewHorizontalCard({ children, onClick, borderRadius, icon, p }: NewHori
         }
       })}
       onClick={onClick}
+      aria-label={ariaLabel}
     >
       <Box bd={'1px dashed gray'} p={p ? p : '11px 9px 7px 9px'} style={{ borderRadius: '8px' }}>
         {icon ? icon : <IconMusicPlus size={18} />}

@@ -44,6 +44,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
     <>
       <Group
         ref={ref}
+        aria-label={`song-card-${song.title}`}
         align={'center'}
         wrap={'nowrap'}
         sx={(theme) => ({
@@ -58,7 +59,11 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
         py={'xs'}
         onClick={handleClick}
       >
-        <Avatar radius={'8px'} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
+        <Avatar
+          radius={'8px'}
+          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+          alt={song.title}
+        />
 
         <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
           <Group gap={4}>
@@ -83,7 +88,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
           </Group>
           {song.releaseDate && (
             <Text fz={'xs'} c={'dimmed'}>
-              {dayjs(song.releaseDate).format('DD MMM YYYY')}
+              {dayjs(song.releaseDate).format('D MMM YYYY')}
             </Text>
           )}
         </Stack>
@@ -93,6 +98,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
             <ActionIcon
               size={'md'}
               variant={'grey'}
+              aria-label={'more-menu'}
               onClick={(e) => e.stopPropagation()}
               style={{
                 transition: '0.3s',

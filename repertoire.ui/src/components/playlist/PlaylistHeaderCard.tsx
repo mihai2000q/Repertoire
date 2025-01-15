@@ -38,7 +38,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openInfo}>
-            Edit
+            Info
           </Menu.Item>
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
@@ -54,6 +54,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
           <Image
             h={150}
             src={playlist.imageUrl}
+            alt={playlist.title}
             fallbackSrc={playlistPlaceholder}
             radius={'lg'}
             style={(theme) => ({

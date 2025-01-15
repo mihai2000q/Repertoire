@@ -32,8 +32,8 @@ function AlbumCard({ album }: AlbumCardProps) {
     navigate(`/album/${album.id}`)
   }
 
-  function handleArtistClick(artistId: string) {
-    dispatch(openArtistDrawer(artistId))
+  function handleArtistClick() {
+    dispatch(openArtistDrawer(album.artist.id))
   }
 
   function handleDelete() {
@@ -43,6 +43,7 @@ function AlbumCard({ album }: AlbumCardProps) {
 
   return (
     <Stack
+      aria-label={`album-card-${album.title}`}
       align={'center'}
       gap={0}
       style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
@@ -57,6 +58,7 @@ function AlbumCard({ album }: AlbumCardProps) {
               radius={'lg'}
               src={album.imageUrl}
               fallbackSrc={albumPlaceholder}
+              alt={album.title}
               onClick={handleClick}
               onContextMenu={openMenu}
               sx={(theme) => ({
@@ -88,7 +90,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             ta={'center'}
             c={'dimmed'}
             truncate={'end'}
-            onClick={() => handleArtistClick(album.artist.id)}
+            onClick={handleArtistClick}
             sx={{
               cursor: 'pointer',
               '&:hover': {

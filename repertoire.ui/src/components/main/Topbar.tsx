@@ -60,6 +60,8 @@ function Topbar(): ReactElement {
     <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
       <Group align={'center'} h={'100%'} gap={0}>
         <Autocomplete
+          role={'searchbox'}
+          aria-label={'topbar-search'}
           placeholder="Search"
           leftSection={<IconSearch size={16} stroke={2} />}
           data={[]}
@@ -131,7 +133,7 @@ function Topbar(): ReactElement {
             <Menu.Target>
               <UnstyledButton
                 p={'4px'}
-                data-testid={'user-button'}
+                aria-label={'user'}
                 sx={(theme) => ({
                   borderRadius: '16px',
                   cursor: 'pointer',

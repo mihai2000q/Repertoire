@@ -2,8 +2,8 @@ import { ComboboxItem, Select } from '@mantine/core'
 import { useGetSongSectionTypesQuery } from '../../../../state/songsApi.ts'
 
 interface SongSectionTypeSelectProps {
-  option: ComboboxItem
-  onChange: (comboboxItem: ComboboxItem) => void
+  option: ComboboxItem | null
+  onChange: (comboboxItem: ComboboxItem | null) => void
   error?: boolean
   label?: string
   placeholder?: string
@@ -15,10 +15,10 @@ function SongSectionTypeSelect({
   onChange,
   error,
   label,
-  placeholder,
-  flex
+  flex,
+  placeholder = 'Type'
 }: SongSectionTypeSelectProps) {
-  const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
+  const { data: songSectionTypesData, isLoading } = useGetSongSectionTypesQuery()
   const songSectionTypes = songSectionTypesData?.map((type) => ({
     value: type.id,
     label: type.name
@@ -29,14 +29,17 @@ function SongSectionTypeSelect({
       w={!flex && 95}
       flex={flex}
       label={label}
-      placeholder={placeholder ?? 'Type'}
+      disabled={isLoading}
+      placeholder={placeholder}
       data={songSectionTypes}
-      value={option ? option.value : null}
+      value={option?.value ?? null}
       onChange={(_, option) => onChange(option)}
       error={error}
       maxDropdownHeight={150}
       clearable={false}
+      allowDeselect={false}
       searchable
+      aria-label={label ?? 'song-section-type'}
     />
   )
 }

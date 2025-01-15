@@ -2,12 +2,12 @@ import { ComboboxItem, Group, Loader, Select, Text } from '@mantine/core'
 import { useGetGuitarTuningsQuery } from '../../../../state/songsApi.ts'
 import CustomIconGuitarHead from '../../icons/CustomIconGuitarHead.tsx'
 
-interface GuitarTuningsSelectProps {
-  option: ComboboxItem
-  onChange: (comboboxItem: ComboboxItem) => void
+interface GuitarTuningSelectProps {
+  option: ComboboxItem | null
+  onChange: (comboboxItem: ComboboxItem | null) => void
 }
 
-function GuitarTuningsSelect({ option, onChange }: GuitarTuningsSelectProps) {
+function GuitarTuningSelect({ option, onChange }: GuitarTuningSelectProps) {
   const { data: guitarTuningsData, isLoading } = useGetGuitarTuningsQuery()
   const guitarTunings = guitarTuningsData?.map((guitarTuning) => ({
     value: guitarTuning.id,
@@ -28,7 +28,7 @@ function GuitarTuningsSelect({ option, onChange }: GuitarTuningsSelectProps) {
       label={'Guitar Tuning'}
       placeholder={'Select Guitar Tuning'}
       data={guitarTunings}
-      value={option ? option.value : null}
+      value={option?.value ?? null}
       onChange={(_, option) => onChange(option)}
       maxDropdownHeight={150}
       clearable
@@ -37,4 +37,4 @@ function GuitarTuningsSelect({ option, onChange }: GuitarTuningsSelectProps) {
   )
 }
 
-export default GuitarTuningsSelect
+export default GuitarTuningSelect

@@ -14,7 +14,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/albumsApi.ts'
-import { useAppSelector } from '../../../state/store.ts'
+import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -28,16 +28,16 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
+import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/globalSlice.ts'
 
-interface AlbumDrawerProps {
-  opened: boolean
-  onClose: () => void
-}
-
-function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
+function AlbumDrawer() {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
+  const opened = useAppSelector((state) => state.global.albumDrawer.open)
   const albumId = useAppSelector((state) => state.global.albumDrawer.albumId)
+  const onClose = () => dispatch(closeAlbumDrawer())
+
   const [deleteAlbumMutation] = useDeleteAlbumMutation()
 
   const { data: album, isFetching } = useGetAlbumQuery(albumId, { skip: !albumId })
@@ -55,7 +55,7 @@ function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
 
   function handleDelete() {
     deleteAlbumMutation(album.id)
-    onClose()
+    dispatch(deleteAlbumDrawer())
     toast.success(`${album.title} deleted!`)
   }
 
@@ -91,6 +91,7 @@ function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
+                  aria-label={'more-menu'}
                   style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
                 >
                   <IconDotsVertical size={20} />
@@ -122,7 +123,11 @@ function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
             {album.artist && (
               <>
                 <Group gap={6}>
-                  <Avatar size={28} src={album.artist.imageUrl ?? userPlaceholder} />
+                  <Avatar
+                    size={28}
+                    src={album.artist.imageUrl ?? userPlaceholder}
+                    alt={album.artist.name}
+                  />
                   <Text fw={600} fz={'lg'}>
                     {album.artist.name}
                   </Text>
@@ -131,13 +136,16 @@ function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
               </>
             )}
             {album.releaseDate && (
-              <Tooltip
-                label={'Released on ' + dayjs(album.releaseDate).format('DD MMMM YYYY')}
-                openDelay={200}
-                position={'bottom'}
-              >
-                <Text fw={500}>{dayjs(album.releaseDate).format('YYYY')} •</Text>
-              </Tooltip>
+              <>
+                <Tooltip
+                  label={'Released on ' + dayjs(album.releaseDate).format('D MMMM YYYY')}
+                  openDelay={200}
+                  position={'bottom'}
+                >
+                  <Text fw={500}>{dayjs(album.releaseDate).format('YYYY')}</Text>
+                </Tooltip>
+                <Text fw={500}>•</Text>
+              </>
             )}
             <Text fw={500} c={'dimmed'}>
               {album.songs.length} song{plural(album.songs)}
@@ -155,7 +163,12 @@ function AlbumDrawer({ opened, onClose }: AlbumDrawerProps) {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={1.4}>
-                  <Avatar radius={'8px'} size={28} src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder} />
+                  <Avatar
+                    radius={'8px'}
+                    size={28}
+                    src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+                    alt={song.title}
+                  />
                 </Grid.Col>
                 <Grid.Col span={9.6}>
                   <Text fw={500} truncate={'end'}>

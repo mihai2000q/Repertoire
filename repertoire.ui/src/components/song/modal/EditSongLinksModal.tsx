@@ -5,6 +5,7 @@ import { EditSongLinksForm, editSongLinksValidation } from '../../../validation/
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
 import { useUpdateSongMutation } from '../../../state/songsApi.ts'
 import { useState } from 'react'
+import { toast } from 'react-toastify'
 
 interface EditSongLinksModalProps {
   song: Song
@@ -48,12 +49,13 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
 
     onClose()
     setHasChanged(false)
+    toast.info('Song links updated!')
   }
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Links'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <form onSubmit={form.onSubmit(updateSong)}>
           <Stack>
