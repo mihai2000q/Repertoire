@@ -37,6 +37,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
   return (
     <Stack
+      aria-label={`artist-card-${artist.name}`}
       align={'center'}
       gap={'xs'}
       style={{
@@ -52,6 +53,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
             onMouseEnter={() => setIsAvatarHovered(true)}
             onMouseLeave={() => setIsAvatarHovered(false)}
             src={artist.imageUrl ?? artistPlaceholder}
+            alt={artist.name}
             size={125}
             style={(theme) => ({
               cursor: 'pointer',

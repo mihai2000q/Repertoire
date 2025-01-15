@@ -2,7 +2,7 @@ import { Divider, Group, Skeleton, Stack } from '@mantine/core'
 
 function AlbumLoader() {
   return (
-    <Stack>
+    <Stack data-testid={'album-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'lg'} w={150} h={150} />
         <Stack gap={4} pt={'10px'}>

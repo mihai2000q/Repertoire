@@ -49,6 +49,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
         ref={ref}
         align={'center'}
         wrap={'nowrap'}
+        aria-label={`song-card-${song.title}`}
         sx={(theme) => ({
           cursor: 'default',
           transition: '0.3s',
@@ -65,7 +66,11 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
           {song.playlistTrackNo}
         </Text>
 
-        <Avatar radius={'8px'} src={song.imageUrl ?? songPlaceholder} />
+        <Avatar
+          radius={'8px'}
+          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+          alt={song.title}
+        />
 
         <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
           <Group gap={4}>
@@ -106,6 +111,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
             <ActionIcon
               size={'md'}
               variant={'grey'}
+              aria-label={'more-menu'}
               onClick={(e) => e.stopPropagation()}
               style={{
                 transition: '0.3s',
@@ -127,6 +133,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
           </Menu.Dropdown>
         </Menu>
       </Group>
+
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}

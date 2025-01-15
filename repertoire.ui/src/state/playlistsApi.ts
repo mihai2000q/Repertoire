@@ -54,7 +54,7 @@ const playlistsApi = api.injectEndpoints({
     deleteImageFromPlaylist: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `playlists/images/${arg}`,
-        method: 'DELETE',
+        method: 'DELETE'
       }),
       invalidatesTags: ['Playlists']
     }),

@@ -7,17 +7,15 @@ export default function usePaginationInfo(
   endCount: number
   totalPages: number
 } {
-  const totalPages = totalCount ? Math.ceil(totalCount / pageSize) : 0
+  if (!totalCount || totalCount === 0) {
+    return { startCount: 0, endCount: 0, totalPages: 0 }
+  }
 
-  const startCount = totalCount === 0 ? 0 : currentPage === 1 ? 1 : pageSize * (currentPage - 1)
+  const totalPages = Math.ceil(totalCount / pageSize)
 
-  const endCount = totalCount
-    ? totalCount === 0
-      ? 0
-      : currentPage === totalPages
-        ? totalCount
-        : currentPage * pageSize
-    : 0
+  const startCount = currentPage === 1 ? 1 : pageSize * (currentPage - 1) + 1
+
+  const endCount = currentPage === totalPages ? totalCount : currentPage * pageSize
 
   return { startCount, endCount, totalPages }
 }

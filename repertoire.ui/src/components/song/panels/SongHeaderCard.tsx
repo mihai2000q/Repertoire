@@ -76,8 +76,9 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         <AspectRatio>
           <Image
             h={150}
-            src={song.imageUrl}
+            src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
+            alt={song.title}
             radius={'lg'}
             style={(theme) => ({
               boxShadow: theme.shadows.lg
@@ -94,7 +95,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Group gap={4}>
             {song.artist && (
               <Group gap={'xs'}>
-                <Avatar size={35} src={song.artist.imageUrl ?? userPlaceholder} />
+                <Avatar
+                  size={35}
+                  src={song.artist.imageUrl ?? userPlaceholder}
+                  alt={song.artist.name}
+                />
                 <Text
                   fw={700}
                   fz={'lg'}
@@ -138,6 +143,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         size={45}
                         radius={'md'}
                         src={song.album.imageUrl ?? songPlaceholder}
+                        alt={song.album.title}
                       />
                       <Stack gap={2}>
                         <Text fw={500} fz={'xs'} inline>
@@ -148,7 +154,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         </Text>
                         {song.album.releaseDate && (
                           <Text fw={500} c={'dimmed'} fz={'sm'} inline>
-                            {dayjs(song.album.releaseDate).format('DD MMM YYYY')}
+                            {dayjs(song.album.releaseDate).format('D MMM YYYY')}
                           </Text>
                         )}
                       </Stack>
@@ -166,7 +172,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                   </Text>
                 )}
                 <Tooltip
-                  label={'Released on ' + dayjs(song.releaseDate).format('DD MMMM YYYY')}
+                  label={'Released on ' + dayjs(song.releaseDate).format('D MMMM YYYY')}
                   openDelay={200}
                   position={'bottom'}
                 >

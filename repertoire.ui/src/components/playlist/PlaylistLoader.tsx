@@ -2,7 +2,7 @@ import { Divider, Group, Skeleton, Stack } from '@mantine/core'
 
 function PlaylistLoader() {
   return (
-    <Stack>
+    <Stack data-testid={'playlist-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'lg'} w={150} h={150} />
         <Stack gap={4} pt={'md'}>

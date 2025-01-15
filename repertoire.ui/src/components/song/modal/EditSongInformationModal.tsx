@@ -15,9 +15,10 @@ import { useUpdateSongMutation } from '../../../state/songsApi.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
-import GuitarTuningsSelect from '../../@ui/form/select/GuitarTuningsSelect.tsx'
+import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
+import { toast } from 'react-toastify'
 
 interface EditSongInformationModalProps {
   song: Song
@@ -64,23 +65,24 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
     await updateSongMutation({
       ...song,
       id: song.id,
-      difficulty: difficulty?.value as Difficulty,
+      difficulty: difficulty ? (difficulty.value as Difficulty) : null,
       guitarTuningId: guitarTuning?.value,
       bpm: parsedBpm,
       isRecorded: isRecorded
     }).unwrap()
 
     onClose()
+    toast.info('Song information updated!')
   }
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Information'}>
       <Modal.Body p={'xs'}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack>
           <Group align={'center'}>
-            <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
+            <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
             <DifficultySelect option={difficulty} onChange={setDifficulty} />
           </Group>

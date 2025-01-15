@@ -17,8 +17,8 @@ import { IconUserFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
 
 interface ArtistsAutocompleteProps {
-  artist: Artist
-  setArtist: (artist: Artist) => void
+  artist: Artist | null
+  setArtist: (artist: Artist | null) => void
   setValue: (value: string) => void
   value?: string
   defaultValue?: string
@@ -112,7 +112,7 @@ function ArtistAutocomplete({
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown style={(theme) => ({ boxShadow: theme.shadows.lg })}>
+      <Combobox.Dropdown>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
@@ -122,8 +122,9 @@ function ArtistAutocomplete({
             ) : (
               artists?.models?.map((artist) => (
                 <Combobox.Option
-                  value={artist.name}
                   key={artist.id}
+                  value={artist.name}
+                  aria-label={artist.name}
                   onClick={() => setArtist(artist)}
                 >
                   <Group gap={'xs'} align={'center'} wrap={'nowrap'}>

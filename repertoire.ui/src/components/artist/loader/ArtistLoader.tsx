@@ -4,7 +4,7 @@ import ArtistSongsLoader from './ArtistSongsLoader.tsx'
 
 function ArtistLoader() {
   return (
-    <Stack>
+    <Stack data-testid={'artist-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'50%'} w={125} h={125} />
         <Stack gap={4} pt={'16px'}>

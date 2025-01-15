@@ -27,9 +27,10 @@ function SongSections({ sections, songId }: SongSectionsProps) {
 
   const maxSectionProgress =
     sections.length > 0
-      ? sections.reduce((accumulator, currentValue) => {
-          return Math.max(accumulator, currentValue.progress)
-        }, sections[0].progress)
+      ? sections.reduce(
+          (accumulator, currentValue) => Math.max(accumulator, currentValue.progress),
+          sections[0].progress
+        )
       : 0
 
   const [showDetails, setShowDetails] = useState(false)
@@ -51,7 +52,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
   }
 
   return (
-    <Card variant={'panel'} p={0}>
+    <Card variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
         <Group align={'center'} p={'md'} gap={4}>
           <Text fw={600} inline>
@@ -61,6 +62,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
           <Tooltip.Group openDelay={500} closeDelay={100}>
             <Tooltip label={'Add New Section'}>
               <ActionIcon
+                aria-label={'add-new-section'}
                 variant={'grey'}
                 size={'sm'}
                 onClick={openedAddSongSection ? closeAddSongSection : openAddSongSection}
@@ -69,13 +71,19 @@ function SongSections({ sections, songId }: SongSectionsProps) {
               </ActionIcon>
             </Tooltip>
 
-            <Tooltip label={showDetails ? "Don' show details" : 'Show Details'}>
-              <ActionIcon variant={'grey'} size={'sm'} onClick={handleShowDetails}>
+            <Tooltip label={showDetails ? 'Hide details' : 'Show Details'}>
+              <ActionIcon
+                aria-label={showDetails ? 'hide-details' : 'show-details'}
+                variant={'grey'}
+                size={'sm'}
+                onClick={handleShowDetails}
+              >
                 {showDetails ? <IconEyeOff size={17} /> : <IconEye size={17} />}
               </ActionIcon>
             </Tooltip>
           </Tooltip.Group>
         </Group>
+
         <Stack gap={0}>
           <DragDropContext onDragEnd={onSectionsDragEnd}>
             <Droppable droppableId="dnd-list" direction="vertical">
@@ -107,6 +115,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
           </DragDropContext>
           {internalSections.length === 0 && (
             <NewHorizontalCard
+              ariaLabel={'add-new-song-section-card'}
               onClick={openedAddSongSection ? closeAddSongSection : openAddSongSection}
             >
               Add New Song Section

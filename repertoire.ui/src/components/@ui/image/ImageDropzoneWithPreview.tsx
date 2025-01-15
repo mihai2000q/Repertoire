@@ -67,9 +67,9 @@ function ImageDropzoneWithPreview({
               transitionProps={{ transition: 'fade-up', duration: 150 }}
             >
               <Menu.Target>
-                <Tooltip label={'Open photo options menu'} openDelay={500}>
+                <Tooltip label={'Open image options menu'} openDelay={500}>
                   <ActionIcon
-                    aria-label={'photo-options'}
+                    aria-label={'image-options'}
                     h={'100%'}
                     w={'100%'}
                     radius={radius}
@@ -80,9 +80,7 @@ function ImageDropzoneWithPreview({
                     })}
                     sx={{
                       opacity: isMenuOpened ? 1 : 0,
-                      '&:hover': {
-                        opacity: 1
-                      }
+                      '&:hover': { opacity: 1 }
                     }}
                   >
                     <IconPhotoFilled size={iconSizes / 1.2} />
@@ -91,7 +89,13 @@ function ImageDropzoneWithPreview({
               </Menu.Target>
 
               <Menu.Dropdown>
-                <FileButton onChange={handleImageChange} accept={IMAGE_MIME_TYPE.join(',')}>
+                <FileButton
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  inputProps={{ 'data-testid': 'upload-image-input' }}
+                  onChange={handleImageChange}
+                  accept={IMAGE_MIME_TYPE.join(',')}
+                >
                   {(props) => (
                     <Menu.Item
                       leftSection={<IconUpload size={18} />}
@@ -119,6 +123,10 @@ function ImageDropzoneWithPreview({
 
   return (
     <Dropzone
+      aria-label={'image-dropzone'}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      inputProps={{ 'data-testid': 'image-dropzone-input' }}
       onDrop={(files) => setImage(files[0])}
       accept={IMAGE_MIME_TYPE}
       multiple={false}

@@ -55,7 +55,7 @@ const songsApi = api.injectEndpoints({
     deleteImageFromSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/images/${arg}`,
-        method: 'DELETE',
+        method: 'DELETE'
       }),
       invalidatesTags: ['Songs', 'Albums']
     }),
@@ -67,15 +67,7 @@ const songsApi = api.injectEndpoints({
       invalidatesTags: ['Songs', 'Albums']
     }),
 
-    getGuitarTunings: build.query<GuitarTuning[], void>({
-      query: () => 'songs/guitar-tunings',
-      providesTags: ['GuitarTunings']
-    }),
-
-    getSongSectionTypes: build.query<SongSectionType[], void>({
-      query: () => 'songs/sections/types',
-      providesTags: ['SongSectionTypes']
-    }),
+    // sections
     createSongSection: build.mutation<{ id: string }, CreateSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections',
@@ -106,6 +98,18 @@ const songsApi = api.injectEndpoints({
         method: 'DELETE'
       }),
       invalidatesTags: ['Songs']
+    }),
+
+    // sections - types
+    getSongSectionTypes: build.query<SongSectionType[], void>({
+      query: () => 'songs/sections/types',
+      providesTags: ['SongSectionTypes']
+    }),
+
+    // guitar-tunings
+    getGuitarTunings: build.query<GuitarTuning[], void>({
+      query: () => 'songs/guitar-tunings',
+      providesTags: ['GuitarTunings']
     })
   })
 })

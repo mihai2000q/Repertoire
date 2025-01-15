@@ -1,12 +1,12 @@
 import { forwardRef, SVGProps } from 'react'
 
-interface CustomIconElectricGuitarSGProps extends SVGProps<SVGSVGElement> {
+interface CustomIconElectricGuitarSTProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number
 }
 
-const CustomIconElectricGuitarSG = forwardRef<SVGSVGElement, CustomIconElectricGuitarSGProps>(
-  ({ color, size = 24 }, ref) => (
+const CustomIconElectricGuitarST = forwardRef<SVGSVGElement, CustomIconElectricGuitarSTProps>(
+  ({ color, size = 24, ...props }, ref) => (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
@@ -18,6 +18,7 @@ const CustomIconElectricGuitarSG = forwardRef<SVGSVGElement, CustomIconElectricG
       strokeLinejoin="round"
       viewBox="0 0 512 512"
       xmlSpace="preserve"
+      {...props}
     >
       <g>
         <path
@@ -52,6 +53,6 @@ const CustomIconElectricGuitarSG = forwardRef<SVGSVGElement, CustomIconElectricG
   )
 )
 
-CustomIconElectricGuitarSG.displayName = 'CustomIconElectricGuitarSG'
+CustomIconElectricGuitarST.displayName = 'CustomIconElectricGuitarST'
 
-export default CustomIconElectricGuitarSG
+export default CustomIconElectricGuitarST

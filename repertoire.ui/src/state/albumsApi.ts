@@ -53,7 +53,7 @@ const albumsApi = api.injectEndpoints({
     deleteImageFromAlbum: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `albums/images/${arg}`,
-        method: 'DELETE',
+        method: 'DELETE'
       }),
       invalidatesTags: ['Songs', 'Albums']
     }),

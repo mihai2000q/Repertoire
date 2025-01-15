@@ -67,6 +67,7 @@ function ArtistHeaderCard({
           style={(theme) => ({
             boxShadow: theme.shadows.md
           })}
+          alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
         />
         <Stack
           gap={4}

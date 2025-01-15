@@ -47,7 +47,6 @@ function SongSection({
 
   const [openedEditSongSection, { open: openEditSongSection, close: closeEditSongSection }] =
     useDisclosure(false)
-
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -69,6 +68,7 @@ function SongSection({
     <Stack
       py={'xs'}
       px={'md'}
+      aria-label={`song-section-${section.name}`}
       sx={(theme) => ({
         cursor: 'default',
         transition: '0.25s',
@@ -86,7 +86,12 @@ function SongSection({
       {...draggableProvided.draggableProps}
     >
       <Group align={'center'} gap={'xs'}>
-        <ActionIcon variant={'subtle'} size={'lg'} {...draggableProvided.dragHandleProps}>
+        <ActionIcon
+          aria-label={'drag-handle'}
+          variant={'subtle'}
+          size={'lg'}
+          {...draggableProvided.dragHandleProps}
+        >
           <IconGripVertical size={20} />
         </ActionIcon>
 
@@ -103,6 +108,7 @@ function SongSection({
               variant={'subtle'}
               size={'md'}
               disabled={isUpdateLoading}
+              aria-label={'add-rehearsal'}
               onClick={handleAddRehearsal}
             >
               <IconLocationPlus size={15} />
@@ -111,7 +117,7 @@ function SongSection({
 
           <Menu>
             <Menu.Target>
-              <ActionIcon variant={'subtle'} size={'lg'}>
+              <ActionIcon variant={'subtle'} size={'lg'} aria-label={'more-menu'}>
                 <IconDots size={20} />
               </ActionIcon>
             </Menu.Target>
@@ -133,18 +139,19 @@ function SongSection({
       </Group>
 
       <Collapse in={showDetails}>
-        <Group align={'center'} gap={'xl'} px={'md'}>
-          <Tooltip.Floating label={`Rehearsals: ${section.rehearsals}`}>
+        <Group aria-label={`song-section-details-${section.name}`} gap={'xl'} px={'md'}>
+          <Tooltip.Floating role={'tooltip'} label={`Rehearsals: ${section.rehearsals}`}>
             <Text fw={500} c={'dimmed'} fz={'md'} inline>
               <NumberFormatter value={section.rehearsals} />
             </Text>
           </Tooltip.Floating>
 
-          <Tooltip.Floating label={`Confidence: ${section.confidence}%`}>
-            <Progress flex={1} size={'sm'} value={section.confidence} />
+          <Tooltip.Floating role={'tooltip'} label={`Confidence: ${section.confidence}%`}>
+            <Progress flex={1} size={'sm'} value={section.confidence} aria-label={'confidence'} />
           </Tooltip.Floating>
 
           <Tooltip.Floating
+            role={'tooltip'}
             label={
               <>
                 Progress: <NumberFormatter value={section.progress} />
@@ -154,6 +161,7 @@ function SongSection({
             <Progress
               flex={1}
               size={'sm'}
+              aria-label={'progress'}
               value={section.progress === 0 ? 0 : (section.progress / maxSectionProgress) * 100}
               color={'green'}
             />

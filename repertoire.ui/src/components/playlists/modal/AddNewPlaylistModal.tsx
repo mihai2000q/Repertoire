@@ -59,7 +59,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addPlaylist)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview
                 image={image}
                 setImage={setImage}
@@ -68,6 +68,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
                 iconSizes={55}
                 icon={<IconPlaylist size={55} />}
               />
+
               <Stack flex={1}>
                 <TextInput
                   withAsterisk={true}
@@ -77,6 +78,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
                   key={form.key('title')}
                   {...form.getInputProps('title')}
                 />
+
                 <Textarea
                   label="Description"
                   placeholder="The description of the playlist"

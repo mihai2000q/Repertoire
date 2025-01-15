@@ -86,6 +86,7 @@ function SignUp(): ReactElement {
                   disabled={isLoading}
                 />
                 <PasswordInput
+                  role={'textbox'}
                   label="Password"
                   placeholder="Your password"
                   key={form.key('password')}

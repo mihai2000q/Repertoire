@@ -166,7 +166,12 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
             </Stepper.Step>
 
             <Stepper.Step label={'Final Step'} description={'Web & Media'}>
-              <AddNewSongModalFinalStep form={form} image={image} setImage={setImage} />
+              <AddNewSongModalFinalStep
+                form={form}
+                image={image}
+                setImage={setImage}
+                album={album}
+              />
             </Stepper.Step>
           </Stepper>
 

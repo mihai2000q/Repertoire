@@ -17,7 +17,6 @@ describe('Title Bar', () => {
   })
 
   it('should have 3 action buttons that trigger the electron Api', async () => {
-    // Arrange
     const user = userEvent.setup()
     window.electron = {
       ipcRenderer: {
@@ -25,10 +24,8 @@ describe('Title Bar', () => {
       } as unknown as IpcRenderer
     } as unknown as ElectronAPI
 
-    // Act
     mantineRender(<TitleBar />)
 
-    // Act & Assert
     await user.click(screen.getByRole('button', { name: 'minimize' }))
     expect(window.electron.ipcRenderer.send).toHaveBeenCalledWith('minimize')
 

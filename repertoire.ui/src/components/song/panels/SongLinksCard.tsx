@@ -13,7 +13,7 @@ function SongLinksCard({ song }: SongLinksCardProps) {
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
 
   return (
-    <EditPanelCard p={'md'} onEditClick={openEdit}>
+    <EditPanelCard p={'md'} ariaLabel={'song-links-card'} onEditClick={openEdit}>
       <Stack>
         <Text fw={600}>Links</Text>
         <Stack gap={'xs'}>

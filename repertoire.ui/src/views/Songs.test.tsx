@@ -1,13 +1,15 @@
 import { screen } from '@testing-library/react'
 import Songs from './Songs.tsx'
-import { reduxRender } from '../test-utils.tsx'
+import { reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import Song from '../types/models/Song.ts'
+import Song, { GuitarTuning, SongSectionType } from '../types/models/Song.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
+import Artist from '../types/models/Artist.ts'
+import Album from '../types/models/Album.ts'
 
-describe.skip('Songs', () => {
+describe('Songs', () => {
   const songs: Song[] = [
     {
       id: '1',
@@ -34,17 +36,56 @@ describe.skip('Songs', () => {
       updatedAt: ''
     }
   ]
+  const totalCount = 2
+
+  const initialCurrentPage = 1
+  const pageSize = 20
+
+  const getSongsWithPagination = (totalCount: number = 30) =>
+    http.get('/songs', async (req) => {
+      const currentPage = new URL(req.request.url).searchParams.get('currentPage')
+      const response: WithTotalCountResponse<Song> =
+        parseInt(currentPage) === 1
+          ? {
+              models: Array.from({ length: pageSize }).map((_, i) => ({
+                ...songs[0],
+                id: i.toString()
+              })),
+              totalCount: totalCount
+            }
+          : {
+              models: Array.from({ length: totalCount - pageSize }).map((_, i) => ({
+                ...songs[0],
+                id: i.toString()
+              })),
+              totalCount: totalCount
+            }
+      return HttpResponse.json(response)
+    })
 
   const handlers = [
     http.get('/songs', async () => {
       const response: WithTotalCountResponse<Song> = {
         models: songs,
-        totalCount: 3
+        totalCount: totalCount
       }
       return HttpResponse.json(response)
     }),
-    http.get('/songs/1', async () => {
-      return HttpResponse.json(songs[0])
+    http.get('/artists', async () => {
+      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/albums', async () => {
+      const response: WithTotalCountResponse<Album> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/songs/guitar-tunings', async () => {
+      const response: GuitarTuning[] = []
+      return HttpResponse.json(response)
+    }),
+    http.get('/songs/sections/types', async () => {
+      const response: SongSectionType[] = []
+      return HttpResponse.json(response)
     })
   ]
 
@@ -57,63 +98,49 @@ describe.skip('Songs', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are songs', async () => {
-    const [{ container }] = reduxRender(<Songs />)
+    reduxRouterRender(<Songs />)
 
     expect(screen.getByRole('heading', { name: /songs/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /new song/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /new-song/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filter-songs/i })).toBeInTheDocument()
     expect(screen.getByTestId('songs-loader')).toBeInTheDocument()
-    expect(container.querySelector('.mantine-Loader-root')).toBeInTheDocument()
 
-    expect(await screen.findByTestId('new-song-card')).toBeInTheDocument()
-    expect(screen.getAllByTestId(/song-card-/)).toHaveLength(songs.length)
-    songs.forEach((song) => expect(screen.getByTestId(`song-card-${song.id}`)).toBeInTheDocument())
-    expect(screen.getByTestId('songs-pagination')).toHaveTextContent('1')
+    expect(await screen.findByLabelText('new-song-card')).toBeInTheDocument()
+    expect(screen.getAllByLabelText(/song-card-/)).toHaveLength(songs.length)
+    expect(
+      screen.getByText(`${initialCurrentPage} - ${songs.length} songs out of ${totalCount}`)
+    ).toBeInTheDocument()
+    songs.forEach((song) =>
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toBeInTheDocument()
+    )
+    expect(screen.getByTestId('songs-pagination')).toBeInTheDocument()
   })
 
   it('should open the add new song modal when clicking the new song button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
-    reduxRender(<Songs />)
+    reduxRouterRender(<Songs />)
 
-    const newSongButton = screen.getByRole('button', { name: /new song/i })
+    const newSongButton = screen.getByRole('button', { name: /new-song/i })
     await user.click(newSongButton)
 
-    // Assert
     expect(await screen.findByRole('heading', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it('should open the add new song modal when clicking the new song card button', async () => {
-    // Arrange
     const user = userEvent.setup()
 
-    // Act
-    reduxRender(<Songs />)
+    reduxRouterRender(<Songs />)
 
-    const newSongCardButton = await screen.findByTestId('new-song-card')
+    const newSongCardButton = await screen.findByLabelText('new-song-card')
     await user.click(newSongCardButton)
 
-    // Assert
     expect(await screen.findByRole('heading', { name: /add new song/i })).toBeInTheDocument()
   })
 
-  it('should open song drawer when clicking on song', async () => {
-    // Arrange
-    const song = songs[0]
-    const user = userEvent.setup()
-
-    // Act
-    reduxRender(<Songs />)
-
-    await user.click(await screen.findByTestId(`song-card-${song.id}`))
-
-    // Assert
-    expect(await screen.findByRole('heading', { name: song.title })).toBeInTheDocument()
-  })
-
   it('should display not display some info when there are no songs', async () => {
-    reduxRender(<Songs />)
+    reduxRouterRender(<Songs />)
 
     server.use(
       http.get('/songs', async () => {
@@ -123,8 +150,52 @@ describe.skip('Songs', () => {
     )
 
     expect(await screen.findByText(/no songs/)).toBeInTheDocument()
-    expect(screen.queryByTestId('new-song-card')).not.toBeInTheDocument()
-    expect(screen.queryAllByTestId(/song-card-/)).toHaveLength(0)
+    expect(screen.queryByLabelText('new-song-card')).not.toBeInTheDocument()
+    expect(screen.queryAllByLabelText(/song-card-/)).toHaveLength(0)
     expect(screen.queryByTestId('songs-pagination')).not.toBeInTheDocument()
+  })
+
+  it('should paginate the songs', async () => {
+    const user = userEvent.setup()
+
+    const totalCount = 30
+
+    server.use(getSongsWithPagination(totalCount))
+
+    reduxRouterRender(<Songs />)
+
+    expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
+    expect(screen.queryAllByLabelText(/song-card-/)).toHaveLength(pageSize)
+    expect(
+      screen.getByText(`${initialCurrentPage} - ${pageSize} songs out of ${totalCount}`)
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '1' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '2' })).toBeInTheDocument()
+
+    const pagination = screen.getByRole('button', { name: '2' })
+    await user.click(pagination)
+
+    expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
+    expect(screen.queryAllByLabelText(/song-card-/)).toHaveLength(totalCount - pageSize)
+    expect(
+      screen.getByText(`${pageSize + 1} - ${totalCount} songs out of ${totalCount}`)
+    ).toBeInTheDocument()
+  })
+
+  it('the new song card should not be displayed on first page, but on the last', async () => {
+    const user = userEvent.setup()
+
+    server.use(getSongsWithPagination())
+
+    reduxRouterRender(<Songs />)
+
+    expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
+    expect(screen.queryByLabelText('new-song-card')).not.toBeInTheDocument()
+
+    const pagination = screen.getByRole('button', { name: '2' })
+    await user.click(pagination)
+
+    expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
+    expect(screen.queryByLabelText('new-song-card')).toBeInTheDocument()
   })
 })

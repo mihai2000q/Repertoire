@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import {FileWithPath} from "@mantine/dropzone";
+import { FileWithPath } from '@mantine/dropzone'
 
 const youtubeRegex =
   /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%?]{11})$/
