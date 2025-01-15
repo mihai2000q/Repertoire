@@ -162,10 +162,8 @@ describe('Artist Drawer', () => {
     it('should navigate to artist when clicking on view details', async () => {
       const user = userEvent.setup()
 
-      // Act
       render()
 
-      // Assert
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/artist/${artist.id}`)
@@ -183,7 +181,6 @@ describe('Artist Drawer', () => {
         })
       )
 
-      // Act
       const [_, store] = reduxRouterRender(withToastify(<ArtistDrawer />), {
         global: {
           artistDrawer: {
@@ -195,10 +192,10 @@ describe('Artist Drawer', () => {
         }
       })
 
-      // Assert
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
+      expect(screen.getByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 

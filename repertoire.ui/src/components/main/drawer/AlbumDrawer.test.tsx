@@ -151,10 +151,8 @@ describe('Album Drawer', () => {
     it('should navigate to album when clicking on view details', async () => {
       const user = userEvent.setup()
 
-      // Act
       render()
 
-      // Assert
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/album/${album.id}`)
@@ -172,7 +170,6 @@ describe('Album Drawer', () => {
         })
       )
 
-      // Act
       const [_, store] = reduxRouterRender(withToastify(<AlbumDrawer />), {
         global: {
           albumDrawer: {
@@ -184,10 +181,10 @@ describe('Album Drawer', () => {
         }
       })
 
-      // Assert
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
+      expect(screen.getByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 

@@ -72,27 +72,23 @@ describe('Playlist Header Card', () => {
     it('should display info modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /info/i }))
 
-      expect(screen.getByRole('heading', { name: /playlist info/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /playlist info/i })).toBeInTheDocument()
     })
 
     it('should display edit header modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-      expect(screen.getByRole('heading', { name: /edit playlist header/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /edit playlist header/i })).toBeInTheDocument()
     })
 
     it('should display warning modal and delete playlist', async () => {
@@ -104,17 +100,15 @@ describe('Playlist Header Card', () => {
         })
       )
 
-      // Act
       reduxRouterRender(
         withToastify(<PlaylistHeaderCard playlist={playlist} />)
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
+      expect(screen.getByRole('dialog', { name: /delete playlist/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete playlist/i })).toBeInTheDocument()
-
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
       expect(window.location.pathname).toBe('/playlists')
@@ -129,6 +123,6 @@ describe('Playlist Header Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
-    expect(screen.getByRole('heading', { name: /edit playlist header/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /edit playlist header/i })).toBeInTheDocument()
   })
 })

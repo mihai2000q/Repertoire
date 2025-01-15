@@ -60,6 +60,8 @@ function Topbar(): ReactElement {
     <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
       <Group align={'center'} h={'100%'} gap={0}>
         <Autocomplete
+          role={'searchbox'}
+          aria-label={'topbar-search'}
           placeholder="Search"
           leftSection={<IconSearch size={16} stroke={2} />}
           data={[]}

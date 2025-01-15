@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
 import ArtistAlbumCard from './ArtistAlbumCard.tsx'
+import dayjs from "dayjs";
 
 describe('Artist Album Card', () => {
   const album: Album = {
@@ -31,7 +32,7 @@ describe('Artist Album Card', () => {
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
-    expect(screen.getByText('11 Oct 2024')).toBeInTheDocument()
+    expect(screen.getByText(dayjs(localAlbum.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
 
@@ -61,13 +62,12 @@ describe('Artist Album Card', () => {
 
       const handleRemove = vitest.fn()
 
-      // Act
       reduxRender(<ArtistAlbumCard album={album} handleRemove={handleRemove} isUnknownArtist={false} />)
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /remove/i }))
 
+      expect(screen.getByRole('dialog', { name: /remove album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove album/i })).toBeInTheDocument()
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 

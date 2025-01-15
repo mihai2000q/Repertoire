@@ -254,10 +254,8 @@ describe('Artists', () => {
         server.use(getSongsWithoutArtists())
       }
 
-      // Act
       reduxRouterRender(<Artists />)
 
-      // Assert
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
       expect(screen.queryByLabelText('unknown-artist-card')).toBeInTheDocument()
       expect(
@@ -287,10 +285,8 @@ describe('Artists', () => {
         server.use(getSongsWithoutArtists())
       }
 
-      // Act
       reduxRouterRender(<Artists />)
 
-      // Assert
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
       expect(screen.queryByLabelText('unknown-artist-card')).not.toBeInTheDocument()
       expect(

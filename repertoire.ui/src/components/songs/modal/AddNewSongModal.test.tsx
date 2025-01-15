@@ -31,6 +31,7 @@ describe.skip('Add New Song Modal', () => {
   it('should render and display form', ({ expect }) => {
     reduxRender(<AddNewSongModal opened={true} onClose={vi.fn()} />)
 
+    expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
 
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveTextContent('')

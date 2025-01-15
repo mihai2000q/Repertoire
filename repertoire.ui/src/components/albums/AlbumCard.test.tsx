@@ -74,13 +74,12 @@ describe('Album Card', () => {
         })
       )
 
-      // Act
       reduxRouterRender(withToastify(<AlbumCard album={album} />))
 
-      // Assert
       await user.pointer({ keys: '[MouseRight>]', target: screen.getByRole('img', { name: album.title }) })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
+      expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 

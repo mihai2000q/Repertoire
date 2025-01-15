@@ -18,7 +18,8 @@ describe('Warning Modal', () => {
       />
     )
 
-    expect(screen.getByText(title)).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
     expect(screen.getByText(description)).toBeInTheDocument()
   })
 
@@ -38,7 +39,8 @@ describe('Warning Modal', () => {
       />
     )
 
-    expect(screen.getByText(title)).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
     expect(screen.getByTestId(descriptionTestId)).toBeInTheDocument()
   })
 

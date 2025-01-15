@@ -115,31 +115,27 @@ describe('Album Songs Card', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRender(
         <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
 
-      expect(screen.getByRole('heading', { name: /add existing songs/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
     })
 
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRender(
         <AlbumSongsCard album={album} songs={[]} isUnknownAlbum={false} />
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
 
-      expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
     })
   })
 
@@ -154,7 +150,7 @@ describe('Album Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-song-card'))
 
-    expect(screen.getByRole('heading', { name: /add existing songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
   })
 
   it('should display new song card when the album is unknown and open Add new song modal', async () => {
@@ -168,7 +164,7 @@ describe('Album Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-song-card'))
 
-    expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it('should send \'remove songs from album request\' when clicking on the more menu of a song card', async () => {

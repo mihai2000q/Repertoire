@@ -96,7 +96,7 @@ describe('Add New Album Modal', () => {
       )
       expect(onClose).toHaveBeenCalledOnce()
 
-      expect(screen.getByText(new RegExp(`${newTitle} added`)))
+      expect(screen.getByText(`${newTitle} added!`))
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
     })
 
@@ -137,7 +137,7 @@ describe('Add New Album Modal', () => {
       )
       expect(onClose).toHaveBeenCalledOnce()
 
-      expect(screen.getByText(new RegExp(`${newTitle} added`)))
+      expect(screen.getByText(`${newTitle} added!`))
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
       expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
       expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(/choose/i) // the placeholder
@@ -176,7 +176,7 @@ describe('Add New Album Modal', () => {
       )
       expect(onClose).toHaveBeenCalledOnce()
 
-      expect(screen.getByText(new RegExp(`${newTitle} added`)))
+      expect(screen.getByText(`${newTitle} added!`))
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
       expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
     })
@@ -223,7 +223,7 @@ describe('Add New Album Modal', () => {
 
     expect(onClose).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(new RegExp(`${newTitle} added`)))
+    expect(screen.getByText(`${newTitle} added!`))
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
   })

@@ -131,7 +131,6 @@ describe('Artist Header Card', () => {
     it('should display info modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(
         <ArtistHeaderCard
           artist={artist}
@@ -141,18 +140,16 @@ describe('Artist Header Card', () => {
         />
       )
 
-      // Assert
       await user.hover(screen.getByLabelText('header-panel-card'))
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /info/i }))
 
-      expect(screen.getByRole('heading', { name: /artist info/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /artist info/i })).toBeInTheDocument()
     })
 
     it('should display edit header modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(
         <ArtistHeaderCard
           artist={artist}
@@ -162,11 +159,10 @@ describe('Artist Header Card', () => {
         />
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-      expect(screen.getByRole('heading', { name: /edit artist header/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /edit artist header/i })).toBeInTheDocument()
     })
 
     it('should display warning modal and delete artist', async () => {
@@ -178,7 +174,6 @@ describe('Artist Header Card', () => {
         })
       )
 
-      // Act
       reduxRouterRender(
         withToastify(
           <ArtistHeaderCard
@@ -190,12 +185,11 @@ describe('Artist Header Card', () => {
         )
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
+      expect(screen.getByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
-
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
       expect(window.location.pathname).toBe('/artists')
@@ -217,6 +211,6 @@ describe('Artist Header Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
-    expect(screen.getByRole('heading', { name: /edit artist header/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /edit artist header/i })).toBeInTheDocument()
   })
 })

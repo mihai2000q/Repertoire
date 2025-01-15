@@ -45,6 +45,7 @@ function Sidebar(): ReactElement {
             key={sidebarLink.label}
             label={sidebarLink.label}
             leftSection={sidebarLink.icon}
+            role={'link'}
             active={
               location.pathname === sidebarLink.link ||
               sidebarLink.subLinks.some((link) => location.pathname.startsWith(link))

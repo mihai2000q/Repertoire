@@ -52,7 +52,7 @@ describe('Add New Artist Modal', () => {
     )
     expect(onClose).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(new RegExp(`${newTitle} added`)))
+    expect(screen.getByText(`${newTitle} added!`))
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
   })
 
@@ -95,7 +95,7 @@ describe('Add New Artist Modal', () => {
 
     expect(onClose).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(new RegExp(`${newTitle} added`)))
+    expect(screen.getByText(`${newTitle} added!`))
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
   })

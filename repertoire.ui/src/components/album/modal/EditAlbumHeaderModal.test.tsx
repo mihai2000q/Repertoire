@@ -56,8 +56,7 @@ describe('Edit Album Header Modal', () => {
     const user = userEvent.setup()
 
     const newTitle = 'New Album'
-    const newDay = '24'
-    const newReleaseDate = `2024-12-${newDay}`
+    const newReleaseDate = dayjs('2024-12-24')
     const onClose = vitest.fn()
 
     let capturedRequest: UpdateAlbumRequest
@@ -78,7 +77,7 @@ describe('Edit Album Header Modal', () => {
     await user.clear(titleField)
     await user.type(titleField, newTitle)
     await user.click(screen.getByRole('button', { name: /release date/i }))
-    await user.click(screen.getByText(newDay))
+    await user.click(screen.getByText(newReleaseDate.date().toString()))
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
@@ -88,7 +87,7 @@ describe('Edit Album Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       id: album.id,
       title: newTitle,
-      releaseDate: dayjs(newReleaseDate).toISOString()
+      releaseDate: newReleaseDate.toISOString()
     })
   })
 

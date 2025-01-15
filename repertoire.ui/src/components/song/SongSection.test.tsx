@@ -120,7 +120,6 @@ describe('Song Section', () => {
     it('should open edit song section modal when clicking edit', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRender(
         <SongSection
           section={section}
@@ -132,10 +131,9 @@ describe('Song Section', () => {
         />
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
-      expect(await screen.findByRole('dialog', { name: /edit song section/i })).toBeVisible()
+      expect(screen.getByRole('dialog', { name: /edit song section/i })).toBeInTheDocument()
     })
 
     it('should display warning modal and delete section, when clicking delete', async () => {
@@ -149,7 +147,6 @@ describe('Song Section', () => {
         })
       )
 
-      // Act
       reduxRender(
         withToastify(
           <SongSection
@@ -163,11 +160,11 @@ describe('Song Section', () => {
         )
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(screen.getByRole('dialog', { name: /delete section/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete section/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
       expect(screen.getByText(`${section.name} deleted!`)).toBeInTheDocument()

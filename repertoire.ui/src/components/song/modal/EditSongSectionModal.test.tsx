@@ -127,7 +127,7 @@ describe('Edit Song Description Modal', () => {
     })
     expect(onClose).toHaveBeenCalledOnce()
 
-    expect(await screen.findByText(new RegExp(`${newName} updated`, 'i'))).toBeInTheDocument()
+    expect(await screen.findByText(`${newName} updated!`)).toBeInTheDocument()
 
     rerender(
       <EditSongSectionModal

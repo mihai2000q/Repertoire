@@ -16,11 +16,11 @@ describe('Sidebar', () => {
   it('should render and display Navigation Links', ({ expect }) => {
     render()
 
-    expect(screen.getByText('Home')).toBeInTheDocument()
-    expect(screen.getByText('Artists')).toBeInTheDocument()
-    expect(screen.getByText('Albums')).toBeInTheDocument()
-    expect(screen.getByText('Songs')).toBeInTheDocument()
-    expect(screen.getByText('Playlists')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /artists/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /albums/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /playlists/i })).toBeInTheDocument()
   })
 
   it('should navigate to Navigation Links', async () => {
@@ -37,8 +37,9 @@ describe('Sidebar', () => {
   })
 
   async function navigateAndAssert(user: UserEvent, link: RegExp) {
-    const navLink = screen.getByText(link)
+    const navLink = screen.getByRole('link', { name: link })
     await user.click(navLink)
     expect(window.location.pathname).toMatch(link)
+    expect(navLink).toHaveAttribute('data-active', 'true')
   }
 })

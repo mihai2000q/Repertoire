@@ -41,12 +41,15 @@ describe('Edit Song Links Modal', () => {
 
     expect(screen.getByRole('dialog', { name: /edit song links/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /edit song links/i })).toBeInTheDocument()
+
     expect(screen.getByRole('textbox', { name: /youtube/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /youtube/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /youtube/i })).toHaveValue(song.youtubeLink)
+
     expect(screen.getByRole('textbox', { name: /songsterr/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /songsterr/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /songsterr/i })).toHaveValue(song.songsterrLink)
+
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
     await user.hover(screen.getByRole('button', { name: /save/i }))

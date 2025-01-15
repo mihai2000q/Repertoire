@@ -22,11 +22,11 @@ describe('Sign Up', () => {
     reduxRouterRender(<SignUp />)
 
     expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /sign in/i })).toBeVisible()
-    expect(screen.getByRole('textbox', { name: /name/i })).toBeVisible()
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeVisible()
-    expect(screen.getByLabelText(/password/i)).toBeVisible()
-    expect(screen.getByRole('button', { name: /sign up/i })).toBeVisible()
+    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /password/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
   })
 
   it('should display validation errors when the fields are empty', async () => {
@@ -44,16 +44,16 @@ describe('Sign Up', () => {
     act(() => emailInput.focus())
     act(() => emailInput.blur())
 
-    const passwordInput = screen.getByLabelText(/password/i)
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     act(() => passwordInput.focus())
     act(() => passwordInput.blur())
 
-    expect(screen.getByText(nameError)).toBeVisible()
-    expect(screen.getByText(emailError)).toBeVisible()
-    expect(screen.getByText(passwordError)).toBeVisible()
+    expect(screen.getByText(nameError)).toBeInTheDocument()
+    expect(screen.getByText(emailError)).toBeInTheDocument()
+    expect(screen.getByText(passwordError)).toBeInTheDocument()
   })
 
-  it.each([['  ', 'Name cannot be blank']])('should display name errors', async (name, error) => {
+  it.each([['  ', /name cannot be blank/i]])('should display name errors', async (name, error) => {
     const user = userEvent.setup()
 
     reduxRouterRender(<SignUp />)
@@ -61,43 +61,41 @@ describe('Sign Up', () => {
     const nameInput = screen.getByRole('textbox', { name: /name/i })
     await user.type(nameInput, name)
     act(() => nameInput.blur())
-
-    expect(screen.getByText(error)).toBeVisible()
+    expect(nameInput).toBeInvalid()
+    expect(screen.getByText(error)).toBeInTheDocument()
   })
 
   it.each([['  '], ['email'], ['email@yahoo'], ['email.com']])(
     'should display email errors',
     async (email) => {
-      const error = 'Email is invalid'
+      const error = /email is invalid/i
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<SignUp />)
 
       const emailInput = screen.getByRole('textbox', { name: /email/i })
       await user.type(emailInput, email)
       act(() => emailInput.blur())
-
-      // Assert
-      expect(screen.getByText(error)).toBeVisible()
+      expect(emailInput).toBeInvalid()
+      expect(screen.getByText(error)).toBeInTheDocument()
     }
   )
 
   it.each([
-    ['1234567', 'Password must have at least 8 characters'],
-    ['This is long', 'Password must have at least 1 digit'],
-    ['THIS PASSWORD IS MISSING 1 LOWER CHARACTER', 'Password must have at least 1 lower character'],
-    ['this password is missing 1 upper character', 'Password must have at least 1 upper character']
+    ['1234567', /password must have at least 8 characters/i],
+    ['This is long', /password must have at least 1 digit/i],
+    ['THIS PASSWORD IS MISSING 1 LOWER CHARACTER', /password must have at least 1 lower character/i],
+    ['this password is missing 1 upper character', /Password must have at least 1 upper character/i]
   ])('should display password errors', async (password, error) => {
     const user = userEvent.setup()
 
     reduxRouterRender(<SignUp />)
 
-    const passwordInput = screen.getByLabelText(/password/i)
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     await user.type(passwordInput, password)
     act(() => passwordInput.blur())
-
-    expect(screen.getByText(error)).toBeVisible()
+    expect(screen.getByText(error)).toBeInTheDocument()
+    expect(passwordInput).toHaveAttribute('data-invalid', 'true')
   })
 
   it('should send sign up request and display sign up error', async () => {
@@ -112,7 +110,10 @@ describe('Sign Up', () => {
 
     await sendSignUpRequest(name, email, password)
 
-    screen.getAllByText(error).forEach((e) => expect(e).toBeVisible())
+    expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInvalid()
+    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute('data-invalid', 'true')
+    expect(screen.getAllByText(error)).toHaveLength(3)
   })
 
   it('should send sign up request and save token', async () => {
@@ -150,7 +151,7 @@ describe('Sign Up', () => {
     const emailInput = screen.getByRole('textbox', { name: /email/i })
     await user.type(emailInput, email)
 
-    const passwordInput = screen.getByLabelText(/password/i)
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     await user.type(passwordInput, password)
 
     const signUpButton = screen.getByRole('button', { name: /sign up/i })

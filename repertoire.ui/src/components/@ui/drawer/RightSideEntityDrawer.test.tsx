@@ -43,6 +43,6 @@ describe('Right Side Entity Drawer', () => {
     )
 
     expect(screen.queryByTestId(childrenTestId)).not.toBeInTheDocument()
-    expect(screen.queryByTestId(loaderTestId)).toBeVisible()
+    expect(screen.queryByTestId(loaderTestId)).toBeInTheDocument()
   })
 })

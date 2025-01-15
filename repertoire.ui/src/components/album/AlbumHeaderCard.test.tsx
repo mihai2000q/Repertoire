@@ -8,6 +8,7 @@ import Song from 'src/types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
+import dayjs from "dayjs";
 
 describe('Album Header Card', () => {
   const emptySong: Song = {
@@ -94,13 +95,13 @@ describe('Album Header Card', () => {
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
-    expect(screen.getByText(/2024/)).toBeInTheDocument()
+    expect(screen.getByText(dayjs(localAlbum.releaseDate).year().toString())).toBeInTheDocument()
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 
-    await user.hover(screen.getByText(/2024/))
-    expect(await screen.findByText(/21 October 2024/)).toBeInTheDocument()
+    await user.hover(screen.getByText(dayjs(localAlbum.releaseDate).year().toString()))
+    expect(await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
@@ -124,27 +125,23 @@ describe('Album Header Card', () => {
     it('should display info modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /info/i }))
 
-      expect(screen.getByRole('heading', { name: /album info/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /album info/i })).toBeInTheDocument()
     })
 
     it('should display edit header modal', async () => {
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-      expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /edit album header/i })).toBeInTheDocument()
     })
 
     it('should display warning modal and delete album', async () => {
@@ -156,15 +153,14 @@ describe('Album Header Card', () => {
         })
       )
 
-      // Act
       reduxRouterRender(
         withToastify(<AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />)
       )
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
+      expect(screen.getByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
@@ -180,7 +176,7 @@ describe('Album Header Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
-    expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /edit album header/i })).toBeInTheDocument()
   })
 
   it('should open artist drawer on artist click', async () => {

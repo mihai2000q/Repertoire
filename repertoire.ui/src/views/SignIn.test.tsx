@@ -21,12 +21,12 @@ describe('Sign In', () => {
   it('should render', () => {
     reduxRouterRender(<SignIn />)
 
-    expect(screen.getByRole('heading', { name: /welcome/i })).toBeVisible()
-    expect(screen.getByRole('link', { name: /create account/i })).toBeVisible()
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeVisible()
-    expect(screen.getByLabelText(/password/i)).toBeVisible()
-    expect(screen.getByRole('link', { name: /forgot password/i })).toBeVisible()
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeVisible()
+    expect(screen.getByRole('heading', { name: /welcome/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /create account/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /password/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /forgot password/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
   })
 
   it('should display validation errors when the fields are empty', async () => {
@@ -39,29 +39,29 @@ describe('Sign In', () => {
     act(() => emailInput.focus())
     act(() => emailInput.blur())
 
-    const passwordInput = screen.getByLabelText(/password/i)
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     act(() => passwordInput.focus())
     act(() => passwordInput.blur())
 
-    expect(screen.getByText(emailError)).toBeVisible()
-    expect(screen.getByText(passwordError)).toBeVisible()
+    expect(emailInput).toBeInvalid()
+    expect(passwordInput).toHaveAttribute('data-invalid', 'true')
+    expect(screen.getByText(emailError)).toBeInTheDocument()
+    expect(screen.getByText(passwordError)).toBeInTheDocument()
   })
 
   it.each([['  '], ['email'], ['email@yahoo'], ['email.com']])(
     'should display email errors',
     async (email) => {
-      const error = 'Email is invalid'
+      const error = /email is invalid/i
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<SignIn />)
 
       const emailInput = screen.getByRole('textbox', { name: /email/i })
       await user.type(emailInput, email)
       act(() => emailInput.blur())
-
-      // Assert
-      expect(screen.getByText(error)).toBeVisible()
+      expect(emailInput).toBeInvalid()
+      expect(screen.getByText(error)).toBeInTheDocument()
     }
   )
 
@@ -74,7 +74,9 @@ describe('Sign In', () => {
 
     await sendSignInRequest(email, password)
 
-    screen.getAllByText(error).forEach((e) => expect(e).toBeVisible())
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInvalid()
+    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute('data-invalid', 'true')
+    expect(screen.getAllByText(error)).toHaveLength(2)
   })
 
   it('should send sign in request and save token', async () => {
@@ -108,7 +110,7 @@ describe('Sign In', () => {
     const emailInput = screen.getByRole('textbox', { name: /email/i })
     await user.type(emailInput, email)
 
-    const passwordInput = screen.getByLabelText(/password/i)
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     await user.type(passwordInput, password)
 
     const signInButton = screen.getByRole('button', { name: /sign in/i })

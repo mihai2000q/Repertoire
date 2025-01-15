@@ -44,13 +44,12 @@ describe('Album Song Card', () => {
 
       const handleRemove = vitest.fn()
 
-      // Act
       reduxRender(<AlbumSongCard song={song} handleRemove={handleRemove} isUnknownAlbum={false} />)
 
-      // Assert
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /remove/i }))
 
+      expect(screen.getByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 

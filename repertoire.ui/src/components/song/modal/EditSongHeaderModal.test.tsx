@@ -218,6 +218,26 @@ describe('Edit Song Header Modal', () => {
     })
   })
 
+  it('should mention that the image will be inherited from the album, if any image is there', async () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: undefined,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something.png',
+      }
+    }
+
+    reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={localSong} />)
+
+    expect(screen.getByRole('presentation', { name: /image-dropzone/i })).toBeInTheDocument()
+    expect(screen.getByText(/song image is inherited from the album/i)).toBeInTheDocument()
+  })
+
   it('should disable the save button when no changes are made', async () => {
     const user = userEvent.setup()
 

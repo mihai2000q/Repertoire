@@ -42,7 +42,7 @@ describe('Topbar', () => {
     async (token) => {
       render(token)
 
-      expect(screen.getByPlaceholderText('Search')).toBeInTheDocument()
+      expect(screen.getByRole('searchbox', { name: 'topbar-search' })).toBeInTheDocument()
       expect(await screen.findByRole('button', { name: 'user' })).toBeInTheDocument()
     }
   )
@@ -66,26 +66,22 @@ describe('Topbar', () => {
     it('should display account modal when clicking on account', async () => {
       const userEventDispatcher = userEvent.setup()
 
-      // Act
       render()
 
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /account/i }))
 
-      // Assert
-      expect(screen.getByRole('heading', { name: /account/i })).toBeInTheDocument()
+      expect(screen.getByRole('dialog', { name: /account/i })).toBeInTheDocument()
     })
 
     it('should sign out when clicking on sign out', async () => {
       const userEventDispatcher = userEvent.setup()
 
-      // Act
       const [_, store] = render()
 
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /sign out/i }))
 
-      // Assert
       expect((store.getState() as RootState).auth.token).toBeNull()
     })
   })

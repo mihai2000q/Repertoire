@@ -9,10 +9,10 @@ describe('Require Authentication', () => {
     reduxRouterRender(
       <Routes>
         <Route element={<RequireAuthentication />}>
-          <Route path={'/'} element={<div>Outlet</div>} />
+          <Route path={'/'} element={<div data-testid={'outlet'}>Outlet</div>} />
         </Route>
 
-        <Route path={'sign-in'} element={<div>SignIn</div>} />
+        <Route path={'sign-in'} element={<div data-testid={'sign-in'}>SignIn</div>} />
         <Route path={'*'} element={<Navigate to={'/'} replace />} />
       </Routes>,
       { auth: { token } }
@@ -22,13 +22,13 @@ describe('Require Authentication', () => {
     render('my token')
 
     expect(window.location.pathname).toBe('/')
-    expect(screen.getByText('Outlet')).toBeInTheDocument()
+    expect(screen.getByTestId('outlet')).toBeInTheDocument()
   })
 
   it('should navigate to Sign In if user is not authenticated', () => {
     render(null)
 
     expect(window.location.pathname).toBe('/sign-in')
-    expect(screen.getByText('SignIn')).toBeInTheDocument()
+    expect(screen.getByTestId('sign-in')).toBeInTheDocument()
   })
 })

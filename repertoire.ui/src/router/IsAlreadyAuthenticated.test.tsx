@@ -9,10 +9,10 @@ describe('Is Already Authenticated', () => {
     reduxRouterRender(
       <Routes>
         <Route element={<IsAlreadyAuthenticated />}>
-          <Route path={'/'} element={<div>Outlet</div>} />
+          <Route path={'/'} element={<div data-testid={'outlet'}>Outlet</div>} />
         </Route>
 
-        <Route path={'/home'} element={<div>Home</div>} />
+        <Route path={'/home'} element={<div data-testid={'home'}>Home</div>} />
         <Route path={'*'} element={<Navigate to={'/'} replace />} />
       </Routes>,
       { auth: { token } }
@@ -22,13 +22,13 @@ describe('Is Already Authenticated', () => {
     render(null)
 
     expect(window.location.pathname).toBe('/')
-    expect(screen.getByText('Outlet')).toBeInTheDocument()
+    expect(screen.getByTestId('outlet')).toBeInTheDocument()
   })
 
   it('should navigate to Home if user is already authenticated', () => {
     render('my token')
 
     expect(window.location.pathname).toBe('/home')
-    expect(screen.getByText('Home')).toBeInTheDocument()
+    expect(screen.getByTestId('home')).toBeInTheDocument()
   })
 })
