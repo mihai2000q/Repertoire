@@ -1,5 +1,17 @@
 # Repertoire
 
+![Typescript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=electron&logoColor=white)
+![React](https://img.shields.io/badge/React-0081A3?style=flat&logo=react&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux-764ABC?style=flat&logo=redux&logoColor=white)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white)
+![Go Gin](https://img.shields.io/badge/Gin-008ECF?style=flat&logo=gin&logoColor=white)
+![Postgres](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
+
+![Version](https://img.shields.io/badge/version-0.9.0-1098ad)
+
 * [Repertoire](#repertoire)
   * [Abstract](#abstract)
   * [Get Started](#get-started)
@@ -13,6 +25,7 @@
     * [Git Issues](#git-issues)
     * [Git Branches](#git-branches)
     * [Git Commits](#git-commits)
+  * [Deployment](#deployment)
   * [License](#license)
 
 ## Abstract
@@ -21,7 +34,9 @@
 It is an application intended for beginner musicians to organize their '_repertoire_' (songs, albums, etc.).
 Its features include adding songs, organized in albums and artists.
 It is also possible to add those songs on playlists.
-Songs can be measured how rehearsed they have been, whether they have been recorded or not and so on.
+Songs can be measured how rehearsed they have been, whether they have been recorded or not and other features.
+
+Version: 0.9.0
 
 ## Get Started
 
@@ -142,10 +157,19 @@ Note: if the target of the commit has nothing to do with any layer or screen,
 no worries, just try to be as concise as possible.
 However, if multiple layers or projects are affected, try submitting more smaller commits.
 
+## Deployment
+
+The deployment is fairly simple. 
+As soon as a pull request from *develop* is pushed onto *master* a CI/CD pipeline will be triggered.
+This Github Action will build and push the following docker images to **Docker Hub**:
+
+- Server
+- Storage
+
 ## License
 
 The project is licensed under the [MIT](https://opensource.org/license/mit) license.
 
 ---
 
-**Repertoire** 2024
+**Repertoire**© 2024-2025
