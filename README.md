@@ -166,6 +166,8 @@ This Github Action will build and push the following docker images to **Docker H
 - Server
 - Storage
 
+Afterwards, the cloud server detects a new latest docker image and pulls them.
+
 ## License
 
 The project is licensed under the [MIT](https://opensource.org/license/mit) license.
