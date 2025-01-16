@@ -40,13 +40,18 @@ func (j *jwtService) Authorize(tokenString string) *wrapper.ErrorCode {
 }
 
 func (j *jwtService) CreateToken(user model.User) (string, *wrapper.ErrorCode) {
+	expiresIn, err := time.ParseDuration(j.env.JwtExpirationTime)
+	if err != nil {
+		return "", wrapper.InternalServerError(err)
+	}
+
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
 		"iss": j.env.JwtIssuer,
 		"aud": j.env.JwtAudience,
 		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(time.Hour).Unix(),
+		"exp": time.Now().UTC().Add(expiresIn).Unix(),
 	})
 	token, err := claims.SignedString([]byte(j.env.JwtSecretKey))
 	if err != nil {

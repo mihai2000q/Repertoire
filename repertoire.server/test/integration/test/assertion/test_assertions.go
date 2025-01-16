@@ -22,6 +22,8 @@ func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 func Token(t *testing.T, actual string, user model.User) {
 	env := utils.GetEnv()
 
+	expiresIn, _ := time.ParseDuration(env.JwtExpirationTime)
+
 	// get token
 	token, err := jwt.Parse(actual, func(t *jwt.Token) (interface{}, error) {
 		return []byte(env.JwtSecretKey), nil
@@ -49,7 +51,7 @@ func Token(t *testing.T, actual string, user model.User) {
 	assert.Equal(t, env.JwtAudience, aud[0])
 	assert.Equal(t, env.JwtIssuer, iss)
 	assert.WithinDuration(t, time.Now().UTC(), iat.Time, 10*time.Second)
-	assert.WithinDuration(t, time.Now().Add(time.Hour).UTC(), exp.Time, 10*time.Second)
+	assert.WithinDuration(t, time.Now().Add(expiresIn).UTC(), exp.Time, 10*time.Second)
 }
 
 // models

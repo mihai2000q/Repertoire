@@ -87,18 +87,45 @@ func TestJwtService_Authorize_WhenTokenIsValid_ShouldNotReturnAnyError(t *testin
 	assert.Nil(t, errCode)
 }
 
-func TestJwtService_CreateToken_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
+func TestJwtService_CreateToken_WhenItFails_ShouldReturnInternalError(t *testing.T) {
 	// given
 	env := internal.Env{
-		JwtSecretKey: "This is a secret key that is used to encrypt the token",
-		JwtIssuer:    "Repertoire",
-		JwtAudience:  "Repertoire",
+		JwtSecretKey:      "This is a secret key that is used to encrypt the token",
+		JwtIssuer:         "Repertoire",
+		JwtAudience:       "Repertoire",
+		JwtExpirationTime: "something",
 	}
 	_uut := service.NewJwtService(env)
 
 	user := model.User{
 		ID: uuid.New(),
 	}
+
+	// when
+	tokenString, errCode := _uut.CreateToken(user)
+
+	// then
+	assert.Empty(t, tokenString)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Error(t, errCode.Error)
+}
+
+func TestJwtService_CreateToken_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
+	// given
+	env := internal.Env{
+		JwtSecretKey:      "This is a secret key that is used to encrypt the token",
+		JwtIssuer:         "Repertoire",
+		JwtAudience:       "Repertoire",
+		JwtExpirationTime: "1h",
+	}
+	_uut := service.NewJwtService(env)
+
+	user := model.User{
+		ID: uuid.New(),
+	}
+
+	expiresIn, _ := time.ParseDuration(env.JwtExpirationTime)
 
 	// when
 	tokenString, errCode := _uut.CreateToken(user)
@@ -132,7 +159,7 @@ func TestJwtService_CreateToken_WhenSuccessful_ShouldReturnNewToken(t *testing.T
 	assert.Equal(t, env.JwtAudience, aud[0])
 	assert.Equal(t, env.JwtIssuer, iss)
 	assert.WithinDuration(t, time.Now().UTC(), iat.Time, 10*time.Second)
-	assert.WithinDuration(t, time.Now().Add(time.Hour).UTC(), exp.Time, 10*time.Second)
+	assert.WithinDuration(t, time.Now().Add(expiresIn).UTC(), exp.Time, 10*time.Second)
 }
 
 func TestJwtService_Validate_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t *testing.T) {
