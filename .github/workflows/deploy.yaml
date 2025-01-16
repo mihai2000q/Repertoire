@@ -20,17 +20,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Extract version from README
-      run: |
-        VERSION=$(awk -F': ' '/Version:/ {print $2}' README.md)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
     - name: Build and Publish Docker Image
       uses: docker/build-push-action@v6
       with:
         context: repertoire.server/
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-server:${{ env.VERSION }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-server:latest
         build-args: SERVER_PORT=8000
 
   deploy-storage:
@@ -46,15 +41,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Extract version from README
-      run: |
-        VERSION=$(awk -F': ' '/Version:/ {print $2}' README.md)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
     - name: Build and Publish Docker Image
       uses: docker/build-push-action@v6
       with:
         context: repertoire.storage/
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-storage:${{ env.VERSION }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-storage:latest
         build-args: SERVER_PORT=8020
