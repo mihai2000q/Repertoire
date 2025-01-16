@@ -7,21 +7,24 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"repertoire/config"
+	"os"
+	"repertoire/server/internal"
 )
 
-func NewServer(lc fx.Lifecycle, handler *RequestHandler, env config.Env) *http.Server {
+func NewServer(lc fx.Lifecycle, handler *RequestHandler, env internal.Env) *http.Server {
+	address := ""
+	if os.Getenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH") == "" {
+		address = fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort)
+	}
+
 	server := &http.Server{
-		Addr:    fmt.Sprintf("localhost:%s", env.ApplicationPort),
+		Addr:    address,
 		Handler: handler.Gin,
 	}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			return startServer(server)
-		},
-		OnStop: func(ctx context.Context) error {
-			return server.Shutdown(ctx)
 		},
 	})
 

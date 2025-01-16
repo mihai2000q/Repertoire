@@ -1,0 +1,50 @@
+name: UI 📈
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    name: Typecheck ⌨️
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.18.0'
+
+    - name: Install Dependencies
+      working-directory: repertoire.ui/
+      run: npm ci
+
+    - name: Typecheck
+      working-directory: repertoire.ui/
+      run: npm run typecheck
+
+  unit-testing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    name: Unit Testing 🧪
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.18.0'
+
+    - name: Install Dependencies
+      working-directory: repertoire.ui/
+      run: npm ci
+
+    - name: Unit Testing
+      working-directory: repertoire.ui/
+      run: npm run test

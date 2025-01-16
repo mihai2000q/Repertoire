@@ -2,17 +2,35 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"repertoire/server/api/middleware"
 )
 
 type RequestHandler struct {
-	Gin        *gin.Engine
-	BaseRouter *gin.RouterGroup
+	Gin           *gin.Engine
+	PublicRouter  *gin.RouterGroup
+	PrivateRouter *gin.RouterGroup
 }
 
-func NewRequestHandler() *RequestHandler {
-	engine := gin.Default()
+func NewRequestHandler(
+	jwtAuthMiddleware middleware.JWTAuthMiddleware,
+	corsMiddleware middleware.CorsMiddleware,
+	errorHandlerMiddleware middleware.ErrorHandlerMiddleware,
+) *RequestHandler {
+	engine := gin.New()
+	engine.Use(gin.Logger())
+	engine.Use(gin.Recovery())
+	engine.Use(corsMiddleware.Handler())
+	engine.Use(errorHandlerMiddleware.Handler())
+
+	publicRouter := engine.Group("/api")
+
+	var privateRouter = &gin.RouterGroup{}
+	*privateRouter = *publicRouter
+	privateRouter.Use(jwtAuthMiddleware.Handler())
+
 	return &RequestHandler{
-		Gin:        engine,
-		BaseRouter: engine.Group("/api"),
+		Gin:           engine,
+		PublicRouter:  publicRouter,
+		PrivateRouter: privateRouter,
 	}
 }

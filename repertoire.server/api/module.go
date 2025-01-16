@@ -1,28 +1,50 @@
 package api
 
 import (
-	"go.uber.org/fx"
 	"net/http"
-	"repertoire/api/handler"
-	"repertoire/api/router"
-	"repertoire/api/routes"
-	"repertoire/api/server"
+	"repertoire/server/api/handler"
+	"repertoire/server/api/middleware"
+	"repertoire/server/api/router"
+	"repertoire/server/api/routes"
+	"repertoire/server/api/server"
+	"repertoire/server/api/validation"
+
+	"go.uber.org/fx"
+)
+
+var middlewares = fx.Options(
+	fx.Provide(middleware.NewCorsMiddleware),
+	fx.Provide(middleware.NewErrorHandlerMiddleware),
+	fx.Provide(middleware.NewJWTAuthMiddleware),
 )
 
 var handlers = fx.Options(
+	fx.Provide(handler.NewAlbumHandler),
+	fx.Provide(handler.NewArtistHandler),
+	fx.Provide(handler.NewAuthHandler),
+	fx.Provide(handler.NewPlaylistHandler),
+	fx.Provide(handler.NewSongHandler),
 	fx.Provide(handler.NewUserHandler),
 )
 
 var routers = fx.Options(
+	fx.Provide(router.NewAlbumRouter),
+	fx.Provide(router.NewArtistRouter),
+	fx.Provide(router.NewAuthRouter),
+	fx.Provide(router.NewPlaylistRouter),
+	fx.Provide(router.NewSongRouter),
 	fx.Provide(router.NewUserRouter),
 )
 
 var Module = fx.Options(
+	fx.Provide(validation.NewValidator),
+	middlewares,
 	fx.Provide(server.NewRequestHandler),
 	handlers,
 	routers,
 	fx.Provide(routes.NewRoutes),
 	fx.Provide(server.NewServer),
+	fx.Invoke(func(*validation.Validator) {}),
 	fx.Invoke(func(*routes.Routes) {}),
 	fx.Invoke(func(*http.Server) {}),
 )

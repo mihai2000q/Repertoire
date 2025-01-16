@@ -1,32 +1,32 @@
 package router
 
 import (
-	"repertoire/api/handler"
-	"repertoire/api/server"
+	"repertoire/server/api/handler"
+	"repertoire/server/api/server"
 )
 
 type UserRouter struct {
-	// logger      server.Logger
 	requestHandler *server.RequestHandler
 	handler        *handler.UserHandler
 }
 
-func (u UserRouter) SetupRoutes() {
-	// u.logger.Debug("Setting up user routes")
-	api := u.requestHandler.BaseRouter.Group("/users")
+func (u UserRouter) RegisterRoutes() {
+	api := u.requestHandler.PrivateRouter.Group("/users")
 	{
-		api.GET("/", u.handler.GetUserByEmail)
-		api.GET("/test", u.handler.Test)
+		api.GET("/current", u.handler.GetCurrentUser)
+		api.GET("/:id", u.handler.Get)
+		api.PUT("", u.handler.Update)
+		api.DELETE("", u.handler.Delete)
+		api.PUT("/pictures", u.handler.SaveProfilePicture)
+		api.DELETE("/pictures", u.handler.DeleteProfilePicture)
 	}
 }
 
 func NewUserRouter(
-	//logger server.Logger,
 	requestHandler *server.RequestHandler,
 	handler *handler.UserHandler,
 ) UserRouter {
 	return UserRouter{
-		//logger: 		logger,
 		handler:        handler,
 		requestHandler: requestHandler,
 	}

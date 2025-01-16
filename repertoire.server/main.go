@@ -2,15 +2,15 @@ package main
 
 import (
 	"go.uber.org/fx"
-	"repertoire/api"
-	"repertoire/config"
-	"repertoire/data"
-	"repertoire/domain"
+	"repertoire/server/api"
+	"repertoire/server/data"
+	"repertoire/server/domain"
+	"repertoire/server/internal"
 )
 
 func main() {
 	fx.New(
-		fx.Provide(config.NewEnv),
+		internal.Module,
 		data.Module,
 		domain.Module,
 		api.Module,

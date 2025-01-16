@@ -1,0 +1,63 @@
+name: Server 🤖
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    name: Build 🔨
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.1'
+
+    - name: Build
+      working-directory: repertoire.server/
+      run: go build -v ./...
+
+  unit-testing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    name: Unit Testing 🧪
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.1'
+
+    - name: Test
+      working-directory: repertoire.server/test/unit/
+      run: go test -v ./...
+
+  integration-testing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    name: Integration Testing 🧪
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.1'
+
+    - name: Setup Environment
+      working-directory: repertoire.server/
+      run: cp .env.dev .env
+
+    - name: Test
+      working-directory: repertoire.server/test/integration/
+      run: go test -v ./...

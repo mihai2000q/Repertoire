@@ -1,25 +1,47 @@
 package repository
 
 import (
-	"repertoire/data/database"
-	"repertoire/models"
+	"gorm.io/gorm/clause"
+	"repertoire/server/data/database"
+	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
-type UserRepository struct {
+type UserRepository interface {
+	Get(user *model.User, id uuid.UUID) error
+	GetByEmail(user *model.User, email string) error
+	Create(user *model.User) error
+	Update(user *model.User) error
+	Delete(id uuid.UUID) error
+}
+
+type userRepository struct {
 	client database.Client
 }
 
 func NewUserRepository(client database.Client) UserRepository {
-	return UserRepository{
+	return userRepository{
 		client: client,
 	}
 }
 
-func (u UserRepository) GetByEmail(user *models.User, email string) error {
-	// return u.client.DB.First(&user, "email = ?", email).Error
-	return u.client.DB.Find(&user, models.User{Email: email}).Error
+func (u userRepository) Get(user *model.User, id uuid.UUID) error {
+	return u.client.DB.Find(&user, model.User{ID: id}).Error
 }
 
-func (u UserRepository) Create(user *models.User) error {
+func (u userRepository) GetByEmail(user *model.User, email string) error {
+	return u.client.DB.Find(&user, model.User{Email: email}).Error
+}
+
+func (u userRepository) Create(user *model.User) error {
 	return u.client.DB.Create(&user).Error
+}
+
+func (u userRepository) Update(user *model.User) error {
+	return u.client.DB.Save(&user).Error
+}
+
+func (u userRepository) Delete(id uuid.UUID) error {
+	return u.client.DB.Select(clause.Associations).Delete(&model.User{ID: id}).Error
 }
