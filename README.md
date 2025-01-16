@@ -36,8 +36,6 @@ Its features include adding songs, organized in albums and artists.
 It is also possible to add those songs on playlists.
 Songs can be measured how rehearsed they have been, whether they have been recorded or not and other features.
 
-Version: 0.9.0
-
 ## Get Started
 
 To get started on the application, you need the server, the storage, the UI and one of the platforms up and running.
