@@ -21,9 +21,10 @@ type Env struct {
 	LogOutput string
 	LogLevel  string
 
-	JwtIssuer    string
-	JwtAudience  string
-	JwtSecretKey string
+	JwtIssuer         string
+	JwtAudience       string
+	JwtSecretKey      string
+	JwtExpirationTime string
 
 	AuthStorageUrl      string
 	StorageUrl          string
@@ -56,9 +57,10 @@ func NewEnv() Env {
 		LogOutput: os.Getenv("LOG_OUTPUT"),
 		LogLevel:  os.Getenv("LOG_LEVEL"),
 
-		JwtIssuer:    os.Getenv("JWT_ISSUER"),
-		JwtAudience:  os.Getenv("JWT_AUDIENCE"),
-		JwtSecretKey: os.Getenv("JWT_SECRET_KEY"),
+		JwtIssuer:         os.Getenv("JWT_ISSUER"),
+		JwtAudience:       os.Getenv("JWT_AUDIENCE"),
+		JwtSecretKey:      os.Getenv("JWT_SECRET_KEY"),
+		JwtExpirationTime: os.Getenv("JWT_EXPIRATION_TIME"),
 
 		AuthStorageUrl:      os.Getenv("AUTH_STORAGE_URL"),
 		StorageUrl:          os.Getenv("UPLOAD_STORAGE_URL"),
