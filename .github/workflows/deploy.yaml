@@ -3,6 +3,8 @@ name: Deploy 🚀
 on:
   push:
     branches: [ "master" ]
+  pull_request:
+    branches: [ "develop" ]
 
 jobs:
   deploy-server:
@@ -29,7 +31,7 @@ jobs:
         context: repertoire.server/
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-server:$VERSION
-        build-args: ['SERVER_PORT=8000']
+        build-args: [ "SERVER_PORT=8000" ]
 
   deploy-storage:
     runs-on: ubuntu-latest
@@ -55,4 +57,4 @@ jobs:
         context: repertoire.storage/
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-storage:$VERSION
-        build-args: ['SERVER_PORT=8020']
+        build-args: [ "SERVER_PORT=8020" ]
