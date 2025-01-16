@@ -24,9 +24,9 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build and Publish Docker Image
-      working-directory: repertoire.server/
       uses: docker/build-push-action@v6
       with:
+        context: repertoire.server/
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-server:$VERSION
         build-args: 
@@ -51,9 +51,9 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build and Publish Docker Image
-      working-directory: repertoire.storage/
       uses: docker/build-push-action@v6
       with:
+        context: repertoire.storage/
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-storage:$VERSION
         build-args: 
