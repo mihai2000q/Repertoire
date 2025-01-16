@@ -1,24 +1,31 @@
-appId: com.electron.app
-productName: repertoire
+appId: com.electron.repertoire
+productName: Repertoire
 directories:
   buildResources: build
 files:
   - '!**/.vscode/*'
+  - '!node_modules/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
 win:
+  target: nsis
   executableName: repertoire
+  icon: icon.ico
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
+  oneClick: false
+  perMachine: true
   createDesktopShortcut: always
+  allowToChangeInstallationDirectory: true
 mac:
+  target: dmg
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
     - NSCameraUsageDescription: Application requests access to the device's camera.
