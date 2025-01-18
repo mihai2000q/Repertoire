@@ -52,6 +52,8 @@ jobs:
   deploy-desktop:
     runs-on: windows-latest
     name: Desktop 🖥️
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -64,7 +66,8 @@ jobs:
       - name: Extract version from package.json
         working-directory: repertoire.desktop/
         run: |
-          echo "VERSION=$(awk -F '[:", ]+' '/"version"/ {print $3}' package.json)" >> $GITHUB_ENV
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          echo "VERSION=$version" >> $env:GITHUB_ENV
 
       - name: Setup Environment Variables
         working-directory: repertoire.desktop/
@@ -87,11 +90,9 @@ jobs:
       - name: Create Release and Upload App on Assets
         uses: ncipollo/release-action@v1
         with:
-          tag: v$VERSION
-          name: Release v$VERSION
-          body: |
-            Release notes for the new version of Repertoire:
+          artifacts: "repertoire.desktop/dist/*.exe"
+          body: "Release notes for the new version of Repertoire"
           draft: false
+          name: Release v${{ env.VERSION }}
           prerelease: false
-          files: |
-            repertoire.desktop/dist/*.exe
+          tag: v${{ env.VERSION }}
