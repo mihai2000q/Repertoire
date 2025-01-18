@@ -44,7 +44,7 @@ function AddExistingArtistSongsModal({
     pageSize: 20,
     orderBy: ['title asc'],
     searchBy: [
-      'artist_id IS NULL',
+      'songs.artist_id IS NULL',
       ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
     ]
   })
