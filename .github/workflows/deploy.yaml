@@ -3,8 +3,6 @@ name: Deploy 🚀
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "develop" ]
 
 jobs:
   deploy-server:
