@@ -71,9 +71,10 @@ jobs:
 
       - name: Setup Environment Variables
         working-directory: repertoire.desktop/
-        run: cp .env.prod .env
-        env:
-          VITE_BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        shell: pwsh
+        run: | 
+          Copy-Item .env.prod .env
+          (Get-Content .env) -replace '^VITE_BACKEND_URL=.*', "VITE_BACKEND_URL=${{ secrets.BACKEND_URL }}" | Set-Content .env
 
       - name: Install UI Dependencies
         working-directory: repertoire.ui/
