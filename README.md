@@ -26,6 +26,8 @@
     * [Git Branches](#git-branches)
     * [Git Commits](#git-commits)
   * [Deployment](#deployment)
+    * [Dockerized Backend](#dockerized-backend)
+    * [Desktop](#desktop-1)
   * [License](#license)
 
 ## Abstract
@@ -157,6 +159,8 @@ However, if multiple layers or projects are affected, try submitting more smalle
 
 ## Deployment
 
+### Dockerized Backend
+
 The deployment is fairly simple. 
 As soon as a pull request from *develop* is pushed onto *master* a CI/CD pipeline will be triggered.
 This Github Action will build and push the following docker images to **Docker Hub**:
@@ -164,7 +168,12 @@ This Github Action will build and push the following docker images to **Docker H
 - Server
 - Storage
 
-Afterwards, the cloud server detects a new latest docker image and pulls them.
+Afterwards, the cloud server detects the latest docker images and pulls them.
+
+### Desktop
+
+Another CI/CD pipeline is in charge of deploying a new windows installer of the application.
+It will be included in a new Release on **GitHub**.
 
 ## License
 
