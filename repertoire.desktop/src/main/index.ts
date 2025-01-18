@@ -16,6 +16,7 @@ function createWindow(): void {
     titleBarStyle: 'hidden',
   })
   mainWindow.removeMenu()
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
