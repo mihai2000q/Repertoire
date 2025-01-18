@@ -17,13 +17,13 @@ win:
   executableName: repertoire
   icon: icon.ico
 nsis:
+  allowToChangeInstallationDirectory: true
   artifactName: ${name}-${version}-setup.${ext}
-  shortcutName: ${productName}
-  uninstallDisplayName: ${productName}
+  createDesktopShortcut: true
   oneClick: false
   perMachine: true
-  createDesktopShortcut: always
-  allowToChangeInstallationDirectory: true
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}-${version}
 mac:
   target: dmg
   entitlementsInherit: build/entitlements.mac.plist

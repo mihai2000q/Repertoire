@@ -23,7 +23,6 @@ WORKDIR /
 
 # Copy our static executable and environment file
 COPY --from=builder /go/main /go/main
-COPY --from=builder /app/.env /go/.env
 
 # Expose port
 ARG SERVER_PORT

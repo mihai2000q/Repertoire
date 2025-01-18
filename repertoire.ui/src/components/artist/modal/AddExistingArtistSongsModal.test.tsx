@@ -152,7 +152,7 @@ describe('Add Existing Artist Songs Modal', () => {
     expect(capturedSearchBy.get('pageSize')).toBe('20')
     expect(capturedSearchBy.get('orderBy')).match(/title ASC/i)
     expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
-    expect(capturedSearchBy.getAll('searchBy')[0]).match(/artist_id IS NULL/i)
+    expect(capturedSearchBy.getAll('searchBy')[0]).match(/songs.artist_id IS NULL/i)
 
     // search
     const searchValue = 'Song 1'

@@ -11,7 +11,7 @@
 ![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
 
 ![Version](https://img.shields.io/badge/version-0.9.0-1098ad)
-
+ 
 * [Repertoire](#repertoire)
   * [Abstract](#abstract)
   * [Get Started](#get-started)
@@ -26,6 +26,8 @@
     * [Git Branches](#git-branches)
     * [Git Commits](#git-commits)
   * [Deployment](#deployment)
+    * [Dockerized Backend](#dockerized-backend)
+    * [Desktop](#desktop-1)
   * [License](#license)
 
 ## Abstract
@@ -35,8 +37,6 @@ It is an application intended for beginner musicians to organize their '_reperto
 Its features include adding songs, organized in albums and artists.
 It is also possible to add those songs on playlists.
 Songs can be measured how rehearsed they have been, whether they have been recorded or not and other features.
-
-Version: 0.9.0
 
 ## Get Started
 
@@ -159,6 +159,8 @@ However, if multiple layers or projects are affected, try submitting more smalle
 
 ## Deployment
 
+### Dockerized Backend
+
 The deployment is fairly simple. 
 As soon as a pull request from *develop* is pushed onto *master* a CI/CD pipeline will be triggered.
 This Github Action will build and push the following docker images to **Docker Hub**:
@@ -166,7 +168,12 @@ This Github Action will build and push the following docker images to **Docker H
 - Server
 - Storage
 
-Afterwards, the cloud server detects a new latest docker image and pulls them.
+Afterwards, the cloud server detects the latest docker images and pulls them.
+
+### Desktop
+
+Another CI/CD pipeline is in charge of deploying a new windows installer of the application.
+It will be included in a new Release on **GitHub**.
 
 ## License
 
