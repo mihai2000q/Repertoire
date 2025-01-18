@@ -20,6 +20,10 @@ jobs:
       with:
         node-version: '20.18.0'
 
+    - name: Install UI Dependencies
+      working-directory: repertoire.ui/
+      run: npm ci
+
     - name: Install Dependencies
       working-directory: repertoire.desktop/
       run: npm ci
