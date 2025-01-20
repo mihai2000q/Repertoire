@@ -38,6 +38,6 @@ describe('Song Description Card', () => {
     reduxRender(<SongDescriptionCard song={song} />)
 
     await user.click(screen.getByRole('button', { name: 'edit-panel' }))
-    expect(screen.getByRole('dialog', { name: /edit song description/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /edit song description/i })).toBeInTheDocument()
   })
 })

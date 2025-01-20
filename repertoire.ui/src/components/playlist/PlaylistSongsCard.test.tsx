@@ -92,7 +92,7 @@ describe('Playlist Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add songs/i }))
 
-      expect(screen.getByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
     })
   })
 
@@ -105,7 +105,7 @@ describe('Playlist Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-song-card'))
 
-    expect(screen.getByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
   })
 
   it("should send 'remove songs from playlist request' when clicking on the more menu of a song card", async () => {

@@ -200,7 +200,7 @@ describe('Artist Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
 
-      expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
     })
 
     it('should open add new song modal', async () => {
@@ -220,7 +220,7 @@ describe('Artist Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
 
-      expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
     })
   })
 
@@ -240,7 +240,7 @@ describe('Artist Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-songs-card'))
 
-    expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
   })
 
   it('should open Add new song modal, when clicking new song card and the artist is unknown', async () => {
@@ -259,7 +259,7 @@ describe('Artist Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-songs-card'))
 
-    expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it("should send 'remove songs from artist request' when clicking on the more menu of a song card", async () => {

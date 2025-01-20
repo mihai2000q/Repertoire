@@ -71,7 +71,7 @@ describe('Artist Album Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /remove/i }))
 
-      expect(screen.getByRole('dialog', { name: /remove album/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /remove album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove album/i })).toBeInTheDocument()
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 

@@ -127,7 +127,7 @@ describe('Album Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
 
-      expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
     })
   })
 
@@ -142,7 +142,7 @@ describe('Album Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-song-card'))
 
-    expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
   })
 
   it('should display new song card when the album is unknown and open Add new song modal', async () => {
@@ -154,7 +154,7 @@ describe('Album Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-song-card'))
 
-    expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it("should send 'remove songs from album request' when clicking on the more menu of a song card", async () => {
