@@ -71,7 +71,7 @@ describe('Topbar', () => {
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /account/i }))
 
-      expect(screen.getByRole('dialog', { name: /account/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /account/i })).toBeInTheDocument()
     })
 
     it('should sign out when clicking on sign out', async () => {

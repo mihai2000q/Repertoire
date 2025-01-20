@@ -49,7 +49,7 @@ describe('Album Song Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /remove/i }))
 
-      expect(screen.getByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 

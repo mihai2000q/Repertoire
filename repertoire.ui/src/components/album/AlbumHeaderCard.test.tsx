@@ -139,7 +139,7 @@ describe('Album Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /info/i }))
 
-      expect(screen.getByRole('dialog', { name: /album info/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /album info/i })).toBeInTheDocument()
     })
 
     it('should display edit header modal', async () => {
@@ -152,7 +152,7 @@ describe('Album Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-      expect(screen.getByRole('dialog', { name: /edit album header/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /edit album header/i })).toBeInTheDocument()
     })
 
     it('should display warning modal and delete album', async () => {
@@ -173,7 +173,7 @@ describe('Album Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
@@ -191,7 +191,7 @@ describe('Album Header Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
-    expect(screen.getByRole('dialog', { name: /edit album header/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /edit album header/i })).toBeInTheDocument()
   })
 
   it('should open artist drawer on artist click', async () => {

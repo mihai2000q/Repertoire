@@ -227,7 +227,7 @@ describe('Song Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete song/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 

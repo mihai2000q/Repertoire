@@ -195,7 +195,7 @@ describe('Artist Albums Card', () => {
       await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing albums/i }))
 
-      expect(screen.getByRole('dialog', { name: /add existing albums/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add existing albums/i })).toBeInTheDocument()
     })
 
     it('should open add new album modal', async () => {
@@ -215,7 +215,7 @@ describe('Artist Albums Card', () => {
       await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new album/i }))
 
-      expect(screen.getByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
     })
   })
 
@@ -235,7 +235,7 @@ describe('Artist Albums Card', () => {
 
     await user.click(screen.getByLabelText('new-albums-card'))
 
-    expect(screen.getByRole('dialog', { name: /add existing albums/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add existing albums/i })).toBeInTheDocument()
   })
 
   it('should open Add new album modal, when clicking new album card and the artist is unknown', async () => {
@@ -254,7 +254,7 @@ describe('Artist Albums Card', () => {
 
     await user.click(screen.getByLabelText('new-albums-card'))
 
-    expect(screen.getByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
   })
 
   it("should send 'remove album from artist request' when clicking on the more menu of a album card", async () => {
