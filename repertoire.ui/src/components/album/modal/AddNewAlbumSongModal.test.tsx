@@ -5,8 +5,17 @@ import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { CreateSongRequest } from '../../../types/requests/SongRequests.ts'
+import Album from "../../../types/models/Album.ts";
 
 describe('Add New Album Song Modal', () => {
+  const album: Album = {
+    id: '1',
+    title: '',
+    songs: [],
+    createdAt: '',
+    updatedAt: ''
+  }
+
   const server = setupServer()
 
   beforeAll(() => server.listen())
@@ -16,7 +25,7 @@ describe('Add New Album Song Modal', () => {
   afterAll(() => server.close())
 
   it('should render', () => {
-    reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} albumId={''} />)
+    reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={undefined} />)
 
     expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
@@ -25,10 +34,32 @@ describe('Add New Album Song Modal', () => {
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
+  it('should render and display info when the song will inherit values', () => {
+    const localAlbum: Album = {
+      ...album,
+      releaseDate: '2024-12-10',
+      imageUrl: 'something.png',
+      artist: {
+        id: '',
+        name: '',
+        albums: [],
+        songs: [],
+        createdAt: '',
+        updatedAt: ''
+      }
+    }
+
+    reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={localAlbum} />)
+
+    expect(screen.getByText(/if no image is uploaded, it will be inherited/i)).toBeInTheDocument()
+    expect(screen.getByText(/new song will inherit/i)).toBeInTheDocument()
+    expect(screen.getByText(/release date/i)).toBeInTheDocument()
+    expect(screen.getByText(/artist/i)).toBeInTheDocument()
+  })
+
   it('should send only create request when no image is uploaded', async () => {
     const user = userEvent.setup()
 
-    const albumId = 'some-album-id'
     const newTitle = 'New Song'
 
     const onClose = vitest.fn()
@@ -42,7 +73,7 @@ describe('Add New Album Song Modal', () => {
     )
 
     reduxRender(
-      withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} albumId={albumId} />)
+      withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={album} />)
     )
 
     await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
@@ -52,7 +83,7 @@ describe('Add New Album Song Modal', () => {
       expect(capturedRequest).toStrictEqual({
         title: newTitle,
         description: '',
-        albumId: albumId
+        albumId: album.id
       })
     )
     expect(onClose).toHaveBeenCalledOnce()
@@ -64,7 +95,6 @@ describe('Add New Album Song Modal', () => {
   it('should send create request and save image request when the image is uploaded', async () => {
     const user = userEvent.setup()
 
-    const albumId = 'some-album-id'
     const newTitle = 'New Song'
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
 
@@ -86,7 +116,7 @@ describe('Add New Album Song Modal', () => {
     )
 
     reduxRender(
-      withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} albumId={albumId} />)
+      withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={album} />)
     )
 
     await user.upload(screen.getByTestId('image-dropzone-input'), newImage)
@@ -97,7 +127,7 @@ describe('Add New Album Song Modal', () => {
       expect(capturedCreateRequest).toStrictEqual({
         title: newTitle,
         description: '',
-        albumId: albumId
+        albumId: album.id
       })
     )
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
@@ -117,7 +147,7 @@ describe('Add New Album Song Modal', () => {
 
     const onClose = vitest.fn()
 
-    reduxRender(<AddNewAlbumSongModal opened={true} onClose={onClose} albumId={''} />)
+    reduxRender(<AddNewAlbumSongModal opened={true} onClose={onClose} album={undefined} />)
 
     await user.upload(screen.getByTestId('image-dropzone-input'), newImage)
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
@@ -131,7 +161,7 @@ describe('Add New Album Song Modal', () => {
   it('should validate title', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} albumId={''} />)
+    reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={undefined} />)
 
     const title = screen.getByRole('textbox', { name: /title/i })
 
