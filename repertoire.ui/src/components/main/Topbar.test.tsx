@@ -20,7 +20,9 @@ describe('Topbar', () => {
   const user: User = {
     id: '1',
     email: 'Gigi@yahoo.com',
-    name: 'Gigi'
+    name: 'Gigi',
+    createdAt: '',
+    updatedAt: ''
   }
 
   const handlers = [
