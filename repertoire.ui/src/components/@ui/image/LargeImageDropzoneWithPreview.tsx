@@ -17,12 +17,16 @@ interface ImageDropzoneWithPreviewProps {
   image: FileWithPath | string | null
   setImage: Dispatch<SetStateAction<FileWithPath | string | null>>
   defaultValue?: string | null
+  label?: string
+  ariaLabel?: string
 }
 
 function LargeImageDropzoneWithPreview({
   image,
   setImage,
-  defaultValue
+  defaultValue,
+  label = 'Image',
+  ariaLabel = 'image'
 }: ImageDropzoneWithPreviewProps) {
   function handleRemoveImage() {
     setImage(null)
@@ -39,7 +43,7 @@ function LargeImageDropzoneWithPreview({
           <Image
             src={typeof image === 'string' ? image : URL.createObjectURL(image)}
             radius={'md'}
-            alt={'image-preview'}
+            alt={`${ariaLabel}-preview`}
           />
         </AspectRatio>
 
@@ -48,15 +52,15 @@ function LargeImageDropzoneWithPreview({
             <Tooltip
               label={
                 image === defaultValue
-                  ? 'Original Image can be restored after re-upload'
-                  : 'Reset Image'
+                  ? `Original ${label} can be restored after re-upload`
+                  : `Reset ${label}`
               }
               openDelay={300}
               position={'right'}
             >
               <ActionIcon
                 variant={'subtle'}
-                aria-label={'reset-image'}
+                aria-label={`reset-${ariaLabel}`}
                 size={'lg'}
                 disabled={image === defaultValue}
                 onClick={handleResetImage}
@@ -69,16 +73,16 @@ function LargeImageDropzoneWithPreview({
           <FileButton
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            inputProps={{ 'data-testid': 'upload-image-input' }}
+            inputProps={{ 'data-testid': `upload-${ariaLabel}-input` }}
             onChange={setImage}
             accept={IMAGE_MIME_TYPE.join(',')}
           >
             {(props) => (
-              <Tooltip label={'Upload another image'} openDelay={300} position={'right'}>
+              <Tooltip label={`Upload another ${label}`} openDelay={300} position={'right'}>
                 <ActionIcon
                   c={'dark'}
                   variant={'subtle'}
-                  aria-label={'upload-image'}
+                  aria-label={`upload-${ariaLabel}`}
                   size={'lg'}
                   {...props}
                 >
@@ -88,11 +92,11 @@ function LargeImageDropzoneWithPreview({
             )}
           </FileButton>
 
-          <Tooltip label={'Remove Image'} openDelay={300} position={'right'}>
+          <Tooltip label={`Remove ${label}`} openDelay={300} position={'right'}>
             <ActionIcon
               variant={'subtle'}
               color={'red.6'}
-              aria-label={'remove-image'}
+              aria-label={`remove-${ariaLabel}`}
               size={'lg'}
               sx={(theme) => ({
                 '&:hover': { backgroundColor: alpha(theme.colors.red[2], 0.7) }
@@ -109,10 +113,10 @@ function LargeImageDropzoneWithPreview({
 
   return (
     <Dropzone
-      aria-label={'image-dropzone'}
+      aria-label={`${ariaLabel}-dropzone`}
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      inputProps={{ 'data-testid': 'image-dropzone-input' }}
+      inputProps={{ 'data-testid': `${ariaLabel}-dropzone-input` }}
       onDrop={(files) => setImage(files[0])}
       accept={IMAGE_MIME_TYPE}
       multiple={false}
@@ -149,7 +153,7 @@ function LargeImageDropzoneWithPreview({
         </Dropzone.Idle>
 
         <Text size="xl" inline>
-          Drag image here or click to select it
+          Drag {label} here or click to select it
         </Text>
       </Group>
     </Dropzone>
