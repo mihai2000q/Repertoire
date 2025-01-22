@@ -1,6 +1,7 @@
 import { createTheme, rem } from '@mantine/core'
 import { colors } from './colors'
 import { components } from './components'
+import classes from './active.module.css'
 
 export const theme = createTheme({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -13,6 +14,8 @@ export const theme = createTheme({
 
   defaultRadius: 'md',
   cursorType: 'pointer',
+
+  activeClassName: classes.active,
 
   autoContrast: true,
   luminanceThreshold: 0.5,
