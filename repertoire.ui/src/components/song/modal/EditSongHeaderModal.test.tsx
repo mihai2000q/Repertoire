@@ -183,7 +183,7 @@ describe('Edit Song Header Modal', () => {
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete image request when the image is first added', async () => {
+  it('should send edit request and delete image request', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
