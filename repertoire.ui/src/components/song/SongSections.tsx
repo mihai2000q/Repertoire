@@ -113,6 +113,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
               )}
             </Droppable>
           </DragDropContext>
+
           {internalSections.length === 0 && (
             <NewHorizontalCard
               ariaLabel={'add-new-song-section-card'}
@@ -121,6 +122,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
               Add New Song Section
             </NewHorizontalCard>
           )}
+
           <AddNewSongSection
             songId={songId}
             opened={openedAddSongSection}
