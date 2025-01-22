@@ -1,4 +1,13 @@
-import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
+import {
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
@@ -12,6 +21,7 @@ import {
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
+import dayjs from 'dayjs'
 
 interface AccountModalProps {
   opened: boolean
@@ -95,6 +105,18 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
             />
 
             <TextInput label="Email" disabled={true} defaultValue={user.email} />
+
+            <Group justify={'space-between'}>
+              <Text fz={'sm'} fw={500} c={'dimmed'} inline>
+                Created on <b>{dayjs(user.createdAt).format('DD MMM YYYY')}</b>
+              </Text>
+
+              {user.createdAt !== user.updatedAt && (
+                <Text fz={'sm'} fw={500} c={'dimmed'} inline>
+                  Last Modified on <b>{dayjs(user.updatedAt).format('DD MMM YYYY')}</b>
+                </Text>
+              )}
+            </Group>
 
             <Tooltip
               disabled={hasChanged}

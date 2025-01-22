@@ -7,6 +7,7 @@ import { http, HttpResponse } from 'msw'
 import AccountModal from './AccountModal.tsx'
 import User from '../../../types/models/User.ts'
 import { UpdateUserRequest } from '../../../types/requests/UserRequests.ts'
+import dayjs from "dayjs";
 
 describe('Account Modal', () => {
   const user: User = {
@@ -44,10 +45,27 @@ describe('Account Modal', () => {
     expect(screen.getByRole('textbox', { name: /email/i })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue(user.email)
 
+    expect(screen.getByText(/created on/i)).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(dayjs(user.createdAt).format('DD MMM YYYY')))).toBeInTheDocument()
+    expect(screen.getByText(/last modified on/i)).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(dayjs(user.updatedAt).format('DD MMM YYYY')))).toBeInTheDocument()
+
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
     await userEventDispatcher.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
+  })
+
+  it('should render', async () => {
+    const localUser = {
+      ...user,
+      updatedAt: user.createdAt
+    }
+
+    reduxRender(<AccountModal opened={true} onClose={() => {}} user={localUser} />)
+
+    expect(screen.getAllByText(new RegExp(dayjs(localUser.createdAt).format('DD MMM YYYY')))).toHaveLength(1)
+    expect(screen.queryByText(/last modified on/i)).not.toBeInTheDocument()
   })
 
   it('should send only edit request when the profile picture is unchanged', async () => {
