@@ -26,7 +26,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { signOut } from '../../state/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useWindowScroll } from '@mantine/hooks'
 import AccountModal from './modal/AccountModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
@@ -37,6 +37,7 @@ function Topbar(): ReactElement {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const isDesktop = useIsDesktop()
+  const [scrollPosition] = useWindowScroll()
 
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
@@ -57,7 +58,15 @@ function Topbar(): ReactElement {
   }
 
   return (
-    <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
+    <AppShell.Header
+      px={'md'}
+      withBorder={false}
+      top={'unset'}
+      style={(theme) => ({
+        transition: '0.35s',
+        ...(scrollPosition.y !== 0 && { boxShadow: theme.shadows.md })
+      })}
+    >
       <Group align={'center'} h={'100%'} gap={0}>
         <Autocomplete
           role={'searchbox'}
