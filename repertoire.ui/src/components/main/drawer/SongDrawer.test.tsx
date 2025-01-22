@@ -236,4 +236,26 @@ describe('Song Drawer', () => {
       expect(screen.getByText(`${song.title} deleted!`)).toBeInTheDocument()
     })
   })
+
+  it('should open youtube modal on youtube icon click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      youtubeLink: 'https://www.youtube.com/watch?v=123456789'
+    }
+
+    server.use(
+      getSong(localSong),
+      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    render()
+
+    await user.click(await screen.findByRole('button', { name: 'youtube' }))
+
+    expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
 })
