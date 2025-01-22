@@ -1,5 +1,5 @@
 import Album from '../../types/models/Album.ts'
-import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/core'
+import { ActionIcon, alpha, Avatar, Group, Menu, Space, Stack, Text } from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
@@ -52,8 +52,11 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
         px={'md'}
         py={'xs'}
         onClick={handleClick}
+        gap={0}
       >
         <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} alt={album.title} />
+
+        <Space ml={'md'} />
 
         <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
           <Text fw={500} truncate={'end'}>
