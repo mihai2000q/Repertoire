@@ -77,7 +77,7 @@ function AddNewSongModalSecondStep({
 
       <Group justify={'space-between'} align={'center'}>
         <NumberInput
-          flex={1}
+          flex={0.75}
           min={1}
           leftSection={<CustomIconMetronome size={20} />}
           label="Bpm"
