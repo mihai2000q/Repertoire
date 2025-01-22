@@ -146,12 +146,15 @@ function Topbar(): ReactElement {
                 sx={(theme) => ({
                   borderRadius: '16px',
                   cursor: 'pointer',
-                  transition: '0.175s',
+                  transition: '0.175s all, transform 200ms ease-in-out',
                   color: theme.colors.gray[7],
                   '&:hover': {
                     boxShadow: theme.shadows.sm,
                     color: theme.colors.gray[8],
                     backgroundColor: alpha(theme.colors.gray[1], 0.7)
+                  },
+                  '&:active': {
+                    transform: 'scale(0.85)'
                   }
                 })}
               >
