@@ -40,7 +40,7 @@ function AddNewSongModalFinalStep({ form, image, setImage, album }: AddNewSongMo
 
       {!image && album?.imageUrl && (
         <Group gap={6}>
-          <Box c={'cyan.8'} mt={3}>
+          <Box c={'primary.8'} mt={3}>
             <IconInfoCircleFilled size={15} />
           </Box>
 

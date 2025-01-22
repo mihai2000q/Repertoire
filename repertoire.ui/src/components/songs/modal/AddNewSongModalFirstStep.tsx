@@ -57,7 +57,7 @@ function AddNewSongModalFirstStep({
             {...form.getInputProps('artistName')}
           />
           {album && (
-            <Box c={'cyan.8'} mt={'lg'} ml={4}>
+            <Box c={'primary.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}

@@ -78,7 +78,7 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                 <Stack gap={0} mt={3}>
                   {!image && album?.imageUrl && (
                     <Group gap={4}>
-                      <Box c={'cyan.8'}>
+                      <Box c={'primary.8'}>
                         <IconInfoCircleFilled size={13} />
                       </Box>
 
@@ -89,7 +89,7 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                   )}
                   {inheritedValues.length > 0 && (
                     <Group gap={4} wrap={'nowrap'}>
-                      <Box c={'cyan.8'}>
+                      <Box c={'primary.8'}>
                         <IconInfoCircleFilled size={13} />
                       </Box>
 

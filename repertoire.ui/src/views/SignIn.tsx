@@ -57,7 +57,7 @@ function SignIn(): ReactElement {
         </Title>
         <Text c="dimmed" size="sm" ta="center" mt={5}>
           Do not have an account yet?{' '}
-          <Anchor c={'cyan.5'} size="sm" component={Link} to={'/sign-up'}>
+          <Anchor c={'primary.5'} size="sm" component={Link} to={'/sign-up'}>
             Create account
           </Anchor>
         </Text>
@@ -86,7 +86,7 @@ function SignIn(): ReactElement {
                 />
               </Stack>
               <Anchor
-                c={'cyan.5'}
+                c={'primary.5'}
                 component={Link}
                 to={'/forgot-pass'}
                 size="sm"

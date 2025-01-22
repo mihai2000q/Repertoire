@@ -74,12 +74,12 @@ function SongSection({
         transition: '0.25s',
         borderRadius: isDragging ? '16px' : '0px',
         border: isDragging
-          ? `1px solid ${alpha(theme.colors.cyan[9], 0.33)}`
+          ? `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
           : '1px solid transparent',
 
         '&:hover': {
           boxShadow: theme.shadows.xl,
-          backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+          backgroundColor: alpha(theme.colors.primary[0], 0.15)
         }
       })}
       ref={draggableProvided.innerRef}

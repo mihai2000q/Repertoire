@@ -46,7 +46,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
           transition: '0.3s',
           ...(isSelected && {
             boxShadow: theme.shadows.xl,
-            backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+            backgroundColor: alpha(theme.colors.primary[0], 0.15)
           })
         })}
         px={'md'}
