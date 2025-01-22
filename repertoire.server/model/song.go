@@ -134,4 +134,4 @@ const (
 
 var DefaultSongSectionConfidence uint = 0
 
-var DefaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}
+var DefaultSongSectionTypes = []string{"Intro", "Verse", "Pre-Chorus", "Chorus", "Interlude", "Bridge", "Breakdown", "Solo", "Riff", "Outro"}
