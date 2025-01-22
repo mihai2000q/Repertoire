@@ -66,7 +66,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
         />
 
         <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
-          <Group gap={4}>
+          <Group gap={'0px 4px'}>
             <Text fw={500} truncate={'end'}>
               {song.title}
             </Text>
@@ -80,6 +80,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
                   sx={{ '&:hover': { textDecoration: 'underline' } }}
                   style={{ cursor: 'pointer' }}
                   onClick={handleAlbumClick}
+                  inline
                 >
                   {song.album.title}
                 </Text>

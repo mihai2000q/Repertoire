@@ -77,7 +77,7 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
       <AddNewAlbumSongModal
         opened={openedAddNewSong}
         onClose={closeAddNewSong}
-        albumId={album?.id}
+        album={album}
       />
       <AddExistingAlbumSongsModal
         opened={openedAddExistingSongs}
