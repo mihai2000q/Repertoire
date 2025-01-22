@@ -40,6 +40,7 @@ import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts'
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
+import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -71,6 +72,7 @@ function SongDrawer() {
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
   function handleViewDetails() {
     onClose()
@@ -406,16 +408,15 @@ function SongDrawer() {
 
               {song.youtubeLink && (
                 <Tooltip label={'Open Youtube'}>
-                  <Anchor
-                    underline={'never'}
-                    href={song.youtubeLink}
-                    target="_blank"
-                    rel="noreferrer"
+                  <ActionIcon
+                    mb={3}
+                    variant={'transparent'}
+                    c={'red.7'}
+                    aria-label={'youtube'}
+                    onClick={openYoutube}
                   >
-                    <ActionIcon variant={'transparent'} c={'red.7'} aria-label={'youtube'}>
-                      <IconBrandYoutubeFilled size={25} />
-                    </ActionIcon>
-                  </Anchor>
+                    <IconBrandYoutubeFilled size={25} />
+                  </ActionIcon>
                 </Tooltip>
               )}
             </Tooltip.Group>
@@ -429,6 +430,12 @@ function SongDrawer() {
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+      />
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
       />
     </RightSideEntityDrawer>
   )

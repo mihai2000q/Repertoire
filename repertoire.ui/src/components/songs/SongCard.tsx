@@ -34,6 +34,7 @@ import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
+import YoutubeModal from "../@ui/modal/YoutubeModal.tsx";
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -73,14 +74,20 @@ function SongCard({ song }: SongCardProps) {
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
   function handleClick() {
     navigate(`/song/${song.id}`)
   }
 
-  function handleArtistClick(e: MouseEvent<HTMLParagraphElement>) {
+  function handleArtistClick(e: MouseEvent<HTMLElement>) {
     e.stopPropagation()
     dispatch(openArtistDrawer(song.artist.id))
+  }
+
+  function handleOpenYoutube(e: MouseEvent<HTMLElement>) {
+    e.stopPropagation()
+    openYoutube()
   }
 
   function handleDelete() {
@@ -189,13 +196,11 @@ function SongCard({ song }: SongCardProps) {
                     </LocalAnchor>
                   )}
                   {song.youtubeLink && (
-                    <LocalAnchor link={song.youtubeLink}>
-                      <LocalTooltip label={'This song has a youtube link'}>
-                        <Center c={'red.7'}>
-                          <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
-                        </Center>
-                      </LocalTooltip>
-                    </LocalAnchor>
+                    <LocalTooltip label={'This song has a youtube link'}>
+                      <Center c={'red.7'} onClick={handleOpenYoutube}>
+                        <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
+                      </Center>
+                    </LocalTooltip>
                   )}
                 </Tooltip.Group>
               </Group>
@@ -222,6 +227,12 @@ function SongCard({ song }: SongCardProps) {
           </Group>
         }
         onYes={handleDelete}
+      />
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
       />
     </Menu>
   )
