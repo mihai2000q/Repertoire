@@ -55,7 +55,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
           transition: '0.3s',
           '&:hover': {
             boxShadow: theme.shadows.xl,
-            backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+            backgroundColor: alpha(theme.colors.primary[0], 0.15)
           }
         })}
         px={'md'}

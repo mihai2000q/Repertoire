@@ -299,8 +299,8 @@ function SongDrawer() {
                     aria-label={'recorded-icon'}
                     sx={(theme) => ({
                       cursor: 'default',
-                      backgroundColor: theme.colors.cyan[5],
-                      '&:hover': { backgroundColor: theme.colors.cyan[5] },
+                      backgroundColor: theme.colors.primary[5],
+                      '&:hover': { backgroundColor: theme.colors.primary[5] },
                       '&:active': { transform: 'none' }
                     })}
                   >

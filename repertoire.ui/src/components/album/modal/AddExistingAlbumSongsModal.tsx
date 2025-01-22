@@ -105,7 +105,7 @@ function AddExistingAlbumSongsModal({
               Choose songs
             </Text>
             <Tooltip label={'All songs will inherit the artist of the album'}>
-              <Box c={'cyan.8'}>
+              <Box c={'primary.8'}>
                 <IconInfoCircleFilled aria-label={'info-icon'} size={15} />
               </Box>
             </Tooltip>
@@ -159,7 +159,7 @@ function AddExistingAlbumSongsModal({
                     transition: '0.3s',
                     '&:hover': {
                       boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
                     }
                   })}
                   w={'100%'}

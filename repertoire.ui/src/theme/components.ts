@@ -81,11 +81,11 @@ export const components = {
           cursor: 'pointer',
           transition: '0.3s',
           boxShadow: theme.shadows.xxl,
-          color: theme.colors.cyan[7],
+          color: theme.colors.primary[7],
           '&:hover': {
             boxShadow: theme.shadows.xxl_hover,
-            color: theme.colors.cyan[8],
-            backgroundColor: alpha(theme.colors.cyan[0], 0.2),
+            color: theme.colors.primary[8],
+            backgroundColor: alpha(theme.colors.primary[0], 0.2),
             transform: 'scale(1.1)'
           }
         }
@@ -160,12 +160,12 @@ export const components = {
           },
 
           '&:where([data-active])': {
-            backgroundColor: alpha(theme.colors.cyan[4], 0.1),
-            color: theme.colors.cyan[4],
+            backgroundColor: alpha(theme.colors.primary[4], 0.1),
+            color: theme.colors.primary[4],
 
             '&:hover': {
-              backgroundColor: alpha(theme.colors.cyan[4], 0.15),
-              color: theme.colors.cyan[5],
+              backgroundColor: alpha(theme.colors.primary[4], 0.15),
+              color: theme.colors.primary[5],
               transform: 'scale(1)'
             }
           }
@@ -203,12 +203,12 @@ export const components = {
   }),
   Tooltip: Tooltip.extend({
     defaultProps: {
-      bg: 'cyan.9'
+      bg: 'primary.9'
     }
   }),
   TooltipFloating: TooltipFloating.extend({
     defaultProps: {
-      bg: 'cyan.9'
+      bg: 'primary.9'
     }
   })
 }

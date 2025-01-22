@@ -102,7 +102,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
             {!image && song.album?.imageUrl && (
               <Group gap={6}>
-                <Box c={'cyan.8'} mt={3}>
+                <Box c={'primary.8'} mt={3}>
                   <IconInfoCircleFilled size={15} />
                 </Box>
 

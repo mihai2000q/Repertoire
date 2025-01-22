@@ -96,7 +96,7 @@ function AddNewSongModalSecondStep({
             {...form.getInputProps('releaseDate')}
           />
           {album?.releaseDate && (
-            <Box c={'cyan.8'} mt={'lg'} ml={4}>
+            <Box c={'primary.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
@@ -138,7 +138,7 @@ function AddNewSongModalSecondStep({
                           sx={(theme) => ({
                             transition: '0.25s',
                             borderRadius: '16px',
-                            border: `1px solid ${alpha(theme.colors.cyan[9], 0.33)}`,
+                            border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`,
                             borderWidth: snapshot.isDragging ? '1px' : '0px'
                           })}
                           ref={provided.innerRef}

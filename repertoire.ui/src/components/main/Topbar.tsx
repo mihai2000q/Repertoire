@@ -118,8 +118,8 @@ function Topbar(): ReactElement {
             color: theme.colors.gray[6],
             '&:hover': {
               boxShadow: theme.shadows.sm,
-              backgroundColor: theme.colors.cyan[0],
-              color: theme.colors.cyan[6]
+              backgroundColor: theme.colors.primary[0],
+              color: theme.colors.primary[6]
             }
           })}
         >

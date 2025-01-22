@@ -142,7 +142,7 @@ function SongCard({ song }: SongCardProps) {
                   </Text>
                 )}
               </Box>
-              <Group c={'cyan.9'} gap={4} align={'end'} pb={1}>
+              <Group c={'primary.9'} gap={4} align={'end'} pb={1}>
                 <Tooltip.Group openDelay={200}>
                   {song.isRecorded && (
                     <LocalTooltip label={'This song is recorded'}>

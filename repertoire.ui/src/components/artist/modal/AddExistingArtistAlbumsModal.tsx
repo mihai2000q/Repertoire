@@ -107,7 +107,7 @@ function AddExistingArtistAlbumsModal({
               ta={'center'}
               label={'All songs related to the added album will be added to the artist too'}
             >
-              <Box c={'cyan.8'}>
+              <Box c={'primary.8'}>
                 <IconInfoCircleFilled size={15} aria-label={'info-icon'} />
               </Box>
             </Tooltip>
@@ -163,7 +163,7 @@ function AddExistingArtistAlbumsModal({
                     transition: '0.3s',
                     '&:hover': {
                       boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
                     }
                   })}
                   w={'100%'}
