@@ -257,4 +257,25 @@ describe('Song Card', () => {
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
   })
+
+  it('should open youtube modal on youtube icon click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      youtubeLink: 'https://youtube.com/watch?v=123456789'
+    }
+
+    server.use(
+      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRouterRender(<SongCard song={localSong} />)
+
+    await user.click(screen.getByLabelText('youtube-icon'))
+
+    expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
 })
