@@ -14,6 +14,7 @@ import {
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
+import { FileWithPath } from '@mantine/dropzone'
 
 interface EditPlaylistHeaderModalProps {
   playlist: Playlist
@@ -50,7 +51,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     }
   })
 
-  const [image, setImage] = useState(playlist.imageUrl)
+  const [image, setImage] = useState<string | FileWithPath>(playlist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
 

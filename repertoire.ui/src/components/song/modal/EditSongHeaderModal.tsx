@@ -22,6 +22,8 @@ import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
+import { FileWithPath } from '@mantine/dropzone'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -43,7 +45,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     initialValues: {
       title: song.title,
       releaseDate: song.releaseDate && new Date(song.releaseDate),
-      image: song.imageUrl ?? null
+      image: song.imageUrl
     } as EditSongHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -58,9 +60,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     }
   })
 
-  const [image, setImage] = useState(song.imageUrl ?? null)
+  const [image, setImage] = useState<string | FileWithPath>(song.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useEffect(() => setImage(song.imageUrl), [song])
+  useDidUpdate(() => setImage(song.imageUrl), [song])
 
   async function updateSong({ title, releaseDate, image }: EditSongHeaderForm) {
     title = title.trim()

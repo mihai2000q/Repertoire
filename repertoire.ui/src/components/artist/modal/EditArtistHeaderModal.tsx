@@ -14,6 +14,7 @@ import {
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
+import { FileWithPath } from '@mantine/dropzone'
 
 interface EditArtistHeaderModalProps {
   artist: Artist
@@ -45,7 +46,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     }
   })
 
-  const [image, setImage] = useState(artist.imageUrl)
+  const [image, setImage] = useState<string | FileWithPath>(artist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(artist.imageUrl), [artist])
 

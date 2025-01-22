@@ -13,6 +13,7 @@ import { IconCalendarFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
+import { FileWithPath } from '@mantine/dropzone'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -49,7 +50,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     }
   })
 
-  const [image, setImage] = useState(album.imageUrl)
+  const [image, setImage] = useState<string | FileWithPath>(album.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(album.imageUrl), [album])
 
