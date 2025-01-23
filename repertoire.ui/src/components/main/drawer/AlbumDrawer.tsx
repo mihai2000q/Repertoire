@@ -21,7 +21,7 @@ import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
@@ -29,18 +29,28 @@ import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
 import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/globalSlice.ts'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 function AlbumDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const setDocumentTitle = useDynamicDocumentTitle()
 
   const opened = useAppSelector((state) => state.global.albumDrawer.open)
   const albumId = useAppSelector((state) => state.global.albumDrawer.albumId)
-  const onClose = () => dispatch(closeAlbumDrawer())
+  const onClose = () => {
+    dispatch(closeAlbumDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
   const [deleteAlbumMutation] = useDeleteAlbumMutation()
 
   const { data: album, isFetching } = useGetAlbumQuery(albumId, { skip: !albumId })
+
+  useEffect(() => {
+    if (album && opened && !isFetching)
+      setDocumentTitle((prevTitle) => prevTitle + ' - ' + album.title)
+  }, [album, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -56,6 +66,7 @@ function AlbumDrawer() {
   function handleDelete() {
     deleteAlbumMutation(album.id)
     dispatch(deleteAlbumDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${album.title} deleted!`)
   }
 

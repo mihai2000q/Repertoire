@@ -12,7 +12,7 @@ describe('use Is Desktop', () => {
     import.meta.env.VITE_PLATFORM = ''
   })
 
-  it('should return false when the environment platform is desktop', () => {
+  it('should return false when the environment platform is not desktop', () => {
     import.meta.env.VITE_PLATFORM = 'web'
 
     const { result } = renderHook(() => useIsDesktop())

@@ -19,8 +19,9 @@ describe('Sign In', () => {
   afterAll(() => server.close())
 
   it('should render', () => {
-    reduxRouterRender(<SignIn />)
+    const [_, store] = reduxRouterRender(<SignIn />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/sign in/i)
     expect(screen.getByRole('heading', { name: /welcome/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /create account/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()

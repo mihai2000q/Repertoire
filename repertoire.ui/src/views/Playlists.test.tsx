@@ -6,6 +6,7 @@ import { http, HttpResponse } from 'msw'
 import Playlist from '../types/models/Playlist.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
+import { RootState } from '../state/store.ts'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -72,8 +73,9 @@ describe('Playlists', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are playlists', async () => {
-    reduxRouterRender(<Playlists />)
+    const [_, store] = reduxRouterRender(<Playlists />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/playlists/i)
     expect(screen.getByRole('heading', { name: /playlists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-playlists/i })).toBeInTheDocument()

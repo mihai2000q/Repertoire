@@ -32,7 +32,7 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
@@ -41,6 +41,7 @@ import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts'
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -48,13 +49,22 @@ const secondColumnSize = 8
 function SongDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const setDocumentTitle = useDynamicDocumentTitle()
 
   const opened = useAppSelector((state) => state.global.songDrawer.open)
   const songId = useAppSelector((state) => state.global.songDrawer.songId)
-  const onClose = () => dispatch(closeSongDrawer())
+  const onClose = () => {
+    dispatch(closeSongDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
   const [deleteSongMutation] = useDeleteSongMutation()
+
+  useEffect(() => {
+    if (song && opened && !isFetching)
+      setDocumentTitle((prevTitle) => prevTitle + ' - ' + song.title)
+  }, [song, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -82,6 +92,7 @@ function SongDrawer() {
   function handleDelete() {
     deleteSongMutation(song.id)
     dispatch(deleteSongDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${song.title} deleted!`)
   }
 

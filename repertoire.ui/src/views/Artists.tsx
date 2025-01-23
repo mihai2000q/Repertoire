@@ -21,8 +21,11 @@ import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@table
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import UnknownArtistCard from '../components/artists/UnknownArtistCard.tsx'
 import useShowUnknownArtist from '../hooks/useShowUnknownArtist.ts'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 
 function Artists() {
+  useFixedDocumentTitle('Artists')
+
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: artists,

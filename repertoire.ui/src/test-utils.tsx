@@ -3,9 +3,8 @@ import { MantineProvider } from '@mantine/core'
 import { theme } from './theme/theme'
 import { ReactNode } from 'react'
 import { Provider } from 'react-redux'
-import { configureStore, EnhancedStore } from '@reduxjs/toolkit'
-import { reducer, RootState } from './state/store'
-import { api } from './state/api'
+import { EnhancedStore } from '@reduxjs/toolkit'
+import { RootState, setupStore } from './state/store'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { ToastContainer } from 'react-toastify'
@@ -84,11 +83,7 @@ export function reduxRender(
   ui: ReactNode,
   preloadedState?: Partial<RootState>
 ): [RenderResult, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     render(ui, {
@@ -106,11 +101,7 @@ export function reduxRouterRender(
   ui: ReactNode,
   preloadedState?: Partial<RootState>
 ): [RenderResult, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     render(ui, {
@@ -132,11 +123,7 @@ export function reduxMemoryRouterRender(
   initialEntries: string[],
   preloadedState?: Partial<RootState>
 ): [RenderResult, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     render(ui, {
@@ -170,11 +157,7 @@ export function reduxRenderHook(
   hook: (props: unknown) => unknown,
   preloadedState?: Partial<RootState>
 ): [RenderHookResult<unknown, unknown>, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     renderHook(hook, {
@@ -190,11 +173,7 @@ export function reduxRouterRenderHook(
   hook: (props: unknown) => unknown,
   preloadedState?: Partial<RootState>
 ): [RenderHookResult<unknown, unknown>, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     renderHook(hook, {

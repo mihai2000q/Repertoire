@@ -4,6 +4,7 @@ import { default as SongType } from './../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
+import { RootState } from '../state/store.ts'
 
 describe('Song', () => {
   const song: SongType = {
@@ -41,7 +42,7 @@ describe('Song', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
+    const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
 
     expect(screen.getByTestId('song-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
@@ -50,5 +51,6 @@ describe('Song', () => {
     expect(screen.getByLabelText('song-links-card')).toBeInTheDocument()
     expect(screen.getByLabelText('song-description-card')).toBeInTheDocument()
     expect(screen.getByLabelText('song-sections')).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(song.title)
   })
 })

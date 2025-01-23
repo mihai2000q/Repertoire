@@ -1,6 +1,9 @@
 import { ReactElement } from 'react'
+import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 
 function Unauthorized(): ReactElement {
+  useFixedDocumentTitle('Unauthorized')
+
   return (
     <div>
       <h1>Unauthorized</h1>

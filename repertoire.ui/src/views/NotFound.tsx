@@ -1,6 +1,9 @@
 import { ReactElement } from 'react'
+import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 
 function NotFound(): ReactElement {
+  useFixedDocumentTitle('Not Found')
+
   return (
     <div>
       <h1>Whoops! Not Found</h1>
