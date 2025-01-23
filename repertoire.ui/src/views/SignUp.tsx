@@ -18,11 +18,14 @@ import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 import { useForm, zodResolver } from '@mantine/form'
 import { setToken } from '../state/authSlice.ts'
 import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
+import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 
 function SignUp(): ReactElement {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+
+  useFixedDocumentTitle('Sign Up')
 
   const [signUpMutation, { error, isLoading }] = useSignUpMutation()
   const signUpError = (error as HttpErrorResponse | undefined)?.data?.error

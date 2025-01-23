@@ -19,8 +19,11 @@ import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../components/songs/SongsLoader.tsx'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
+import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 
 function Songs(): ReactElement {
+  useFixedDocumentTitle('Songs')
+
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: songs,

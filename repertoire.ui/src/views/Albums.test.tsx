@@ -8,6 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 import Artist from '../types/models/Artist.ts'
 import Album from '../types/models/Album.ts'
 import Song from '../types/models/Song.ts'
+import { RootState } from '../state/store.ts'
 
 describe('Albums', () => {
   const albums: Album[] = [
@@ -108,8 +109,9 @@ describe('Albums', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are albums', async () => {
-    reduxRouterRender(<Albums />)
+    const [_, store] = reduxRouterRender(<Albums />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/albums/i)
     expect(screen.getByRole('heading', { name: /albums/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-album/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-albums/i })).toBeInTheDocument()

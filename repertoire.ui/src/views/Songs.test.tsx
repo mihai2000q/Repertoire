@@ -8,6 +8,7 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import Artist from '../types/models/Artist.ts'
 import Album from '../types/models/Album.ts'
+import { RootState } from '../state/store.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -98,8 +99,9 @@ describe('Songs', () => {
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are songs', async () => {
-    reduxRouterRender(<Songs />)
+    const [_, store] = reduxRouterRender(<Songs />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/songs/i)
     expect(screen.getByRole('heading', { name: /songs/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-song/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-songs/i })).toBeInTheDocument()

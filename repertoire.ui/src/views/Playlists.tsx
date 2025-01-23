@@ -19,8 +19,11 @@ import AddNewPlaylistModal from '../components/playlists/modal/AddNewPlaylistMod
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import PlaylistsLoader from '../components/playlists/PlaylistsLoader.tsx'
 import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
+import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 
 function Playlists() {
+  useFixedDocumentTitle('Playlists')
+
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: playlists,

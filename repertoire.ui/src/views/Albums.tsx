@@ -21,8 +21,11 @@ import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabl
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
 import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 
 function Albums() {
+  useFixedDocumentTitle('Albums')
+
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: albums,
