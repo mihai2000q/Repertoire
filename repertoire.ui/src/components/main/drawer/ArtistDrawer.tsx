@@ -20,7 +20,7 @@ import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
@@ -30,14 +30,19 @@ import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
 import { useGetSongsQuery } from '../../../state/songsApi.ts'
 import dayjs from 'dayjs'
 import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/globalSlice.ts'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const setDocumentTitle = useDynamicDocumentTitle()
 
   const opened = useAppSelector((state) => state.global.artistDrawer.open)
   const artistId = useAppSelector((state) => state.global.artistDrawer.artistId)
-  const onClose = () => dispatch(closeArtistDrawer())
+  const onClose = () => {
+    dispatch(closeArtistDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
@@ -57,6 +62,11 @@ function ArtistDrawer() {
     { skip: !artistId }
   )
 
+  useEffect(() => {
+    if (artist && opened && !isFetching)
+      setDocumentTitle((prevTitle) => prevTitle + ' - ' + artist.name)
+  }, [artist, opened, isFetching])
+
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
@@ -71,6 +81,7 @@ function ArtistDrawer() {
   function handleDelete() {
     deleteArtistMutation(artist.id)
     dispatch(deleteArtistDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${artist.name} deleted!`)
   }
 
