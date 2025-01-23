@@ -1,4 +1,4 @@
-import { mantineRender } from '../../test-utils.tsx'
+import { reduxRender } from '../../test-utils.tsx'
 import TitleBar from './TitleBar.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -8,9 +8,20 @@ import { ElectronAPI, IpcRenderer } from '@electron-toolkit/preload'
 describe('Title Bar', () => {
   afterEach(() => vi.restoreAllMocks())
 
-  it('should render and display 3 action buttons', () => {
-    mantineRender(<TitleBar />)
+  it('should render and display the document title and 3 action buttons', () => {
+    const documentTitle = "Title bar's document title"
 
+    reduxRender(<TitleBar />, {
+      global: {
+        documentTitle: documentTitle,
+        artistDrawer: undefined,
+        songDrawer: undefined,
+        albumDrawer: undefined
+      }
+    })
+
+    expect(window.document.title).toBe(documentTitle)
+    expect(screen.getByText(documentTitle)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'minimize' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'maximize' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'close' })).toBeInTheDocument()
@@ -24,7 +35,7 @@ describe('Title Bar', () => {
       } as unknown as IpcRenderer
     } as unknown as ElectronAPI
 
-    mantineRender(<TitleBar />)
+    reduxRender(<TitleBar />)
 
     await user.click(screen.getByRole('button', { name: 'minimize' }))
     expect(window.electron.ipcRenderer.send).toHaveBeenCalledWith('minimize')

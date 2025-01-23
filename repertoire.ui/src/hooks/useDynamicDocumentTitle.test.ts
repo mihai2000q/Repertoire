@@ -1,15 +1,15 @@
 import { act } from '@testing-library/react'
-import useUpdateDocumentTitle from './useUpdateDocumentTitle.ts'
+import useDynamicDocumentTitle from './useDynamicDocumentTitle.ts'
 import {reduxRenderHook} from "../test-utils.tsx";
 import {RootState} from "../state/store.ts";
 
-describe('use Update Document Title', () => {
+describe('use Dynamic Document Title', () => {
   it('should return a setter that changes the document title', () => {
     const newTitle = 'new title'
     const secondNewTitle = 'second'
     const thirdNewTitle = 'third'
 
-    const [{ result }, store] = reduxRenderHook(() => useUpdateDocumentTitle())
+    const [{ result }, store] = reduxRenderHook(() => useDynamicDocumentTitle())
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
