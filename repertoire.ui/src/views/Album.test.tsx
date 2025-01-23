@@ -6,6 +6,8 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { default as AlbumType } from './../types/models/Album.ts'
+import { RootState } from '../state/store.ts'
+import {expect} from "vitest";
 
 describe('Album', () => {
   const emptySong: Song = {
@@ -83,20 +85,22 @@ describe('Album', () => {
   it('should render and display info from album when the album is not unknown', async () => {
     server.use(getAlbum)
 
-    reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
+    const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(album.title)
   })
 
   it('should render and display info from songs when the album is unknown', async () => {
     server.use(getSongs)
 
-    reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
+    const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
   })
 })

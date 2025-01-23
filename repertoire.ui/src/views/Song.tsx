@@ -8,12 +8,19 @@ import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'
 import SongOverallCard from '../components/song/panels/SongOverallCard.tsx'
 import SongDescriptionCard from '../components/song/panels/SongDescriptionCard.tsx'
 import SongHeaderCard from '../components/song/panels/SongHeaderCard.tsx'
+import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
+import { useEffect } from 'react'
 
 function Song() {
   const params = useParams()
+  const setDocumentTitle = useDynamicDocumentTitle()
   const songId = params['id'] ?? ''
 
   const { data: song, isLoading } = useGetSongQuery(songId)
+
+  useEffect(() => {
+    if (song) setDocumentTitle(song.title)
+  }, [song])
 
   if (isLoading) return <SongLoader />
 
