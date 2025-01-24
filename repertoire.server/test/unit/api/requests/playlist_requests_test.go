@@ -187,7 +187,7 @@ func TestValidateAddAlbumsToPlaylistRequest_WhenSingleFieldIsInvalid_ShouldRetur
 		{
 			"Album IDs is invalid because it requires at least 1 ID",
 			requests.AddAlbumsToPlaylistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
-			"SongIDs",
+			"AlbumIDs",
 			"min",
 		},
 	}
@@ -202,7 +202,7 @@ func TestValidateAddAlbumsToPlaylistRequest_WhenSingleFieldIsInvalid_ShouldRetur
 			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "AddSongsToPlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "AddAlbumsToPlaylistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
