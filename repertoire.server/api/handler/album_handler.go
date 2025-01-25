@@ -104,7 +104,7 @@ func (a AlbumHandler) AddSongs(c *gin.Context) {
 		return
 	}
 
-	a.SendMessage(c, "song has been added to album successfully")
+	a.SendMessage(c, "songs have been added to album successfully")
 }
 
 func (a AlbumHandler) Update(c *gin.Context) {
@@ -155,7 +155,7 @@ func (a AlbumHandler) RemoveSongs(c *gin.Context) {
 		return
 	}
 
-	a.SendMessage(c, "song has been removed from album successfully")
+	a.SendMessage(c, "songs have been removed from album successfully")
 }
 
 func (a AlbumHandler) Delete(c *gin.Context) {

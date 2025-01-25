@@ -9,6 +9,7 @@ import (
 
 func SeedData(db *gorm.DB) {
 	db.Create(&Users)
+	db.Create(&Artists)
 	db.Create(&Albums)
 	db.Create(&Playlists)
 	db.Create(&Songs)
@@ -21,6 +22,19 @@ var Users = []model.User{
 		Name:     "John Doe",
 		Email:    "johndoe@gmail.com",
 		Password: "",
+	},
+}
+
+var Artists = []model.Artist{
+	{
+		ID:     uuid.New(),
+		Name:   "Test Artist 1",
+		UserID: Users[0].ID,
+	},
+	{
+		ID:     uuid.New(),
+		Name:   "Test Artist 2",
+		UserID: Users[0].ID,
 	},
 }
 
@@ -54,34 +68,39 @@ var Playlists = []model.Playlist{
 
 var Songs = []model.Song{
 	{
-		ID:      uuid.New(),
-		Title:   "Test Song 1",
-		UserID:  Users[0].ID,
-		AlbumID: &[]uuid.UUID{Albums[0].ID}[0],
+		ID:       uuid.New(),
+		Title:    "Test Song 1",
+		UserID:   Users[0].ID,
+		AlbumID:  &[]uuid.UUID{Albums[0].ID}[0],
+		ArtistID: &[]uuid.UUID{Artists[0].ID}[0],
 	},
 	{
-		ID:      uuid.New(),
-		Title:   "Test Song 2",
-		UserID:  Users[0].ID,
-		AlbumID: &[]uuid.UUID{Albums[0].ID}[0],
+		ID:       uuid.New(),
+		Title:    "Test Song 2",
+		UserID:   Users[0].ID,
+		AlbumID:  &[]uuid.UUID{Albums[0].ID}[0],
+		ArtistID: &[]uuid.UUID{Artists[0].ID}[0],
 	},
 	{
-		ID:      uuid.New(),
-		Title:   "Test Song 3",
-		UserID:  Users[0].ID,
-		AlbumID: &[]uuid.UUID{Albums[1].ID}[0],
+		ID:       uuid.New(),
+		Title:    "Test Song 3",
+		UserID:   Users[0].ID,
+		AlbumID:  &[]uuid.UUID{Albums[1].ID}[0],
+		ArtistID: &[]uuid.UUID{Artists[1].ID}[0],
 	},
 	{
-		ID:      uuid.New(),
-		Title:   "Test Song 4",
-		UserID:  Users[0].ID,
-		AlbumID: &[]uuid.UUID{Albums[1].ID}[0],
+		ID:       uuid.New(),
+		Title:    "Test Song 4",
+		UserID:   Users[0].ID,
+		AlbumID:  &[]uuid.UUID{Albums[1].ID}[0],
+		ArtistID: &[]uuid.UUID{Artists[1].ID}[0],
 	},
 	{
-		ID:      uuid.New(),
-		Title:   "Test Song 5",
-		UserID:  Users[0].ID,
-		AlbumID: &[]uuid.UUID{Albums[1].ID}[0],
+		ID:       uuid.New(),
+		Title:    "Test Song 5",
+		UserID:   Users[0].ID,
+		AlbumID:  &[]uuid.UUID{Albums[1].ID}[0],
+		ArtistID: &[]uuid.UUID{Artists[1].ID}[0],
 	},
 }
 
