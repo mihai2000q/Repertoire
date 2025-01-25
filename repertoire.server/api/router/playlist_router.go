@@ -17,6 +17,7 @@ func (p PlaylistRouter) RegisterRoutes() {
 		api.GET("", p.handler.GetAll)
 		api.POST("", p.handler.Create)
 		api.POST("/add-albums", p.handler.AddAlbums)
+		api.POST("/add-artists", p.handler.AddArtists)
 		api.POST("/add-songs", p.handler.AddSongs)
 		api.PUT("", p.handler.Update)
 		api.PUT("/move-song", p.handler.MoveSong)

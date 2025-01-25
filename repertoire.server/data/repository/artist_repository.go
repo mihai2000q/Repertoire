@@ -11,6 +11,7 @@ type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
 	// Deprecated: Use normal Get instead
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
+	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.Artist,
 		userID uuid.UUID,
@@ -41,6 +42,13 @@ func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
 
 func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
 	return a.client.DB.Find(&artist, model.Artist{ID: id}).Error
+}
+
+func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
+	return a.client.DB.Model(&model.Artist{}).
+		Preload("Songs").
+		Find(&artists, ids).
+		Error
 }
 
 func (a artistRepository) GetAllByUser(
