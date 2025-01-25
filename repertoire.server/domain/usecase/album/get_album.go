@@ -3,11 +3,10 @@ package album
 import (
 	"errors"
 	"reflect"
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type GetAlbum struct {
@@ -20,8 +19,12 @@ func NewGetAlbum(repository repository.AlbumRepository) GetAlbum {
 	}
 }
 
-func (g GetAlbum) Handle(id uuid.UUID) (album model.Album, e *wrapper.ErrorCode) {
-	err := g.repository.GetWithAssociations(&album, id)
+func (g GetAlbum) Handle(request requests.GetAlbumRequest) (album model.Album, e *wrapper.ErrorCode) {
+	if len(request.SongsOrderBy) == 0 {
+		request.SongsOrderBy = []string{"album_track_no"}
+	}
+
+	err := g.repository.GetWithAssociations(&album, request.ID, request.SongsOrderBy)
 	if err != nil {
 		return album, wrapper.InternalServerError(err)
 	}

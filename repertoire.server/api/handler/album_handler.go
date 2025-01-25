@@ -29,13 +29,27 @@ func NewAlbumHandler(
 }
 
 func (a AlbumHandler) Get(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	var request requests.GetAlbumRequest
+	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := a.service.Get(id)
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := a.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	user, errorCode := a.service.Get(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
