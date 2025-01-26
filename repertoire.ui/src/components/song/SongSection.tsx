@@ -140,7 +140,14 @@ function SongSection({
 
       <Collapse in={showDetails}>
         <Group aria-label={`song-section-details-${section.name}`} gap={'xl'} px={'md'}>
-          <Tooltip.Floating role={'tooltip'} label={`Rehearsals: ${section.rehearsals}`}>
+          <Tooltip.Floating
+            role={'tooltip'}
+            label={
+              <>
+                Rehearsals: <NumberFormatter value={section.rehearsals} />
+              </>
+            }
+          >
             <Text fw={500} c={'dimmed'} fz={'md'} inline>
               <NumberFormatter value={section.rehearsals} />
             </Text>
