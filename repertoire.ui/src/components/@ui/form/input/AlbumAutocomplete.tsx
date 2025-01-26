@@ -157,7 +157,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                         {album.title}
                       </Text>
                       {album.artist && (
-                        <Text inline c={'dimmed'} fz={'xs'} fw={500} truncate={'end'}>
+                        <Text inline c={'dimmed'} fz={'xs'} fw={500} lineClamp={1}>
                           {album.artist.name}
                         </Text>
                       )}
