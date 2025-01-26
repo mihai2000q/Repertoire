@@ -11,7 +11,6 @@ import {
   Image,
   Menu,
   NumberFormatter,
-  Progress,
   Stack,
   Text,
   Title,
@@ -42,6 +41,8 @@ import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
+import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -359,16 +360,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating
-                    role={'tooltip'}
-                    label={
-                      <>
-                        <NumberFormatter value={song.confidence} />%
-                      </>
-                    }
-                  >
-                    <Progress aria-label={'confidence'} flex={1} size={7} value={song.confidence} />
-                  </Tooltip.Floating>
+                  <SongConfidenceBar confidence={song.confidence} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -381,18 +373,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating
-                    role={'tooltip'}
-                    label={<NumberFormatter value={song.progress} />}
-                  >
-                    <Progress
-                      aria-label={'progress'}
-                      flex={1}
-                      size={7}
-                      value={song.progress / 10}
-                      color={'green'}
-                    />
-                  </Tooltip.Floating>
+                  <SongProgressBar progress={song.progress} size={7} />
                 </Grid.Col>
               </>
             )}
