@@ -69,13 +69,13 @@ function AddNewSongModalSecondStep({
 
   return (
     <Stack>
-      <Group justify={'space-between'} align={'center'}>
+      <Group justify={'space-between'}>
         <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
         <DifficultySelect option={difficulty} onChange={setDifficulty} />
       </Group>
 
-      <Group justify={'space-between'} align={'center'}>
+      <Group justify={'space-between'}>
         <NumberInput
           flex={0.75}
           min={1}
@@ -86,7 +86,7 @@ function AddNewSongModalSecondStep({
           {...form.getInputProps('bpm')}
         />
 
-        <Group flex={1} gap={4} align={'center'}>
+        <Group flex={1} gap={4}>
           <DatePickerInput
             flex={1}
             leftSection={<IconCalendarFilled size={20} />}
@@ -132,7 +132,6 @@ function AddNewSongModalSecondStep({
                       return (
                         <Group
                           key={section.id}
-                          align={'center'}
                           gap={'xs'}
                           py={'xs'}
                           sx={(theme) => ({

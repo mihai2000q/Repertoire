@@ -56,7 +56,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addSong)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview image={image} setImage={setImage} />
               <TextInput
                 flex={1}

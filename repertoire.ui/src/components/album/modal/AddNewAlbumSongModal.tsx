@@ -62,7 +62,7 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addSong)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview image={image} setImage={setImage} />
 
               <Stack flex={1} gap={0}>

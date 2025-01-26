@@ -39,7 +39,6 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum }: AlbumSongCardProp
       <Group
         aria-label={`song-card-${song.title}`}
         ref={ref}
-        align={'center'}
         wrap={'nowrap'}
         sx={(theme) => ({
           cursor: 'default',

@@ -47,7 +47,6 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
     <>
       <Group
         ref={ref}
-        align={'center'}
         wrap={'nowrap'}
         aria-label={`song-card-${song.title}`}
         sx={(theme) => ({

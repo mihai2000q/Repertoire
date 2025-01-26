@@ -39,7 +39,7 @@ function AddNewSongModalFirstStep({
         {...form.getInputProps('title')}
       />
 
-      <Group align={'center'}>
+      <Group>
         <AlbumAutocomplete
           album={album}
           setAlbum={setAlbum}
@@ -48,7 +48,7 @@ function AddNewSongModalFirstStep({
           {...form.getInputProps('albumTitle')}
         />
 
-        <Group flex={1} gap={0} align={'center'}>
+        <Group flex={1} gap={0}>
           <ArtistAutocomplete
             artist={artist}
             setArtist={setArtist}

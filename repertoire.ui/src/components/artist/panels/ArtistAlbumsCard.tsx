@@ -61,7 +61,7 @@ function ArtistAlbumsCard({
       <Stack gap={0}>
         <LoadingOverlay visible={isFetching} />
 
-        <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
+        <Group px={'md'} py={'xs'} gap={'xs'}>
           <Text fw={600}>Albums</Text>
 
           <CompactOrderButton

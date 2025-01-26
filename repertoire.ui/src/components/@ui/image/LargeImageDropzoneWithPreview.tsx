@@ -38,7 +38,7 @@ function LargeImageDropzoneWithPreview({
 
   if (image) {
     return (
-      <Group justify={'center'} align={'center'}>
+      <Group justify={'center'}>
         <AspectRatio w={'50%'} ratio={1}>
           <Image
             src={typeof image === 'string' ? image : URL.createObjectURL(image)}

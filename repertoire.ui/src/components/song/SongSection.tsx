@@ -85,7 +85,7 @@ function SongSection({
       ref={draggableProvided.innerRef}
       {...draggableProvided.draggableProps}
     >
-      <Group align={'center'} gap={'xs'}>
+      <Group gap={'xs'}>
         <ActionIcon
           aria-label={'drag-handle'}
           variant={'subtle'}
@@ -102,7 +102,7 @@ function SongSection({
           {section.name}
         </Text>
 
-        <Group gap={2} align={'center'}>
+        <Group gap={2}>
           <Tooltip label={'Add Rehearsal'} openDelay={200}>
             <ActionIcon
               variant={'subtle'}

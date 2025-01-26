@@ -204,7 +204,7 @@ function SongDrawer() {
                     </Text>
                   </HoverCard.Target>
                   <HoverCard.Dropdown maw={300}>
-                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                    <Group gap={'xs'} wrap={'nowrap'}>
                       <Avatar
                         size={45}
                         radius={'md'}

@@ -32,7 +32,7 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'} align={'center'}>
+        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
 
           <CompactOrderButton

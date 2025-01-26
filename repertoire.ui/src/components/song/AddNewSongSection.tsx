@@ -63,7 +63,6 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
     <Collapse in={opened} onTransitionEnd={handleOnTransitionEnd}>
       <Group
         ref={scrollIntoViewRef}
-        align={'center'}
         gap={'xs'}
         py={'xs'}
         px={'md'}
