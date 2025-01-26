@@ -50,7 +50,7 @@ function Albums() {
 
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <Group gap={4} align={'center'}>
+      <Group gap={4}>
         <Title order={3} fw={800}>
           Albums
         </Title>
