@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from 'react'
 import ArtistAlbumsLoader from '../loader/ArtistAlbumsLoader.tsx'
 import {
   ActionIcon,
-  Button,
   Card,
   Group,
   LoadingOverlay,
@@ -13,14 +12,7 @@ import {
   Text
 } from '@mantine/core'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
-import {
-  IconAlbum,
-  IconCaretDownFilled,
-  IconCheck,
-  IconDisc,
-  IconDots,
-  IconPlus
-} from '@tabler/icons-react'
+import { IconAlbum, IconDisc, IconDots, IconPlus } from '@tabler/icons-react'
 import ArtistAlbumCard from '../ArtistAlbumCard.tsx'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -30,6 +22,7 @@ import WithTotalCountResponse from '../../../types/responses/WithTotalCountRespo
 import Album from '../../../types/models/Album.ts'
 import AddNewArtistAlbumModal from '../modal/AddNewArtistAlbumModal.tsx'
 import AddExistingArtistAlbumsModal from '../modal/AddExistingArtistAlbumsModal.tsx'
+import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 
 interface ArtistAlbumsCardProps {
   albums: WithTotalCountResponse<Album>
@@ -71,30 +64,11 @@ function ArtistAlbumsCard({
         <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
           <Text fw={600}>Albums</Text>
 
-          <Menu shadow={'sm'}>
-            <Menu.Target>
-              <Button
-                variant={'subtle'}
-                size={'compact-xs'}
-                rightSection={<IconCaretDownFilled size={11} />}
-                styles={{ section: { marginLeft: 4 } }}
-              >
-                {order.label}
-              </Button>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              {artistAlbumsOrders.map((o) => (
-                <Menu.Item
-                  key={o.value}
-                  leftSection={order === o && <IconCheck size={12} />}
-                  onClick={() => setOrder(o)}
-                >
-                  {o.label}
-                </Menu.Item>
-              ))}
-            </Menu.Dropdown>
-          </Menu>
+          <CompactOrderButton
+            availableOrders={artistAlbumsOrders}
+            order={order}
+            setOrder={setOrder}
+          />
 
           <Space flex={1} />
 

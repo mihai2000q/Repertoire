@@ -1,15 +1,5 @@
-import {
-  ActionIcon,
-  Button,
-  Card,
-  Group,
-  LoadingOverlay,
-  Menu,
-  Space,
-  Stack,
-  Text
-} from '@mantine/core'
-import { IconCaretDownFilled, IconCheck, IconDots, IconPlus } from '@tabler/icons-react'
+import { ActionIcon, Card, Group, LoadingOverlay, Menu, Space, Stack, Text } from '@mantine/core'
+import { IconDots, IconPlus } from '@tabler/icons-react'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
@@ -19,6 +9,7 @@ import { useState } from 'react'
 import Order from '../../types/Order.ts'
 import { useRemoveSongsFromPlaylistMutation } from '../../state/playlistsApi.ts'
 import { useDisclosure } from '@mantine/hooks'
+import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
 
 interface PlaylistSongsCardProps {
   playlist: Playlist
@@ -44,30 +35,11 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
         <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'} align={'center'}>
           <Text fw={600}>Songs</Text>
 
-          <Menu shadow={'sm'}>
-            <Menu.Target>
-              <Button
-                variant={'subtle'}
-                size={'compact-xs'}
-                rightSection={<IconCaretDownFilled size={11} />}
-                styles={{ section: { marginLeft: 4 } }}
-              >
-                {order.label}
-              </Button>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              {playlistSongsOrders.map((o) => (
-                <Menu.Item
-                  key={o.value}
-                  leftSection={order === o && <IconCheck size={12} />}
-                  onClick={() => setOrder(o)}
-                >
-                  {o.label}
-                </Menu.Item>
-              ))}
-            </Menu.Dropdown>
-          </Menu>
+          <CompactOrderButton
+            availableOrders={playlistSongsOrders}
+            order={order}
+            setOrder={setOrder}
+          />
 
           <Space flex={1} />
 
