@@ -80,7 +80,7 @@ function AlbumCard({ album }: AlbumCardProps) {
         </Menu.Dropdown>
       </Menu>
 
-      <Stack w={'100%'} align={'center'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
+      <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>
           {album.title}
         </Text>
