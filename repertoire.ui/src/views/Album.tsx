@@ -5,8 +5,10 @@ import AlbumLoader from '../components/album/AlbumLoader.tsx'
 import { useGetSongsQuery } from '../state/songsApi.ts'
 import AlbumHeaderCard from '../components/album/AlbumHeaderCard.tsx'
 import AlbumSongsCard from '../components/album/AlbumSongsCard.tsx'
-import useDynamicDocumentTitle from "../hooks/useDynamicDocumentTitle.ts";
-import {useEffect} from "react";
+import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
+import { useEffect, useState } from 'react'
+import Order from '../types/Order.ts'
+import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 
 function Album() {
   const params = useParams()
@@ -15,13 +17,23 @@ function Album() {
 
   const isUnknownAlbum = albumId === 'unknown'
 
-  const { data: album, isLoading, isFetching } = useGetAlbumQuery(albumId, { skip: isUnknownAlbum })
+  const [order, setOrder] = useState<Order>(isUnknownAlbum ? albumSongsOrders[1] : albumSongsOrders[0])
+
+  const {
+    data: album,
+    isLoading,
+    isFetching
+  } = useGetAlbumQuery(
+    {
+      id: albumId,
+      songsOrderBy: [order.value]
+    },
+    { skip: isUnknownAlbum }
+  )
 
   useEffect(() => {
-    if (isUnknownAlbum)
-      setDocumentTitle('Unknown Album')
-    else if (album)
-      setDocumentTitle(album.title)
+    if (isUnknownAlbum) setDocumentTitle('Unknown Album')
+    else if (album) setDocumentTitle(album.title)
   }, [album, isUnknownAlbum])
 
   const {
@@ -30,7 +42,7 @@ function Album() {
     isFetching: isSongsFetching
   } = useGetSongsQuery(
     {
-      orderBy: ['title'],
+      orderBy: [order.value],
       searchBy: ['album_id IS NULL']
     },
     { skip: !isUnknownAlbum }
@@ -51,8 +63,10 @@ function Album() {
       <AlbumSongsCard
         album={album}
         songs={songs?.models}
-        isFetching={isSongsFetching || isFetching}
         isUnknownAlbum={isUnknownAlbum}
+        order={order}
+        setOrder={setOrder}
+        isFetching={isSongsFetching || isFetching}
       />
     </Stack>
   )
