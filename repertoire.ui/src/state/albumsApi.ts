@@ -4,6 +4,7 @@ import Album from '../types/models/Album.ts'
 import {
   AddSongsToAlbumRequest,
   CreateAlbumRequest,
+  GetAlbumRequest,
   GetAlbumsRequest,
   RemoveSongsFromAlbumRequest,
   SaveImageToAlbumRequest,
@@ -21,8 +22,8 @@ const albumsApi = api.injectEndpoints({
       }),
       providesTags: ['Albums']
     }),
-    getAlbum: build.query<Album, string>({
-      query: (arg) => `albums/${arg}`,
+    getAlbum: build.query<Album, GetAlbumRequest>({
+      query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Albums']
     }),
     createAlbum: build.mutation<{ id: string }, CreateAlbumRequest>({
