@@ -267,7 +267,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <DifficultyBar difficulty={song.difficulty} />
+                  <DifficultyBar difficulty={song.difficulty} size={7} />
                 </Grid.Col>
               </>
             )}

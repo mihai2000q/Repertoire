@@ -4,9 +4,11 @@ import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 
 interface DifficultyBarProps {
   difficulty: Difficulty | undefined
+  size?: number | string
+  maw?: number
 }
 
-function DifficultyBar({ difficulty }: DifficultyBarProps) {
+function DifficultyBar({ difficulty, maw, size = 5 }: DifficultyBarProps) {
   const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(difficulty)
 
   return (
@@ -15,8 +17,8 @@ function DifficultyBar({ difficulty }: DifficultyBarProps) {
         {Array.from(Array(Object.entries(Difficulty).length)).map((_, i) => (
           <Progress
             key={i}
-            size={5}
-            maw={40}
+            size={size}
+            maw={maw}
             value={i + 1 <= difficultyNumber ? 100 : 0}
             color={difficultyColor}
           />
