@@ -7,9 +7,10 @@ interface CompactOrderButtonProps {
   availableOrders: Order[]
   order: Order
   setOrder: Dispatch<SetStateAction<Order>>
+  disabledOrders?: Order[]
 }
 
-function CompactOrderButton({ availableOrders, order, setOrder }: CompactOrderButtonProps) {
+function CompactOrderButton({ availableOrders, order, setOrder, disabledOrders }: CompactOrderButtonProps) {
   return (
     <Menu shadow={'sm'}>
       <Menu.Target>
@@ -28,6 +29,7 @@ function CompactOrderButton({ availableOrders, order, setOrder }: CompactOrderBu
           <Menu.Item
             key={o.value}
             leftSection={order === o && <IconCheck size={12} />}
+            disabled={disabledOrders?.includes(o)}
             onClick={() => setOrder(o)}
           >
             {o.label}
