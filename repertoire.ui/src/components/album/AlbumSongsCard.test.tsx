@@ -25,17 +25,51 @@ describe('Album Songs Card', () => {
     updatedAt: ''
   }
 
+  const emptyAlbum: Album = {
+    id: '',
+    title: '',
+    createdAt: '',
+    updatedAt: '',
+    songs: []
+  }
+
   const songs: Song[] = [
     {
       ...emptySong,
       id: '1',
-      title: 'Song 1'
+      title: 'Song 1',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png',
+      }
     },
     {
       ...emptySong,
       id: '2',
-      title: 'Song 2'
-    }
+      title: 'Song 2',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png',
+      }
+    },
+    {
+      ...emptySong,
+      id: '3',
+      title: 'Song 3',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+      }
+    },
+    {
+      ...emptySong,
+      id: '4',
+      title: 'Song 4',
+      album: {
+        ...emptyAlbum,
+      }
+    },
   ]
 
   const album: Album = {
@@ -47,8 +81,8 @@ describe('Album Songs Card', () => {
       ...songs,
       {
         ...emptySong,
-        id: '3',
-        title: 'Song 3'
+        id: '5',
+        title: 'Song 5'
       }
     ]
   }

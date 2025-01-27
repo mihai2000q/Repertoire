@@ -58,6 +58,7 @@ describe('Album Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: album.title })).toHaveAttribute('src', album.imageUrl)
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText('0 songs')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
@@ -74,6 +75,7 @@ describe('Album Header Card', () => {
 
     const localAlbum: Album = {
       ...album,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-21T10:30:00',
       artist: artist,
       songs: [
@@ -95,8 +97,16 @@ describe('Album Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
+      'src',
+      localAlbum.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.artist.name })).toHaveAttribute(
+      'src',
+      localAlbum.artist.imageUrl
+    )
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
     expect(screen.getByText(dayjs(localAlbum.releaseDate).year().toString())).toBeInTheDocument()
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()

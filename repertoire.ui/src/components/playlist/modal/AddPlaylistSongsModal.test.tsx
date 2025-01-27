@@ -46,25 +46,45 @@ describe('Add Playlist Songs Modal', () => {
       ...emptySong,
       id: '1',
       title: 'Song 1',
+      imageUrl: 'something.png',
       artist: artist
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
-      album: album,
+      imageUrl: 'something.png',
+      album: {
+        ...album,
+        imageUrl: 'something-album.png',
+      },
       artist: artist
     },
     {
       ...emptySong,
       id: '3',
       title: 'Song 11',
-      album: album
+      album: {
+        ...album,
+        imageUrl: 'something-album.png',
+      },
     },
     {
       ...emptySong,
       id: '4',
-      title: 'Song 12'
+      title: 'Song 12',
+      imageUrl: 'something.png'
+    },
+    {
+      ...emptySong,
+      id: '5',
+      title: 'Song 512',
+      imageUrl: 'something.png',
+    },
+    {
+      ...emptySong,
+      id: '6',
+      title: 'Song 6'
     }
   ]
 
@@ -123,6 +143,11 @@ describe('Add Playlist Songs Modal', () => {
       expect(screen.getByRole('checkbox', { name: song.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: song.title })).not.toBeChecked()
       expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.album.imageUrl)
+      }
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.album) expect(within(renderedSong).getByText(song.album.title)).toBeInTheDocument()
       if (song.artist) expect(within(renderedSong).getByText(song.artist.name)).toBeInTheDocument()

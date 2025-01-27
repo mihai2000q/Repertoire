@@ -25,6 +25,7 @@ describe('Artist Album Card', () => {
   it('should render and display maximal information', async () => {
     const localAlbum: Album = {
       ...album,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-11'
     }
 
@@ -33,6 +34,10 @@ describe('Artist Album Card', () => {
     )
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
+      'src',
+      localAlbum.imageUrl
+    )
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(dayjs(localAlbum.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()

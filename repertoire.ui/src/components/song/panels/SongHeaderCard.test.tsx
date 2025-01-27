@@ -74,6 +74,7 @@ describe('Song Header Card', () => {
 
     const localSong: Song = {
       ...song,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-21T10:30:00',
       artist: artist,
       album: album
@@ -82,8 +83,10 @@ describe('Song Header Card', () => {
     reduxRouterRender(<SongHeaderCard song={localSong} />)
 
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute('src', localSong.imageUrl)
     expect(screen.getByRole('heading', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.artist.name })).toHaveAttribute('src', localSong.artist.imageUrl)
     expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect(screen.getByText(dayjs(localSong.releaseDate).format('YYYY'))).toBeInTheDocument()
@@ -97,10 +100,41 @@ describe('Song Header Card', () => {
 
     await user.hover(screen.getByText(localSong.album.title))
     expect(await screen.findByRole('img', { name: localSong.album.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.album.title })).toHaveAttribute('src', localSong.album.imageUrl)
     expect(screen.getAllByText(localSong.album.title)).toHaveLength(2)
     expect(
       screen.getByText(dayjs(localSong.album.releaseDate).format('D MMM YYYY'))
     ).toBeInTheDocument()
+  })
+
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRouterRender(<SongHeaderCard song={localSong} />)
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(<SongHeaderCard song={localSongWithAlbum} />)
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
   })
 
   it('should display menu on click', async () => {

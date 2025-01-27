@@ -21,7 +21,8 @@ describe('Add Existing Artist Albums Modal', () => {
     {
       ...emptyAlbum,
       id: '1',
-      title: 'Album 1'
+      title: 'Album 1',
+      imageUrl: 'something.png'
     },
     {
       ...emptyAlbum,
@@ -96,6 +97,12 @@ describe('Add Existing Artist Albums Modal', () => {
       expect(screen.getByRole('checkbox', { name: album.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: album.title })).not.toBeChecked()
       expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+      if (album.imageUrl) {
+        expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
+          'src',
+          album.imageUrl
+        )
+      }
       expect(screen.getByText(album.title)).toBeInTheDocument()
     }
   })

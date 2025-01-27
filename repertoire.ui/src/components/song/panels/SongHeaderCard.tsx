@@ -13,6 +13,7 @@ import {
 } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
@@ -142,7 +143,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                       <Avatar
                         size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? songPlaceholder}
+                        src={song.album.imageUrl ?? albumPlaceholder}
                         alt={song.album.title}
                       />
                       <Stack gap={2}>

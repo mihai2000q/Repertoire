@@ -4,9 +4,9 @@ import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Order from '../../types/Order.ts'
-import SongProperty from "../../utils/enums/SongProperty.ts";
-import dayjs from "dayjs";
-import Difficulty from "../../utils/enums/Difficulty.ts";
+import SongProperty from '../../utils/enums/SongProperty.ts'
+import dayjs from 'dayjs'
+import Difficulty from '../../utils/enums/Difficulty.ts'
 
 describe('Album Song Card', () => {
   const song: Song = {
@@ -42,6 +42,50 @@ describe('Album Song Card', () => {
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
+  })
+
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRender(
+      <AlbumSongCard
+        song={localSong}
+        handleRemove={() => {}}
+        isUnknownAlbum={false}
+        order={emptyOrder}
+      />
+    )
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(
+      <AlbumSongCard
+        song={localSongWithAlbum}
+        handleRemove={() => {}}
+        isUnknownAlbum={false}
+        order={emptyOrder}
+      />
+    )
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
   })
 
   it('should display menu by clicking on the dots button', async () => {
@@ -85,12 +129,7 @@ describe('Album Song Card', () => {
       expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
 
       rerender(
-        <AlbumSongCard
-          song={song}
-          handleRemove={() => {}}
-          isUnknownAlbum={false}
-          order={order}
-        />
+        <AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} order={order} />
       )
 
       expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
@@ -187,15 +226,12 @@ describe('Album Song Card', () => {
         />
       )
 
-      expect(screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))).toBeInTheDocument()
+      expect(
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
+      ).toBeInTheDocument()
 
       rerender(
-        <AlbumSongCard
-          song={song}
-          handleRemove={() => {}}
-          isUnknownAlbum={false}
-          order={order}
-        />
+        <AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} order={order} />
       )
 
       expect(screen.getByText(/never/i)).toBeInTheDocument()

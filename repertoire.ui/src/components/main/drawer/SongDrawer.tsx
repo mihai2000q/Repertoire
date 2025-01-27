@@ -19,8 +19,8 @@ import {
 import { useDeleteSongMutation, useGetSongQuery } from '../../../state/songsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
-import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -123,7 +123,7 @@ function SongDrawer() {
           <AspectRatio ratio={4 / 3}>
             <Image
               src={song.imageUrl ?? song.album?.imageUrl}
-              fallbackSrc={imagePlaceholder}
+              fallbackSrc={songPlaceholder}
               alt={song.title}
             />
           </AspectRatio>
@@ -209,7 +209,7 @@ function SongDrawer() {
                       <Avatar
                         size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? songPlaceholder}
+                        src={song.album.imageUrl ?? albumPlaceholder}
                         alt={song.album.title}
                       />
                       <Stack gap={2}>

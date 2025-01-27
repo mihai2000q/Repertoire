@@ -54,6 +54,7 @@ describe('Artist Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
     expect(
       screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)
@@ -99,6 +100,7 @@ describe('Artist Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: localArtist.name })).toBeInTheDocument()
     expect(
       screen.getByText(`${albumsTotalCount} album • ${songsTotalCount} song`)

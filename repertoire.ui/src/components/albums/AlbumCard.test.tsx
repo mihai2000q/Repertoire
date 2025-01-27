@@ -45,12 +45,14 @@ describe('Album Card', () => {
   it('should render maximal info', async () => {
     const localAlbum = {
       ...album,
+      imageUrl: 'something.png',
       artist: artist
     }
 
     reduxRouterRender(<AlbumCard album={localAlbum} />)
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute('src', localAlbum.imageUrl)
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
   })

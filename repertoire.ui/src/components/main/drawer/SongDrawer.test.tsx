@@ -11,7 +11,7 @@ import Album from '../../../types/models/Album.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { openSongDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
+import { closeSongDrawer, openSongDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
 
 describe('Song Drawer', () => {
   const song: Song = {
@@ -93,6 +93,7 @@ describe('Song Drawer', () => {
     const localSong = {
       ...song,
       description: 'This is a short description of the song',
+      imageUrl: 'something.png',
       releaseDate: '2024-10-16',
       difficulty: Difficulty.Medium,
       isRecorded: true,
@@ -119,9 +120,17 @@ describe('Song Drawer', () => {
     expect(screen.getByTestId('song-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByText(dayjs(localSong.releaseDate).format('YYYY'))).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.artist.name })).toHaveAttribute(
+      'src',
+      localSong.artist.imageUrl
+    )
     expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
@@ -140,6 +149,10 @@ describe('Song Drawer', () => {
     await user.hover(screen.getByText(localSong.album.title))
     expect(await screen.findByRole('dialog', { name: localSong.album.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.album.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.album.title })).toHaveAttribute(
+      'src',
+      localSong.album.imageUrl
+    )
     expect(screen.getAllByText(localSong.album.title)).toHaveLength(2)
     expect(
       screen.getByText(new RegExp(dayjs(localSong.album.releaseDate).format('D MMM YYYY')))
@@ -189,6 +202,47 @@ describe('Song Drawer', () => {
     render(null)
 
     expect(screen.getByTestId('song-drawer-loader')).toBeInTheDocument()
+  })
+
+  it("should display song's image if the song has one, if not the album's image", async () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    server.use(getSong(localSong))
+
+    const [{ rerender }, store] = render(localSong.id)
+
+    expect(await screen.findByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      id: '3123123123',
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    server.use(getSong(localSongWithAlbum))
+    await act(() => store.dispatch(closeSongDrawer()))
+    await act(() => store.dispatch(openSongDrawer(localSongWithAlbum.id)))
+    rerender(<SongDrawer />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('img', { name: localSongWithAlbum.title })).toHaveAttribute(
+        'src',
+        localSongWithAlbum.album.imageUrl
+      )
+    })
   })
 
   it('should change document title on opening and closing, correctly', async () => {

@@ -39,16 +39,56 @@ describe('Artist Drawer', () => {
     {
       ...emptySong,
       id: '1',
-      title: 'Song 1'
+      title: 'Song 1',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
+    },
+    {
+      ...emptySong,
+      id: '3',
+      title: 'Song 3',
+      imageUrl: 'something.png',
       album: {
         ...emptyAlbum,
-        id: '12',
-        title: 'Song Album'
+        id: '1',
+        title: 'Song Album 1',
+        imageUrl: 'something-album.png'
+      }
+    },
+    {
+      ...emptySong,
+      id: '4',
+      title: 'Song 4',
+      album: {
+        ...emptyAlbum,
+        id: '2',
+        title: 'Song Album 2',
+        imageUrl: 'something-album.png'
+      }
+    },
+    {
+      ...emptySong,
+      id: '5',
+      title: 'Song 5',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        id: '3',
+        title: 'Song Album 3',
+      }
+    },
+    {
+      ...emptySong,
+      id: '6',
+      title: 'Song 6',
+      album: {
+        ...emptyAlbum,
+        id: '4',
+        title: 'Song Album 4',
       }
     }
   ]
@@ -63,13 +103,15 @@ describe('Artist Drawer', () => {
     {
       ...emptyAlbum,
       id: '2',
-      title: 'Album 2'
+      title: 'Album 2',
+      imageUrl: 'something.png'
     }
   ]
 
   const artist: Artist = {
     id: '1',
     name: 'Artist 1',
+    imageUrl: 'something.png',
     createdAt: '',
     updatedAt: '',
     albums: [],
@@ -128,6 +170,7 @@ describe('Artist Drawer', () => {
     expect(screen.getByTestId('artist-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByText(`${albums.length} albums • ${songs.length} songs`)).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
@@ -135,15 +178,29 @@ describe('Artist Drawer', () => {
     )
 
     albums.forEach((album) => {
-      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
       expect(screen.getByText(album.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+      if (album.imageUrl) {
+        expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
+          'src',
+          album.imageUrl
+        )
+      }
       if (album.releaseDate) {
         expect(screen.getByText(dayjs(album.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
       }
     })
     songs.forEach((song) => {
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
       if (song.album) {
         expect(screen.getByText(song.album.title)).toBeInTheDocument()
       }
