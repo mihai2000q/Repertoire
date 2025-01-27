@@ -73,7 +73,9 @@ describe('Song Section', () => {
       />
     )
 
-    expect(screen.getByText(section.rehearsals)).toBeInTheDocument()
+    expect(screen.getAllByText(section.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
+    expect(screen.getAllByText(section.rehearsals)[0]).toBeVisible()
+    expect(screen.getAllByText(section.rehearsals)[1]).not.toBeVisible()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(section.confidence)
     expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
@@ -81,7 +83,7 @@ describe('Song Section', () => {
       (section.progress / maxSectionProgress) * 100
     )
 
-    await user.hover(screen.getByText(section.rehearsals))
+    await user.hover(screen.getAllByText(section.rehearsals)[0])
     expect(
       screen.getByRole('tooltip', { name: new RegExp(section.rehearsals.toString()) })
     ).toBeInTheDocument()
