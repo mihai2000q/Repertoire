@@ -20,7 +20,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
 
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
   const isSelected = hovered || isMenuOpened
@@ -68,7 +68,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
       <Menu.Target>
         <Group
           ref={ref}

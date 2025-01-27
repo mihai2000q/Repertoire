@@ -41,7 +41,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum, order }: AlbumSongC
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
 
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
   const isSelected = hovered || isMenuOpened
@@ -81,7 +81,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum, order }: AlbumSongC
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
       <Menu.Target>
         <Group
           aria-label={`song-card-${song.title}`}

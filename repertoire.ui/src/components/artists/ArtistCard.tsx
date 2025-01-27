@@ -21,7 +21,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
 
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -47,7 +47,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         })
       }}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
           <Avatar
             onMouseEnter={() => setIsAvatarHovered(true)}

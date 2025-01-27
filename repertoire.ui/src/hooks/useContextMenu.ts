@@ -15,7 +15,7 @@ interface MenuDropdownProps {
 
 interface ContextMenuHandlers {
   openMenu: (event: MouseEvent) => void
-  onMenuChange: (opened: boolean) => void
+  closeMenu: () => void
 }
 
 export default function useContextMenu(): [boolean, MenuDropdownProps, ContextMenuHandlers] {
@@ -39,9 +39,9 @@ export default function useContextMenu(): [boolean, MenuDropdownProps, ContextMe
     })
   }
 
-  function onMenuChange(opened: boolean) {
-    setMenuState({ ...menuState, opened })
+  function closeMenu() {
+    setMenuState((prevState) => ({ ...prevState, opened: false }))
   }
 
-  return [menuState.opened, menuProps, { openMenu, onMenuChange }]
+  return [menuState.opened, menuProps, { openMenu, closeMenu }]
 }
