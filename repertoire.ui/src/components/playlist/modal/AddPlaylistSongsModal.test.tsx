@@ -1,4 +1,10 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import AddPlaylistSongsModal from './AddPlaylistSongsModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -11,34 +17,16 @@ import Artist from '../../../types/models/Artist.ts'
 import Album from '../../../types/models/Album.ts'
 
 describe('Add Playlist Songs Modal', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
-    title: 'Album',
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
+    title: 'Album'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist',
-    albums: [],
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
+    name: 'Artist'
   }
 
   const songs: Song[] = [
@@ -56,7 +44,7 @@ describe('Add Playlist Songs Modal', () => {
       imageUrl: 'something.png',
       album: {
         ...album,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       },
       artist: artist
     },
@@ -66,8 +54,8 @@ describe('Add Playlist Songs Modal', () => {
       title: 'Song 11',
       album: {
         ...album,
-        imageUrl: 'something-album.png',
-      },
+        imageUrl: 'something-album.png'
+      }
     },
     {
       ...emptySong,
@@ -79,7 +67,7 @@ describe('Add Playlist Songs Modal', () => {
       ...emptySong,
       id: '5',
       title: 'Song 512',
-      imageUrl: 'something.png',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
@@ -146,7 +134,10 @@ describe('Add Playlist Songs Modal', () => {
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (song.album?.imageUrl) {
-        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.album.imageUrl)
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
       }
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.album) expect(within(renderedSong).getByText(song.album.title)).toBeInTheDocument()

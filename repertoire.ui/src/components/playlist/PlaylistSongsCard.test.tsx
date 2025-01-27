@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRender } from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
@@ -8,30 +8,8 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
-import Album from "../../types/models/Album.ts";
 
 describe('Playlist Songs Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
-  }
-
   const playlist: Playlist = {
     id: '1',
     title: 'Song 1',
@@ -46,7 +24,7 @@ describe('Playlist Songs Card', () => {
         imageUrl: 'something.png',
         album: {
           ...emptyAlbum,
-          imageUrl: 'something-album.png',
+          imageUrl: 'something-album.png'
         }
       },
       {
@@ -55,7 +33,7 @@ describe('Playlist Songs Card', () => {
         title: 'Song 2',
         album: {
           ...emptyAlbum,
-          imageUrl: 'something-album.png',
+          imageUrl: 'something-album.png'
         }
       },
       {
@@ -64,7 +42,7 @@ describe('Playlist Songs Card', () => {
         title: 'Song 3',
         imageUrl: 'something.png',
         album: {
-          ...emptyAlbum,
+          ...emptyAlbum
         }
       },
       {
@@ -72,20 +50,20 @@ describe('Playlist Songs Card', () => {
         id: '4',
         title: 'Song 4',
         album: {
-          ...emptyAlbum,
+          ...emptyAlbum
         }
       },
       {
         ...emptySong,
         id: '5',
         title: 'Song 5',
-        imageUrl: 'something.png',
+        imageUrl: 'something.png'
       },
       {
         ...emptySong,
         id: '6',
-        title: 'Song 6',
-      },
+        title: 'Song 6'
+      }
     ]
   }
 

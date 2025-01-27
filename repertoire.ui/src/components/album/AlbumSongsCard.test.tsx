@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRender } from '../../test-utils.tsx'
 import AlbumSongsCard from './AlbumSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Album from '../../types/models/Album.ts'
@@ -12,27 +12,6 @@ import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
 import { expect } from 'vitest'
 
 describe('Album Songs Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
@@ -41,7 +20,7 @@ describe('Album Songs Card', () => {
       imageUrl: 'something.png',
       album: {
         ...emptyAlbum,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -50,7 +29,7 @@ describe('Album Songs Card', () => {
       title: 'Song 2',
       album: {
         ...emptyAlbum,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -59,7 +38,7 @@ describe('Album Songs Card', () => {
       title: 'Song 3',
       imageUrl: 'something.png',
       album: {
-        ...emptyAlbum,
+        ...emptyAlbum
       }
     },
     {
@@ -67,9 +46,9 @@ describe('Album Songs Card', () => {
       id: '4',
       title: 'Song 4',
       album: {
-        ...emptyAlbum,
+        ...emptyAlbum
       }
-    },
+    }
   ]
 
   const album: Album = {

@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingArtistSongsModal from './AddExistingArtistSongsModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -7,30 +7,8 @@ import { setupServer } from 'msw/node'
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddSongsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
-import Album from "../../../types/models/Album.ts";
 
 describe('Add Existing Artist Songs Modal', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    createdAt: '',
-    id: '',
-    songs: [],
-    title: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
@@ -40,7 +18,7 @@ describe('Add Existing Artist Songs Modal', () => {
       album: {
         ...emptyAlbum,
         title: 'Album 1',
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -50,7 +28,7 @@ describe('Add Existing Artist Songs Modal', () => {
       album: {
         ...emptyAlbum,
         title: 'Album 2',
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -60,7 +38,7 @@ describe('Add Existing Artist Songs Modal', () => {
       imageUrl: 'something.png',
       album: {
         ...emptyAlbum,
-        title: 'Album 3',
+        title: 'Album 3'
       }
     },
     {
@@ -69,19 +47,19 @@ describe('Add Existing Artist Songs Modal', () => {
       title: 'Song 12',
       album: {
         ...emptyAlbum,
-        title: 'Album 4',
+        title: 'Album 4'
       }
     },
     {
       ...emptySong,
       id: '5',
       title: 'Song 512',
-      imageUrl: 'something.png',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
       id: '6',
-      title: 'Song 6',
+      title: 'Song 6'
     }
   ]
 
@@ -143,7 +121,10 @@ describe('Add Existing Artist Songs Modal', () => {
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (song.album?.imageUrl) {
-        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.album.imageUrl)
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
       }
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.album) expect(within(renderedSong).getByText(song.album.title)).toBeInTheDocument()

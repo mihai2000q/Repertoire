@@ -1,5 +1,5 @@
 import Album from 'src/types/models/Album.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import {emptyAlbum, emptyArtist, reduxRouterRender, withToastify} from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
 import Artist from 'src/types/models/Artist.ts'
@@ -10,20 +10,15 @@ import { RootState } from 'src/state/store.ts'
 
 describe('Album Card', () => {
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
   }
 
   const server = setupServer()

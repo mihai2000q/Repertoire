@@ -1,5 +1,5 @@
 import Playlist from './Playlist.tsx'
-import { reduxMemoryRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxMemoryRouterRender } from '../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import Song from '../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -9,19 +9,6 @@ import { default as PlaylistType } from './../types/models/Playlist.ts'
 import { RootState } from '../state/store.ts'
 
 describe('Playlist', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,

@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingArtistAlbumsModal from './AddExistingArtistAlbumsModal.tsx'
 import Album from '../../../types/models/Album.ts'
 import { http, HttpResponse } from 'msw'
@@ -9,14 +9,6 @@ import { userEvent } from '@testing-library/user-event'
 import { AddAlbumsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 
 describe('Add Existing Artist Albums Modal', () => {
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const albums: Album[] = [
     {
       ...emptyAlbum,

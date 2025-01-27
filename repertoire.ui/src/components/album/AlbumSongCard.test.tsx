@@ -1,31 +1,18 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptyOrder, emptySong, reduxRender } from '../../test-utils.tsx'
 import AlbumSongCard from './AlbumSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Order from '../../types/Order.ts'
 import SongProperty from '../../utils/enums/SongProperty.ts'
 import dayjs from 'dayjs'
 import Difficulty from '../../utils/enums/Difficulty.ts'
 
 describe('Album Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
     title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
     albumTrackNo: 1
-  }
-
-  const emptyOrder: Order = {
-    label: '',
-    value: ''
   }
 
   it('should render and display information, when the album is not unknown', () => {
@@ -227,7 +214,7 @@ describe('Album Song Card', () => {
       )
 
       expect(
-        screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
       ).toBeInTheDocument()
 
       rerender(

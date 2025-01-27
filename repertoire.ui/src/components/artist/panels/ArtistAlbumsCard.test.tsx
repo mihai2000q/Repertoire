@@ -1,4 +1,4 @@
-import { reduxRender } from '../../../test-utils.tsx'
+import { emptyAlbum, reduxRender } from '../../../test-utils.tsx'
 import ArtistAlbumsCard from './ArtistAlbumsCard.tsx'
 import Album from '../../../types/models/Album.ts'
 import { screen, within } from '@testing-library/react'
@@ -11,14 +11,6 @@ import Order from 'src/types/Order.ts'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
 
 describe('Artist Albums Card', () => {
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
-  }
-
   const albumModels: Album[] = [
     {
       ...emptyAlbum,
@@ -34,7 +26,7 @@ describe('Artist Albums Card', () => {
 
   const albums: WithTotalCountResponse<Album> = {
     models: albumModels,
-    totalCount: 2
+    totalCount: albumModels.length
   }
 
   const artistId = '1'
@@ -195,7 +187,9 @@ describe('Artist Albums Card', () => {
       await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing albums/i }))
 
-      expect(await screen.findByRole('dialog', { name: /add existing albums/i })).toBeInTheDocument()
+      expect(
+        await screen.findByRole('dialog', { name: /add existing albums/i })
+      ).toBeInTheDocument()
     })
 
     it('should open add new album modal', async () => {

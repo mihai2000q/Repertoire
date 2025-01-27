@@ -86,6 +86,7 @@ function ArtistSongsCard({
               song={song}
               handleRemove={() => handleRemoveSongsFromArtist([song.id])}
               isUnknownArtist={isUnknownArtist}
+              order={order}
             />
           ))}
           {songs.models.length === songs.totalCount && (
