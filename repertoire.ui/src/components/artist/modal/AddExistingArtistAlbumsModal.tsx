@@ -167,6 +167,7 @@ function AddExistingArtistAlbumsModal({
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -181,7 +182,7 @@ function AddExistingArtistAlbumsModal({
                     src={album.imageUrl ?? albumPlaceholder}
                     alt={album.title}
                   />
-                  <Text fw={500}>{album.title}</Text>
+                  <Text fw={500} lineClamp={2}>{album.title}</Text>
                 </Group>
               ))
             )}
