@@ -114,7 +114,7 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum, order }: AlbumSongC
           )}
           {order.property === SongProperty.LastTimePlayed && (
             <Text fw={500} c={'dimmed'} inline>
-              {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('DD MMM YYYY') : 'never'}
+              {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('D MMM YYYY') : 'never'}
             </Text>
           )}
         </Box>

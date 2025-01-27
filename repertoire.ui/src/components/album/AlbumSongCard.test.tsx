@@ -220,7 +220,7 @@ describe('Album Song Card', () => {
       )
 
       expect(
-        screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
       ).toBeInTheDocument()
 
       rerender(
