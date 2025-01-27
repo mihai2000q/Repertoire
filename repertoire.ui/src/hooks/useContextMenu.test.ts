@@ -43,7 +43,7 @@ describe('use Context Menu', () => {
       }
     })
 
-    act(() => closeMenu)
+    act(() => closeMenu())
     rerender()
 
     const [opened3] = result.current

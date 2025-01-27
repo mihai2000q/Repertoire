@@ -1,4 +1,4 @@
-import { emptyAlbum, reduxRender } from '../../../test-utils.tsx'
+import { emptyAlbum, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistAlbumsCard from './ArtistAlbumsCard.tsx'
 import Album from '../../../types/models/Album.ts'
 import { screen, within } from '@testing-library/react'
@@ -57,7 +57,7 @@ describe('Artist Albums Card', () => {
   it('should render and display albums', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -86,7 +86,7 @@ describe('Artist Albums Card', () => {
   })
 
   it('should display loader on loading', async () => {
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -107,7 +107,7 @@ describe('Artist Albums Card', () => {
     const newOrder = artistAlbumsOrders[0]
     const setOrder = vitest.fn()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -132,7 +132,7 @@ describe('Artist Albums Card', () => {
   it('should display more menu', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -152,7 +152,7 @@ describe('Artist Albums Card', () => {
   it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -173,7 +173,7 @@ describe('Artist Albums Card', () => {
     it('should open add existing albums modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistAlbumsCard
           albums={albums}
           artistId={artistId}
@@ -195,7 +195,7 @@ describe('Artist Albums Card', () => {
     it('should open add new album modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistAlbumsCard
           albums={albums}
           artistId={artistId}
@@ -216,7 +216,7 @@ describe('Artist Albums Card', () => {
   it('should open Add existing albums modal, when clicking new album card and the artist is not unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -235,7 +235,7 @@ describe('Artist Albums Card', () => {
   it('should open Add new album modal, when clicking new album card and the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}
@@ -264,7 +264,7 @@ describe('Artist Albums Card', () => {
       })
     )
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumsCard
         albums={albums}
         artistId={artistId}

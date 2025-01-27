@@ -1,4 +1,4 @@
-import { reduxRender, reduxRouterRender } from '../../test-utils.tsx'
+import { reduxRouterRender } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
@@ -16,7 +16,9 @@ describe('Artist Album Card', () => {
   }
 
   it('should render and display minimal information', async () => {
-    reduxRender(<ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRouterRender(
+      <ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />
+    )
 
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText(album.title)).toBeInTheDocument()
@@ -30,7 +32,7 @@ describe('Artist Album Card', () => {
       releaseDate: '2024-10-11'
     }
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistAlbumCard album={localAlbum} handleRemove={() => {}} isUnknownArtist={false} />
     )
 
@@ -47,7 +49,9 @@ describe('Artist Album Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRouterRender(
+      <ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />
+    )
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -61,7 +65,9 @@ describe('Artist Album Card', () => {
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRouterRender(
+      <ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />
+    )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -72,7 +78,9 @@ describe('Artist Album Card', () => {
   it('should display less information on the menu when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={true} />)
+    reduxRouterRender(
+      <ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={true} />
+    )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -102,7 +110,7 @@ describe('Artist Album Card', () => {
 
       const handleRemove = vitest.fn()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistAlbumCard album={album} handleRemove={handleRemove} isUnknownArtist={false} />
       )
 

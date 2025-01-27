@@ -1,4 +1,4 @@
-import { emptyAlbum, emptySong, reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
@@ -86,7 +86,7 @@ describe('Playlist Songs Card', () => {
   afterAll(() => server.close())
 
   it("should render and display playlist's songs", () => {
-    reduxRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -100,7 +100,7 @@ describe('Playlist Songs Card', () => {
   it('should display menu', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
@@ -111,7 +111,7 @@ describe('Playlist Songs Card', () => {
     it('should open add playlist songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<PlaylistSongsCard playlist={playlist} />)
+      reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add songs/i }))
@@ -123,7 +123,7 @@ describe('Playlist Songs Card', () => {
   it('should display new song card when there are no playlist songs and open Add playlist songs modal', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<PlaylistSongsCard playlist={{ ...playlist, songs: [] }} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={{ ...playlist, songs: [] }} />)
 
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
@@ -145,7 +145,7 @@ describe('Playlist Songs Card', () => {
       })
     )
 
-    reduxRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
     const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
 
