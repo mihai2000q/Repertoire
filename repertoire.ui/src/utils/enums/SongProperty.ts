@@ -1,5 +1,6 @@
 enum SongProperty {
   AlbumTrackNo = 'album_track_no',
+  ReleaseDate = 'release_date',
   Title = 'title',
   Difficulty = 'difficulty',
   Rehearsals = 'rehearsals',
