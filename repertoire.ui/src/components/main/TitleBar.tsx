@@ -39,15 +39,15 @@ function TitleBar() {
       gap={0}
       style={{ zIndex: 100, WebkitAppRegion: 'drag' }}
     >
-      <Group gap={0} h={height} px={'xs'}>
+      <Group gap={0} h={height} px={'xs'} wrap={'nowrap'}>
         <Avatar src={logo} size={25} />
-        <Text c={'gray.7'} fw={600} pl={6}>
+        <Text c={'gray.7'} fw={600} pl={6} truncate={'end'}>
           {title}
         </Text>
 
         <Space flex={1} />
 
-        <Group gap={4} style={{ WebkitAppRegion: 'no-drag' }}>
+        <Group gap={4} style={{ WebkitAppRegion: 'no-drag' }} wrap={'nowrap'}>
           <ActionIcon
             aria-label={'minimize'}
             variant={'subtle'}
