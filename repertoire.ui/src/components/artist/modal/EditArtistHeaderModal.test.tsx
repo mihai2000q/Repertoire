@@ -35,6 +35,7 @@ describe('Edit Artist Header Modal', () => {
     expect(screen.getByRole('heading', { name: /edit artist header/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', artist.imageUrl)
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()

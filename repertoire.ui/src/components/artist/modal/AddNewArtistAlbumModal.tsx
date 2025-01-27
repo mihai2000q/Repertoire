@@ -57,7 +57,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addAlbum)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview
                 image={image}
                 setImage={setImage}

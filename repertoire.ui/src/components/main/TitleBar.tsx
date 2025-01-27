@@ -39,7 +39,7 @@ function TitleBar() {
       gap={0}
       style={{ zIndex: 100, WebkitAppRegion: 'drag' }}
     >
-      <Group gap={0} h={height} px={'xs'} align={'center'}>
+      <Group gap={0} h={height} px={'xs'}>
         <Avatar src={logo} size={25} />
         <Text c={'gray.7'} fw={600} pl={6}>
           {title}

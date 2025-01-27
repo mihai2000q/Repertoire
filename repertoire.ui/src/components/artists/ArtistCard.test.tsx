@@ -24,11 +24,24 @@ describe('Artist Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render', () => {
+  it('should render with minimal info', () => {
     reduxRouterRender(<ArtistCard artist={artist} />)
 
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByText(artist.name)).toBeInTheDocument()
+  })
+
+  it('should render with maximal info', () => {
+    const localArtist: Artist = {
+      ...artist,
+      imageUrl: 'something.png'
+    }
+
+    reduxRouterRender(<ArtistCard artist={localArtist} />)
+
+    expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute('src', localArtist.imageUrl)
+    expect(screen.getByText(localArtist.name)).toBeInTheDocument()
   })
 
   it('should display menu on right click', async () => {

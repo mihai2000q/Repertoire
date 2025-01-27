@@ -55,6 +55,7 @@ describe('Playlist Header Card', () => {
     reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
     expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: playlist.title })).toHaveAttribute('src', playlist.imageUrl)
     expect(screen.getByRole('heading', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByText(playlist.description)).toBeInTheDocument()
     expect(screen.getByText(`${playlist.songs.length} songs`)).toBeInTheDocument()

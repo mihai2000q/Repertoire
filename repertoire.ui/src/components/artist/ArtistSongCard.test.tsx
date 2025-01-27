@@ -40,6 +40,7 @@ describe('Artist Song Card', () => {
   it('should render and display maximal information', async () => {
     const localSong: Song = {
       ...song,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-11',
       album: album
     }
@@ -47,10 +48,45 @@ describe('Artist Song Card', () => {
     reduxRender(<ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />)
 
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute('src', localSong.imageUrl)
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
     expect(screen.getByText(dayjs(localSong.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
+  })
+
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRender(
+      <ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />
+    )
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(
+      <ArtistSongCard song={localSongWithAlbum} handleRemove={() => {}} isUnknownArtist={false} />
+    )
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
   })
 
   it('should display menu by clicking on the dots button', async () => {

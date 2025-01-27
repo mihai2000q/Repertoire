@@ -26,26 +26,57 @@ describe('Album Drawer', () => {
     updatedAt: ''
   }
 
+  const emptyAlbum: Album = {
+    id: '',
+    title: '',
+    createdAt: '',
+    updatedAt: '',
+    songs: []
+  }
+
   const songs: Song[] = [
     {
       ...emptySong,
       id: '1',
       title: 'Song 1',
-      albumTrackNo: 1
+      albumTrackNo: 1,
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png',
+      }
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
-      albumTrackNo: 2
+      albumTrackNo: 2,
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png',
+      }
+    },
+    {
+      ...emptySong,
+      id: '3',
+      title: 'Song 3',
+      albumTrackNo: 3,
+      imageUrl: 'something.png',
+      album: emptyAlbum
+    },
+    {
+      ...emptySong,
+      id: '4',
+      title: 'Song 4',
+      albumTrackNo: 4,
+      album: emptyAlbum
     }
   ]
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
     songs: songs
   }
 
@@ -102,8 +133,16 @@ describe('Album Drawer', () => {
 
     album.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
     })
   })
 
@@ -112,6 +151,7 @@ describe('Album Drawer', () => {
 
     const localAlbum = {
       ...album,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-16',
       artist: artist
     }
@@ -123,9 +163,17 @@ describe('Album Drawer', () => {
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
+      'src',
+      localAlbum.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByText(dayjs(localAlbum.releaseDate).format('YYYY'))).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.artist.name })).toHaveAttribute(
+      'src',
+      localAlbum.artist.imageUrl
+    )
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
@@ -139,8 +187,16 @@ describe('Album Drawer', () => {
 
     localAlbum.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
     })
   })
 

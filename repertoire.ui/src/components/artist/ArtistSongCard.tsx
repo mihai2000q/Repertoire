@@ -45,7 +45,6 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist }: ArtistSongCardP
       <Group
         ref={ref}
         aria-label={`song-card-${song.title}`}
-        align={'center'}
         wrap={'nowrap'}
         sx={(theme) => ({
           cursor: 'default',

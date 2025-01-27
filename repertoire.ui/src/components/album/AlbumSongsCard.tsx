@@ -8,15 +8,28 @@ import { useRemoveSongsFromAlbumMutation } from '../../state/albumsApi.ts'
 import { useDisclosure } from '@mantine/hooks'
 import Album from '../../types/models/Album.ts'
 import Song from '../../types/models/Song.ts'
+import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
+import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
+import Order from '../../types/Order.ts'
+import { Dispatch, SetStateAction } from 'react'
 
 interface AlbumSongsCardProps {
   album: Album | undefined
   songs: Song[] | undefined
   isUnknownAlbum: boolean
+  order: Order
+  setOrder: Dispatch<SetStateAction<Order>>
   isFetching?: boolean
 }
 
-function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongsCardProps) {
+function AlbumSongsCard({
+  album,
+  songs,
+  isUnknownAlbum,
+  order,
+  setOrder,
+  isFetching
+}: AlbumSongsCardProps) {
   const [removeSongsFromAlbum] = useRemoveSongsFromAlbumMutation()
 
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
@@ -32,9 +45,18 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'}>
+        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
+
+          <CompactOrderButton
+            availableOrders={albumSongsOrders}
+            order={order}
+            setOrder={setOrder}
+            disabledOrders={isUnknownAlbum ? [albumSongsOrders[0]] : []}
+          />
+
           <Space flex={1} />
+
           <Menu position={'bottom-end'}>
             <Menu.Target>
               <ActionIcon aria-label={'songs-more-menu'} size={'md'} variant={'grey'}>
@@ -61,6 +83,7 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
               song={song}
               handleRemove={() => handleRemoveSongsFromAlbum([song.id])}
               isUnknownAlbum={isUnknownAlbum}
+              order={order}
             />
           ))}
           {(isUnknownAlbum || album.songs.length === 0) && (
@@ -74,11 +97,7 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
         </Stack>
       </Stack>
 
-      <AddNewAlbumSongModal
-        opened={openedAddNewSong}
-        onClose={closeAddNewSong}
-        album={album}
-      />
+      <AddNewAlbumSongModal opened={openedAddNewSong} onClose={closeAddNewSong} album={album} />
       <AddExistingAlbumSongsModal
         opened={openedAddExistingSongs}
         onClose={closeAddExistingSongs}

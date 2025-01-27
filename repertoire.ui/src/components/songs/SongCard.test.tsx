@@ -47,6 +47,39 @@ describe('Song Card', () => {
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
   })
 
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRouterRender(<SongCard song={localSong} />)
+
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(<SongCard song={localSongWithAlbum} />)
+
+    expect(screen.getByRole('img', { name: localSongWithAlbum.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
+  })
+
   it('should render and display icons when the song is recorded, has guitar tuning, and songsterr and youtube links', async () => {
     const user = userEvent.setup()
 

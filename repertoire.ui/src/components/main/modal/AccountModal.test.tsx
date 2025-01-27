@@ -36,6 +36,7 @@ describe('Account Modal', () => {
     expect(screen.getByRole('heading', { name: /account/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'profile-picture-preview' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'profile-picture-preview' })).toHaveAttribute('src', user.profilePictureUrl)
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()

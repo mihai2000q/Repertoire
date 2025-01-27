@@ -67,7 +67,7 @@ function Topbar(): ReactElement {
         ...(scrollPosition.y !== 0 && { boxShadow: theme.shadows.md })
       })}
     >
-      <Group align={'center'} h={'100%'} gap={0}>
+      <Group h={'100%'} gap={0}>
         <Autocomplete
           role={'searchbox'}
           aria-label={'topbar-search'}

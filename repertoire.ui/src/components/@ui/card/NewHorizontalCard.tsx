@@ -21,7 +21,6 @@ function NewHorizontalCard({
 }: NewHorizontalCardProps) {
   return (
     <Group
-      align={'center'}
       wrap={'nowrap'}
       px={'md'}
       py={'xs'}

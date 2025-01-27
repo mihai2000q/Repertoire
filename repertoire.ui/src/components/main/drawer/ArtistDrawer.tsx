@@ -161,7 +161,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
-              <Group key={album.id} align={'center'} wrap={'nowrap'} gap={'xs'}>
+              <Group key={album.id} wrap={'nowrap'} gap={'xs'}>
                 <Avatar
                   radius={'8px'}
                   size={28}
@@ -191,7 +191,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
-              <Group key={song.id} align={'center'} gap={'xs'} wrap={'nowrap'}>
+              <Group key={song.id} gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   radius={'8px'}
                   size={28}

@@ -8,6 +8,7 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
+import Album from "../../types/models/Album.ts";
 
 describe('Playlist Songs Card', () => {
   const emptySong: Song = {
@@ -23,6 +24,14 @@ describe('Playlist Songs Card', () => {
     updatedAt: ''
   }
 
+  const emptyAlbum: Album = {
+    id: '',
+    title: '',
+    createdAt: '',
+    updatedAt: '',
+    songs: []
+  }
+
   const playlist: Playlist = {
     id: '1',
     title: 'Song 1',
@@ -33,13 +42,50 @@ describe('Playlist Songs Card', () => {
       {
         ...emptySong,
         id: '1',
-        title: 'Song 1'
+        title: 'Song 1',
+        imageUrl: 'something.png',
+        album: {
+          ...emptyAlbum,
+          imageUrl: 'something-album.png',
+        }
       },
       {
         ...emptySong,
         id: '2',
-        title: 'Song 2'
-      }
+        title: 'Song 2',
+        album: {
+          ...emptyAlbum,
+          imageUrl: 'something-album.png',
+        }
+      },
+      {
+        ...emptySong,
+        id: '3',
+        title: 'Song 3',
+        imageUrl: 'something.png',
+        album: {
+          ...emptyAlbum,
+        }
+      },
+      {
+        ...emptySong,
+        id: '4',
+        title: 'Song 4',
+        album: {
+          ...emptyAlbum,
+        }
+      },
+      {
+        ...emptySong,
+        id: '5',
+        title: 'Song 5',
+        imageUrl: 'something.png',
+      },
+      {
+        ...emptySong,
+        id: '6',
+        title: 'Song 6',
+      },
     ]
   }
 

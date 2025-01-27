@@ -11,7 +11,6 @@ import {
   Image,
   Menu,
   NumberFormatter,
-  Progress,
   Stack,
   Text,
   Title,
@@ -20,8 +19,8 @@ import {
 import { useDeleteSongMutation, useGetSongQuery } from '../../../state/songsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
-import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -42,6 +41,8 @@ import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
+import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -122,7 +123,7 @@ function SongDrawer() {
           <AspectRatio ratio={4 / 3}>
             <Image
               src={song.imageUrl ?? song.album?.imageUrl}
-              fallbackSrc={imagePlaceholder}
+              fallbackSrc={songPlaceholder}
               alt={song.title}
             />
           </AspectRatio>
@@ -204,11 +205,11 @@ function SongDrawer() {
                     </Text>
                   </HoverCard.Target>
                   <HoverCard.Dropdown maw={300}>
-                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                    <Group gap={'xs'} wrap={'nowrap'}>
                       <Avatar
                         size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? songPlaceholder}
+                        src={song.album.imageUrl ?? albumPlaceholder}
                         alt={song.album.title}
                       />
                       <Stack gap={2}>
@@ -267,7 +268,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <DifficultyBar difficulty={song.difficulty} />
+                  <DifficultyBar difficulty={song.difficulty} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -359,16 +360,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating
-                    role={'tooltip'}
-                    label={
-                      <>
-                        <NumberFormatter value={song.confidence} />%
-                      </>
-                    }
-                  >
-                    <Progress aria-label={'confidence'} flex={1} size={7} value={song.confidence} />
-                  </Tooltip.Floating>
+                  <SongConfidenceBar confidence={song.confidence} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -381,18 +373,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating
-                    role={'tooltip'}
-                    label={<NumberFormatter value={song.progress} />}
-                  >
-                    <Progress
-                      aria-label={'progress'}
-                      flex={1}
-                      size={7}
-                      value={song.progress / 10}
-                      color={'green'}
-                    />
-                  </Tooltip.Floating>
+                  <SongProgressBar progress={song.progress} size={7} />
                 </Grid.Col>
               </>
             )}

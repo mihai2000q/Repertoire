@@ -37,7 +37,6 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
     <>
       <Group
         ref={ref}
-        align={'center'}
         wrap={'nowrap'}
         aria-label={`album-card-${album.title}`}
         sx={(theme) => ({

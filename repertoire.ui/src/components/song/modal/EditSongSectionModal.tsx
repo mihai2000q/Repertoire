@@ -104,7 +104,7 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
               {...form.getInputProps('name')}
             />
 
-            <Group align={'center'}>
+            <Group>
               <SongSectionTypeSelect
                 flex={1}
                 label={'Type'}

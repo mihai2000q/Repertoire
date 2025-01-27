@@ -81,13 +81,13 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
         <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack>
-          <Group align={'center'}>
+          <Group>
             <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
             <DifficultySelect option={difficulty} onChange={setDifficulty} />
           </Group>
 
-          <Group align={'center'}>
+          <Group>
             <NumberInput
               min={1}
               leftSection={<CustomIconMetronome size={20} />}

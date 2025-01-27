@@ -7,6 +7,11 @@ export interface GetAlbumsRequest {
   searchBy?: string[]
 }
 
+export interface GetAlbumRequest {
+  id: string
+  songsOrderBy?: string[]
+}
+
 export interface CreateAlbumRequest {
   title: string
   releaseDate?: Date | string
