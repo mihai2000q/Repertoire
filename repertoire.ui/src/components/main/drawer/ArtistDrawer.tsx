@@ -198,7 +198,7 @@ function ArtistDrawer() {
                   src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
                   alt={song.title}
                 />
-                <Stack gap={1}>
+                <Stack gap={1} style={{ overflow: 'hidden' }}>
                   <Text fw={500} truncate={'end'} inline>
                     {song.title}
                   </Text>
