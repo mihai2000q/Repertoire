@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify'
 import Album from "./types/models/Album.ts";
 import Song from "./types/models/Song.ts";
 import Artist from "./types/models/Artist.ts";
+import Order from "./types/Order.ts";
 
 // Custom Matchers
 
@@ -220,4 +221,9 @@ export const emptySong: Song = {
   sections: [],
   createdAt: '',
   updatedAt: ''
+}
+
+export const emptyOrder: Order = {
+  label: '',
+  value: ''
 }

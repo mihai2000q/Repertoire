@@ -1,9 +1,8 @@
-import { emptySong, reduxRender } from '../../test-utils.tsx'
+import { emptyOrder, emptySong, reduxRender } from '../../test-utils.tsx'
 import AlbumSongCard from './AlbumSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Order from '../../types/Order.ts'
 import SongProperty from '../../utils/enums/SongProperty.ts'
 import dayjs from 'dayjs'
 import Difficulty from '../../utils/enums/Difficulty.ts'
@@ -14,11 +13,6 @@ describe('Album Song Card', () => {
     id: '1',
     title: 'Song 1',
     albumTrackNo: 1
-  }
-
-  const emptyOrder: Order = {
-    label: '',
-    value: ''
   }
 
   it('should render and display information, when the album is not unknown', () => {
