@@ -7,7 +7,8 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { setupServer } from 'msw/node'
 import { default as AlbumType } from './../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
-import {expect} from "vitest";
+import { expect } from 'vitest'
+import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 
 describe('Album', () => {
   const emptySong: Song = {
@@ -62,18 +63,6 @@ describe('Album', () => {
     })
   ]
 
-  const getSongs = http.get('/songs', async () => {
-    const response: WithTotalCountResponse<Song> = {
-      models: songs,
-      totalCount: songs.length
-    }
-    return HttpResponse.json(response)
-  })
-
-  const getAlbum = http.get(`/albums/${album.id}`, async () => {
-    return HttpResponse.json(album)
-  })
-
   const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
@@ -83,7 +72,15 @@ describe('Album', () => {
   afterAll(() => server.close())
 
   it('should render and display info from album when the album is not unknown', async () => {
-    server.use(getAlbum)
+    let songsOrderBy: string[]
+    server.use(
+      http.get(`/albums/${album.id}`, async (req) => {
+        if (!songsOrderBy) {
+          songsOrderBy = new URL(req.request.url).searchParams.getAll('songsOrderBy')
+        }
+        return HttpResponse.json(album)
+      })
+    )
 
     const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
 
@@ -91,10 +88,27 @@ describe('Album', () => {
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(album.title)
+
+    expect(songsOrderBy).toHaveLength(1)
+    expect(songsOrderBy[0]).toBe(albumSongsOrders[0].value)
   })
 
   it('should render and display info from songs when the album is unknown', async () => {
-    server.use(getSongs)
+    let songsSearchBy: string[]
+    let songsOrderBy: string[]
+    server.use(
+      http.get('/songs', async (req) => {
+        if (!songsSearchBy || !songsOrderBy) {
+          songsSearchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+          songsOrderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        }
+        const response: WithTotalCountResponse<Song> = {
+          models: songs,
+          totalCount: songs.length
+        }
+        return HttpResponse.json(response)
+      })
+    )
 
     const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
 
@@ -102,5 +116,11 @@ describe('Album', () => {
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
+
+    expect(songsSearchBy).toHaveLength(1)
+    expect(songsSearchBy[0]).toMatch('album_id IS NULL')
+
+    expect(songsOrderBy).toHaveLength(1)
+    expect(songsOrderBy[0]).toBe(albumSongsOrders[1].value)
   })
 })
