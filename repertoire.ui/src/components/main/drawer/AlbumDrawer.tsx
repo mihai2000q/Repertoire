@@ -45,7 +45,7 @@ function AlbumDrawer() {
 
   const [deleteAlbumMutation] = useDeleteAlbumMutation()
 
-  const { data: album, isFetching } = useGetAlbumQuery(albumId, { skip: !albumId })
+  const { data: album, isFetching } = useGetAlbumQuery({ id: albumId }, { skip: !albumId })
 
   useEffect(() => {
     if (album && opened && !isFetching)
