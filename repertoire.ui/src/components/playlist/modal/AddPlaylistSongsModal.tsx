@@ -148,6 +148,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -163,16 +164,16 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     alt={song.title}
                   />
                   <Stack gap={0} style={{ overflow: 'hidden' }}>
-                    <Group gap={4}>
+                    <Group gap={4} wrap={'nowrap'}>
                       <Text fw={500} truncate={'end'}>
                         {song.title}
                       </Text>
                       {song.album && (
-                        <Group gap={4}>
+                        <Group gap={4} wrap={'nowrap'}>
                           <Text fz={'sm'} c={'dimmed'}>
                             -
                           </Text>
-                          <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                          <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
                             {song.album.title}
                           </Text>
                         </Group>

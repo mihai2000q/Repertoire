@@ -70,7 +70,7 @@ function SongCard({ song }: SongCardProps) {
   const solos = song.sections.filter((s) => s.songSectionType.name === 'Solo').length
   const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
 
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -96,7 +96,7 @@ function SongCard({ song }: SongCardProps) {
   }
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
       <Menu.Target>
         <Card
           aria-label={`song-card-${song.title}`}

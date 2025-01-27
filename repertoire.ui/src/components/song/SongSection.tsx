@@ -24,6 +24,7 @@ import { toast } from 'react-toastify'
 import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import useContextMenu from '../../hooks/useContextMenu.ts'
 
 interface SongSectionProps {
   section: SongSectionModel
@@ -45,6 +46,8 @@ function SongSection({
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
 
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+
   const [openedEditSongSection, { open: openEditSongSection, close: closeEditSongSection }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -64,117 +67,128 @@ function SongSection({
     toast.success(`${section.name} deleted!`)
   }
 
+  const menuDropdown = (
+    <>
+      <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongSection}>
+        Edit
+      </Menu.Item>
+      <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
+        Delete
+      </Menu.Item>
+    </>
+  )
+
   return (
-    <Stack
-      py={'xs'}
-      px={'md'}
-      aria-label={`song-section-${section.name}`}
-      sx={(theme) => ({
-        cursor: 'default',
-        transition: '0.25s',
-        borderRadius: isDragging ? '16px' : '0px',
-        border: isDragging
-          ? `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
-          : '1px solid transparent',
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
+      <Menu.Target>
+        <Stack
+          py={'xs'}
+          px={'md'}
+          aria-label={`song-section-${section.name}`}
+          sx={(theme) => ({
+            cursor: 'default',
+            transition: '0.25s',
+            borderRadius: isDragging ? '16px' : '0px',
+            border: isDragging
+              ? `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
+              : '1px solid transparent',
 
-        '&:hover': {
-          boxShadow: theme.shadows.xl,
-          backgroundColor: alpha(theme.colors.primary[0], 0.15)
-        }
-      })}
-      ref={draggableProvided.innerRef}
-      {...draggableProvided.draggableProps}
-    >
-      <Group gap={'xs'}>
-        <ActionIcon
-          aria-label={'drag-handle'}
-          variant={'subtle'}
-          size={'lg'}
-          {...draggableProvided.dragHandleProps}
+            '&:hover': {
+              boxShadow: theme.shadows.xl,
+              backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }
+          })}
+          ref={draggableProvided.innerRef}
+          {...draggableProvided.draggableProps}
+          onContextMenu={openMenu}
         >
-          <IconGripVertical size={20} />
-        </ActionIcon>
-
-        <Text inline fw={600}>
-          {section.songSectionType.name}
-        </Text>
-        <Text flex={1} inline truncate={'end'}>
-          {section.name}
-        </Text>
-
-        <Group gap={2}>
-          <Tooltip label={'Add Rehearsal'} openDelay={200}>
+          <Group gap={'xs'}>
             <ActionIcon
+              aria-label={'drag-handle'}
               variant={'subtle'}
-              size={'md'}
-              disabled={isUpdateLoading}
-              aria-label={'add-rehearsal'}
-              onClick={handleAddRehearsal}
+              size={'lg'}
+              {...draggableProvided.dragHandleProps}
             >
-              <IconLocationPlus size={15} />
+              <IconGripVertical size={20} />
             </ActionIcon>
-          </Tooltip>
 
-          <Menu>
-            <Menu.Target>
-              <ActionIcon variant={'subtle'} size={'lg'} aria-label={'more-menu'}>
-                <IconDots size={20} />
-              </ActionIcon>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongSection}>
-                Edit
-              </Menu.Item>
-              <Menu.Item
-                leftSection={<IconTrash size={14} />}
-                c={'red.5'}
-                onClick={openDeleteWarning}
-              >
-                Delete
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-      </Group>
-
-      <Collapse in={showDetails}>
-        <Group aria-label={`song-section-details-${section.name}`} gap={'xl'} px={'md'}>
-          <Tooltip.Floating
-            role={'tooltip'}
-            label={
-              <>
-                Rehearsals: <NumberFormatter value={section.rehearsals} />
-              </>
-            }
-          >
-            <Text fw={500} c={'dimmed'} fz={'md'} inline>
-              <NumberFormatter value={section.rehearsals} />
+            <Text inline fw={600}>
+              {section.songSectionType.name}
             </Text>
-          </Tooltip.Floating>
+            <Text flex={1} inline truncate={'end'}>
+              {section.name}
+            </Text>
 
-          <Tooltip.Floating role={'tooltip'} label={`Confidence: ${section.confidence}%`}>
-            <Progress flex={1} size={'sm'} value={section.confidence} aria-label={'confidence'} />
-          </Tooltip.Floating>
+            <Group gap={2}>
+              <Tooltip label={'Add Rehearsal'} openDelay={200}>
+                <ActionIcon
+                  variant={'subtle'}
+                  size={'md'}
+                  disabled={isUpdateLoading}
+                  aria-label={'add-rehearsal'}
+                  onClick={handleAddRehearsal}
+                >
+                  <IconLocationPlus size={15} />
+                </ActionIcon>
+              </Tooltip>
 
-          <Tooltip.Floating
-            role={'tooltip'}
-            label={
-              <>
-                Progress: <NumberFormatter value={section.progress} />
-              </>
-            }
-          >
-            <Progress
-              flex={1}
-              size={'sm'}
-              aria-label={'progress'}
-              value={section.progress === 0 ? 0 : (section.progress / maxSectionProgress) * 100}
-              color={'green'}
-            />
-          </Tooltip.Floating>
-        </Group>
-      </Collapse>
+              <Menu>
+                <Menu.Target>
+                  <ActionIcon variant={'subtle'} size={'lg'} aria-label={'more-menu'}>
+                    <IconDots size={20} />
+                  </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+              </Menu>
+            </Group>
+          </Group>
+
+          <Collapse in={showDetails}>
+            <Group aria-label={`song-section-details-${section.name}`} gap={'xl'} px={'md'}>
+              <Tooltip.Floating
+                role={'tooltip'}
+                label={
+                  <>
+                    Rehearsals: <NumberFormatter value={section.rehearsals} />
+                  </>
+                }
+              >
+                <Text fw={500} c={'dimmed'} fz={'md'} inline>
+                  <NumberFormatter value={section.rehearsals} />
+                </Text>
+              </Tooltip.Floating>
+
+              <Tooltip.Floating role={'tooltip'} label={`Confidence: ${section.confidence}%`}>
+                <Progress
+                  flex={1}
+                  size={'sm'}
+                  value={section.confidence}
+                  aria-label={'confidence'}
+                />
+              </Tooltip.Floating>
+
+              <Tooltip.Floating
+                role={'tooltip'}
+                label={
+                  <>
+                    Progress: <NumberFormatter value={section.progress} />
+                  </>
+                }
+              >
+                <Progress
+                  flex={1}
+                  size={'sm'}
+                  aria-label={'progress'}
+                  value={section.progress === 0 ? 0 : (section.progress / maxSectionProgress) * 100}
+                  color={'green'}
+                />
+              </Tooltip.Floating>
+            </Group>
+          </Collapse>
+        </Stack>
+      </Menu.Target>
+
+      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
 
       <EditSongSectionModal
         opened={openedEditSongSection}
@@ -194,7 +208,7 @@ function SongSection({
         }
         onYes={handleDelete}
       />
-    </Stack>
+    </Menu>
   )
 }
 

@@ -163,6 +163,7 @@ function AddExistingAlbumSongsModal({
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -178,9 +179,9 @@ function AddExistingAlbumSongsModal({
                     alt={song.title}
                   />
                   <Stack gap={0}>
-                    <Text fw={500}>{song.title}</Text>
+                    <Text fw={500} lineClamp={2}>{song.title}</Text>
                     {song.artist && (
-                      <Text fz={'sm'} c={'dimmed'}>
+                      <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
                         {song.artist.name}
                       </Text>
                     )}

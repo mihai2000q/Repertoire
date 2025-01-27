@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react'
 import useContextMenu from './useContextMenu.ts'
 import React from 'react'
 
-describe('useAuth', () => {
+describe('use Context Menu', () => {
   it('should return change menu state on open', () => {
     const expectedClientX = 10
     const expectedClientY = 10
@@ -31,8 +31,8 @@ describe('useAuth', () => {
     )
     rerender()
 
-    // on menu change
-    const [opened2, props2, { onMenuChange }] = result.current
+    // close menu
+    const [opened2, props2, { closeMenu }] = result.current
 
     expect(opened2).toBeTruthy()
     expect(props2).toStrictEqual({
@@ -43,7 +43,7 @@ describe('useAuth', () => {
       }
     })
 
-    act(() => onMenuChange(false))
+    act(() => closeMenu())
     rerender()
 
     const [opened3] = result.current

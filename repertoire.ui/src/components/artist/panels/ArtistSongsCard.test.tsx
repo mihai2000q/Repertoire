@@ -1,4 +1,4 @@
-import { emptyAlbum, emptySong, reduxRender } from '../../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistSongsCard from './ArtistSongsCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { screen, within } from '@testing-library/react'
@@ -94,7 +94,7 @@ describe('Artist Songs Card', () => {
   it('should render and display songs', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -123,7 +123,7 @@ describe('Artist Songs Card', () => {
   })
 
   it('should display loader on loading', async () => {
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -144,7 +144,7 @@ describe('Artist Songs Card', () => {
     const newOrder = artistSongsOrders[0]
     const setOrder = vitest.fn()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -169,7 +169,7 @@ describe('Artist Songs Card', () => {
   it('should display more menu', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -189,7 +189,7 @@ describe('Artist Songs Card', () => {
   it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -210,7 +210,7 @@ describe('Artist Songs Card', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistSongsCard
           songs={songs}
           artistId={artistId}
@@ -230,7 +230,7 @@ describe('Artist Songs Card', () => {
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistSongsCard
           songs={songs}
           artistId={artistId}
@@ -251,7 +251,7 @@ describe('Artist Songs Card', () => {
   it('should open Add existing songs modal, when clicking new song card and the artist is not unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -270,7 +270,7 @@ describe('Artist Songs Card', () => {
   it('should open Add new song modal, when clicking new song card and the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -299,7 +299,7 @@ describe('Artist Songs Card', () => {
       })
     )
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}

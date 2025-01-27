@@ -1,4 +1,4 @@
-import { emptyAlbum, emptySong, reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import AlbumSongsCard from './AlbumSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Album from '../../types/models/Album.ts'
@@ -89,7 +89,7 @@ describe('Album Songs Card', () => {
   it("should render and display album's songs when the album is not unknown", async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <AlbumSongsCard
         album={album}
         songs={[]}
@@ -123,7 +123,7 @@ describe('Album Songs Card', () => {
   it('should render and display the songs when the album is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <AlbumSongsCard
         album={album}
         songs={songs}
@@ -162,7 +162,7 @@ describe('Album Songs Card', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <AlbumSongsCard
           album={album}
           songs={[]}
@@ -181,7 +181,7 @@ describe('Album Songs Card', () => {
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <AlbumSongsCard
           album={album}
           songs={[]}
@@ -201,7 +201,7 @@ describe('Album Songs Card', () => {
   it('should display new song card when there are no album songs and open Add existing songs modal', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <AlbumSongsCard
         album={{ ...album, songs: [] }}
         songs={[]}
@@ -221,7 +221,7 @@ describe('Album Songs Card', () => {
   it('should display new song card when the album is unknown and open Add new song modal', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <AlbumSongsCard
         album={album}
         songs={songs}
@@ -251,7 +251,7 @@ describe('Album Songs Card', () => {
       })
     )
 
-    reduxRender(
+    reduxRouterRender(
       <AlbumSongsCard
         album={album}
         songs={songs}

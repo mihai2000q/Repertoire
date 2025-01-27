@@ -99,7 +99,30 @@ describe('Song Section', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display menu', async () => {
+  it('should display menu on right click', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(
+      <SongSection
+        section={section}
+        songId={''}
+        maxSectionProgress={0}
+        showDetails={true}
+        isDragging={false}
+        draggableProvided={draggableProvided}
+      />
+    )
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`song-section-${section.name}`)
+    })
+
+    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+  })
+
+  it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -114,6 +137,7 @@ describe('Song Section', () => {
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
+
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
