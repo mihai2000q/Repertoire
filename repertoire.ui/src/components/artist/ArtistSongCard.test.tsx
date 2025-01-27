@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptyOrder, reduxRender } from '../../test-utils.tsx'
 import ArtistSongCard from './ArtistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -6,6 +6,8 @@ import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
 import dayjs from 'dayjs'
+import SongProperty from '../../utils/enums/SongProperty.ts'
+import Difficulty from '../../utils/enums/Difficulty.ts'
 
 describe('Artist Song Card', () => {
   const song: Song = {
@@ -30,7 +32,14 @@ describe('Artist Song Card', () => {
   }
 
   it('should render and display minimal information', async () => {
-    reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRender(
+      <ArtistSongCard
+        song={song}
+        handleRemove={() => {}}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
+    )
 
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
@@ -41,16 +50,24 @@ describe('Artist Song Card', () => {
     const localSong: Song = {
       ...song,
       imageUrl: 'something.png',
-      releaseDate: '2024-10-11',
       album: album
     }
 
-    reduxRender(<ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRender(
+      <ArtistSongCard
+        song={localSong}
+        handleRemove={() => {}}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
+    )
 
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute('src', localSong.imageUrl)
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
-    expect(screen.getByText(dayjs(localSong.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
@@ -62,7 +79,12 @@ describe('Artist Song Card', () => {
     }
 
     const [{ rerender }] = reduxRender(
-      <ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />
+      <ArtistSongCard
+        song={localSong}
+        handleRemove={() => {}}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
     )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
@@ -80,7 +102,12 @@ describe('Artist Song Card', () => {
     }
 
     rerender(
-      <ArtistSongCard song={localSongWithAlbum} handleRemove={() => {}} isUnknownArtist={false} />
+      <ArtistSongCard
+        song={localSongWithAlbum}
+        handleRemove={() => {}}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
     )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
@@ -92,7 +119,14 @@ describe('Artist Song Card', () => {
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} />)
+    reduxRender(
+      <ArtistSongCard
+        song={song}
+        handleRemove={() => {}}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
+    )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -102,11 +136,176 @@ describe('Artist Song Card', () => {
   it('should display less information on the menu when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={true} />)
+    reduxRender(
+      <ArtistSongCard
+        song={song}
+        handleRemove={() => {}}
+        isUnknownArtist={true}
+        order={emptyOrder}
+      />
+    )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
+  })
+
+  describe('on order property change', () => {
+    it('should display the release date, when it is release date', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.ReleaseDate
+      }
+
+      const localSong = {
+        ...song,
+        releaseDate: '2024-10-12T10:30'
+      }
+
+      reduxRender(
+        <ArtistSongCard
+          song={localSong}
+          handleRemove={() => {}}
+          isUnknownArtist={false}
+          order={order}
+        />
+      )
+
+      expect(
+        screen.getByText(dayjs(localSong.releaseDate).format('D MMM YYYY'))
+      ).toBeInTheDocument()
+    })
+
+    it('should display the difficulty bar, when it is difficulty', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Difficulty
+      }
+
+      const localSong = {
+        ...song,
+        difficulty: Difficulty.Easy
+      }
+
+      const [{ rerender }] = reduxRender(
+        <ArtistSongCard
+          song={localSong}
+          handleRemove={() => {}}
+          isUnknownArtist={false}
+          order={order}
+        />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
+
+      rerender(
+        <ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} order={order} />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
+    })
+
+    it('should display the rehearsals, when it is rehearsals', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Rehearsals
+      }
+
+      const localSong = {
+        ...song,
+        rehearsals: 34
+      }
+
+      reduxRender(
+        <ArtistSongCard
+          song={localSong}
+          handleRemove={() => {}}
+          isUnknownArtist={false}
+          order={order}
+        />
+      )
+
+      expect(screen.getAllByText(localSong.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
+      expect(screen.getAllByText(localSong.rehearsals)[0]).toBeVisible()
+      expect(screen.getAllByText(localSong.rehearsals)[1]).not.toBeVisible()
+    })
+
+    it('should display the confidence bar, when it is confidence', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Confidence
+      }
+
+      const localSong = {
+        ...song,
+        confidence: 23
+      }
+
+      reduxRender(
+        <ArtistSongCard
+          song={localSong}
+          handleRemove={() => {}}
+          isUnknownArtist={false}
+          order={order}
+        />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
+    })
+
+    it('should display the progress bar, when it is progress', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Progress
+      }
+
+      const localSong = {
+        ...song,
+        progress: 123
+      }
+
+      reduxRender(
+        <ArtistSongCard
+          song={localSong}
+          handleRemove={() => {}}
+          isUnknownArtist={false}
+          order={order}
+        />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
+    })
+
+    it('should display the last time played date, when it is last time played', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.LastTimePlayed
+      }
+
+      const localSong = {
+        ...song,
+        lastTimePlayed: '2024-10-12T10:30'
+      }
+
+      const [{ rerender }] = reduxRender(
+        <ArtistSongCard
+          song={localSong}
+          handleRemove={() => {}}
+          isUnknownArtist={false}
+          order={order}
+        />
+      )
+
+      expect(
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
+      ).toBeInTheDocument()
+
+      rerender(
+        <ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} order={order} />
+      )
+
+      expect(screen.getByText(/never/i)).toBeInTheDocument()
+    })
   })
 
   describe('on menu', () => {
@@ -116,7 +315,12 @@ describe('Artist Song Card', () => {
       const handleRemove = vitest.fn()
 
       reduxRender(
-        <ArtistSongCard song={song} handleRemove={handleRemove} isUnknownArtist={false} />
+        <ArtistSongCard
+          song={song}
+          handleRemove={handleRemove}
+          isUnknownArtist={false}
+          order={emptyOrder}
+        />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -141,7 +345,12 @@ describe('Artist Song Card', () => {
     }
 
     const [_, store] = reduxRender(
-      <ArtistSongCard song={localSong} handleRemove={() => {}} isUnknownArtist={false} />
+      <ArtistSongCard
+        song={localSong}
+        handleRemove={() => {}}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
     )
 
     await user.click(screen.getByText(localSong.album.title))
