@@ -1,26 +1,29 @@
-import { Group, Progress, Tooltip } from '@mantine/core'
+import { Group, MantineStyleProps, Progress, Tooltip } from '@mantine/core'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 
-interface DifficultyBarProps {
+interface DifficultyBarProps extends MantineStyleProps {
   difficulty: Difficulty | undefined
   size?: number | string
-  maw?: number
 }
 
-function DifficultyBar({ difficulty, maw, size = 5 }: DifficultyBarProps) {
+function DifficultyBar({ difficulty, size = 5, ...props }: DifficultyBarProps) {
   const { number: difficultyNumber, color: difficultyColor } = useDifficultyInfo(difficulty)
 
   return (
-    <Tooltip label={`This song is ${difficulty}`} openDelay={400} position={'top'}>
+    <Tooltip
+      label={difficulty ? `This song is ${difficulty}` : 'This song has no difficulty set'}
+      openDelay={400}
+      position={'top'}
+    >
       <Group grow gap={4} role={'progressbar'} aria-label={'difficulty'}>
         {Array.from(Array(Object.entries(Difficulty).length)).map((_, i) => (
           <Progress
             key={i}
             size={size}
-            maw={maw}
             value={i + 1 <= difficultyNumber ? 100 : 0}
             color={difficultyColor}
+            {...props}
           />
         ))}
       </Group>

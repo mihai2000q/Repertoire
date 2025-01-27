@@ -1,15 +1,11 @@
-import { NumberFormatter, Progress, Tooltip } from '@mantine/core'
+import {MantineStyleProps, NumberFormatter, Progress, Tooltip} from '@mantine/core'
 
-interface SongConfidenceBarProps {
+interface SongConfidenceBarProps extends MantineStyleProps {
   confidence: number
-  flex?: string | number
-  w?: number
-  maw?: number
-  miw?: number
   size?: number | string
 }
 
-function SongConfidenceBar({ confidence, flex, w, maw, miw, size = 'sm' }: SongConfidenceBarProps) {
+function SongConfidenceBar({ confidence, size = 'sm', ...props }: SongConfidenceBarProps) {
   return (
     <Tooltip.Floating
       role={'tooltip'}
@@ -21,12 +17,9 @@ function SongConfidenceBar({ confidence, flex, w, maw, miw, size = 'sm' }: SongC
     >
       <Progress
         aria-label={'confidence'}
-        flex={flex}
-        w={w}
-        maw={maw}
-        miw={miw}
         size={size}
         value={confidence}
+        {...props}
       />
     </Tooltip.Floating>
   )

@@ -1,23 +1,16 @@
-import { NumberFormatter, Progress, Tooltip } from '@mantine/core'
+import {MantineStyleProps, NumberFormatter, Progress, Tooltip} from '@mantine/core'
 
-interface ProgressBarProps {
+interface ProgressBarProps extends MantineStyleProps {
   progress: number
-  flex?: string | number
-  w?: number
-  maw?: number
-  miw?: number
-  size?: number | string
+  size?: string | number
 }
 
-function SongProgressBar({ progress, flex, w, maw, miw, size = 'sm' }: ProgressBarProps) {
+function SongProgressBar({ progress, size = 'sm', ...props }: ProgressBarProps) {
   return (
     <Tooltip.Floating role={'tooltip'} label={<NumberFormatter value={progress} />}>
       <Progress
         aria-label={'progress'}
-        w={w}
-        maw={maw}
-        miw={miw}
-        flex={flex}
+        {...props}
         size={size}
         value={progress / 10}
         color={'green'}
