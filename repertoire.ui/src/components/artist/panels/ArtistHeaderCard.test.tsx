@@ -1,33 +1,16 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
 import ArtistHeaderCard from './ArtistHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
-import Song from 'src/types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 
 describe('Artist Header Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const albumsTotalCount = 10

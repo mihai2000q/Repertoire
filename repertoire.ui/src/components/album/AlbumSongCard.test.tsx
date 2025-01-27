@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../test-utils.tsx'
 import AlbumSongCard from './AlbumSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -10,16 +10,9 @@ import Difficulty from '../../utils/enums/Difficulty.ts'
 
 describe('Album Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
     title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
     albumTrackNo: 1
   }
 

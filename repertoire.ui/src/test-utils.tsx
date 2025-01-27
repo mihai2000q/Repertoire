@@ -8,6 +8,9 @@ import { RootState, setupStore } from './state/store'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { ToastContainer } from 'react-toastify'
+import Album from "./types/models/Album.ts";
+import Song from "./types/models/Song.ts";
+import Artist from "./types/models/Artist.ts";
 
 // Custom Matchers
 
@@ -185,4 +188,36 @@ export function reduxRouterRenderHook(
     }),
     store
   ]
+}
+
+// Empty Types
+
+export const emptyArtist: Artist = {
+  id: '',
+  name: '',
+  createdAt: '',
+  updatedAt: '',
+  albums: [],
+  songs: []
+}
+
+export const emptyAlbum: Album = {
+  createdAt: '',
+  id: '',
+  songs: [],
+  title: '',
+  updatedAt: ''
+}
+
+export const emptySong: Song = {
+  id: '',
+  title: '',
+  description: '',
+  isRecorded: false,
+  rehearsals: 0,
+  confidence: 0,
+  progress: 0,
+  sections: [],
+  createdAt: '',
+  updatedAt: ''
 }

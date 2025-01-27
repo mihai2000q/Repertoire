@@ -1,4 +1,4 @@
-import { reduxRender } from '../../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRender } from '../../../test-utils.tsx'
 import ArtistSongsCard from './ArtistSongsCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { screen, within } from '@testing-library/react'
@@ -9,30 +9,8 @@ import { setupServer } from 'msw/node'
 import { RemoveSongsFromArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
-import Album from "../../../types/models/Album.ts";
 
 describe('Artist Songs Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
-  }
-
   const songModels: Song[] = [
     {
       ...emptySong,
@@ -41,7 +19,7 @@ describe('Artist Songs Card', () => {
       imageUrl: 'something.png',
       album: {
         ...emptyAlbum,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -50,7 +28,7 @@ describe('Artist Songs Card', () => {
       title: 'Song 2',
       album: {
         ...emptyAlbum,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -59,7 +37,7 @@ describe('Artist Songs Card', () => {
       title: 'Song 3',
       imageUrl: 'something.png',
       album: {
-        ...emptyAlbum,
+        ...emptyAlbum
       }
     },
     {
@@ -67,25 +45,25 @@ describe('Artist Songs Card', () => {
       id: '4',
       title: 'Song 4',
       album: {
-        ...emptyAlbum,
+        ...emptyAlbum
       }
     },
     {
       ...emptySong,
       id: '5',
       title: 'Song 5',
-      imageUrl: 'something.png',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
       id: '6',
-      title: 'Song 6',
-    },
+      title: 'Song 6'
+    }
   ]
 
   const songs: WithTotalCountResponse<Song> = {
     models: songModels,
-    totalCount: songModels.length,
+    totalCount: songModels.length
   }
 
   const artistId = '1'

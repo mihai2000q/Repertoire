@@ -1,5 +1,5 @@
 import Album from './Album.tsx'
-import { reduxMemoryRouterRender } from '../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxMemoryRouterRender } from '../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import Song from '../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -11,19 +11,6 @@ import { expect } from 'vitest'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 
 describe('Album', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
@@ -38,10 +25,9 @@ describe('Album', () => {
   ]
 
   const album: AlbumType = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
     releaseDate: null,
     songs: [
       ...songs,

@@ -1,4 +1,4 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
 import ArtistDrawer from './ArtistDrawer.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { setupServer } from 'msw/node'
@@ -14,27 +14,6 @@ import { expect } from 'vitest'
 import { openArtistDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
 
 describe('Artist Drawer', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,

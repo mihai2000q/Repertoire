@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Songs from './Songs.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Song, { GuitarTuning, SongSectionType } from '../types/models/Song.ts'
@@ -13,28 +13,14 @@ import { RootState } from '../state/store.ts'
 describe('Songs', () => {
   const songs: Song[] = [
     {
+      ...emptySong,
       id: '1',
-      title: 'All for justice',
-      description: '',
-      isRecorded: false,
-      sections: [],
-      rehearsals: 0,
-      confidence: 0,
-      progress: 0,
-      createdAt: '',
-      updatedAt: ''
+      title: 'All for justice'
     },
     {
+      ...emptySong,
       id: '2',
-      description: '',
-      title: 'Seek and Destroy',
-      isRecorded: true,
-      sections: [],
-      rehearsals: 0,
-      confidence: 0,
-      progress: 0,
-      createdAt: '',
-      updatedAt: ''
+      title: 'Seek and Destroy'
     }
   ]
   const totalCount = 2

@@ -1,45 +1,32 @@
 import Album from 'src/types/models/Album.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils.tsx'
 import AlbumHeaderCard from './AlbumHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
-import Song from 'src/types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
 import dayjs from 'dayjs'
 
 describe('Album Header Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: null,
-    songs: []
+    releaseDate: null
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const server = setupServer()

@@ -1,4 +1,4 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
 import AlbumDrawer from './AlbumDrawer.tsx'
 import Album from '../../../types/models/Album.ts'
 import { setupServer } from 'msw/node'
@@ -13,27 +13,6 @@ import { expect } from 'vitest'
 import { openAlbumDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
 
 describe('Album Drawer', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
@@ -43,7 +22,7 @@ describe('Album Drawer', () => {
       imageUrl: 'something.png',
       album: {
         ...emptyAlbum,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {
@@ -53,7 +32,7 @@ describe('Album Drawer', () => {
       albumTrackNo: 2,
       album: {
         ...emptyAlbum,
-        imageUrl: 'something-album.png',
+        imageUrl: 'something-album.png'
       }
     },
     {

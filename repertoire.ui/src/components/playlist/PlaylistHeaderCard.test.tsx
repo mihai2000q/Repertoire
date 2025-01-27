@@ -1,26 +1,12 @@
 import Playlist from 'src/types/models/Playlist.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import { emptySong, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import PlaylistHeaderCard from './PlaylistHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
-import Song from 'src/types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 
 describe('Playlist Header Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const playlist: Playlist = {
     id: '1',
     title: 'Playlist 1',
@@ -55,7 +41,10 @@ describe('Playlist Header Card', () => {
     reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
     expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: playlist.title })).toHaveAttribute('src', playlist.imageUrl)
+    expect(screen.getByRole('img', { name: playlist.title })).toHaveAttribute(
+      'src',
+      playlist.imageUrl
+    )
     expect(screen.getByRole('heading', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByText(playlist.description)).toBeInTheDocument()
     expect(screen.getByText(`${playlist.songs.length} songs`)).toBeInTheDocument()
@@ -88,7 +77,9 @@ describe('Playlist Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-      expect(await screen.findByRole('dialog', { name: /edit playlist header/i })).toBeInTheDocument()
+      expect(
+        await screen.findByRole('dialog', { name: /edit playlist header/i })
+      ).toBeInTheDocument()
     })
 
     it('should display warning modal and delete playlist', async () => {
