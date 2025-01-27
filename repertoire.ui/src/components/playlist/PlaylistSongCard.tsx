@@ -5,8 +5,10 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer, openSongDrawer } from '../../state/globalSlice.ts'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
-import { IconDots, IconTrash } from '@tabler/icons-react'
+import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import { useNavigate } from 'react-router-dom'
+import useContextMenu from '../../hooks/useContextMenu.ts'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -15,8 +17,10 @@ interface PlaylistSongCardProps {
 
 function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const { ref, hovered } = useHover()
 
+  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
   const isSelected = hovered || isMenuOpened
@@ -38,100 +42,117 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
+  function handleViewDetails(e: MouseEvent) {
+    e.stopPropagation()
+    navigate(`/song/${song.id}`)
+  }
+
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()
     openRemoveWarning()
   }
 
-  return (
+  const menuDropdown = (
     <>
-      <Group
-        ref={ref}
-        wrap={'nowrap'}
-        aria-label={`song-card-${song.title}`}
-        sx={(theme) => ({
-          cursor: 'default',
-          transition: '0.3s',
-          '&:hover': {
-            boxShadow: theme.shadows.xl,
-            backgroundColor: alpha(theme.colors.primary[0], 0.15)
-          }
-        })}
-        px={'md'}
-        py={'xs'}
-        onClick={handleClick}
+      <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        View Details
+      </Menu.Item>
+      <Menu.Item
+        leftSection={<IconTrash size={14} />}
+        c={'red.5'}
+        onClick={handleOpenRemoveWarning}
       >
-        <Text fw={500} w={35} ta={'center'}>
-          {song.playlistTrackNo}
-        </Text>
+        Remove
+      </Menu.Item>
+    </>
+  )
 
-        <Avatar
-          radius={'8px'}
-          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
-          alt={song.title}
-        />
+  return (
+    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+      <Menu.Target>
+        <Group
+          ref={ref}
+          wrap={'nowrap'}
+          aria-label={`song-card-${song.title}`}
+          sx={(theme) => ({
+            cursor: 'default',
+            transition: '0.3s',
+            '&:hover': {
+              boxShadow: theme.shadows.xl,
+              backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }
+          })}
+          px={'md'}
+          py={'xs'}
+          onClick={handleClick}
+          onContextMenu={openMenu}
+        >
+          <Text fw={500} w={35} ta={'center'}>
+            {song.playlistTrackNo}
+          </Text>
 
-        <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
-          <Group gap={4}>
-            <Text fw={500} truncate={'end'}>
-              {song.title}
-            </Text>
-            {song.album && (
-              <>
-                <Text fz={'sm'}>-</Text>
-                <Text
-                  fz={'sm'}
-                  c={'dimmed'}
-                  truncate={'end'}
-                  sx={{ '&:hover': { textDecoration: 'underline' } }}
-                  style={{ cursor: 'pointer' }}
-                  onClick={handleAlbumClick}
-                >
-                  {song.album.title}
-                </Text>
-              </>
+          <Avatar
+            radius={'8px'}
+            src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+            alt={song.title}
+          />
+
+          <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
+            <Group gap={4}>
+              <Text fw={500} truncate={'end'}>
+                {song.title}
+              </Text>
+              {song.album && (
+                <>
+                  <Text fz={'sm'}>-</Text>
+                  <Text
+                    fz={'sm'}
+                    c={'dimmed'}
+                    truncate={'end'}
+                    sx={{ '&:hover': { textDecoration: 'underline' } }}
+                    style={{ cursor: 'pointer' }}
+                    onClick={handleAlbumClick}
+                  >
+                    {song.album.title}
+                  </Text>
+                </>
+              )}
+            </Group>
+            {song.artist && (
+              <Text
+                fz={'sm'}
+                c={'dimmed'}
+                sx={{ '&:hover': { textDecoration: 'underline' } }}
+                style={{ cursor: 'pointer', alignSelf: 'start' }}
+                onClick={handleArtistClick}
+              >
+                {song.artist.name}
+              </Text>
             )}
-          </Group>
-          {song.artist && (
-            <Text
-              fz={'sm'}
-              c={'dimmed'}
-              sx={{ '&:hover': { textDecoration: 'underline' } }}
-              style={{ cursor: 'pointer', alignSelf: 'start' }}
-              onClick={handleArtistClick}
-            >
-              {song.artist.name}
-            </Text>
-          )}
-        </Stack>
+          </Stack>
 
-        <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
-          <Menu.Target>
-            <ActionIcon
-              size={'md'}
-              variant={'grey'}
-              aria-label={'more-menu'}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                transition: '0.3s',
-                opacity: isSelected ? 1 : 0
-              }}
-            >
-              <IconDots size={15} />
-            </ActionIcon>
-          </Menu.Target>
+          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu.Target>
+              <ActionIcon
+                size={'md'}
+                variant={'grey'}
+                aria-label={'more-menu'}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  transition: '0.3s',
+                  opacity: isSelected ? 1 : 0
+                }}
+              >
+                <IconDots size={15} />
+              </ActionIcon>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Item
-              leftSection={<IconTrash size={14} />}
-              c={'red.5'}
-              onClick={handleOpenRemoveWarning}
-            >
-              Remove
-            </Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      </Group>
+            <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+          </Menu>
+        </Group>
+      </Menu.Target>
+
+      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
 
       <WarningModal
         opened={openedRemoveWarning}
@@ -148,7 +169,7 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
         }
         onYes={handleRemove}
       />
-    </>
+    </Menu>
   )
 }
 
