@@ -6,8 +6,10 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer } from '../../state/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
-import { IconDots, IconTrash } from '@tabler/icons-react'
+import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import { useNavigate } from 'react-router-dom'
+import useContextMenu from '../../hooks/useContextMenu.ts'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -17,8 +19,12 @@ interface ArtistAlbumCardProps {
 
 function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCardProps) {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const { ref, hovered } = useHover()
+
+  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
+
   const isSelected = hovered || isMenuOpened
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -28,74 +34,91 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
     dispatch(openAlbumDrawer(album.id))
   }
 
+  function handleViewDetails(e: MouseEvent) {
+    e.stopPropagation()
+    navigate(`/album/${album.id}`)
+  }
+
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()
     openRemoveWarning()
   }
 
-  return (
+  const menuDropdown = (
     <>
-      <Group
-        ref={ref}
-        wrap={'nowrap'}
-        aria-label={`album-card-${album.title}`}
-        sx={(theme) => ({
-          cursor: 'default',
-          borderRadius: '8px',
-          transition: '0.3s',
-          ...(isSelected && {
-            boxShadow: theme.shadows.xl,
-            backgroundColor: alpha(theme.colors.primary[0], 0.15)
-          })
-        })}
-        px={'md'}
-        py={'xs'}
-        onClick={handleClick}
-        gap={0}
-      >
-        <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} alt={album.title} />
+      <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        View Details
+      </Menu.Item>
+      {!isUnknownArtist && (
+        <Menu.Item
+          leftSection={<IconTrash size={14} />}
+          c={'red.5'}
+          onClick={handleOpenRemoveWarning}
+        >
+          Remove
+        </Menu.Item>
+      )}
+    </>
+  )
 
-        <Space ml={'md'} />
+  return (
+    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+      <Menu.Target>
+        <Group
+          ref={ref}
+          wrap={'nowrap'}
+          aria-label={`album-card-${album.title}`}
+          sx={(theme) => ({
+            cursor: 'default',
+            borderRadius: '8px',
+            transition: '0.3s',
+            ...(isSelected && {
+              boxShadow: theme.shadows.xl,
+              backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            })
+          })}
+          px={'md'}
+          py={'xs'}
+          gap={0}
+          onClick={handleClick}
+          onContextMenu={openMenu}
+        >
+          <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} alt={album.title} />
 
-        <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
-          <Text fw={500} truncate={'end'}>
-            {album.title}
-          </Text>
-          {album.releaseDate && (
-            <Text fz={'xs'} c={'dimmed'}>
-              {dayjs(album.releaseDate).format('D MMM YYYY')}
+          <Space ml={'md'} />
+
+          <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
+            <Text fw={500} truncate={'end'}>
+              {album.title}
             </Text>
-          )}
-        </Stack>
-
-        <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
-          <Menu.Target>
-            <ActionIcon
-              size={'md'}
-              variant={'grey'}
-              aria-label={'more-menu'}
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                transition: '0.3s',
-                opacity: isSelected ? 1 : 0
-              }}
-            >
-              <IconDots size={15} />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            {!isUnknownArtist && (
-              <Menu.Item
-                leftSection={<IconTrash size={14} />}
-                c={'red.5'}
-                onClick={handleOpenRemoveWarning}
-              >
-                Remove
-              </Menu.Item>
+            {album.releaseDate && (
+              <Text fz={'xs'} c={'dimmed'}>
+                {dayjs(album.releaseDate).format('D MMM YYYY')}
+              </Text>
             )}
-          </Menu.Dropdown>
-        </Menu>
-      </Group>
+          </Stack>
+
+          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu.Target>
+              <ActionIcon
+                size={'md'}
+                variant={'grey'}
+                aria-label={'more-menu'}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  transition: '0.3s',
+                  opacity: isSelected ? 1 : 0
+                }}
+              >
+                <IconDots size={15} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+          </Menu>
+        </Group>
+      </Menu.Target>
+
+      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
 
       <WarningModal
         opened={openedRemoveWarning}
@@ -115,7 +138,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
         }
         onYes={handleRemove}
       />
-    </>
+    </Menu>
   )
 }
 

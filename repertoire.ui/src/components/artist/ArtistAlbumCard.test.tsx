@@ -1,9 +1,10 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { reduxRender, reduxRouterRender } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
 import ArtistAlbumCard from './ArtistAlbumCard.tsx'
 import dayjs from 'dayjs'
+import { expect } from 'vitest'
 
 describe('Artist Album Card', () => {
   const album: Album = {
@@ -43,6 +44,20 @@ describe('Artist Album Card', () => {
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
 
+  it('should display menu on right click', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`album-card-${album.title}`)
+    })
+
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+  })
+
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
@@ -50,6 +65,7 @@ describe('Artist Album Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
 
@@ -60,10 +76,27 @@ describe('Artist Album Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
   })
 
   describe('on menu', () => {
+    it('should navigate to album when clicking on view details', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <ArtistAlbumCard album={album} handleRemove={() => {}} isUnknownArtist={false} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /view details/i }))
+
+      expect(window.location.pathname).toBe(`/album/${album.id}`)
+
+      // restore
+      window.location.pathname = '/'
+    })
+
     it('should display warning modal and remove album, when clicking on remove', async () => {
       const user = userEvent.setup()
 
