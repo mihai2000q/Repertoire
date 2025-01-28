@@ -10,6 +10,7 @@
     * [Restore dependencies](#restore-dependencies)
     * [Run](#run)
     * [Quick Test](#quick-test)
+  * [Sample Data](#sample-data)
   * [Build Executable](#build-executable)
   * [Architecture](#architecture)
   * [Api](#api)
@@ -111,6 +112,11 @@ And the body of the request shall be:
 It will return an Invalid Credentials Error, however,
 now you know that you have a working connection to the API and to the database.
 
+## Sample Data
+
+A Sample Data has been provided for testing purposes of the application.
+
+To populate the database, simply use the following script: `add-sample-data.sh`.
 
 ## Build Executable
 
