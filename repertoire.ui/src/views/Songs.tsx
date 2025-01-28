@@ -19,23 +19,28 @@ import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../components/songs/SongsLoader.tsx'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
-import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
 
+  const pageSize = 40
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: songs,
     isLoading,
     isFetching
   } = useGetSongsQuery({
-    pageSize: 20,
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
 
-  const { startCount, endCount, totalPages } = usePaginationInfo(songs?.totalCount, 20, currentPage)
+  const { startCount, endCount, totalPages } = usePaginationInfo(
+    songs?.totalCount,
+    pageSize,
+    currentPage
+  )
 
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)

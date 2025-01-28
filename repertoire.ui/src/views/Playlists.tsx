@@ -24,20 +24,21 @@ import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 function Playlists() {
   useFixedDocumentTitle('Playlists')
 
+  const pageSize = 40
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: playlists,
     isLoading,
     isFetching
   } = useGetPlaylistsQuery({
-    pageSize: 20,
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     playlists?.totalCount,
-    20,
+    pageSize,
     currentPage
   )
 
