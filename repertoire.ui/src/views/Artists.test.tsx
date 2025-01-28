@@ -32,7 +32,7 @@ describe('Artists', () => {
   const totalCount = 2
 
   const initialCurrentPage = 1
-  const pageSize = 20
+  const pageSize = 40
 
   const getSongsWithoutArtists = () =>
     http.get('/songs', async () => {
@@ -73,7 +73,7 @@ describe('Artists', () => {
       return HttpResponse.json(response)
     })
 
-  const getArtistsWithPagination = (totalCount: number = 30) =>
+  const getArtistsWithPagination = (totalCount: number = 50) =>
     http.get('/artists', async (req) => {
       const currentPage = new URL(req.request.url).searchParams.get('currentPage')
       const response: WithTotalCountResponse<Artist> =
@@ -201,7 +201,7 @@ describe('Artists', () => {
   it('should paginate the artists', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getArtistsWithPagination(totalCount))
 
@@ -277,7 +277,7 @@ describe('Artists', () => {
     async (withAlbum, withSong) => {
       const user = userEvent.setup()
 
-      const totalCount = 30
+      const totalCount = 50
 
       server.use(getArtistsWithPagination(totalCount))
       if (withAlbum) {

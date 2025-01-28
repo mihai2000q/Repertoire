@@ -30,7 +30,7 @@ describe('Albums', () => {
   const totalCount = 2
 
   const initialCurrentPage = 1
-  const pageSize = 20
+  const pageSize = 40
 
   const getSongsWithoutAlbums = () =>
     http.get('/songs', async () => {
@@ -54,7 +54,7 @@ describe('Albums', () => {
       return HttpResponse.json(response)
     })
 
-  const getAlbumsWithPagination = (totalCount: number = 30) =>
+  const getAlbumsWithPagination = (totalCount: number = 50) =>
     http.get('/albums', async (req) => {
       const currentPage = new URL(req.request.url).searchParams.get('currentPage')
       const response: WithTotalCountResponse<Album> =
@@ -178,7 +178,7 @@ describe('Albums', () => {
   it('should paginate the albums', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getAlbumsWithPagination(totalCount))
 
@@ -236,7 +236,7 @@ describe('Albums', () => {
   it('should display unknown album card when there are songs without album on the last page, but not on the first', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getSongsWithoutAlbums(), getAlbumsWithPagination(totalCount))
 

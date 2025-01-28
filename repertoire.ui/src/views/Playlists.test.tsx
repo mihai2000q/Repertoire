@@ -30,9 +30,9 @@ describe('Playlists', () => {
   const totalCount = 2
 
   const initialCurrentPage = 1
-  const pageSize = 20
+  const pageSize = 40
 
-  const getSongsWithPagination = (totalCount: number = 30) =>
+  const getSongsWithPagination = (totalCount: number = 50) =>
     http.get('/playlists', async (req) => {
       const currentPage = new URL(req.request.url).searchParams.get('currentPage')
       const response: WithTotalCountResponse<Playlist> =
@@ -134,7 +134,7 @@ describe('Playlists', () => {
   it('should paginate the playlists', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getSongsWithPagination(totalCount))
 

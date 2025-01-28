@@ -26,13 +26,14 @@ import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 function Albums() {
   useFixedDocumentTitle('Albums')
 
+  const pageSize = 40
   const [currentPage, setCurrentPage] = useState(1)
   const {
     data: albums,
     isLoading,
     isFetching
   } = useGetAlbumsQuery({
-    pageSize: 20,
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
@@ -41,7 +42,7 @@ function Albums() {
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     albums?.totalCount + (showUnknownAlbum ? 1 : 0),
-    20,
+    pageSize,
     currentPage
   )
 
