@@ -117,6 +117,22 @@ describe('Artist Header Card', () => {
     expect(screen.queryByRole('button', { name: 'edit-header' })).not.toBeInTheDocument()
   })
 
+  it('should display image modal, when clicking the image', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(
+      <ArtistHeaderCard
+        artist={{ ...artist, imageUrl: 'something.png' }}
+        isUnknownArtist={false}
+        songsTotalCount={undefined}
+        albumsTotalCount={undefined}
+      />
+    )
+
+    await user.click(screen.getByRole('img', { name: artist.name }))
+    expect(await screen.findByRole('dialog', { name: artist.name + '-image' })).toBeInTheDocument()
+  })
+
   describe('on menu', () => {
     it('should display info modal', async () => {
       const user = userEvent.setup()

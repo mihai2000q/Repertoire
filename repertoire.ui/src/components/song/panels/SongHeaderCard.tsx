@@ -26,6 +26,7 @@ import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
+import ImageModal from '../../@ui/modal/ImageModal.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -37,6 +38,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
 
   const [deleteSongMutation] = useDeleteSongMutation()
 
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -76,14 +78,16 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            h={150}
+            w={150}
             src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
             alt={song.title}
             radius={'lg'}
-            style={(theme) => ({
-              boxShadow: theme.shadows.lg
+            sx={(theme) => ({
+              boxShadow: theme.shadows.lg,
+              ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })
             })}
+            onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
           />
         </AspectRatio>
         <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
@@ -187,9 +191,15 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         </Stack>
       </Group>
 
+      <ImageModal
+        opened={openedImage}
+        onClose={closeImage}
+        title={song.title}
+        image={song.imageUrl || song.album?.imageUrl}
+      />
+
       <SongInfoModal opened={openedInfo} onClose={closeInfo} song={song} />
       <EditSongHeaderModal song={song} opened={openedEdit} onClose={closeEdit} />
-
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
