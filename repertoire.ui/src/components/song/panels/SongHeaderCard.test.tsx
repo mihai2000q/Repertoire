@@ -83,10 +83,16 @@ describe('Song Header Card', () => {
     reduxRouterRender(<SongHeaderCard song={localSong} />)
 
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute('src', localSong.imageUrl)
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.artist.name })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localSong.artist.name })).toHaveAttribute('src', localSong.artist.imageUrl)
+    expect(screen.getByRole('img', { name: localSong.artist.name })).toHaveAttribute(
+      'src',
+      localSong.artist.imageUrl
+    )
     expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect(screen.getByText(dayjs(localSong.releaseDate).format('YYYY'))).toBeInTheDocument()
@@ -100,7 +106,10 @@ describe('Song Header Card', () => {
 
     await user.hover(screen.getByText(localSong.album.title))
     expect(await screen.findByRole('img', { name: localSong.album.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localSong.album.title })).toHaveAttribute('src', localSong.album.imageUrl)
+    expect(screen.getByRole('img', { name: localSong.album.title })).toHaveAttribute(
+      'src',
+      localSong.album.imageUrl
+    )
     expect(screen.getAllByText(localSong.album.title)).toHaveLength(2)
     expect(
       screen.getByText(dayjs(localSong.album.releaseDate).format('D MMM YYYY'))
@@ -135,6 +144,15 @@ describe('Song Header Card', () => {
       'src',
       localSongWithAlbum.album.imageUrl
     )
+  })
+
+  it('should display image modal, when clicking the image', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<SongHeaderCard song={{ ...song, imageUrl: 'something.png' }} />)
+
+    await user.click(screen.getByRole('img', { name: song.title }))
+    expect(await screen.findByRole('dialog', { name: song.title + '-image' })).toBeInTheDocument()
   })
 
   it('should display menu on click', async () => {

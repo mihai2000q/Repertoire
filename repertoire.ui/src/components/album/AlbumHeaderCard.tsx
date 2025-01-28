@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import ImageModal from '../@ui/modal/ImageModal.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -29,9 +30,9 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
   const [deleteAlbumMutation] = useDeleteAlbumMutation()
 
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedAlbumInfo, { open: openAlbumInfo, close: closeAlbumInfo }] = useDisclosure(false)
-  const [openedEditAlbumHeader, { open: openEditAlbumHeader, close: closeEditAlbumHeader }] =
-    useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -47,13 +48,13 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
   return (
     <HeaderPanelCard
-      onEditClick={openEditAlbumHeader}
+      onEditClick={openEdit}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openAlbumInfo}>
             Info
           </Menu.Item>
-          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditAlbumHeader}>
+          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
@@ -66,14 +67,16 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            h={150}
+            w={150}
             src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
             fallbackSrc={albumPlaceholder}
             radius={'lg'}
             alt={isUnknownAlbum ? 'unknown-album' : album.title}
-            style={(theme) => ({
-              boxShadow: theme.shadows.lg
+            sx={(theme) => ({
+              boxShadow: theme.shadows.lg,
+              ...(!isUnknownAlbum && album.imageUrl && { cursor: 'pointer' })
             })}
+            onClick={!isUnknownAlbum && album.imageUrl && openImage}
           />
         </AspectRatio>
         <Stack
@@ -144,13 +147,16 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
       {!isUnknownAlbum && (
         <>
+          <ImageModal
+            opened={openedImage}
+            onClose={closeImage}
+            title={album.title}
+            image={album.imageUrl}
+          />
+
           <AlbumInfoModal opened={openedAlbumInfo} onClose={closeAlbumInfo} album={album} />
 
-          <EditAlbumHeaderModal
-            album={album}
-            opened={openedEditAlbumHeader}
-            onClose={closeEditAlbumHeader}
-          />
+          <EditAlbumHeaderModal album={album} opened={openedEdit} onClose={closeEdit} />
 
           <WarningModal
             opened={openedDeleteWarning}

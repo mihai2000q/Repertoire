@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import { useDeleteArtistMutation } from '../../../state/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
+import ImageModal from '../../@ui/modal/ImageModal.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -30,9 +31,9 @@ function ArtistHeaderCard({
 
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] = useDisclosure(false)
-  const [openedEditArtistHeader, { open: openEditArtistHeader, close: closeEditArtistHeader }] =
-    useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -44,13 +45,13 @@ function ArtistHeaderCard({
 
   return (
     <HeaderPanelCard
-      onEditClick={openEditArtistHeader}
+      onEditClick={openEdit}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openArtistInfo}>
             Info
           </Menu.Item>
-          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditArtistHeader}>
+          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
@@ -64,10 +65,12 @@ function ArtistHeaderCard({
         <Avatar
           src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
           size={125}
-          style={(theme) => ({
-            boxShadow: theme.shadows.md
-          })}
           alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
+          sx={(theme) => ({
+            boxShadow: theme.shadows.lg,
+            ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
+          })}
+          onClick={!isUnknownArtist && artist.imageUrl && openImage}
         />
         <Stack
           gap={4}
@@ -96,13 +99,16 @@ function ArtistHeaderCard({
 
       {!isUnknownArtist && (
         <>
+          <ImageModal
+            opened={openedImage}
+            onClose={closeImage}
+            title={artist.name}
+            image={artist.imageUrl}
+          />
+
           <ArtistInfoModal opened={openedArtistInfo} onClose={closeArtistInfo} artist={artist} />
 
-          <EditArtistHeaderModal
-            artist={artist}
-            opened={openedEditArtistHeader}
-            onClose={closeEditArtistHeader}
-          />
+          <EditArtistHeaderModal artist={artist} opened={openedEdit} onClose={closeEdit} />
 
           <WarningModal
             opened={openedDeleteWarning}

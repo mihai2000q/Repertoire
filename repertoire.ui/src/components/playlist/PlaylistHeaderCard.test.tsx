@@ -57,6 +57,17 @@ describe('Playlist Header Card', () => {
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
+  it('should display image modal, when clicking the image', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<PlaylistHeaderCard playlist={{ ...playlist, imageUrl: 'something.png' }} />)
+
+    await user.click(screen.getByRole('img', { name: playlist.title }))
+    expect(
+      await screen.findByRole('dialog', { name: playlist.title + '-image' })
+    ).toBeInTheDocument()
+  })
+
   describe('on menu', () => {
     it('should display info modal', async () => {
       const user = userEvent.setup()

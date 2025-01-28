@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import ImageModal from '../@ui/modal/ImageModal.tsx'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -21,6 +22,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
 
   const [deletePlaylistMutation] = useDeletePlaylistMutation()
 
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -52,14 +54,16 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            h={150}
+            w={150}
             src={playlist.imageUrl}
             alt={playlist.title}
             fallbackSrc={playlistPlaceholder}
             radius={'lg'}
-            style={(theme) => ({
-              boxShadow: theme.shadows.lg
+            sx={(theme) => ({
+              boxShadow: theme.shadows.lg,
+              ...(playlist.imageUrl && { cursor: 'pointer' })
             })}
+            onClick={playlist.imageUrl && openImage}
           />
         </AspectRatio>
         <Stack gap={4} pt={'md'} style={{ alignSelf: 'start' }}>
@@ -80,6 +84,13 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
           </Text>
         </Stack>
       </Group>
+
+      <ImageModal
+        opened={openedImage}
+        onClose={closeImage}
+        title={playlist.title}
+        image={playlist.imageUrl}
+      />
 
       <PlaylistInfoModal playlist={playlist} opened={openedInfo} onClose={closeInfo} />
       <EditPlaylistHeaderModal playlist={playlist} opened={openedEdit} onClose={closeEdit} />
