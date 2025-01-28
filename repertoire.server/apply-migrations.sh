@@ -1,7 +1,5 @@
 DIRECTORY_SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo ${DIRECTORY_SCRIPT}
-
 source ${DIRECTORY_SCRIPT}/.env
 
 export GOOSE_DRIVER=postgres

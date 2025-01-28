@@ -1,0 +1,14 @@
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('e19415cd-240b-4f00-82dc-469017a2f8ab', 'E Standard', 0, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('de04ac08-b2b6-433a-b047-4ad58e4bcebd', 'Eb Standard', 1, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('60937e10-7489-4f3a-b1a3-6317d287a126', 'D Standard', 2, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('e0c0d445-0857-4d84-984d-1de0356ff7b2', 'C# Standard', 3, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('aecde6ba-245d-4753-bc76-e34239c56f92', 'C Standard', 4, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('79e569ac-a0e0-4d6a-84a1-17837e4997bf', 'B Standard', 5, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('330c1655-3145-4dbf-84ac-a9c7aae67545', 'A# Standard', 6, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('7c8dedbb-85a6-4801-9bf7-eac2f5d248d4', 'A Standard', 7, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('634db611-b0ae-42ca-8a8e-4bfec906542a', 'Drop D', 8, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('f816b9eb-481c-4da8-8203-670b386df386', 'Drop C#', 9, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('2bbc7221-1acf-42b0-8f6b-fa5f467a9d21', 'Drop C', 10, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('aec96e8d-b99c-40fe-bd4d-5f85b5f707de', 'Drop B', 11, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('ba0c53b1-17bd-4b90-85f4-31cd65c53356', 'Drop A#', 12, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.guitar_tunings (id, name, "order", user_id) VALUES ('347aa5fa-c57f-49b9-8bca-88b42a63ca50', 'Drop A', 13, '10000000-0000-0000-0000-000000000000');
