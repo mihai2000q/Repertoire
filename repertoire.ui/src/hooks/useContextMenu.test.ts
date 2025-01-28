@@ -1,11 +1,11 @@
-import { act, renderHook } from '@testing-library/react'
+import {act, renderHook} from '@testing-library/react'
 import useContextMenu from './useContextMenu.ts'
 import React from 'react'
 
 describe('use Context Menu', () => {
   it('should return change menu state on open', () => {
-    const expectedClientX = 10
-    const expectedClientY = 10
+    const expectedPageX = 10
+    const expectedPageY = 10
 
     const { result, rerender } = renderHook(() => useContextMenu())
 
@@ -21,14 +21,14 @@ describe('use Context Menu', () => {
       }
     })
 
-    act(() =>
-      openMenu(
-        new MouseEvent('mousemove', {
-          clientX: expectedClientX,
-          clientY: expectedClientY
-        }) as unknown as React.MouseEvent
-      )
-    )
+    // noinspection JSUnusedGlobalSymbols
+    const event = new class {
+      pageX = expectedPageX
+      pageY = expectedPageY
+      preventDefault() {}
+    }
+
+    act(() => openMenu(event as React.MouseEvent))
     rerender()
 
     // close menu
@@ -38,8 +38,8 @@ describe('use Context Menu', () => {
     expect(props2).toStrictEqual({
       style: {
         position: 'absolute',
-        top: expectedClientY,
-        left: expectedClientX
+        top: expectedPageY,
+        left: expectedPageX
       }
     })
 

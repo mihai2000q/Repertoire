@@ -33,8 +33,8 @@ export default function useContextMenu(): [boolean, MenuDropdownProps, ContextMe
     setMenuState({
       opened: true,
       position: {
-        top: e.clientY,
-        left: e.clientX
+        top: e.pageY,
+        left: e.pageX
       }
     })
   }
