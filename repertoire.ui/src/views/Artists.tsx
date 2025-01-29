@@ -85,7 +85,7 @@ function Artists() {
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
-        {((artists?.totalCount > 0 && currentPage == totalPages) || showUnknownArtist) && (
+        {((artists?.totalCount > 0 && currentPage == totalPages) || (artists?.totalCount === 0 && showUnknownArtist)) && (
           <Card
             aria-label={'new-artist-card'}
             w={125}
@@ -103,7 +103,7 @@ function Artists() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
+      <Box style={{ alignSelf: 'center' }} pb={'md'}>
         {!isFetching ? (
           <Pagination
             data-testid={'artists-pagination'}

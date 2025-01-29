@@ -95,7 +95,7 @@ function Songs(): ReactElement {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
+      <Box style={{ alignSelf: 'center' }} pb={'md'}>
         {!isFetching ? (
           <Pagination
             data-testid={'songs-pagination'}

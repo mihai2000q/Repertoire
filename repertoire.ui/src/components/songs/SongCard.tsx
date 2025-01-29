@@ -137,7 +137,7 @@ function SongCard({ song }: SongCardProps) {
                   <Text
                     fz={'sm'}
                     c="dimmed"
-                    truncate={'end'}
+                    lineClamp={1}
                     onClick={handleArtistClick}
                     sx={{ '&:hover': { textDecoration: 'underline' } }}
                   >

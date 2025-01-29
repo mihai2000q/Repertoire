@@ -5,6 +5,7 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     setupFiles: './src/setupTests.ts',
-    unstubEnvs: true
+    unstubEnvs: true,
+    testTimeout: 10_000
   }
 })

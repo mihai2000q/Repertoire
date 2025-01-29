@@ -81,7 +81,7 @@ describe('Add Playlist Songs Modal', () => {
       const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
       let localSongs = songs
       if (searchBy.length === 2) {
-        const searchValue = searchBy[1].replace('title ~* ', '').replaceAll("'", '')
+        const searchValue = searchBy[1].replace('songs.title ~* ', '').replaceAll("'", '')
         localSongs = localSongs.filter((song) => song.title.startsWith(searchValue))
       }
       const response: WithTotalCountResponse<Song> = {
@@ -200,7 +200,7 @@ describe('Add Playlist Songs Modal', () => {
 
     await waitFor(() => {
       expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`title ~* '${searchValue}'`)
+      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`songs.title ~* '${searchValue}'`)
     })
   })
 

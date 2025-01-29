@@ -12,7 +12,7 @@ import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import Album from '../../../types/models/Album.ts'
 
 interface AddNewSongModalFinalStepProps {
-  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  form: UseFormReturnType<AddNewSongForm>
   image: FileWithPath | null
   setImage: Dispatch<SetStateAction<FileWithPath | null>>
   album: Album | null

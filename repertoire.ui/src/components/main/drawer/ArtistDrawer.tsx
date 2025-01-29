@@ -141,7 +141,7 @@ function ArtistDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'md'} gap={4}>
-          <Title order={5} fw={700} lh={1}>
+          <Title order={5} fw={700} lh={1} lineClamp={2}>
             {artist.name}
           </Title>
 
@@ -152,12 +152,14 @@ function ArtistDrawer() {
             </Text>
           </Group>
 
-          <Stack gap={0} my={6}>
-            <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-              Albums
-            </Text>
-            <Divider />
-          </Stack>
+          {albums.totalCount > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Albums
+              </Text>
+              <Divider />
+            </Stack>
+          )}
 
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
@@ -182,12 +184,14 @@ function ArtistDrawer() {
             ))}
           </SimpleGrid>
 
-          <Stack gap={0} my={6}>
-            <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-              Songs
-            </Text>
-            <Divider />
-          </Stack>
+          {songs.totalCount > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Songs
+              </Text>
+              <Divider />
+            </Stack>
+          )}
 
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (

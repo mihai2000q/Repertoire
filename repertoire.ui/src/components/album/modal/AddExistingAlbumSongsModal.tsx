@@ -48,7 +48,7 @@ function AddExistingAlbumSongsModal({
     searchBy: [
       'album_id IS NULL',
       `songs.artist_id IS NULL${artistId ? ` OR songs.artist_id = '${artistId}'` : ''}`,
-      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })
 

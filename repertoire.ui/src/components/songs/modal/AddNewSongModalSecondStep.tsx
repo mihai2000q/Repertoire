@@ -6,7 +6,6 @@ import {
   ComboboxItem,
   Group,
   NumberInput,
-  Select,
   Stack,
   Text,
   TextInput,
@@ -19,7 +18,6 @@ import {
   IconInfoCircleFilled,
   IconMinus
 } from '@tabler/icons-react'
-import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { v4 as uuid } from 'uuid'
 import { UseFormReturnType } from '@mantine/form'
@@ -31,9 +29,10 @@ import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import Album from '../../../types/models/Album.ts'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
+import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 
 interface AddNewSongModalSecondStepProps {
-  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  form: UseFormReturnType<AddNewSongForm>
   sections: AddNewSongModalSongSection[]
   sectionsHandlers: UseListStateHandlers<AddNewSongModalSongSection>
   guitarTuning: ComboboxItem | null
@@ -53,13 +52,6 @@ function AddNewSongModalSecondStep({
   setDifficulty,
   album
 }: AddNewSongModalSecondStepProps) {
-  // TODO: Use Song Section Select
-  const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
-  const songSectionTypes = songSectionTypesData?.map((type) => ({
-    value: type.id,
-    label: type.name
-  }))
-
   const handleAddSection = () =>
     sectionsHandlers.append({ id: uuid(), name: '', type: null, errors: [] })
 
@@ -103,7 +95,7 @@ function AddNewSongModalSecondStep({
                 ta={'center'}
                 label={'If the release date is not set, then it will be inherited from the album'}
               >
-                <IconInfoCircleFilled size={18} />
+                <IconInfoCircleFilled aria-label={'release-date-info'} size={18} />
               </Tooltip>
             </Box>
           )}
@@ -143,16 +135,19 @@ function AddNewSongModalSecondStep({
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                         >
-                          <ActionIcon variant={'subtle'} size={'lg'} {...provided.dragHandleProps}>
+                          <ActionIcon
+                            aria-label={'drag-handle'}
+                            variant={'subtle'}
+                            size={'lg'}
+                            {...provided.dragHandleProps}
+                          >
                             <IconGripVertical size={20} />
                           </ActionIcon>
 
-                          <Select
-                            w={95}
+                          <SongSectionTypeSelect
                             placeholder={'Type'}
-                            data={songSectionTypes}
-                            value={section.type ? section.type.value : null}
-                            onChange={(_, option) =>
+                            option={section.type}
+                            onChange={(option) =>
                               sectionsHandlers.setItem(index, {
                                 ...section,
                                 type: option,
@@ -162,13 +157,13 @@ function AddNewSongModalSecondStep({
                                 ]
                               })
                             }
-                            maxDropdownHeight={150}
                             error={section.errors.some((e) => e.property === 'type')}
                           />
 
                           <TextInput
                             flex={1}
                             maxLength={30}
+                            aria-label={'name'}
                             placeholder={'Name of Section'}
                             value={section.name}
                             onChange={(e) =>
@@ -187,6 +182,7 @@ function AddNewSongModalSecondStep({
                           <ActionIcon
                             variant={'subtle'}
                             size={'lg'}
+                            aria-label={'remove-section'}
                             onClick={() => sectionsHandlers.remove(index)}
                           >
                             <IconMinus size={20} />

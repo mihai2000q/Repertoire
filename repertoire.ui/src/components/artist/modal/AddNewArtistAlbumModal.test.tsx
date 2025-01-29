@@ -28,6 +28,39 @@ describe('Add New Artist Album Modal', () => {
   it('should send only create request when no image is uploaded', async () => {
     const user = userEvent.setup()
 
+    const newTitle = 'New Album'
+
+    const onClose = vitest.fn()
+
+    let capturedRequest: CreateAlbumRequest
+    server.use(
+      http.post('/albums', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateAlbumRequest
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(
+      withToastify(<AddNewArtistAlbumModal opened={true} onClose={onClose} artistId={undefined} />)
+    )
+
+    await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+    await user.click(screen.getByRole('button', { name: /submit/i }))
+
+    await waitFor(() =>
+      expect(capturedRequest).toStrictEqual({
+        title: newTitle
+      })
+    )
+    expect(onClose).toHaveBeenCalledOnce()
+
+    expect(screen.getByText(`${newTitle} added!`))
+    expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+  })
+
+  it('should send only create request when no image is uploaded', async () => {
+    const user = userEvent.setup()
+
     const artistId = 'some-artist-id'
     const newTitle = 'New Album'
 

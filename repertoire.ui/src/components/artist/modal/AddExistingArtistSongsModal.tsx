@@ -45,7 +45,7 @@ function AddExistingArtistSongsModal({
     orderBy: ['title asc'],
     searchBy: [
       'songs.artist_id IS NULL',
-      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })
 
