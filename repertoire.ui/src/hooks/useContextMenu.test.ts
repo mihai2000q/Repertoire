@@ -11,7 +11,6 @@ describe('use Context Menu', () => {
 
     const [opened, props, { openMenu }] = result.current
 
-    // open menu
     expect(opened).toBeFalsy()
     expect(props).toStrictEqual({
       style: {
@@ -21,19 +20,19 @@ describe('use Context Menu', () => {
       }
     })
 
+    // open menu
     // noinspection JSUnusedGlobalSymbols
     const event = new class {
       pageX = expectedPageX
       pageY = expectedPageY
-      preventDefault() {}
-    }
-
-    act(() => openMenu(event as React.MouseEvent))
+    } as React.MouseEvent
+    event.preventDefault = vitest.fn()
+    act(() => openMenu(event))
     rerender()
 
-    // close menu
     const [opened2, props2, { closeMenu }] = result.current
 
+    expect(event.preventDefault).toHaveBeenCalledOnce()
     expect(opened2).toBeTruthy()
     expect(props2).toStrictEqual({
       style: {
@@ -43,6 +42,7 @@ describe('use Context Menu', () => {
       }
     })
 
+    // close menu
     act(() => closeMenu())
     rerender()
 
