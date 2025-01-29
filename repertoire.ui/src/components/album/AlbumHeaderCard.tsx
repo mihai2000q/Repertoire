@@ -97,10 +97,10 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               {album.title}
             </Title>
           )}
-          <Group gap={4}>
+          <Group gap={4} wrap={'nowrap'}>
             {album?.artist && (
               <>
-                <Group gap={'xs'}>
+                <Group gap={'xs'} wrap={'nowrap'}>
                   <Avatar
                     size={35}
                     src={album.artist.imageUrl ?? userPlaceholder}
@@ -114,6 +114,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                       '&:hover': { textDecoration: 'underline' }
                     }}
                     onClick={handleArtistClick}
+                    lineClamp={1}
                   >
                     {album.artist.name}
                   </Text>

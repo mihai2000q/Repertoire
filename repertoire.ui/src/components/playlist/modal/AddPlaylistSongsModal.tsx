@@ -180,7 +180,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                       )}
                     </Group>
                     {song.artist && (
-                      <Text fz={'sm'} c={'dimmed'}>
+                      <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
                         {song.artist.name}
                       </Text>
                     )}

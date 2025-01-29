@@ -141,7 +141,7 @@ function ArtistDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'md'} gap={4}>
-          <Title order={5} fw={700} lh={1}>
+          <Title order={5} fw={700} lh={1} lineClamp={2}>
             {artist.name}
           </Title>
 
