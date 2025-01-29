@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import {emptyArtist, reduxRender, withToastify} from '../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import AddNewAlbumModal from './AddNewAlbumModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
@@ -11,28 +11,19 @@ import WithTotalCountResponse from '../../../types/responses/WithTotalCountRespo
 describe('Add New Album Modal', () => {
   const artists: Artist[] = [
     {
+      ...emptyArtist,
       id: '1',
       name: 'Artist 1',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
     },
     {
+      ...emptyArtist,
       id: '2',
       name: 'Artist 2',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
     },
     {
+      ...emptyArtist,
       id: '3',
       name: 'Artist 3',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
     }
   ]
 
