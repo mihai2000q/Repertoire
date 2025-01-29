@@ -5,7 +5,7 @@ import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { CreateSongRequest } from '../../../types/requests/SongRequests.ts'
-import Album from "../../../types/models/Album.ts";
+import Album from '../../../types/models/Album.ts'
 
 describe('Add New Album Song Modal', () => {
   const album: Album = {
@@ -55,6 +55,40 @@ describe('Add New Album Song Modal', () => {
     expect(screen.getByText(/new song will inherit/i)).toBeInTheDocument()
     expect(screen.getByText(/release date/i)).toBeInTheDocument()
     expect(screen.getByText(/artist/i)).toBeInTheDocument()
+  })
+
+  it('should send create request even when no album is specified (the album is unknown)', async () => {
+    const user = userEvent.setup()
+
+    const newTitle = 'New Song'
+
+    const onClose = vitest.fn()
+
+    let capturedRequest: CreateSongRequest
+    server.use(
+      http.post('/songs', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongRequest
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(
+      withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={undefined} />)
+    )
+
+    await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+    await user.click(screen.getByRole('button', { name: /submit/i }))
+
+    await waitFor(() =>
+      expect(capturedRequest).toStrictEqual({
+        title: newTitle,
+        description: ''
+      })
+    )
+    expect(onClose).toHaveBeenCalledOnce()
+
+    expect(screen.getByText(`${newTitle} added!`))
+    expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
   })
 
   it('should send only create request when no image is uploaded', async () => {
