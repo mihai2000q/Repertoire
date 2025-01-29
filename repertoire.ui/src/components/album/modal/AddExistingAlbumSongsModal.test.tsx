@@ -71,7 +71,7 @@ describe('Add Existing Album Songs Modal', () => {
       const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
       let localSongs = songs
       if (searchBy.length === 3) {
-        const searchValue = searchBy[2].replace('title ~* ', '').replaceAll("'", '')
+        const searchValue = searchBy[2].replace('songs.title ~* ', '').replaceAll("'", '')
         localSongs = localSongs.filter((song) => song.title.startsWith(searchValue))
       }
       const response: WithTotalCountResponse<Song> = {
@@ -208,7 +208,7 @@ describe('Add Existing Album Songs Modal', () => {
 
     await waitFor(() => {
       expect(capturedSearchBy.getAll('searchBy')).toHaveLength(3)
-      expect(capturedSearchBy.getAll('searchBy')[2]).toBe(`title ~* '${searchValue}'`)
+      expect(capturedSearchBy.getAll('searchBy')[2]).toBe(`songs.title ~* '${searchValue}'`)
     })
   })
 

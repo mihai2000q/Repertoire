@@ -41,7 +41,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     orderBy: ['title asc'],
     searchBy: [
       `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
-      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })
 
