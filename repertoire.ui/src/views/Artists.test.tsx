@@ -225,7 +225,7 @@ describe('Artists', () => {
     ).toBeInTheDocument()
   })
 
-  it('the new artist card should not be displayed on first page, but on the last', async () => {
+  it('should display the new artist card on last page, but not on the first page', async () => {
     const user = userEvent.setup()
 
     server.use(getArtistsWithPagination())
@@ -273,7 +273,7 @@ describe('Artists', () => {
     [true, false],
     [true, true]
   ])(
-    'should display unknown artist card when there are songs or albums without artist on the last page, but not on the first',
+    'should display the new artist and unknown artist cards on the last page, but not the first page',
     async (withAlbum, withSong) => {
       const user = userEvent.setup()
 
@@ -291,6 +291,7 @@ describe('Artists', () => {
 
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
       expect(screen.queryByLabelText('unknown-artist-card')).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('new-artist-card')).not.toBeInTheDocument()
       expect(
         screen.getByText(`${initialCurrentPage} - ${pageSize} artists out of ${totalCount + 1}`)
       ).toBeInTheDocument()
@@ -299,7 +300,8 @@ describe('Artists', () => {
       await user.click(pagination)
 
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
-      expect(screen.queryByLabelText('unknown-artist-card')).toBeInTheDocument()
+      expect(screen.getByLabelText('unknown-artist-card')).toBeInTheDocument()
+      expect(screen.getByLabelText('new-artist-card')).toBeInTheDocument()
       expect(
         screen.getByText(`${pageSize + 1} - ${totalCount + 1} artists out of ${totalCount + 1}`)
       ).toBeInTheDocument()
