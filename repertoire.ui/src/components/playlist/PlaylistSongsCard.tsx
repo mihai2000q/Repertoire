@@ -7,7 +7,7 @@ import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import Playlist from '../../types/models/Playlist.ts'
 import { useState } from 'react'
 import Order from '../../types/Order.ts'
-import { useRemoveSongsFromPlaylistMutation } from '../../state/playlistsApi.ts'
+import { useRemoveSongsFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
 import { useDisclosure } from '@mantine/hooks'
 import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
 

@@ -127,7 +127,10 @@ describe('Artists', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    window.location.search = ''
+    server.resetHandlers()
+  })
 
   afterAll(() => server.close())
 
@@ -223,6 +226,7 @@ describe('Artists', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount} artists out of ${totalCount}`)
     ).toBeInTheDocument()
+    expect(window.location.search).toContain('p=2')
   })
 
   it('should display the new artist card on last page, but not on the first page', async () => {

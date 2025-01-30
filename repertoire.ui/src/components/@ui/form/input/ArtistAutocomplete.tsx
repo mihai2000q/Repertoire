@@ -10,7 +10,7 @@ import {
   useCombobox
 } from '@mantine/core'
 import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
-import { useGetArtistsQuery } from '../../../../state/artistsApi.ts'
+import { useGetArtistsQuery } from '../../../../state/api/artistsApi.ts'
 import Artist from '../../../../types/models/Artist.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import { IconUserFilled } from '@tabler/icons-react'

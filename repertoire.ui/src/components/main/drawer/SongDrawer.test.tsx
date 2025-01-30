@@ -11,7 +11,7 @@ import Album from '../../../types/models/Album.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { closeSongDrawer, openSongDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
+import { closeSongDrawer, openSongDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
 
 describe('Song Drawer', () => {
   const song: Song = {

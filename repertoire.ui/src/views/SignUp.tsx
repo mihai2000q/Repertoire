@@ -16,7 +16,7 @@ import { useAppDispatch } from '../state/store.ts'
 import { useSignUpMutation } from '../state/api.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 import { useForm, zodResolver } from '@mantine/form'
-import { setToken } from '../state/authSlice.ts'
+import { setToken } from '../state/slice/authSlice.ts'
 import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 

@@ -10,7 +10,7 @@ import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { openAlbumDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
+import { openAlbumDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
 
 describe('Album Drawer', () => {
   const songs: Song[] = [

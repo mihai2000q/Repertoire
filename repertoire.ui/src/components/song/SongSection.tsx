@@ -21,7 +21,7 @@ import {
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/songsApi.ts'
+import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/api/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   useCreatePlaylistMutation,
   useSaveImageToPlaylistMutation
-} from '../../../state/playlistsApi.ts'
+} from '../../../state/api/playlistsApi.ts'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'

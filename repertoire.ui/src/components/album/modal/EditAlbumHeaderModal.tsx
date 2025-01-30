@@ -4,7 +4,7 @@ import {
   useDeleteImageFromAlbumMutation,
   useSaveImageToAlbumMutation,
   useUpdateAlbumMutation
-} from '../../../state/albumsApi.ts'
+} from '../../../state/api/albumsApi.ts'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validation/albumsForm.ts'

@@ -3,7 +3,7 @@ import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@manti
 import { useForm, zodResolver } from '@mantine/form'
 import { EditSongLinksForm, editSongLinksValidation } from '../../../validation/songsForm.ts'
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
-import { useUpdateSongMutation } from '../../../state/songsApi.ts'
+import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 

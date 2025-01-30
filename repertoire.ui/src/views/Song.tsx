@@ -1,7 +1,7 @@
 import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from '../components/song/SongLoader.tsx'
-import { useGetSongQuery } from '../state/songsApi.ts'
+import { useGetSongQuery } from '../state/api/songsApi.ts'
 import SongSections from '../components/song/SongSections.tsx'
 import SongInformationCard from '../components/song/panels/SongInformationCard.tsx'
 import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'

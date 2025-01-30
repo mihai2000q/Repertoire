@@ -1,6 +1,6 @@
-import { api } from './api'
-import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
-import Song, { GuitarTuning, SongSectionType } from '../types/models/Song'
+import { api } from '../api.ts'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Song, { GuitarTuning, SongSectionType } from '../../types/models/Song.ts'
 import {
   CreateSongRequest,
   CreateSongSectionRequest,
@@ -10,10 +10,10 @@ import {
   SaveImageToSongRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest
-} from '../types/requests/SongRequests'
-import HttpMessageResponse from '../types/responses/HttpMessageResponse'
-import createFormData from '../utils/createFormData.ts'
-import createQueryParams from '../utils/createQueryParams.ts'
+} from '../../types/requests/SongRequests.ts'
+import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
+import createFormData from '../../utils/createFormData.ts'
+import createQueryParams from '../../utils/createQueryParams.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({

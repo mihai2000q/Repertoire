@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useGetAlbumsQuery } from '../state/albumsApi.ts'
+import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
 import {
   ActionIcon,
   Box,
@@ -22,12 +21,15 @@ import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
 import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import albumsSearchParamsState from '../state/searchParams/AlbumsSearchParamsState.ts'
 
 function Albums() {
   useFixedDocumentTitle('Albums')
+  const [searchParams, setSearchParams] = useSearchParamsState(albumsSearchParamsState)
+  const { currentPage } = searchParams
 
   const pageSize = 40
-  const [currentPage, setCurrentPage] = useState(1)
   const {
     data: albums,
     isLoading,
@@ -48,6 +50,10 @@ function Albums() {
 
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
+
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
 
   return (
     <Stack h={'100%'} gap={'xs'}>
@@ -84,7 +90,8 @@ function Albums() {
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
-        {((albums?.totalCount > 0 && currentPage == totalPages) || (albums?.totalCount === 0 && showUnknownAlbum)) && (
+        {((albums?.totalCount > 0 && currentPage == totalPages) ||
+          (albums?.totalCount === 0 && showUnknownAlbum)) && (
           <Card
             aria-label={'new-album-card'}
             w={150}
@@ -107,7 +114,7 @@ function Albums() {
           <Pagination
             data-testid={'albums-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (

@@ -1,5 +1,5 @@
 import { ComboboxItem, Group, Loader, Select, Text } from '@mantine/core'
-import { useGetGuitarTuningsQuery } from '../../../../state/songsApi.ts'
+import { useGetGuitarTuningsQuery } from '../../../../state/api/songsApi.ts'
 import CustomIconGuitarHead from '../../icons/CustomIconGuitarHead.tsx'
 
 interface GuitarTuningSelectProps {

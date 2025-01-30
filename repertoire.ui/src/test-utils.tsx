@@ -8,10 +8,10 @@ import { RootState, setupStore } from './state/store'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { ToastContainer } from 'react-toastify'
-import Album from "./types/models/Album.ts";
-import Song from "./types/models/Song.ts";
-import Artist from "./types/models/Artist.ts";
-import Order from "./types/Order.ts";
+import Album from './types/models/Album.ts'
+import Song from './types/models/Song.ts'
+import Artist from './types/models/Artist.ts'
+import Order from './types/Order.ts'
 
 // Custom Matchers
 
@@ -149,7 +149,7 @@ export function reduxMemoryRouterRender(
 
 // Hooks
 
-export function mantineRenderHook(hook: (props: unknown) => unknown) {
+export function mantineRenderHook<T>(hook: (props: T) => T) {
   return renderHook(hook, {
     wrapper: ({ children }: { children: ReactNode }) => (
       <MantineProviderComponent>{children}</MantineProviderComponent>
@@ -157,10 +157,16 @@ export function mantineRenderHook(hook: (props: unknown) => unknown) {
   })
 }
 
-export function reduxRenderHook(
-  hook: (props: unknown) => unknown,
+export function routerRenderHook<T>(hook: (props: T) => T): RenderHookResult<T, T> {
+  return renderHook(hook, {
+    wrapper: ({ children }: { children: ReactNode }) => <BrowserRouter>{children}</BrowserRouter>
+  })
+}
+
+export function reduxRenderHook<T>(
+  hook: (props: T) => T,
   preloadedState?: Partial<RootState>
-): [RenderHookResult<unknown, unknown>, EnhancedStore] {
+): [RenderHookResult<T, T>, EnhancedStore] {
   const store = setupStore(preloadedState)
 
   return [
@@ -173,10 +179,10 @@ export function reduxRenderHook(
   ]
 }
 
-export function reduxRouterRenderHook(
-  hook: (props: unknown) => unknown,
+export function reduxRouterRenderHook<T>(
+  hook: (props: T) => T,
   preloadedState?: Partial<RootState>
-): [RenderHookResult<unknown, unknown>, EnhancedStore] {
+): [RenderHookResult<T, T>, EnhancedStore] {
   const store = setupStore(preloadedState)
 
   return [

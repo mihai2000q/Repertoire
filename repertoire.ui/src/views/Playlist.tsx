@@ -1,6 +1,6 @@
 import { Divider, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
-import { useGetPlaylistQuery } from '../state/playlistsApi.ts'
+import { useGetPlaylistQuery } from '../state/api/playlistsApi.ts'
 import PlaylistLoader from '../components/playlist/PlaylistLoader.tsx'
 import PlaylistHeaderCard from '../components/playlist/PlaylistHeaderCard.tsx'
 import PlaylistSongsCard from '../components/playlist/PlaylistSongsCard.tsx'

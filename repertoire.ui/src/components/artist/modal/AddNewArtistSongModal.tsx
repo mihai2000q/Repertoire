@@ -7,7 +7,7 @@ import {
   addNewArtistSongValidation
 } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 
 interface AddNewArtistSongModalProps {

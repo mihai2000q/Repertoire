@@ -104,7 +104,10 @@ describe('Albums', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    window.location.search = ''
+    server.resetHandlers()
+  })
 
   afterAll(() => server.close())
 
@@ -200,6 +203,7 @@ describe('Albums', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount} albums out of ${totalCount}`)
     ).toBeInTheDocument()
+    expect(window.location.search).toContain('p=2')
   })
 
   it('should display unknown album card when there are songs without album', async () => {

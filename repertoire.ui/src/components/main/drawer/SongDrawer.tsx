@@ -16,7 +16,7 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteSongMutation, useGetSongQuery } from '../../../state/songsApi.ts'
+import { useDeleteSongMutation, useGetSongQuery } from '../../../state/api/songsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -37,7 +37,7 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts'
+import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'

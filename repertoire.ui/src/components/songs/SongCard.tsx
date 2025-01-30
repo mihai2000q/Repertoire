@@ -15,7 +15,7 @@ import {
 } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer } from '../../state/globalSlice.ts'
+import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, ReactElement } from 'react'
 import {
   IconBoltFilled,
@@ -28,7 +28,7 @@ import {
 } from '@tabler/icons-react'
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
-import { useDeleteSongMutation } from '../../state/songsApi.ts'
+import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'

@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../state/store.ts'
-import { setDocumentTitle } from '../state/globalSlice.ts'
+import { setDocumentTitle } from '../state/slice/globalSlice.ts'
 
 export default function useDynamicDocumentTitle() {
   const dispatch = useAppDispatch()

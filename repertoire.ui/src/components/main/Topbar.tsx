@@ -23,7 +23,7 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
-import { signOut } from '../../state/authSlice.ts'
+import { signOut } from '../../state/slice/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
 import { useDisclosure, useWindowScroll } from '@mantine/hooks'
