@@ -27,6 +27,7 @@ type AlbumRepository interface {
 	UpdateWithAssociations(album *model.Album) error
 	UpdateAllWithSongs(albums *[]model.Album) error
 	Delete(id uuid.UUID) error
+	DeleteWithSongs(id uuid.UUID) error
 	RemoveSongs(album *model.Album, song *[]model.Song) error
 }
 
@@ -128,13 +129,17 @@ func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
 }
 
 func (a albumRepository) Delete(id uuid.UUID) error {
+	return a.client.DB.Delete(&model.Album{}, id).Error
+}
+
+func (a albumRepository) DeleteWithSongs(id uuid.UUID) error {
 	return a.client.DB.Transaction(func(tx *gorm.DB) error {
-		/*err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
+		err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
 		if err != nil {
 			return err
-		}*/
+		}
 
-		err := tx.Delete(&model.Album{}, id).Error
+		err = tx.Delete(&model.Album{}, id).Error
 		if err != nil {
 			return err
 		}

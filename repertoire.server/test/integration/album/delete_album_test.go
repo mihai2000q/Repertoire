@@ -55,8 +55,47 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 
 			var deletedAlbum model.Album
 			db.Find(&deletedAlbum, test.album.ID)
-
 			assert.Empty(t, deletedAlbum)
+
+			if len(test.album.Songs) > 0 {
+				var ids []uuid.UUID
+				for _, song := range test.album.Songs {
+					ids = append(ids, song.ID)
+				}
+
+				var songs []model.Song
+				db.Find(&songs, ids)
+				assert.NotEmpty(t, songs)
+			}
 		})
 	}
+}
+
+func TestDeleteAlbum_WhenWithSongs_ShouldDeleteAlbumAndSongs(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	album := albumData.Albums[0]
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().DELETE(w, "/api/albums/"+album.ID.String()+"?withSongs=true")
+
+	// then
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	db := utils.GetDatabase(t)
+
+	var deletedAlbum model.Album
+	db.Find(&deletedAlbum, album.ID)
+	assert.Empty(t, deletedAlbum)
+
+	var ids []uuid.UUID
+	for _, song := range album.Songs {
+		ids = append(ids, song.ID)
+	}
+
+	var songs []model.Song
+	db.Find(&songs, ids)
+	assert.Empty(t, songs)
 }
