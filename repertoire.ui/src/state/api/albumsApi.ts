@@ -5,7 +5,7 @@ import {
   AddSongsToAlbumRequest,
   CreateAlbumRequest,
   GetAlbumRequest,
-  GetAlbumsRequest,
+  GetAlbumsRequest, MoveSongFromAlbumRequest,
   RemoveSongsFromAlbumRequest,
   SaveImageToAlbumRequest,
   UpdateAlbumRequest
@@ -74,6 +74,14 @@ const albumsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Albums', 'Songs']
     }),
+    moveSongFromAlbum: build.mutation<HttpMessageResponse, MoveSongFromAlbumRequest>({
+      query: (body) => ({
+        url: `albums/move-song`,
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Albums', 'Songs']
+    }),
     removeSongsFromAlbum: build.mutation<HttpMessageResponse, RemoveSongsFromAlbumRequest>({
       query: (body) => ({
         url: `albums/remove-songs`,
@@ -94,5 +102,6 @@ export const {
   useDeleteImageFromAlbumMutation,
   useDeleteAlbumMutation,
   useAddSongsToAlbumMutation,
+  useMoveSongFromAlbumMutation,
   useRemoveSongsFromAlbumMutation
 } = albumsApi

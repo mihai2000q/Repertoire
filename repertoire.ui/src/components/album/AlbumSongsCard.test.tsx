@@ -270,4 +270,6 @@ describe('Album Songs Card', () => {
     expect(capturedRequest.id).toBe(album.id)
     expect(capturedRequest.songIds).toStrictEqual([song.id])
   })
+
+  it.skip('should be able to reorder songs', () => {})
 })

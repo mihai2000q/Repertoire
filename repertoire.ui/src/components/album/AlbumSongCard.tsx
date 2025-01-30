@@ -16,7 +16,7 @@ import {
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/slice/globalSlice.ts'
-import { useDisclosure, useHover } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -28,23 +28,33 @@ import DifficultyBar from '../@ui/misc/DifficultyBar.tsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
+import { DraggableProvided } from '@hello-pangea/dnd'
 
 interface AlbumSongCardProps {
   song: Song
   handleRemove: () => void
   isUnknownAlbum: boolean
   order: Order
+  isDragging: boolean
+  draggableProvided?: DraggableProvided
 }
 
-function AlbumSongCard({ song, handleRemove, isUnknownAlbum, order }: AlbumSongCardProps) {
+function AlbumSongCard({
+  song,
+  handleRemove,
+  isUnknownAlbum,
+  order,
+  isDragging,
+  draggableProvided
+}: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { ref, hovered } = useHover()
+  const [isHovered, setIsHovered] = useState(false)
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = hovered || isMenuOpened
+  const isSelected = isHovered || isMenuOpened || isDragging
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -85,15 +95,26 @@ function AlbumSongCard({ song, handleRemove, isUnknownAlbum, order }: AlbumSongC
       <Menu.Target>
         <Group
           aria-label={`song-card-${song.title}`}
-          ref={ref}
           wrap={'nowrap'}
+          ref={draggableProvided?.innerRef}
+          {...draggableProvided?.draggableProps}
+          {...draggableProvided?.dragHandleProps}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{
+            ...draggableProvided?.draggableProps?.style,
+            cursor: 'default'
+          }}
           sx={(theme) => ({
-            cursor: 'default',
             transition: '0.3s',
-            '&:hover': {
+            border: '1px solid transparent',
+            ...(isSelected && {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
-            }
+            }),
+
+            borderRadius: isDragging ? '16px' : '0px',
+            borderColor: isDragging ? alpha(theme.colors.primary[9], 0.33) : 'transparent'
           })}
           px={'md'}
           py={'xs'}

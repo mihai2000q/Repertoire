@@ -23,6 +23,7 @@ describe('Album Song Card', () => {
         handleRemove={() => {}}
         isUnknownAlbum={false}
         order={emptyOrder}
+        isDragging={false}
       />
     )
 
@@ -44,6 +45,7 @@ describe('Album Song Card', () => {
         handleRemove={() => {}}
         isUnknownAlbum={false}
         order={emptyOrder}
+        isDragging={false}
       />
     )
 
@@ -67,6 +69,7 @@ describe('Album Song Card', () => {
         handleRemove={() => {}}
         isUnknownAlbum={false}
         order={emptyOrder}
+        isDragging={false}
       />
     )
 
@@ -94,13 +97,20 @@ describe('Album Song Card', () => {
           handleRemove={() => {}}
           isUnknownAlbum={false}
           order={order}
+          isDragging={false}
         />
       )
 
       expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
 
       rerender(
-        <AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} order={order} />
+        <AlbumSongCard
+          song={song}
+          handleRemove={() => {}}
+          isUnknownAlbum={false}
+          order={order}
+          isDragging={false}
+        />
       )
 
       expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
@@ -123,6 +133,7 @@ describe('Album Song Card', () => {
           handleRemove={() => {}}
           isUnknownAlbum={false}
           order={order}
+          isDragging={false}
         />
       )
 
@@ -148,6 +159,7 @@ describe('Album Song Card', () => {
           handleRemove={() => {}}
           isUnknownAlbum={false}
           order={order}
+          isDragging={false}
         />
       )
 
@@ -171,6 +183,7 @@ describe('Album Song Card', () => {
           handleRemove={() => {}}
           isUnknownAlbum={false}
           order={order}
+          isDragging={false}
         />
       )
 
@@ -194,6 +207,7 @@ describe('Album Song Card', () => {
           handleRemove={() => {}}
           isUnknownAlbum={false}
           order={order}
+          isDragging={false}
         />
       )
 
@@ -202,7 +216,13 @@ describe('Album Song Card', () => {
       ).toBeInTheDocument()
 
       rerender(
-        <AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={false} order={order} />
+        <AlbumSongCard
+          song={song}
+          handleRemove={() => {}}
+          isUnknownAlbum={false}
+          order={order}
+          isDragging={false}
+        />
       )
 
       expect(screen.getByText(/never/i)).toBeInTheDocument()
@@ -218,6 +238,7 @@ describe('Album Song Card', () => {
         handleRemove={() => {}}
         isUnknownAlbum={false}
         order={emptyOrder}
+        isDragging={false}
       />
     )
 
@@ -239,6 +260,7 @@ describe('Album Song Card', () => {
         handleRemove={() => {}}
         isUnknownAlbum={false}
         order={emptyOrder}
+        isDragging={false}
       />
     )
 
@@ -258,6 +280,7 @@ describe('Album Song Card', () => {
           handleRemove={() => {}}
           isUnknownAlbum={false}
           order={emptyOrder}
+          isDragging={false}
         />
       )
 
@@ -281,6 +304,7 @@ describe('Album Song Card', () => {
           handleRemove={handleRemove}
           isUnknownAlbum={false}
           order={emptyOrder}
+          isDragging={false}
         />
       )
 
@@ -301,7 +325,13 @@ describe('Album Song Card', () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <AlbumSongCard song={song} handleRemove={() => {}} isUnknownAlbum={true} order={emptyOrder} />
+      <AlbumSongCard
+        song={song}
+        handleRemove={() => {}}
+        isUnknownAlbum={true}
+        order={emptyOrder}
+        isDragging={false}
+      />
     )
 
     expect(screen.queryByText(song.albumTrackNo)).not.toBeInTheDocument()
