@@ -10,14 +10,17 @@ import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
+import Order from '../../types/Order.ts'
+import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
 
 interface ArtistAlbumCardProps {
   album: Album
   handleRemove: () => void
   isUnknownArtist: boolean
+  order: Order
 }
 
-function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCardProps) {
+function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: ArtistAlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
@@ -88,10 +91,10 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist }: ArtistAlbumCa
           <Space ml={'md'} />
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
-            <Text fw={500} truncate={'end'}>
+            <Text fw={500} lineClamp={order.property === AlbumProperty.Title ? 2 : 1}>
               {album.title}
             </Text>
-            {album.releaseDate && (
+            {order.property === AlbumProperty.ReleaseDate && album.releaseDate && (
               <Text fz={'xs'} c={'dimmed'}>
                 {dayjs(album.releaseDate).format('D MMM YYYY')}
               </Text>

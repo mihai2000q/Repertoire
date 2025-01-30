@@ -98,6 +98,7 @@ function ArtistAlbumsCard({
               album={album}
               handleRemove={() => handleRemoveAlbumsFromArtist([album.id])}
               isUnknownArtist={isUnknownArtist}
+              order={order}
             />
           ))}
           {albums.models.length === albums.totalCount && (
