@@ -96,6 +96,7 @@ describe('Add New Album Modal', () => {
       const newArtistName = 'New Artist Name'
       const now = new Date()
       const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const whichDayIsCurrentDay = newReleaseDate.getDate() > 15 ? 1 : 0
 
       const onClose = vitest.fn()
 
@@ -112,7 +113,7 @@ describe('Add New Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getByText(newReleaseDate.getDate().toString()))
+      await user.click(screen.getAllByText(newReleaseDate.getDate().toString())[whichDayIsCurrentDay])
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
       await waitFor(() =>

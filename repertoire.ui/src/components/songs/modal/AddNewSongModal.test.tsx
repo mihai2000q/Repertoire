@@ -734,6 +734,7 @@ describe('Add New Song Modal', () => {
       const newBpm = 123
       const now = new Date()
       const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const whichDayIsCurrentDay = newReleaseDate.getDate() > 15 ? 1 : 0
 
       // sections
       const newSectionType = songSectionTypes[0]
@@ -769,7 +770,7 @@ describe('Add New Song Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /bpm/i }), newBpm.toString())
 
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getByText(newReleaseDate.getDate().toString()))
+      await user.click(screen.getAllByText(newReleaseDate.getDate().toString())[whichDayIsCurrentDay])
 
       // sections
       await user.click(screen.getByRole('button', { name: /add section/i }))
