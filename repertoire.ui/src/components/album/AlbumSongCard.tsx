@@ -16,7 +16,7 @@ import {
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/slice/globalSlice.ts'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -49,12 +49,13 @@ function AlbumSongCard({
 }: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const [isHovered, setIsHovered] = useState(false)
+  const { ref: hoverRef, hovered } = useHover()
+  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = isHovered || isMenuOpened || isDragging
+  const isSelected = hovered || isMenuOpened || isDragging
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -96,11 +97,9 @@ function AlbumSongCard({
         <Group
           aria-label={`song-card-${song.title}`}
           wrap={'nowrap'}
-          ref={draggableProvided?.innerRef}
+          ref={ref}
           {...draggableProvided?.draggableProps}
           {...draggableProvided?.dragHandleProps}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
           style={{
             ...draggableProvided?.draggableProps?.style,
             cursor: 'default'

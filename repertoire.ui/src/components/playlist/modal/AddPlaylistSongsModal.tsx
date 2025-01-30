@@ -114,6 +114,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
               <Checkbox
                 aria-label={songIds.length === songs.models.length ? 'deselect-all' : 'select-all'}
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
+                checked={songIds.length === songs.models.length}
               />
               <Text>{songIds.length === songs.models.length ? 'Deselect' : 'Select'} All</Text>
             </Group>

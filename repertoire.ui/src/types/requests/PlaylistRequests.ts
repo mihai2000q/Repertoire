@@ -31,6 +31,7 @@ export interface AddSongsToPlaylistRequest {
 export interface MoveSongFromPlaylistRequest {
   id: string
   songId: string
+  overSongId: string
 }
 
 export interface RemoveSongsFromPlaylistRequest {
