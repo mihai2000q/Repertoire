@@ -3,27 +3,36 @@ import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/co
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
-import { useDisclosure, useHover } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
+import { DraggableProvided } from '@hello-pangea/dnd'
 
 interface PlaylistSongCardProps {
   song: Song
   handleRemove: () => void
+  isDragging: boolean
+  draggableProvided?: DraggableProvided
 }
 
-function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
+function PlaylistSongCard({
+  song,
+  handleRemove,
+  isDragging,
+  draggableProvided
+}: PlaylistSongCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { ref, hovered } = useHover()
+  const { ref: hoverRef, hovered } = useHover()
+  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = hovered || isMenuOpened
+  const isSelected = hovered || isMenuOpened || isDragging
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -74,13 +83,22 @@ function PlaylistSongCard({ song, handleRemove }: PlaylistSongCardProps) {
           ref={ref}
           wrap={'nowrap'}
           aria-label={`song-card-${song.title}`}
+          {...draggableProvided?.draggableProps}
+          {...draggableProvided?.dragHandleProps}
+          style={{
+            ...draggableProvided?.draggableProps?.style,
+            cursor: 'default'
+          }}
           sx={(theme) => ({
-            cursor: 'default',
             transition: '0.3s',
-            '&:hover': {
+            border: '1px solid transparent',
+            ...(isSelected && {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
-            }
+            }),
+
+            borderRadius: isDragging ? '16px' : '0px',
+            borderColor: isDragging ? alpha(theme.colors.primary[9], 0.33) : 'transparent'
           })}
           px={'md'}
           py={'xs'}

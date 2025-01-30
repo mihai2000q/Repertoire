@@ -41,7 +41,7 @@ describe('Playlist Song Card', () => {
   }
 
   it('should render and display minimal info', () => {
-    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
     expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
@@ -57,7 +57,9 @@ describe('Playlist Song Card', () => {
       album: album
     }
 
-    reduxRouterRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
+    reduxRouterRender(
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+    )
 
     expect(screen.getByText(localSong.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
@@ -78,7 +80,7 @@ describe('Playlist Song Card', () => {
     }
 
     const [{ rerender }] = reduxRouterRender(
-      <PlaylistSongCard song={localSong} handleRemove={() => {}} />
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
     )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
@@ -95,7 +97,9 @@ describe('Playlist Song Card', () => {
       }
     }
 
-    rerender(<PlaylistSongCard song={localSongWithAlbum} handleRemove={() => {}} />)
+    rerender(
+      <PlaylistSongCard song={localSongWithAlbum} handleRemove={() => {}} isDragging={false} />
+    )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
       'src',
@@ -106,7 +110,7 @@ describe('Playlist Song Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -120,7 +124,7 @@ describe('Playlist Song Card', () => {
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -132,7 +136,7 @@ describe('Playlist Song Card', () => {
     it('should navigate to song when clicking on view details', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+      reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
@@ -148,7 +152,9 @@ describe('Playlist Song Card', () => {
 
       const handleRemove = vitest.fn()
 
-      reduxRouterRender(<PlaylistSongCard song={song} handleRemove={handleRemove} />)
+      reduxRouterRender(
+        <PlaylistSongCard song={song} handleRemove={handleRemove} isDragging={false} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /remove/i }))
@@ -172,7 +178,7 @@ describe('Playlist Song Card', () => {
     }
 
     const [_, store] = reduxRouterRender(
-      <PlaylistSongCard song={localSong} handleRemove={() => {}} />
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
     )
 
     await user.click(screen.getByText(localSong.album.title))
@@ -190,7 +196,7 @@ describe('Playlist Song Card', () => {
     }
 
     const [_, store] = reduxRouterRender(
-      <PlaylistSongCard song={localSong} handleRemove={() => {}} />
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
     )
 
     await user.click(screen.getByText(localSong.artist.name))
