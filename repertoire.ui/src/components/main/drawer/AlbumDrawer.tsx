@@ -13,7 +13,7 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/albumsApi.ts'
+import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/api/albumsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -28,7 +28,7 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
-import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/globalSlice.ts'
+import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 function AlbumDrawer() {

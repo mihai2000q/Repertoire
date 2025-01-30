@@ -12,7 +12,7 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/artistsApi.ts'
+import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/user-placeholder.jpg'
@@ -26,10 +26,10 @@ import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
-import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
-import { useGetSongsQuery } from '../../../state/songsApi.ts'
+import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
+import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
-import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/globalSlice.ts'
+import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 function ArtistDrawer() {

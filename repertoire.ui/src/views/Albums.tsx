@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useGetAlbumsQuery } from '../state/albumsApi.ts'
+import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
 import {
   ActionIcon,
   Box,

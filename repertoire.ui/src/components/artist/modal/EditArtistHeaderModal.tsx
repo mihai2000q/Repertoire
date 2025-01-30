@@ -4,7 +4,7 @@ import {
   useDeleteImageFromArtistMutation,
   useSaveImageToArtistMutation,
   useUpdateArtistMutation
-} from '../../../state/artistsApi.ts'
+} from '../../../state/api/artistsApi.ts'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import {

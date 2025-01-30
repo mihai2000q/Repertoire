@@ -11,7 +11,7 @@ import Album from '../../../types/models/Album.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { openArtistDrawer, setDocumentTitle } from '../../../state/globalSlice.ts'
+import { openArtistDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
 
 describe('Artist Drawer', () => {
   const songs: Song[] = [

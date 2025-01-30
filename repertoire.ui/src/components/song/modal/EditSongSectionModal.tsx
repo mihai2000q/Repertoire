@@ -1,4 +1,4 @@
-import { useUpdateSongSectionMutation } from '../../../state/songsApi.ts'
+import { useUpdateSongSectionMutation } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import {
   Button,

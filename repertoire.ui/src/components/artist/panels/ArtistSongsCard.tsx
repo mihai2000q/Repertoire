@@ -11,7 +11,7 @@ import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewArtistSongModal from '../modal/AddNewArtistSongModal.tsx'
 import AddExistingArtistSongsModal from '../modal/AddExistingArtistSongsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { useRemoveSongsFromArtistMutation } from '../../../state/artistsApi.ts'
+import { useRemoveSongsFromArtistMutation } from '../../../state/api/artistsApi.ts'
 import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 
 interface ArtistSongsCardProps {

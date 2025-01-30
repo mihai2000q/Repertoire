@@ -14,7 +14,7 @@ import {
   useDeleteImageFromSongMutation,
   useSaveImageToSongMutation,
   useUpdateSongMutation
-} from '../../../state/songsApi.ts'
+} from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validation/songsForm.ts'

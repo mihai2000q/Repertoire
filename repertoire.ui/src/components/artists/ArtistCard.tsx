@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import useContextMenu from '../../hooks/useContextMenu.ts'
-import { useDeleteArtistMutation } from '../../state/artistsApi.ts'
+import { useDeleteArtistMutation } from '../../state/api/artistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 

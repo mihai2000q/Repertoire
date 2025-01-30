@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import authReducer from './authSlice'
-import globalReducer from './globalSlice'
+import authReducer from './slice/authSlice.ts'
+import globalReducer from './slice/globalSlice.ts'
 import { api } from './api'
 import { useDispatch, useSelector } from 'react-redux'
 

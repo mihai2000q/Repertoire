@@ -13,7 +13,7 @@ import {
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
-import { openAlbumDrawer, openSongDrawer } from '../../state/globalSlice.ts'
+import { openAlbumDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure, useHover } from '@mantine/hooks'

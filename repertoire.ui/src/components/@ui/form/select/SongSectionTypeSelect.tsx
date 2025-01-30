@@ -1,5 +1,5 @@
 import { ComboboxItem, Select } from '@mantine/core'
-import { useGetSongSectionTypesQuery } from '../../../../state/songsApi.ts'
+import { useGetSongSectionTypesQuery } from '../../../../state/api/songsApi.ts'
 
 interface SongSectionTypeSelectProps {
   option: ComboboxItem | null

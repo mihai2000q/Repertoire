@@ -1,6 +1,6 @@
-import { api } from './api'
-import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
-import Playlist from '../types/models/Playlist.ts'
+import { api } from '../api.ts'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
 import {
   AddSongsToPlaylistRequest,
   CreatePlaylistRequest,
@@ -9,10 +9,10 @@ import {
   RemoveSongsFromPlaylistRequest,
   SaveImageToPlaylistRequest,
   UpdatePlaylistRequest
-} from '../types/requests/PlaylistRequests.ts'
-import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
-import createFormData from '../utils/createFormData.ts'
-import createQueryParams from '../utils/createQueryParams.ts'
+} from '../../types/requests/PlaylistRequests.ts'
+import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
+import createFormData from '../../utils/createFormData.ts'
+import createQueryParams from '../../utils/createQueryParams.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({

@@ -13,7 +13,7 @@ import {
 import { ReactElement } from 'react'
 import { useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
-import { setToken } from '../state/authSlice'
+import { setToken } from '../state/slice/authSlice.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'

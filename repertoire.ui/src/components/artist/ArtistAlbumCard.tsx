@@ -3,7 +3,7 @@ import { ActionIcon, alpha, Avatar, Group, Menu, Space, Stack, Text } from '@man
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
-import { openAlbumDrawer } from '../../state/globalSlice.ts'
+import { openAlbumDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'

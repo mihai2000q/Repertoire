@@ -15,7 +15,7 @@ import {
 } from '@mantine/core'
 import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
-import { openSongDrawer } from '../../state/globalSlice.ts'
+import { openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
 import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'

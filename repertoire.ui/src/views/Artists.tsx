@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useGetArtistsQuery } from '../state/artistsApi.ts'
+import { useGetArtistsQuery } from '../state/api/artistsApi.ts'
 import {
   ActionIcon,
   Box,

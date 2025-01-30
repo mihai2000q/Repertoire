@@ -4,7 +4,7 @@ import {
   useDeleteImageFromPlaylistMutation,
   useSaveImageToPlaylistMutation,
   useUpdatePlaylistMutation
-} from '../../../state/playlistsApi.ts'
+} from '../../../state/api/playlistsApi.ts'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import {

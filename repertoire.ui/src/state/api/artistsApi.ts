@@ -1,6 +1,6 @@
-import { api } from './api'
-import WithTotalCountResponse from '../types/responses/WithTotalCountResponse'
-import Artist from '../types/models/Artist.ts'
+import { api } from '../api.ts'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Artist from '../../types/models/Artist.ts'
 import {
   AddAlbumsToArtistRequest,
   AddSongsToArtistRequest,
@@ -10,10 +10,10 @@ import {
   RemoveSongsFromArtistRequest,
   SaveImageToArtistRequest,
   UpdateArtistRequest
-} from '../types/requests/ArtistRequests.ts'
-import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
-import createFormData from '../utils/createFormData.ts'
-import createQueryParams from '../utils/createQueryParams.ts'
+} from '../../types/requests/ArtistRequests.ts'
+import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
+import createFormData from '../../utils/createFormData.ts'
+import createQueryParams from '../../utils/createQueryParams.ts'
 
 const artistsApi = api.injectEndpoints({
   endpoints: (build) => ({

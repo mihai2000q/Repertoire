@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useGetPlaylistsQuery } from '../state/playlistsApi.ts'
+import { useGetPlaylistsQuery } from '../state/api/playlistsApi.ts'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import { useDisclosure } from '@mantine/hooks'
 import {

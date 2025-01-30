@@ -1,7 +1,7 @@
 import { Button, ComboboxItem, Group, Modal, Space, Stepper, Text } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm.ts'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'

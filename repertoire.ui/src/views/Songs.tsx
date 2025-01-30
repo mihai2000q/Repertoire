@@ -12,7 +12,7 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useGetSongsQuery } from '../state/songsApi.ts'
+import { useGetSongsQuery } from '../state/api/songsApi.ts'
 import SongCard from '../components/songs/SongCard.tsx'
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
