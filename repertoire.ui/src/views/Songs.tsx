@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import {
   ActionIcon,
   Box,
@@ -20,12 +20,15 @@ import AddNewSongModal from '../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../components/songs/SongsLoader.tsx'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
+  const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
+  const { currentPage } = searchParams
 
   const pageSize = 40
-  const [currentPage, setCurrentPage] = useState(1)
   const {
     data: songs,
     isLoading,
@@ -44,6 +47,10 @@ function Songs(): ReactElement {
 
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
+
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
 
   return (
     <Stack h={'100%'} gap={'xs'}>
@@ -100,7 +107,7 @@ function Songs(): ReactElement {
           <Pagination
             data-testid={'songs-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (
