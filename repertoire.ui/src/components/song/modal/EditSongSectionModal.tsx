@@ -114,7 +114,8 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
               />
 
               <NumberInput
-                min={0}
+                allowNegative={false}
+                allowDecimal={false}
                 flex={1}
                 label="Rehearsals"
                 placeholder="Enter Rehearsals"
