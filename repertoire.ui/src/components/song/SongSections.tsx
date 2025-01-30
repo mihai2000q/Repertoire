@@ -40,7 +40,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
   function onSectionsDragEnd({ source, destination }) {
     reorder({ from: source.index, to: destination?.index || 0 })
 
-    if (source.index === destination.index || !destination) return
+    if (!destination || source.index === destination.index) return
 
     moveSongSection({
       id: sections[source.index].id,

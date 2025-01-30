@@ -64,7 +64,7 @@ function AlbumSongsCard({
   function onSongsDragEnd({ source, destination }) {
     reorder({ from: source.index, to: destination?.index || 0 })
 
-    if (source.index === destination.index || !destination) return
+    if (!destination || source.index === destination.index) return
 
     moveSongFromAlbum({
       id: album.id,
@@ -132,8 +132,8 @@ function AlbumSongsCard({
                           handleRemove={() => handleRemoveSongsFromAlbum([song.id])}
                           isUnknownAlbum={isUnknownAlbum}
                           order={order}
-                          draggableProvided={provided}
                           isDragging={snapshot.isDragging}
+                          draggableProvided={provided}
                         />
                       )}
                     </Draggable>
