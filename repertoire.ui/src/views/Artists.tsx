@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useGetArtistsQuery } from '../state/api/artistsApi.ts'
 import {
   ActionIcon,
@@ -22,12 +21,15 @@ import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import UnknownArtistCard from '../components/artists/UnknownArtistCard.tsx'
 import useShowUnknownArtist from '../hooks/useShowUnknownArtist.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import artistsSearchParamsState from '../state/searchParams/ArtistsSearchParamsState.ts'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
+  const [searchParams, setSearchParams] = useSearchParamsState(artistsSearchParamsState)
+  const { currentPage } = searchParams
 
   const pageSize = 40
-  const [currentPage, setCurrentPage] = useState(1)
   const {
     data: artists,
     isLoading,
@@ -48,6 +50,10 @@ function Artists() {
 
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
+
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
 
   return (
     <Stack h={'100%'} gap={'xs'}>
@@ -85,7 +91,8 @@ function Artists() {
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
-        {((artists?.totalCount > 0 && currentPage == totalPages) || (artists?.totalCount === 0 && showUnknownArtist)) && (
+        {((artists?.totalCount > 0 && currentPage == totalPages) ||
+          (artists?.totalCount === 0 && showUnknownArtist)) && (
           <Card
             aria-label={'new-artist-card'}
             w={125}
@@ -108,7 +115,7 @@ function Artists() {
           <Pagination
             data-testid={'artists-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (
