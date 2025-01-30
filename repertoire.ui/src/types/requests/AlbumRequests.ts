@@ -35,6 +35,12 @@ export interface AddSongsToAlbumRequest {
   songIds: string[]
 }
 
+export interface MoveSongFromAlbumRequest {
+  id: string
+  songId: string
+  overSongId: string
+}
+
 export interface RemoveSongsFromAlbumRequest {
   id: string
   songIds: string[]
