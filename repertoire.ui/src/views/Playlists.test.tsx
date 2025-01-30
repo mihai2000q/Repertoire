@@ -68,7 +68,10 @@ describe('Playlists', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    window.location.search = ''
+    server.resetHandlers()
+  })
 
   afterAll(() => server.close())
 
@@ -156,6 +159,7 @@ describe('Playlists', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount} playlists out of ${totalCount}`)
     ).toBeInTheDocument()
+    expect(window.location.search).toContain('p=2')
   })
 
   it('the new playlist card should not be displayed on first page, but on the last', async () => {
