@@ -4,8 +4,11 @@
 ![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=electron&logoColor=white)
 ![React](https://img.shields.io/badge/React-0081A3?style=flat&logo=react&logoColor=white)
 ![Redux](https://img.shields.io/badge/Redux-764ABC?style=flat&logo=redux&logoColor=white)
+![Mantine](https://img.shields.io/badge/Mantine-339AF0?style=flat&logo=mantine&logoColor=white)
 ![Go](https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white)
 ![Go Gin](https://img.shields.io/badge/Gin-008ECF?style=flat&logo=gin&logoColor=white)
+![GORM](https://img.shields.io/badge/GORM-38B6FF?style=flat&logo=go&logoColor=white)
+![Goose](https://img.shields.io/badge/Goose-00ADD8?style=flat&logo=duckduckgo&logoColor=white)
 ![Postgres](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
@@ -116,6 +119,7 @@ The expected labels to use are:
   - **feature** for new features that are added to the application
   - **performance** when the code is being optimized
   - **refactor** when the code is just being cleaned up (interchangeable with **code-quality**)
+  - **styling** when only the style is being affected (usually used for the front end components)
   - **test** if a unit or integration test for the source code is being written
 
 ### Git Branches
@@ -135,6 +139,7 @@ Based on the above label, the branch will have similar prefixes:
 - **feature** for a _feature_ issue
 - **perform** for a _performance_ issue
 - **refactor** for a _refactor_ issue
+- **style** for a _styling_ issue
 - **test** for a _test_ issue
 
 For example, if your ticket's name is "\[Server\] Data - New Repository for Menus"
@@ -163,12 +168,12 @@ However, if multiple layers or projects are affected, try submitting more smalle
 
 The deployment is fairly simple. 
 As soon as a pull request from *develop* is pushed onto *master* a CI/CD pipeline will be triggered.
-This Github Action will build and push the following docker images to **Docker Hub**:
-
-- Server
-- Storage
+This Github Action will build and push the server docker image to **Docker Hub**.
 
 Afterwards, the cloud server detects the latest docker images and pulls them.
+
+The _storage_ service is not udnergoing changes so often, 
+so there is not benefit for automating the deploying process.
 
 ### Desktop
 
