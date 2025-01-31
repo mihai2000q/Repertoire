@@ -4,6 +4,6 @@ export interface UpdateUserRequest {
   name: string
 }
 
-export interface SaveProfilePictureToUserRequest {
+export interface SaveProfilePictureRequest {
   profile_pic: FileWithPath
 }

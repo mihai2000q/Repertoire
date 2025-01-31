@@ -14,8 +14,8 @@ import { useForm, zodResolver } from '@mantine/form'
 import User from '../../../types/models/User.ts'
 import { AccountForm, accountValidation } from '../../../validation/mainForm.ts'
 import {
-  useDeleteProfilePictureFromUserMutation,
-  useSaveProfilePictureToUserMutation,
+  useDeleteProfilePictureMutation,
+  useSaveProfilePictureMutation,
   useUpdateUserMutation
 } from '../../../state/api.ts'
 import { toast } from 'react-toastify'
@@ -32,9 +32,9 @@ interface AccountModalProps {
 function AccountModal({ opened, onClose, user }: AccountModalProps) {
   const [updateUserMutation, { isLoading: isUpdateLoading }] = useUpdateUserMutation()
   const [saveProfilePictureMutation, { isLoading: isSaveProfilePictureLoading }] =
-    useSaveProfilePictureToUserMutation()
+    useSaveProfilePictureMutation()
   const [deleteProfilePictureMutation, { isLoading: isDeleteProfilePictureLoading }] =
-    useDeleteProfilePictureFromUserMutation()
+    useDeleteProfilePictureMutation()
   const isLoading = isUpdateLoading || isSaveProfilePictureLoading || isDeleteProfilePictureLoading
 
   const [hasChanged, setHasChanged] = useState(false)
