@@ -56,7 +56,6 @@ export const api = createApi({
           method: 'DELETE',
           body: body
         }),
-        invalidatesTags: ['User']
       }),
 
       saveProfilePicture: build.mutation<HttpMessageResponse, SaveProfilePictureRequest>({
