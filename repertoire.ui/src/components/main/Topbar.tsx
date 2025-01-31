@@ -32,6 +32,7 @@ import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import CustomIconArrowLeft from '../@ui/icons/CustomIconArrowLeft.tsx'
 import CustomIconArrowRight from '../@ui/icons/CustomIconArrowRight.tsx'
+import SettingsModal from './modal/SettingsModal.tsx'
 
 function Topbar(): ReactElement {
   const navigate = useNavigate()
@@ -52,6 +53,7 @@ function Topbar(): ReactElement {
   }
 
   const [openedAccount, { open: openAccount, close: closeAccount }] = useDisclosure(false)
+  const [openedSettings, { open: openSettings, close: closeSettings }] = useDisclosure(false)
 
   function handleSignOut() {
     dispatch(signOut())
@@ -182,13 +184,16 @@ function Topbar(): ReactElement {
               <Menu.Item leftSection={<IconUser size={14} />} onClick={openAccount}>
                 Account
               </Menu.Item>
-              <Menu.Item leftSection={<IconSettings size={14} />}>Settings</Menu.Item>
+              <Menu.Item leftSection={<IconSettings size={14} />} onClick={openSettings}>
+                Settings
+              </Menu.Item>
               <Menu.Item leftSection={<IconLogout2 size={14} />} onClick={handleSignOut}>
                 Sign Out
               </Menu.Item>
             </Menu.Dropdown>
 
             <AccountModal opened={openedAccount} onClose={closeAccount} user={user} />
+            <SettingsModal opened={openedSettings} onClose={closeSettings} user={user} />
           </Menu>
         )}
       </Group>

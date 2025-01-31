@@ -12,6 +12,7 @@ import Album from './types/models/Album.ts'
 import Song from './types/models/Song.ts'
 import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
+import User from './types/models/User.ts'
 
 // Custom Matchers
 
@@ -198,6 +199,14 @@ export function reduxRouterRenderHook<T>(
 }
 
 // Empty Types
+
+export const emptyUser: User = {
+  createdAt: '',
+  email: '',
+  id: '',
+  name: '',
+  updatedAt: ''
+}
 
 export const emptyArtist: Artist = {
   id: '',
