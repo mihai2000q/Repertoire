@@ -4,7 +4,7 @@ import Artist from '../../types/models/Artist.ts'
 import {
   AddAlbumsToArtistRequest,
   AddSongsToArtistRequest,
-  CreateArtistRequest,
+  CreateArtistRequest, DeleteArtistRequest,
   GetArtistsRequest,
   RemoveAlbumsFromArtistRequest,
   RemoveSongsFromArtistRequest,
@@ -59,10 +59,11 @@ const artistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Artists', 'Songs', 'Albums']
     }),
-    deleteArtist: build.mutation<HttpMessageResponse, string>({
+    deleteArtist: build.mutation<HttpMessageResponse, DeleteArtistRequest>({
       query: (arg) => ({
-        url: `artists/${arg}`,
-        method: 'DELETE'
+        url: `artists/${arg.id}`,
+        method: 'DELETE',
+        params: { ...arg, id: undefined }
       }),
       invalidatesTags: ['Artists', 'Songs', 'Albums']
     }),

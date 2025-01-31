@@ -31,7 +31,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
   }
 
   function handleDelete() {
-    deleteArtistMutation(artist.id)
+    deleteArtistMutation({ id: artist.id })
     toast.success(`${artist.name} deleted!`)
   }
 

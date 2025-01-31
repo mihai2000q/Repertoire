@@ -174,8 +174,13 @@ describe('Artist Header Card', () => {
     it('should display warning modal and delete artist', async () => {
       const user = userEvent.setup()
 
+      let withAlbums: string | null
+      let withSongs: string | null
       server.use(
-        http.delete(`/artists/${artist.id}`, async () => {
+        http.delete(`/artists/${artist.id}`, (req) => {
+          const params = new URL(req.request.url).searchParams
+          withAlbums = params.get('withAlbums')
+          withSongs = params.get('withSongs')
           return HttpResponse.json({ message: 'it worked' })
         })
       )
@@ -197,6 +202,50 @@ describe('Artist Header Card', () => {
       expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
+
+      expect(withAlbums).toBe('false')
+      expect(withSongs).toBe('false')
+
+      expect(window.location.pathname).toBe('/artists')
+      expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
+    })
+
+    it('should display warning modal and delete artist with associations', async () => {
+      const user = userEvent.setup()
+
+      let withAlbums: string | null
+      let withSongs: string | null
+      server.use(
+        http.delete(`/artists/${artist.id}`, (req) => {
+          const params = new URL(req.request.url).searchParams
+          withAlbums = params.get('withAlbums')
+          withSongs = params.get('withSongs')
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      reduxRouterRender(
+        withToastify(
+          <ArtistHeaderCard
+            artist={artist}
+            albumsTotalCount={undefined}
+            songsTotalCount={undefined}
+            isUnknownArtist={false}
+          />
+        )
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+      expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
+      expect(screen.getByRole('checkbox', { name: /albums and songs/i })).toBeInTheDocument()
+      await user.click(screen.getByRole('checkbox', { name: /albums and songs/i }))
+      await user.click(screen.getByRole('button', { name: /yes/i }))
+
+      expect(withAlbums).toBe('true')
+      expect(withSongs).toBe('true')
 
       expect(window.location.pathname).toBe('/artists')
       expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
