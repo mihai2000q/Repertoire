@@ -11,14 +11,14 @@ import {
   Title
 } from '@mantine/core'
 import { ReactElement } from 'react'
-import { useSignInMutation } from '../state/api'
+import { api, useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
 import { setToken } from '../state/slice/authSlice.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
-import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 
 function SignIn(): ReactElement {
   const dispatch = useAppDispatch()
@@ -46,6 +46,7 @@ function SignIn(): ReactElement {
     try {
       const res = await signInMutation({ email, password }).unwrap()
       dispatch(setToken(res.token))
+      dispatch(api.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/
