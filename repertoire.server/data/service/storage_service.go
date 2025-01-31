@@ -83,7 +83,7 @@ func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCod
 		return wrapper.InternalServerError(err)
 	}
 	if res.StatusCode() == http.StatusNotFound {
-		return wrapper.InternalServerError(errors.New("Storage Service - DeleteFile Not Found: " + res.String()))
+		return wrapper.NotFoundError(errors.New("Storage Service - DeleteFile Not Found: " + res.String()))
 	}
 	if res.StatusCode() != http.StatusOK {
 		return wrapper.InternalServerError(errors.New("Storage Service - DeleteFile failed: " + res.String()))
@@ -105,7 +105,7 @@ func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode
 		return wrapper.InternalServerError(err)
 	}
 	if res.StatusCode() == http.StatusNotFound {
-		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectory Not Found: " + res.String()))
+		return wrapper.NotFoundError(errors.New("Storage Service - DeleteDirectory Not Found: " + res.String()))
 	}
 	if res.StatusCode() != http.StatusOK {
 		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectory failed: " + res.String()))
