@@ -37,7 +37,7 @@ function AlbumCard({ album }: AlbumCardProps) {
   }
 
   function handleDelete() {
-    deleteAlbumMutation(album.id)
+    deleteAlbumMutation({ id: album.id })
     toast.success(`${album.title} deleted!`)
   }
 

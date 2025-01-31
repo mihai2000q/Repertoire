@@ -170,8 +170,10 @@ describe('Album Header Card', () => {
     it('should display warning modal and delete album', async () => {
       const user = userEvent.setup()
 
+      let withSongs: string | null
       server.use(
-        http.delete(`/albums/${album.id}`, () => {
+        http.delete(`/albums/${album.id}`, (req) => {
+          withSongs = new URL(req.request.url).searchParams.get('withSongs')
           return HttpResponse.json({ message: 'it worked' })
         })
       )
@@ -188,6 +190,40 @@ describe('Album Header Card', () => {
       expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
+
+      expect(withSongs).toBe('false')
+
+      expect(window.location.pathname).toBe('/albums')
+      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
+    })
+
+    it('should display warning modal and delete album with songs', async () => {
+      const user = userEvent.setup()
+
+      let withSongs: string | null
+      server.use(
+        http.delete(`/albums/${album.id}`, (req) => {
+          withSongs = new URL(req.request.url).searchParams.get('withSongs')
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      reduxRouterRender(
+        withToastify(
+          <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+        )
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+      expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
+      expect(screen.getByRole('checkbox', { name: /songs/i })).toBeInTheDocument()
+      await user.click(screen.getByRole('checkbox', { name: /songs/i }))
+      await user.click(screen.getByRole('button', { name: /yes/i }))
+
+      expect(withSongs).toBe('true')
 
       expect(window.location.pathname).toBe('/albums')
       expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()

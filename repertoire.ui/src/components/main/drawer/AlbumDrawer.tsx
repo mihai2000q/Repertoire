@@ -64,7 +64,7 @@ function AlbumDrawer() {
   }
 
   function handleDelete() {
-    deleteAlbumMutation(album.id)
+    deleteAlbumMutation({ id: album.id })
     dispatch(deleteAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${album.title} deleted!`)

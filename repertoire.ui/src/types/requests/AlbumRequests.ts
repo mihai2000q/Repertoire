@@ -30,6 +30,11 @@ export interface SaveImageToAlbumRequest {
   id: string
 }
 
+export interface DeleteAlbumRequest {
+  id: string
+  withSongs?: boolean
+}
+
 export interface AddSongsToAlbumRequest {
   id: string
   songIds: string[]
