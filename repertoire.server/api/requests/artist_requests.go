@@ -37,3 +37,9 @@ type RemoveSongsFromArtistRequest struct {
 	ID      uuid.UUID   `validate:"required"`
 	SongIDs []uuid.UUID `validate:"min=1"`
 }
+
+type DeleteArtistRequest struct {
+	ID         uuid.UUID `validate:"required"`
+	WithAlbums bool      `form:"withAlbums"`
+	WithSongs  bool      `form:"withSongs"`
+}

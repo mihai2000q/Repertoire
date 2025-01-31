@@ -176,13 +176,27 @@ func (a ArtistHandler) RemoveSongs(c *gin.Context) {
 }
 
 func (a ArtistHandler) Delete(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	var request requests.DeleteArtistRequest
+	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	errorCode := a.service.Delete(id)
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := a.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.Delete(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
