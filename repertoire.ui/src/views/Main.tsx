@@ -29,7 +29,6 @@ function Main(): ReactElement {
           breakpoint: 'xs',
           collapsed: { mobile: true, desktop: false }
         }}
-        px={'xl'}
         w={'100%'}
         h={`calc(100% - ${titleBarHeight})`}
         mt={titleBarHeight}

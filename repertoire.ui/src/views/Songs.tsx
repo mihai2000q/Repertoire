@@ -53,7 +53,7 @@ function Songs(): ReactElement {
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'}>
+    <Stack h={'100%'} gap={'xs'} px={'xl'}>
       <Group gap={4}>
         <Title order={3} fw={800}>
           Songs

@@ -51,7 +51,7 @@ function Album() {
   if (isLoading || isSongsLoading) return <AlbumLoader />
 
   return (
-    <Stack>
+    <Stack px={'xl'}>
       <AlbumHeaderCard
         album={album}
         isUnknownAlbum={isUnknownAlbum}

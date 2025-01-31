@@ -51,7 +51,7 @@ function Artist() {
   if (isLoading) return <ArtistLoader />
 
   return (
-    <Stack>
+    <Stack px={'xl'}>
       <ArtistHeaderCard
         artist={artist}
         albumsTotalCount={albums?.totalCount}
