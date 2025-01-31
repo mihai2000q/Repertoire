@@ -42,9 +42,9 @@ func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 
 	if d.storageFilePathProvider.HasPlaylistFiles(playlist) {
 		directoryPath := d.storageFilePathProvider.GetPlaylistDirectoryPath(playlist)
-		err = d.storageService.DeleteDirectory(directoryPath)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		errCode := d.storageService.DeleteDirectory(directoryPath)
+		if errCode != nil {
+			return errCode
 		}
 	}
 

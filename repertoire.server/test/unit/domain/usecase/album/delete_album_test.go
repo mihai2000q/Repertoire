@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -81,7 +82,7 @@ func TestDeleteAlbum_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t 
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetAlbumDirectoryPath", *mockAlbum).Return(directoryPath).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
 
 	// when
@@ -89,8 +90,7 @@ func TestDeleteAlbum_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t 
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	albumRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)

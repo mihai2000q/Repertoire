@@ -41,9 +41,9 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 
 	if d.storageFilePathProvider.HasAlbumFiles(album) {
 		directoryPath := d.storageFilePathProvider.GetAlbumDirectoryPath(album)
-		err = d.storageService.DeleteDirectory(directoryPath)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		errCode := d.storageService.DeleteDirectory(directoryPath)
+		if errCode != nil {
+			return errCode
 		}
 	}
 

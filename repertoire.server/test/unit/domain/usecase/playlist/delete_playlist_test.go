@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -74,7 +75,7 @@ func TestDeletePlaylist_WhenDeleteDirectoryFails_ShouldReturnInternalServerError
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetPlaylistDirectoryPath", *mockPlaylist).Return(directoryPath).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
 
 	// when
@@ -82,8 +83,7 @@ func TestDeletePlaylist_WhenDeleteDirectoryFails_ShouldReturnInternalServerError
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	playlistRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)

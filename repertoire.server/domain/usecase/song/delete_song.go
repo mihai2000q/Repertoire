@@ -52,9 +52,9 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 
 	if d.storageFilePathProvider.HasSongFiles(song) {
 		directoryPath := d.storageFilePathProvider.GetSongDirectoryPath(song)
-		err = d.storageService.DeleteDirectory(directoryPath)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		errCode := d.storageService.DeleteDirectory(directoryPath)
+		if errCode != nil {
+			return errCode
 		}
 	}
 
