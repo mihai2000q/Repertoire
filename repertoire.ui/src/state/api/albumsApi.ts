@@ -4,8 +4,10 @@ import Album from '../../types/models/Album.ts'
 import {
   AddSongsToAlbumRequest,
   CreateAlbumRequest,
+  DeleteAlbumRequest,
   GetAlbumRequest,
-  GetAlbumsRequest, MoveSongFromAlbumRequest,
+  GetAlbumsRequest,
+  MoveSongFromAlbumRequest,
   RemoveSongsFromAlbumRequest,
   SaveImageToAlbumRequest,
   UpdateAlbumRequest
@@ -58,10 +60,11 @@ const albumsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs', 'Albums']
     }),
-    deleteAlbum: build.mutation<HttpMessageResponse, string>({
+    deleteAlbum: build.mutation<HttpMessageResponse, DeleteAlbumRequest>({
       query: (arg) => ({
-        url: `albums/${arg}`,
-        method: 'DELETE'
+        url: `albums/${arg.id}`,
+        method: 'DELETE',
+        params: { ...arg, id: undefined }
       }),
       invalidatesTags: ['Albums', 'Songs']
     }),

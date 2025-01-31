@@ -79,7 +79,7 @@ function ArtistDrawer() {
   }
 
   function handleDelete() {
-    deleteArtistMutation(artist.id)
+    deleteArtistMutation({ id: artist.id })
     dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${artist.name} deleted!`)

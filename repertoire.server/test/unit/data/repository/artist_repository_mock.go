@@ -83,3 +83,13 @@ func (a *ArtistRepositoryMock) Delete(id uuid.UUID) error {
 	args := a.Called(id)
 	return args.Error(0)
 }
+
+func (a *ArtistRepositoryMock) DeleteAlbums(id uuid.UUID) error {
+	args := a.Called(id)
+	return args.Error(0)
+}
+
+func (a *ArtistRepositoryMock) DeleteSongs(id uuid.UUID) error {
+	args := a.Called(id)
+	return args.Error(0)
+}

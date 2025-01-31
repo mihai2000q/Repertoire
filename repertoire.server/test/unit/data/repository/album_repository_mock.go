@@ -104,6 +104,11 @@ func (a *AlbumRepositoryMock) Delete(id uuid.UUID) error {
 	return args.Error(0)
 }
 
+func (a *AlbumRepositoryMock) DeleteWithSongs(id uuid.UUID) error {
+	args := a.Called(id)
+	return args.Error(0)
+}
+
 func (a *AlbumRepositoryMock) RemoveSongs(album *model.Album, songs *[]model.Song) error {
 	args := a.Called(album, songs)
 	return args.Error(0)

@@ -540,3 +540,68 @@ func TestValidateRemoveSongsFromAlbumRequest_WhenSingleFieldIsInvalid_ShouldRetu
 		})
 	}
 }
+
+func TestValidateDeleteAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.DeleteAlbumRequest
+	}{
+		{
+			"Minimal",
+			requests.DeleteAlbumRequest{ID: uuid.New()},
+		},
+		{
+			"Maximal",
+			requests.DeleteAlbumRequest{
+				ID:        uuid.New(),
+				WithSongs: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateDeleteAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.DeleteAlbumRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Cases
+		{
+			"ID is invalid because it is required",
+			requests.DeleteAlbumRequest{ID: uuid.Nil},
+			"ID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "DeleteAlbumRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}

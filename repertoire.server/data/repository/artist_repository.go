@@ -24,6 +24,8 @@ type ArtistRepository interface {
 	Create(artist *model.Artist) error
 	Update(artist *model.Artist) error
 	Delete(id uuid.UUID) error
+	DeleteAlbums(id uuid.UUID) error
+	DeleteSongs(id uuid.UUID) error
 }
 
 type artistRepository struct {
@@ -84,4 +86,12 @@ func (a artistRepository) Update(artist *model.Artist) error {
 
 func (a artistRepository) Delete(id uuid.UUID) error {
 	return a.client.DB.Delete(&model.Artist{}, id).Error
+}
+
+func (a artistRepository) DeleteAlbums(id uuid.UUID) error {
+	return a.client.DB.Where("artist_id = ?", id).Delete(&model.Album{}).Error
+}
+
+func (a artistRepository) DeleteSongs(id uuid.UUID) error {
+	return a.client.DB.Where("artist_id = ?", id).Delete(&model.Song{}).Error
 }

@@ -3,13 +3,12 @@ package album
 import (
 	"errors"
 	"reflect"
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type DeleteAlbum struct {
@@ -30,9 +29,9 @@ func NewDeleteAlbum(
 	}
 }
 
-func (d DeleteAlbum) Handle(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorCode {
 	var album model.Album
-	err := d.repository.Get(&album, id)
+	err := d.repository.Get(&album, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -48,7 +47,11 @@ func (d DeleteAlbum) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		}
 	}
 
-	err = d.repository.Delete(id)
+	if request.WithSongs {
+		err = d.repository.DeleteWithSongs(request.ID)
+	} else {
+		err = d.repository.Delete(request.ID)
+	}
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

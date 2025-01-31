@@ -1,5 +1,5 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Avatar, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { Avatar, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import unknownPlaceholder from '../../../assets/unknown-placeholder.png'
 import artistPlaceholder from '../../../assets/user-placeholder.jpg'
@@ -13,6 +13,7 @@ import { useDeleteArtistMutation } from '../../../state/api/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
+import { useState } from 'react'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -31,6 +32,8 @@ function ArtistHeaderCard({
 
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
+  const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
+
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] = useDisclosure(false)
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
@@ -38,7 +41,11 @@ function ArtistHeaderCard({
     useDisclosure(false)
 
   function handleDelete() {
-    deleteArtistMutation(artist.id)
+    deleteArtistMutation({
+      id: artist.id,
+      withAlbums: deleteWithAssociations,
+      withSongs: deleteWithAssociations
+    })
     navigate(`/artists`, { replace: true })
     toast.success(`${artist.name} deleted!`)
   }
@@ -114,7 +121,21 @@ function ArtistHeaderCard({
             opened={openedDeleteWarning}
             onClose={closeDeleteWarning}
             title={'Delete Artist'}
-            description={`Are you sure you want to delete this artist?`}
+            description={
+              <Stack gap={'xs'}>
+                <Text fw={500}>Are you sure you want to delete this artist?</Text>
+                <Checkbox
+                  checked={deleteWithAssociations}
+                  onChange={(event) => setDeleteWithAssociations(event.currentTarget.checked)}
+                  label={
+                    <Text c={'dimmed'}>
+                      Delete all associated <b>albums</b> and <b>songs</b>
+                    </Text>
+                  }
+                  styles={{ label: { paddingLeft: 8 } }}
+                />
+              </Stack>
+            }
             onYes={handleDelete}
           />
         </>

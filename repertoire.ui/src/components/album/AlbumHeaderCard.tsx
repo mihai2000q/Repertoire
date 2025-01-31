@@ -1,5 +1,16 @@
 import Album from '../../types/models/Album.ts'
-import { AspectRatio, Avatar, Group, Image, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
+import {
+  AspectRatio,
+  Avatar,
+  Checkbox,
+  Group,
+  Image,
+  Menu,
+  Stack,
+  Text,
+  Title,
+  Tooltip
+} from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import unknownPlaceholder from '../../assets/unknown-placeholder.png'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
@@ -17,6 +28,7 @@ import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
+import { useState } from 'react'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -30,6 +42,8 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
   const [deleteAlbumMutation] = useDeleteAlbumMutation()
 
+  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
+
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedAlbumInfo, { open: openAlbumInfo, close: closeAlbumInfo }] = useDisclosure(false)
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
@@ -41,7 +55,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   }
 
   function handleDelete() {
-    deleteAlbumMutation(album.id)
+    deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs })
     navigate(`/albums`, { replace: true })
     toast.success(`${album.title} deleted!`)
   }
@@ -163,7 +177,18 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             opened={openedDeleteWarning}
             onClose={closeDeleteWarning}
             title={'Delete Album'}
-            description={`Are you sure you want to delete this album?`}
+            description={
+              <Stack gap={5}>
+                <Text fw={500}>Are you sure you want to delete this album?</Text>
+                <Checkbox
+                  checked={deleteWithSongs}
+                  onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
+                  label={'Delete all associated songs'}
+                  c={'dimmed'}
+                  styles={{ label: { paddingLeft: 8 } }}
+                />
+              </Stack>
+            }
             onYes={handleDelete}
           />
         </>

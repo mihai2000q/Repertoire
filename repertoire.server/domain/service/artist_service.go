@@ -14,7 +14,7 @@ type ArtistService interface {
 	AddAlbums(request requests.AddAlbumsToArtistRequest) *wrapper.ErrorCode
 	AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode
 	Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
-	Delete(id uuid.UUID) *wrapper.ErrorCode
+	Delete(request requests.DeleteArtistRequest) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.Artist], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
@@ -78,8 +78,8 @@ func (a *artistService) Create(request requests.CreateArtistRequest, token strin
 	return a.createArtist.Handle(request, token)
 }
 
-func (a *artistService) Delete(id uuid.UUID) *wrapper.ErrorCode {
-	return a.deleteArtist.Handle(id)
+func (a *artistService) Delete(request requests.DeleteArtistRequest) *wrapper.ErrorCode {
+	return a.deleteArtist.Handle(request)
 }
 
 func (a *artistService) DeleteImage(id uuid.UUID) *wrapper.ErrorCode {
