@@ -13,6 +13,7 @@ import {
   NumberFormatter,
   Select,
   StylesApiProps,
+  Tabs,
   Text,
   Title,
   Tooltip,
@@ -189,6 +190,24 @@ export const components = {
           duration: 160
         }
       }
+    }
+  }),
+  Tabs: Tabs.extend({
+    defaultProps: {
+      styles: (theme) => ({
+        tab: {
+          transition: 'border 200ms, background-color 200ms',
+          '&:hover': {
+            borderColor: theme.colors.gray[5],
+            backgroundColor: alpha(theme.colors.gray[3], 0.6)
+          },
+          '&[data-active]': {
+            '&:hover': {
+              borderColor: theme.colors.primary[5]
+            }
+          }
+        }
+      })
     }
   }),
   Text: Text.extend({

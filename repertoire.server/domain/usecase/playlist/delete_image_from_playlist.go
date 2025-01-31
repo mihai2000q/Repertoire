@@ -39,9 +39,9 @@ func (d DeleteImageFromPlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.BadRequestError(errors.New("playlist does not have an image"))
 	}
 
-	err = d.storageService.DeleteFile(*playlist.ImageURL)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	errCode := d.storageService.DeleteFile(*playlist.ImageURL)
+	if errCode != nil {
+		return errCode
 	}
 
 	playlist.ImageURL = nil

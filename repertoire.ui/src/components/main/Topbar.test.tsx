@@ -1,4 +1,4 @@
-import { reduxRouterRender } from '../../test-utils.tsx'
+import {emptyUser, reduxRouterRender} from '../../test-utils.tsx'
 import Topbar from './Topbar.tsx'
 import { AppShell } from '@mantine/core'
 import { screen } from '@testing-library/react'
@@ -18,11 +18,10 @@ describe('Topbar', () => {
     )
 
   const user: User = {
+    ...emptyUser,
     id: '1',
     email: 'Gigi@yahoo.com',
     name: 'Gigi',
-    createdAt: '',
-    updatedAt: ''
   }
 
   const handlers = [

@@ -41,9 +41,9 @@ func (d DeleteArtist) Handle(request requests.DeleteArtistRequest) *wrapper.Erro
 
 	if d.storageFilePathProvider.HasArtistFiles(artist) {
 		directoryPath := d.storageFilePathProvider.GetArtistDirectoryPath(artist)
-		err = d.storageService.DeleteDirectory(directoryPath)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		errCode := d.storageService.DeleteDirectory(directoryPath)
+		if errCode != nil {
+			return errCode
 		}
 	}
 

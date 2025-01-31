@@ -133,7 +133,7 @@ func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturn
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"This is some url"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(internalError).Once()
 
 	// when
@@ -141,8 +141,7 @@ func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturn
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
 	userRepository.AssertExpectations(t)

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"net/http"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
@@ -35,12 +36,12 @@ func (d DeleteUser) Handle(token string) *wrapper.ErrorCode {
 	}
 
 	directoryPath := d.storageFilePathProvider.GetUserDirectoryPath(id)
-	err := d.storageService.DeleteDirectory(directoryPath)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	errCode = d.storageService.DeleteDirectory(directoryPath)
+	if errCode != nil && errCode.Code != http.StatusNotFound {
+		return errCode
 	}
 
-	err = d.repository.Delete(id)
+	err := d.repository.Delete(id)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

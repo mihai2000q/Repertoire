@@ -39,9 +39,9 @@ func (d DeleteImageFromArtist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.BadRequestError(errors.New("artist does not have an image"))
 	}
 
-	err = d.storageService.DeleteFile(*artist.ImageURL)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	errCode := d.storageService.DeleteFile(*artist.ImageURL)
+	if errCode != nil {
+		return errCode
 	}
 
 	artist.ImageURL = nil

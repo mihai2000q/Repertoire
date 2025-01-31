@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -160,7 +161,7 @@ func TestDeleteSong_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetSongDirectoryPath", *mockSong).Return(directoryPath).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
 
 	// when
@@ -168,8 +169,7 @@ func TestDeleteSong_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	songRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)

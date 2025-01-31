@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -92,7 +93,7 @@ func TestDeleteImageFromArtist_WhenDeleteImageFails_ShouldReturnInternalServerEr
 	mockArtist := &model.Artist{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
 	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockArtist.ImageURL).Return(internalError).Once()
 
 	// when
@@ -101,7 +102,7 @@ func TestDeleteImageFromArtist_WhenDeleteImageFails_ShouldReturnInternalServerEr
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	artistRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)

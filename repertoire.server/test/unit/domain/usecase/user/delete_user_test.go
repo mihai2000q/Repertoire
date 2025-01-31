@@ -49,7 +49,7 @@ func TestDeleteUser_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetUserDirectoryPath", id).Return(directoryPath).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
 
 	// when
@@ -57,8 +57,7 @@ func TestDeleteUser_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
@@ -101,33 +100,51 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 }
 
 func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
-	// give
-	jwtService := new(service.JwtServiceMock)
-	userRepository := new(repository.UserRepositoryMock)
-	storageService := new(service.StorageServiceMock)
-	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider)
+	tests := []struct {
+		name                 string
+		deleteDirectoryError *wrapper.ErrorCode
+	}{
+		{
+			"Without Files",
+			wrapper.NotFoundError(errors.New("cannot delete the directory as it's not found")),
+		},
+		{
+			"With Files",
+			nil,
+		},
+	}
 
-	token := "This is a token"
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			jwtService := new(service.JwtServiceMock)
+			userRepository := new(repository.UserRepositoryMock)
+			storageService := new(service.StorageServiceMock)
+			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+			_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider)
 
-	id := uuid.New()
-	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
+			token := "This is a token"
 
-	directoryPath := "some directory path"
-	storageFilePathProvider.On("GetUserDirectoryPath", id).Return(directoryPath).Once()
+			id := uuid.New()
+			jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
 
-	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
+			directoryPath := "some directory path"
+			storageFilePathProvider.On("GetUserDirectoryPath", id).Return(directoryPath).Once()
 
-	userRepository.On("Delete", id).Return(nil).Once()
+			storageService.On("DeleteDirectory", directoryPath).Return(tt.deleteDirectoryError).Once()
 
-	// when
-	errCode := _uut.Handle(token)
+			userRepository.On("Delete", id).Return(nil).Once()
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Handle(token)
 
-	jwtService.AssertExpectations(t)
-	storageFilePathProvider.AssertExpectations(t)
-	storageService.AssertExpectations(t)
-	userRepository.AssertExpectations(t)
+			// then
+			assert.Nil(t, errCode)
+
+			jwtService.AssertExpectations(t)
+			storageFilePathProvider.AssertExpectations(t)
+			storageService.AssertExpectations(t)
+			userRepository.AssertExpectations(t)
+		})
+	}
 }
