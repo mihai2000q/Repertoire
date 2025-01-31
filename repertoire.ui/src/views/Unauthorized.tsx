@@ -1,14 +1,17 @@
 import { ReactElement } from 'react'
-import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import { Stack, Text, Title } from '@mantine/core'
 
 function Unauthorized(): ReactElement {
   useFixedDocumentTitle('Unauthorized')
 
   return (
-    <div>
-      <h1>Unauthorized</h1>
-      <p>You shouldn&#39;t be here</p>
-    </div>
+    <Stack px={'xl'}>
+      <Title fw={800} order={3}>
+        Unauthorized
+      </Title>
+      <Text>You shouldn&#39;t be here</Text>
+    </Stack>
   )
 }
 
