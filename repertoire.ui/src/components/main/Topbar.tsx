@@ -17,6 +17,8 @@ import userPlaceholder from '../../assets/user-placeholder.jpg'
 import {
   IconBellFilled,
   IconCaretDownFilled,
+  IconChevronLeft,
+  IconChevronRight,
   IconLogout2,
   IconSearch,
   IconSettings,
@@ -30,8 +32,6 @@ import { useDisclosure, useWindowScroll } from '@mantine/hooks'
 import AccountModal from './modal/AccountModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
-import CustomIconArrowLeft from '../@ui/icons/CustomIconArrowLeft.tsx'
-import CustomIconArrowRight from '../@ui/icons/CustomIconArrowRight.tsx'
 import SettingsModal from './modal/SettingsModal.tsx'
 
 function Topbar(): ReactElement {
@@ -103,7 +103,7 @@ function Topbar(): ReactElement {
               disabled={window.history.state?.idx < 1}
               onClick={handleGoBack}
             >
-              <CustomIconArrowLeft />
+              <IconChevronLeft size={20} />
             </ActionIcon>
 
             <ActionIcon
@@ -114,7 +114,7 @@ function Topbar(): ReactElement {
               disabled={window.history.state?.idx >= window.history.length - 1}
               onClick={handleGoForward}
             >
-              <CustomIconArrowRight />
+              <IconChevronRight size={20} />
             </ActionIcon>
           </Group>
         )}

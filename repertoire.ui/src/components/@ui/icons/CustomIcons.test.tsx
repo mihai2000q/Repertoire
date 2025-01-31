@@ -1,6 +1,4 @@
 import { render } from '@testing-library/react'
-import CustomIconArrowLeft from './CustomIconArrowLeft.tsx'
-import CustomIconArrowRight from './CustomIconArrowRight.tsx'
 import CustomIconElectricGuitar from './CustomIconElectricGuitar.tsx'
 import CustomIconElectricGuitarST from './CustomIconElectricGuitarST.tsx'
 import CustomIconFlyingVGuitar from './CustomIconFlyingVGuitar.tsx'
@@ -12,14 +10,6 @@ import CustomIconMetronome from './CustomIconMetronome.tsx'
 import CustomIconLightningTrio from './CustomIconLightningTrio.tsx'
 
 describe.concurrent('Custom Icons', () => {
-  it('should render Custom Icon Arrow Left', () => {
-    render(<CustomIconArrowLeft />)
-  })
-
-  it('should render Custom Icon Arrow Right', () => {
-    render(<CustomIconArrowRight />)
-  })
-
   it('should render Custom Icon Electric Guitar', () => {
     render(<CustomIconElectricGuitar />)
   })
