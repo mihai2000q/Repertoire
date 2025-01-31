@@ -19,10 +19,22 @@ func (s *StorageServiceMock) Upload(fileHeader *multipart.FileHeader, filePath s
 
 func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCode {
 	args := s.Called(filePath)
-	return args.Get(0).(*wrapper.ErrorCode)
+
+	var errCode *wrapper.ErrorCode
+	if a := args.Get(0); a != nil {
+		errCode = a.(*wrapper.ErrorCode)
+	}
+
+	return errCode
 }
 
 func (s *StorageServiceMock) DeleteDirectory(directoryPath string) *wrapper.ErrorCode {
 	args := s.Called(directoryPath)
-	return args.Get(0).(*wrapper.ErrorCode)
+
+	var errCode *wrapper.ErrorCode
+	if a := args.Get(0); a != nil {
+		errCode = a.(*wrapper.ErrorCode)
+	}
+
+	return errCode
 }

@@ -102,7 +102,7 @@ func TestDeleteImageFromArtist_WhenDeleteImageFails_ShouldReturnInternalServerEr
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	artistRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)
