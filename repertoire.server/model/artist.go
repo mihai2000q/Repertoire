@@ -11,6 +11,7 @@ import (
 type Artist struct {
 	ID       uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name     string             `gorm:"size:100; not null" json:"name"`
+	IsBand   bool               `gorm:"not null" json:"isBand"`
 	ImageURL *internal.FilePath `json:"imageUrl"`
 	Albums   []Album            `gorm:"constraint:OnDelete:SET NULL" json:"albums"`
 	Songs    []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
