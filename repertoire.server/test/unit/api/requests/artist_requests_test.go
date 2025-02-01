@@ -266,19 +266,39 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 }
 
 func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.UpdateArtistRequest{
-		ID:   uuid.New(),
-		Name: validArtistName,
+	tests := []struct {
+		name    string
+		request requests.UpdateArtistRequest
+	}{
+		{
+			"Minimal",
+			requests.UpdateArtistRequest{
+				ID:   uuid.New(),
+				Name: validArtistName,
+			},
+		},
+		{
+			"Maximal",
+			requests.UpdateArtistRequest{
+				ID:     uuid.New(),
+				Name:   validArtistName,
+				IsBand: true,
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {

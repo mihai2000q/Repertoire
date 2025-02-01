@@ -24,8 +24,9 @@ type AddSongsToArtistRequest struct {
 }
 
 type UpdateArtistRequest struct {
-	ID   uuid.UUID `validate:"required"`
-	Name string    `validate:"required,max=100"`
+	ID     uuid.UUID `validate:"required"`
+	Name   string    `validate:"required,max=100"`
+	IsBand bool
 }
 
 type RemoveAlbumsFromArtistRequest struct {
