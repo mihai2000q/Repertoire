@@ -3,6 +3,7 @@ package usecase
 import (
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist/band/member/role"
 	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/domain/usecase/song"
@@ -39,6 +40,10 @@ var artistUseCases = fx.Options(
 	fx.Provide(artist.NewRemoveSongsFromArtist),
 	fx.Provide(artist.NewSaveImageToArtist),
 	fx.Provide(artist.NewUpdateArtist),
+	fx.Provide(role.NewCreateBandMemberRole),
+	fx.Provide(role.NewDeleteBandMemberRole),
+	fx.Provide(role.NewGetSongBandMemberRoles),
+	fx.Provide(role.NewMoveBandMemberRole),
 )
 
 var authUseCases = fx.Options(

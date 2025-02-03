@@ -30,3 +30,17 @@ func (a *Artist) AfterFind(*gorm.DB) error {
 	a.ImageURL = a.ImageURL.ToFullURL(&a.UpdatedAt)
 	return nil
 }
+// Band Member Role
+
+type BandMemberRole struct {
+	ID          uuid.UUID    `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name        string       `gorm:"size:24; not null" json:"name"`
+	Order       uint         `gorm:"not null" json:"-"`
+	BandMembers []BandMember `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+
+	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+}
+
+var DefaultBandMemberRoles = []string{
+	"Vocalist", "Lead Guitarist", "Rhythm Guitarist", "Bassist", "Drummer", "Pianist",
+}

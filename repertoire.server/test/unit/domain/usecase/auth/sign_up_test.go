@@ -265,4 +265,11 @@ func assertCreatedUser(
 		assert.Equal(t, model.DefaultSongSectionTypes[i], songSectionType.Name)
 		assert.Equal(t, uint(i), songSectionType.Order)
 	}
+
+	for i, bandMemberRole := range user.BandMemberRoles {
+		assert.NotEmpty(t, bandMemberRole.ID)
+		assert.Equal(t, user.ID, bandMemberRole.UserID)
+		assert.Equal(t, model.DefaultBandMemberRoles[i], bandMemberRole.Name)
+		assert.Equal(t, uint(i), bandMemberRole.Order)
+	}
 }

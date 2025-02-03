@@ -45,3 +45,14 @@ type DeleteArtistRequest struct {
 	WithAlbums bool      `form:"withAlbums"`
 	WithSongs  bool      `form:"withSongs"`
 }
+
+// Band Member - Roles
+
+type CreateBandMemberRoleRequest struct {
+	Name string `validate:"required,max=24"`
+}
+
+type MoveBandMemberRoleRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	OverID uuid.UUID `validate:"required"`
+}

@@ -83,6 +83,11 @@ func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist) {
 	assert.Equal(t, artist.ImageURL, response.ImageURL)
 }
 
+func ResponseBandMemberRole(t *testing.T, bandMemberRole model.BandMemberRole, response model.BandMemberRole) {
+	assert.Equal(t, bandMemberRole.ID, response.ID)
+	assert.Equal(t, bandMemberRole.Name, response.Name)
+}
+
 func ResponseSong(
 	t *testing.T,
 	song model.Song,

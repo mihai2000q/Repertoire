@@ -22,6 +22,23 @@ var Users = []model.User{
 		Name:     "John Doe",
 		Email:    "johndoe@gmail.com",
 		Password: "",
+		BandMemberRoles: []model.BandMemberRole{
+			{
+				ID:    uuid.New(),
+				Name:  "Guitarist",
+				Order: 0,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Vocalist",
+				Order: 1,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Manager",
+				Order: 2,
+			},
+		},
 	},
 }
 

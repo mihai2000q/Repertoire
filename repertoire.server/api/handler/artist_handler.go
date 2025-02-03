@@ -244,3 +244,72 @@ func (a ArtistHandler) DeleteImage(c *gin.Context) {
 
 	a.SendMessage(c, "image has been deleted from artist successfully")
 }
+// Band Member - Roles
+
+func (a ArtistHandler) GetBandMemberRoles(c *gin.Context) {
+	token := a.GetTokenFromContext(c)
+
+	result, errorCode := a.service.GetBandMemberRoles(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (a ArtistHandler) CreateBandMemberRole(c *gin.Context) {
+	var request requests.CreateBandMemberRoleRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := a.GetTokenFromContext(c)
+
+	errorCode = a.service.CreateBandMemberRole(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "band member role has been created successfully!")
+}
+
+func (a ArtistHandler) MoveBandMemberRole(c *gin.Context) {
+	var request requests.MoveBandMemberRoleRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := a.GetTokenFromContext(c)
+
+	errorCode = a.service.MoveBandMemberRole(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "band member role has been moved successfully!")
+}
+
+func (a ArtistHandler) DeleteBandMemberRole(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token := a.GetTokenFromContext(c)
+
+	errorCode := a.service.DeleteBandMemberRole(id, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "band member role has been deleted successfully!")
+}

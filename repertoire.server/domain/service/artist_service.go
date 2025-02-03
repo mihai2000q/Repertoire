@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist/band/member/role"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -22,6 +23,10 @@ type ArtistService interface {
 	RemoveSongs(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode
+	CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *wrapper.ErrorCode
+	DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode
+	GetBandMemberRoles(token string) ([]model.BandMemberRole, *wrapper.ErrorCode)
+	MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode
 }
 
 type artistService struct {
@@ -36,6 +41,10 @@ type artistService struct {
 	removeSongsFromArtist  artist.RemoveSongsFromArtist
 	saveImageToArtist      artist.SaveImageToArtist
 	updateArtist           artist.UpdateArtist
+	createBandMemberRole role.CreateBandMemberRole
+	deleteBandMemberRole role.DeleteBandMemberRole
+	getBandMemberRoles   role.GetBandMemberRoles
+	moveBandMemberRole   role.MoveBandMemberRole
 }
 
 func NewArtistService(
@@ -50,6 +59,10 @@ func NewArtistService(
 	removeSongsFromArtist artist.RemoveSongsFromArtist,
 	saveImageToArtist artist.SaveImageToArtist,
 	updateArtist artist.UpdateArtist,
+	createBandMemberRole role.CreateBandMemberRole,
+	deleteBandMemberRole role.DeleteBandMemberRole,
+	getBandMemberRoles role.GetBandMemberRoles,
+	moveBandMemberRole role.MoveBandMemberRole,
 ) ArtistService {
 	return &artistService{
 		addAlbumsToArtist:      addAlbumsToArtist,
@@ -63,6 +76,10 @@ func NewArtistService(
 		removeSongsFromArtist:  removeSongsFromArtist,
 		saveImageToArtist:      saveImageToArtist,
 		updateArtist:           updateArtist,
+		createBandMemberRole:   createBandMemberRole,
+		deleteBandMemberRole:   deleteBandMemberRole,
+		getBandMemberRoles:     getBandMemberRoles,
+		moveBandMemberRole:     moveBandMemberRole,
 	}
 }
 
@@ -108,4 +125,21 @@ func (a *artistService) SaveImage(file *multipart.FileHeader, id uuid.UUID) *wra
 
 func (a *artistService) Update(request requests.UpdateArtistRequest) *wrapper.ErrorCode {
 	return a.updateArtist.Handle(request)
+}
+// Band Member - Roles
+
+func (a *artistService) CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *wrapper.ErrorCode {
+	return a.createBandMemberRole.Handle(request, token)
+}
+
+func (a *artistService) DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode {
+	return a.deleteBandMemberRole.Handle(id, token)
+}
+
+func (a *artistService) GetBandMemberRoles(token string) ([]model.BandMemberRole, *wrapper.ErrorCode) {
+	return a.getBandMemberRoles.Handle(token)
+}
+
+func (a *artistService) MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode {
+	return a.moveBandMemberRole.Handle(request, token)
 }

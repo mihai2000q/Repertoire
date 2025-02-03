@@ -63,7 +63,6 @@ func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &response)
 
 	assertion.Token(t, response.Token, user)
-
 }
 
 func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User {
@@ -80,6 +79,13 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 	assert.NotEmpty(t, user.Password)
 	assert.Nil(t, user.ProfilePictureURL)
 
+	assert.Len(t, user.GuitarTunings, len(model.DefaultGuitarTunings))
+	for i, guitarTuning := range user.GuitarTunings {
+		assert.NotEmpty(t, guitarTuning.ID)
+		assert.Equal(t, model.DefaultGuitarTunings[i], guitarTuning.Name)
+		assert.Equal(t, uint(i), guitarTuning.Order)
+	}
+
 	assert.Len(t, user.SongSectionTypes, len(model.DefaultSongSectionTypes))
 	for i, sectionType := range user.SongSectionTypes {
 		assert.NotEmpty(t, sectionType.ID)
@@ -87,11 +93,11 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 		assert.Equal(t, uint(i), sectionType.Order)
 	}
 
-	assert.Len(t, user.GuitarTunings, len(model.DefaultGuitarTunings))
-	for i, guitarTuning := range user.GuitarTunings {
-		assert.NotEmpty(t, guitarTuning.ID)
-		assert.Equal(t, model.DefaultGuitarTunings[i], guitarTuning.Name)
-		assert.Equal(t, uint(i), guitarTuning.Order)
+	assert.Len(t, user.BandMemberRoles, len(model.DefaultBandMemberRoles))
+	for i, bandMemberRole := range user.BandMemberRoles {
+		assert.NotEmpty(t, bandMemberRole.ID)
+		assert.Equal(t, model.DefaultSongSectionTypes[i], bandMemberRole.Name)
+		assert.Equal(t, uint(i), bandMemberRole.Order)
 	}
 
 	return user
