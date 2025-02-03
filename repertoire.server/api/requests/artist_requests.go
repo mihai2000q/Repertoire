@@ -10,7 +10,8 @@ type GetArtistsRequest struct {
 }
 
 type CreateArtistRequest struct {
-	Name string `validate:"required,max=100"`
+	Name   string `validate:"required,max=100"`
+	IsBand bool
 }
 
 type AddAlbumsToArtistRequest struct {

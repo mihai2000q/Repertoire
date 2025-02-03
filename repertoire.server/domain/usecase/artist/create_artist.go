@@ -31,6 +31,7 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 	artist := model.Artist{
 		ID:     uuid.New(),
 		Name:   request.Name,
+		IsBand: request.IsBand,
 		UserID: userID,
 	}
 	err := c.repository.Create(&artist)
