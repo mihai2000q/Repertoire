@@ -13,6 +13,43 @@ import (
 	"testing"
 )
 
+func TestCreateBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.CreateBandMemberRequest{
+		ArtistID: uuid.New(),
+		Name:     "Guitarist 1-New",
+		RoleIDs:  []uuid.UUID{artistData.Users[0].BandMemberRoles[2].ID},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/band-members", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnBadRequestError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	artist := artistData.Artists[1]
+	request := requests.CreateBandMemberRequest{
+		ArtistID: artist.ID,
+		Name:     "Guitarist 1-New",
+		RoleIDs:  []uuid.UUID{artistData.Users[0].BandMemberRoles[2].ID},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/band-members", request)
+
+	// then
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
+
 func TestCreateBandMember_WhenSuccessful_ShouldCreateMember(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
@@ -33,12 +70,10 @@ func TestCreateBandMember_WhenSuccessful_ShouldCreateMember(t *testing.T) {
 
 	db := utils.GetDatabase(t)
 
-	var section model.BandMember
-	db.Preload("BandMembers").
-		Preload("BandMembers.Roles").
-		Find(&section, &model.BandMember{Name: request.Name})
+	var member model.BandMember
+	db.Preload("Roles").Find(&member, &model.BandMember{Name: request.Name})
 
-	assertCreatedBandMember(t, section, request, len(artist.BandMembers))
+	assertCreatedBandMember(t, member, request, len(artist.BandMembers))
 }
 
 func assertCreatedBandMember(

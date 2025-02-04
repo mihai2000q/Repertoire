@@ -43,11 +43,12 @@ func TestDeleteBandMember_WhenSuccessful_ShouldDeleteMember(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
-	bandMember := artistData.Artists[0].BandMembers[1]
+	artist := artistData.Artists[0]
+	bandMember := artist.BandMembers[1]
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/artists/band-members/"+bandMember.ID.String()+"/from/"+bandMember.ArtistID.String())
+	core.NewTestHandler().DELETE(w, "/api/artists/band-members/"+bandMember.ID.String()+"/from/"+artist.ID.String())
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -55,7 +56,7 @@ func TestDeleteBandMember_WhenSuccessful_ShouldDeleteMember(t *testing.T) {
 	db := utils.GetDatabase(t)
 
 	var sections []model.BandMember
-	db.Order("\"order\"").Find(&sections, &model.BandMember{ArtistID: bandMember.ArtistID})
+	db.Order("\"order\"").Find(&sections, &model.BandMember{ArtistID: artist.ID})
 
 	assert.True(t,
 		slices.IndexFunc(sections, func(t model.BandMember) bool {

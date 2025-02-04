@@ -48,6 +48,7 @@ var Artists = []model.Artist{
 		Name:     "Arduino",
 		UserID:   Users[0].ID,
 		ImageURL: &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
+		IsBand:   true,
 		BandMembers: []model.BandMember{
 			{
 				ID:       uuid.New(),
@@ -99,6 +100,7 @@ var Artists = []model.Artist{
 		ID:     uuid.New(),
 		Name:   "Metal",
 		UserID: Users[0].ID,
+		IsBand: false,
 		Albums: []model.Album{
 			{
 				ID:     uuid.New(),
