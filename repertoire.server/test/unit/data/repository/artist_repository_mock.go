@@ -141,6 +141,11 @@ func (a *ArtistRepositoryMock) UpdateBandMember(bandMember *model.BandMember) er
 	return args.Error(0)
 }
 
+func (a *ArtistRepositoryMock) ReplaceRolesFromBandMember(roles *[]model.BandMemberRole, bandMember *model.BandMember) error {
+	args := a.Called(roles, bandMember)
+	return args.Error(0)
+}
+
 func (a *ArtistRepositoryMock) DeleteBandMember(id uuid.UUID) error {
 	args := a.Called(id)
 	return args.Error(0)

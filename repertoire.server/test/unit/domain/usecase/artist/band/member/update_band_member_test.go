@@ -99,6 +99,48 @@ func TestUpdateBandMember_WhenGetRolesFails_ShouldReturnInternalServerError(t *t
 	artistRepository.AssertExpectations(t)
 }
 
+func TestUpdateBandMember_WhenReplaceRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	_uut := member.NewUpdateBandMember(artistRepository)
+
+	request := requests.UpdateBandMemberRequest{
+		ID:      uuid.New(),
+		Name:    "Some Artist",
+		RoleIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// given - mocking
+	mockBandMember := &model.BandMember{ID: request.ID}
+	artistRepository.On("GetBandMember", new(model.BandMember), request.ID).
+		Return(nil, mockBandMember).
+		Once()
+
+	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	artistRepository.
+		On(
+			"ReplaceRolesFromBandMember",
+			mock.IsType(new([]model.BandMemberRole)),
+			mock.IsType(new(model.BandMember)),
+		).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	artistRepository.AssertExpectations(t)
+}
+
 func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
@@ -117,6 +159,15 @@ func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerEr
 		Once()
 
 	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+		Return(nil).
+		Once()
+
+	artistRepository.
+		On(
+			"ReplaceRolesFromBandMember",
+			mock.IsType(new([]model.BandMemberRole)),
+			mock.IsType(new(model.BandMember)),
+		).
 		Return(nil).
 		Once()
 
@@ -160,6 +211,10 @@ func TestUpdateBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil, &roles).
 		Once()
 
+	artistRepository.On("ReplaceRolesFromBandMember", &roles, mockBandMember).
+		Return(nil).
+		Once()
+
 	artistRepository.On("UpdateBandMember", mock.IsType(new(model.BandMember))).
 		Run(func(args mock.Arguments) {
 			newBandMember := args.Get(0).(*model.BandMember)
@@ -183,8 +238,4 @@ func assertUpdatedBandMember(
 	member model.BandMember,
 ) {
 	assert.Equal(t, request.Name, member.Name)
-	assert.Len(t, member.Roles, len(request.RoleIDs))
-	for i, roleID := range request.RoleIDs {
-		assert.Equal(t, roleID, member.Roles[i].ID)
-	}
 }
