@@ -62,9 +62,10 @@ type MoveGuitarTuningRequest struct {
 // Sections
 
 type CreateSongSectionRequest struct {
-	SongID uuid.UUID `validate:"required"`
-	Name   string    `validate:"required,max=30"`
-	TypeID uuid.UUID `validate:"required"`
+	SongID       uuid.UUID `validate:"required"`
+	Name         string    `validate:"required,max=30"`
+	TypeID       uuid.UUID `validate:"required"`
+	BandMemberID *uuid.UUID
 }
 
 type UpdateSongSectionRequest struct {

@@ -118,6 +118,11 @@ func (s *SongRepositoryMock) CountByAlbum(count *int64, albumID *uuid.UUID) erro
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error) {
+	args := s.Called(songID, bandMemberID)
+	return args.Bool(0), args.Error(1)
+}
+
 func (s *SongRepositoryMock) Create(song *model.Song) error {
 	args := s.Called(song)
 	return args.Error(0)
