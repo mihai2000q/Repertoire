@@ -48,6 +48,30 @@ var Artists = []model.Artist{
 		Name:     "Arduino",
 		UserID:   Users[0].ID,
 		ImageURL: &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
+		BandMembers: []model.BandMember{
+			{
+				ID:       uuid.New(),
+				Name:     "Member 1",
+				Order:    1,
+				ImageURL: &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
+				Roles: []model.BandMemberRole{
+					Users[0].BandMemberRoles[0],
+					Users[0].BandMemberRoles[1],
+				},
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Member 2",
+				Order: 2,
+				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[1]},
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Member 3",
+				Order: 3,
+				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[0]},
+			},
+		},
 		Albums: []model.Album{
 			{
 				ID:     uuid.New(),

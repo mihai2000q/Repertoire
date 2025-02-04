@@ -46,6 +46,26 @@ type DeleteArtistRequest struct {
 	WithSongs  bool      `form:"withSongs"`
 }
 
+// Band Members
+
+type CreateBandMemberRequest struct {
+	Name     string      `validate:"required,max=100"`
+	RoleIDs  []uuid.UUID `validate:"min=1"`
+	ArtistID uuid.UUID   `validate:"required"`
+}
+
+type UpdateBandMemberRequest struct {
+	ID      uuid.UUID   `validate:"required"`
+	Name    string      `validate:"required,max=100"`
+	RoleIDs []uuid.UUID `validate:"min=1"`
+}
+
+type MoveBandMemberRequest struct {
+	ID       uuid.UUID `validate:"required"`
+	OverID   uuid.UUID `validate:"required"`
+	ArtistID uuid.UUID `validate:"required"`
+}
+
 // Band Member - Roles
 
 type CreateBandMemberRoleRequest struct {
