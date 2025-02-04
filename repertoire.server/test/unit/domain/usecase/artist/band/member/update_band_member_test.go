@@ -124,7 +124,7 @@ func TestUpdateBandMember_WhenReplaceRolesFails_ShouldReturnInternalServerError(
 	artistRepository.
 		On(
 			"ReplaceRolesFromBandMember",
-			mock.IsType(new([]model.BandMemberRole)),
+			mock.IsType([]model.BandMemberRole{}),
 			mock.IsType(new(model.BandMember)),
 		).
 		Return(internalError).
@@ -165,7 +165,7 @@ func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerEr
 	artistRepository.
 		On(
 			"ReplaceRolesFromBandMember",
-			mock.IsType(new([]model.BandMemberRole)),
+			mock.IsType([]model.BandMemberRole{}),
 			mock.IsType(new(model.BandMember)),
 		).
 		Return(nil).
@@ -211,7 +211,7 @@ func TestUpdateBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil, &roles).
 		Once()
 
-	artistRepository.On("ReplaceRolesFromBandMember", &roles, mockBandMember).
+	artistRepository.On("ReplaceRolesFromBandMember", roles, mockBandMember).
 		Return(nil).
 		Once()
 
