@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -46,10 +47,23 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	db.Joins("Album").
 		Joins("Artist").
 		Joins("GuitarTuning").
-		Preload("Sections").
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
 		Preload("Sections.SongSectionType").
-		Preload("Playlists").
+		Preload("Sections.BandMember").
+		Preload("Sections.BandMember.Roles").
+		Preload("Artist.BandMembers").
+		Preload("Artist.BandMembers.Roles").
 		Find(&song, song.ID)
 
-	assertion.ResponseSong(t, song, responseSong, true, true, true)
+	assertion.ResponseSong(
+		t,
+		song,
+		responseSong,
+		true,
+		true,
+		true,
+		true,
+	)
 }
