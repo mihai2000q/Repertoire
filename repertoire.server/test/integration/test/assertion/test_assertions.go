@@ -64,7 +64,7 @@ func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withAr
 
 	if withArtist {
 		if album.Artist != nil {
-			ResponseArtist(t, *album.Artist, *response.Artist)
+			ResponseArtist(t, *album.Artist, *response.Artist, false)
 		} else {
 			assert.Nil(t, response.Artist)
 		}
@@ -77,10 +77,27 @@ func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withAr
 	}
 }
 
-func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist) {
+func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist, withBandMembers bool) {
 	assert.Equal(t, artist.ID, response.ID)
 	assert.Equal(t, artist.Name, response.Name)
 	assert.Equal(t, artist.ImageURL, response.ImageURL)
+
+	if withBandMembers {
+		for i := 0; i < len(artist.BandMembers); i++ {
+			ResponseBandMember(t, artist.BandMembers[i], response.BandMembers[i], true)
+		}
+	}
+}
+
+func ResponseBandMember(t *testing.T, bandMember model.BandMember, response model.BandMember, withRoles bool) {
+	assert.Equal(t, bandMember.ID, response.ID)
+	assert.Equal(t, bandMember.Name, response.Name)
+	assert.Equal(t, bandMember.ImageURL, response.ImageURL)
+	if withRoles {
+		for i := 0; i < len(bandMember.Roles); i++ {
+			ResponseBandMemberRole(t, bandMember.Roles[i], response.Roles[i])
+		}
+	}
 }
 
 func ResponseBandMemberRole(t *testing.T, bandMemberRole model.BandMemberRole, response model.BandMemberRole) {
@@ -121,7 +138,7 @@ func ResponseSong(
 
 	if withArtist {
 		if song.Artist != nil {
-			ResponseArtist(t, *song.Artist, *response.Artist)
+			ResponseArtist(t, *song.Artist, *response.Artist, true)
 		} else {
 			assert.Nil(t, response.Artist)
 		}
