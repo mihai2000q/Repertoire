@@ -46,5 +46,5 @@ func TestGetArtist_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 	db := utils.GetDatabase(t)
 	db.Find(&artist, artist.ID)
 
-	assertion.ResponseArtist(t, artist, responseArtist)
+	assertion.ResponseArtist(t, artist, responseArtist, true)
 }

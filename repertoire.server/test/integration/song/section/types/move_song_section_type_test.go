@@ -94,12 +94,12 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			db := utils.GetDatabase(t)
 			db.Order("\"order\"").Find(&sectionTypes, &model.SongSectionType{UserID: test.user.ID})
 
-			assertMovedTunings(t, request, sectionTypes, test.index, test.overIndex)
+			assertMovedTypes(t, request, sectionTypes, test.index, test.overIndex)
 		})
 	}
 }
 
-func assertMovedTunings(
+func assertMovedTypes(
 	t *testing.T,
 	request requests.MoveSongSectionTypeRequest,
 	sectionTypes []model.SongSectionType,

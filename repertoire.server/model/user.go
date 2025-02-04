@@ -21,6 +21,7 @@ type User struct {
 	Songs            []Song            `json:"-"`
 	SongSectionTypes []SongSectionType `json:"-"`
 	GuitarTunings    []GuitarTuning    `json:"-"`
+	BandMemberRoles  []BandMemberRole  `json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`

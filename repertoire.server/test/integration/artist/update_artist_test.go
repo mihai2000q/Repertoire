@@ -38,8 +38,9 @@ func TestUpdateArtist_WhenSuccessful_ShouldUpdateArtist(t *testing.T) {
 	artist := artistData.Artists[0]
 
 	request := requests.UpdateArtistRequest{
-		ID:   artist.ID,
-		Name: "New Name",
+		ID:     artist.ID,
+		Name:   "New Name",
+		IsBand: true,
 	}
 
 	// when
@@ -58,4 +59,5 @@ func TestUpdateArtist_WhenSuccessful_ShouldUpdateArtist(t *testing.T) {
 func assertUpdatedArtist(t *testing.T, request requests.UpdateArtistRequest, artist model.Artist) {
 	assert.Equal(t, request.ID, artist.ID)
 	assert.Equal(t, request.Name, artist.Name)
+	assert.Equal(t, request.IsBand, artist.IsBand)
 }

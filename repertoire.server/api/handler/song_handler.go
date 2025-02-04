@@ -212,7 +212,7 @@ func (s SongHandler) MoveGuitarTuning(c *gin.Context) {
 		return
 	}
 
-	s.SendMessage(c, "guitar tuning has been created successfully!")
+	s.SendMessage(c, "guitar tuning has been moved successfully!")
 }
 
 func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {

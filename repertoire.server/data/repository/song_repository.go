@@ -97,6 +97,8 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
+		Preload("Artist.BandMembers").
+		Preload("Artist.BandMembers.Roles").
 		Find(&song, model.Song{ID: id}).
 		Error
 }
