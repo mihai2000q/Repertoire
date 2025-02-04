@@ -3,6 +3,7 @@ package member
 import (
 	"errors"
 	"github.com/google/uuid"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -24,6 +25,9 @@ func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid
 	err := c.artistRepository.GetWithBandMembers(&artist, request.ArtistID)
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
+	}
+	if reflect.ValueOf(artist).IsZero() {
+		return uuid.Nil, wrapper.NotFoundError(errors.New("artist not found"))
 	}
 	if !artist.IsBand {
 		return uuid.Nil, wrapper.BadRequestError(errors.New("artist is not band"))

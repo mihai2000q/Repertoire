@@ -88,15 +88,6 @@ func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 		})
 	}
 
-	for i, songSectionType := range model.DefaultSongSectionTypes {
-		songSectionTypes = append(songSectionTypes, model.SongSectionType{
-			ID:     uuid.New(),
-			Name:   songSectionType,
-			Order:  uint(i),
-			UserID: user.ID,
-		})
-	}
-
 	for i, bandMemberRole := range model.DefaultBandMemberRoles {
 		bandMemberRoles = append(bandMemberRoles, model.BandMemberRole{
 			ID:     uuid.New(),
