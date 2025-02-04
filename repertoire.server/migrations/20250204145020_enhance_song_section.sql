@@ -2,6 +2,9 @@
 -- +goose StatementBegin
 
 ALTER TABLE public.song_sections
+    ADD COLUMN occurrences bigint not null default 0;
+
+ALTER TABLE public.song_sections
     ADD COLUMN band_member_id uuid;
 
 ALTER TABLE public.song_sections
@@ -13,6 +16,9 @@ ALTER TABLE public.song_sections
 
 -- +goose Down
 -- +goose StatementBegin
+
+ALTER TABLE public.song_sections
+    DROP COLUMN occurrences;
 
 ALTER TABLE public.song_sections
     DROP COLUMN band_member_id;
