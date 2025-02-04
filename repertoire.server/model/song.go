@@ -95,10 +95,13 @@ type SongSection struct {
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
 
-	SongID            uuid.UUID       `gorm:"not null" json:"-"`
-	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
-	Song              Song            `json:"-"`
-	SongSectionType   SongSectionType `json:"songSectionType"`
+	SongID            uuid.UUID  `gorm:"not null" json:"-"`
+	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
+	BandMemberID      *uuid.UUID `json:"-"`
+
+	Song            Song            `json:"-"`
+	SongSectionType SongSectionType `json:"songSectionType"`
+	BandMember      *BandMember     `json:"bandMember"`
 
 	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
