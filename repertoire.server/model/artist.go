@@ -55,7 +55,7 @@ type BandMemberRole struct {
 	ID          uuid.UUID    `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name        string       `gorm:"size:24; not null" json:"name"`
 	Order       uint         `gorm:"not null" json:"-"`
-	BandMembers []BandMember `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	BandMembers []BandMember `gorm:"many2many:band_member_has_roles" json:"-"`
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
