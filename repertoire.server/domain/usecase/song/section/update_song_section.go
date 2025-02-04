@@ -42,6 +42,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 
 	hasRehearsalsChanged := section.Rehearsals != request.Rehearsals
 	hasConfidenceChanged := section.Confidence != request.Confidence
+	hasBandMemberChanged := section.BandMemberID != request.BandMemberID
 
 	var song model.Song
 	var sectionsCount int64
@@ -53,6 +54,16 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 		err = u.songRepository.CountSectionsBySong(&sectionsCount, section.SongID)
 		if err != nil {
 			return wrapper.InternalServerError(err)
+		}
+	}
+
+	if hasBandMemberChanged && request.BandMemberID != nil {
+		res, err := u.songRepository.IsBandMemberAssociatedWithSong(section.SongID, *request.BandMemberID)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+		if !res {
+			return wrapper.BadRequestError(errors.New("band member is not part of the artist associated with this song"))
 		}
 	}
 
@@ -74,6 +85,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 	section.Confidence = request.Confidence
 	section.Rehearsals = request.Rehearsals
 	section.SongSectionTypeID = request.TypeID
+	section.BandMemberID = request.BandMemberID
 
 	if hasRehearsalsChanged || hasConfidenceChanged {
 		err = u.songRepository.Update(&song)

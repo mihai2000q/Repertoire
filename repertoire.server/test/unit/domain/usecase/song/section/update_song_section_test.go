@@ -242,6 +242,81 @@ func TestUpdateSongSection_WhenCountSectionsFails_ShouldReturnInternalServerErro
 	}
 }
 
+func TestUpdateSongSection_WhenIsBandMemberAssociatedWithSongFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := section.NewUpdateSongSection(songRepository, nil)
+
+	request := requests.UpdateSongSectionRequest{
+		ID:           uuid.New(),
+		Name:         "Some Section",
+		TypeID:       uuid.New(),
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// given - mocking
+	mockSection := &model.SongSection{
+		ID:     uuid.New(),
+		Name:   "Old name",
+		SongID: uuid.New(),
+	}
+	songRepository.On("GetSection", new(model.SongSection), request.ID).
+		Return(nil, mockSection).
+		Once()
+
+	internalError := errors.New("internal error")
+	songRepository.On("IsBandMemberAssociatedWithSong", mockSection.SongID, *request.BandMemberID).
+		Return(false, internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestUpdateSongSection_WhenBandMemberIsNotAssociatedWithSong_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := section.NewUpdateSongSection(songRepository, nil)
+
+	request := requests.UpdateSongSectionRequest{
+		ID:           uuid.New(),
+		Name:         "Some Section",
+		TypeID:       uuid.New(),
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// given - mocking
+	mockSection := &model.SongSection{
+		ID:     uuid.New(),
+		Name:   "Old name",
+		SongID: uuid.New(),
+	}
+	songRepository.On("GetSection", new(model.SongSection), request.ID).
+		Return(nil, mockSection).
+		Once()
+
+	songRepository.On("IsBandMemberAssociatedWithSong", mockSection.SongID, *request.BandMemberID).
+		Return(false, nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestUpdateSongSection_WhenCreateHistoryFails_ShouldReturnInternalServerError(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -773,6 +848,12 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 					Return(nil, tt.song).
 					Once()
 
+				if tt.request.BandMemberID != tt.songSection.BandMemberID && tt.request.BandMemberID != nil {
+					songRepository.On("IsBandMemberAssociatedWithSong", tt.songSection.SongID, *tt.request.BandMemberID).
+						Return(true, nil).
+						Once()
+				}
+
 				songRepository.On("CountSectionsBySong", mock.IsType(tt.sectionsCount), tt.songSection.SongID).
 					Return(nil, tt.sectionsCount).
 					Once()
@@ -828,4 +909,5 @@ func assertUpdatedSongSection(
 	assert.Equal(t, confidenceScore, section.ConfidenceScore)
 	assert.Equal(t, progress, section.Progress)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
+	assert.Equal(t, request.BandMemberID, section.BandMemberID)
 }
