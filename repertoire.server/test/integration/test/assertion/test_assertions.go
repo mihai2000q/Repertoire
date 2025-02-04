@@ -183,6 +183,7 @@ func ResponseSongSection(
 ) {
 	assert.Equal(t, songSection.ID, response.ID)
 	assert.Equal(t, songSection.Name, response.Name)
+	assert.Equal(t, songSection.Occurrences, response.Occurrences)
 	assert.Equal(t, songSection.Rehearsals, response.Rehearsals)
 	assert.Equal(t, songSection.Confidence, response.Confidence)
 	assert.Equal(t, songSection.RehearsalsScore, response.RehearsalsScore)

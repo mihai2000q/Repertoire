@@ -77,10 +77,20 @@ type UpdateSongSectionRequest struct {
 	BandMemberID *uuid.UUID
 }
 
+type UpdateSongSectionsOccurrencesRequest struct {
+	SongID   uuid.UUID                         `validate:"required"`
+	Sections []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
+}
+
 type MoveSongSectionRequest struct {
 	ID     uuid.UUID `validate:"required"`
 	OverID uuid.UUID `validate:"required"`
 	SongID uuid.UUID `validate:"required"`
+}
+
+type UpdateSectionOccurrencesRequest struct {
+	ID          uuid.UUID `validate:"required"`
+	Occurrences uint
 }
 
 // Sections - Types
