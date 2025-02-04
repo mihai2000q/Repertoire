@@ -214,35 +214,24 @@ func TestUpdateSongSection_WhenSuccessfulWithConfidenceIncreasing_ShouldUpdateSe
 
 func TestUpdateSongSection_WhenSuccessfulWithBandMember_ShouldUpdateSection(t *testing.T) {
 	tests := []struct {
-		name    string
-		request requests.UpdateSongSectionRequest
+		name         string
+		section      model.SongSection
+		bandMemberID *uuid.UUID
 	}{
 		{
 			"to Nil Band Member",
-			requests.UpdateSongSectionRequest{
-				ID:           songData.Songs[0].Sections[2].ID,
-				Name:         "New Chorus Name",
-				TypeID:       songData.Users[0].SongSectionTypes[0].ID,
-				BandMemberID: nil,
-			},
+			songData.Songs[0].Sections[1],
+			nil,
 		},
 		{
 			"from member to Another Band Member",
-			requests.UpdateSongSectionRequest{
-				ID:           songData.Songs[0].Sections[2].ID,
-				Name:         "New Chorus Name",
-				TypeID:       songData.Users[0].SongSectionTypes[0].ID,
-				BandMemberID: &songData.Artists[0].BandMembers[1].ID,
-			},
+			songData.Songs[0].Sections[1],
+			&songData.Artists[0].BandMembers[1].ID,
 		},
 		{
 			"from nil to Another Band Member",
-			requests.UpdateSongSectionRequest{
-				ID:           songData.Songs[0].Sections[3].ID,
-				Name:         "New Chorus Name",
-				TypeID:       songData.Users[0].SongSectionTypes[0].ID,
-				BandMemberID: &songData.Artists[0].BandMembers[1].ID,
-			},
+			songData.Songs[0].Sections[2],
+			&songData.Artists[0].BandMembers[1].ID,
 		},
 	}
 
@@ -251,9 +240,18 @@ func TestUpdateSongSection_WhenSuccessfulWithBandMember_ShouldUpdateSection(t *t
 			// given
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
+			request := requests.UpdateSongSectionRequest{
+				ID:           test.section.ID,
+				Name:         test.section.Name,
+				Rehearsals:   test.section.Rehearsals,
+				Confidence:   test.section.Confidence,
+				TypeID:       test.section.SongSectionTypeID,
+				BandMemberID: test.bandMemberID,
+			}
+
 			// when
 			w := httptest.NewRecorder()
-			core.NewTestHandler().PUT(w, "/api/songs/sections", test.request)
+			core.NewTestHandler().PUT(w, "/api/songs/sections", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
@@ -261,9 +259,9 @@ func TestUpdateSongSection_WhenSuccessfulWithBandMember_ShouldUpdateSection(t *t
 			db := utils.GetDatabase(t)
 
 			var section model.SongSection
-			db.Find(&section, &model.SongSection{ID: test.request.ID})
+			db.Find(&section, &model.SongSection{ID: request.ID})
 
-			assertUpdatedSongSection(t, section, test.request)
+			assertUpdatedSongSection(t, section, request)
 		})
 	}
 }
