@@ -14,6 +14,7 @@ import (
 )
 
 type SongService interface {
+	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -40,13 +41,14 @@ type SongService interface {
 }
 
 type songService struct {
-	createSong          song.CreateSong
-	deleteImageFromSong song.DeleteImageFromSong
-	deleteSong          song.DeleteSong
-	getAllSongs         song.GetAllSongs
-	getSong             song.GetSong
-	saveImageToSong     song.SaveImageToSong
-	updateSong          song.UpdateSong
+	addPerfectSongRehearsal song.AddPerfectSongRehearsal
+	createSong              song.CreateSong
+	deleteImageFromSong     song.DeleteImageFromSong
+	deleteSong              song.DeleteSong
+	getAllSongs             song.GetAllSongs
+	getSong                 song.GetSong
+	saveImageToSong         song.SaveImageToSong
+	updateSong              song.UpdateSong
 
 	createGuitarTuning tuning.CreateGuitarTuning
 	deleteGuitarTuning tuning.DeleteGuitarTuning
@@ -66,6 +68,7 @@ type songService struct {
 }
 
 func NewSongService(
+	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
 	deleteSong song.DeleteSong,
@@ -91,13 +94,14 @@ func NewSongService(
 	moveSongSectionType types.MoveSongSectionType,
 ) SongService {
 	return &songService{
-		createSong:          createSong,
-		deleteImageFromSong: deleteImageFromSong,
-		deleteSong:          deleteSong,
-		getAllSongs:         getAllSongs,
-		getSong:             getSong,
-		saveImageToSong:     saveImageToSong,
-		updateSong:          updateSong,
+		addPerfectSongRehearsal: addPerfectSongRehearsal,
+		createSong:              createSong,
+		deleteImageFromSong:     deleteImageFromSong,
+		deleteSong:              deleteSong,
+		getAllSongs:             getAllSongs,
+		getSong:                 getSong,
+		saveImageToSong:         saveImageToSong,
+		updateSong:              updateSong,
 
 		createGuitarTuning: createGuitarTuning,
 		deleteGuitarTuning: deleteGuitarTuning,
@@ -115,6 +119,10 @@ func NewSongService(
 		getSongSectionTypes:   getSongSectionTypes,
 		moveSongSectionType:   moveSongSectionType,
 	}
+}
+
+func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
+	return s.addPerfectSongRehearsal.Handle(request)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
