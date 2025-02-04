@@ -257,14 +257,21 @@ var Songs = []model.Song{
 
 	{
 		ID:     uuid.New(),
-		Title:  "Test Song 5 - No Album",
+		Title:  "Test Song 5 - No Album - But Has Section Occurrences",
 		UserID: Users[0].ID,
 		Sections: []model.SongSection{
 			{
 				ID:                uuid.New(),
-				Name:              "Test Song Section",
+				Name:              "Test Song Section 1",
 				Order:             0,
 				SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
+				Occurrences:       2,
+			},
+			{
+				ID:                uuid.New(),
+				Name:              "Test Song Section 2",
+				Order:             1,
+				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 			},
 		},
 	},
