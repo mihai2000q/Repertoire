@@ -131,7 +131,7 @@ func assertMovedTunings(
 	}
 
 	assert.Equal(t, sections[overIndex].ID, request.ID)
-	for i, sectionType := range sections {
-		assert.Equal(t, uint(i), sectionType.Order)
+	for i, section := range sections {
+		assert.Equal(t, uint(i), section.Order)
 	}
 }

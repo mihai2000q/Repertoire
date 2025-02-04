@@ -10,7 +10,6 @@ import (
 
 type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
-	// Deprecated: Use normal Get instead
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
 	GetWithBandMembers(artist *model.Artist, id uuid.UUID) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
@@ -60,7 +59,11 @@ func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
 }
 
 func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
-	return a.client.DB.Find(&artist, model.Artist{ID: id}).Error
+	return a.client.DB.
+		Preload("BandMembers").
+		Preload("BandMembers.Roles").
+		Find(&artist, model.Artist{ID: id}).
+		Error
 }
 
 func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID) error {

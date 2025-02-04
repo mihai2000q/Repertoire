@@ -89,9 +89,9 @@ func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	tunings := &[]model.SongSectionType{}
+	expectedTypes := &[]model.SongSectionType{}
 	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, tunings).
+		Return(nil, expectedTypes).
 		Once()
 
 	// when
@@ -121,11 +121,11 @@ func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundE
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	tunings := &[]model.SongSectionType{
+	expectedTypes := &[]model.SongSectionType{
 		{ID: request.ID},
 	}
 	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, tunings).
+		Return(nil, expectedTypes).
 		Once()
 
 	// when
@@ -155,16 +155,16 @@ func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternal
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	tunings := &[]model.SongSectionType{
+	expectedTypes := &[]model.SongSectionType{
 		{ID: request.ID},
 		{ID: request.OverID},
 	}
 	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, tunings).
+		Return(nil, expectedTypes).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateAllSectionTypes", mock.IsType(tunings)).
+	songRepository.On("UpdateAllSectionTypes", mock.IsType(expectedTypes)).
 		Return(internalError).
 		Once()
 
