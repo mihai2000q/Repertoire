@@ -108,16 +108,16 @@ func TestMoveBandMemberType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			var sections []model.BandMember
+			var members []model.BandMember
 			db := utils.GetDatabase(t)
-			db.Order("\"order\"").Find(&sections, &model.BandMember{ArtistID: test.artist.ID})
+			db.Order("\"order\"").Find(&members, &model.BandMember{ArtistID: test.artist.ID})
 
-			assertMovedTunings(t, request, sections, test.index, test.overIndex)
+			assertMovedMembers(t, request, members, test.index, test.overIndex)
 		})
 	}
 }
 
-func assertMovedTunings(
+func assertMovedMembers(
 	t *testing.T,
 	request requests.MoveBandMemberRequest,
 	members []model.BandMember,

@@ -55,17 +55,17 @@ func TestDeleteBandMember_WhenSuccessful_ShouldDeleteMember(t *testing.T) {
 
 	db := utils.GetDatabase(t)
 
-	var sections []model.BandMember
-	db.Order("\"order\"").Find(&sections, &model.BandMember{ArtistID: artist.ID})
+	var members []model.BandMember
+	db.Order("\"order\"").Find(&members, &model.BandMember{ArtistID: artist.ID})
 
 	assert.True(t,
-		slices.IndexFunc(sections, func(t model.BandMember) bool {
+		slices.IndexFunc(members, func(t model.BandMember) bool {
 			return t.ID == bandMember.ID
 		}) == -1,
 		"Artist Section has not been deleted",
 	)
 
-	for i := range sections {
-		assert.Equal(t, uint(i), sections[i].Order)
+	for i := range members {
+		assert.Equal(t, uint(i), members[i].Order)
 	}
 }

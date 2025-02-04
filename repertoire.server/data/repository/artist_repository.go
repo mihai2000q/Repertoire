@@ -33,6 +33,7 @@ type ArtistRepository interface {
 	GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error
 	CreateBandMember(bandMember *model.BandMember) error
 	UpdateBandMember(bandMember *model.BandMember) error
+	ReplaceRolesFromBandMember(roles []model.BandMemberRole, bandMember *model.BandMember) error
 	DeleteBandMember(id uuid.UUID) error
 
 	GetBandMemberRoles(roles *[]model.BandMemberRole, userID uuid.UUID) error
@@ -42,7 +43,6 @@ type ArtistRepository interface {
 	UpdateBandMemberRole(bandMember *model.BandMemberRole) error
 	UpdateAllBandMemberRoles(bandMemberRoles *[]model.BandMemberRole) error
 	DeleteBandMemberRole(id uuid.UUID) error
-	ReplaceRolesFromBandMember(roles *[]model.BandMemberRole, bandMember *model.BandMember) error
 }
 
 type artistRepository struct {
@@ -149,6 +149,10 @@ func (a artistRepository) UpdateBandMember(bandMember *model.BandMember) error {
 	return a.client.DB.Save(&bandMember).Error
 }
 
+func (a artistRepository) ReplaceRolesFromBandMember(roles []model.BandMemberRole, bandMember *model.BandMember) error {
+	return a.client.DB.Model(&bandMember).Association("Roles").Replace(roles)
+}
+
 func (a artistRepository) DeleteBandMember(id uuid.UUID) error {
 	return a.client.DB.Delete(&model.BandMember{}, id).Error
 }
@@ -187,10 +191,6 @@ func (a artistRepository) UpdateAllBandMemberRoles(bandMemberRoles *[]model.Band
 		}
 		return nil
 	})
-}
-
-func (a artistRepository) ReplaceRolesFromBandMember(roles *[]model.BandMemberRole, bandMember *model.BandMember) error {
-	return a.client.DB.Model(&bandMember).Association("Roles").Replace(&roles)
 }
 
 func (a artistRepository) DeleteBandMemberRole(id uuid.UUID) error {

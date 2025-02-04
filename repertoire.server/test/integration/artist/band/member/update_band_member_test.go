@@ -52,7 +52,7 @@ func TestUpdateBandMember_WhenSuccessful_ShouldUpdateBandMember(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	db := utils.GetDatabase(t)
-	db.Find(&bandMember, bandMember.ID)
+	db.Preload("Roles").Find(&bandMember, bandMember.ID)
 
 	assertUpdatedBandMember(t, request, bandMember)
 }

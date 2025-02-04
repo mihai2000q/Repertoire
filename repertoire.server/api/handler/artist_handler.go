@@ -307,7 +307,7 @@ func (a ArtistHandler) DeleteBandMember(c *gin.Context) {
 		return
 	}
 
-	artistID, err := uuid.Parse(c.Param("artistId"))
+	artistID, err := uuid.Parse(c.Param("artistID"))
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return

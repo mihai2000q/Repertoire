@@ -35,7 +35,7 @@ func (u UpdateBandMember) Handle(request requests.UpdateBandMemberRequest) *wrap
 		return wrapper.InternalServerError(err)
 	}
 
-	err = u.artistRepository.ReplaceRolesFromBandMember(&roles, &bandMember)
+	err = u.artistRepository.ReplaceRolesFromBandMember(roles, &bandMember)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

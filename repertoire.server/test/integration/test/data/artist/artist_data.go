@@ -53,7 +53,7 @@ var Artists = []model.Artist{
 			{
 				ID:       uuid.New(),
 				Name:     "Member 1",
-				Order:    1,
+				Order:    0,
 				ImageURL: &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
 				Roles: []model.BandMemberRole{
 					Users[0].BandMemberRoles[0],
@@ -63,13 +63,13 @@ var Artists = []model.Artist{
 			{
 				ID:    uuid.New(),
 				Name:  "Member 2",
-				Order: 2,
+				Order: 1,
 				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[1]},
 			},
 			{
 				ID:    uuid.New(),
 				Name:  "Member 3",
-				Order: 3,
+				Order: 2,
 				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[0]},
 			},
 		},
