@@ -585,20 +585,41 @@ func TestValidateMoveGuitarTuningRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 var validSectionName = "James Solo"
 
 func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.CreateSongSectionRequest{
-		SongID: uuid.New(),
-		Name:   validSectionName,
-		TypeID: uuid.New(),
+	tests := []struct {
+		name    string
+		request requests.CreateSongSectionRequest
+	}{
+		{
+			"Minimal",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.CreateSongSectionRequest{
+				SongID:       uuid.New(),
+				Name:         validSectionName,
+				TypeID:       uuid.New(),
+				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -672,22 +693,45 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 }
 
 func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.UpdateSongSectionRequest{
-		ID:         uuid.New(),
-		Name:       validSectionName,
-		Confidence: 100,
-		Rehearsals: 23,
-		TypeID:     uuid.New(),
+	tests := []struct {
+		name    string
+		request requests.UpdateSongSectionRequest
+	}{
+		{
+			"Minimal",
+			requests.UpdateSongSectionRequest{
+				ID:         uuid.New(),
+				Name:       validSectionName,
+				Confidence: 100,
+				Rehearsals: 23,
+				TypeID:     uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.UpdateSongSectionRequest{
+				ID:           uuid.New(),
+				Name:         validSectionName,
+				Confidence:   100,
+				Rehearsals:   23,
+				TypeID:       uuid.New(),
+				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {

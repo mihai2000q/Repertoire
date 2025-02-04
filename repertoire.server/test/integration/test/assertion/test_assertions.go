@@ -72,7 +72,15 @@ func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withAr
 
 	if withSongs {
 		for i := 0; i < len(album.Songs); i++ {
-			ResponseSong(t, album.Songs[i], response.Songs[i], false, false, false)
+			ResponseSong(
+				t,
+				album.Songs[i],
+				response.Songs[i],
+				false,
+				false,
+				false,
+				false,
+			)
 		}
 	}
 }
@@ -112,6 +120,7 @@ func ResponseSong(
 	withAlbum bool,
 	withArtist bool,
 	withAssociations bool,
+	withSongSectionsDetails bool,
 ) {
 	assert.Equal(t, song.ID, response.ID)
 	assert.Equal(t, song.Title, response.Title)
@@ -152,7 +161,7 @@ func ResponseSong(
 		}
 
 		for i := range song.Sections {
-			ResponseSongSection(t, song.Sections[i], response.Sections[i])
+			ResponseSongSection(t, song.Sections[i], response.Sections[i], withSongSectionsDetails)
 		}
 
 		for i := range song.Playlists {
@@ -166,7 +175,12 @@ func ResponseGuitarTuning(t *testing.T, guitarTuning model.GuitarTuning, respons
 	assert.Equal(t, guitarTuning.Name, response.Name)
 }
 
-func ResponseSongSection(t *testing.T, songSection model.SongSection, response model.SongSection) {
+func ResponseSongSection(
+	t *testing.T,
+	songSection model.SongSection,
+	response model.SongSection,
+	withBandMember bool,
+) {
 	assert.Equal(t, songSection.ID, response.ID)
 	assert.Equal(t, songSection.Name, response.Name)
 	assert.Equal(t, songSection.Rehearsals, response.Rehearsals)
@@ -176,6 +190,13 @@ func ResponseSongSection(t *testing.T, songSection model.SongSection, response m
 	assert.Equal(t, songSection.Progress, response.Progress)
 
 	ResponseSongSectionType(t, songSection.SongSectionType, response.SongSectionType)
+	if withBandMember {
+		if songSection.BandMember != nil {
+			ResponseBandMember(t, *songSection.BandMember, *response.BandMember, true)
+		} else {
+			assert.Nil(t, response.BandMember)
+		}
+	}
 }
 
 func ResponseSongSectionType(t *testing.T, songSectionType model.SongSectionType, response model.SongSectionType) {
@@ -190,7 +211,15 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 	assert.Equal(t, playlist.ImageURL, response.ImageURL)
 
 	for i := range playlist.Songs {
-		ResponseSong(t, playlist.Songs[i], response.Songs[i], withSongsMetadata, withSongsMetadata, false)
+		ResponseSong(
+			t,
+			playlist.Songs[i],
+			response.Songs[i],
+			withSongsMetadata,
+			withSongsMetadata,
+			false,
+			false,
+		)
 		if withSongsMetadata {
 			// making sure the After Find hook works
 			assert.Equal(t, playlist.PlaylistSongs[i].SongID, response.Songs[i].ID)

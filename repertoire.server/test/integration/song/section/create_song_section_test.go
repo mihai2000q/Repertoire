@@ -1,6 +1,7 @@
 package section
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -12,16 +13,14 @@ import (
 	"testing"
 )
 
-func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
+func TestCreateSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	// song with sections and previous stats
-	song := songData.Songs[0]
 	request := requests.CreateSongSectionRequest{
-		SongID: song.ID,
+		SongID: uuid.New(),
 		Name:   "Chorus 1-New",
-		TypeID: songData.Users[0].SongSectionTypes[0].ID,
+		TypeID: uuid.New(),
 	}
 
 	// when
@@ -29,18 +28,97 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 	core.NewTestHandler().POST(w, "/api/songs/sections", request)
 
 	// then
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
-	db := utils.GetDatabase(t)
+func TestCreateSongSection_WhenRequestHasBandMemberIDButItIsNotAssociated_ShouldReturnBadRequestError(t *testing.T) {
+	tests := []struct {
+		name string
+		song model.Song
+	}{
+		{
+			"Song without artist",
+			songData.Songs[4],
+		},
+		{
+			"Song with artist but without that member",
+			songData.Songs[0],
+		},
+	}
 
-	var section model.SongSection
-	db.Preload("Song").Find(&section, &model.SongSection{Name: request.Name})
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// given
+			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
-	assert.LessOrEqual(t, section.Song.Rehearsals, song.Rehearsals)
-	assert.LessOrEqual(t, section.Song.Progress, song.Progress)
+			request := requests.CreateSongSectionRequest{
+				SongID:       test.song.ID,
+				Name:         "Chorus 1-New",
+				TypeID:       uuid.New(),
+				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+			}
 
-	assertCreatedSongSection(t, section, request, len(song.Sections))
+			// when
+			w := httptest.NewRecorder()
+			core.NewTestHandler().POST(w, "/api/songs/sections", request)
+
+			// then
+			assert.Equal(t, http.StatusBadRequest, w.Code)
+		})
+	}
+}
+
+func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
+	tests := []struct {
+		name         string
+		song         model.Song
+		bandMemberID *uuid.UUID
+	}{
+		{
+			"Without Band Member",
+			songData.Songs[0],
+			nil,
+		},
+		{
+			"With Band Member",
+			songData.Songs[0],
+			&songData.Artists[0].BandMembers[0].ID,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// given
+			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+			// song with sections and previous stats
+			song := songData.Songs[0]
+			request := requests.CreateSongSectionRequest{
+				SongID:       song.ID,
+				Name:         "Chorus 1-New",
+				TypeID:       songData.Users[0].SongSectionTypes[0].ID,
+				BandMemberID: test.bandMemberID,
+			}
+
+			// when
+			w := httptest.NewRecorder()
+			core.NewTestHandler().POST(w, "/api/songs/sections", request)
+
+			// then
+			assert.Equal(t, http.StatusOK, w.Code)
+
+			db := utils.GetDatabase(t)
+
+			var section model.SongSection
+			db.Preload("Song").Find(&section, &model.SongSection{Name: request.Name})
+
+			assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
+			assert.LessOrEqual(t, section.Song.Rehearsals, song.Rehearsals)
+			assert.LessOrEqual(t, section.Song.Progress, song.Progress)
+
+			assertCreatedSongSection(t, section, request, len(song.Sections))
+		})
+	}
 }
 
 func assertCreatedSongSection(
