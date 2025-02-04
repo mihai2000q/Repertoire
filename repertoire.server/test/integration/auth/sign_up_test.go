@@ -71,6 +71,7 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 	var user model.User
 	db.Preload("SongSectionTypes").
 		Preload("GuitarTunings").
+		Preload("BandMemberRoles").
 		Find(&user, model.User{Email: strings.ToLower(request.Email)})
 
 	assert.NotEmpty(t, user.ID)
@@ -96,7 +97,7 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 	assert.Len(t, user.BandMemberRoles, len(model.DefaultBandMemberRoles))
 	for i, bandMemberRole := range user.BandMemberRoles {
 		assert.NotEmpty(t, bandMemberRole.ID)
-		assert.Equal(t, model.DefaultSongSectionTypes[i], bandMemberRole.Name)
+		assert.Equal(t, model.DefaultBandMemberRoles[i], bandMemberRole.Name)
 		assert.Equal(t, uint(i), bandMemberRole.Order)
 	}
 
