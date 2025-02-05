@@ -10,7 +10,7 @@ import (
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/domain/usecase/udata/guitar/tuning"
-	types2 "repertoire/server/domain/usecase/udata/section/types"
+	"repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/domain/usecase/user"
 
 	"go.uber.org/fx"
@@ -101,9 +101,9 @@ var userDataUseCases = fx.Options(
 	fx.Provide(tuning.NewDeleteGuitarTuning),
 	fx.Provide(tuning.NewMoveGuitarTuning),
 
-	fx.Provide(types2.NewCreateSongSectionType),
-	fx.Provide(types2.NewDeleteSongSectionType),
-	fx.Provide(types2.NewMoveSongSectionType),
+	fx.Provide(types.NewCreateSongSectionType),
+	fx.Provide(types.NewDeleteSongSectionType),
+	fx.Provide(types.NewMoveSongSectionType),
 )
 
 var userUseCases = fx.Options(
