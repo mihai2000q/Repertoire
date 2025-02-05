@@ -20,7 +20,7 @@ type User struct {
 	Playlists        []Playlist        `json:"-"`
 	Songs            []Song            `json:"-"`
 	SongSectionTypes []SongSectionType `json:"-"`
-	InstrumentTypes  []InstrumentType  `json:"-"`
+	Instruments      []Instrument      `json:"-"`
 	GuitarTunings    []GuitarTuning    `json:"-"`
 	BandMemberRoles  []BandMemberRole  `json:"-"`
 

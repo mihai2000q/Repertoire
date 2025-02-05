@@ -89,7 +89,7 @@ type SongSection struct {
 	Song            Song            `json:"-"`
 	SongSectionType SongSectionType `json:"songSectionType"`
 	BandMember      *BandMember     `json:"bandMember"`
-	Instrument      Instrument      `json:"instrument"`
+	Instrument      *Instrument     `json:"instrument"`
 
 	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
