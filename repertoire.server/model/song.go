@@ -33,7 +33,6 @@ type Song struct {
 	Artist         *Artist        `json:"artist"`
 	Album          *Album         `json:"album"`
 	GuitarTuning   *GuitarTuning  `json:"guitarTuning"`
-	Instruments    []Instrument   `gorm:"constraint:OnDelete:CASCADE" json:"instruments"`
 	Sections       []SongSection  `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Playlists      []Playlist     `gorm:"many2many:playlist_songs" json:"playlists"`
 	PlaylistSongs  []PlaylistSong `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"-"`
