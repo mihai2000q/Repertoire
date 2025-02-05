@@ -37,6 +37,18 @@ var Users = []model.User{
 		Name:     "John Doe",
 		Email:    "johndoe@gmail.com",
 		Password: "",
+		Instruments: []model.Instrument{
+			{
+				ID:    uuid.New(),
+				Name:  "Guitar",
+				Order: 0,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Piano",
+				Order: 1,
+			},
+		},
 		GuitarTunings: []model.GuitarTuning{
 			{
 				ID:    uuid.New(),
@@ -150,6 +162,7 @@ var songSections = []model.SongSection{
 		Name:              "Verse 1 - used on update",
 		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
 		BandMemberID:      &Artists[0].BandMembers[0].ID,
+		InstrumentID:      &Users[0].Instruments[1].ID,
 		Order:             0,
 		Confidence:        10,
 		Rehearsals:        10,
@@ -188,6 +201,7 @@ var songSections = []model.SongSection{
 		ConfidenceScore:   30,
 		RehearsalsScore:   550,
 		Progress:          99,
+		InstrumentID:      &Users[0].Instruments[0].ID,
 	},
 	{
 		ID:                uuid.New(),

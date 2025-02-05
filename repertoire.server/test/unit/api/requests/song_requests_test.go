@@ -604,6 +604,7 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 				Name:         validSectionName,
 				TypeID:       uuid.New(),
 				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}
@@ -765,6 +766,7 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 				Rehearsals:   23,
 				TypeID:       uuid.New(),
 				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}
