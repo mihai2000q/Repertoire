@@ -8,7 +8,7 @@ ALTER TABLE public.song_sections
     ADD COLUMN band_member_id uuid;
 
 ALTER TABLE public.song_sections
-    ADD CONSTRAINT fk_band_members_sections
+    ADD CONSTRAINT fk_band_members_song_sections
     FOREIGN KEY (band_member_id) REFERENCES band_members(id)
     ON DELETE SET NULL;
 

@@ -42,9 +42,10 @@ type BandMember struct {
 	Color    *string            `gorm:"size:7" json:"color"`
 	ImageURL *internal.FilePath `json:"imageUrl"`
 
-	ArtistID uuid.UUID        `gorm:"not null" json:"-"`
-	Artist   Artist           `json:"artist"`
-	Roles    []BandMemberRole `gorm:"many2many:band_member_has_roles" json:"role"`
+	ArtistID     uuid.UUID        `gorm:"not null" json:"-"`
+	Artist       Artist           `json:"artist"`
+	Roles        []BandMemberRole `gorm:"many2many:band_member_has_roles" json:"roles"`
+	SongSections []SongSection    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
