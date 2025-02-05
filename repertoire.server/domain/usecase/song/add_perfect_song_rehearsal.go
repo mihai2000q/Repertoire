@@ -40,12 +40,17 @@ func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsal
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
 	for i, section := range song.Sections {
+		if section.Occurrences == 0 {
+			continue
+		}
+
+		newRehearsals := section.Rehearsals + section.Occurrences
 		// add history of the rehearsals change
 		newHistory := model.SongSectionHistory{
 			ID:            uuid.New(),
 			Property:      model.RehearsalsProperty,
 			From:          section.Rehearsals,
-			To:            section.Occurrences,
+			To:            newRehearsals,
 			SongSectionID: section.ID,
 		}
 		err = a.repository.CreateSongSectionHistory(&newHistory)
@@ -60,7 +65,7 @@ func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsal
 			return wrapper.InternalServerError(err)
 		}
 
-		song.Sections[i].Rehearsals += section.Occurrences
+		song.Sections[i].Rehearsals = newRehearsals
 		song.Sections[i].RehearsalsScore = a.progressProcessor.ComputeRehearsalsScore(history)
 		song.Sections[i].Progress = a.progressProcessor.ComputeProgress(song.Sections[i])
 
@@ -68,7 +73,12 @@ func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsal
 		totalProgress += float64(song.Sections[i].Progress)
 		totalRehearsals += float64(song.Sections[i].Rehearsals)
 	}
-	
+
+	// means that no section got updated (because if it did, the total would be at least 1 from an occurrence)
+	if totalRehearsals == 0 {
+		return nil
+	}
+
 	// update song media progress and rehearsals + update last time played
 	sectionsCount := len(song.Sections)
 	song.Rehearsals = totalRehearsals / float64(sectionsCount)

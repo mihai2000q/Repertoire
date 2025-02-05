@@ -45,6 +45,10 @@ func TestUpdateSongSectionsOccurrences_WhenSuccessful_ShouldUpdateSongSectionsOc
 				ID:          song.Sections[1].ID,
 				Occurrences: uint(7),
 			},
+			{
+				ID:          song.Sections[2].ID,
+				Occurrences: uint(8),
+			},
 		},
 	}
 
