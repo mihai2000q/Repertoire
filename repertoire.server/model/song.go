@@ -67,49 +67,6 @@ func (s *Song) AfterFind(*gorm.DB) error {
 	return nil
 }
 
-// Guitar Tuning
-
-type GuitarTuning struct {
-	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name  string    `gorm:"size:16; not null" json:"name"`
-	Order uint      `gorm:"not null" json:"-"`
-	Songs []Song    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-}
-
-var DefaultGuitarTunings = []string{
-	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
-	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
-}
-
-// Instrument
-
-type Instrument struct {
-	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name  string    `gorm:"size:30" json:"name"`
-	Order uint      `gorm:"not null" json:"-"`
-
-	SongID           uuid.UUID      `gorm:"not null" json:"-"`
-	InstrumentTypeID uuid.UUID      `gorm:"not null" json:"-"`
-	Song             Song           `json:"-"`
-	InstrumentType   InstrumentType `json:"instrumentType"`
-
-	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
-
-	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
-	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-}
-
-type InstrumentType struct {
-	ID          uuid.UUID    `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name        string       `gorm:"size:26" json:"name"`
-	Order       uint         `gorm:"not null" json:"-"`
-	Instruments []Instrument `gorm:"constraint:OnDelete:CASCADE" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-}
-
 // Song Sections
 
 type SongSection struct {
@@ -123,7 +80,7 @@ type SongSection struct {
 	RehearsalsScore uint64 `gorm:"not null" json:"rehearsalsScore"`
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
-	
+
 	SongID            uuid.UUID  `gorm:"not null" json:"-"`
 	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
 	InstrumentID      *uuid.UUID `json:"-"`
