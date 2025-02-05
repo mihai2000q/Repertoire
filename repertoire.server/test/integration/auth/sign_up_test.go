@@ -101,5 +101,12 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 		assert.Equal(t, uint(i), bandMemberRole.Order)
 	}
 
+	assert.Len(t, user.Instruments, len(model.DefaultInstruments))
+	for i, instrument := range user.Instruments {
+		assert.NotEmpty(t, instrument.ID)
+		assert.Equal(t, model.DefaultInstruments[i], instrument.Name)
+		assert.Equal(t, uint(i), instrument.Order)
+	}
+
 	return user
 }
