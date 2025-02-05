@@ -33,7 +33,7 @@ func TestDeleteSongSectionType_WhenSuccessful_ShouldDeleteType(t *testing.T) {
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/sections/types/"+sectionType.ID.String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/song-section-types/"+sectionType.ID.String())
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
