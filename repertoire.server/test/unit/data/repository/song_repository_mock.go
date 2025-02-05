@@ -165,6 +165,30 @@ func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, use
 	return args.Error(0)
 }
 
+// Instruments
+
+func (s *SongRepositoryMock) GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error {
+	args := s.Called(instruments, userID)
+
+	if len(args) > 1 {
+		*instruments = *args.Get(1).(*[]model.Instrument)
+	}
+
+	return args.Error(0)
+}
+
+// Section Types
+
+func (s *SongRepositoryMock) GetSectionTypes(sectionTypes *[]model.SongSectionType, userID uuid.UUID) error {
+	args := s.Called(sectionTypes, userID)
+
+	if len(args) > 1 {
+		*sectionTypes = *args.Get(1).(*[]model.SongSectionType)
+	}
+
+	return args.Error(0)
+}
+
 // Sections
 
 func (s *SongRepositoryMock) GetSection(section *model.SongSection, id uuid.UUID) error {
@@ -199,18 +223,6 @@ func (s *SongRepositoryMock) UpdateSection(section *model.SongSection) error {
 
 func (s *SongRepositoryMock) DeleteSection(id uuid.UUID) error {
 	args := s.Called(id)
-	return args.Error(0)
-}
-
-// Section Types
-
-func (s *SongRepositoryMock) GetSectionTypes(sectionTypes *[]model.SongSectionType, userID uuid.UUID) error {
-	args := s.Called(sectionTypes, userID)
-
-	if len(args) > 1 {
-		*sectionTypes = *args.Get(1).(*[]model.SongSectionType)
-	}
-
 	return args.Error(0)
 }
 

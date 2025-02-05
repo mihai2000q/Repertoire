@@ -5,6 +5,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/domain/usecase/udata/guitar/tuning"
+	"repertoire/server/domain/usecase/udata/instrument"
 	"repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/internal/wrapper"
 )
@@ -50,9 +51,9 @@ func NewUserDataService(
 	deleteBandMemberRole role.DeleteBandMemberRole,
 	moveBandMemberRole role.MoveBandMemberRole,
 
-	createInstrument tuning.CreateInstrument,
-	deleteInstrument tuning.DeleteInstrument,
-	moveInstrument tuning.MoveInstrument,
+	createInstrument instrument.CreateInstrument,
+	deleteInstrument instrument.DeleteInstrument,
+	moveInstrument instrument.MoveInstrument,
 
 	createGuitarTuning tuning.CreateGuitarTuning,
 	deleteGuitarTuning tuning.DeleteGuitarTuning,

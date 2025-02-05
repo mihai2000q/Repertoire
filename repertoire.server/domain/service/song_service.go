@@ -22,6 +22,7 @@ type SongService interface {
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
+	GetInstruments(token string) ([]model.Instrument, *wrapper.ErrorCode)
 	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
@@ -42,6 +43,7 @@ type songService struct {
 	updateSong              song.UpdateSong
 
 	getGuitarTunings    song.GetGuitarTunings
+	getInstruments      song.GetInstruments
 	getSongSectionTypes section.GetSongSectionTypes
 
 	createSongSection             section.CreateSongSection
@@ -62,6 +64,7 @@ func NewSongService(
 	updateSong song.UpdateSong,
 
 	getGuitarTunings song.GetGuitarTunings,
+	getInstruments song.GetInstruments,
 	getSongSectionTypes section.GetSongSectionTypes,
 
 	createSongSection section.CreateSongSection,
@@ -81,6 +84,7 @@ func NewSongService(
 		updateSong:              updateSong,
 
 		getGuitarTunings:    getGuitarTunings,
+		getInstruments:      getInstruments,
 		getSongSectionTypes: getSongSectionTypes,
 
 		createSongSection:             createSongSection,
@@ -125,6 +129,10 @@ func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorC
 
 func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {
 	return s.getGuitarTunings.Handle(token)
+}
+
+func (s *songService) GetInstruments(token string) ([]model.Instrument, *wrapper.ErrorCode) {
+	return s.getInstruments.Handle(token)
 }
 
 func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {

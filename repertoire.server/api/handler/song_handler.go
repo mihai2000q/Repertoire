@@ -194,6 +194,20 @@ func (s SongHandler) GetGuitarTunings(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+// Instruments
+
+func (s SongHandler) GetInstruments(c *gin.Context) {
+	token := s.GetTokenFromContext(c)
+
+	result, errorCode := s.service.GetInstruments(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // Sections
 
 func (s SongHandler) CreateSection(c *gin.Context) {

@@ -33,6 +33,7 @@ type SongRepository interface {
 	Delete(id uuid.UUID) error
 
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
+	GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error
 	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
@@ -213,30 +214,24 @@ func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID u
 		Error
 }
 
-func (s songRepository) GetGuitarTuningsCount(count *int64, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.GuitarTuning{}).
-		Where(model.GuitarTuning{UserID: userID}).
-		Count(count).
+// Instruments
+
+func (s songRepository) GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.Instrument{}).
+		Where(model.Instrument{UserID: userID}).
+		Order("\"order\"").
+		Find(&instruments).
 		Error
 }
 
-func (s songRepository) CreateGuitarTuning(tuning *model.GuitarTuning) error {
-	return s.client.DB.Create(&tuning).Error
-}
+// Section Types
 
-func (s songRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
-	return s.client.DB.Transaction(func(tx *gorm.DB) error {
-		for _, tuning := range *tunings {
-			if err := tx.Save(tuning).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
-
-func (s songRepository) DeleteGuitarTuning(id uuid.UUID) error {
-	return s.client.DB.Delete(&model.GuitarTuning{}, id).Error
+func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
+	return s.client.DB.Model(&model.SongSectionType{}).
+		Where(model.SongSectionType{UserID: userID}).
+		Order("\"order\"").
+		Find(&types).
+		Error
 }
 
 // Sections
@@ -262,42 +257,6 @@ func (s songRepository) UpdateSection(section *model.SongSection) error {
 
 func (s songRepository) DeleteSection(id uuid.UUID) error {
 	return s.client.DB.Delete(&model.SongSection{}, id).Error
-}
-
-// Section Types
-
-func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.SongSectionType{}).
-		Where(model.SongSectionType{UserID: userID}).
-		Order("\"order\"").
-		Find(&types).
-		Error
-}
-
-func (s songRepository) CountSectionTypes(count *int64, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.SongSectionType{}).
-		Where(model.SongSectionType{UserID: userID}).
-		Count(count).
-		Error
-}
-
-func (s songRepository) CreateSectionType(sectionType *model.SongSectionType) error {
-	return s.client.DB.Create(&sectionType).Error
-}
-
-func (s songRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {
-	return s.client.DB.Transaction(func(tx *gorm.DB) error {
-		for _, sectionType := range *sectionTypes {
-			if err := tx.Save(sectionType).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
-
-func (s songRepository) DeleteSectionType(id uuid.UUID) error {
-	return s.client.DB.Delete(&model.SongSectionType{}, id).Error
 }
 
 // Song Section History
