@@ -40,8 +40,8 @@ func TestDeleteGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testi
 func TestDeleteGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewDeleteGuitarTuning(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -50,7 +50,7 @@ func TestDeleteGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServer
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(internalError).
 		Once()
 
@@ -63,14 +63,14 @@ func TestDeleteGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServer
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestDeleteGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewDeleteGuitarTuning(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -81,7 +81,7 @@ func TestDeleteGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError
 	tunings := &[]model.GuitarTuning{
 		{ID: uuid.New()},
 	}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
@@ -94,14 +94,14 @@ func TestDeleteGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError
 	assert.Equal(t, "guitar tuning not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestDeleteGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewDeleteGuitarTuning(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -112,12 +112,12 @@ func TestDeleteGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternal
 	tunings := &[]model.GuitarTuning{
 		{ID: id},
 	}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
+	userDataRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
 		Return(internalError).
 		Once()
 
@@ -130,14 +130,14 @@ func TestDeleteGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternal
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestDeleteGuitarTuning_WhenDeleteGuitarTuningFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewDeleteGuitarTuning(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -148,16 +148,16 @@ func TestDeleteGuitarTuning_WhenDeleteGuitarTuningFails_ShouldReturnInternalServ
 	tunings := &[]model.GuitarTuning{
 		{ID: id},
 	}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
-	songRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
+	userDataRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("DeleteGuitarTuning", id).
+	userDataRepository.On("DeleteGuitarTuning", id).
 		Return(internalError).
 		Once()
 
@@ -170,14 +170,14 @@ func TestDeleteGuitarTuning_WhenDeleteGuitarTuningFails_ShouldReturnInternalServ
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewDeleteGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewDeleteGuitarTuning(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -188,11 +188,11 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 	tunings := &[]model.GuitarTuning{
 		{ID: id},
 	}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
-	songRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
+	userDataRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
 		Run(func(args mock.Arguments) {
 			newGuitarTunings := args.Get(0).(*[]model.GuitarTuning)
 			guitarTunings := slices.DeleteFunc(*newGuitarTunings, func(t model.GuitarTuning) bool {
@@ -205,7 +205,7 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 		Return(nil).
 		Once()
 
-	songRepository.On("DeleteGuitarTuning", id).
+	userDataRepository.On("DeleteGuitarTuning", id).
 		Return(nil).
 		Once()
 
@@ -216,5 +216,5 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }

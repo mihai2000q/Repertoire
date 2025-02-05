@@ -12,12 +12,12 @@ import (
 )
 
 type DeleteSongSectionType struct {
-	repository repository.SongRepository
+	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
 func NewDeleteSongSectionType(
-	repository repository.SongRepository,
+	repository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) DeleteSongSectionType {
 	return DeleteSongSectionType{

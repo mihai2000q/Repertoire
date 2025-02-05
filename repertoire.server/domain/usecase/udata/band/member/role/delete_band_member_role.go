@@ -12,12 +12,12 @@ import (
 )
 
 type DeleteBandMemberRole struct {
-	repository repository.ArtistRepository
+	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
 func NewDeleteBandMemberRole(
-	repository repository.ArtistRepository,
+	repository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) DeleteBandMemberRole {
 	return DeleteBandMemberRole{

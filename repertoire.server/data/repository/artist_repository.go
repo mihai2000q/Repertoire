@@ -38,11 +38,6 @@ type ArtistRepository interface {
 
 	GetBandMemberRoles(roles *[]model.BandMemberRole, userID uuid.UUID) error
 	GetBandMemberRolesByIDs(roles *[]model.BandMemberRole, ids []uuid.UUID) error
-	CountBandMemberRoles(count *int64, userID uuid.UUID) error
-	CreateBandMemberRole(bandMember *model.BandMemberRole) error
-	UpdateBandMemberRole(bandMember *model.BandMemberRole) error
-	UpdateAllBandMemberRoles(bandMemberRoles *[]model.BandMemberRole) error
-	DeleteBandMemberRole(id uuid.UUID) error
 }
 
 type artistRepository struct {
@@ -165,34 +160,4 @@ func (a artistRepository) GetBandMemberRoles(bandMemberRoles *[]model.BandMember
 
 func (a artistRepository) GetBandMemberRolesByIDs(bandMemberRoles *[]model.BandMemberRole, ids []uuid.UUID) error {
 	return a.client.DB.Find(&bandMemberRoles, ids).Error
-}
-
-func (a artistRepository) CountBandMemberRoles(count *int64, userID uuid.UUID) error {
-	return a.client.DB.Model(&model.BandMemberRole{}).
-		Where(model.BandMemberRole{UserID: userID}).
-		Count(count).
-		Error
-}
-
-func (a artistRepository) CreateBandMemberRole(bandMemberRole *model.BandMemberRole) error {
-	return a.client.DB.Create(&bandMemberRole).Error
-}
-
-func (a artistRepository) UpdateBandMemberRole(bandMemberRole *model.BandMemberRole) error {
-	return a.client.DB.Save(&bandMemberRole).Error
-}
-
-func (a artistRepository) UpdateAllBandMemberRoles(bandMemberRoles *[]model.BandMemberRole) error {
-	return a.client.DB.Transaction(func(tx *gorm.DB) error {
-		for _, sectionType := range *bandMemberRoles {
-			if err := tx.Save(sectionType).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
-
-func (a artistRepository) DeleteBandMemberRole(id uuid.UUID) error {
-	return a.client.DB.Delete(&model.BandMemberRole{}, id).Error
 }

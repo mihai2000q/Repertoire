@@ -19,12 +19,19 @@ func (u UserDataRouter) RegisterRoutes() {
 		bandMemberRolesApi.PUT("/move", u.handler.MoveBandMemberRole)
 		bandMemberRolesApi.DELETE("/:id", u.handler.DeleteBandMemberRole)
 	}
-	
+
 	guitarTuningsApi := api.Group("/guitar-tunings")
 	{
 		guitarTuningsApi.POST("", u.handler.CreateGuitarTuning)
 		guitarTuningsApi.PUT("/move", u.handler.MoveGuitarTuning)
 		guitarTuningsApi.DELETE("/:id", u.handler.DeleteGuitarTuning)
+	}
+
+	instrumentsApi := api.Group("/instruments")
+	{
+		instrumentsApi.POST("", u.handler.CreateInstrument)
+		instrumentsApi.PUT("/move", u.handler.MoveInstrument)
+		instrumentsApi.DELETE("/:id", u.handler.DeleteInstrument)
 	}
 
 	songSectionTypesApi := api.Group("/song-section-types")

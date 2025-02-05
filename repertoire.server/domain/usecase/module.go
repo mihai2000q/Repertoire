@@ -10,6 +10,7 @@ import (
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/domain/usecase/udata/guitar/tuning"
+	"repertoire/server/domain/usecase/udata/instrument"
 	"repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/domain/usecase/user"
 
@@ -97,10 +98,14 @@ var userDataUseCases = fx.Options(
 	fx.Provide(role.NewCreateBandMemberRole),
 	fx.Provide(role.NewDeleteBandMemberRole),
 	fx.Provide(role.NewMoveBandMemberRole),
-	
+
 	fx.Provide(tuning.NewCreateGuitarTuning),
 	fx.Provide(tuning.NewDeleteGuitarTuning),
 	fx.Provide(tuning.NewMoveGuitarTuning),
+
+	fx.Provide(instrument.NewCreateInstrument),
+	fx.Provide(instrument.NewDeleteInstrument),
+	fx.Provide(instrument.NewMoveInstrument),
 
 	fx.Provide(types.NewCreateSongSectionType),
 	fx.Provide(types.NewDeleteSongSectionType),

@@ -33,22 +33,13 @@ type SongRepository interface {
 	Delete(id uuid.UUID) error
 
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
-	GetGuitarTuningsCount(count *int64, userID uuid.UUID) error
-	CreateGuitarTuning(tuning *model.GuitarTuning) error
-	UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error
-	DeleteGuitarTuning(id uuid.UUID) error
+	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
 
 	GetSection(section *model.SongSection, id uuid.UUID) error
 	CountSectionsBySong(count *int64, songID uuid.UUID) error
 	CreateSection(section *model.SongSection) error
 	UpdateSection(section *model.SongSection) error
 	DeleteSection(id uuid.UUID) error
-
-	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
-	CountSectionTypes(count *int64, userID uuid.UUID) error
-	CreateSectionType(sectionType *model.SongSectionType) error
-	UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error
-	DeleteSectionType(id uuid.UUID) error
 
 	GetSongSectionHistory(
 		history *[]model.SongSectionHistory,

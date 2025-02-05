@@ -42,8 +42,8 @@ func TestCreateSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *te
 func TestCreateSongSectionType_WhenCountSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := types.NewCreateSongSectionType(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := types.NewCreateSongSectionType(userDataRepository, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",
@@ -54,7 +54,7 @@ func TestCreateSongSectionType_WhenCountSectionTypesFails_ShouldReturnInternalSe
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("CountSectionTypes", new(int64), userID).Return(internalError).Once()
+	userDataRepository.On("CountSectionTypes", new(int64), userID).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request, token)
@@ -65,14 +65,14 @@ func TestCreateSongSectionType_WhenCountSectionTypesFails_ShouldReturnInternalSe
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestCreateSongSectionType_WhenCreateSectionTypeFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := types.NewCreateSongSectionType(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := types.NewCreateSongSectionType(userDataRepository, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",
@@ -82,10 +82,10 @@ func TestCreateSongSectionType_WhenCreateSectionTypeFails_ShouldReturnInternalSe
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	songRepository.On("CountSectionTypes", new(int64), userID).Return(nil).Once()
+	userDataRepository.On("CountSectionTypes", new(int64), userID).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("CreateSectionType", mock.IsType(new(model.SongSectionType))).
+	userDataRepository.On("CreateSectionType", mock.IsType(new(model.SongSectionType))).
 		Return(internalError).
 		Once()
 
@@ -98,14 +98,14 @@ func TestCreateSongSectionType_WhenCreateSectionTypeFails_ShouldReturnInternalSe
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestCreateSongSectionType_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := types.NewCreateSongSectionType(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := types.NewCreateSongSectionType(userDataRepository, jwtService)
 
 	request := requests.CreateSongSectionTypeRequest{
 		Name: "New Type",
@@ -116,11 +116,11 @@ func TestCreateSongSectionType_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	count := &[]int64{20}[0]
-	songRepository.On("CountSectionTypes", mock.IsType(count), userID).
+	userDataRepository.On("CountSectionTypes", mock.IsType(count), userID).
 		Return(nil, count).
 		Once()
 
-	songRepository.On("CreateSectionType", mock.IsType(new(model.SongSectionType))).
+	userDataRepository.On("CreateSectionType", mock.IsType(new(model.SongSectionType))).
 		Run(func(args mock.Arguments) {
 			newType := args.Get(0).(*model.SongSectionType)
 			assertCreatedSongSectionType(t, *newType, request, userID, count)
@@ -135,7 +135,7 @@ func TestCreateSongSectionType_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func assertCreatedSongSectionType(

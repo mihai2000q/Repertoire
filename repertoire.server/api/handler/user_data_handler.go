@@ -143,6 +143,64 @@ func (u UserDataHandler) DeleteGuitarTuning(c *gin.Context) {
 	u.SendMessage(c, "guitar tuning has been deleted successfully!")
 }
 
+// Instruments
+
+func (u UserDataHandler) CreateInstrument(c *gin.Context) {
+	var request requests.CreateInstrumentRequest
+	errorCode := u.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode = u.service.CreateInstrument(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "instrument has been created successfully!")
+}
+
+func (u UserDataHandler) MoveInstrument(c *gin.Context) {
+	var request requests.MoveInstrumentRequest
+	errorCode := u.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode = u.service.MoveInstrument(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "instrument has been moved successfully!")
+}
+
+func (u UserDataHandler) DeleteInstrument(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode := u.service.DeleteInstrument(id, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "instrument has been deleted successfully!")
+}
+
 // Song Section Types
 
 func (u UserDataHandler) CreateSectionType(c *gin.Context) {

@@ -1,4 +1,4 @@
-package tuning
+package instrument
 
 import (
 	"repertoire/server/api/requests"
@@ -10,37 +10,37 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateGuitarTuning struct {
+type CreateInstrument struct {
 	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
-func NewCreateGuitarTuning(repository repository.UserDataRepository, jwtService service.JwtService) CreateGuitarTuning {
-	return CreateGuitarTuning{
+func NewCreateInstrument(repository repository.UserDataRepository, jwtService service.JwtService) CreateInstrument {
+	return CreateInstrument{
 		repository: repository,
 		jwtService: jwtService,
 	}
 }
 
-func (c CreateGuitarTuning) Handle(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode {
+func (c CreateInstrument) Handle(request requests.CreateInstrumentRequest, token string) *wrapper.ErrorCode {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var count int64
-	err := c.repository.GetGuitarTuningsCount(&count, userID)
+	err := c.repository.GetInstrumentsCount(&count, userID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	guitarTuning := &model.GuitarTuning{
+	guitarTuning := &model.Instrument{
 		ID:     uuid.New(),
 		Name:   request.Name,
 		Order:  uint(count),
 		UserID: userID,
 	}
-	err = c.repository.CreateGuitarTuning(guitarTuning)
+	err = c.repository.CreateInstrument(guitarTuning)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

@@ -30,6 +30,11 @@ var Users = []model.User{
 				Name:  "Piano",
 				Order: 1,
 			},
+			{
+				ID:    uuid.New(),
+				Name:  "Voice",
+				Order: 2,
+			},
 		},
 		GuitarTunings: []model.GuitarTuning{
 			{

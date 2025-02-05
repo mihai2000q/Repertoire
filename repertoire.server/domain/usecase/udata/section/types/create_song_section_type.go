@@ -11,12 +11,12 @@ import (
 )
 
 type CreateSongSectionType struct {
-	repository repository.SongRepository
+	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
 func NewCreateSongSectionType(
-	repository repository.SongRepository,
+	repository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) CreateSongSectionType {
 	return CreateSongSectionType{

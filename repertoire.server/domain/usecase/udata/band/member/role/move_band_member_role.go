@@ -12,12 +12,12 @@ import (
 )
 
 type MoveBandMemberRole struct {
-	repository repository.ArtistRepository
+	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
 func NewMoveBandMemberRole(
-	repository repository.ArtistRepository,
+	repository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) MoveBandMemberRole {
 	return MoveBandMemberRole{

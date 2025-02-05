@@ -1,11 +1,11 @@
-package role
+package instrument
 
 import (
 	"cmp"
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/udata/band/member/role"
+	"repertoire/server/domain/usecase/udata/instrument"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -18,12 +18,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestMoveBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
+func TestMoveInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := role.NewMoveBandMemberRole(nil, jwtService)
+	_uut := instrument.NewMoveInstrument(nil, jwtService)
 
-	request := requests.MoveBandMemberRoleRequest{
+	request := requests.MoveInstrumentRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -42,13 +42,13 @@ func TestMoveBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testi
 	jwtService.AssertExpectations(t)
 }
 
-func TestMoveBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestMoveInstrument_WhenGetInstrumentsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewMoveBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewMoveInstrument(userDataRepository, jwtService)
 
-	request := requests.MoveBandMemberRoleRequest{
+	request := requests.MoveInstrumentRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -58,7 +58,7 @@ func TestMoveBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalServ
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
 		Return(internalError).
 		Once()
 
@@ -71,16 +71,16 @@ func TestMoveBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalServ
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveBandMemberRole_WhenBandMemberRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveInstrument_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewMoveBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewMoveInstrument(userDataRepository, jwtService)
 
-	request := requests.MoveBandMemberRoleRequest{
+	request := requests.MoveInstrumentRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -89,9 +89,9 @@ func TestMoveBandMemberRole_WhenBandMemberRoleIsNotFound_ShouldReturnNotFoundErr
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedRoles := &[]model.BandMemberRole{}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, expectedRoles).
+	instruments := &[]model.Instrument{}
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
 	// when
@@ -100,19 +100,19 @@ func TestMoveBandMemberRole_WhenBandMemberRoleIsNotFound_ShouldReturnNotFoundErr
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "role not found", errCode.Error.Error())
+	assert.Equal(t, "instrument not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveBandMemberRole_WhenOverBandMemberRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveInstrument_WhenOverInstrumentIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewMoveBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewMoveInstrument(userDataRepository, jwtService)
 
-	request := requests.MoveBandMemberRoleRequest{
+	request := requests.MoveInstrumentRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -121,11 +121,11 @@ func TestMoveBandMemberRole_WhenOverBandMemberRoleIsNotFound_ShouldReturnNotFoun
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedRoles := &[]model.BandMemberRole{
+	instruments := &[]model.Instrument{
 		{ID: request.ID},
 	}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, expectedRoles).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
 	// when
@@ -134,19 +134,19 @@ func TestMoveBandMemberRole_WhenOverBandMemberRoleIsNotFound_ShouldReturnNotFoun
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "over role not found", errCode.Error.Error())
+	assert.Equal(t, "over instrument not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestMoveInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewMoveBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewMoveInstrument(userDataRepository, jwtService)
 
-	request := requests.MoveBandMemberRoleRequest{
+	request := requests.MoveInstrumentRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -155,16 +155,16 @@ func TestMoveBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnIntern
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedRoles := &[]model.BandMemberRole{
+	instruments := &[]model.Instrument{
 		{ID: request.ID},
 		{ID: request.OverID},
 	}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, expectedRoles).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("UpdateAllBandMemberRoles", mock.IsType(expectedRoles)).
+	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Return(internalError).
 		Once()
 
@@ -177,19 +177,19 @@ func TestMoveBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnIntern
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveBandMemberRole_WhenSuccessful_ShouldReturnBandMemberRoles(t *testing.T) {
+func TestMoveInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 	tests := []struct {
-		name      string
-		role      *[]model.BandMemberRole
-		index     uint
-		overIndex uint
+		name        string
+		instruments *[]model.Instrument
+		index       uint
+		overIndex   uint
 	}{
 		{
 			"Use case 1",
-			&[]model.BandMemberRole{
+			&[]model.Instrument{
 				{ID: uuid.New(), Order: 0},
 				{ID: uuid.New(), Order: 1},
 				{ID: uuid.New(), Order: 2},
@@ -201,7 +201,7 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldReturnBandMemberRoles(t *testin
 		},
 		{
 			"Use case 2",
-			&[]model.BandMemberRole{
+			&[]model.Instrument{
 				{ID: uuid.New(), Order: 0},
 				{ID: uuid.New(), Order: 1},
 				{ID: uuid.New(), Order: 2},
@@ -217,37 +217,36 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldReturnBandMemberRoles(t *testin
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			jwtService := new(service.JwtServiceMock)
-			artistRepository := new(repository.ArtistRepositoryMock)
-			_uut := role.NewMoveBandMemberRole(artistRepository, jwtService)
+			userDataRepository := new(repository.UserDataRepositoryMock)
+			_uut := instrument.NewMoveInstrument(userDataRepository, jwtService)
 
-			request := requests.MoveBandMemberRoleRequest{
-				ID:     (*tt.role)[tt.index].ID,
-				OverID: (*tt.role)[tt.overIndex].ID,
+			request := requests.MoveInstrumentRequest{
+				ID:     (*tt.instruments)[tt.index].ID,
+				OverID: (*tt.instruments)[tt.overIndex].ID,
 			}
 			token := "this is a token"
 
-			// given - mocking
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-			artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-				Return(nil, tt.role).
+			userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+				Return(nil, tt.instruments).
 				Once()
 
-			artistRepository.On("UpdateAllBandMemberRoles", mock.IsType(tt.role)).
+			userDataRepository.On("UpdateAllInstruments", mock.IsType(tt.instruments)).
 				Run(func(args mock.Arguments) {
-					newBandMemberRoles := args.Get(0).(*[]model.BandMemberRole)
-					sortedBandMemberRoles := slices.Clone(*newBandMemberRoles)
-					slices.SortFunc(sortedBandMemberRoles, func(a, b model.BandMemberRole) int {
+					newInstruments := args.Get(0).(*[]model.Instrument)
+					instruments := slices.Clone(*newInstruments)
+					slices.SortFunc(instruments, func(a, b model.Instrument) int {
 						return cmp.Compare(a.Order, b.Order)
 					})
 					if tt.index < tt.overIndex {
-						assert.Equal(t, sortedBandMemberRoles[tt.overIndex-1].ID, request.OverID)
+						assert.Equal(t, instruments[tt.overIndex-1].ID, request.OverID)
 					} else if tt.index > tt.overIndex {
-						assert.Equal(t, sortedBandMemberRoles[tt.overIndex+1].ID, request.OverID)
+						assert.Equal(t, instruments[tt.overIndex+1].ID, request.OverID)
 					}
-					for i, sectionRole := range sortedBandMemberRoles {
-						assert.Equal(t, uint(i), sectionRole.Order)
+					for i, tune := range instruments {
+						assert.Equal(t, uint(i), tune.Order)
 					}
 				}).
 				Return(nil).
@@ -260,7 +259,7 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldReturnBandMemberRoles(t *testin
 			assert.Nil(t, errCode)
 
 			jwtService.AssertExpectations(t)
-			artistRepository.AssertExpectations(t)
+			userDataRepository.AssertExpectations(t)
 		})
 	}
 }

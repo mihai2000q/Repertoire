@@ -14,6 +14,10 @@ type UserDataService interface {
 	DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode
 	MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode
 
+	CreateInstrument(request requests.CreateInstrumentRequest, token string) *wrapper.ErrorCode
+	MoveInstrument(request requests.MoveInstrumentRequest, token string) *wrapper.ErrorCode
+	DeleteInstrument(id uuid.UUID, token string) *wrapper.ErrorCode
+
 	CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode
 	MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode
 	DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode
@@ -27,6 +31,10 @@ type userDataService struct {
 	createBandMemberRole role.CreateBandMemberRole
 	deleteBandMemberRole role.DeleteBandMemberRole
 	moveBandMemberRole   role.MoveBandMemberRole
+
+	createInstrument instrument.CreateInstrument
+	deleteInstrument instrument.DeleteInstrument
+	moveInstrument   instrument.MoveInstrument
 
 	createGuitarTuning tuning.CreateGuitarTuning
 	deleteGuitarTuning tuning.DeleteGuitarTuning
@@ -42,6 +50,10 @@ func NewUserDataService(
 	deleteBandMemberRole role.DeleteBandMemberRole,
 	moveBandMemberRole role.MoveBandMemberRole,
 
+	createInstrument tuning.CreateInstrument,
+	deleteInstrument tuning.DeleteInstrument,
+	moveInstrument tuning.MoveInstrument,
+
 	createGuitarTuning tuning.CreateGuitarTuning,
 	deleteGuitarTuning tuning.DeleteGuitarTuning,
 	moveGuitarTuning tuning.MoveGuitarTuning,
@@ -54,6 +66,10 @@ func NewUserDataService(
 		createBandMemberRole: createBandMemberRole,
 		deleteBandMemberRole: deleteBandMemberRole,
 		moveBandMemberRole:   moveBandMemberRole,
+
+		createInstrument: createInstrument,
+		deleteInstrument: deleteInstrument,
+		moveInstrument:   moveInstrument,
 
 		createGuitarTuning: createGuitarTuning,
 		deleteGuitarTuning: deleteGuitarTuning,
@@ -91,6 +107,20 @@ func (u *userDataService) DeleteGuitarTuning(id uuid.UUID, token string) *wrappe
 
 func (u *userDataService) MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode {
 	return u.moveGuitarTuning.Handle(request, token)
+}
+
+// Instruments
+
+func (u *userDataService) CreateInstrument(request requests.CreateInstrumentRequest, token string) *wrapper.ErrorCode {
+	return u.createInstrument.Handle(request, token)
+}
+
+func (u *userDataService) DeleteInstrument(id uuid.UUID, token string) *wrapper.ErrorCode {
+	return u.deleteInstrument.Handle(id, token)
+}
+
+func (u *userDataService) MoveInstrument(request requests.MoveInstrumentRequest, token string) *wrapper.ErrorCode {
+	return u.moveInstrument.Handle(request, token)
 }
 
 // Song Section Types

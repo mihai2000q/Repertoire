@@ -45,8 +45,8 @@ func TestMoveGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing
 func TestMoveGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewMoveGuitarTuning(userDataRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -58,7 +58,7 @@ func TestMoveGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServerEr
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(internalError).
 		Once()
 
@@ -71,14 +71,14 @@ func TestMoveGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServerEr
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestMoveGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewMoveGuitarTuning(userDataRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -90,7 +90,7 @@ func TestMoveGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	tunings := &[]model.GuitarTuning{}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
@@ -103,14 +103,14 @@ func TestMoveGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t
 	assert.Equal(t, "tuning not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestMoveGuitarTuning_WhenOverGuitarTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewMoveGuitarTuning(userDataRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -124,7 +124,7 @@ func TestMoveGuitarTuning_WhenOverGuitarTuningIsNotFound_ShouldReturnNotFoundErr
 	tunings := &[]model.GuitarTuning{
 		{ID: request.ID},
 	}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
@@ -137,14 +137,14 @@ func TestMoveGuitarTuning_WhenOverGuitarTuningIsNotFound_ShouldReturnNotFoundErr
 	assert.Equal(t, "over tuning not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestMoveGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := tuning.NewMoveGuitarTuning(userDataRepository, jwtService)
 
 	request := requests.MoveGuitarTuningRequest{
 		ID:     uuid.New(),
@@ -159,12 +159,12 @@ func TestMoveGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternalSe
 		{ID: request.ID},
 		{ID: request.OverID},
 	}
-	songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
+	userDataRepository.On("UpdateAllGuitarTunings", mock.IsType(tunings)).
 		Return(internalError).
 		Once()
 
@@ -177,7 +177,7 @@ func TestMoveGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternalSe
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
 func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
@@ -217,8 +217,8 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			jwtService := new(service.JwtServiceMock)
-			songRepository := new(repository.SongRepositoryMock)
-			_uut := tuning.NewMoveGuitarTuning(songRepository, jwtService)
+			userDataRepository := new(repository.UserDataRepositoryMock)
+			_uut := tuning.NewMoveGuitarTuning(userDataRepository, jwtService)
 
 			request := requests.MoveGuitarTuningRequest{
 				ID:     (*tt.tunings)[tt.index].ID,
@@ -229,11 +229,11 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-			songRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
+			userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 				Return(nil, tt.tunings).
 				Once()
 
-			songRepository.On("UpdateAllGuitarTunings", mock.IsType(tt.tunings)).
+			userDataRepository.On("UpdateAllGuitarTunings", mock.IsType(tt.tunings)).
 				Run(func(args mock.Arguments) {
 					newGuitarTunings := args.Get(0).(*[]model.GuitarTuning)
 					tunings := slices.Clone(*newGuitarTunings)
@@ -259,7 +259,7 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T)
 			assert.Nil(t, errCode)
 
 			jwtService.AssertExpectations(t)
-			songRepository.AssertExpectations(t)
+			userDataRepository.AssertExpectations(t)
 		})
 	}
 }

@@ -1,11 +1,11 @@
-package types
+package role
 
 import (
 	"cmp"
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/udata/section/types"
+	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -18,12 +18,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestMoveSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
+func TestMoveBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := types.NewMoveSongSectionType(nil, jwtService)
+	_uut := role.NewMoveBandMemberRole(nil, jwtService)
 
-	request := requests.MoveSongSectionTypeRequest{
+	request := requests.MoveBandMemberRoleRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -42,13 +42,13 @@ func TestMoveSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *test
 	jwtService.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestMoveBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewMoveSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewMoveBandMemberRole(userDataRepository, jwtService)
 
-	request := requests.MoveSongSectionTypeRequest{
+	request := requests.MoveBandMemberRoleRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -58,7 +58,7 @@ func TestMoveSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServer
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
 		Return(internalError).
 		Once()
 
@@ -74,13 +74,13 @@ func TestMoveSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServer
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveBandMemberRole_WhenBandMemberRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewMoveSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewMoveBandMemberRole(userDataRepository, jwtService)
 
-	request := requests.MoveSongSectionTypeRequest{
+	request := requests.MoveBandMemberRoleRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -89,9 +89,9 @@ func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedTypes := &[]model.SongSectionType{}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, expectedTypes).
+	expectedRoles := &[]model.BandMemberRole{}
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, expectedRoles).
 		Once()
 
 	// when
@@ -100,19 +100,19 @@ func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "type not found", errCode.Error.Error())
+	assert.Equal(t, "role not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestMoveBandMemberRole_WhenOverBandMemberRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewMoveSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewMoveBandMemberRole(userDataRepository, jwtService)
 
-	request := requests.MoveSongSectionTypeRequest{
+	request := requests.MoveBandMemberRoleRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -121,11 +121,11 @@ func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundE
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedTypes := &[]model.SongSectionType{
+	expectedRoles := &[]model.BandMemberRole{
 		{ID: request.ID},
 	}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, expectedTypes).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, expectedRoles).
 		Once()
 
 	// when
@@ -134,19 +134,19 @@ func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundE
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "over type not found", errCode.Error.Error())
+	assert.Equal(t, "over role not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestMoveBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewMoveSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewMoveBandMemberRole(userDataRepository, jwtService)
 
-	request := requests.MoveSongSectionTypeRequest{
+	request := requests.MoveBandMemberRoleRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
 	}
@@ -155,16 +155,16 @@ func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternal
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedTypes := &[]model.SongSectionType{
+	expectedRoles := &[]model.BandMemberRole{
 		{ID: request.ID},
 		{ID: request.OverID},
 	}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, expectedTypes).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, expectedRoles).
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("UpdateAllSectionTypes", mock.IsType(expectedTypes)).
+	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(expectedRoles)).
 		Return(internalError).
 		Once()
 
@@ -180,16 +180,16 @@ func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternal
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *testing.T) {
+func TestMoveBandMemberRole_WhenSuccessful_ShouldReturnBandMemberRoles(t *testing.T) {
 	tests := []struct {
 		name      string
-		types     *[]model.SongSectionType
+		role      *[]model.BandMemberRole
 		index     uint
 		overIndex uint
 	}{
 		{
 			"Use case 1",
-			&[]model.SongSectionType{
+			&[]model.BandMemberRole{
 				{ID: uuid.New(), Order: 0},
 				{ID: uuid.New(), Order: 1},
 				{ID: uuid.New(), Order: 2},
@@ -201,7 +201,7 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 		},
 		{
 			"Use case 2",
-			&[]model.SongSectionType{
+			&[]model.BandMemberRole{
 				{ID: uuid.New(), Order: 0},
 				{ID: uuid.New(), Order: 1},
 				{ID: uuid.New(), Order: 2},
@@ -218,11 +218,11 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 			// given
 			jwtService := new(service.JwtServiceMock)
 			userDataRepository := new(repository.UserDataRepositoryMock)
-			_uut := types.NewMoveSongSectionType(userDataRepository, jwtService)
+			_uut := role.NewMoveBandMemberRole(userDataRepository, jwtService)
 
-			request := requests.MoveSongSectionTypeRequest{
-				ID:     (*tt.types)[tt.index].ID,
-				OverID: (*tt.types)[tt.overIndex].ID,
+			request := requests.MoveBandMemberRoleRequest{
+				ID:     (*tt.role)[tt.index].ID,
+				OverID: (*tt.role)[tt.overIndex].ID,
 			}
 			token := "this is a token"
 
@@ -230,24 +230,24 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-			userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-				Return(nil, tt.types).
+			userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+				Return(nil, tt.role).
 				Once()
 
-			userDataRepository.On("UpdateAllSectionTypes", mock.IsType(tt.types)).
+			userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(tt.role)).
 				Run(func(args mock.Arguments) {
-					newSongSectionTypes := args.Get(0).(*[]model.SongSectionType)
-					sortedSectionTypes := slices.Clone(*newSongSectionTypes)
-					slices.SortFunc(sortedSectionTypes, func(a, b model.SongSectionType) int {
+					newBandMemberRoles := args.Get(0).(*[]model.BandMemberRole)
+					sortedBandMemberRoles := slices.Clone(*newBandMemberRoles)
+					slices.SortFunc(sortedBandMemberRoles, func(a, b model.BandMemberRole) int {
 						return cmp.Compare(a.Order, b.Order)
 					})
 					if tt.index < tt.overIndex {
-						assert.Equal(t, sortedSectionTypes[tt.overIndex-1].ID, request.OverID)
+						assert.Equal(t, sortedBandMemberRoles[tt.overIndex-1].ID, request.OverID)
 					} else if tt.index > tt.overIndex {
-						assert.Equal(t, sortedSectionTypes[tt.overIndex+1].ID, request.OverID)
+						assert.Equal(t, sortedBandMemberRoles[tt.overIndex+1].ID, request.OverID)
 					}
-					for i, sectionType := range sortedSectionTypes {
-						assert.Equal(t, uint(i), sectionType.Order)
+					for i, sectionRole := range sortedBandMemberRoles {
+						assert.Equal(t, uint(i), sectionRole.Order)
 					}
 				}).
 				Return(nil).

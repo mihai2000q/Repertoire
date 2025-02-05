@@ -1,9 +1,9 @@
-package types
+package role
 
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/domain/usecase/udata/section/types"
+	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestDeleteSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
+func TestDeleteBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := types.NewDeleteSongSectionType(nil, jwtService)
+	_uut := role.NewDeleteBandMemberRole(nil, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -37,11 +37,11 @@ func TestDeleteSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *te
 	jwtService.AssertExpectations(t)
 }
 
-func TestDeleteSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewDeleteSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -50,7 +50,7 @@ func TestDeleteSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServ
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
 		Return(internalError).
 		Once()
 
@@ -66,11 +66,11 @@ func TestDeleteSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServ
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewDeleteSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -78,11 +78,11 @@ func TestDeleteSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *t
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	sectionTypes := &[]model.SongSectionType{
+	bandMemberRoles := &[]model.BandMemberRole{
 		{ID: uuid.New()},
 	}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, sectionTypes).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, bandMemberRoles).
 		Once()
 
 	// when
@@ -91,17 +91,17 @@ func TestDeleteSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *t
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "song section type not found", errCode.Error.Error())
+	assert.Equal(t, "band member role not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewDeleteSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -109,15 +109,15 @@ func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnIntern
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	sectionTypes := &[]model.SongSectionType{
+	bandMemberRoles := &[]model.BandMemberRole{
 		{ID: id},
 	}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, sectionTypes).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, bandMemberRoles).
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("UpdateAllSectionTypes", mock.IsType(sectionTypes)).
+	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
 		Return(internalError).
 		Once()
 
@@ -133,11 +133,11 @@ func TestDeleteSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnIntern
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteSongSectionType_WhenDeleteSectionTypeFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewDeleteSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -145,19 +145,19 @@ func TestDeleteSongSectionType_WhenDeleteSectionTypeFails_ShouldReturnInternalSe
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	sectionTypes := &[]model.SongSectionType{
+	bandMemberRoles := &[]model.BandMemberRole{
 		{ID: id},
 	}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, sectionTypes).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, bandMemberRoles).
 		Once()
 
-	userDataRepository.On("UpdateAllSectionTypes", mock.IsType(sectionTypes)).
+	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("DeleteSectionType", id).
+	userDataRepository.On("DeleteBandMemberRole", id).
 		Return(internalError).
 		Once()
 
@@ -173,11 +173,11 @@ func TestDeleteSongSectionType_WhenDeleteSectionTypeFails_ShouldReturnInternalSe
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteSongSectionType_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
+func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := types.NewDeleteSongSectionType(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -185,27 +185,27 @@ func TestDeleteSongSectionType_WhenSuccessful_ShouldReturnGuitarTunings(t *testi
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	sectionTypes := &[]model.SongSectionType{
+	bandMemberRoles := &[]model.BandMemberRole{
 		{ID: id},
 	}
-	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
-		Return(nil, sectionTypes).
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, bandMemberRoles).
 		Once()
 
-	userDataRepository.On("UpdateAllSectionTypes", mock.IsType(sectionTypes)).
+	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
 		Run(func(args mock.Arguments) {
-			newSectionTypes := args.Get(0).(*[]model.SongSectionType)
-			sortedSectionTypes := slices.DeleteFunc(*newSectionTypes, func(s model.SongSectionType) bool {
+			newBandMemberRoles := args.Get(0).(*[]model.BandMemberRole)
+			sortedBandMemberRoles := slices.DeleteFunc(*newBandMemberRoles, func(s model.BandMemberRole) bool {
 				return s.ID == id
 			})
-			for i, sectionType := range sortedSectionTypes {
-				assert.Equal(t, i, sectionType.Order)
+			for i, bandMemberRole := range sortedBandMemberRoles {
+				assert.Equal(t, i, bandMemberRole.Order)
 			}
 		}).
 		Return(nil).
 		Once()
 
-	userDataRepository.On("DeleteSectionType", id).
+	userDataRepository.On("DeleteBandMemberRole", id).
 		Return(nil).
 		Once()
 

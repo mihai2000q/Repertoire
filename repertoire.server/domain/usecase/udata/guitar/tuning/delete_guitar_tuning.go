@@ -12,11 +12,11 @@ import (
 )
 
 type DeleteGuitarTuning struct {
-	repository repository.SongRepository
+	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
-func NewDeleteGuitarTuning(repository repository.SongRepository, jwtService service.JwtService) DeleteGuitarTuning {
+func NewDeleteGuitarTuning(repository repository.UserDataRepository, jwtService service.JwtService) DeleteGuitarTuning {
 	return DeleteGuitarTuning{
 		repository: repository,
 		jwtService: jwtService,

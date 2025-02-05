@@ -1,9 +1,9 @@
-package role
+package instrument
 
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/domain/usecase/udata/band/member/role"
+	"repertoire/server/domain/usecase/udata/instrument"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestDeleteBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
+func TestDeleteInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := role.NewDeleteBandMemberRole(nil, jwtService)
+	_uut := instrument.NewDeleteInstrument(nil, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -37,11 +37,11 @@ func TestDeleteBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *tes
 	jwtService.AssertExpectations(t)
 }
 
-func TestDeleteBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteInstrument_WhenGetInstrumentsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -50,7 +50,7 @@ func TestDeleteBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalSe
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
 		Return(internalError).
 		Once()
 
@@ -63,14 +63,14 @@ func TestDeleteBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalSe
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestDeleteInstrument_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -78,11 +78,11 @@ func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *te
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	bandMemberRoles := &[]model.BandMemberRole{
+	instruments := &[]model.Instrument{
 		{ID: uuid.New()},
 	}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, bandMemberRoles).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
 	// when
@@ -91,17 +91,17 @@ func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *te
 	// then
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "band member role not found", errCode.Error.Error())
+	assert.Equal(t, "instrument not found", errCode.Error.Error())
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -109,15 +109,15 @@ func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInte
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	bandMemberRoles := &[]model.BandMemberRole{
+	instruments := &[]model.Instrument{
 		{ID: id},
 	}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, bandMemberRoles).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
+	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Return(internalError).
 		Once()
 
@@ -130,14 +130,14 @@ func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInte
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteInstrument_WhenDeleteInstrumentFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -145,19 +145,19 @@ func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternal
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	bandMemberRoles := &[]model.BandMemberRole{
+	instruments := &[]model.Instrument{
 		{ID: id},
 	}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, bandMemberRoles).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
-	artistRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
+	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("DeleteBandMemberRole", id).
+	userDataRepository.On("DeleteInstrument", id).
 		Return(internalError).
 		Once()
 
@@ -170,14 +170,14 @@ func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternal
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
+func TestDeleteInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(artistRepository, jwtService)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -185,27 +185,27 @@ func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testin
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	bandMemberRoles := &[]model.BandMemberRole{
+	instruments := &[]model.Instrument{
 		{ID: id},
 	}
-	artistRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
-		Return(nil, bandMemberRoles).
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
 		Once()
 
-	artistRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
+	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Run(func(args mock.Arguments) {
-			newBandMemberRoles := args.Get(0).(*[]model.BandMemberRole)
-			sortedBandMemberRoles := slices.DeleteFunc(*newBandMemberRoles, func(s model.BandMemberRole) bool {
-				return s.ID == id
+			newInstruments := args.Get(0).(*[]model.Instrument)
+			guitarTunings := slices.DeleteFunc(*newInstruments, func(t model.Instrument) bool {
+				return t.ID == id
 			})
-			for i, bandMemberRole := range sortedBandMemberRoles {
-				assert.Equal(t, i, bandMemberRole.Order)
+			for i, tune := range guitarTunings {
+				assert.Equal(t, i, tune.Order)
 			}
 		}).
 		Return(nil).
 		Once()
 
-	artistRepository.On("DeleteBandMemberRole", id).
+	userDataRepository.On("DeleteInstrument", id).
 		Return(nil).
 		Once()
 
@@ -216,5 +216,5 @@ func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testin
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
 }

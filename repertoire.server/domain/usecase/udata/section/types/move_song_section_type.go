@@ -12,12 +12,12 @@ import (
 )
 
 type MoveSongSectionType struct {
-	repository repository.SongRepository
+	repository repository.UserDataRepository
 	jwtService service.JwtService
 }
 
 func NewMoveSongSectionType(
-	repository repository.SongRepository,
+	repository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) MoveSongSectionType {
 	return MoveSongSectionType{

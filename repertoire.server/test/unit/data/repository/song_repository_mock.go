@@ -165,31 +165,6 @@ func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, use
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetGuitarTuningsCount(count *int64, userID uuid.UUID) error {
-	args := s.Called(count, userID)
-
-	if len(args) > 1 {
-		*count = *args.Get(1).(*int64)
-	}
-
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) CreateGuitarTuning(tuning *model.GuitarTuning) error {
-	args := s.Called(tuning)
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
-	args := s.Called(tunings)
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) DeleteGuitarTuning(id uuid.UUID) error {
-	args := s.Called(id)
-	return args.Error(0)
-}
-
 // Sections
 
 func (s *SongRepositoryMock) GetSection(section *model.SongSection, id uuid.UUID) error {
@@ -229,38 +204,13 @@ func (s *SongRepositoryMock) DeleteSection(id uuid.UUID) error {
 
 // Section Types
 
-func (s *SongRepositoryMock) GetSectionTypes(tunings *[]model.SongSectionType, userID uuid.UUID) error {
-	args := s.Called(tunings, userID)
+func (s *SongRepositoryMock) GetSectionTypes(sectionTypes *[]model.SongSectionType, userID uuid.UUID) error {
+	args := s.Called(sectionTypes, userID)
 
 	if len(args) > 1 {
-		*tunings = *args.Get(1).(*[]model.SongSectionType)
+		*sectionTypes = *args.Get(1).(*[]model.SongSectionType)
 	}
 
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) CountSectionTypes(count *int64, userID uuid.UUID) error {
-	args := s.Called(count, userID)
-
-	if len(args) > 1 {
-		*count = *args.Get(1).(*int64)
-	}
-
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) CreateSectionType(sectionType *model.SongSectionType) error {
-	args := s.Called(sectionType)
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {
-	args := s.Called(sectionTypes)
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) DeleteSectionType(id uuid.UUID) error {
-	args := s.Called(id)
 	return args.Error(0)
 }
 
