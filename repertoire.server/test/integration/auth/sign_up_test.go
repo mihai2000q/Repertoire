@@ -72,6 +72,7 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 	db.Preload("SongSectionTypes").
 		Preload("GuitarTunings").
 		Preload("BandMemberRoles").
+		Preload("Instruments").
 		Find(&user, model.User{Email: strings.ToLower(request.Email)})
 
 	assert.NotEmpty(t, user.ID)
