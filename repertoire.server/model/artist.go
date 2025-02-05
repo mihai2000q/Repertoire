@@ -39,6 +39,7 @@ type BandMember struct {
 	ID       uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name     string             `gorm:"size:100; not null" json:"name"`
 	Order    uint               `gorm:"not null" json:"-"`
+	Color    *string            `gorm:"size:7" json:"color"`
 	ImageURL *internal.FilePath `json:"imageUrl"`
 
 	ArtistID uuid.UUID        `gorm:"not null" json:"-"`

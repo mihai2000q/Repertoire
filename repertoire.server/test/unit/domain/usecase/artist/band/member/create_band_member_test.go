@@ -221,6 +221,7 @@ func assertCreatedBandMember(
 ) {
 	assert.NotEmpty(t, bandMember.ID)
 	assert.Equal(t, request.Name, bandMember.Name)
+	assert.Equal(t, request.Color, bandMember.Color)
 	assert.Equal(t, request.ArtistID, bandMember.ArtistID)
 	assert.Equal(t, uint(bandMembersLen), bandMember.Order)
 	assert.Empty(t, bandMember.ImageURL)

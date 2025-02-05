@@ -41,6 +41,7 @@ func (u UpdateBandMember) Handle(request requests.UpdateBandMemberRequest) *wrap
 	}
 
 	bandMember.Name = request.Name
+	bandMember.Color = request.Color
 	err = u.artistRepository.UpdateBandMember(&bandMember)
 	if err != nil {
 		return wrapper.InternalServerError(err)

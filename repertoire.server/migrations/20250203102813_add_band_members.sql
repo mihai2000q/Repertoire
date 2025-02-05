@@ -17,6 +17,7 @@ CREATE TABLE public.band_members
     id          uuid   not null primary key,
     name        varchar(100),
     "order"     bigint not null,
+    color       varchar(7),
     image_url   text,
     artist_id   uuid not null constraint fk_artists_band_members references public.artists on delete cascade,
     created_at  timestamp with time zone default CURRENT_TIMESTAMP not null,

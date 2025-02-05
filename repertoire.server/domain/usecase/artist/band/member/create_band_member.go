@@ -42,6 +42,7 @@ func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid
 	member := model.BandMember{
 		ID:       uuid.New(),
 		Name:     request.Name,
+		Color:    request.Color,
 		Order:    uint(len(artist.BandMembers)),
 		ArtistID: request.ArtistID,
 		Roles:    roles,
