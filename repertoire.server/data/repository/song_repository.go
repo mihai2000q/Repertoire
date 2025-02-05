@@ -155,6 +155,8 @@ func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUI
 		Error
 }
 
+// TODO: Isn't this authorization basically? (therefore, it might need to be deleted)
+
 func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error) {
 	var count int64
 	err := s.client.DB.
