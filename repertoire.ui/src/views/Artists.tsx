@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useGetArtistsQuery } from '../state/artistsApi.ts'
+import { useGetArtistsQuery } from '../state/api/artistsApi.ts'
 import {
   ActionIcon,
   Box,
@@ -21,11 +20,22 @@ import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@table
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import UnknownArtistCard from '../components/artists/UnknownArtistCard.tsx'
 import useShowUnknownArtist from '../hooks/useShowUnknownArtist.ts'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import artistsSearchParamsState from '../state/searchParams/ArtistsSearchParamsState.ts'
 
 function Artists() {
-  const [currentPage, setCurrentPage] = useState(1)
-  const { data: artists, isLoading } = useGetArtistsQuery({
-    pageSize: 20,
+  useFixedDocumentTitle('Artists')
+  const [searchParams, setSearchParams] = useSearchParamsState(artistsSearchParamsState)
+  const { currentPage } = searchParams
+
+  const pageSize = 40
+  const {
+    data: artists,
+    isLoading,
+    isFetching
+  } = useGetArtistsQuery({
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
@@ -34,52 +44,61 @@ function Artists() {
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     artists?.totalCount + (showUnknownArtist ? 1 : 0),
-    20,
+    pageSize,
     currentPage
   )
 
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
+
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <AddNewArtistModal opened={openedAddNewArtistModal} onClose={closeAddNewArtistModal} />
-
-      <Group gap={4} align={'center'}>
+      <Group gap={4}>
         <Title order={3} fw={800}>
           Artists
         </Title>
-        <ActionIcon variant={'grey'} size={'lg'} onClick={openAddNewArtistModal}>
+        <ActionIcon
+          aria-label={'new-artist'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewArtistModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'order-artists'} variant={'grey'} size={'lg'}>
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'filter-artists'} variant={'grey'} size={'lg'}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
-      {!isLoading && (
+      {!isFetching && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
           {artists?.totalCount + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 
-      {artists?.totalCount === 0 && <Text mt={'sm'}>There are no artists yet. Try to add one</Text>}
-      <Group gap={'xl'}>
+      {artists?.totalCount === 0 && !showUnknownArtist && (
+        <Text mt={'sm'}>There are no artists yet. Try to add one</Text>
+      )}
+      <Group gap={'xl'} align={'start'}>
         {isLoading && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
-        {artists?.totalCount > 0 && currentPage == totalPages && (
+        {((artists?.totalCount > 0 && currentPage == totalPages) ||
+          (artists?.totalCount === 0 && showUnknownArtist)) && (
           <Card
-            data-testid={'new-artist-card'}
+            aria-label={'new-artist-card'}
             w={125}
             h={125}
             radius={'50%'}
             onClick={openAddNewArtistModal}
-            style={{ alignSelf: 'start' }}
             variant={'add-new'}
           >
             <Center h={'100%'}>
@@ -91,18 +110,20 @@ function Artists() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
-        {!isLoading ? (
+      <Box style={{ alignSelf: 'center' }} pb={'md'}>
+        {!isFetching ? (
           <Pagination
             data-testid={'artists-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (
           <Loader size={25} />
         )}
       </Box>
+
+      <AddNewArtistModal opened={openedAddNewArtistModal} onClose={closeAddNewArtistModal} />
     </Stack>
   )
 }

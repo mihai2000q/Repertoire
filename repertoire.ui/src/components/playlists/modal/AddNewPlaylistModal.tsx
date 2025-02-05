@@ -2,12 +2,12 @@ import { useState } from 'react'
 import {
   useCreatePlaylistMutation,
   useSaveImageToPlaylistMutation
-} from '../../../state/playlistsApi.ts'
+} from '../../../state/api/playlistsApi.ts'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
-import ImageDropzoneWithPreview from '../../image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import { AddNewPlaylistForm, addNewPlaylistValidation } from '../../../validation/playlistsForm.ts'
 import { IconPlaylist } from '@tabler/icons-react'
 
@@ -59,7 +59,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addPlaylist)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview
                 image={image}
                 setImage={setImage}
@@ -68,6 +68,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
                 iconSizes={55}
                 icon={<IconPlaylist size={55} />}
               />
+
               <Stack flex={1}>
                 <TextInput
                   withAsterisk={true}
@@ -77,6 +78,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
                   key={form.key('title')}
                   {...form.getInputProps('title')}
                 />
+
                 <Textarea
                   label="Description"
                   placeholder="The description of the playlist"

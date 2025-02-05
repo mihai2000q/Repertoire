@@ -23,25 +23,56 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
-import { signOut } from '../../state/authSlice.ts'
+import { signOut } from '../../state/slice/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
+import { useDisclosure, useWindowScroll } from '@mantine/hooks'
+import AccountModal from './modal/AccountModal.tsx'
+import { useNavigate } from 'react-router-dom'
+import useIsDesktop from '../../hooks/useIsDesktop.ts'
+import CustomIconArrowLeft from '../@ui/icons/CustomIconArrowLeft.tsx'
+import CustomIconArrowRight from '../@ui/icons/CustomIconArrowRight.tsx'
+import SettingsModal from './modal/SettingsModal.tsx'
 
 function Topbar(): ReactElement {
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const isDesktop = useIsDesktop()
+  const [scrollPosition] = useWindowScroll()
 
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
   })
+
+  function handleGoBack() {
+    navigate(-1)
+  }
+
+  function handleGoForward() {
+    navigate(1)
+  }
+
+  const [openedAccount, { open: openAccount, close: closeAccount }] = useDisclosure(false)
+  const [openedSettings, { open: openSettings, close: closeSettings }] = useDisclosure(false)
 
   function handleSignOut() {
     dispatch(signOut())
   }
 
   return (
-    <AppShell.Header px={'md'} withBorder={false} top={'unset'}>
-      <Group align={'center'} h={'100%'} gap={0}>
+    <AppShell.Header
+      px={'md'}
+      withBorder={false}
+      top={'unset'}
+      style={(theme) => ({
+        transition: '0.35s',
+        ...(scrollPosition.y !== 0 && { boxShadow: theme.shadows.md })
+      })}
+    >
+      <Group h={'100%'} gap={0}>
         <Autocomplete
+          role={'searchbox'}
+          aria-label={'topbar-search'}
           placeholder="Search"
           leftSection={<IconSearch size={16} stroke={2} />}
           data={[]}
@@ -62,6 +93,32 @@ function Topbar(): ReactElement {
           })}
         />
 
+        {isDesktop && (
+          <Group gap={0} ml={'xs'}>
+            <ActionIcon
+              aria-label={'back-button'}
+              size={'lg'}
+              variant={'grey'}
+              radius={'50%'}
+              disabled={window.history.state?.idx < 1}
+              onClick={handleGoBack}
+            >
+              <CustomIconArrowLeft />
+            </ActionIcon>
+
+            <ActionIcon
+              aria-label={'forward-button'}
+              size={'lg'}
+              variant={'grey'}
+              radius={'50%'}
+              disabled={window.history.state?.idx >= window.history.length - 1}
+              onClick={handleGoForward}
+            >
+              <CustomIconArrowRight />
+            </ActionIcon>
+          </Group>
+        )}
+
         <Space flex={1} />
 
         <ActionIcon
@@ -69,12 +126,11 @@ function Topbar(): ReactElement {
           size={'lg'}
           sx={(theme) => ({
             borderRadius: '50%',
-            transition: '0.175s',
             color: theme.colors.gray[6],
             '&:hover': {
               boxShadow: theme.shadows.sm,
-              backgroundColor: theme.colors.cyan[0],
-              color: theme.colors.cyan[6]
+              backgroundColor: theme.colors.primary[0],
+              color: theme.colors.primary[6]
             }
           })}
         >
@@ -88,16 +144,19 @@ function Topbar(): ReactElement {
             <Menu.Target>
               <UnstyledButton
                 p={'4px'}
-                data-testid={'user-button'}
+                aria-label={'user'}
                 sx={(theme) => ({
                   borderRadius: '16px',
                   cursor: 'pointer',
-                  transition: '0.175s',
+                  transition: '0.175s all, transform 200ms ease-in-out',
                   color: theme.colors.gray[7],
                   '&:hover': {
                     boxShadow: theme.shadows.sm,
                     color: theme.colors.gray[8],
                     backgroundColor: alpha(theme.colors.gray[1], 0.7)
+                  },
+                  '&:active': {
+                    transform: 'scale(0.85)'
                   }
                 })}
               >
@@ -122,13 +181,19 @@ function Topbar(): ReactElement {
 
               <Menu.Divider />
 
-              <Menu.Item leftSection={<IconUser size={14} />}>Account</Menu.Item>
-              <Menu.Item leftSection={<IconSettings size={14} />}>Settings</Menu.Item>
-
+              <Menu.Item leftSection={<IconUser size={14} />} onClick={openAccount}>
+                Account
+              </Menu.Item>
+              <Menu.Item leftSection={<IconSettings size={14} />} onClick={openSettings}>
+                Settings
+              </Menu.Item>
               <Menu.Item leftSection={<IconLogout2 size={14} />} onClick={handleSignOut}>
                 Sign Out
               </Menu.Item>
             </Menu.Dropdown>
+
+            <AccountModal opened={openedAccount} onClose={closeAccount} user={user} />
+            <SettingsModal opened={openedSettings} onClose={closeSettings} user={user} />
           </Menu>
         )}
       </Group>

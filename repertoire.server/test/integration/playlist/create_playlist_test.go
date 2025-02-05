@@ -34,8 +34,8 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
@@ -45,7 +45,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(user).
-				POST(w, "/api/playlists", tt.request)
+				POST(w, "/api/playlists", test.request)
 
 			// then
 			var response struct{ ID uuid.UUID }
@@ -53,7 +53,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
-			assertCreatedPlaylist(t, tt.request, response.ID, user.ID)
+			assertCreatedPlaylist(t, test.request, response.ID, user.ID)
 		})
 	}
 }

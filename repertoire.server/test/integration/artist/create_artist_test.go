@@ -22,7 +22,8 @@ func TestCreateArtist_WhenSuccessful_ShouldCreateArtist(t *testing.T) {
 	user := artistData.Users[0]
 
 	request := requests.CreateArtistRequest{
-		Name: "New Artist",
+		Name:   "New Artist",
+		IsBand: true,
 	}
 
 	// when
@@ -47,6 +48,7 @@ func assertCreatedArtist(t *testing.T, request requests.CreateArtistRequest, art
 	db.Find(&artist, artistID)
 
 	assert.Equal(t, request.Name, artist.Name)
+	assert.Equal(t, request.IsBand, artist.IsBand)
 	assert.Nil(t, artist.ImageURL)
 	assert.Equal(t, userID, artist.UserID)
 }

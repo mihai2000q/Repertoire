@@ -1,12 +1,20 @@
 import Playlist from '../../../types/models/Playlist.ts'
 import { Button, LoadingOverlay, Modal, Stack, Textarea, TextInput, Tooltip } from '@mantine/core'
-import { useUpdatePlaylistMutation } from '../../../state/playlistsApi.ts'
-import { useState } from 'react'
+import {
+  useDeleteImageFromPlaylistMutation,
+  useSaveImageToPlaylistMutation,
+  useUpdatePlaylistMutation
+} from '../../../state/api/playlistsApi.ts'
+import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import {
   EditPlaylistHeaderForm,
   editPlaylistHeaderValidation
 } from '../../../validation/playlistsForm.ts'
+import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import { useDidUpdate } from '@mantine/hooks'
+import { toast } from 'react-toastify'
+import { FileWithPath } from '@mantine/dropzone'
 
 interface EditPlaylistHeaderModalProps {
   playlist: Playlist
@@ -15,7 +23,11 @@ interface EditPlaylistHeaderModalProps {
 }
 
 function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHeaderModalProps) {
-  const [updatePlaylistMutation, { isLoading }] = useUpdatePlaylistMutation()
+  const [updatePlaylistMutation, { isLoading: isUpdateLoading }] = useUpdatePlaylistMutation()
+  const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToPlaylistMutation()
+  const [deleteImageMutation, { isLoading: isDeleteImageLoading }] =
+    useDeleteImageFromPlaylistMutation()
+  const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
   const [hasChanged, setHasChanged] = useState(false)
 
@@ -23,35 +35,62 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     mode: 'uncontrolled',
     initialValues: {
       title: playlist.title,
-      description: playlist.description
+      description: playlist.description,
+      image: playlist.imageUrl
     } as EditPlaylistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
     validate: zodResolver(editPlaylistHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(values.title !== playlist.title || values.description !== playlist.description)
+      setHasChanged(
+        values.title !== playlist.title ||
+          values.description !== playlist.description ||
+          values.image !== playlist.imageUrl
+      )
     }
   })
 
-  async function updatePlaylist({ title, description }: EditPlaylistHeaderForm) {
+  const [image, setImage] = useState<string | FileWithPath>(playlist.imageUrl)
+  useEffect(() => form.setFieldValue('image', image), [image])
+  useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
+
+  async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
+    title = title.trim()
+
     await updatePlaylistMutation({
-      ...playlist,
       id: playlist.id,
       title: title,
       description: description
     }).unwrap()
 
+    if (image !== null && typeof image !== 'string') {
+      await saveImageMutation({
+        id: playlist.id,
+        image: image
+      })
+    } else if (image === null && playlist.imageUrl) {
+      await deleteImageMutation(playlist.id)
+    }
+
+    toast.info('Playlist updated!')
     onClose()
+    setHasChanged(false)
   }
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Playlist Header'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <form onSubmit={form.onSubmit(updatePlaylist)}>
           <Stack>
+            <LargeImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              defaultValue={playlist.imageUrl}
+            />
+
             <TextInput
               withAsterisk={true}
               maxLength={100}

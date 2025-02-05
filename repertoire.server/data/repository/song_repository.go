@@ -1,12 +1,10 @@
 package repository
 
 import (
-	"repertoire/server/data/database"
-	"repertoire/server/model"
-	"time"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"repertoire/server/data/database"
+	"repertoire/server/model"
 )
 
 type SongRepository interface {
@@ -26,9 +24,9 @@ type SongRepository interface {
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
+	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
 	Update(song *model.Song) error
-	UpdateLastTimePlayed(songID uuid.UUID, lastTimePlayed time.Time) error
 	UpdateAll(songs *[]model.Song) error
 	UpdateWithAssociations(song *model.Song) error
 	UpdateAllWithAssociations(songs *[]model.Song) error
@@ -92,16 +90,49 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 
 func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
+		Joins("GuitarTuning").
+		Joins("Artist").
+		Joins("Album").
+		Preload("Artist.BandMembers").
+		Preload("Artist.BandMembers.Roles").
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_sections.order")
 		}).
 		Preload("Sections.SongSectionType").
-		Preload("Playlists").
+		Preload("Sections.BandMember").
+		Preload("Sections.BandMember.Roles").
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetAllByUser(
+	songs *[]model.Song,
+	userID uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+	orderBy []string,
+	searchBy []string,
+) error {
+	tx := s.client.DB.Model(&model.Song{}).
+		Preload("Sections").
+		Preload("Sections.SongSectionType").
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
-		Find(&song, model.Song{ID: id}).
-		Error
+		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
+		Where(model.Song{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	tx = database.OrderBy(tx, orderBy)
+	tx = database.Paginate(tx, currentPage, pageSize)
+	return tx.Find(&songs).Error
+}
+
+func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
+	tx := s.client.DB.Model(&model.Song{}).
+		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id").
+		Where(model.Song{UserID: userID})
+	tx = database.SearchBy(tx, searchBy)
+	return tx.Count(count).Error
 }
 
 func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error {
@@ -124,35 +155,17 @@ func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUI
 		Error
 }
 
-func (s songRepository) GetAllByUser(
-	songs *[]model.Song,
-	userID uuid.UUID,
-	currentPage *int,
-	pageSize *int,
-	orderBy []string,
-	searchBy []string,
-) error {
-	tx := s.client.DB.Model(&model.Song{}).
-		Preload("Sections").
-		Preload("Sections.SongSectionType").
-		Preload("Playlists").
-		Joins("GuitarTuning").
-		Joins("Artist").
-		Joins("Album").
-		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
-		Where(model.Song{UserID: userID})
-	tx = database.SearchBy(tx, searchBy)
-	tx = database.OrderBy(tx, orderBy)
-	tx = database.Paginate(tx, currentPage, pageSize)
-	return tx.Find(&songs).Error
-}
-
-func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
-	tx := s.client.DB.Model(&model.Song{}).
-		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id").
-		Where(model.Song{UserID: userID})
-	tx = database.SearchBy(tx, searchBy)
-	return tx.Count(count).Error
+func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error) {
+	var count int64
+	err := s.client.DB.
+		Model(&model.Song{}).
+		Joins("JOIN artists ON artists.id = songs.artist_id").
+		Joins("JOIN band_members ON artists.id = band_members.artist_id").
+		Where("songs.id = ?", songID).
+		Where("band_members.id = ?", bandMemberID).
+		Count(&count).
+		Error
+	return count != 0, err
 }
 
 func (s songRepository) Create(song *model.Song) error {
@@ -161,13 +174,6 @@ func (s songRepository) Create(song *model.Song) error {
 
 func (s songRepository) Update(song *model.Song) error {
 	return s.client.DB.Save(&song).Error
-}
-
-func (s songRepository) UpdateLastTimePlayed(songID uuid.UUID, lastTimePlayed time.Time) error {
-	return s.client.DB.Model(&model.Song{}).
-		Where("id = ?", songID).
-		Update("last_time_played", lastTimePlayed).
-		Error
 }
 
 func (s songRepository) UpdateAll(songs *[]model.Song) error {

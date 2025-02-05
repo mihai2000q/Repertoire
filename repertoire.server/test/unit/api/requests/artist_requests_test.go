@@ -104,7 +104,8 @@ func TestValidateCreateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	_uut := validation.NewValidator(nil)
 
 	request := requests.CreateArtistRequest{
-		Name: validArtistName,
+		Name:   validArtistName,
+		IsBand: true,
 	}
 
 	// when
@@ -266,19 +267,39 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 }
 
 func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.UpdateArtistRequest{
-		ID:   uuid.New(),
-		Name: validArtistName,
+	tests := []struct {
+		name    string
+		request requests.UpdateArtistRequest
+	}{
+		{
+			"Minimal",
+			requests.UpdateArtistRequest{
+				ID:   uuid.New(),
+				Name: validArtistName,
+			},
+		},
+		{
+			"Maximal",
+			requests.UpdateArtistRequest{
+				ID:     uuid.New(),
+				Name:   validArtistName,
+				IsBand: true,
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -433,6 +454,511 @@ func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRet
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveSongsFromArtistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateDeleteArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.DeleteArtistRequest
+	}{
+		{
+			"Minimal",
+			requests.DeleteArtistRequest{ID: uuid.New()},
+		},
+		{
+			"Maximal",
+			requests.DeleteArtistRequest{
+				ID:         uuid.New(),
+				WithSongs:  true,
+				WithAlbums: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateDeleteArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.DeleteArtistRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Cases
+		{
+			"ID is invalid because it is required",
+			requests.DeleteArtistRequest{ID: uuid.Nil},
+			"ID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "DeleteArtistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+// Band Members
+
+var validBandMemberName = "Backup Vocalist"
+var validBandMemberColor = "#123123"
+
+func TestValidateCreateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.CreateBandMemberRequest
+	}{
+		{
+			"Minimal",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				Color:    &validBandMemberColor,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.CreateBandMemberRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Name Test Cases
+		{
+			"Name is invalid because it's required",
+			requests.CreateBandMemberRequest{
+				Name:     "",
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+			},
+			"Name",
+			"required",
+		},
+		{
+			"Name is invalid because it has too many characters",
+			requests.CreateBandMemberRequest{
+				Name:     strings.Repeat("a", 101),
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+			},
+			"Name",
+			"max",
+		},
+		// Color Test Cases
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{""}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{""}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{"123456"}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{"#12345"}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		// Role IDs Test Cases
+		{
+			"Role IDs is invalid because it must have at least one ID",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{},
+				ArtistID: uuid.New(),
+			},
+			"RoleIDs",
+			"min",
+		},
+		// Artist ID Test Cases
+		{
+			"Artist ID is invalid because it's required",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.Nil,
+			},
+			"ArtistID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "CreateBandMemberRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateUpdateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.UpdateBandMemberRequest{
+		ID:      uuid.New(),
+		Name:    validBandMemberName,
+		RoleIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.UpdateBandMemberRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.UpdateBandMemberRequest{
+				ID:      uuid.Nil,
+				Name:    validBandMemberName,
+				RoleIDs: []uuid.UUID{uuid.New()},
+			},
+			"ID",
+			"required",
+		},
+		// Name Test Cases
+		{
+			"Name is invalid because it's required",
+			requests.UpdateBandMemberRequest{
+				ID:      uuid.New(),
+				Name:    "",
+				RoleIDs: []uuid.UUID{uuid.New()},
+			},
+			"Name",
+			"required",
+		},
+		{
+			"Name is invalid because it has too many characters",
+			requests.UpdateBandMemberRequest{
+				ID:      uuid.New(),
+				Name:    strings.Repeat("a", 101),
+				RoleIDs: []uuid.UUID{uuid.New()},
+			},
+			"Name",
+			"max",
+		},
+		// Role IDs Test Cases
+		{
+			"Role IDs is invalid because it must have at least one ID",
+			requests.UpdateBandMemberRequest{
+				ID:      uuid.New(),
+				Name:    validBandMemberName,
+				RoleIDs: []uuid.UUID{},
+			},
+			"RoleIDs",
+			"min",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "UpdateBandMemberRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateMoveBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.MoveBandMemberRequest{
+		ID:       uuid.New(),
+		OverID:   uuid.New(),
+		ArtistID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateMoveBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.MoveBandMemberRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.MoveBandMemberRequest{
+				ID:       uuid.Nil,
+				OverID:   uuid.New(),
+				ArtistID: uuid.New(),
+			},
+			"ID",
+			"required",
+		},
+		// Over ID Test Cases
+		{
+			"Over ID is invalid because it's required",
+			requests.MoveBandMemberRequest{
+				ID:       uuid.New(),
+				OverID:   uuid.Nil,
+				ArtistID: uuid.New(),
+			},
+			"OverID",
+			"required",
+		},
+		// Artist ID Test Cases
+		{
+			"Artist ID is invalid because it's required",
+			requests.MoveBandMemberRequest{
+				ID:       uuid.New(),
+				OverID:   uuid.New(),
+				ArtistID: uuid.Nil,
+			},
+			"ArtistID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "MoveBandMemberRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+// Band Member Roles
+
+var validBandMemberRole = "Backup Vocalist"
+
+func TestValidateCreateBandMemberRoleRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.CreateBandMemberRoleRequest{
+		Name: validBandMemberRole,
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateCreateBandMemberRoleRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.CreateBandMemberRoleRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Name Test Cases
+		{
+			"Name is invalid because it's required",
+			requests.CreateBandMemberRoleRequest{Name: ""},
+			"Name",
+			"required",
+		},
+		{
+			"Name is invalid because it has too many characters",
+			requests.CreateBandMemberRoleRequest{Name: strings.Repeat("a", 25)},
+			"Name",
+			"max",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "CreateBandMemberRoleRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateMoveBandMemberRoleRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.MoveBandMemberRoleRequest{
+		ID:     uuid.New(),
+		OverID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateMoveBandMemberRoleRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.MoveBandMemberRoleRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.MoveBandMemberRoleRequest{
+				ID:     uuid.Nil,
+				OverID: uuid.New(),
+			},
+			"ID",
+			"required",
+		},
+		// Over ID Test Cases
+		{
+			"Over ID is invalid because it's required",
+			requests.MoveBandMemberRoleRequest{
+				ID:     uuid.New(),
+				OverID: uuid.Nil,
+			},
+			"OverID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "MoveBandMemberRoleRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})

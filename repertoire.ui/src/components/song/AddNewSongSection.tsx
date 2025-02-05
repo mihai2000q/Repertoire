@@ -1,8 +1,9 @@
-import { useCreateSongSectionMutation, useGetSongSectionTypesQuery } from '../../state/songsApi.ts'
-import { Button, Collapse, ComboboxItem, Group, Select, TextInput } from '@mantine/core'
+import { useCreateSongSectionMutation } from '../../state/api/songsApi.ts'
+import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
+import { useDidUpdate, useFocusTrap, useInputState, useScrollIntoView } from '@mantine/hooks'
 import { toast } from 'react-toastify'
+import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
 
 interface AddNewSongSectionProps {
   songId: string
@@ -11,14 +12,9 @@ interface AddNewSongSectionProps {
 }
 
 function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) {
-  const [createSongSectionMutation, { isLoading: isCreateSongSectionLoading }] =
-    useCreateSongSectionMutation()
+  const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
 
-  const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
-  const songSectionTypes = songSectionTypesData?.map((type) => ({
-    value: type.id,
-    label: type.name
-  }))
+  const nameInputRef = useFocusTrap(opened)
 
   const [name, setName] = useInputState('')
   const [nameError, setNameError] = useState(false)
@@ -33,20 +29,30 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
     setTypeError(false)
   }, [opened])
 
-  const nameInputRef = useFocusTrap(opened)
+  const { scrollIntoView, targetRef: scrollIntoViewRef } = useScrollIntoView({
+    offset: 20
+  })
+
+  function handleOnTransitionEnd() {
+    if (opened) scrollIntoView({ alignment: 'end' })
+  }
 
   async function addSection() {
     if (!type || name.trim().length === 0) {
-      setTypeError(true)
-      setNameError(true)
+      setTypeError(!type)
+      setNameError(name.trim().length === 0)
       return
     }
 
     const nameTrimmed = name.trim()
 
-    await createSongSectionMutation({ typeId: type.value, name: nameTrimmed, songId }).unwrap()
+    await createSongSectionMutation({
+      typeId: type.value,
+      name: nameTrimmed,
+      songId: songId
+    }).unwrap()
 
-    toast.success(name + ' added!')
+    toast.success(nameTrimmed + ' added!')
 
     onClose()
     setName('')
@@ -54,30 +60,28 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
   }
 
   return (
-    <Collapse in={opened}>
-      <Group align={'center'} gap={'xs'} py={'xs'} px={'md'}>
-        <Select
-          clearable={false}
-          w={95}
-          placeholder={'Type'}
-          data={songSectionTypes}
-          value={type ? type.value : null}
-          onChange={(_, option) => setType(option)}
-          maxDropdownHeight={150}
-          error={typeError}
-        />
+    <Collapse in={opened} onTransitionEnd={handleOnTransitionEnd}>
+      <Group
+        ref={scrollIntoViewRef}
+        gap={'xs'}
+        py={'xs'}
+        px={'md'}
+        aria-label={'add-new-song-section'}
+      >
+        <SongSectionTypeSelect option={type} onChange={setType} error={typeError} />
 
         <TextInput
           ref={nameInputRef}
           flex={1}
           maxLength={30}
+          aria-label={'name'}
           placeholder={'Name of Section'}
           value={name}
           onChange={setName}
           error={nameError}
         />
 
-        <Button disabled={isCreateSongSectionLoading} onClick={addSection}>
+        <Button disabled={isLoading} onClick={addSection}>
           Add
         </Button>
       </Group>

@@ -12,6 +12,7 @@ type StorageFilePathProvider interface {
 	GetUserProfilePicturePath(file *multipart.FileHeader, user model.User) string
 	GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string
 	GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string
+	GetBandMemberImagePath(file *multipart.FileHeader, artist model.BandMember) string
 	GetPlaylistImagePath(file *multipart.FileHeader, playlist model.Playlist) string
 	GetSongImagePath(file *multipart.FileHeader, song model.Song) string
 
@@ -20,11 +21,6 @@ type StorageFilePathProvider interface {
 	GetArtistDirectoryPath(artist model.Artist) string
 	GetPlaylistDirectoryPath(playlist model.Playlist) string
 	GetSongDirectoryPath(song model.Song) string
-
-	HasAlbumFiles(album model.Album) bool
-	HasArtistFiles(artist model.Artist) bool
-	HasPlaylistFiles(playlist model.Playlist) bool
-	HasSongFiles(song model.Song) bool
 }
 
 type storageFilePathProvider struct {
@@ -38,6 +34,7 @@ var profilePicture = "profile_pic"
 var image = "image"
 var albumRootDirectory = "albums"
 var artistRootDirectory = "artists"
+var bandMemberRootDirectory = "members"
 var songRootDirectory = "songs"
 var playlistRootDirectory = "playlists"
 
@@ -59,10 +56,16 @@ func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, a
 
 func (s storageFilePathProvider) GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string {
 	fileExtension := filepath.Ext(file.Filename)
-	return s.builder().
-		WithDirectory(artist.UserID.String()).
-		WithDirectory(artistRootDirectory).
-		WithDirectory(artist.ID.String()).
+	return s.getArtistDirectory(artist).
+		WithFile(image + fileExtension).
+		BuildFilePath()
+}
+
+func (s storageFilePathProvider) GetBandMemberImagePath(file *multipart.FileHeader, member model.BandMember) string {
+	fileExtension := filepath.Ext(file.Filename)
+	return s.getArtistDirectory(member.Artist).
+		WithDirectory(bandMemberRootDirectory).
+		WithDirectory(member.ID.String()).
 		WithFile(image + fileExtension).
 		BuildFilePath()
 }
@@ -125,20 +128,11 @@ func (s storageFilePathProvider) GetSongDirectoryPath(song model.Song) string {
 		BuildDirectoryPath()
 }
 
-func (s storageFilePathProvider) HasAlbumFiles(album model.Album) bool {
-	return album.ImageURL != nil
-}
-
-func (s storageFilePathProvider) HasArtistFiles(artist model.Artist) bool {
-	return artist.ImageURL != nil
-}
-
-func (s storageFilePathProvider) HasPlaylistFiles(playlist model.Playlist) bool {
-	return playlist.ImageURL != nil
-}
-
-func (s storageFilePathProvider) HasSongFiles(song model.Song) bool {
-	return song.ImageURL != nil
+func (s storageFilePathProvider) getArtistDirectory(artist model.Artist) directoryPathBuilder {
+	return s.builder().
+		WithDirectory(artist.UserID.String()).
+		WithDirectory(artistRootDirectory).
+		WithDirectory(artist.ID.String())
 }
 
 func (s storageFilePathProvider) builder() directoryPathBuilder {

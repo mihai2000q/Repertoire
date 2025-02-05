@@ -14,6 +14,7 @@ import (
 )
 
 type SongService interface {
+	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -31,6 +32,7 @@ type SongService interface {
 	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
 	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
+	UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
 
 	CreateSectionType(request requests.CreateSongSectionTypeRequest, token string) *wrapper.ErrorCode
 	DeleteSectionType(id uuid.UUID, token string) *wrapper.ErrorCode
@@ -39,23 +41,25 @@ type SongService interface {
 }
 
 type songService struct {
-	createSong          song.CreateSong
-	deleteImageFromSong song.DeleteImageFromSong
-	deleteSong          song.DeleteSong
-	getAllSongs         song.GetAllSongs
-	getSong             song.GetSong
-	saveImageToSong     song.SaveImageToSong
-	updateSong          song.UpdateSong
+	addPerfectSongRehearsal song.AddPerfectSongRehearsal
+	createSong              song.CreateSong
+	deleteImageFromSong     song.DeleteImageFromSong
+	deleteSong              song.DeleteSong
+	getAllSongs             song.GetAllSongs
+	getSong                 song.GetSong
+	saveImageToSong         song.SaveImageToSong
+	updateSong              song.UpdateSong
 
 	createGuitarTuning tuning.CreateGuitarTuning
 	deleteGuitarTuning tuning.DeleteGuitarTuning
 	getGuitarTunings   tuning.GetGuitarTunings
 	moveGuitarTuning   tuning.MoveGuitarTuning
 
-	createSongSection section.CreateSongSection
-	deleteSongSection section.DeleteSongSection
-	moveSongSection   section.MoveSongSection
-	updateSongSection section.UpdateSongSection
+	createSongSection             section.CreateSongSection
+	deleteSongSection             section.DeleteSongSection
+	moveSongSection               section.MoveSongSection
+	updateSongSection             section.UpdateSongSection
+	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences
 
 	createSongSectionType types.CreateSongSectionType
 	deleteSongSectionType types.DeleteSongSectionType
@@ -64,6 +68,7 @@ type songService struct {
 }
 
 func NewSongService(
+	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
 	deleteSong song.DeleteSong,
@@ -81,6 +86,7 @@ func NewSongService(
 	deleteSongSection section.DeleteSongSection,
 	moveSongSection section.MoveSongSection,
 	updateSongSection section.UpdateSongSection,
+	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
 
 	createSongSectionType types.CreateSongSectionType,
 	deleteSongSectionType types.DeleteSongSectionType,
@@ -88,29 +94,35 @@ func NewSongService(
 	moveSongSectionType types.MoveSongSectionType,
 ) SongService {
 	return &songService{
-		createSong:          createSong,
-		deleteImageFromSong: deleteImageFromSong,
-		deleteSong:          deleteSong,
-		getAllSongs:         getAllSongs,
-		getSong:             getSong,
-		saveImageToSong:     saveImageToSong,
-		updateSong:          updateSong,
+		addPerfectSongRehearsal: addPerfectSongRehearsal,
+		createSong:              createSong,
+		deleteImageFromSong:     deleteImageFromSong,
+		deleteSong:              deleteSong,
+		getAllSongs:             getAllSongs,
+		getSong:                 getSong,
+		saveImageToSong:         saveImageToSong,
+		updateSong:              updateSong,
 
 		createGuitarTuning: createGuitarTuning,
 		deleteGuitarTuning: deleteGuitarTuning,
 		getGuitarTunings:   getGuitarTunings,
 		moveGuitarTuning:   moveGuitarTuning,
 
-		createSongSection: createSongSection,
-		deleteSongSection: deleteSongSection,
-		moveSongSection:   moveSongSection,
-		updateSongSection: updateSongSection,
+		createSongSection:             createSongSection,
+		deleteSongSection:             deleteSongSection,
+		moveSongSection:               moveSongSection,
+		updateSongSection:             updateSongSection,
+		updateSongSectionsOccurrences: updateSongSectionsOccurrences,
 
 		createSongSectionType: createSongSectionType,
 		deleteSongSectionType: deleteSongSectionType,
 		getSongSectionTypes:   getSongSectionTypes,
 		moveSongSectionType:   moveSongSectionType,
 	}
+}
+
+func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
+	return s.addPerfectSongRehearsal.Handle(request)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
@@ -175,6 +187,10 @@ func (s *songService) MoveSection(request requests.MoveSongSectionRequest) *wrap
 
 func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
 	return s.updateSongSection.Handle(request)
+}
+
+func (s *songService) UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode {
+	return s.updateSongSectionsOccurrences.Handle(request)
 }
 
 // Section - Types

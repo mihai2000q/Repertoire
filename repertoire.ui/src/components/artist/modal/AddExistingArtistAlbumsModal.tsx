@@ -13,13 +13,13 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedState, useListState } from '@mantine/hooks'
+import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useAddAlbumsToArtistMutation } from '../../../state/artistsApi.ts'
-import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
-import { IconSearch } from '@tabler/icons-react'
+import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
+import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
+import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import {MouseEvent, useEffect} from 'react'
+import { MouseEvent, useEffect } from 'react'
 
 interface AddExistingArtistAlbumsModalProps {
   opened: boolean
@@ -27,17 +27,26 @@ interface AddExistingArtistAlbumsModalProps {
   artistId: string
 }
 
-function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExistingArtistAlbumsModalProps) {
-  const [searchValue, setSearchValue] = useDebouncedState('', 200)
+function AddExistingArtistAlbumsModal({
+  opened,
+  onClose,
+  artistId
+}: AddExistingArtistAlbumsModalProps) {
+  const [search, setSearch] = useInputState('')
+  const [searchValue] = useDebouncedValue(search, 200)
 
-  const { data: albums, isLoading: albumsIsLoading } = useGetAlbumsQuery({
+  const {
+    data: albums,
+    isLoading: albumsIsLoading,
+    isFetching: albumsIsFetching
+  } = useGetAlbumsQuery({
     currentPage: 1,
     pageSize: 20,
     orderBy: ['title asc'],
-    searchBy:
-      searchValue.trim() !== ''
-        ? ['artist_id IS NULL', `title ~* '${searchValue}'`]
-        : ['artist_id IS NULL']
+    searchBy: [
+      'artist_id IS NULL',
+      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+    ]
   })
 
   const [addAlbumMutation, { isLoading: addAlbumIsLoading }] = useAddAlbumsToArtistMutation()
@@ -45,9 +54,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExisting
   const [albumIds, albumIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    albumIdsHandlers.filter(albumId =>
-      albums.models.some(album => album.id === albumId)
-    )
+    albumIdsHandlers.filter((albumId) => albums.models.some((album) => album.id === albumId))
   }, [searchValue, albums])
 
   function checkAllAlbums(check: boolean) {
@@ -76,7 +83,7 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExisting
     toast.success(`Albums added to artist!`)
     onClose()
     albumIdsHandlers.setState([])
-    setSearchValue('')
+    setSearch('')
   }
 
   return (
@@ -87,65 +94,100 @@ function AddExistingArtistAlbumsModal({ opened, onClose, artistId }: AddExisting
       styles={{ body: { padding: 0 } }}
     >
       <Modal.Body p={0} pos={'relative'}>
-        <LoadingOverlay visible={addAlbumIsLoading} />
+        <LoadingOverlay visible={addAlbumIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
-          <Text fw={500} fz={'lg'}>
-            Choose albums
-          </Text>
+          <Group gap={4} align={'start'}>
+            <Text fw={500} ta={'center'} fz={'lg'}>
+              Choose albums
+            </Text>
+            <Tooltip
+              w={230}
+              multiline
+              ta={'center'}
+              label={'All songs related to the added album will be added to the artist too'}
+            >
+              <Box c={'primary.8'}>
+                <IconInfoCircleFilled size={15} aria-label={'info-icon'} />
+              </Box>
+            </Tooltip>
+          </Group>
+
           <TextInput
             w={250}
+            role={'searchbox'}
+            aria-label={'search'}
             leftSection={<IconSearch size={15} />}
             placeholder={'Search by title'}
             disabled={albumsIsLoading}
-            defaultValue={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            value={search}
+            onChange={setSearch}
           />
+
           {albums?.totalCount === 0 && <Text>There are no albums without artist</Text>}
           {albums?.totalCount > 0 && (
             <Group w={'100%'} px={'xl'}>
               <Checkbox
+                aria-label={
+                  albumIds.length === albums.models.length ? 'deselect-all' : 'select-all'
+                }
                 checked={albumIds.length === albums.models.length}
                 onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
-                disabled={albumsIsLoading}
               />
               <Text>{albumIds.length === albums.models.length ? 'Deselect' : 'Select'} All</Text>
             </Group>
           )}
+
           <Stack w={'100%'} gap={0} style={{ overflow: 'auto', maxHeight: '50vh' }}>
-            {albumsIsLoading
-              ? Array.from(Array(5)).map((_, i) => (
+            <LoadingOverlay
+              data-testid={'loading-overlay-fetching'}
+              visible={!albumsIsLoading && albumsIsFetching}
+            />
+            {albumsIsLoading ? (
+              <Box data-testid={'albums-loader'}>
+                {Array.from(Array(5)).map((_, i) => (
                   <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
                     <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
                     <Skeleton width={37} height={37} radius={'md'} />
                     <Skeleton width={160} height={18} />
                   </Group>
-                ))
-              : albums.models.map((album) => (
-                  <Group
-                    key={album.id}
-                    align={'center'}
-                    sx={(theme) => ({
-                      transition: '0.3s',
-                      '&:hover': {
-                        boxShadow: theme.shadows.xl,
-                        backgroundColor: alpha(theme.colors.cyan[0], 0.15)
-                      }
-                    })}
-                    w={'100%'}
-                    px={'xl'}
-                    py={'xs'}
-                  >
-                    <Checkbox
-                      checked={albumIds.includes(album.id)}
-                      onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
-                      pr={'sm'}
-                    />
-                    <Avatar radius={'md'} src={album.imageUrl ?? albumPlaceholder} />
-                    <Text fw={500}>{album.title}</Text>
-                  </Group>
                 ))}
+              </Box>
+            ) : (
+              albums.models.map((album) => (
+                <Group
+                  key={album.id}
+                  aria-label={`album-${album.title}`}
+                  aria-selected={albumIds.some((id) => id === album.id)}
+                  sx={(theme) => ({
+                    transition: '0.3s',
+                    '&:hover': {
+                      boxShadow: theme.shadows.xl,
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
+                    }
+                  })}
+                  w={'100%'}
+                  wrap={'nowrap'}
+                  px={'xl'}
+                  py={'xs'}
+                >
+                  <Checkbox
+                    aria-label={album.title}
+                    checked={albumIds.includes(album.id)}
+                    onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
+                    pr={'sm'}
+                  />
+                  <Avatar
+                    radius={'md'}
+                    src={album.imageUrl ?? albumPlaceholder}
+                    alt={album.title}
+                  />
+                  <Text fw={500} lineClamp={2}>{album.title}</Text>
+                </Group>
+              ))
+            )}
           </Stack>
+
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={albumIds.length > 0} label="Select albums">
               <Button data-disabled={albumIds.length === 0} onClick={addAlbums}>

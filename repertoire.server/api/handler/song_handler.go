@@ -90,6 +90,23 @@ func (s SongHandler) Create(c *gin.Context) {
 	})
 }
 
+func (s SongHandler) AddPerfectRehearsal(c *gin.Context) {
+	var request requests.AddPerfectSongRehearsalRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.AddPerfectRehearsal(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "perfect rehearsal has been added successfully!")
+}
+
 func (s SongHandler) Update(c *gin.Context) {
 	var request requests.UpdateSongRequest
 	errorCode := s.BindAndValidate(c, &request)
@@ -212,7 +229,7 @@ func (s SongHandler) MoveGuitarTuning(c *gin.Context) {
 		return
 	}
 
-	s.SendMessage(c, "guitar tuning has been created successfully!")
+	s.SendMessage(c, "guitar tuning has been moved successfully!")
 }
 
 func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {
@@ -267,6 +284,23 @@ func (s SongHandler) UpdateSection(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "song section has been updated successfully!")
+}
+
+func (s SongHandler) UpdateSectionsOccurrences(c *gin.Context) {
+	var request requests.UpdateSongSectionsOccurrencesRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.UpdateSectionsOccurrences(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song sections' occurrences have been updated successfully!")
 }
 
 func (s SongHandler) MoveSection(c *gin.Context) {

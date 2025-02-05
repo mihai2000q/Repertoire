@@ -3,7 +3,9 @@ package album
 import (
 	"errors"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -19,13 +21,15 @@ func TestDeleteAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewDeleteAlbum(albumRepository, nil, nil)
 
-	id := uuid.New()
+	request := requests.DeleteAlbumRequest{
+		ID: uuid.New(),
+	}
 
 	internalError := errors.New("internal error")
-	albumRepository.On("Get", new(model.Album), id).Return(internalError).Once()
+	albumRepository.On("Get", new(model.Album), request.ID).Return(internalError).Once()
 
 	// when
-	errCode := _uut.Handle(id)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -40,12 +44,14 @@ func TestDeleteAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewDeleteAlbum(albumRepository, nil, nil)
 
-	id := uuid.New()
+	request := requests.DeleteAlbumRequest{
+		ID: uuid.New(),
+	}
 
-	albumRepository.On("Get", new(model.Album), id).Return(nil).Once()
+	albumRepository.On("Get", new(model.Album), request.ID).Return(nil).Once()
 
 	// when
-	errCode := _uut.Handle(id)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -62,23 +68,59 @@ func TestDeleteAlbum_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t 
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	_uut := album.NewDeleteAlbum(albumRepository, storageService, storageFilePathProvider)
 
-	id := uuid.New()
+	request := requests.DeleteAlbumRequest{
+		ID: uuid.New(),
+	}
 
 	mockAlbum := &model.Album{
-		ID: id,
+		ID: request.ID,
 	}
-	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
-
-	storageFilePathProvider.On("HasAlbumFiles", *mockAlbum).Return(true).Once()
+	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
 
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetAlbumDirectoryPath", *mockAlbum).Return(directoryPath).Once()
 
-	internalError := errors.New("internal error")
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
 
 	// when
-	errCode := _uut.Handle(id)
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, internalError, errCode)
+
+	albumRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+}
+
+func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	storageService := new(service.StorageServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	_uut := album.NewDeleteAlbum(albumRepository, storageService, storageFilePathProvider)
+
+	request := requests.DeleteAlbumRequest{
+		ID: uuid.New(),
+	}
+
+	mockAlbum := &model.Album{
+		ID: request.ID,
+	}
+	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
+
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetAlbumDirectoryPath", *mockAlbum).Return(directoryPath).Once()
+
+	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
+
+	internalError := errors.New("internal error")
+	albumRepository.On("Delete", request.ID).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -90,26 +132,33 @@ func TestDeleteAlbum_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t 
 	storageFilePathProvider.AssertExpectations(t)
 }
 
-func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteAlbum_WhenDeleteAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
+	storageService := new(service.StorageServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := album.NewDeleteAlbum(albumRepository, nil, storageFilePathProvider)
+	_uut := album.NewDeleteAlbum(albumRepository, storageService, storageFilePathProvider)
 
-	id := uuid.New()
+	request := requests.DeleteAlbumRequest{
+		ID:        uuid.New(),
+		WithSongs: true,
+	}
 
 	mockAlbum := &model.Album{
-		ID: id,
+		ID: request.ID,
 	}
-	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
+	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
 
-	storageFilePathProvider.On("HasAlbumFiles", *mockAlbum).Return(false).Once()
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetAlbumDirectoryPath", *mockAlbum).Return(directoryPath).Once()
+
+	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("Delete", id).Return(internalError).Once()
+	albumRepository.On("DeleteWithSongs", request.ID).Return(internalError).Once()
 
 	// when
-	errCode := _uut.Handle(id)
+	errCode := _uut.Handle(request)
 
 	// then
 	assert.NotNil(t, errCode)
@@ -117,22 +166,23 @@ func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *tes
 	assert.Equal(t, internalError, errCode.Error)
 
 	albumRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 }
 
 func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 	tests := []struct {
-		name     string
-		album    model.Album
-		hasFiles bool
+		name      string
+		album     model.Album
+		withSongs bool
 	}{
 		{
-			"Without Files",
+			"Without Songs",
 			model.Album{ID: uuid.New()},
 			false,
 		},
 		{
-			"With Files",
+			"With Songs",
 			model.Album{ID: uuid.New()},
 			true,
 		},
@@ -146,27 +196,30 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 			_uut := album.NewDeleteAlbum(albumRepository, storageService, storageFilePathProvider)
 
-			id := tt.album.ID
-
-			albumRepository.On("Get", new(model.Album), id).Return(nil, &tt.album).Once()
-
-			storageFilePathProvider.On("HasAlbumFiles", tt.album).Return(tt.hasFiles).Once()
-
-			if tt.hasFiles {
-				directoryPath := "some directory path"
-				storageFilePathProvider.On("GetAlbumDirectoryPath", tt.album).
-					Return(directoryPath).
-					Once()
-
-				storageService.On("DeleteDirectory", directoryPath).
-					Return(nil).
-					Once()
+			request := requests.DeleteAlbumRequest{
+				ID:        tt.album.ID,
+				WithSongs: tt.withSongs,
 			}
 
-			albumRepository.On("Delete", id).Return(nil).Once()
+			albumRepository.On("Get", new(model.Album), request.ID).Return(nil, &tt.album).Once()
+
+			directoryPath := "some directory path"
+			storageFilePathProvider.On("GetAlbumDirectoryPath", tt.album).
+				Return(directoryPath).
+				Once()
+
+			storageService.On("DeleteDirectory", directoryPath).
+				Return(nil).
+				Once()
+
+			if tt.withSongs {
+				albumRepository.On("DeleteWithSongs", request.ID).Return(nil).Once()
+			} else {
+				albumRepository.On("Delete", request.ID).Return(nil).Once()
+			}
 
 			// when
-			errCode := _uut.Handle(id)
+			errCode := _uut.Handle(request)
 
 			// then
 			assert.Nil(t, errCode)

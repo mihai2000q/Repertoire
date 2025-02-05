@@ -8,6 +8,7 @@ import (
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -99,8 +100,9 @@ func TestUpdateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := album.NewUpdateAlbum(albumRepository)
 
 	request := requests.UpdateAlbumRequest{
-		ID:    uuid.New(),
-		Title: "New Album",
+		ID:          uuid.New(),
+		Title:       "New Album",
+		ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
 	}
 
 	mockAlbum := &model.Album{

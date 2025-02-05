@@ -1,10 +1,12 @@
 import { ReactElement } from 'react'
+import useFixedDocumentTitle from "../hooks/useFixedDocumentTitle.ts";
 
 function Home(): ReactElement {
+  useFixedDocumentTitle('Home')
+
   return (
     <div>
-      <h1>Home View</h1>
-      <div>This is the home view</div>
+      <h1>Home</h1>
     </div>
   )
 }

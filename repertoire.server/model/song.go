@@ -1,7 +1,6 @@
 package model
 
 import (
-	"math"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"time"
@@ -24,10 +23,9 @@ type Song struct {
 	YoutubeLink    *string            `json:"youtubeLink"`
 	AlbumTrackNo   *uint              `json:"albumTrackNo"`
 	LastTimePlayed *time.Time         `json:"lastTimePlayed"`
-
-	Rehearsals *uint   `gorm:"-" json:"rehearsals"`
-	Confidence *uint   `gorm:"-" json:"confidence"`
-	Progress   *uint64 `gorm:"-" json:"progress"`
+	Rehearsals     float64            `gorm:"not null" json:"rehearsals"`
+	Confidence     float64            `gorm:"not null" json:"confidence"`
+	Progress       float64            `gorm:"not null" json:"progress"`
 
 	AlbumID        *uuid.UUID     `json:"-"`
 	ArtistID       *uuid.UUID     `json:"-"`
@@ -52,32 +50,19 @@ type playlistSongMetadata struct {
 }
 
 func (s *Song) BeforeSave(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.StripNullableURL()
+	s.ImageURL = s.ImageURL.StripURL()
 	return nil
 }
 
 func (s *Song) AfterFind(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.ToNullableFullURL()
-
-	if len(s.Sections) == 0 {
-		return nil
+	s.ImageURL = s.ImageURL.ToFullURL(&s.UpdatedAt)
+	// When Joins instead of Preload, AfterFind Hook is not used
+	if s.Artist != nil {
+		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(&s.Artist.UpdatedAt)
 	}
-
-	rehearsals := uint(0)
-	confidence := uint(0)
-	progress := uint64(0)
-	for _, section := range s.Sections {
-		rehearsals += section.Rehearsals
-		confidence += section.Confidence
-		progress += section.Progress
+	if s.Album != nil {
+		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(&s.Album.UpdatedAt)
 	}
-	rehearsals = uint(math.Round(float64(int(rehearsals) / len(s.Sections))))
-	confidence = uint(math.Round(float64(int(confidence) / len(s.Sections))))
-	progress = uint64(math.Round(float64(int(progress) / len(s.Sections))))
-
-	s.Rehearsals = &rehearsals
-	s.Confidence = &confidence
-	s.Progress = &progress
 
 	return nil
 }
@@ -128,22 +113,26 @@ type InstrumentType struct {
 // Song Sections
 
 type SongSection struct {
-	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name  string    `gorm:"size:30" json:"name"`
-	Order uint      `gorm:"not null" json:"-"`
+	ID          uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name        string    `gorm:"size:30" json:"name"`
+	Order       uint      `gorm:"not null" json:"-"`
+	Occurrences uint      `gorm:"not null" json:"occurrences"`
 
 	Rehearsals      uint   `gorm:"not null" json:"rehearsals"`
 	Confidence      uint   `gorm:"not null; size:100" json:"confidence"`
 	RehearsalsScore uint64 `gorm:"not null" json:"rehearsalsScore"`
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
+	
+	SongID            uuid.UUID  `gorm:"not null" json:"-"`
+	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
+	InstrumentID      *uuid.UUID `json:"-"`
+	BandMemberID      *uuid.UUID `json:"-"`
 
-	SongID            uuid.UUID       `gorm:"not null" json:"-"`
-	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
-	InstrumentID      *uuid.UUID      `json:"-"`
-	Song              Song            `json:"-"`
-	Instrument        Instrument      `json:"instrument"`
-	SongSectionType   SongSectionType `json:"songSectionType"`
+	Song            Song            `json:"-"`
+	SongSectionType SongSectionType `json:"songSectionType"`
+	BandMember      *BandMember     `json:"bandMember"`
+	Instrument      Instrument      `json:"instrument"`
 
 	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
@@ -179,4 +168,4 @@ const (
 
 var DefaultSongSectionConfidence uint = 0
 
-var DefaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}
+var DefaultSongSectionTypes = []string{"Intro", "Verse", "Pre-Chorus", "Chorus", "Interlude", "Bridge", "Breakdown", "Solo", "Riff", "Outro"}

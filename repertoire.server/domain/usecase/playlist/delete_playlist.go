@@ -2,6 +2,7 @@ package playlist
 
 import (
 	"errors"
+	"net/http"
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -40,12 +41,10 @@ func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 
-	if d.storageFilePathProvider.HasPlaylistFiles(playlist) {
-		directoryPath := d.storageFilePathProvider.GetPlaylistDirectoryPath(playlist)
-		err = d.storageService.DeleteDirectory(directoryPath)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
+	directoryPath := d.storageFilePathProvider.GetPlaylistDirectoryPath(playlist)
+	errCode := d.storageService.DeleteDirectory(directoryPath)
+	if errCode != nil && errCode.Code != http.StatusNotFound {
+		return errCode
 	}
 
 	err = d.repository.Delete(id)

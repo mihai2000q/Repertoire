@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
@@ -41,7 +41,7 @@ func TestAddSongToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestAddSongToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
@@ -73,7 +73,7 @@ func TestAddSongToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServe
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestAddSongToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestAddSongsToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)

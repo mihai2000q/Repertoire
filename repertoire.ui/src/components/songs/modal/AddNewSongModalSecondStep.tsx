@@ -1,41 +1,45 @@
 import {
   ActionIcon,
   alpha,
+  Box,
   Button,
   ComboboxItem,
   Group,
   NumberInput,
-  Select,
   Stack,
   Text,
-  TextInput
+  TextInput,
+  Tooltip
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import {
-  IconActivityHeartbeat,
   IconCalendarFilled,
   IconGripVertical,
+  IconInfoCircleFilled,
   IconMinus
 } from '@tabler/icons-react'
-import { useGetSongSectionTypesQuery } from '../../../state/songsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { v4 as uuid } from 'uuid'
 import { UseFormReturnType } from '@mantine/form'
 import { AddNewSongModalSongSection } from './AddNewSongModal.tsx'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { UseListStateHandlers } from '@mantine/hooks'
-import GuitarTuningsSelect from '../../form/select/GuitarTuningsSelect.tsx'
-import DifficultySelect from '../../form/select/DifficultySelect.tsx'
+import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
+import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
+import Album from '../../../types/models/Album.ts'
+import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
+import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 
 interface AddNewSongModalSecondStepProps {
-  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  form: UseFormReturnType<AddNewSongForm>
   sections: AddNewSongModalSongSection[]
   sectionsHandlers: UseListStateHandlers<AddNewSongModalSongSection>
   guitarTuning: ComboboxItem | null
   setGuitarTuning: Dispatch<SetStateAction<ComboboxItem | null>>
   difficulty: ComboboxItem | null
   setDifficulty: Dispatch<SetStateAction<ComboboxItem | null>>
+  album: Album | null
 }
 
 function AddNewSongModalSecondStep({
@@ -45,15 +49,11 @@ function AddNewSongModalSecondStep({
   guitarTuning,
   setGuitarTuning,
   difficulty,
-  setDifficulty
+  setDifficulty,
+  album
 }: AddNewSongModalSecondStepProps) {
-  const { data: songSectionTypesData } = useGetSongSectionTypesQuery()
-  const songSectionTypes = songSectionTypesData?.map((type) => ({
-    value: type.id,
-    label: type.name
-  }))
-
-  const handleAddSection = () => sectionsHandlers.append({ id: uuid(), name: '', type: null })
+  const handleAddSection = () =>
+    sectionsHandlers.append({ id: uuid(), name: '', type: null, errors: [] })
 
   function onSectionsDragEnd({ destination, source }) {
     sectionsHandlers.reorder({ from: source.index, to: destination?.index || 0 })
@@ -61,31 +61,46 @@ function AddNewSongModalSecondStep({
 
   return (
     <Stack>
-      <Group justify={'space-between'} align={'center'}>
-        <GuitarTuningsSelect option={guitarTuning} onChange={setGuitarTuning} />
+      <Group justify={'space-between'}>
+        <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
         <DifficultySelect option={difficulty} onChange={setDifficulty} />
       </Group>
 
-      <Group justify={'space-between'} align={'center'}>
+      <Group justify={'space-between'}>
         <NumberInput
-          flex={1}
+          flex={0.75}
           min={1}
-          leftSection={<IconActivityHeartbeat size={20} />}
+          allowDecimal={false}
+          leftSection={<CustomIconMetronome size={20} />}
           label="Bpm"
           placeholder="Enter Bpm"
           key={form.key('bpm')}
           {...form.getInputProps('bpm')}
         />
 
-        <DatePickerInput
-          flex={1}
-          leftSection={<IconCalendarFilled size={20} />}
-          label={'Release Date'}
-          placeholder={'Choose the release date'}
-          key={form.key('releaseDate')}
-          {...form.getInputProps('releaseDate')}
-        />
+        <Group flex={1} gap={4}>
+          <DatePickerInput
+            flex={1}
+            leftSection={<IconCalendarFilled size={20} />}
+            label={'Release Date'}
+            placeholder={'Choose the release date'}
+            key={form.key('releaseDate')}
+            {...form.getInputProps('releaseDate')}
+          />
+          {album?.releaseDate && (
+            <Box c={'primary.8'} mt={'lg'} ml={4}>
+              <Tooltip
+                multiline
+                w={210}
+                ta={'center'}
+                label={'If the release date is not set, then it will be inherited from the album'}
+              >
+                <IconInfoCircleFilled aria-label={'release-date-info'} size={18} />
+              </Tooltip>
+            </Box>
+          )}
+        </Group>
       </Group>
 
       <Stack gap={4}>
@@ -110,46 +125,65 @@ function AddNewSongModalSecondStep({
                       return (
                         <Group
                           key={section.id}
-                          align={'center'}
                           gap={'xs'}
                           py={'xs'}
                           sx={(theme) => ({
                             transition: '0.25s',
                             borderRadius: '16px',
-                            border: `1px solid ${alpha(theme.colors.cyan[9], 0.33)}`,
+                            border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`,
                             borderWidth: snapshot.isDragging ? '1px' : '0px'
                           })}
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                         >
-                          <ActionIcon variant={'subtle'} size={'lg'} {...provided.dragHandleProps}>
+                          <ActionIcon
+                            aria-label={'drag-handle'}
+                            variant={'subtle'}
+                            size={'lg'}
+                            {...provided.dragHandleProps}
+                          >
                             <IconGripVertical size={20} />
                           </ActionIcon>
 
-                          <Select
-                            w={95}
+                          <SongSectionTypeSelect
                             placeholder={'Type'}
-                            data={songSectionTypes}
-                            value={section.type ? section.type.value : null}
-                            onChange={(_, option) =>
-                              sectionsHandlers.setItem(index, { ...section, type: option })
+                            option={section.type}
+                            onChange={(option) =>
+                              sectionsHandlers.setItem(index, {
+                                ...section,
+                                type: option,
+                                errors: [
+                                  ...section.errors.filter((e) => e.property !== 'type'),
+                                  ...(!option ? [{ property: 'type' }] : [])
+                                ]
+                              })
                             }
-                            maxDropdownHeight={150}
+                            error={section.errors.some((e) => e.property === 'type')}
                           />
 
                           <TextInput
                             flex={1}
                             maxLength={30}
+                            aria-label={'name'}
                             placeholder={'Name of Section'}
                             value={section.name}
                             onChange={(e) =>
-                              sectionsHandlers.setItem(index, { ...section, name: e.target.value })
+                              sectionsHandlers.setItem(index, {
+                                ...section,
+                                name: e.target.value,
+                                errors: [
+                                  ...section.errors.filter((e) => e.property !== 'name'),
+                                  ...(e.target.value.trim() === '' ? [{ property: 'name' }] : [])
+                                ]
+                              })
                             }
+                            error={section.errors.some((e) => e.property === 'name')}
                           />
 
                           <ActionIcon
                             variant={'subtle'}
                             size={'lg'}
+                            aria-label={'remove-section'}
                             onClick={() => sectionsHandlers.remove(index)}
                           >
                             <IconMinus size={20} />

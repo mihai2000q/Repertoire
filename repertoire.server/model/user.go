@@ -22,17 +22,18 @@ type User struct {
 	SongSectionTypes []SongSectionType `json:"-"`
 	InstrumentTypes  []InstrumentType  `json:"-"`
 	GuitarTunings    []GuitarTuning    `json:"-"`
+	BandMemberRoles  []BandMemberRole  `json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
 
 func (u *User) BeforeSave(*gorm.DB) error {
-	u.ProfilePictureURL = u.ProfilePictureURL.StripNullableURL()
+	u.ProfilePictureURL = u.ProfilePictureURL.StripURL()
 	return nil
 }
 
 func (u *User) AfterFind(*gorm.DB) error {
-	u.ProfilePictureURL = u.ProfilePictureURL.ToNullableFullURL()
+	u.ProfilePictureURL = u.ProfilePictureURL.ToFullURL(&u.UpdatedAt)
 	return nil
 }

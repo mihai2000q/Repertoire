@@ -4,8 +4,9 @@ import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewArtistForm, addNewArtistValidation } from '../../../validation/artistsForm.ts'
-import { useCreateArtistMutation, useSaveImageToArtistMutation } from '../../../state/artistsApi.ts'
-import RoundImageDropzoneWithPreview from '../../image/RoundImageDropzoneWithPreview.tsx'
+import { useCreateArtistMutation, useSaveImageToArtistMutation } from '../../../state/api/artistsApi.ts'
+import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
+import { IconUserFilled } from '@tabler/icons-react'
 
 interface AddNewArtistModalProps {
   opened: boolean
@@ -53,8 +54,14 @@ function AddNewArtistModal({ opened, onClose }: AddNewArtistModalProps) {
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addArtist)}>
           <Stack>
-            <Group align={'center'}>
-              <RoundImageDropzoneWithPreview image={image} setImage={setImage} />
+            <Group>
+              <ImageDropzoneWithPreview
+                image={image}
+                setImage={setImage}
+                radius={'50%'}
+                icon={<IconUserFilled size={45} />}
+              />
+
               <TextInput
                 flex={1}
                 withAsterisk={true}

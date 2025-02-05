@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { FileWithPath } from '@mantine/dropzone'
 
 export interface AddNewPlaylistForm {
   title: string
@@ -12,6 +13,7 @@ export const addNewPlaylistValidation = z.object({
 export interface EditPlaylistHeaderForm {
   title: string
   description: string
+  image: string | FileWithPath | null
 }
 
 export const editPlaylistHeaderValidation = z.object({

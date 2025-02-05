@@ -1,5 +1,20 @@
 # Repertoire
 
+![Typescript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Electron](https://img.shields.io/badge/Electron-47848F?style=flat&logo=electron&logoColor=white)
+![React](https://img.shields.io/badge/React-0081A3?style=flat&logo=react&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux-764ABC?style=flat&logo=redux&logoColor=white)
+![Mantine](https://img.shields.io/badge/Mantine-339AF0?style=flat&logo=mantine&logoColor=white)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white)
+![Go Gin](https://img.shields.io/badge/Gin-008ECF?style=flat&logo=gin&logoColor=white)
+![GORM](https://img.shields.io/badge/GORM-38B6FF?style=flat&logo=go&logoColor=white)
+![Goose](https://img.shields.io/badge/Goose-00ADD8?style=flat&logo=duckduckgo&logoColor=white)
+![Postgres](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
+
+![Version](https://img.shields.io/badge/version-0.9.0-1098ad)
+ 
 * [Repertoire](#repertoire)
   * [Abstract](#abstract)
   * [Get Started](#get-started)
@@ -13,6 +28,9 @@
     * [Git Issues](#git-issues)
     * [Git Branches](#git-branches)
     * [Git Commits](#git-commits)
+  * [Deployment](#deployment)
+    * [Dockerized Backend](#dockerized-backend)
+    * [Desktop](#desktop-1)
   * [License](#license)
 
 ## Abstract
@@ -21,7 +39,7 @@
 It is an application intended for beginner musicians to organize their '_repertoire_' (songs, albums, etc.).
 Its features include adding songs, organized in albums and artists.
 It is also possible to add those songs on playlists.
-Songs can be measured how rehearsed they have been, whether they have been recorded or not and so on.
+Songs can be measured how rehearsed they have been, whether they have been recorded or not and other features.
 
 ## Get Started
 
@@ -34,7 +52,7 @@ Otherwise, a full setup on each project has to be made
 (except for Desktop or Web, depending on where you prefer to host the app).
 
 Additionally, if you prefer to run everything in containers and not install GO or Node, 
-you can run the `run-container.sh` script to run all the docker containers.
+you can run the `run-container.sh` script to run all the docker containers and apply the database migrations.
 
 ### Server
 
@@ -101,6 +119,7 @@ The expected labels to use are:
   - **feature** for new features that are added to the application
   - **performance** when the code is being optimized
   - **refactor** when the code is just being cleaned up (interchangeable with **code-quality**)
+  - **styling** when only the style is being affected (usually used for the front end components)
   - **test** if a unit or integration test for the source code is being written
 
 ### Git Branches
@@ -120,6 +139,7 @@ Based on the above label, the branch will have similar prefixes:
 - **feature** for a _feature_ issue
 - **perform** for a _performance_ issue
 - **refactor** for a _refactor_ issue
+- **style** for a _styling_ issue
 - **test** for a _test_ issue
 
 For example, if your ticket's name is "\[Server\] Data - New Repository for Menus"
@@ -142,10 +162,28 @@ Note: if the target of the commit has nothing to do with any layer or screen,
 no worries, just try to be as concise as possible.
 However, if multiple layers or projects are affected, try submitting more smaller commits.
 
+## Deployment
+
+### Dockerized Backend
+
+The deployment is fairly simple. 
+As soon as a pull request from *develop* is pushed onto *master* a CI/CD pipeline will be triggered.
+This Github Action will build and push the server docker image to **Docker Hub**.
+
+Afterwards, the cloud server detects the latest docker images and pulls them.
+
+The _storage_ service is not udnergoing changes so often, 
+so there is not benefit for automating the deploying process.
+
+### Desktop
+
+Another CI/CD pipeline is in charge of deploying a new windows installer of the application.
+It will be included in a new Release on **GitHub**.
+
 ## License
 
 The project is licensed under the [MIT](https://opensource.org/license/mit) license.
 
 ---
 
-**Repertoire** 2024
+**Repertoire**© 2024-2025

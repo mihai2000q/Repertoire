@@ -13,7 +13,14 @@ export default interface Song {
   releaseDate?: string
   difficulty?: Difficulty
   imageUrl?: string
+  lastTimePlayed?: string
+
+  rehearsals: number
+  confidence: number
+  progress: number
+
   albumTrackNo?: number
+
   playlistTrackNo?: number
   playlistCreatedAt?: string
 
@@ -21,12 +28,17 @@ export default interface Song {
   artist?: Artist
   guitarTuning?: GuitarTuning
   sections: SongSection[]
+
+  createdAt: string
+  updatedAt: string
 }
 
 export interface SongSection {
   id: string
   name: string
   rehearsals: number
+  confidence: number
+  progress: number
   songSectionType: SongSectionType
 }
 

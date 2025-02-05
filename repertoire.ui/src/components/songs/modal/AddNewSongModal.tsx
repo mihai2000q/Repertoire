@@ -1,14 +1,14 @@
 import { Button, ComboboxItem, Group, Modal, Space, Stepper, Text } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm.ts'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
 import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
 import AddNewSongModalFinalStep from './AddNewSongModalFinalStep.tsx'
-import { useListState } from '@mantine/hooks'
+import {useDidUpdate, useListState} from '@mantine/hooks'
 import Album from '../../../types/models/Album.ts'
 import Artist from '../../../types/models/Artist.ts'
 
@@ -16,6 +16,7 @@ export interface AddNewSongModalSongSection {
   id: string
   name: string
   type: ComboboxItem | null
+  errors: { property: string }[]
 }
 
 interface AddNewSongModalProps {
@@ -28,7 +29,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
   const isLoading = isCreateSongLoading || isSaveImageLoading
 
-  const [artist, setArtist] = useState<Artist>(null)
+  const [artist, setArtist] = useState<Artist>(undefined)
   const [album, setAlbum] = useState<Album>(null)
 
   const [guitarTuning, setGuitarTuning] = useState<ComboboxItem>(null)
@@ -43,6 +44,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   }
 
   const [isArtistDisabled, setIsArtistDisabled] = useState(false)
+  useDidUpdate(() => setIsArtistDisabled(album !== null), [album])
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -53,9 +55,6 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    onValuesChange: (values) => {
-      setIsArtistDisabled(values.albumTitle?.trim().length > 0)
-    },
     validate: zodResolver(addNewSongValidation),
     enhanceGetInputProps: (payload) => ({
       disabled: isArtistDisabled && payload.field === 'artistName'
@@ -64,7 +63,15 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
 
   const [activeStep, setActiveStep] = useState(0)
   const handleActiveStepChange = (activeStep: ((prevState: number) => number) | number) => {
-    if (form.validate().hasErrors) return
+    const localSections = sections.map((s) => ({
+      ...s,
+      errors: [
+        ...(s.name.trim() === '' ? [{ property: 'name' }] : []),
+        ...(!s.type ? [{ property: 'type' }] : [])
+      ]
+    }))
+    sectionsHandlers.setState(localSections)
+    if (form.validate().hasErrors || localSections.some((s) => s.errors.length > 0)) return
     setActiveStep(activeStep)
   }
   const prevStep = () => handleActiveStepChange((current) => current - 1)
@@ -81,11 +88,11 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
     youtubeLink
   }: AddNewSongForm) {
     title = title.trim()
-    artistName = artistName?.trim() === '' ? null : artistName?.trim()
-    albumTitle = albumTitle?.trim() === '' ? null : albumTitle?.trim()
-    songsterrLink = songsterrLink?.trim() === '' ? null : songsterrLink?.trim()
-    youtubeLink = youtubeLink?.trim() === '' ? null : youtubeLink?.trim()
-    bpm = typeof bpm === 'string' ? null : bpm
+    artistName = artistName?.trim() === '' ? undefined : artistName?.trim()
+    albumTitle = albumTitle?.trim() === '' ? undefined : albumTitle?.trim()
+    songsterrLink = songsterrLink?.trim() === '' ? undefined : songsterrLink?.trim()
+    youtubeLink = youtubeLink?.trim() === '' ? undefined : youtubeLink?.trim()
+    bpm = typeof bpm === 'string' ? undefined : bpm
 
     const res = await createSongMutation({
       title: title,
@@ -95,12 +102,12 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
       releaseDate: releaseDate,
       songsterrLink: songsterrLink,
       youtubeLink: youtubeLink,
-      sections: sections.map((s) => ({ name: s.name, typeId: s.type.value })),
+      sections: sections.map((s) => ({ name: s.name.trim(), typeId: s.type.value })),
       guitarTuningId: guitarTuning?.value,
       albumId: album?.id,
-      artistId: album || albumTitle ? null : artist?.id,
-      artistName: artist ? null : artistName,
-      albumTitle: album ? null : albumTitle
+      artistId: album ? undefined : artist?.id,
+      artistName: artist ? undefined : artistName,
+      albumTitle: album ? undefined : albumTitle
     }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
@@ -152,11 +159,17 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
                 setGuitarTuning={setGuitarTuning}
                 difficulty={difficulty}
                 setDifficulty={setDifficulty}
+                album={album}
               />
             </Stepper.Step>
 
             <Stepper.Step label={'Final Step'} description={'Web & Media'}>
-              <AddNewSongModalFinalStep form={form} image={image} setImage={setImage} />
+              <AddNewSongModalFinalStep
+                form={form}
+                image={image}
+                setImage={setImage}
+                album={album}
+              />
             </Stepper.Step>
           </Stepper>
 

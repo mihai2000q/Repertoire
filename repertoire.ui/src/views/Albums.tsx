@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useGetAlbumsQuery } from '../state/albumsApi.ts'
+import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
 import {
   ActionIcon,
   Box,
@@ -21,11 +20,22 @@ import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabl
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
 import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import albumsSearchParamsState from '../state/searchParams/AlbumsSearchParamsState.ts'
 
 function Albums() {
-  const [currentPage, setCurrentPage] = useState(1)
-  const { data: albums, isLoading } = useGetAlbumsQuery({
-    pageSize: 20,
+  useFixedDocumentTitle('Albums')
+  const [searchParams, setSearchParams] = useSearchParamsState(albumsSearchParamsState)
+  const { currentPage } = searchParams
+
+  const pageSize = 40
+  const {
+    data: albums,
+    isLoading,
+    isFetching
+  } = useGetAlbumsQuery({
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
@@ -34,51 +44,60 @@ function Albums() {
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     albums?.totalCount + (showUnknownAlbum ? 1 : 0),
-    20,
+    pageSize,
     currentPage
   )
 
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
 
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
+
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <AddNewAlbumModal opened={openedAddNewAlbumModal} onClose={closeAddNewAlbumModal} />
-
-      <Group gap={4} align={'center'}>
+      <Group gap={4}>
         <Title order={3} fw={800}>
           Albums
         </Title>
-        <ActionIcon variant={'grey'} size={'lg'} onClick={openAddNewAlbumModal}>
+        <ActionIcon
+          aria-label={'new-album'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={openAddNewAlbumModal}
+        >
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'order-albums'} variant={'grey'} size={'lg'}>
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'filter-albums'} variant={'grey'} size={'lg'}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
-      {!isLoading && (
+      {!isFetching && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} albums out of {albums?.totalCount + (showUnknownAlbum ? 1 : 0)}
         </Text>
       )}
 
-      {albums?.totalCount === 0 && <Text mt={'sm'}>There are no albums yet. Try to add one</Text>}
-      <Group gap={'xl'}>
+      {albums?.totalCount === 0 && !showUnknownAlbum && (
+        <Text mt={'sm'}>There are no albums yet. Try to add one</Text>
+      )}
+      <Group gap={'xl'} align={'start'}>
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
-        {albums?.totalCount > 0 && currentPage == totalPages && (
+        {((albums?.totalCount > 0 && currentPage == totalPages) ||
+          (albums?.totalCount === 0 && showUnknownAlbum)) && (
           <Card
-            data-testid={'new-album-card'}
+            aria-label={'new-album-card'}
             w={150}
             h={150}
             radius={'lg'}
             onClick={openAddNewAlbumModal}
-            style={{ alignSelf: 'start' }}
             variant={'add-new'}
           >
             <Center h={'100%'}>
@@ -90,18 +109,20 @@ function Albums() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
-        {!isLoading ? (
+      <Box style={{ alignSelf: 'center' }} pb={'md'}>
+        {!isFetching ? (
           <Pagination
             data-testid={'albums-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (
           <Loader size={25} />
         )}
       </Box>
+
+      <AddNewAlbumModal opened={openedAddNewAlbumModal} onClose={closeAddNewAlbumModal} />
     </Stack>
   )
 }

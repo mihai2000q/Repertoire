@@ -43,7 +43,9 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	section := songData.Songs[0].Sections[1]
+	// song with sections and previous stats
+	song := songData.Songs[0]
+	section := song.Sections[1]
 
 	// when
 	w := httptest.NewRecorder()
@@ -67,4 +69,11 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 	for i := range sections {
 		assert.Equal(t, uint(i), sections[i].Order)
 	}
+
+	var newSong model.Song
+	db.Find(&song, song.ID)
+
+	assert.LessOrEqual(t, newSong.Confidence, song.Confidence)
+	assert.LessOrEqual(t, newSong.Rehearsals, song.Rehearsals)
+	assert.LessOrEqual(t, newSong.Progress, song.Progress)
 }

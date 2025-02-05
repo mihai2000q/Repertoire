@@ -1,0 +1,76 @@
+name: Deploy 🚀
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy-server:
+    runs-on: ubuntu-latest
+    name: Server 🤖
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Publish Docker Image
+      uses: docker/build-push-action@v6
+      with:
+        context: repertoire.server/
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/repertoire-server:latest
+        build-args: SERVER_PORT=8000
+
+  deploy-desktop:
+    runs-on: windows-latest
+    name: Desktop 🖥️
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.0'
+
+      - name: Extract version from package.json
+        working-directory: repertoire.desktop/
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Setup Environment Variables
+        working-directory: repertoire.desktop/
+        shell: pwsh
+        run: | 
+          Copy-Item .env.prod .env
+          (Get-Content .env) -replace '^VITE_BACKEND_URL=.*', "VITE_BACKEND_URL=${{ secrets.BACKEND_URL }}" | Set-Content .env
+
+      - name: Install UI Dependencies
+        working-directory: repertoire.ui/
+        run: npm ci
+
+      - name: Install Dependencies
+        working-directory: repertoire.desktop/
+        run: npm ci
+
+      - name: Build
+        working-directory: repertoire.desktop/
+        run: npm run build:win
+
+      - name: Create Release and Upload App on Assets
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "repertoire.desktop/dist/*.exe"
+          body: "Release notes for the new version of Repertoire"
+          draft: false
+          name: Release v${{ env.VERSION }}
+          prerelease: false
+          tag: v${{ env.VERSION }}

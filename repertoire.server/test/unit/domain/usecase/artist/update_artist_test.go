@@ -98,13 +98,15 @@ func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := artist.NewUpdateArtist(artistRepository)
 
 	request := requests.UpdateArtistRequest{
-		ID:   uuid.New(),
-		Name: "New Artist",
+		ID:     uuid.New(),
+		Name:   "New Artist",
+		IsBand: false,
 	}
 
 	mockArtist := &model.Artist{
-		ID:   request.ID,
-		Name: "Some Artist",
+		ID:     request.ID,
+		Name:   "Some Artist",
+		IsBand: true,
 	}
 
 	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
@@ -112,6 +114,7 @@ func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Run(func(args mock.Arguments) {
 			newArtist := args.Get(0).(*model.Artist)
 			assert.Equal(t, request.Name, newArtist.Name)
+			assert.Equal(t, request.IsBand, newArtist.IsBand)
 		}).
 		Return(nil).
 		Once()

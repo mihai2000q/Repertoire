@@ -25,5 +25,4 @@ var Module = fx.Options(
 	fx.Provide(database.NewClient),
 	repositories,
 	services,
-	fx.Invoke(func(database.Client) {}),
 )

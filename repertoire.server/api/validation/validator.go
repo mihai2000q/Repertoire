@@ -69,6 +69,11 @@ func registerCustomValidators(validate *validator.Validate) error {
 		return err
 	}
 
+	err = validate.RegisterValidation("isColor", IsColor)
+	if err != nil {
+		return err
+	}
+
 	err = validate.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err

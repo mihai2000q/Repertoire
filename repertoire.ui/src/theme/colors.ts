@@ -1,14 +1,26 @@
+import { DefaultMantineColor, MantineColorsTuple } from '@mantine/core'
+
 export const colors = {
-  deepBlue: [
-    '#eef3ff',
-    '#dce4f5',
-    '#b9c7e2',
-    '#94a8d0',
-    '#748dc1',
-    '#5f7cb8',
-    '#5474b4',
-    '#44639f',
-    '#39588f',
-    '#2d4b81'
+  // cyan
+  primary: [
+    '#e3fafc',
+    '#c5f6fa',
+    '#99e9f2',
+    '#66d9e8',
+    '#3bc9db',
+    '#22b8cf',
+    '#15aabf',
+    '#1098ad',
+    '#0c8599',
+    '#0b7285'
   ]
+}
+
+declare module '@mantine/core' {
+  type ExtendedCustomColors = DefaultMantineColor | 'primary'
+
+  // noinspection JSUnusedGlobalSymbols
+  export interface MantineThemeColorsOverride {
+    colors: Record<ExtendedCustomColors, MantineColorsTuple>
+  }
 }

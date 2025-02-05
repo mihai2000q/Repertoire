@@ -4,7 +4,10 @@ import Song from './Song.ts'
 export default interface Artist {
   id: string
   name: string
-  imageUrl: string
+  imageUrl?: string
   albums: Album[]
   songs: Song[]
+
+  createdAt: string
+  updatedAt: string
 }

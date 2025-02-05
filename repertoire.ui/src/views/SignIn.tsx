@@ -11,18 +11,21 @@ import {
   Title
 } from '@mantine/core'
 import { ReactElement } from 'react'
-import { useSignInMutation } from '../state/api'
+import { api, useSignInMutation } from '../state/api'
 import { useAppDispatch } from '../state/store'
-import { setToken } from '../state/authSlice'
+import { setToken } from '../state/slice/authSlice.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 
 function SignIn(): ReactElement {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+
+  useFixedDocumentTitle('Sign In')
 
   const [signInMutation, { error, isLoading }] = useSignInMutation()
   const signInError = (error as HttpErrorResponse | undefined)?.data?.error
@@ -43,6 +46,7 @@ function SignIn(): ReactElement {
     try {
       const res = await signInMutation({ email, password }).unwrap()
       dispatch(setToken(res.token))
+      dispatch(api.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/
@@ -57,7 +61,7 @@ function SignIn(): ReactElement {
         </Title>
         <Text c="dimmed" size="sm" ta="center" mt={5}>
           Do not have an account yet?{' '}
-          <Anchor c={'cyan.5'} size="sm" component={Link} to={'/sign-up'}>
+          <Anchor c={'primary.5'} size="sm" component={Link} to={'/sign-up'}>
             Create account
           </Anchor>
         </Text>
@@ -76,6 +80,7 @@ function SignIn(): ReactElement {
                   disabled={isLoading}
                 />
                 <PasswordInput
+                  role={'textbox'}
                   label="Password"
                   placeholder="Your password"
                   key={form.key('password')}
@@ -85,7 +90,7 @@ function SignIn(): ReactElement {
                 />
               </Stack>
               <Anchor
-                c={'cyan.5'}
+                c={'primary.5'}
                 component={Link}
                 to={'/forgot-pass'}
                 size="sm"

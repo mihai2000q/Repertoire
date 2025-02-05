@@ -6,7 +6,6 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { SignInRequest } from '../types/requests/AuthRequests.ts'
 import TokenResponse from '../types/responses/TokenResponse.ts'
-import { EnhancedStore } from '@reduxjs/toolkit'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 
@@ -19,90 +18,72 @@ describe('Sign In', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display specific elements', () => {
-    const [{ container }] = reduxRouterRender(<SignIn />)
+  it('should render', () => {
+    const [_, store] = reduxRouterRender(<SignIn />)
 
-    expect(screen.getByRole('heading', { name: /welcome/i })).toBeVisible()
-    expect(screen.getByRole('textbox', { name: /email/i })).toBeVisible()
-    expect(container.querySelector('input[type=password]')).toBeVisible()
-    expect(screen.getByRole('link', { name: /create account/i })).toBeVisible()
-    expect(screen.getByRole('link', { name: /forgot password/i })).toBeVisible()
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeVisible()
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/sign in/i)
+    expect(screen.getByRole('heading', { name: /welcome/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /create account/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /password/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /forgot password/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
   })
 
   it('should display validation errors when the fields are empty', async () => {
-    // Arrange
     const emailError = 'Email is invalid'
     const passwordError = 'Password cannot be blank'
 
-    // Act
-    const [{ container }] = reduxRouterRender(<SignIn />)
+    reduxRouterRender(<SignIn />)
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
     act(() => emailInput.focus())
     act(() => emailInput.blur())
 
-    const passwordInput = container.querySelector('input[type=password]') as HTMLElement
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     act(() => passwordInput.focus())
     act(() => passwordInput.blur())
 
-    // Assert
-    expect(screen.getByText(emailError)).toBeVisible()
-    expect(screen.getByText(passwordError)).toBeVisible()
+    expect(emailInput).toBeInvalid()
+    expect(passwordInput).toHaveAttribute('data-invalid', 'true')
+    expect(screen.getByText(emailError)).toBeInTheDocument()
+    expect(screen.getByText(passwordError)).toBeInTheDocument()
   })
 
   it.each([['  '], ['email'], ['email@yahoo'], ['email.com']])(
     'should display email errors',
     async (email) => {
-      // Arrange
-      const error = 'Email is invalid'
+      const error = /email is invalid/i
       const user = userEvent.setup()
 
-      // Act
       reduxRouterRender(<SignIn />)
 
       const emailInput = screen.getByRole('textbox', { name: /email/i })
       await user.type(emailInput, email)
       act(() => emailInput.blur())
-
-      // Assert
-      expect(screen.getByText(error)).toBeVisible()
+      expect(emailInput).toBeInvalid()
+      expect(screen.getByText(error)).toBeInTheDocument()
     }
   )
 
-  it('should display password errors', async () => {
-    // Arrange
-    const user = userEvent.setup()
-    const error = 'Password cannot be blank'
-
-    // Act
-    const [{ container }] = reduxRouterRender(<SignIn />)
-
-    const passwordInput = container.querySelector('input[type=password]') as HTMLElement
-    await user.type(passwordInput, ' ')
-    act(() => passwordInput.blur())
-
-    // Assert
-    expect(screen.getByText(error)).toBeVisible()
-  })
-
   it('should send sign in request and display sign in error', async () => {
-    // Arrange
     const email = 'someone@else.com'
     const password = 'ThisIsAGoodPassword123'
     const error = 'Invalid credentials'
 
     server.use(http.put('/auth/sign-in', async () => HttpResponse.json({ error }, { status: 401 })))
 
-    // Act
     await sendSignInRequest(email, password)
 
-    // Assert
-    screen.getAllByText(error).forEach((e) => expect(e).toBeVisible())
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInvalid()
+    expect(screen.getByRole('textbox', { name: /password/i })).toHaveAttribute(
+      'data-invalid',
+      'true'
+    )
+    expect(screen.getAllByText(error)).toHaveLength(2)
   })
 
   it('should send sign in request and save token', async () => {
-    // Arrange
     const email = 'someone@else.com'
     const password = 'ThisIsAGoodPassword123'
 
@@ -118,24 +99,22 @@ describe('Sign In', () => {
       })
     )
 
-    // Act
     const store = await sendSignInRequest(email, password)
 
-    // Assert
     expect(capturedSignInRequest).toStrictEqual({ email, password })
     expect((store.getState() as RootState).auth.token).toBe(expectedToken)
     expect(window.location.pathname).toBe('/home')
   })
 
-  async function sendSignInRequest(email: string, password: string): Promise<EnhancedStore> {
+  async function sendSignInRequest(email: string, password: string) {
     const user = userEvent.setup()
 
-    const [{ container }, store] = reduxRouterRender(<SignIn />)
+    const [_, store] = reduxRouterRender(<SignIn />)
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
     await user.type(emailInput, email)
 
-    const passwordInput = container.querySelector('input[type=password]') as HTMLElement
+    const passwordInput = screen.getByRole('textbox', { name: /password/i })
     await user.type(passwordInput, password)
 
     const signInButton = screen.getByRole('button', { name: /sign in/i })

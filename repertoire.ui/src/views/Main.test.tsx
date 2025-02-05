@@ -8,7 +8,7 @@ describe('Main', () => {
     reduxRouterRender(
       <Routes>
         <Route element={<Main />}>
-          <Route path={'/'} element={<div>Outlet</div>} />
+          <Route path={'/'} element={<div data-testid={'outlet'}>Outlet</div>} />
         </Route>
       </Routes>,
       { auth: { token } }
@@ -17,29 +17,32 @@ describe('Main', () => {
   it('should render and display just the outlet when user is not authenticated', () => {
     render()
 
-    expect(screen.getByText('Outlet')).toBeInTheDocument()
+    expect(screen.getByTestId('outlet')).toBeInTheDocument()
     expect(screen.queryByTestId('title-bar')).not.toBeInTheDocument() // env not desktop
+  })
+
+  it('should render and display just the outlet and title bar when user is not authenticated', () => {
+    vi.stubEnv('VITE_PLATFORM', 'desktop')
+
+    render()
+
+    expect(screen.getByTestId('outlet')).toBeInTheDocument()
+    expect(screen.getByTestId('title-bar')).toBeInTheDocument()
   })
 
   it('should render and display topbar, sidebar and outlet when user is authenticated', () => {
     render('some token')
 
-    expect(screen.getByText('Outlet')).toBeInTheDocument()
-    expect(screen.getByRole('navigation')).toBeVisible()
-    expect(screen.getByRole('banner')).toBeVisible()
+    expect(screen.getByTestId('outlet')).toBeInTheDocument()
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
   })
 
   it('should display title bar when platform is desktop', () => {
-    // Arrange
-    import.meta.env.VITE_PLATFORM = 'desktop'
+    vi.stubEnv('VITE_PLATFORM', 'desktop')
 
-    // Act
     render()
 
-    // Assert
-    expect(screen.getByTestId('title-bar')).toBeVisible()
-
-    // restore
-    import.meta.env.VITE_PLATFORM = ''
+    expect(screen.getByTestId('title-bar')).toBeInTheDocument()
   })
 })

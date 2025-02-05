@@ -27,7 +27,7 @@ func TestGetAlbum_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
+func TestGetAlbum_WhenSuccessful_ShouldReturnAlbumWithSongsOrderedByTrackNo(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -45,9 +45,36 @@ func TestGetAlbum_WhenSuccessful_ShouldReturnAlbum(t *testing.T) {
 
 	db := utils.GetDatabase(t)
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
-		return db.Order("songs.album_track_no")
+		return db.Order("album_track_no")
 	}).
-		Preload("Artist").
+		Joins("Artist").
+		Find(&album, album.ID)
+
+	assertion.ResponseAlbum(t, album, responseAlbum, true, true)
+}
+
+func TestGetAlbum_WhenRequestHasSongsOrderBy_ShouldReturnAlbumAndSongsOrderedByQueryParam(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	album := albumData.Albums[0]
+	songsOder := "title desc"
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().GET(w, "/api/albums/"+album.ID.String()+"?songsOrderBy="+songsOder)
+
+	// then
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var responseAlbum model.Album
+	_ = json.Unmarshal(w.Body.Bytes(), &responseAlbum)
+
+	db := utils.GetDatabase(t)
+	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
+		return db.Order(songsOder)
+	}).
+		Joins("Artist").
 		Find(&album, album.ID)
 
 	assertion.ResponseAlbum(t, album, responseAlbum, true, true)

@@ -1,18 +1,24 @@
-import { Stack, TextInput } from '@mantine/core'
-import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
+import { Box, Group, Stack, Text, TextInput } from '@mantine/core'
+import {
+  IconBrandYoutubeFilled,
+  IconGuitarPickFilled,
+  IconInfoCircleFilled
+} from '@tabler/icons-react'
 import { FileWithPath } from '@mantine/dropzone'
 import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
-import LargeImageDropzoneWithPreview from '../../image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
+import Album from '../../../types/models/Album.ts'
 
 interface AddNewSongModalFinalStepProps {
-  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  form: UseFormReturnType<AddNewSongForm>
   image: FileWithPath | null
   setImage: Dispatch<SetStateAction<FileWithPath | null>>
+  album: Album | null
 }
 
-function AddNewSongModalFinalStep({ form, image, setImage }: AddNewSongModalFinalStepProps) {
+function AddNewSongModalFinalStep({ form, image, setImage, album }: AddNewSongModalFinalStepProps) {
   return (
     <Stack>
       <TextInput
@@ -31,6 +37,18 @@ function AddNewSongModalFinalStep({ form, image, setImage }: AddNewSongModalFina
       />
 
       <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
+
+      {!image && album?.imageUrl && (
+        <Group gap={6}>
+          <Box c={'primary.8'} mt={3}>
+            <IconInfoCircleFilled size={15} />
+          </Box>
+
+          <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+            If no image is uploaded, it will be inherited from the album
+          </Text>
+        </Group>
+      )}
     </Stack>
   )
 }

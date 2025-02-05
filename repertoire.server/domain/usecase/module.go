@@ -3,6 +3,8 @@ package usecase
 import (
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/band/member/role"
 	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/domain/usecase/song"
@@ -39,6 +41,18 @@ var artistUseCases = fx.Options(
 	fx.Provide(artist.NewRemoveSongsFromArtist),
 	fx.Provide(artist.NewSaveImageToArtist),
 	fx.Provide(artist.NewUpdateArtist),
+
+	fx.Provide(member.NewCreateBandMember),
+	fx.Provide(member.NewDeleteBandMember),
+	fx.Provide(member.NewDeleteImageFromBandMember),
+	fx.Provide(member.NewMoveBandMember),
+	fx.Provide(member.NewSaveImageToBandMember),
+	fx.Provide(member.NewUpdateBandMember),
+
+	fx.Provide(role.NewCreateBandMemberRole),
+	fx.Provide(role.NewDeleteBandMemberRole),
+	fx.Provide(role.NewGetBandMemberRoles),
+	fx.Provide(role.NewMoveBandMemberRole),
 )
 
 var authUseCases = fx.Options(
@@ -48,6 +62,8 @@ var authUseCases = fx.Options(
 )
 
 var playlistUseCases = fx.Options(
+	fx.Provide(playlist.NewAddAlbumsToPlaylist),
+	fx.Provide(playlist.NewAddArtistsToPlaylist),
 	fx.Provide(playlist.NewAddSongsToPlaylist),
 	fx.Provide(playlist.NewCreatePlaylist),
 	fx.Provide(playlist.NewDeletePlaylist),
@@ -61,6 +77,7 @@ var playlistUseCases = fx.Options(
 )
 
 var songUseCases = fx.Options(
+	fx.Provide(song.NewAddPerfectSongRehearsal),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
 	fx.Provide(song.NewDeleteImageFromSong),
@@ -78,6 +95,7 @@ var songUseCases = fx.Options(
 	fx.Provide(section.NewDeleteSongSection),
 	fx.Provide(section.NewMoveSongSection),
 	fx.Provide(section.NewUpdateSongSection),
+	fx.Provide(section.NewUpdateSongSectionsOccurrences),
 
 	fx.Provide(types.NewCreateSongSectionType),
 	fx.Provide(types.NewDeleteSongSectionType),

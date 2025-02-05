@@ -1,8 +1,9 @@
 import Song from '../../../types/models/Song.ts'
 import { Button, LoadingOverlay, Modal, Stack, Textarea, Tooltip } from '@mantine/core'
-import { useUpdateSongMutation } from '../../../state/songsApi.ts'
+import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import { useInputState } from '@mantine/hooks'
 import { MouseEvent } from 'react'
+import { toast } from 'react-toastify'
 
 interface EditSongDescriptionModalProps {
   song: Song
@@ -31,12 +32,14 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
     }).unwrap()
 
     onClose()
+
+    toast.info('Song description updated!')
   }
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Description'}>
       <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack>
           <Textarea

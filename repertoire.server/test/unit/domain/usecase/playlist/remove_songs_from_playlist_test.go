@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestRemoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
@@ -41,7 +41,7 @@ func TestRemoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalSe
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
@@ -71,7 +71,7 @@ func TestRemoveSongFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(t
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
@@ -105,7 +105,7 @@ func TestRemoveSongFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServerE
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
@@ -143,7 +143,7 @@ func TestRemoveSongFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInte
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)

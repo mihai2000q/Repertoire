@@ -36,10 +36,8 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	song := songData.Songs[0]
-
 	request := requests.UpdateSongRequest{
-		ID:          song.ID,
+		ID:          songData.Songs[0].ID,
 		Title:       "New Title",
 		ReleaseDate: &[]time.Time{time.Now()}[0],
 	}
@@ -51,8 +49,9 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
+	var song model.Song
 	db := utils.GetDatabase(t)
-	db.Find(&song, song.ID)
+	db.Find(&song, request.ID)
 
 	assertUpdatedSong(t, request, song)
 }
@@ -67,5 +66,5 @@ func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song mo
 	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
 	assertion.Time(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
-	//assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID) // TODO
+	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 }

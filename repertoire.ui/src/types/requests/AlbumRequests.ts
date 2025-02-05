@@ -7,6 +7,11 @@ export interface GetAlbumsRequest {
   searchBy?: string[]
 }
 
+export interface GetAlbumRequest {
+  id: string
+  songsOrderBy?: string[]
+}
+
 export interface CreateAlbumRequest {
   title: string
   releaseDate?: Date | string
@@ -25,9 +30,20 @@ export interface SaveImageToAlbumRequest {
   id: string
 }
 
+export interface DeleteAlbumRequest {
+  id: string
+  withSongs?: boolean
+}
+
 export interface AddSongsToAlbumRequest {
   id: string
   songIds: string[]
+}
+
+export interface MoveSongFromAlbumRequest {
+  id: string
+  songId: string
+  overSongId: string
 }
 
 export interface RemoveSongsFromAlbumRequest {

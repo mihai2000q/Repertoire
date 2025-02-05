@@ -3,10 +3,9 @@ import '@mantine/core/styles.css'
 import '@mantine/dates/styles.css'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { emotionCache } from './cache.ts'
-import 'react-toastify/dist/ReactToastify.css'
-import CustomizedToastContainer from './components/toast/CustomizedToastContainer.tsx'
+import CustomizedToastContainer from './components/@ui/toast/CustomizedToastContainer.tsx'
 import { ReactElement } from 'react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { MantineProvider } from '@mantine/core'
 import { theme } from './theme/theme'
 import { Provider } from 'react-redux'
@@ -25,10 +24,16 @@ import Artists from './views/Artists.tsx'
 import Artist from './views/Artist.tsx'
 import Album from './views/Album.tsx'
 import Song from './views/Song.tsx'
-import Playlists from "./views/Playlists.tsx";
-import Playlist from "./views/Playlist.tsx";
+import Playlists from './views/Playlists.tsx'
+import Playlist from './views/Playlist.tsx'
+import useIsDesktop from './hooks/useIsDesktop.ts'
+import useIsProduction from './hooks/useIsProduction.ts'
 
 function App(): ReactElement {
+  const isDesktop = useIsDesktop()
+  const isProduction = useIsProduction()
+  const Router = isDesktop && isProduction ? HashRouter : BrowserRouter
+
   return (
     <div className={'app'}>
       <Provider store={store}>
@@ -38,7 +43,7 @@ function App(): ReactElement {
           stylesTransform={emotionTransform}
         >
           <MantineEmotionProvider cache={emotionCache}>
-            <BrowserRouter>
+            <Router>
               <CustomizedToastContainer />
               <Routes>
                 <Route element={<Main />}>
@@ -67,7 +72,7 @@ function App(): ReactElement {
                   </Route>
                 </Route>
               </Routes>
-            </BrowserRouter>
+            </Router>
           </MantineEmotionProvider>
         </MantineProvider>
       </Provider>

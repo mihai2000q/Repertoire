@@ -1,11 +1,29 @@
 import Song from '../../../types/models/Song.ts'
-import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
-import { useUpdateSongMutation } from '../../../state/songsApi.ts'
-import { useState } from 'react'
+import {
+  Box,
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
+import {
+  useDeleteImageFromSongMutation,
+  useSaveImageToSongMutation,
+  useUpdateSongMutation
+} from '../../../state/api/songsApi.ts'
+import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validation/songsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
-import { IconCalendarFilled } from '@tabler/icons-react'
+import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
+import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import { toast } from 'react-toastify'
+import { FileWithPath } from '@mantine/dropzone'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -14,7 +32,11 @@ interface EditSongHeaderModalProps {
 }
 
 function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps) {
-  const [updateSongMutation, { isLoading }] = useUpdateSongMutation()
+  const [updateSongMutation, { isLoading: isUpdateLoading }] = useUpdateSongMutation()
+  const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
+  const [deleteImageMutation, { isLoading: isDeleteImageLoading }] =
+    useDeleteImageFromSongMutation()
+  const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
   const [hasChanged, setHasChanged] = useState(false)
 
@@ -22,7 +44,8 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     mode: 'uncontrolled',
     initialValues: {
       title: song.title,
-      releaseDate: new Date(song.releaseDate)
+      releaseDate: song.releaseDate && new Date(song.releaseDate),
+      image: song.imageUrl
     } as EditSongHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -31,12 +54,19 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== song.title ||
-          values.releaseDate.toISOString() !== new Date(song.releaseDate).toISOString()
+          values.releaseDate?.toISOString() !== new Date(song.releaseDate).toISOString() ||
+          values.image !== song.imageUrl
       )
     }
   })
 
-  async function updateSong({ title, releaseDate }: EditSongHeaderForm) {
+  const [image, setImage] = useState<string | FileWithPath>(song.imageUrl)
+  useEffect(() => form.setFieldValue('image', image), [image])
+  useDidUpdate(() => setImage(song.imageUrl), [song])
+
+  async function updateSong({ title, releaseDate, image }: EditSongHeaderForm) {
+    title = title.trim()
+
     await updateSongMutation({
       ...song,
       guitarTuningId: song.guitarTuning?.id,
@@ -45,7 +75,18 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
       releaseDate: releaseDate
     }).unwrap()
 
+    if (image !== null && typeof image !== 'string') {
+      await saveImageMutation({
+        id: song.id,
+        image: image
+      })
+    } else if (image === null && song.imageUrl) {
+      await deleteImageMutation(song.id)
+    }
+
+    toast.info('Song header updated!')
     onClose()
+    setHasChanged(false)
   }
 
   return (
@@ -55,6 +96,24 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
         <form onSubmit={form.onSubmit(updateSong)}>
           <Stack>
+            <LargeImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              defaultValue={song.imageUrl}
+            />
+
+            {!image && song.album?.imageUrl && (
+              <Group gap={6}>
+                <Box c={'primary.8'} mt={3}>
+                  <IconInfoCircleFilled size={15} />
+                </Box>
+
+                <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                  The song image is inherited from the album
+                </Text>
+              </Group>
+            )}
+
             <TextInput
               withAsterisk={true}
               maxLength={100}

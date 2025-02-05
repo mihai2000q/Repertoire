@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestAddSongToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewAddSongsToAlbum(albumRepository, nil)
@@ -42,7 +42,7 @@ func TestAddSongToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerErr
 	albumRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestAddSongsToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewAddSongsToAlbum(albumRepository, nil)
@@ -68,7 +68,7 @@ func TestAddSongToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T)
 	albumRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -101,7 +101,7 @@ func TestAddSongToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t *
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -135,7 +135,7 @@ func TestAddSongToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnBadReques
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -169,7 +169,7 @@ func TestAddSongToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturnB
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenOneSongHasAlbum_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -203,7 +203,7 @@ func TestAddSongToAlbum_WhenOneSongHasAlbum_ShouldReturnBadRequestError(t *testi
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -242,7 +242,7 @@ func TestAddSongToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	id := uuid.New()
 	songID := uuid.New()
 	artistID := uuid.New()

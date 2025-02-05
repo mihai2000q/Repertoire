@@ -78,7 +78,8 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	_uut := artist.NewCreateArtist(jwtService, artistRepository)
 
 	request := requests.CreateArtistRequest{
-		Name: "Some Artist",
+		Name:   "Some Artist",
+		IsBand: true,
 	}
 	token := "this is a token"
 	userID := uuid.New()
@@ -113,6 +114,7 @@ func assertCreatedArtist(
 	userID uuid.UUID,
 ) {
 	assert.Equal(t, request.Name, artist.Name)
+	assert.Equal(t, request.IsBand, artist.IsBand)
 	assert.Nil(t, artist.ImageURL)
 	assert.Equal(t, userID, artist.UserID)
 }
