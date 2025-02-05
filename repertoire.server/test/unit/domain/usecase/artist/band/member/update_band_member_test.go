@@ -238,4 +238,5 @@ func assertUpdatedBandMember(
 	member model.BandMember,
 ) {
 	assert.Equal(t, request.Name, member.Name)
+	assert.Equal(t, request.Color, member.Color)
 }

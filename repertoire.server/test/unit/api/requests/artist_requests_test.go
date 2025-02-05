@@ -529,22 +529,44 @@ func TestValidateDeleteArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 // Band Members
 
 var validBandMemberName = "Backup Vocalist"
+var validBandMemberColor = "#123123"
 
 func TestValidateCreateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.CreateBandMemberRequest{
-		Name:     validBandMemberName,
-		RoleIDs:  []uuid.UUID{uuid.New()},
-		ArtistID: uuid.New(),
+	tests := []struct {
+		name    string
+		request requests.CreateBandMemberRequest
+	}{
+		{
+			"Minimal",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				Color:    &validBandMemberColor,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -574,6 +596,51 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			},
 			"Name",
 			"max",
+		},
+		// Color Test Cases
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{""}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{""}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{"123456"}[0],
+			},
+			"Color",
+			"isColor",
+		},
+		{
+			"Color is invalid because the format is wrong",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{uuid.New()},
+				ArtistID: uuid.New(),
+				Color:    &[]string{"#12345"}[0],
+			},
+			"Color",
+			"isColor",
 		},
 		// Role IDs Test Cases
 		{

@@ -100,6 +100,7 @@ func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist, wi
 func ResponseBandMember(t *testing.T, bandMember model.BandMember, response model.BandMember, withRoles bool) {
 	assert.Equal(t, bandMember.ID, response.ID)
 	assert.Equal(t, bandMember.Name, response.Name)
+	assert.Equal(t, bandMember.Color, response.Color)
 	assert.Equal(t, bandMember.ImageURL, response.ImageURL)
 	if withRoles {
 		for i := 0; i < len(bandMember.Roles); i++ {

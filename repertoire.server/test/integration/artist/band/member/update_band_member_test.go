@@ -60,6 +60,7 @@ func TestUpdateBandMember_WhenSuccessful_ShouldUpdateBandMember(t *testing.T) {
 func assertUpdatedBandMember(t *testing.T, request requests.UpdateBandMemberRequest, bandMember model.BandMember) {
 	assert.Equal(t, request.ID, bandMember.ID)
 	assert.Equal(t, request.Name, bandMember.Name)
+	assert.Equal(t, request.Color, bandMember.Color)
 	assert.Len(t, bandMember.Roles, len(request.RoleIDs))
 	for i, role := range bandMember.Roles {
 		assert.Equal(t, request.RoleIDs[i], role.ID)
