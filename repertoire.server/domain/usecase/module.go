@@ -8,9 +8,9 @@ import (
 	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/domain/usecase/song/section"
-	"repertoire/server/domain/usecase/song/section/types"
+	"repertoire/server/domain/usecase/udata/guitar/tuning"
+	types2 "repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/domain/usecase/user"
 
 	"go.uber.org/fx"
@@ -86,21 +86,24 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewSaveImageToSong),
 	fx.Provide(song.NewUpdateSong),
 
-	fx.Provide(tuning.NewCreateGuitarTuning),
-	fx.Provide(tuning.NewDeleteGuitarTuning),
-	fx.Provide(tuning.NewGetGuitarTunings),
-	fx.Provide(tuning.NewMoveGuitarTuning),
+	fx.Provide(song.NewGetGuitarTunings),
+	fx.Provide(section.NewGetSongSectionTypes),
 
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
 	fx.Provide(section.NewMoveSongSection),
 	fx.Provide(section.NewUpdateSongSection),
 	fx.Provide(section.NewUpdateSongSectionsOccurrences),
+)
 
-	fx.Provide(types.NewCreateSongSectionType),
-	fx.Provide(types.NewDeleteSongSectionType),
-	fx.Provide(types.NewGetSongSectionTypes),
-	fx.Provide(types.NewMoveSongSectionType),
+var userDataUseCases = fx.Options(
+	fx.Provide(tuning.NewCreateGuitarTuning),
+	fx.Provide(tuning.NewDeleteGuitarTuning),
+	fx.Provide(tuning.NewMoveGuitarTuning),
+
+	fx.Provide(types2.NewCreateSongSectionType),
+	fx.Provide(types2.NewDeleteSongSectionType),
+	fx.Provide(types2.NewMoveSongSectionType),
 )
 
 var userUseCases = fx.Options(
@@ -117,5 +120,6 @@ var Module = fx.Options(
 	authUseCases,
 	playlistUseCases,
 	songUseCases,
+	userDataUseCases,
 	userUseCases,
 )

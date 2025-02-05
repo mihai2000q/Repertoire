@@ -96,15 +96,6 @@ type SongSection struct {
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
 
-type SongSectionType struct {
-	ID       uuid.UUID     `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name     string        `gorm:"size:16" json:"name"`
-	Order    uint          `gorm:"not null" json:"-"`
-	Sections []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-}
-
 type SongSectionHistory struct {
 	ID            uuid.UUID           `gorm:"primaryKey; type:uuid; <-:create"`
 	Property      SongSectionProperty `gorm:"size:255; not null"`
@@ -123,5 +114,3 @@ const (
 )
 
 var DefaultSongSectionConfidence uint = 0
-
-var DefaultSongSectionTypes = []string{"Intro", "Verse", "Pre-Chorus", "Chorus", "Interlude", "Bridge", "Breakdown", "Solo", "Riff", "Outro"}

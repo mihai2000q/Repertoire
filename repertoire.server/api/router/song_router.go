@@ -30,9 +30,6 @@ func (s SongRouter) RegisterRoutes() {
 	guitarTuningsApi := api.Group("/guitar-tunings")
 	{
 		guitarTuningsApi.GET("", s.handler.GetGuitarTunings)
-		guitarTuningsApi.POST("", s.handler.CreateGuitarTuning)
-		guitarTuningsApi.PUT("/move", s.handler.MoveGuitarTuning)
-		guitarTuningsApi.DELETE("/:id", s.handler.DeleteGuitarTuning)
 	}
 
 	sectionsApi := api.Group("/sections")
@@ -47,9 +44,6 @@ func (s SongRouter) RegisterRoutes() {
 	sectionTypesApi := sectionsApi.Group("/types")
 	{
 		sectionTypesApi.GET("", s.handler.GetSectionTypes)
-		sectionTypesApi.POST("", s.handler.CreateSectionType)
-		sectionTypesApi.PUT("/move", s.handler.MoveSectionType)
-		sectionTypesApi.DELETE("/:id", s.handler.DeleteSectionType)
 	}
 }
 

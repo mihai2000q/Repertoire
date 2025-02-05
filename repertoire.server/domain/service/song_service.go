@@ -4,9 +4,7 @@ import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/domain/usecase/song/guitar/tuning"
 	"repertoire/server/domain/usecase/song/section"
-	"repertoire/server/domain/usecase/song/section/types"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -23,21 +21,14 @@ type SongService interface {
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 
-	CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode
-	MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode
-	DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
+	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
 	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 	UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
-
-	CreateSectionType(request requests.CreateSongSectionTypeRequest, token string) *wrapper.ErrorCode
-	DeleteSectionType(id uuid.UUID, token string) *wrapper.ErrorCode
-	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
-	MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *wrapper.ErrorCode
 }
 
 type songService struct {
@@ -50,21 +41,14 @@ type songService struct {
 	saveImageToSong         song.SaveImageToSong
 	updateSong              song.UpdateSong
 
-	createGuitarTuning tuning.CreateGuitarTuning
-	deleteGuitarTuning tuning.DeleteGuitarTuning
-	getGuitarTunings   tuning.GetGuitarTunings
-	moveGuitarTuning   tuning.MoveGuitarTuning
+	getGuitarTunings    song.GetGuitarTunings
+	getSongSectionTypes section.GetSongSectionTypes
 
 	createSongSection             section.CreateSongSection
 	deleteSongSection             section.DeleteSongSection
 	moveSongSection               section.MoveSongSection
 	updateSongSection             section.UpdateSongSection
 	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences
-
-	createSongSectionType types.CreateSongSectionType
-	deleteSongSectionType types.DeleteSongSectionType
-	getSongSectionTypes   types.GetSongSectionTypes
-	moveSongSectionType   types.MoveSongSectionType
 }
 
 func NewSongService(
@@ -77,21 +61,14 @@ func NewSongService(
 	saveImageToSong song.SaveImageToSong,
 	updateSong song.UpdateSong,
 
-	createGuitarTuning tuning.CreateGuitarTuning,
-	deleteGuitarTuning tuning.DeleteGuitarTuning,
-	getGuitarTunings tuning.GetGuitarTunings,
-	moveGuitarTuning tuning.MoveGuitarTuning,
+	getGuitarTunings song.GetGuitarTunings,
+	getSongSectionTypes section.GetSongSectionTypes,
 
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
 	moveSongSection section.MoveSongSection,
 	updateSongSection section.UpdateSongSection,
 	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
-
-	createSongSectionType types.CreateSongSectionType,
-	deleteSongSectionType types.DeleteSongSectionType,
-	getSongSectionTypes types.GetSongSectionTypes,
-	moveSongSectionType types.MoveSongSectionType,
 ) SongService {
 	return &songService{
 		addPerfectSongRehearsal: addPerfectSongRehearsal,
@@ -103,21 +80,14 @@ func NewSongService(
 		saveImageToSong:         saveImageToSong,
 		updateSong:              updateSong,
 
-		createGuitarTuning: createGuitarTuning,
-		deleteGuitarTuning: deleteGuitarTuning,
-		getGuitarTunings:   getGuitarTunings,
-		moveGuitarTuning:   moveGuitarTuning,
+		getGuitarTunings:    getGuitarTunings,
+		getSongSectionTypes: getSongSectionTypes,
 
 		createSongSection:             createSongSection,
 		deleteSongSection:             deleteSongSection,
 		moveSongSection:               moveSongSection,
 		updateSongSection:             updateSongSection,
 		updateSongSectionsOccurrences: updateSongSectionsOccurrences,
-
-		createSongSectionType: createSongSectionType,
-		deleteSongSectionType: deleteSongSectionType,
-		getSongSectionTypes:   getSongSectionTypes,
-		moveSongSectionType:   moveSongSectionType,
 	}
 }
 
@@ -153,22 +123,12 @@ func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorC
 	return s.updateSong.Handle(request)
 }
 
-// Guitar Tunings
-
-func (s *songService) CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode {
-	return s.createGuitarTuning.Handle(request, token)
-}
-
-func (s *songService) DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode {
-	return s.deleteGuitarTuning.Handle(id, token)
-}
-
 func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {
 	return s.getGuitarTunings.Handle(token)
 }
 
-func (s *songService) MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode {
-	return s.moveGuitarTuning.Handle(request, token)
+func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
+	return s.getSongSectionTypes.Handle(token)
 }
 
 // Sections
@@ -191,25 +151,4 @@ func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *
 
 func (s *songService) UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode {
 	return s.updateSongSectionsOccurrences.Handle(request)
-}
-
-// Section - Types
-
-func (s *songService) CreateSectionType(
-	request requests.CreateSongSectionTypeRequest,
-	token string,
-) *wrapper.ErrorCode {
-	return s.createSongSectionType.Handle(request, token)
-}
-
-func (s *songService) DeleteSectionType(id uuid.UUID, token string) *wrapper.ErrorCode {
-	return s.deleteSongSectionType.Handle(id, token)
-}
-
-func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
-	return s.getSongSectionTypes.Handle(token)
-}
-
-func (s *songService) MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *wrapper.ErrorCode {
-	return s.moveSongSectionType.Handle(request, token)
 }
