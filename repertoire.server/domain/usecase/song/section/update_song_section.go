@@ -86,6 +86,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 	section.Rehearsals = request.Rehearsals
 	section.SongSectionTypeID = request.TypeID
 	section.BandMemberID = request.BandMemberID
+	section.InstrumentID = request.InstrumentID
 
 	if hasRehearsalsChanged || hasConfidenceChanged {
 		err = u.songRepository.Update(&song)

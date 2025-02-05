@@ -73,16 +73,25 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 		name         string
 		song         model.Song
 		bandMemberID *uuid.UUID
+		instrumentID *uuid.UUID
 	}{
 		{
-			"Without Band Member",
+			"Without Band Member or Instrument",
 			songData.Songs[0],
+			nil,
 			nil,
 		},
 		{
 			"With Band Member",
 			songData.Songs[0],
 			&songData.Artists[0].BandMembers[0].ID,
+			nil,
+		},
+		{
+			"With Instrument",
+			songData.Songs[0],
+			nil,
+			&songData.Users[0].Instruments[0].ID,
 		},
 	}
 
@@ -98,6 +107,7 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 				Name:         "Chorus 1-New",
 				TypeID:       songData.Users[0].SongSectionTypes[0].ID,
 				BandMemberID: test.bandMemberID,
+				InstrumentID: test.instrumentID,
 			}
 
 			// when
@@ -131,6 +141,8 @@ func assertCreatedSongSection(
 	assert.Equal(t, request.SongID, songSection.SongID)
 	assert.Equal(t, request.Name, songSection.Name)
 	assert.Equal(t, request.TypeID, songSection.SongSectionTypeID)
+	assert.Equal(t, request.BandMemberID, songSection.BandMemberID)
+	assert.Equal(t, request.InstrumentID, songSection.InstrumentID)
 	assert.Zero(t, songSection.Rehearsals)
 	assert.Equal(t, model.DefaultSongSectionConfidence, songSection.Confidence)
 	assert.Zero(t, songSection.RehearsalsScore)

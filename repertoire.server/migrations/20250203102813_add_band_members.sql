@@ -30,6 +30,34 @@ CREATE TABLE public.band_member_has_roles(
       primary key(band_member_id, band_member_role_id)
 );
 
+-- define default Band Member Roles
+WITH band_member_roles AS (
+    SELECT unnest(ARRAY['Vocalist', 'Lead Guitarist', 'Rhythm Guitarist', 'Bassist', 'Drummer', 'Pianist']) AS name,
+    generate_series(0, 5) AS name_order
+),
+
+-- generate a sequence of order indices for each user band member role together with the name
+user_band_member_roles AS (
+    SELECT
+        users.id AS user_id,
+        band_member_roles.name,
+        band_member_roles.name_order AS order_index
+    FROM
+        users
+    CROSS JOIN
+        band_member_roles
+)
+
+-- Insert new user band member roles
+INSERT INTO public.band_member_roles (id, name, "order", user_id)
+SELECT
+    gen_random_uuid() AS id,
+    ub.name,
+    ub.order_index,
+    ub.user_id
+FROM
+    user_band_member_roles ub;
+
 -- +goose StatementEnd
 
 -- +goose Down

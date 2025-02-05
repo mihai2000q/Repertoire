@@ -42,25 +42,11 @@ type BandMember struct {
 	Color    *string            `gorm:"size:7" json:"color"`
 	ImageURL *internal.FilePath `json:"imageUrl"`
 
-	ArtistID uuid.UUID        `gorm:"not null" json:"-"`
-	Artist   Artist           `json:"artist"`
-	Roles    []BandMemberRole `gorm:"many2many:band_member_has_roles" json:"role"`
+	ArtistID     uuid.UUID        `gorm:"not null" json:"-"`
+	Artist       Artist           `json:"artist"`
+	Roles        []BandMemberRole `gorm:"many2many:band_member_has_roles" json:"roles"`
+	SongSections []SongSection    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-}
-
-// Band Member Role
-
-type BandMemberRole struct {
-	ID          uuid.UUID    `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name        string       `gorm:"size:24; not null" json:"name"`
-	Order       uint         `gorm:"not null" json:"-"`
-	BandMembers []BandMember `gorm:"many2many:band_member_has_roles" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-}
-
-var DefaultBandMemberRoles = []string{
-	"Vocalist", "Lead Guitarist", "Rhythm Guitarist", "Bassist", "Drummer", "Pianist",
 }

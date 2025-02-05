@@ -194,60 +194,18 @@ func (s SongHandler) GetGuitarTunings(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (s SongHandler) CreateGuitarTuning(c *gin.Context) {
-	var request requests.CreateGuitarTuningRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
+// Instruments
 
+func (s SongHandler) GetInstruments(c *gin.Context) {
 	token := s.GetTokenFromContext(c)
 
-	errorCode = s.service.CreateGuitarTuning(request, token)
+	result, errorCode := s.service.GetInstruments(token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "guitar tuning has been created successfully!")
-}
-
-func (s SongHandler) MoveGuitarTuning(c *gin.Context) {
-	var request requests.MoveGuitarTuningRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	token := s.GetTokenFromContext(c)
-
-	errorCode = s.service.MoveGuitarTuning(request, token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "guitar tuning has been moved successfully!")
-}
-
-func (s SongHandler) DeleteGuitarTuning(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	token := s.GetTokenFromContext(c)
-
-	errorCode := s.service.DeleteGuitarTuning(id, token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "guitar tuning has been deleted successfully!")
+	c.JSON(http.StatusOK, result)
 }
 
 // Sections
@@ -354,60 +312,4 @@ func (s SongHandler) GetSectionTypes(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
-}
-
-func (s SongHandler) CreateSectionType(c *gin.Context) {
-	var request requests.CreateSongSectionTypeRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	token := s.GetTokenFromContext(c)
-
-	errorCode = s.service.CreateSectionType(request, token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song section type has been created successfully!")
-}
-
-func (s SongHandler) MoveSectionType(c *gin.Context) {
-	var request requests.MoveSongSectionTypeRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	token := s.GetTokenFromContext(c)
-
-	errorCode = s.service.MoveSectionType(request, token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song section type has been moved successfully!")
-}
-
-func (s SongHandler) DeleteSectionType(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	token := s.GetTokenFromContext(c)
-
-	errorCode := s.service.DeleteSectionType(id, token)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song section type has been deleted successfully!")
 }

@@ -52,17 +52,6 @@ type CreateSectionRequest struct {
 	TypeID uuid.UUID `validate:"required"`
 }
 
-// Guitar Tunings
-
-type CreateGuitarTuningRequest struct {
-	Name string `validate:"required,max=16"`
-}
-
-type MoveGuitarTuningRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	OverID uuid.UUID `validate:"required"`
-}
-
 // Sections
 
 type CreateSongSectionRequest struct {
@@ -70,6 +59,7 @@ type CreateSongSectionRequest struct {
 	Name         string    `validate:"required,max=30"`
 	TypeID       uuid.UUID `validate:"required"`
 	BandMemberID *uuid.UUID
+	InstrumentID *uuid.UUID
 }
 
 type UpdateSongSectionRequest struct {
@@ -79,6 +69,7 @@ type UpdateSongSectionRequest struct {
 	Rehearsals   uint
 	TypeID       uuid.UUID `validate:"required"`
 	BandMemberID *uuid.UUID
+	InstrumentID *uuid.UUID
 }
 
 type UpdateSongSectionsOccurrencesRequest struct {
@@ -95,15 +86,4 @@ type MoveSongSectionRequest struct {
 type UpdateSectionOccurrencesRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Occurrences uint
-}
-
-// Sections - Types
-
-type CreateSongSectionTypeRequest struct {
-	Name string `validate:"required,max=16"`
-}
-
-type MoveSongSectionTypeRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	OverID uuid.UUID `validate:"required"`
 }

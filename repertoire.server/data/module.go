@@ -12,6 +12,7 @@ var repositories = fx.Options(
 	fx.Provide(repository.NewArtistRepository),
 	fx.Provide(repository.NewPlaylistRepository),
 	fx.Provide(repository.NewSongRepository),
+	fx.Provide(repository.NewUserDataRepository),
 	fx.Provide(repository.NewUserRepository),
 )
 

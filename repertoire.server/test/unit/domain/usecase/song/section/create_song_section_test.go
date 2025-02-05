@@ -386,5 +386,6 @@ func assertCreatedSongSection(
 	assert.Equal(t, uint(count), section.Order)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
 	assert.Equal(t, request.BandMemberID, section.BandMemberID)
+	assert.Equal(t, request.InstrumentID, section.InstrumentID)
 	assert.Equal(t, request.SongID, section.SongID)
 }

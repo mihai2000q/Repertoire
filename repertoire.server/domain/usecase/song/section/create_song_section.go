@@ -53,6 +53,7 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 		Order:             uint(sectionsCount),
 		SongID:            request.SongID,
 		BandMemberID:      request.BandMemberID,
+		InstrumentID:      request.InstrumentID,
 	}
 	err = c.songRepository.CreateSection(&section)
 	if err != nil {

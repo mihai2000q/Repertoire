@@ -910,4 +910,5 @@ func assertUpdatedSongSection(
 	assert.Equal(t, progress, section.Progress)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
 	assert.Equal(t, request.BandMemberID, section.BandMemberID)
+	assert.Equal(t, request.InstrumentID, section.InstrumentID)
 }

@@ -176,6 +176,11 @@ func ResponseGuitarTuning(t *testing.T, guitarTuning model.GuitarTuning, respons
 	assert.Equal(t, guitarTuning.Name, response.Name)
 }
 
+func ResponseInstrument(t *testing.T, instrument model.Instrument, response model.Instrument) {
+	assert.Equal(t, instrument.ID, response.ID)
+	assert.Equal(t, instrument.Name, response.Name)
+}
+
 func ResponseSongSection(
 	t *testing.T,
 	songSection model.SongSection,
