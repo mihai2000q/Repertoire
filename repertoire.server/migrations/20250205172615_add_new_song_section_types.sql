@@ -51,7 +51,7 @@ WITH section_types AS (
     generate_series(0, 9) AS name_order
 ),
 
--- generate a sequence of order indices for each user instrument together with the name
+-- generate a sequence of order indices for each user song section type together with the name
      user_section_types AS (
          SELECT
              users.id AS user_id,
@@ -63,7 +63,7 @@ WITH section_types AS (
              section_types
      )
 
--- Insert new user instruments
+-- Insert new user song section types
 INSERT INTO public.song_section_types (id, name, "order", user_id)
 SELECT
     gen_random_uuid() AS id,
