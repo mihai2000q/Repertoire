@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
-	artistData "repertoire/server/test/integration/test/data/artist"
+	userDataData "repertoire/server/test/integration/test/data/udata"
 	"repertoire/server/test/integration/test/utils"
 	"slices"
 	"testing"
@@ -15,11 +15,11 @@ import (
 
 func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+	utils.SeedAndCleanupData(t, userDataData.Users, userDataData.SeedData)
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/artists/band-members/roles/"+uuid.New().String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/band-members-roles/"+uuid.New().String())
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -27,13 +27,13 @@ func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *te
 
 func TestDeleteBandMemberRole_WhenSuccessful_ShouldDeleteRole(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+	utils.SeedAndCleanupData(t, userDataData.Users, userDataData.SeedData)
 
-	bandMemberRole := artistData.Users[0].BandMemberRoles[1]
+	bandMemberRole := userDataData.Users[0].BandMemberRoles[1]
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/artists/band-members/roles/"+bandMemberRole.ID.String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/band-members-roles/"+bandMemberRole.ID.String())
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

@@ -67,14 +67,3 @@ type MoveBandMemberRequest struct {
 	OverID   uuid.UUID `validate:"required"`
 	ArtistID uuid.UUID `validate:"required"`
 }
-
-// Band Member - Roles
-
-type CreateBandMemberRoleRequest struct {
-	Name string `validate:"required,max=24"`
-}
-
-type MoveBandMemberRoleRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	OverID uuid.UUID `validate:"required"`
-}

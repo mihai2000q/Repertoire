@@ -27,6 +27,64 @@ func NewUserDataHandler(
 	}
 }
 
+// Band Member Roles
+
+func (u UserDataHandler) CreateBandMemberRole(c *gin.Context) {
+	var request requests.CreateBandMemberRoleRequest
+	errorCode := u.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode = u.service.CreateBandMemberRole(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "band member role has been created successfully!")
+}
+
+func (u UserDataHandler) MoveBandMemberRole(c *gin.Context) {
+	var request requests.MoveBandMemberRoleRequest
+	errorCode := u.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode = u.service.MoveBandMemberRole(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "band member role has been moved successfully!")
+}
+
+func (u UserDataHandler) DeleteBandMemberRole(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	token := u.GetTokenFromContext(c)
+
+	errorCode := u.service.DeleteBandMemberRole(id, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	u.SendMessage(c, "band member role has been deleted successfully!")
+}
+
 // Guitar Tunings
 
 func (u UserDataHandler) CreateGuitarTuning(c *gin.Context) {

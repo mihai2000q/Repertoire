@@ -3,7 +3,7 @@ package role
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/domain/usecase/artist/band/member/role"
+	"repertoire/server/domain/usecase/artist/band/member"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -18,7 +18,7 @@ import (
 func TestGetBandMemberRoles_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := role.NewGetBandMemberRoles(nil, jwtService)
+	_uut := member.NewGetBandMemberRoles(nil, jwtService)
 
 	token := "this is a token"
 
@@ -40,7 +40,7 @@ func TestGetBandMemberRoles_WhenGetBandMemberRolesFails_ShouldReturnInternalServ
 	// given
 	jwtService := new(service.JwtServiceMock)
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewGetBandMemberRoles(artistRepository, jwtService)
+	_uut := member.NewGetBandMemberRoles(artistRepository, jwtService)
 
 	token := "this is a token"
 
@@ -67,7 +67,7 @@ func TestGetBandMemberRoles_WhenSuccessful_ShouldReturnBandMemberRoles(t *testin
 	// given
 	jwtService := new(service.JwtServiceMock)
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := role.NewGetBandMemberRoles(artistRepository, jwtService)
+	_uut := member.NewGetBandMemberRoles(artistRepository, jwtService)
 
 	token := "this is a token"
 

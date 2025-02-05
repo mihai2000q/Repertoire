@@ -8,16 +8,16 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
-	artistData "repertoire/server/test/integration/test/data/artist"
+	userDataData "repertoire/server/test/integration/test/data/udata"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 )
 
 func TestCreateBandMemberRole_WhenSuccessful_ShouldCreateRole(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+	utils.SeedAndCleanupData(t, userDataData.Users, userDataData.SeedData)
 
-	user := artistData.Users[0]
+	user := userDataData.Users[0]
 
 	request := requests.CreateBandMemberRoleRequest{
 		Name: "Guitarist-New",
@@ -27,7 +27,7 @@ func TestCreateBandMemberRole_WhenSuccessful_ShouldCreateRole(t *testing.T) {
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		POST(w, "/api/artists/band-members/roles", request)
+		POST(w, "/api/user-data/band-members-roles", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -37,7 +37,7 @@ func TestCreateBandMemberRole_WhenSuccessful_ShouldCreateRole(t *testing.T) {
 	var bandMemberRole model.BandMemberRole
 	db.Find(&bandMemberRole, &model.BandMemberRole{Name: request.Name})
 
-	assertCreatedBandMemberRole(t, bandMemberRole, request, len(artistData.Users[0].BandMemberRoles), user.ID)
+	assertCreatedBandMemberRole(t, bandMemberRole, request, len(userDataData.Users[0].BandMemberRoles), user.ID)
 }
 
 func assertCreatedBandMemberRole(

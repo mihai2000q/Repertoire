@@ -47,9 +47,6 @@ func (a ArtistRouter) RegisterRoutes() {
 	bandMemberRolesApi := bandMembersApi.Group("/roles")
 	{
 		bandMemberRolesApi.GET("", a.handler.GetBandMemberRoles)
-		bandMemberRolesApi.POST("", a.handler.CreateBandMemberRole)
-		bandMemberRolesApi.PUT("/move", a.handler.MoveBandMemberRole)
-		bandMemberRolesApi.DELETE("/:id", a.handler.DeleteBandMemberRole)
 	}
 }
 

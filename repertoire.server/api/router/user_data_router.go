@@ -13,6 +13,13 @@ type UserDataRouter struct {
 func (u UserDataRouter) RegisterRoutes() {
 	api := u.requestHandler.PrivateRouter.Group("/user-data")
 
+	bandMemberRolesApi := api.Group("/band-member-roles")
+	{
+		bandMemberRolesApi.POST("", u.handler.CreateBandMemberRole)
+		bandMemberRolesApi.PUT("/move", u.handler.MoveBandMemberRole)
+		bandMemberRolesApi.DELETE("/:id", u.handler.DeleteBandMemberRole)
+	}
+	
 	guitarTuningsApi := api.Group("/guitar-tunings")
 	{
 		guitarTuningsApi.POST("", u.handler.CreateGuitarTuning)

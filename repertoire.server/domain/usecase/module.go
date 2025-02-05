@@ -4,11 +4,11 @@ import (
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/domain/usecase/artist/band/member"
-	"repertoire/server/domain/usecase/artist/band/member/role"
 	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/domain/usecase/udata/guitar/tuning"
 	"repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/domain/usecase/user"
@@ -49,10 +49,7 @@ var artistUseCases = fx.Options(
 	fx.Provide(member.NewSaveImageToBandMember),
 	fx.Provide(member.NewUpdateBandMember),
 
-	fx.Provide(role.NewCreateBandMemberRole),
-	fx.Provide(role.NewDeleteBandMemberRole),
-	fx.Provide(role.NewGetBandMemberRoles),
-	fx.Provide(role.NewMoveBandMemberRole),
+	fx.Provide(member.NewGetBandMemberRoles),
 )
 
 var authUseCases = fx.Options(
@@ -97,6 +94,10 @@ var songUseCases = fx.Options(
 )
 
 var userDataUseCases = fx.Options(
+	fx.Provide(role.NewCreateBandMemberRole),
+	fx.Provide(role.NewDeleteBandMemberRole),
+	fx.Provide(role.NewMoveBandMemberRole),
+	
 	fx.Provide(tuning.NewCreateGuitarTuning),
 	fx.Provide(tuning.NewDeleteGuitarTuning),
 	fx.Provide(tuning.NewMoveGuitarTuning),

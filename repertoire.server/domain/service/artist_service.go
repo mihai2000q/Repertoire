@@ -5,7 +5,6 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/domain/usecase/artist/band/member"
-	"repertoire/server/domain/usecase/artist/band/member/role"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -32,10 +31,7 @@ type ArtistService interface {
 	SaveBandMemberImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
 	UpdateBandMember(request requests.UpdateBandMemberRequest) *wrapper.ErrorCode
 
-	CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *wrapper.ErrorCode
-	DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode
 	GetBandMemberRoles(token string) ([]model.BandMemberRole, *wrapper.ErrorCode)
-	MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode
 }
 
 type artistService struct {
@@ -58,10 +54,7 @@ type artistService struct {
 	updateBandMember          member.UpdateBandMember
 	saveImageToBandMember     member.SaveImageToBandMember
 
-	createBandMemberRole role.CreateBandMemberRole
-	deleteBandMemberRole role.DeleteBandMemberRole
-	getBandMemberRoles   role.GetBandMemberRoles
-	moveBandMemberRole   role.MoveBandMemberRole
+	getBandMemberRoles member.GetBandMemberRoles
 }
 
 func NewArtistService(
@@ -76,39 +69,37 @@ func NewArtistService(
 	removeSongsFromArtist artist.RemoveSongsFromArtist,
 	saveImageToArtist artist.SaveImageToArtist,
 	updateArtist artist.UpdateArtist,
+
 	createBandMember member.CreateBandMember,
 	deleteBandMember member.DeleteBandMember,
 	deleteImageFromBandMember member.DeleteImageFromBandMember,
 	moveBandMember member.MoveBandMember,
 	saveImageToBandMember member.SaveImageToBandMember,
 	updateBandMember member.UpdateBandMember,
-	createBandMemberRole role.CreateBandMemberRole,
-	deleteBandMemberRole role.DeleteBandMemberRole,
-	getBandMemberRoles role.GetBandMemberRoles,
-	moveBandMemberRole role.MoveBandMemberRole,
+
+	getBandMemberRoles member.GetBandMemberRoles,
 ) ArtistService {
 	return &artistService{
-		addAlbumsToArtist:         addAlbumsToArtist,
-		addSongsToArtist:          addSongsToArtist,
-		createArtist:              createArtist,
-		deleteArtist:              deleteArtist,
-		deleteImageFromArtist:     deleteImageFromArtist,
-		getAllArtists:             getAllArtists,
-		getArtist:                 getArtist,
-		removeAlbumsFromArtist:    removeAlbumsFromArtist,
-		removeSongsFromArtist:     removeSongsFromArtist,
-		saveImageToArtist:         saveImageToArtist,
-		updateArtist:              updateArtist,
+		addAlbumsToArtist:      addAlbumsToArtist,
+		addSongsToArtist:       addSongsToArtist,
+		createArtist:           createArtist,
+		deleteArtist:           deleteArtist,
+		deleteImageFromArtist:  deleteImageFromArtist,
+		getAllArtists:          getAllArtists,
+		getArtist:              getArtist,
+		removeAlbumsFromArtist: removeAlbumsFromArtist,
+		removeSongsFromArtist:  removeSongsFromArtist,
+		saveImageToArtist:      saveImageToArtist,
+		updateArtist:           updateArtist,
+
 		createBandMember:          createBandMember,
 		deleteBandMember:          deleteBandMember,
 		deleteImageFromBandMember: deleteImageFromBandMember,
 		moveBandMember:            moveBandMember,
 		saveImageToBandMember:     saveImageToBandMember,
 		updateBandMember:          updateBandMember,
-		createBandMemberRole:      createBandMemberRole,
-		deleteBandMemberRole:      deleteBandMemberRole,
-		getBandMemberRoles:        getBandMemberRoles,
-		moveBandMemberRole:        moveBandMemberRole,
+
+		getBandMemberRoles: getBandMemberRoles,
 	}
 }
 
@@ -184,18 +175,6 @@ func (a *artistService) UpdateBandMember(request requests.UpdateBandMemberReques
 
 // Band Member - Roles
 
-func (a *artistService) CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *wrapper.ErrorCode {
-	return a.createBandMemberRole.Handle(request, token)
-}
-
-func (a *artistService) DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode {
-	return a.deleteBandMemberRole.Handle(id, token)
-}
-
 func (a *artistService) GetBandMemberRoles(token string) ([]model.BandMemberRole, *wrapper.ErrorCode) {
 	return a.getBandMemberRoles.Handle(token)
-}
-
-func (a *artistService) MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode {
-	return a.moveBandMemberRole.Handle(request, token)
 }

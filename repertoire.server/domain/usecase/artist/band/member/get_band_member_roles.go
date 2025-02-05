@@ -1,4 +1,4 @@
-package role
+package member
 
 import (
 	"repertoire/server/data/repository"

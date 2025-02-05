@@ -3,7 +3,7 @@ package role
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/domain/usecase/artist/band/member/role"
+	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"

@@ -2,6 +2,17 @@ package requests
 
 import "github.com/google/uuid"
 
+// Band Member Roles
+
+type CreateBandMemberRoleRequest struct {
+	Name string `validate:"required,max=24"`
+}
+
+type MoveBandMemberRoleRequest struct {
+	ID     uuid.UUID `validate:"required"`
+	OverID uuid.UUID `validate:"required"`
+}
+
 // Guitar Tunings
 
 type CreateGuitarTuningRequest struct {

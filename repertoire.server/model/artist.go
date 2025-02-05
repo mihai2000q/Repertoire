@@ -50,18 +50,3 @@ type BandMember struct {
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
-
-// Band Member Role
-
-type BandMemberRole struct {
-	ID          uuid.UUID    `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name        string       `gorm:"size:24; not null" json:"name"`
-	Order       uint         `gorm:"not null" json:"-"`
-	BandMembers []BandMember `gorm:"many2many:band_member_has_roles" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-}
-
-var DefaultBandMemberRoles = []string{
-	"Vocalist", "Lead Guitarist", "Rhythm Guitarist", "Bassist", "Drummer", "Pianist",
-}

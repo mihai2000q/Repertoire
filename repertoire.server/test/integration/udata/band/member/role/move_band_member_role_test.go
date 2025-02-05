@@ -8,14 +8,14 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
-	artistData "repertoire/server/test/integration/test/data/artist"
+	userDataData "repertoire/server/test/integration/test/data/udata"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 )
 
 func TestMoveBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+	utils.SeedAndCleanupData(t, userDataData.Users, userDataData.SeedData)
 
 	request := requests.MoveBandMemberRoleRequest{
 		ID:     uuid.New(),
@@ -24,7 +24,7 @@ func TestMoveBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *test
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/artists/band-members/roles/move", request)
+	core.NewTestHandler().PUT(w, "/api/user-data/band-members-roles/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -32,9 +32,9 @@ func TestMoveBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *test
 
 func TestMoveBandMemberRole_WhenOverRoleIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+	utils.SeedAndCleanupData(t, userDataData.Users, userDataData.SeedData)
 
-	user := artistData.Users[0]
+	user := userDataData.Users[0]
 	request := requests.MoveBandMemberRoleRequest{
 		ID:     user.BandMemberRoles[0].ID,
 		OverID: uuid.New(),
@@ -44,7 +44,7 @@ func TestMoveBandMemberRole_WhenOverRoleIsNotFound_ShouldReturnNotFoundError(t *
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		PUT(w, "/api/artists/band-members/roles/move", request)
+		PUT(w, "/api/user-data/band-members-roles/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -59,13 +59,13 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldMoveRoles(t *testing.T) {
 	}{
 		{
 			"From upper position to lower",
-			artistData.Users[0],
+			userDataData.Users[0],
 			2,
 			0,
 		},
 		{
 			"From lower position to upper",
-			artistData.Users[0],
+			userDataData.Users[0],
 			0,
 			2,
 		},
@@ -74,7 +74,7 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldMoveRoles(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			// given
-			utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+			utils.SeedAndCleanupData(t, userDataData.Users, userDataData.SeedData)
 
 			request := requests.MoveBandMemberRoleRequest{
 				ID:     test.user.BandMemberRoles[test.index].ID,
@@ -85,7 +85,7 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldMoveRoles(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(test.user).
-				PUT(w, "/api/artists/band-members/roles/move", request)
+				PUT(w, "/api/user-data/band-members-roles/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
