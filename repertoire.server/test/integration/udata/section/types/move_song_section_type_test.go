@@ -24,7 +24,7 @@ func TestMoveSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *tes
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/types/move", request)
+	core.NewTestHandler().PUT(w, "/api/user-data/song-section-types/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -44,7 +44,7 @@ func TestMoveSongSectionType_WhenOverTypeIsNotFound_ShouldReturnNotFoundError(t 
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		PUT(w, "/api/songs/sections/types/move", request)
+		PUT(w, "/api/user-data/song-section-types/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -85,7 +85,7 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(test.user).
-				PUT(w, "/api/songs/sections/types/move", request)
+				PUT(w, "/api/user-data/song-section-types/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)

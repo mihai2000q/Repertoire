@@ -24,7 +24,7 @@ func TestMoveGuitarTuning_WhenTuningIsNotFound_ShouldReturnNotFoundError(t *test
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/guitar-tunings/move", request)
+	core.NewTestHandler().PUT(w, "/api/user-data/guitar-tunings/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -44,7 +44,7 @@ func TestMoveGuitarTuning_WhenOverTuningIsNotFound_ShouldReturnNotFoundError(t *
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		PUT(w, "/api/songs/guitar-tunings/move", request)
+		PUT(w, "/api/user-data/guitar-tunings/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -85,7 +85,7 @@ func TestMoveGuitarTuning_WhenSuccessful_ShouldMoveTunings(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(test.user).
-				PUT(w, "/api/songs/guitar-tunings/move", request)
+				PUT(w, "/api/user-data/guitar-tunings/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)

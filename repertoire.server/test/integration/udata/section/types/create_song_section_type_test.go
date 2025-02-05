@@ -27,7 +27,7 @@ func TestCreateSongSectionType_WhenSuccessful_ShouldCreateType(t *testing.T) {
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		POST(w, "/api/songs/sections/types", request)
+		POST(w, "/api/user-data/song-section-types", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

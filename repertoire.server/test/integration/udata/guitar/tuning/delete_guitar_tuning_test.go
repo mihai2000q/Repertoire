@@ -19,7 +19,7 @@ func TestDeleteGuitarTuning_WhenTuningIsNotFound_ShouldReturnNotFoundError(t *te
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/guitar-tunings/"+uuid.New().String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/guitar-tunings/"+uuid.New().String())
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -33,7 +33,7 @@ func TestDeleteGuitarTuning_WhenSuccessful_ShouldDeleteTuning(t *testing.T) {
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/guitar-tunings/"+tuning.ID.String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/guitar-tunings/"+tuning.ID.String())
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

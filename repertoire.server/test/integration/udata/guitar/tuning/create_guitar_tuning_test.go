@@ -27,7 +27,7 @@ func TestCreateGuitarTuning_WhenSuccessful_ShouldCreateTuning(t *testing.T) {
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		POST(w, "/api/songs/guitar-tunings", request)
+		POST(w, "/api/user-data/guitar-tunings", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

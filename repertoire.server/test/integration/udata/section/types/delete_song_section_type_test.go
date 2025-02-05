@@ -19,7 +19,7 @@ func TestDeleteSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *t
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/sections/types/"+uuid.New().String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/song-section-types/"+uuid.New().String())
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
