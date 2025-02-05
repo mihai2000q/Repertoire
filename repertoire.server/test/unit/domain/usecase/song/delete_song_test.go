@@ -156,8 +156,6 @@ func TestDeleteSong_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *
 		Return(nil, mockSong).
 		Once()
 
-	storageFilePathProvider.On("HasSongFiles", *mockSong).Return(true).Once()
-
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetSongDirectoryPath", *mockSong).Return(directoryPath).Once()
 
@@ -180,8 +178,9 @@ func TestDeleteSong_WhenUpdateAllPlaylistsSongsFails_ShouldReturnInternalServerE
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
+	storageService := new(service.StorageServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := song.NewDeleteSong(songRepository, playlistRepository, nil, storageFilePathProvider)
+	_uut := song.NewDeleteSong(songRepository, playlistRepository, storageService, storageFilePathProvider)
 
 	id := uuid.New()
 
@@ -200,7 +199,10 @@ func TestDeleteSong_WhenUpdateAllPlaylistsSongsFails_ShouldReturnInternalServerE
 		Return(nil, mockSong).
 		Once()
 
-	storageFilePathProvider.On("HasSongFiles", *mockSong).Return(false).Once()
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetSongDirectoryPath", *mockSong).Return(directoryPath).Once()
+
+	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	playlistRepository.On("UpdateAllPlaylistSongs", mock.IsType(new([]model.PlaylistSong))).
@@ -222,8 +224,9 @@ func TestDeleteSong_WhenUpdateAllPlaylistsSongsFails_ShouldReturnInternalServerE
 func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
+	storageService := new(service.StorageServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := song.NewDeleteSong(songRepository, nil, nil, storageFilePathProvider)
+	_uut := song.NewDeleteSong(songRepository, nil, storageService, storageFilePathProvider)
 
 	id := uuid.New()
 
@@ -232,7 +235,10 @@ func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testi
 		Return(nil, mockSong).
 		Once()
 
-	storageFilePathProvider.On("HasSongFiles", *mockSong).Return(false).Once()
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetSongDirectoryPath", *mockSong).Return(directoryPath).Once()
+
+	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	songRepository.On("Delete", id).Return(internalError).Once()
@@ -256,19 +262,11 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 		name       string
 		song       model.Song
 		albumSongs []model.Song
-		hasFiles   bool
 	}{
 		{
-			"Normal delete, without album or files",
+			"Normal delete, without album",
 			model.Song{ID: songID},
 			[]model.Song{},
-			false,
-		},
-		{
-			"With Files",
-			model.Song{ID: songID},
-			[]model.Song{},
-			true,
 		},
 		{
 			"With Album",
@@ -282,7 +280,6 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 				{AlbumTrackNo: &[]uint{4}[0]},
 				{AlbumTrackNo: &[]uint{5}[0]},
 			},
-			false,
 		},
 		{
 			"With Playlist",
@@ -324,7 +321,6 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 				},
 			},
 			[]model.Song{},
-			false,
 		},
 	}
 
@@ -367,18 +363,14 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 					Once()
 			}
 
-			storageFilePathProvider.On("HasSongFiles", tt.song).Return(tt.hasFiles).Once()
+			directoryPath := "some directory path"
+			storageFilePathProvider.On("GetSongDirectoryPath", tt.song).
+				Return(directoryPath).
+				Once()
 
-			if tt.hasFiles {
-				directoryPath := "some directory path"
-				storageFilePathProvider.On("GetSongDirectoryPath", tt.song).
-					Return(directoryPath).
-					Once()
-
-				storageService.On("DeleteDirectory", directoryPath).
-					Return(nil).
-					Once()
-			}
+			storageService.On("DeleteDirectory", directoryPath).
+				Return(nil).
+				Once()
 
 			for _, playlist := range tt.song.Playlists {
 				songRemovedIndex := slices.IndexFunc(playlist.PlaylistSongs, func(playlistSong model.PlaylistSong) bool {

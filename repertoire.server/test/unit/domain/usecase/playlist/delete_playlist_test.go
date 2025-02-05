@@ -70,8 +70,6 @@ func TestDeletePlaylist_WhenDeleteDirectoryFails_ShouldReturnInternalServerError
 	}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	storageFilePathProvider.On("HasPlaylistFiles", *mockPlaylist).Return(true).Once()
-
 	directoryPath := "some directory path"
 	storageFilePathProvider.On("GetPlaylistDirectoryPath", *mockPlaylist).Return(directoryPath).Once()
 
@@ -93,8 +91,9 @@ func TestDeletePlaylist_WhenDeleteDirectoryFails_ShouldReturnInternalServerError
 func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
+	storageService := new(service.StorageServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := playlist.NewDeletePlaylist(playlistRepository, nil, storageFilePathProvider)
+	_uut := playlist.NewDeletePlaylist(playlistRepository, storageService, storageFilePathProvider)
 
 	id := uuid.New()
 
@@ -103,7 +102,10 @@ func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(
 	}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	storageFilePathProvider.On("HasPlaylistFiles", *mockPlaylist).Return(false).Once()
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetPlaylistDirectoryPath", *mockPlaylist).Return(directoryPath).Once()
+
+	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	playlistRepository.On("Delete", id).Return(internalError).Once()
@@ -117,63 +119,40 @@ func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 }
 
 func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
-	tests := []struct {
-		name     string
-		playlist model.Playlist
-		hasFiles bool
-	}{
-		{
-			"Without Files",
-			model.Playlist{ID: uuid.New()},
-			false,
-		},
-		{
-			"With Files",
-			model.Playlist{ID: uuid.New()},
-			true,
-		},
-	}
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	storageService := new(service.StorageServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	_uut := playlist.NewDeletePlaylist(playlistRepository, storageService, storageFilePathProvider)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			playlistRepository := new(repository.PlaylistRepositoryMock)
-			storageService := new(service.StorageServiceMock)
-			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-			_uut := playlist.NewDeletePlaylist(playlistRepository, storageService, storageFilePathProvider)
+	expectedPlaylist := model.Playlist{ID: uuid.New()}
+	playlistRepository.On("Get", new(model.Playlist), expectedPlaylist.ID).
+		Return(nil, &expectedPlaylist).
+		Once()
 
-			id := tt.playlist.ID
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetPlaylistDirectoryPath", expectedPlaylist).
+		Return(directoryPath).
+		Once()
 
-			playlistRepository.On("Get", new(model.Playlist), id).Return(nil, &tt.playlist).Once()
+	storageService.On("DeleteDirectory", directoryPath).
+		Return(nil).
+		Once()
 
-			storageFilePathProvider.On("HasPlaylistFiles", tt.playlist).Return(tt.hasFiles).Once()
+	playlistRepository.On("Delete", expectedPlaylist.ID).Return(nil).Once()
 
-			if tt.hasFiles {
-				directoryPath := "some directory path"
-				storageFilePathProvider.On("GetPlaylistDirectoryPath", tt.playlist).
-					Return(directoryPath).
-					Once()
+	// when
+	errCode := _uut.Handle(expectedPlaylist.ID)
 
-				storageService.On("DeleteDirectory", directoryPath).
-					Return(nil).
-					Once()
-			}
+	// then
+	assert.Nil(t, errCode)
 
-			playlistRepository.On("Delete", id).Return(nil).Once()
-
-			// when
-			errCode := _uut.Handle(id)
-
-			// then
-			assert.Nil(t, errCode)
-
-			playlistRepository.AssertExpectations(t)
-			storageService.AssertExpectations(t)
-			storageFilePathProvider.AssertExpectations(t)
-		})
-	}
+	playlistRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
 }
