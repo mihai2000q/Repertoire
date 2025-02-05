@@ -27,7 +27,7 @@ func TestCreateBandMemberRole_WhenSuccessful_ShouldCreateRole(t *testing.T) {
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		POST(w, "/api/user-data/band-members-roles", request)
+		POST(w, "/api/user-data/band-member-roles", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

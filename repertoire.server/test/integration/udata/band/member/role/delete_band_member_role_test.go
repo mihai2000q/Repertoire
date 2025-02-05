@@ -19,7 +19,7 @@ func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *te
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/user-data/band-members-roles/"+uuid.New().String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/band-member-roles/"+uuid.New().String())
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -33,7 +33,7 @@ func TestDeleteBandMemberRole_WhenSuccessful_ShouldDeleteRole(t *testing.T) {
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/user-data/band-members-roles/"+bandMemberRole.ID.String())
+	core.NewTestHandler().DELETE(w, "/api/user-data/band-member-roles/"+bandMemberRole.ID.String())
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

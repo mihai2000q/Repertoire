@@ -24,7 +24,7 @@ func TestMoveBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *test
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/user-data/band-members-roles/move", request)
+	core.NewTestHandler().PUT(w, "/api/user-data/band-member-roles/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -44,7 +44,7 @@ func TestMoveBandMemberRole_WhenOverRoleIsNotFound_ShouldReturnNotFoundError(t *
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithUser(user).
-		PUT(w, "/api/user-data/band-members-roles/move", request)
+		PUT(w, "/api/user-data/band-member-roles/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -85,7 +85,7 @@ func TestMoveBandMemberRole_WhenSuccessful_ShouldMoveRoles(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(test.user).
-				PUT(w, "/api/user-data/band-members-roles/move", request)
+				PUT(w, "/api/user-data/band-member-roles/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
