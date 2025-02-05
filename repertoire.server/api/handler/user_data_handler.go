@@ -11,15 +11,15 @@ import (
 )
 
 type UserDataHandler struct {
-	service service.SongService
+	service service.UserDataService
 	server.BaseHandler
 }
 
 func NewUserDataHandler(
-	service service.SongService,
+	service service.UserDataService,
 	validator *validation.Validator,
-) *SongHandler {
-	return &SongHandler{
+) *UserDataHandler {
+	return &UserDataHandler{
 		service: service,
 		BaseHandler: server.BaseHandler{
 			Validator: validator,
