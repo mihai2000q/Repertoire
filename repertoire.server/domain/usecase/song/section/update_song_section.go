@@ -124,7 +124,7 @@ func (u UpdateSongSection) rehearsalsHasChanged(
 	song.Rehearsals = song.Rehearsals*float64(sectionsCount) - float64(section.Rehearsals)
 	song.Progress = song.Progress*float64(sectionsCount) - float64(section.Progress)
 
-	// update Section's rehearsals score based on the history changes
+	// update section's rehearsals score based on the history changes
 	var history []model.SongSectionHistory
 	err = u.songRepository.GetSongSectionHistory(&history, section.ID, model.RehearsalsProperty)
 	if err != nil {
@@ -133,7 +133,7 @@ func (u UpdateSongSection) rehearsalsHasChanged(
 
 	section.RehearsalsScore = u.progressProcessor.ComputeRehearsalsScore(history)
 
-	// update Section's progress (dependent on the rehearsals score)
+	// update section's progress (dependent on the rehearsals score)
 	section.Progress = u.progressProcessor.ComputeProgress(*section)
 
 	// update the song's rehearsals and progress median with new section values
@@ -169,7 +169,7 @@ func (u UpdateSongSection) confidenceHasChanged(
 	song.Confidence = song.Confidence*float64(sectionsCount) - float64(section.Confidence)
 	song.Progress = song.Progress*float64(sectionsCount) - float64(section.Progress)
 
-	// update Section's confidence score based on the history changes
+	// update section's confidence score based on the history changes
 	var history []model.SongSectionHistory
 	err = u.songRepository.GetSongSectionHistory(&history, section.ID, model.ConfidenceProperty)
 	if err != nil {
@@ -178,7 +178,7 @@ func (u UpdateSongSection) confidenceHasChanged(
 
 	section.ConfidenceScore = u.progressProcessor.ComputeConfidenceScore(history)
 
-	// update Section's progress (dependent on the confidence score)
+	// update section's progress (dependent on the confidence score)
 	section.Progress = u.progressProcessor.ComputeProgress(*section)
 
 	// update the song's confidence and progress median with new section values

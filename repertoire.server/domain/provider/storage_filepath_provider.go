@@ -21,11 +21,6 @@ type StorageFilePathProvider interface {
 	GetArtistDirectoryPath(artist model.Artist) string
 	GetPlaylistDirectoryPath(playlist model.Playlist) string
 	GetSongDirectoryPath(song model.Song) string
-
-	HasAlbumFiles(album model.Album) bool
-	HasArtistFiles(artist model.Artist) bool
-	HasPlaylistFiles(playlist model.Playlist) bool
-	HasSongFiles(song model.Song) bool
 }
 
 type storageFilePathProvider struct {
@@ -131,22 +126,6 @@ func (s storageFilePathProvider) GetSongDirectoryPath(song model.Song) string {
 		WithDirectory(songRootDirectory).
 		WithDirectory(song.ID.String()).
 		BuildDirectoryPath()
-}
-
-func (s storageFilePathProvider) HasAlbumFiles(album model.Album) bool {
-	return album.ImageURL != nil
-}
-
-func (s storageFilePathProvider) HasArtistFiles(artist model.Artist) bool {
-	return artist.ImageURL != nil
-}
-
-func (s storageFilePathProvider) HasPlaylistFiles(playlist model.Playlist) bool {
-	return playlist.ImageURL != nil
-}
-
-func (s storageFilePathProvider) HasSongFiles(song model.Song) bool {
-	return song.ImageURL != nil
 }
 
 func (s storageFilePathProvider) getArtistDirectory(artist model.Artist) directoryPathBuilder {

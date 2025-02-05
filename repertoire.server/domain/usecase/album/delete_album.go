@@ -2,6 +2,7 @@ package album
 
 import (
 	"errors"
+	"net/http"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -39,12 +40,10 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
-	if d.storageFilePathProvider.HasAlbumFiles(album) {
-		directoryPath := d.storageFilePathProvider.GetAlbumDirectoryPath(album)
-		errCode := d.storageService.DeleteDirectory(directoryPath)
-		if errCode != nil {
-			return errCode
-		}
+	directoryPath := d.storageFilePathProvider.GetAlbumDirectoryPath(album)
+	errCode := d.storageService.DeleteDirectory(directoryPath)
+	if errCode != nil && errCode.Code != http.StatusNotFound {
+		return errCode
 	}
 
 	if request.WithSongs {

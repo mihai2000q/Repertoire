@@ -30,6 +30,10 @@ type CreateSongRequest struct {
 	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
+type AddPerfectSongRehearsalRequest struct {
+	ID uuid.UUID `validate:"required"`
+}
+
 type UpdateSongRequest struct {
 	ID             uuid.UUID `validate:"required"`
 	Title          string    `validate:"required,max=100"`

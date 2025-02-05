@@ -90,6 +90,23 @@ func (s SongHandler) Create(c *gin.Context) {
 	})
 }
 
+func (s SongHandler) AddPerfectRehearsal(c *gin.Context) {
+	var request requests.AddPerfectSongRehearsalRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.AddPerfectRehearsal(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "perfect rehearsal has been added successfully!")
+}
+
 func (s SongHandler) Update(c *gin.Context) {
 	var request requests.UpdateSongRequest
 	errorCode := s.BindAndValidate(c, &request)
