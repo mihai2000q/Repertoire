@@ -9,11 +9,13 @@ export interface GetArtistsRequest {
 
 export interface CreateArtistRequest {
   name: string
+  isBand?: boolean
 }
 
 export interface UpdateArtistRequest {
   id: string
   name: string
+  isBand?: boolean
 }
 
 export interface SaveImageToArtistRequest {

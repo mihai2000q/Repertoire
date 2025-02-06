@@ -211,6 +211,7 @@ export const emptyUser: User = {
 export const emptyArtist: Artist = {
   id: '',
   name: '',
+  isBand: false,
   createdAt: '',
   updatedAt: '',
   albums: [],

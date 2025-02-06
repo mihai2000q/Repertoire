@@ -3,6 +3,7 @@ import { FileWithPath } from '@mantine/dropzone'
 
 export interface AddNewArtistForm {
   name: string
+  isBand: boolean
 }
 
 export const addNewArtistValidation = z.object({
@@ -28,6 +29,7 @@ export const addNewArtistSongValidation = z.object({
 export interface EditArtistHeaderForm {
   name: string
   image: string | FileWithPath | null
+  isBand: boolean
 }
 
 export const editArtistHeaderValidation = z.object({
