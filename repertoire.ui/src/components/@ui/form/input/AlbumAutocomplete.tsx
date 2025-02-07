@@ -134,7 +134,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
-          <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
+          <ScrollArea.Autosize mah={200} scrollbarSize={5}>
             {albums?.totalCount === 0 ? (
               <Combobox.Empty>No album found</Combobox.Empty>
             ) : (
