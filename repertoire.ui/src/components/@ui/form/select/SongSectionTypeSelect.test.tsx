@@ -1,5 +1,5 @@
 import { reduxRender } from '../../../../test-utils.tsx'
-import { screen } from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
@@ -51,9 +51,11 @@ describe('Song Section Type Select', () => {
       <SongSectionTypeSelect label={label} option={null} onChange={onChange} />
     )
 
-    expect(screen.getByRole('textbox', { name: label })).toHaveValue('')
 
     const select = screen.getByRole('textbox', { name: label })
+    expect(select).toHaveValue('')
+    expect(select).toBeDisabled()
+    await waitFor(() => expect(select).not.toBeDisabled())
     await user.click(select)
 
     for (const st of sectionTypes) {
