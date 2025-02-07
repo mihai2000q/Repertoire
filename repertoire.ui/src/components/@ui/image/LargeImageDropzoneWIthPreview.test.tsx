@@ -117,6 +117,9 @@ describe('Large Image Dropzone With Preview', () => {
       />
     )
 
+    expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', defaultImage)
+
     let resetImageButton = screen.getByRole('button', { name: 'reset-image' })
     expect(resetImageButton).toBeInTheDocument()
     expect(resetImageButton).toBeDisabled()
