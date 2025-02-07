@@ -8,7 +8,21 @@ export default interface Artist {
   imageUrl?: string
   albums: Album[]
   songs: Song[]
+  bandMembers: BandMember[]
 
   createdAt: string
   updatedAt: string
+}
+
+export interface BandMember {
+  id: string
+  name: string
+  imageUrl?: string
+  color?: string
+  roles: BandMemberRole[]
+}
+
+export interface BandMemberRole {
+  id: string
+  name: string
 }

@@ -48,3 +48,35 @@ export interface RemoveSongsFromArtistRequest {
   id: string
   songIds: string[]
 }
+
+// Band Members
+
+export interface CreateBandMemberRequest {
+  name: string
+  color?: string
+  roleIds: string[]
+  artistId: string
+}
+
+export interface UpdateBandMemberRequest {
+  id: string
+  name: string
+  color?: string
+  roleIds: string[]
+}
+
+export interface MoveBandMemberRequest {
+  id: string
+  overId: string
+  artistId: string
+}
+
+export interface SaveImageToBandMemberRequest {
+  image: FileWithPath
+  id: string
+}
+
+export interface DeleteBandMemberRequest {
+  id: string
+  artistId: string
+}
