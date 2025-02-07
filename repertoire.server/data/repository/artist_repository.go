@@ -56,7 +56,9 @@ func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
 
 func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
 	return a.client.DB.
-		Preload("BandMembers").
+		Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
+			return db.Order("band_members.order")
+		}).
 		Preload("BandMembers.Roles").
 		Find(&artist, model.Artist{ID: id}).
 		Error
@@ -64,7 +66,9 @@ func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID
 
 func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID) error {
 	return a.client.DB.
-		Preload("BandMembers").
+		Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
+			return db.Order("band_members.order")
+		}).
 		Find(&artist, model.Artist{ID: id}).
 		Error
 }
