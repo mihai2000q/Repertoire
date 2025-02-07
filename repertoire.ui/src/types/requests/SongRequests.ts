@@ -48,6 +48,8 @@ export interface SaveImageToSongRequest {
   id: string
 }
 
+// Sections
+
 export interface CreateSongSectionRequest {
   songId: string
   typeId: string

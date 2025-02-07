@@ -78,6 +78,7 @@ function ArtistAlbumsCard({
                 <IconDots size={15} />
               </ActionIcon>
             </Menu.Target>
+
             <Menu.Dropdown>
               {!isUnknownArtist && (
                 <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingAlbums}>
