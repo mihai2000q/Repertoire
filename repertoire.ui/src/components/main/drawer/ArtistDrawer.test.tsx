@@ -1,4 +1,10 @@
-import { emptyAlbum, emptySong, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import ArtistDrawer from './ArtistDrawer.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { setupServer } from 'msw/node'
@@ -24,7 +30,7 @@ describe('Artist Drawer', () => {
     {
       ...emptySong,
       id: '2',
-      title: 'Song 2',
+      title: 'Song 2'
     },
     {
       ...emptySong,
@@ -57,7 +63,7 @@ describe('Artist Drawer', () => {
       album: {
         ...emptyAlbum,
         id: '3',
-        title: 'Song Album 3',
+        title: 'Song Album 3'
       }
     },
     {
@@ -67,7 +73,7 @@ describe('Artist Drawer', () => {
       album: {
         ...emptyAlbum,
         id: '4',
-        title: 'Song Album 4',
+        title: 'Song Album 4'
       }
     }
   ]
@@ -88,13 +94,10 @@ describe('Artist Drawer', () => {
   ]
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    imageUrl: 'something.png',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    imageUrl: 'something.png'
   }
 
   const getArtist = (artist: Artist) =>

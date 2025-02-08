@@ -54,7 +54,7 @@ describe('Edit Artist Header Modal', () => {
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
 
-  it('should send only edit request when the image is unchanged - minimal', async () => {
+  it('should send only edit request when the image is unchanged', async () => {
     const user = userEvent.setup()
 
     const newName = 'New Artist'
@@ -126,6 +126,7 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
+      isBand: artist.isBand,
       name: artist.name
     })
     expect(capturedSaveImageFormData.get('id')).toBe(artist.id)
@@ -172,6 +173,7 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
+      isBand: artist.isBand,
       name: artist.name
     })
     expect(capturedSaveImageFormData.get('id')).toBe(artist.id)
@@ -209,6 +211,7 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
+      isBand: artist.isBand,
       name: artist.name
     })
   })

@@ -1,4 +1,4 @@
-import { reduxRouterRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -10,34 +10,22 @@ import { expect } from 'vitest'
 
 describe('Playlist Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
     title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
     playlistTrackNo: 1
   }
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
-    title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
+    title: 'Album 1'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   it('should render and display minimal info', () => {

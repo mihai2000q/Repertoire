@@ -237,7 +237,8 @@ export const emptySong: Song = {
   progress: 0,
   sections: [],
   createdAt: '',
-  updatedAt: ''
+  updatedAt: '',
+  releaseDate: null
 }
 
 export const emptyOrder: Order = {
