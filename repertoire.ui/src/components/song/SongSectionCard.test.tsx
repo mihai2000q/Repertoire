@@ -1,5 +1,5 @@
 import { reduxRender, withToastify } from '../../test-utils.tsx'
-import SongSection from './SongSection.tsx'
+import SongSectionCard from './SongSectionCard.tsx'
 import { SongSection as SongSectionModel } from './../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
 
-describe('Song Section', () => {
+describe('Song Section Card', () => {
   const section: SongSectionModel = {
     id: '1',
     name: 'Solo 1',
@@ -41,7 +41,7 @@ describe('Song Section', () => {
 
   it('should render', () => {
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={0}
@@ -63,7 +63,7 @@ describe('Song Section', () => {
     const maxSectionProgress = 67
 
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={maxSectionProgress}
@@ -103,7 +103,7 @@ describe('Song Section', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={0}
@@ -126,7 +126,7 @@ describe('Song Section', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={0}
@@ -147,7 +147,7 @@ describe('Song Section', () => {
       const user = userEvent.setup()
 
       reduxRender(
-        <SongSection
+        <SongSectionCard
           section={section}
           songId={''}
           maxSectionProgress={0}
@@ -176,7 +176,7 @@ describe('Song Section', () => {
 
       reduxRender(
         withToastify(
-          <SongSection
+          <SongSectionCard
             section={section}
             songId={songId}
             maxSectionProgress={0}
@@ -211,7 +211,7 @@ describe('Song Section', () => {
 
     reduxRender(
       withToastify(
-        <SongSection
+        <SongSectionCard
           section={section}
           songId={''}
           maxSectionProgress={0}

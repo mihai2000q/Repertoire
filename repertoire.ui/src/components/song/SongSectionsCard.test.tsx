@@ -1,5 +1,5 @@
 import { reduxRender } from '../../test-utils.tsx'
-import SongSections from './SongSections.tsx'
+import SongSectionsCard from './SongSectionsCard.tsx'
 import { SongSection } from '../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -8,7 +8,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MoveSongSectionRequest } from '../../types/requests/SongRequests.ts'
 
-describe('Song Sections', () => {
+describe('Song Sections Card', () => {
   const sections: SongSection[] = [
     {
       id: '1',
@@ -60,7 +60,7 @@ describe('Song Sections', () => {
   afterAll(() => server.close())
 
   it('should render', () => {
-    reduxRender(<SongSections sections={sections} songId={''} />)
+    reduxRender(<SongSectionsCard sections={sections} songId={''} />)
 
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
@@ -76,7 +76,7 @@ describe('Song Sections', () => {
   it('should open add new song section when clicking on add new section button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSections sections={sections} songId={''} />)
+    reduxRender(<SongSectionsCard sections={sections} songId={''} />)
 
     await user.click(screen.getByRole('button', { name: 'add-new-section' }))
     expect(screen.getByLabelText('add-new-song-section')).toBeInTheDocument()
@@ -85,7 +85,7 @@ describe('Song Sections', () => {
   it('should show details when clicking on show details', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSections sections={sections} songId={''} />)
+    reduxRender(<SongSectionsCard sections={sections} songId={''} />)
 
     await user.click(screen.getByRole('button', { name: 'show-details' }))
     expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
@@ -111,7 +111,7 @@ describe('Song Sections', () => {
       })
     )
 
-    reduxRender(<SongSections sections={sections} songId={songId} />)
+    reduxRender(<SongSectionsCard sections={sections} songId={songId} />)
 
     fireEvent.mouseDown(screen.getByLabelText(`song-section-${section.name}`))
     fireEvent.dragStart(screen.getByLabelText(`song-section-${section.name}`))
@@ -136,7 +136,7 @@ describe('Song Sections', () => {
   it('should show add new song section card and open add new song section, when there are no sections', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSections sections={[]} songId={''} />)
+    reduxRender(<SongSectionsCard sections={[]} songId={''} />)
 
     expect(screen.getByLabelText('add-new-song-section-card')).toBeInTheDocument()
     await user.click(screen.getByLabelText('add-new-song-section-card'))

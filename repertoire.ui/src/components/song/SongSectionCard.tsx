@@ -26,7 +26,7 @@ import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 
-interface SongSectionProps {
+interface SongSectionCardProps {
   section: SongSectionModel
   songId: string
   isDragging: boolean
@@ -35,14 +35,14 @@ interface SongSectionProps {
   maxSectionProgress: number
 }
 
-function SongSection({
+function SongSectionCard({
   section,
   songId,
   isDragging,
   draggableProvided,
   showDetails,
   maxSectionProgress
-}: SongSectionProps) {
+}: SongSectionCardProps) {
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
 
@@ -212,4 +212,4 @@ function SongSection({
   )
 }
 
-export default SongSection
+export default SongSectionCard

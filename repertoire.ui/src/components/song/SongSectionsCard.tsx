@@ -6,15 +6,15 @@ import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
-import SongSection from './SongSection.tsx'
+import SongSectionCard from './SongSectionCard.tsx'
 import { useState } from 'react'
 
-interface SongSectionsProps {
+interface SongSectionsCardProps {
   sections: SongSectionModel[]
   songId: string
 }
 
-function SongSections({ sections, songId }: SongSectionsProps) {
+function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
 
   const [openedAddSongSection, { open: openAddSongSection, close: closeAddSongSection }] =
@@ -95,7 +95,7 @@ function SongSections({ sections, songId }: SongSectionsProps) {
                       isDragDisabled={isMoveLoading}
                     >
                       {(provided, snapshot) => (
-                        <SongSection
+                        <SongSectionCard
                           section={section}
                           songId={songId}
                           draggableProvided={provided}
@@ -132,4 +132,4 @@ function SongSections({ sections, songId }: SongSectionsProps) {
   )
 }
 
-export default SongSections
+export default SongSectionsCard
