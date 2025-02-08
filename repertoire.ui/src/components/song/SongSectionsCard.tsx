@@ -1,6 +1,17 @@
-import { useMoveSongSectionMutation } from '../../state/api/songsApi.ts'
-import { ActionIcon, Box, Card, Group, Stack, Text, Tooltip } from '@mantine/core'
-import { IconEye, IconEyeOff, IconListNumbers, IconPlus } from '@tabler/icons-react'
+import {
+  useAddPerfectSongRehearsalMutation,
+  useMoveSongSectionMutation
+} from '../../state/api/songsApi.ts'
+import { ActionIcon, alpha, Box, Card, Group, Popover, Stack, Text, Tooltip } from '@mantine/core'
+import {
+  IconCheck,
+  IconChecks,
+  IconEye,
+  IconEyeOff,
+  IconListNumbers,
+  IconPlus,
+  IconX
+} from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
@@ -9,6 +20,7 @@ import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
 import SongSectionCard from './SongSectionCard.tsx'
 import { useState } from 'react'
 import EditSongSectionsOccurrencesModal from './modal/EditSongSectionsOccurrencesModal.tsx'
+import { toast } from 'react-toastify'
 
 interface SongSectionsCardProps {
   sections: SongSectionModel[]
@@ -17,6 +29,10 @@ interface SongSectionsCardProps {
 
 function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
+  const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
+    useAddPerfectSongRehearsalMutation()
+
+  const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
 
   const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
     useDisclosure(false)
@@ -37,6 +53,12 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
 
   function handleShowDetails() {
     setShowDetails(!showDetails)
+  }
+
+  async function handleAddPerfectRehearsal() {
+    await addPerfectRehearsal({ id: songId }).unwrap()
+    toast.info('Perfect rehearsal added!')
+    setOpenedPerfectRehearsalPopover(false)
   }
 
   function onSectionsDragEnd({ source, destination }) {
@@ -92,6 +114,74 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
                 <IconListNumbers size={16} />
               </ActionIcon>
             </Tooltip>
+
+            <Popover
+              opened={openedPerfectRehearsalPopover}
+              onChange={setOpenedPerfectRehearsalPopover}
+              transitionProps={{ transition: 'fade-up' }}
+              position={'top'}
+              withArrow
+              shadow={'sm'}
+              closeOnClickOutside={!isPerfectRehearsalLoading}
+            >
+              <Popover.Target>
+                <Tooltip label={'Add Perfect Rehearsal'} disabled={openedPerfectRehearsalPopover}>
+                  <ActionIcon
+                    aria-label={'add-perfect-rehearsal'}
+                    variant={'grey'}
+                    size={'sm'}
+                    onClick={() =>
+                      setOpenedPerfectRehearsalPopover(
+                        isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
+                      )
+                    }
+                  >
+                    <IconChecks size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Popover.Target>
+
+              <Popover.Dropdown>
+                <Group gap={4}>
+                  <Text c={'dimmed'} fw={500} fz={'sm'}>
+                    Increase sections&#39; rehearsals based on occurrences
+                  </Text>
+                  <Group gap={4}>
+                    <ActionIcon
+                      variant={'subtle'}
+                      aria-label={'cancel-perfect-rehearsal'}
+                      disabled={isPerfectRehearsalLoading}
+                      onClick={() => setOpenedPerfectRehearsalPopover(false)}
+                      sx={(theme) => ({
+                        color: theme.colors.red[4],
+                        '&:hover': {
+                          color: theme.colors.red[5],
+                          backgroundColor: alpha(theme.colors.red[2], 0.35)
+                        },
+                        '&[data-disabled]': {
+                          color: theme.colors.gray[4],
+                          backgroundColor: 'transparent'
+                        }
+                      })}
+                    >
+                      <IconX size={16} />
+                    </ActionIcon>
+                    <ActionIcon
+                      variant={'subtle'}
+                      c={'green'}
+                      aria-label={'confirm-perfect-rehearsal'}
+                      loading={isPerfectRehearsalLoading}
+                      onClick={handleAddPerfectRehearsal}
+                      sx={(theme) => ({
+                        '&:hover': { backgroundColor: alpha(theme.colors.green[2], 0.35) }
+                      })}
+                    >
+                      <IconCheck size={16} />
+                    </ActionIcon>
+                  </Group>
+                </Group>
+              </Popover.Dropdown>
+            </Popover>
           </Tooltip.Group>
         </Group>
 
