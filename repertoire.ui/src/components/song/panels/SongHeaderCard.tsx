@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -39,8 +40,8 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const [deleteSongMutation] = useDeleteSongMutation()
 
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
-  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -69,6 +70,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <PerfectRehearsalMenuItem songId={song.id} />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

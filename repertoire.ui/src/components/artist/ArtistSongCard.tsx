@@ -25,6 +25,7 @@ import SongConfidenceBar from '../@ui/misc/SongConfidenceBar.tsx'
 import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
+import PerfectRehearsalMenuItem from "../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
 
 interface ArtistSongCardProps {
   song: Song
@@ -70,6 +71,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist, order }: ArtistSo
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownArtist && (
         <Menu.Item
           leftSection={<IconTrash size={14} />}

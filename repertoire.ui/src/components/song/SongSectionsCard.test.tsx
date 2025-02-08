@@ -1,4 +1,4 @@
-import { emptySongSection, reduxRender } from '../../test-utils.tsx'
+import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
 import SongSectionsCard from './SongSectionsCard.tsx'
 import { SongSection } from '../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
@@ -131,7 +131,7 @@ describe('Song Sections Card', () => {
 
       const songId = 'some-id'
 
-      reduxRender(<SongSectionsCard sections={sections} songId={songId} />)
+      reduxRender(withToastify(<SongSectionsCard sections={sections} songId={songId} />))
 
       await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
 

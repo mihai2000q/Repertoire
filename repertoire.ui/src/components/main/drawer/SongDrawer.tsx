@@ -43,6 +43,7 @@ import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
 import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
+import PerfectRehearsalMenuItem from "../../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -144,6 +145,7 @@ function SongDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <PerfectRehearsalMenuItem songId={song.id} />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
