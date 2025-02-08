@@ -64,6 +64,11 @@ export interface UpdateSongSectionRequest {
   confidence: number
 }
 
+export interface UpdateSongSectionsOccurrencesRequest {
+  songId: string
+  sections: { id: string, occurrences: number }[]
+}
+
 export interface MoveSongSectionRequest {
   id: string
   overId: string

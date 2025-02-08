@@ -39,6 +39,7 @@ export interface SongSection {
   rehearsals: number
   confidence: number
   progress: number
+  occurrences: number
   songSectionType: SongSectionType
 }
 
