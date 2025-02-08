@@ -10,7 +10,19 @@ describe('Artist Header Card', () => {
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1'
+    name: 'Artist 1',
+    bandMembers: [
+      {
+        id: '1',
+        name: 'Member 1',
+        roles: []
+      },
+      {
+        id: '2',
+        name: 'Member 2',
+        roles: []
+      }
+    ]
   }
 
   const albumsTotalCount = 10
@@ -56,6 +68,7 @@ describe('Artist Header Card', () => {
 
     const localArtist: Artist = {
       ...artist,
+      isBand: true,
       songs: [
         {
           ...emptySong,
@@ -86,7 +99,9 @@ describe('Artist Header Card', () => {
     expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: localArtist.name })).toBeInTheDocument()
     expect(
-      screen.getByText(`${albumsTotalCount} album • ${songsTotalCount} song`)
+      screen.getByText(
+        `${artist.bandMembers.length} members • ${albumsTotalCount} album • ${songsTotalCount} song`
+      )
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()

@@ -10,10 +10,11 @@ function ArtistLoader() {
         <Skeleton radius={'50%'} w={125} h={125} />
         <Stack gap={4} pt={'16px'}>
           <Skeleton w={80} h={15} />
-          <Skeleton w={200} h={35} my={6} />
+          <Skeleton w={200} h={37} my={6} />
           <Group gap={4}>
-            <Skeleton w={65} h={18} />
-            <Skeleton w={55} h={18} />
+            <Skeleton w={75} h={16} />
+            <Skeleton w={55} h={16} />
+            <Skeleton w={45} h={16} />
           </Group>
         </Stack>
       </Group>
