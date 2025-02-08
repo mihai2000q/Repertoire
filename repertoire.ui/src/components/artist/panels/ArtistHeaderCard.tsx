@@ -77,7 +77,7 @@ function ArtistHeaderCard({
             boxShadow: theme.shadows.lg,
             ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
           })}
-          onClick={!isUnknownArtist && artist.imageUrl && openImage}
+          onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
         />
         <Stack
           gap={4}
@@ -98,6 +98,9 @@ function ArtistHeaderCard({
             </Title>
           )}
           <Text fw={500} fz={'sm'} c={'dimmed'}>
+            {!isUnknownArtist && artist?.isBand
+              ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+              : ''}
             {albumsTotalCount} album{plural(albumsTotalCount)} • {songsTotalCount} song
             {plural(songsTotalCount)}
           </Text>

@@ -116,7 +116,7 @@ function ArtistAutocomplete({
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
-          <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
+          <ScrollArea.Autosize mah={200} scrollbarSize={5}>
             {artists?.totalCount === 0 ? (
               <Combobox.Empty>No artist found</Combobox.Empty>
             ) : (

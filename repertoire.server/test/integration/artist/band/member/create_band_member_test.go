@@ -1,6 +1,7 @@
 package member
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -66,7 +67,10 @@ func TestCreateBandMember_WhenSuccessful_ShouldCreateMember(t *testing.T) {
 	core.NewTestHandler().POST(w, "/api/artists/band-members", request)
 
 	// then
+	var response struct{ ID uuid.UUID }
+	_ = json.Unmarshal(w.Body.Bytes(), &response)
 	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotEmpty(t, response)
 
 	db := utils.GetDatabase(t)
 

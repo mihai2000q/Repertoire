@@ -28,7 +28,7 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: Artist
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = hovered || isMenuOpened
+  const isSelected = hovered || isMenuOpened || openedMenu
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)

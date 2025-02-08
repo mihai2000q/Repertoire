@@ -1,5 +1,14 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
+import {
+  Button,
+  Checkbox,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
 import {
   useDeleteImageFromArtistMutation,
   useSaveImageToArtistMutation,
@@ -35,14 +44,19 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     mode: 'uncontrolled',
     initialValues: {
       name: artist.name,
-      image: artist.imageUrl
+      image: artist.imageUrl,
+      isBand: artist.isBand
     } as EditArtistHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
     validate: zodResolver(editArtistHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(values.name !== artist.name || values.image !== artist.imageUrl)
+      setHasChanged(
+        values.name !== artist.name ||
+          values.image !== artist.imageUrl ||
+          values.isBand !== artist.isBand
+      )
     }
   })
 
@@ -50,12 +64,13 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(artist.imageUrl), [artist])
 
-  async function updateArtist({ name, image }: EditArtistHeaderForm) {
+  async function updateArtist({ name, image, isBand }: EditArtistHeaderForm) {
     name = name.trim()
 
     await updateArtistMutation({
       id: artist.id,
-      name: name
+      name: name,
+      isBand: isBand
     }).unwrap()
 
     if (image !== null && typeof image !== 'string') {
@@ -92,6 +107,18 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
               placeholder="The name of the artist"
               key={form.key('name')}
               {...form.getInputProps('name')}
+            />
+
+            <Checkbox
+              aria-label={'is-band'}
+              label={
+                <Text inline fz={'sm'}>
+                  The artist is a <b>band</b>
+                </Text>
+              }
+              styles={{ label: { paddingLeft: 8 }, labelWrapper: { justifyContent: 'center' } }}
+              key={form.key('isBand')}
+              {...form.getInputProps('isBand', { type: 'checkbox' })}
             />
 
             <Tooltip

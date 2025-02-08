@@ -1,10 +1,13 @@
-import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
+import { Button, Checkbox, Group, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewArtistForm, addNewArtistValidation } from '../../../validation/artistsForm.ts'
-import { useCreateArtistMutation, useSaveImageToArtistMutation } from '../../../state/api/artistsApi.ts'
+import {
+  useCreateArtistMutation,
+  useSaveImageToArtistMutation
+} from '../../../state/api/artistsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import { IconUserFilled } from '@tabler/icons-react'
 
@@ -36,10 +39,10 @@ function AddNewArtistModal({ opened, onClose }: AddNewArtistModalProps) {
     validate: zodResolver(addNewArtistValidation)
   })
 
-  async function addArtist({ name }: AddNewArtistForm) {
+  async function addArtist({ name, isBand }: AddNewArtistForm) {
     name = name.trim()
 
-    const res = await createArtistMutation({ name }).unwrap()
+    const res = await createArtistMutation({ name, isBand }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
@@ -62,15 +65,29 @@ function AddNewArtistModal({ opened, onClose }: AddNewArtistModalProps) {
                 icon={<IconUserFilled size={45} />}
               />
 
-              <TextInput
-                flex={1}
-                withAsterisk={true}
-                maxLength={100}
-                label="Name"
-                placeholder="The name of the artist"
-                key={form.key('name')}
-                {...form.getInputProps('name')}
-              />
+              <Stack gap={'xs'} flex={1}>
+                <TextInput
+                  flex={1}
+                  withAsterisk={true}
+                  maxLength={100}
+                  label="Name"
+                  placeholder="The name of the artist"
+                  key={form.key('name')}
+                  {...form.getInputProps('name')}
+                />
+
+                <Checkbox
+                  aria-label={'is-band'}
+                  label={
+                    <Text inline fz={'sm'}>
+                      The artist is a <b>band</b>
+                    </Text>
+                  }
+                  styles={{ label: { paddingLeft: 8 }, labelWrapper: { justifyContent: 'center' } }}
+                  key={form.key('isBand')}
+                  {...form.getInputProps('isBand')}
+                />
+              </Stack>
             </Group>
 
             <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>

@@ -11,6 +11,8 @@ import {
   Modal,
   NavLink,
   NumberFormatter,
+  ScrollArea,
+  ScrollAreaAutosize,
   Select,
   StylesApiProps,
   Tabs,
@@ -181,6 +183,16 @@ export const components = {
       decimalScale: 0
     }
   }),
+  ScrollArea: ScrollArea.extend({
+    defaultProps: {
+      type: 'hover'
+    }
+  }),
+  ScrollAreaAutosize: ScrollAreaAutosize.extend({
+    defaultProps: {
+      type: 'hover'
+    }
+  }),
   Select: Select.extend({
     defaultProps: {
       comboboxProps: {
@@ -189,6 +201,9 @@ export const components = {
           transition: 'scale-y',
           duration: 160
         }
+      },
+      scrollAreaProps: {
+        type: 'hover'
       }
     }
   }),

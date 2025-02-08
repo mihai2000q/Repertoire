@@ -4,10 +4,25 @@ import Song from './Song.ts'
 export default interface Artist {
   id: string
   name: string
+  isBand: boolean
   imageUrl?: string
   albums: Album[]
   songs: Song[]
+  bandMembers: BandMember[]
 
   createdAt: string
   updatedAt: string
+}
+
+export interface BandMember {
+  id: string
+  name: string
+  imageUrl?: string
+  color?: string
+  roles: BandMemberRole[]
+}
+
+export interface BandMemberRole {
+  id: string
+  name: string
 }

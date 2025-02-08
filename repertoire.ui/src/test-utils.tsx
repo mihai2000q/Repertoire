@@ -211,10 +211,12 @@ export const emptyUser: User = {
 export const emptyArtist: Artist = {
   id: '',
   name: '',
+  isBand: false,
   createdAt: '',
   updatedAt: '',
   albums: [],
-  songs: []
+  songs: [],
+  bandMembers: []
 }
 
 export const emptyAlbum: Album = {
@@ -235,7 +237,8 @@ export const emptySong: Song = {
   progress: 0,
   sections: [],
   createdAt: '',
-  updatedAt: ''
+  updatedAt: '',
+  releaseDate: null
 }
 
 export const emptyOrder: Order = {

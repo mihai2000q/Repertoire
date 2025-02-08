@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
-import { reduxRouterRender, withToastify } from '../../test-utils'
+import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import Difficulty from '../../utils/enums/Difficulty.ts'
@@ -11,25 +11,15 @@ import { setupServer } from 'msw/node'
 
 describe('Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '',
-    title: 'Some song',
-    description: '',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: ''
+    title: 'Some song'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const server = setupServer()

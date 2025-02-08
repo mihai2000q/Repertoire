@@ -55,7 +55,7 @@ function AlbumSongCard({
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = hovered || isMenuOpened || isDragging
+  const isSelected = hovered || isMenuOpened || isDragging || openedMenu
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)

@@ -1,5 +1,5 @@
 import { reduxRender } from '../../../../test-utils.tsx'
-import { screen } from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
@@ -47,11 +47,10 @@ describe('Guitar Tuning Select', () => {
 
     const [{ rerender }] = reduxRender(<GuitarTuningSelect option={null} onChange={onChange} />)
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
-
-    expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toHaveValue('')
-
     const select = screen.getByRole('textbox', { name: /guitar tuning/i })
+    expect(select).toHaveValue('')
+    expect(select).toBeDisabled()
+    await waitFor(() => expect(select).not.toBeDisabled())
     await user.click(select)
 
     for (const gt of guitarTunings) {

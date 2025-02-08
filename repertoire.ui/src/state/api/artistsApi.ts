@@ -1,15 +1,21 @@
 import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import Artist from '../../types/models/Artist.ts'
+import Artist, { BandMemberRole } from '../../types/models/Artist.ts'
 import {
   AddAlbumsToArtistRequest,
   AddSongsToArtistRequest,
-  CreateArtistRequest, DeleteArtistRequest,
+  CreateArtistRequest,
+  CreateBandMemberRequest,
+  DeleteArtistRequest,
+  DeleteBandMemberRequest,
   GetArtistsRequest,
+  MoveBandMemberRequest,
   RemoveAlbumsFromArtistRequest,
   RemoveSongsFromArtistRequest,
   SaveImageToArtistRequest,
-  UpdateArtistRequest
+  SaveImageToBandMemberRequest,
+  UpdateArtistRequest,
+  UpdateBandMemberRequest
 } from '../../types/requests/ArtistRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
@@ -100,6 +106,61 @@ const artistsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Artists', 'Songs']
+    }),
+
+    // band member
+    createBandMember: build.mutation<{ id: string }, CreateBandMemberRequest>({
+      query: (body) => ({
+        url: 'artists/band-members',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Artists']
+    }),
+    updateBandMember: build.mutation<HttpMessageResponse, UpdateBandMemberRequest>({
+      query: (body) => ({
+        url: 'artists/band-members',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Artists', 'Songs']
+    }),
+    moveBandMember: build.mutation<HttpMessageResponse, MoveBandMemberRequest>({
+      query: (body) => ({
+        url: 'artists/band-members/move',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Artists']
+    }),
+    saveImageToBandMember: build.mutation<HttpMessageResponse, SaveImageToBandMemberRequest>({
+      query: (request) => ({
+        url: 'artists/band-members/images',
+        method: 'PUT',
+        body: createFormData(request),
+        formData: true
+      }),
+      invalidatesTags: ['Artists', 'Songs']
+    }),
+    deleteImageFromBandMember: build.mutation<HttpMessageResponse, string>({
+      query: (arg) => ({
+        url: `artists/band-members/images/${arg}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: ['Artists', 'Songs']
+    }),
+    deleteBandMember: build.mutation<HttpMessageResponse, DeleteBandMemberRequest>({
+      query: (arg) => ({
+        url: `artists/band-members/${arg.id}/from/${arg.artistId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: ['Artists', 'Songs']
+    }),
+
+    // band member - roles
+    getBandMemberRoles: build.query<BandMemberRole[], void>({
+      query: () => 'artists/band-members/roles',
+      providesTags: ['BandMemberRoles']
     })
   })
 })
@@ -115,5 +176,12 @@ export const {
   useAddSongsToArtistMutation,
   useRemoveSongsFromArtistMutation,
   useAddAlbumsToArtistMutation,
-  useRemoveAlbumsFromArtistMutation
+  useRemoveAlbumsFromArtistMutation,
+  useCreateBandMemberMutation,
+  useUpdateBandMemberMutation,
+  useMoveBandMemberMutation,
+  useSaveImageToBandMemberMutation,
+  useDeleteImageFromBandMemberMutation,
+  useDeleteBandMemberMutation,
+  useGetBandMemberRolesQuery
 } = artistsApi

@@ -80,5 +80,44 @@ describe('Image Dropzone With Preview', () => {
 
       expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     })
+
+    it('should reset image when default value is provided', async () => {
+      const user = userEvent.setup()
+
+      const defaultImage = 'default.png'
+      const newImage = new File([''], 'image.png', { type: 'image/png' })
+      const setImage = vitest.fn()
+
+      const { rerender } = mantineRender(
+        <ImageDropzoneWithPreview
+          image={defaultImage}
+          setImage={setImage}
+          defaultValue={defaultImage}
+        />
+      )
+
+      expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', defaultImage)
+
+      await user.click(screen.getByRole('button', { name: 'image-options' }))
+      let resetImageButton = screen.getByRole('menuitem', { name: /reset image/i })
+      expect(resetImageButton).toBeInTheDocument()
+      expect(resetImageButton).toBeDisabled()
+
+      rerender(
+        <ImageDropzoneWithPreview
+          image={newImage}
+          setImage={setImage}
+          defaultValue={defaultImage}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'image-options' }))
+      resetImageButton = screen.getByRole('menuitem', { name: /reset image/i })
+      expect(resetImageButton).not.toBeDisabled()
+      await user.click(resetImageButton)
+
+      expect(setImage).toHaveBeenCalledWith(defaultImage)
+    })
   })
 })

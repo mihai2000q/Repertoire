@@ -22,10 +22,11 @@ describe('Add New Artist Modal', () => {
     expect(screen.getByRole('heading', { name: /add new artist/i })).toBeInTheDocument()
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'is-band' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
-  it('should send only create request when no image is uploaded', async () => {
+  it('should send only create request when no image is uploaded - minimal', async () => {
     const user = userEvent.setup()
 
     const newTitle = 'New Artist'
@@ -48,6 +49,39 @@ describe('Add New Artist Modal', () => {
     await waitFor(() =>
       expect(capturedRequest).toStrictEqual({
         name: newTitle
+      })
+    )
+    expect(onClose).toHaveBeenCalledOnce()
+
+    expect(screen.getByText(`${newTitle} added!`))
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
+  })
+
+  it('should send only create request when no image is uploaded - maximal', async () => {
+    const user = userEvent.setup()
+
+    const newTitle = 'New Artist'
+
+    const onClose = vitest.fn()
+
+    let capturedRequest: CreateArtistRequest
+    server.use(
+      http.post('/artists', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateArtistRequest
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(withToastify(<AddNewArtistModal opened={true} onClose={onClose} />))
+
+    await user.type(screen.getByRole('textbox', { name: /name/i }), newTitle)
+    await user.click(screen.getByRole('checkbox', { name: 'is-band' }))
+    await user.click(screen.getByRole('button', { name: /submit/i }))
+
+    await waitFor(() =>
+      expect(capturedRequest).toStrictEqual({
+        name: newTitle,
+        isBand: true
       })
     )
     expect(onClose).toHaveBeenCalledOnce()

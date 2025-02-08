@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Artists from './Artists.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptyArtist, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
@@ -13,20 +13,14 @@ import { RootState } from '../state/store.ts'
 describe('Artists', () => {
   const artists: Artist[] = [
     {
+      ...emptyArtist,
       id: '1',
-      name: 'Artist 1',
-      albums: [],
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 1'
     },
     {
+      ...emptyArtist,
       id: '2',
-      name: 'Artist 2',
-      albums: [],
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 2'
     }
   ]
   const totalCount = 2

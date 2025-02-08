@@ -52,13 +52,13 @@ func (m MoveBandMemberRole) Handle(request requests.MoveBandMemberRoleRequest, t
 	return nil
 }
 
-func (MoveBandMemberRole) getIndexes(types []model.BandMemberRole, id uuid.UUID, overID uuid.UUID) (int, int, error) {
+func (MoveBandMemberRole) getIndexes(roles []model.BandMemberRole, id uuid.UUID, overID uuid.UUID) (int, int, error) {
 	var index *int
 	var overIndex *int
-	for i := 0; i < len(types); i++ {
-		if types[i].ID == id {
+	for i := 0; i < len(roles); i++ {
+		if roles[i].ID == id {
 			index = &i
-		} else if types[i].ID == overID {
+		} else if roles[i].ID == overID {
 			overIndex = &i
 		}
 	}
@@ -73,18 +73,18 @@ func (MoveBandMemberRole) getIndexes(types []model.BandMemberRole, id uuid.UUID,
 	return *index, *overIndex, nil
 }
 
-func (MoveBandMemberRole) move(types []model.BandMemberRole, index int, overIndex int) []model.BandMemberRole {
+func (MoveBandMemberRole) move(roles []model.BandMemberRole, index int, overIndex int) []model.BandMemberRole {
 	if index < overIndex {
 		for i := index + 1; i <= overIndex; i++ {
-			types[i].Order = uint(i - 1)
+			roles[i].Order = uint(i - 1)
 		}
 	} else {
 		for i := overIndex; i <= index; i++ {
-			types[i].Order = uint(i + 1)
+			roles[i].Order = uint(i + 1)
 		}
 	}
 
-	types[index].Order = uint(overIndex)
+	roles[index].Order = uint(overIndex)
 
-	return types
+	return roles
 }
