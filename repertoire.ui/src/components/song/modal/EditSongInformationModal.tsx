@@ -90,6 +90,7 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
           <Group>
             <NumberInput
               min={1}
+              allowNegative={false}
               allowDecimal={false}
               leftSection={<CustomIconMetronome size={20} />}
               label="Bpm"

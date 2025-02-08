@@ -71,6 +71,7 @@ function AddNewSongModalSecondStep({
         <NumberInput
           flex={0.75}
           min={1}
+          allowNegative={false}
           allowDecimal={false}
           leftSection={<CustomIconMetronome size={20} />}
           label="Bpm"
