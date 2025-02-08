@@ -1,6 +1,6 @@
 import { useMoveSongSectionMutation } from '../../state/api/songsApi.ts'
 import { ActionIcon, Box, Card, Group, Stack, Text, Tooltip } from '@mantine/core'
-import { IconEye, IconEyeOff, IconPlus } from '@tabler/icons-react'
+import { IconEye, IconEyeOff, IconListNumbers, IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
@@ -8,6 +8,7 @@ import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
 import SongSectionCard from './SongSectionCard.tsx'
 import { useState } from 'react'
+import EditSongSectionsOccurrencesModal from './modal/EditSongSectionsOccurrencesModal.tsx'
 
 interface SongSectionsCardProps {
   sections: SongSectionModel[]
@@ -17,8 +18,9 @@ interface SongSectionsCardProps {
 function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
 
-  const [openedAddSongSection, { open: openAddSongSection, close: closeAddSongSection }] =
+  const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
     useDisclosure(false)
+  const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
   const [internalSections, { reorder, setState }] = useListState<SongSectionModel>(sections)
   useDidUpdate(() => setState(sections), [sections])
@@ -63,9 +65,9 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
                 aria-label={'add-new-section'}
                 variant={'grey'}
                 size={'sm'}
-                onClick={openedAddSongSection ? closeAddSongSection : openAddSongSection}
+                onClick={openedAdd ? closeAdd : openAdd}
               >
-                <IconPlus size={17} />
+                <IconPlus size={16} />
               </ActionIcon>
             </Tooltip>
 
@@ -76,7 +78,18 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
                 size={'sm'}
                 onClick={handleShowDetails}
               >
-                {showDetails ? <IconEyeOff size={17} /> : <IconEye size={17} />}
+                {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+              </ActionIcon>
+            </Tooltip>
+
+            <Tooltip label={"Edit Sections' Occurrences"}>
+              <ActionIcon
+                aria-label={'edit-occurrences'}
+                variant={'grey'}
+                size={'sm'}
+                onClick={openOccurrences}
+              >
+                <IconListNumbers size={16} />
               </ActionIcon>
             </Tooltip>
           </Tooltip.Group>
@@ -115,19 +128,22 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
           {sections.length === 0 && (
             <NewHorizontalCard
               ariaLabel={'add-new-song-section-card'}
-              onClick={openedAddSongSection ? closeAddSongSection : openAddSongSection}
+              onClick={openedAdd ? closeAdd : openAdd}
             >
               Add New Song Section
             </NewHorizontalCard>
           )}
 
-          <AddNewSongSection
-            songId={songId}
-            opened={openedAddSongSection}
-            onClose={closeAddSongSection}
-          />
+          <AddNewSongSection songId={songId} opened={openedAdd} onClose={closeAdd} />
         </Stack>
       </Stack>
+
+      <EditSongSectionsOccurrencesModal
+        opened={openedOccurrences}
+        onClose={closeOccurrences}
+        sections={sections}
+        songId={songId}
+      />
     </Card>
   )
 }
