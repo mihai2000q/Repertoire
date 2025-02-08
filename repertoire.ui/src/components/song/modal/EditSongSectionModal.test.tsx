@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import {emptySongSection, reduxRender, withToastify} from '../../../test-utils.tsx'
 import { SongSection, SongSectionType } from '../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { fireEvent, screen } from '@testing-library/react'
@@ -20,12 +20,12 @@ describe('Edit Song Description Modal', () => {
   ]
 
   const section: SongSection = {
+    ...emptySongSection,
     id: 'some-id',
     name: 'section 1',
     songSectionType: sectionTypes[1],
     rehearsals: 12,
     confidence: 50,
-    progress: 0
   }
 
   const handlers = [

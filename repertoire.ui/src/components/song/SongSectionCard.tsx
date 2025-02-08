@@ -30,9 +30,9 @@ interface SongSectionCardProps {
   section: SongSectionModel
   songId: string
   isDragging: boolean
-  draggableProvided: DraggableProvided
   showDetails: boolean
   maxSectionProgress: number
+  draggableProvided?: DraggableProvided
 }
 
 function SongSectionCard({
@@ -98,8 +98,8 @@ function SongSectionCard({
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             }
           })}
-          ref={draggableProvided.innerRef}
-          {...draggableProvided.draggableProps}
+          ref={draggableProvided?.innerRef}
+          {...draggableProvided?.draggableProps}
           onContextMenu={openMenu}
         >
           <Group gap={'xs'}>
@@ -107,7 +107,7 @@ function SongSectionCard({
               aria-label={'drag-handle'}
               variant={'subtle'}
               size={'lg'}
-              {...draggableProvided.dragHandleProps}
+              {...draggableProvided?.dragHandleProps}
             >
               <IconGripVertical size={20} />
             </ActionIcon>

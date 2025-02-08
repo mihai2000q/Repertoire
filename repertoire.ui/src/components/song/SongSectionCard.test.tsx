@@ -1,6 +1,6 @@
-import { reduxRender, withToastify } from '../../test-utils.tsx'
+import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
 import SongSectionCard from './SongSectionCard.tsx'
-import { SongSection as SongSectionModel } from './../../types/models/Song.ts'
+import { SongSection } from './../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
@@ -8,7 +8,8 @@ import { userEvent } from '@testing-library/user-event'
 import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
 
 describe('Song Section Card', () => {
-  const section: SongSectionModel = {
+  const section: SongSection = {
+    ...emptySongSection,
     id: '1',
     name: 'Solo 1',
     rehearsals: 12,
@@ -18,11 +19,6 @@ describe('Song Section Card', () => {
       id: 'some id',
       name: 'Solo'
     }
-  }
-  const draggableProvided = {
-    draggableProps: undefined,
-    dragHandleProps: undefined,
-    innerRef: undefined
   }
 
   const handlers = [
@@ -47,7 +43,6 @@ describe('Song Section Card', () => {
         maxSectionProgress={0}
         showDetails={false}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -69,7 +64,6 @@ describe('Song Section Card', () => {
         maxSectionProgress={maxSectionProgress}
         showDetails={true}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -109,7 +103,6 @@ describe('Song Section Card', () => {
         maxSectionProgress={0}
         showDetails={true}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -132,7 +125,6 @@ describe('Song Section Card', () => {
         maxSectionProgress={0}
         showDetails={true}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -153,7 +145,6 @@ describe('Song Section Card', () => {
           maxSectionProgress={0}
           showDetails={true}
           isDragging={false}
-          draggableProvided={draggableProvided}
         />
       )
 
@@ -182,7 +173,6 @@ describe('Song Section Card', () => {
             maxSectionProgress={0}
             showDetails={true}
             isDragging={false}
-            draggableProvided={draggableProvided}
           />
         )
       )
