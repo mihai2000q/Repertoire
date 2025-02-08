@@ -1,6 +1,7 @@
 import { Divider, Grid, Group, Skeleton, Stack } from '@mantine/core'
 import ArtistAlbumsLoader from './ArtistAlbumsLoader.tsx'
 import ArtistSongsLoader from './ArtistSongsLoader.tsx'
+import BandMembersLoader from "./BandMembersLoader.tsx";
 
 function ArtistLoader() {
   return (
@@ -21,7 +22,10 @@ function ArtistLoader() {
 
       <Grid align={'flex-start'}>
         <Grid.Col span={{ sm: 12, md: 6.5 }}>
-          <ArtistAlbumsLoader />
+          <Stack>
+            <BandMembersLoader />
+            <ArtistAlbumsLoader />
+          </Stack>
         </Grid.Col>
 
         <Grid.Col span={{ sm: 12, md: 5.5 }}>

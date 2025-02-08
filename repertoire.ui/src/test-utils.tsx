@@ -215,7 +215,8 @@ export const emptyArtist: Artist = {
   createdAt: '',
   updatedAt: '',
   albums: [],
-  songs: []
+  songs: [],
+  bandMembers: []
 }
 
 export const emptyAlbum: Album = {
