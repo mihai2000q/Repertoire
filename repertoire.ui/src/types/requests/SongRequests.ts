@@ -25,6 +25,10 @@ export interface CreateSongRequest {
   artistName?: string
 }
 
+export interface AddPerfectSongRehearsalRequest {
+  id: string
+}
+
 export interface CreateSectionRequest {
   name: string
   typeId: string
