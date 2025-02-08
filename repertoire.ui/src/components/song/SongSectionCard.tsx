@@ -59,7 +59,6 @@ function SongSectionCard({
       typeId: section.songSectionType.id,
       rehearsals: section.rehearsals + 1
     })
-    toast.info(`${section.name} rehearsals' have been increased by 1`)
   }
 
   function handleDelete() {

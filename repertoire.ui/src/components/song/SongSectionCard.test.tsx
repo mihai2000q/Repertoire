@@ -200,16 +200,13 @@ describe('Song Section Card', () => {
     )
 
     reduxRender(
-      withToastify(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          showDetails={true}
-          isDragging={false}
-          draggableProvided={draggableProvided}
-        />
-      )
+      <SongSectionCard
+        section={section}
+        songId={''}
+        maxSectionProgress={0}
+        showDetails={true}
+        isDragging={false}
+      />
     )
 
     await user.click(screen.getByRole('button', { name: 'add-rehearsal' }))
@@ -219,9 +216,5 @@ describe('Song Section Card', () => {
       typeId: section.songSectionType.id,
       rehearsals: section.rehearsals + 1
     })
-
-    expect(
-      screen.getByText(new RegExp(`${section.name} rehearsals' .* increased`))
-    ).toBeInTheDocument()
   })
 })
