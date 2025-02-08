@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptySong, reduxRender, withToastify } from '../../../test-utils.tsx'
 import Song, { GuitarTuning } from '../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
@@ -25,15 +25,8 @@ describe('Edit Song Information Modal', () => {
   ]
 
   const song: Song = {
+    ...emptySong,
     id: 'some-id',
-    title: '',
-    description: '',
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: '',
     guitarTuning: guitarTunings[1],
     difficulty: Difficulty.Easy,
     bpm: 120,
