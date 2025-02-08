@@ -1,7 +1,13 @@
 import { screen } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
-import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../test-utils'
+import {
+  emptyArtist,
+  emptySong,
+  emptySongSection,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import Difficulty from '../../utils/enums/Difficulty.ts'
@@ -127,7 +133,8 @@ describe('Song Card', () => {
           },
           rehearsals: 0,
           confidence: 0,
-          progress: 0
+          progress: 0,
+          occurrences: 0
         }
       ]
     }
@@ -147,26 +154,20 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 1',
           songSectionType: {
             id: '',
             name: 'Solo'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         },
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 2',
           songSectionType: {
             id: '',
             name: 'Solo'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         }
       ]
     }
@@ -186,26 +187,20 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Riff 1',
           songSectionType: {
             id: '',
             name: 'Riff'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         },
         {
-          id: '',
+          ...emptySongSection,
           name: 'Riff 2',
           songSectionType: {
             id: '',
             name: 'Riff'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         }
       ]
     }

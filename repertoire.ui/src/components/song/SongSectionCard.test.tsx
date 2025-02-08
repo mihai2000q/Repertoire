@@ -1,14 +1,15 @@
-import { reduxRender, withToastify } from '../../test-utils.tsx'
-import SongSection from './SongSection.tsx'
-import { SongSection as SongSectionModel } from './../../types/models/Song.ts'
+import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
+import SongSectionCard from './SongSectionCard.tsx'
+import { SongSection } from './../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
 
-describe('Song Section', () => {
-  const section: SongSectionModel = {
+describe('Song Section Card', () => {
+  const section: SongSection = {
+    ...emptySongSection,
     id: '1',
     name: 'Solo 1',
     rehearsals: 12,
@@ -18,11 +19,6 @@ describe('Song Section', () => {
       id: 'some id',
       name: 'Solo'
     }
-  }
-  const draggableProvided = {
-    draggableProps: undefined,
-    dragHandleProps: undefined,
-    innerRef: undefined
   }
 
   const handlers = [
@@ -41,13 +37,12 @@ describe('Song Section', () => {
 
   it('should render', () => {
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={0}
         showDetails={false}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -63,13 +58,12 @@ describe('Song Section', () => {
     const maxSectionProgress = 67
 
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={maxSectionProgress}
         showDetails={true}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -103,13 +97,12 @@ describe('Song Section', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={0}
         showDetails={true}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -126,13 +119,12 @@ describe('Song Section', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <SongSection
+      <SongSectionCard
         section={section}
         songId={''}
         maxSectionProgress={0}
         showDetails={true}
         isDragging={false}
-        draggableProvided={draggableProvided}
       />
     )
 
@@ -147,13 +139,12 @@ describe('Song Section', () => {
       const user = userEvent.setup()
 
       reduxRender(
-        <SongSection
+        <SongSectionCard
           section={section}
           songId={''}
           maxSectionProgress={0}
           showDetails={true}
           isDragging={false}
-          draggableProvided={draggableProvided}
         />
       )
 
@@ -176,13 +167,12 @@ describe('Song Section', () => {
 
       reduxRender(
         withToastify(
-          <SongSection
+          <SongSectionCard
             section={section}
             songId={songId}
             maxSectionProgress={0}
             showDetails={true}
             isDragging={false}
-            draggableProvided={draggableProvided}
           />
         )
       )
@@ -210,16 +200,13 @@ describe('Song Section', () => {
     )
 
     reduxRender(
-      withToastify(
-        <SongSection
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          showDetails={true}
-          isDragging={false}
-          draggableProvided={draggableProvided}
-        />
-      )
+      <SongSectionCard
+        section={section}
+        songId={''}
+        maxSectionProgress={0}
+        showDetails={true}
+        isDragging={false}
+      />
     )
 
     await user.click(screen.getByRole('button', { name: 'add-rehearsal' }))
@@ -229,9 +216,5 @@ describe('Song Section', () => {
       typeId: section.songSectionType.id,
       rehearsals: section.rehearsals + 1
     })
-
-    expect(
-      screen.getByText(new RegExp(`${section.name} rehearsals' .* increased`))
-    ).toBeInTheDocument()
   })
 })

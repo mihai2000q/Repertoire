@@ -2,7 +2,7 @@ import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from '../components/song/SongLoader.tsx'
 import { useGetSongQuery } from '../state/api/songsApi.ts'
-import SongSections from '../components/song/SongSections.tsx'
+import SongSectionsCard from '../components/song/SongSectionsCard.tsx'
 import SongInformationCard from '../components/song/panels/SongInformationCard.tsx'
 import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'
 import SongOverallCard from '../components/song/panels/SongOverallCard.tsx'
@@ -45,7 +45,7 @@ function Song() {
           <Stack>
             <SongDescriptionCard song={song} />
 
-            <SongSections songId={songId} sections={song.sections} />
+            <SongSectionsCard songId={songId} sections={song.sections} />
           </Stack>
         </Grid.Col>
       </Grid>

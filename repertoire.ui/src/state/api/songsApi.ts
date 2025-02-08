@@ -9,7 +9,8 @@ import {
   MoveSongSectionRequest,
   SaveImageToSongRequest,
   UpdateSongRequest,
-  UpdateSongSectionRequest
+  UpdateSongSectionRequest,
+  UpdateSongSectionsOccurrencesRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
@@ -84,6 +85,17 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    updateSongSectionsOccurrences: build.mutation<
+      HttpMessageResponse,
+      UpdateSongSectionsOccurrencesRequest
+    >({
+      query: (body) => ({
+        url: 'songs/sections/occurrences',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections/move',
@@ -126,6 +138,7 @@ export const {
   useGetSongSectionTypesQuery,
   useCreateSongSectionMutation,
   useUpdateSongSectionMutation,
+  useUpdateSongSectionsOccurrencesMutation,
   useMoveSongSectionMutation,
   useDeleteSongSectionMutation
 } = songsApi

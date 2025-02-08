@@ -11,6 +11,7 @@ import {
   Modal,
   NavLink,
   NumberFormatter,
+  NumberInput,
   ScrollArea,
   ScrollAreaAutosize,
   Select,
@@ -181,6 +182,11 @@ export const components = {
       thousandSeparator: ' ',
       decimalSeparator: ',',
       decimalScale: 0
+    }
+  }),
+  NumberInput: NumberInput.extend({
+    defaultProps: {
+      clampBehavior: 'strict'
     }
   }),
   ScrollArea: ScrollArea.extend({

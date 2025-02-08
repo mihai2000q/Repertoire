@@ -26,23 +26,23 @@ import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 
-interface SongSectionProps {
+interface SongSectionCardProps {
   section: SongSectionModel
   songId: string
   isDragging: boolean
-  draggableProvided: DraggableProvided
   showDetails: boolean
   maxSectionProgress: number
+  draggableProvided?: DraggableProvided
 }
 
-function SongSection({
+function SongSectionCard({
   section,
   songId,
   isDragging,
   draggableProvided,
   showDetails,
   maxSectionProgress
-}: SongSectionProps) {
+}: SongSectionCardProps) {
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
 
@@ -59,7 +59,6 @@ function SongSection({
       typeId: section.songSectionType.id,
       rehearsals: section.rehearsals + 1
     })
-    toast.info(`${section.name} rehearsals' have been increased by 1`)
   }
 
   function handleDelete() {
@@ -98,8 +97,8 @@ function SongSection({
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             }
           })}
-          ref={draggableProvided.innerRef}
-          {...draggableProvided.draggableProps}
+          ref={draggableProvided?.innerRef}
+          {...draggableProvided?.draggableProps}
           onContextMenu={openMenu}
         >
           <Group gap={'xs'}>
@@ -107,7 +106,7 @@ function SongSection({
               aria-label={'drag-handle'}
               variant={'subtle'}
               size={'lg'}
-              {...draggableProvided.dragHandleProps}
+              {...draggableProvided?.dragHandleProps}
             >
               <IconGripVertical size={20} />
             </ActionIcon>
@@ -212,4 +211,4 @@ function SongSection({
   )
 }
 
-export default SongSection
+export default SongSectionCard
