@@ -18,7 +18,7 @@ function SongLinksCard({ song }: SongLinksCardProps) {
     <EditPanelCard p={'md'} ariaLabel={'song-links-card'} onEditClick={openEdit}>
       <Stack>
         <Text fw={600}>Links</Text>
-        <Stack gap={'xs'}>
+        <Stack gap={'xs'} align={'center'}>
           {!song.youtubeLink && !song.songsterrLink && (
             <Text fw={500} c={'dimmed'} ta={'center'} fs={'italic'}>
               No links to display
@@ -27,6 +27,7 @@ function SongLinksCard({ song }: SongLinksCardProps) {
           {song.youtubeLink && (
             <Button
               fullWidth
+              maw={400}
               variant={'gradient'}
               size={'md'}
               radius={'lg'}
@@ -40,9 +41,17 @@ function SongLinksCard({ song }: SongLinksCardProps) {
             </Button>
           )}
           {song.songsterrLink && (
-            <Anchor underline={'never'} href={song.songsterrLink} target="_blank" rel="noreferrer">
+            <Anchor
+              w={'100%'}
+              underline={'never'}
+              href={song.songsterrLink}
+              target="_blank"
+              rel="noreferrer"
+              style={{ justifyItems: 'center' }}
+            >
               <Button
                 fullWidth
+                maw={400}
                 variant={'gradient'}
                 size={'md'}
                 radius={'lg'}
