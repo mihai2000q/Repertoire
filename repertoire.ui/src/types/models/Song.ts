@@ -52,3 +52,8 @@ export interface GuitarTuning {
   id: string
   name: string
 }
+
+export interface Instrument {
+  id: string
+  name: string
+}
