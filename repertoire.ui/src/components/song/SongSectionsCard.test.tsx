@@ -1,4 +1,4 @@
-import { emptySongSection, reduxRender } from '../../test-utils.tsx'
+import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
 import SongSectionsCard from './SongSectionsCard.tsx'
 import { SongSection } from '../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
@@ -6,7 +6,10 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { MoveSongSectionRequest } from '../../types/requests/SongRequests.ts'
+import {
+  AddPerfectSongRehearsalRequest,
+  MoveSongSectionRequest
+} from '../../types/requests/SongRequests.ts'
 
 describe('Song Sections Card', () => {
   const sections: SongSection[] = [
@@ -68,6 +71,8 @@ describe('Song Sections Card', () => {
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
 
     const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
     for (let i = 0; i < sections.length; i++) {
@@ -102,7 +107,7 @@ describe('Song Sections Card', () => {
       expect(screen.queryByRole('button', { name: 'hide-details' })).not.toBeInTheDocument()
     })
 
-    it("should open edit song sections' occurrences when on edit sections' occurrences button", async () => {
+    it("should open edit song sections' occurrences when clicking on edit sections' occurrences button", async () => {
       const user = userEvent.setup()
 
       reduxRender(<SongSectionsCard sections={sections} songId={''} />)
@@ -111,6 +116,34 @@ describe('Song Sections Card', () => {
       expect(
         await screen.findByRole('dialog', { name: /edit sections' occurrences/i })
       ).toBeInTheDocument()
+    })
+
+    it('should open add perfect rehearsal popover when on clicking add perfect rehearsal button and send request', async () => {
+      const user = userEvent.setup()
+
+      let capturedRequest: AddPerfectSongRehearsalRequest
+      server.use(
+        http.post('/songs/perfect-rehearsal', async (req) => {
+          capturedRequest = (await req.request.json()) as AddPerfectSongRehearsalRequest
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      const songId = 'some-id'
+
+      reduxRender(withToastify(<SongSectionsCard sections={sections} songId={songId} />))
+
+      await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
+
+      expect(await screen.findByRole('dialog')).toBeInTheDocument()
+      expect(screen.getByText(/increase sections' rehearsals/i)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'cancel-perfect-rehearsal' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'confirm-perfect-rehearsal' })).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'confirm-perfect-rehearsal' }))
+
+      expect(await screen.findByText(/perfect rehearsal added/i)).toBeInTheDocument()
+      expect(capturedRequest).toStrictEqual({ id: songId })
     })
   })
 

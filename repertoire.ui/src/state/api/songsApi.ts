@@ -2,6 +2,7 @@ import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Song, { GuitarTuning, SongSectionType } from '../../types/models/Song.ts'
 import {
+  AddPerfectSongRehearsalRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
@@ -35,6 +36,14 @@ const songsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Songs', 'Artists', 'Albums']
+    }),
+    addPerfectSongRehearsal: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalRequest>({
+      query: (body) => ({
+        url: 'songs/perfect-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
     }),
     updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
       query: (body) => ({
@@ -130,6 +139,7 @@ export const {
   useGetSongsQuery,
   useGetSongQuery,
   useCreateSongMutation,
+  useAddPerfectSongRehearsalMutation,
   useUpdateSongMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,

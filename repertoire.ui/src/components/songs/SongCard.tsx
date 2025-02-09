@@ -34,7 +34,8 @@ import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
-import YoutubeModal from "../@ui/modal/YoutubeModal.tsx";
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -210,6 +211,7 @@ function SongCard({ song }: SongCardProps) {
       </Menu.Target>
 
       <Menu.Dropdown {...menuDropdownProps}>
+        <PerfectRehearsalMenuItem songId={song.id} />
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
           Delete
         </Menu.Item>
