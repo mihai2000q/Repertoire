@@ -90,7 +90,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               boxShadow: theme.shadows.lg,
               ...(!isUnknownAlbum && album.imageUrl && { cursor: 'pointer' })
             })}
-            onClick={!isUnknownAlbum && album.imageUrl && openImage}
+            onClick={!isUnknownAlbum && album.imageUrl ? openImage : undefined}
           />
         </AspectRatio>
         <Stack

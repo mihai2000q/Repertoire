@@ -165,7 +165,7 @@ describe('Artist Drawer', () => {
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
     expect(
       screen.getByText(
-        `${artist.bandMembers.length} members • ${albums.length} albums • ${songs.length} songs`
+        `${artist.bandMembers.length} member • ${albums.length} albums • ${songs.length} songs`
       )
     ).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
