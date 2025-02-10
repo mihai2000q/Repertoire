@@ -18,6 +18,7 @@ import CustomIconSaxophone from './CustomIconSaxophone.tsx'
 import CustomIconUkulele from './CustomIconUkulele.tsx'
 import CustomIconViolin from './CustomIconViolin.tsx'
 import CustomIconVoice from './CustomIconVoice.tsx'
+import CustomIconTriangleMusic from './CustomIconTriangleMusic.tsx'
 
 describe.concurrent('Custom Icons', () => {
   it('should render Custom Icon Arrow Left', () => {
@@ -82,6 +83,10 @@ describe.concurrent('Custom Icons', () => {
 
   it('should render Custom Icon Saxophone', () => {
     render(<CustomIconSaxophone />)
+  })
+
+  it('should render Custom Icon Triangle Music', () => {
+    render(<CustomIconTriangleMusic />)
   })
 
   it('should render Custom Icon Ukulele', () => {
