@@ -16,7 +16,7 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
-import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
+import { SongSection } from '../../types/models/Song.ts'
 import SongSectionCard from './SongSectionCard.tsx'
 import { useState } from 'react'
 import EditSongSectionsOccurrencesModal from './modal/EditSongSectionsOccurrencesModal.tsx'
@@ -24,12 +24,12 @@ import { toast } from 'react-toastify'
 import { BandMember } from '../../types/models/Artist.ts'
 
 interface SongSectionsCardProps {
-  sections: SongSectionModel[]
+  sections: SongSection[]
   songId: string
   bandMembers?: BandMember[]
 }
 
-function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
+function SongSectionsCard({ sections, songId, bandMembers }: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
@@ -40,7 +40,7 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
-  const [internalSections, { reorder, setState }] = useListState<SongSectionModel>(sections)
+  const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
   useDidUpdate(() => setState(sections), [sections])
 
   const maxSectionProgress =
@@ -106,11 +106,18 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
               </ActionIcon>
             </Tooltip>
 
-            <Tooltip label={"Edit Sections' Occurrences"}>
+            <Tooltip
+              label={
+                sections.length === 0
+                  ? "To edit sections' occurrences you need sections"
+                  : "Edit Sections' Occurrences"
+              }
+            >
               <ActionIcon
                 aria-label={'edit-occurrences'}
                 variant={'grey'}
                 size={'sm'}
+                disabled={sections.length === 0}
                 onClick={openOccurrences}
               >
                 <IconListNumbers size={16} />
@@ -127,11 +134,19 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
               closeOnClickOutside={!isPerfectRehearsalLoading}
             >
               <Popover.Target>
-                <Tooltip label={'Add Perfect Rehearsal'} disabled={openedPerfectRehearsalPopover}>
+                <Tooltip
+                  label={
+                    sections.length === 0
+                      ? 'To add a perfect rehearsal you need sections'
+                      : 'Add Perfect Rehearsal'
+                  }
+                  disabled={openedPerfectRehearsalPopover}
+                >
                   <ActionIcon
                     aria-label={'add-perfect-rehearsal'}
                     variant={'grey'}
                     size={'sm'}
+                    disabled={sections.length === 0}
                     onClick={() =>
                       setOpenedPerfectRehearsalPopover(
                         isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
