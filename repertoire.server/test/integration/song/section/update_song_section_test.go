@@ -54,6 +54,46 @@ func TestUpdateSongSection_WhenRehearsalsAreDecreasing_ShouldReturnBadRequestErr
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
+func TestUpdateSongSection_WhenRequestChangesBandMemberIDButItIsNotAssociated_ShouldReturnBadRequestError(t *testing.T) {
+	tests := []struct {
+		name string
+		song model.Song
+	}{
+		{
+			"Song without artist",
+			songData.Songs[4],
+		},
+		{
+			"Song with artist but without that member",
+			songData.Songs[0],
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// given
+			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+			section := test.song.Sections[0]
+			request := requests.UpdateSongSectionRequest{
+				ID:           section.ID,
+				TypeID:       section.SongSectionTypeID,
+				Rehearsals:   section.Rehearsals,
+				Confidence:   section.Confidence,
+				Name:         "Chorus 1-New",
+				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+			}
+
+			// when
+			w := httptest.NewRecorder()
+			core.NewTestHandler().PUT(w, "/api/songs/sections", request)
+
+			// then
+			assert.Equal(t, http.StatusBadRequest, w.Code)
+		})
+	}
+}
+
 func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSection(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -172,6 +212,60 @@ func TestUpdateSongSection_WhenSuccessfulWithConfidenceIncreasing_ShouldUpdateSe
 	assert.Greater(t, newSection.Song.Progress, song.Progress)
 }
 
+func TestUpdateSongSection_WhenSuccessfulWithBandMember_ShouldUpdateSection(t *testing.T) {
+	tests := []struct {
+		name         string
+		section      model.SongSection
+		bandMemberID *uuid.UUID
+	}{
+		{
+			"to Nil Band Member",
+			songData.Songs[0].Sections[1],
+			nil,
+		},
+		{
+			"from member to Another Band Member",
+			songData.Songs[0].Sections[1],
+			&songData.Artists[0].BandMembers[1].ID,
+		},
+		{
+			"from nil to Another Band Member",
+			songData.Songs[0].Sections[2],
+			&songData.Artists[0].BandMembers[1].ID,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// given
+			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+			request := requests.UpdateSongSectionRequest{
+				ID:           test.section.ID,
+				Name:         test.section.Name,
+				Rehearsals:   test.section.Rehearsals,
+				Confidence:   test.section.Confidence,
+				TypeID:       test.section.SongSectionTypeID,
+				BandMemberID: test.bandMemberID,
+			}
+
+			// when
+			w := httptest.NewRecorder()
+			core.NewTestHandler().PUT(w, "/api/songs/sections", request)
+
+			// then
+			assert.Equal(t, http.StatusOK, w.Code)
+
+			db := utils.GetDatabase(t)
+
+			var section model.SongSection
+			db.Find(&section, &model.SongSection{ID: request.ID})
+
+			assertUpdatedSongSection(t, section, request)
+		})
+	}
+}
+
 func assertUpdatedSongSection(
 	t *testing.T,
 	songSection model.SongSection,
@@ -181,4 +275,6 @@ func assertUpdatedSongSection(
 	assert.Equal(t, request.Confidence, songSection.Confidence)
 	assert.Equal(t, request.Rehearsals, songSection.Rehearsals)
 	assert.Equal(t, request.TypeID, songSection.SongSectionTypeID)
+	assert.Equal(t, request.BandMemberID, songSection.BandMemberID)
+	assert.Equal(t, request.InstrumentID, songSection.InstrumentID)
 }

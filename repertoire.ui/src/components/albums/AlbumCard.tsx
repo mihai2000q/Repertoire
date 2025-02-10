@@ -1,5 +1,5 @@
 import Album from '../../types/models/Album.ts'
-import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
+import { AspectRatio, Checkbox, Group, Image, Menu, Stack, Text } from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
@@ -20,7 +20,9 @@ function AlbumCard({ album }: AlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteAlbumMutation] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
+
+  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   const [isImageHovered, setIsImageHovered] = useState(false)
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
@@ -36,8 +38,8 @@ function AlbumCard({ album }: AlbumCardProps) {
     dispatch(openArtistDrawer(album.artist.id))
   }
 
-  function handleDelete() {
-    deleteAlbumMutation({ id: album.id })
+  async function handleDelete() {
+    await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
     toast.success(`${album.title} deleted!`)
   }
 
@@ -112,13 +114,23 @@ function AlbumCard({ album }: AlbumCardProps) {
         onClose={closeDeleteWarning}
         title={`Delete Album`}
         description={
-          <Group gap={4}>
-            <Text>Are you sure you want to delete</Text>
-            <Text fw={600}>{album.title}</Text>
-            <Text>?</Text>
-          </Group>
+          <Stack gap={5}>
+            <Group gap={4}>
+              <Text>Are you sure you want to delete</Text>
+              <Text fw={600}>{album.title}</Text>
+              <Text>?</Text>
+            </Group>
+            <Checkbox
+              checked={deleteWithSongs}
+              onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
+              label={'Delete all associated songs'}
+              c={'dimmed'}
+              styles={{ label: { paddingLeft: 8 } }}
+            />
+          </Stack>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )

@@ -1,4 +1,10 @@
-import { emptyAlbum, emptySong, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import ArtistDrawer from './ArtistDrawer.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { setupServer } from 'msw/node'
@@ -24,7 +30,7 @@ describe('Artist Drawer', () => {
     {
       ...emptySong,
       id: '2',
-      title: 'Song 2',
+      title: 'Song 2'
     },
     {
       ...emptySong,
@@ -57,7 +63,7 @@ describe('Artist Drawer', () => {
       album: {
         ...emptyAlbum,
         id: '3',
-        title: 'Song Album 3',
+        title: 'Song Album 3'
       }
     },
     {
@@ -67,7 +73,7 @@ describe('Artist Drawer', () => {
       album: {
         ...emptyAlbum,
         id: '4',
-        title: 'Song Album 4',
+        title: 'Song Album 4'
       }
     }
   ]
@@ -88,13 +94,19 @@ describe('Artist Drawer', () => {
   ]
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
     imageUrl: 'something.png',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    isBand: true,
+    bandMembers: [
+      {
+        id: '1',
+        name: 'Member 1',
+        roles: [],
+        imageUrl: 'something.png'
+      }
+    ]
   }
 
   const getArtist = (artist: Artist) =>
@@ -151,10 +163,19 @@ describe('Artist Drawer', () => {
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
-    expect(screen.getByText(`${albums.length} albums • ${songs.length} songs`)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        `${artist.bandMembers.length} member • ${albums.length} albums • ${songs.length} songs`
+      )
+    ).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
       prevDocumentTitle + ' - ' + artist.name
     )
+
+    artist.bandMembers.forEach((bandMember) => {
+      expect(screen.getByText(bandMember.name)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+    })
 
     albums.forEach((album) => {
       expect(screen.getByText(album.title)).toBeInTheDocument()

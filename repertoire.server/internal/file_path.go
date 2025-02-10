@@ -12,6 +12,8 @@ func (f *FilePath) ToFullURL(lastModifiedAt *time.Time) *FilePath {
 	if f == nil {
 		return nil
 	}
+	// when the file changes, the changes are detected by the browser only if the name of the item changes
+	// so we add a query parameter that actually changes, as we prefer, for cleanliness, to not change the name of file
 	url := FilePath(f.getFullURL() + string(*f) + "?lastModifiedAt=" + lastModifiedAt.String())
 	return &url
 }

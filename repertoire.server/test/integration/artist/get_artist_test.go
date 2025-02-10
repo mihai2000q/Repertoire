@@ -2,6 +2,7 @@ package artist
 
 import (
 	"encoding/json"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -44,7 +45,11 @@ func TestGetArtist_WhenSuccessful_ShouldReturnArtist(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &responseArtist)
 
 	db := utils.GetDatabase(t)
-	db.Find(&artist, artist.ID)
+	db.Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
+		return db.Order("band_members.order")
+	}).
+		Preload("BandMembers.Roles").
+		Find(&artist, artist.ID)
 
-	assertion.ResponseArtist(t, artist, responseArtist)
+	assertion.ResponseArtist(t, artist, responseArtist, true)
 }

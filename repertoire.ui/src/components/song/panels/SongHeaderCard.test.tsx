@@ -1,4 +1,10 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import SongHeaderCard from './SongHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
@@ -12,35 +18,22 @@ import dayjs from 'dayjs'
 
 describe('Song Header Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
-    title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: null
+    title: 'Song 1'
   }
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: '2022-10-15',
-    songs: []
+    releaseDate: '2022-10-15'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const handlers = [
@@ -163,6 +156,7 @@ describe('Song Header Card', () => {
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

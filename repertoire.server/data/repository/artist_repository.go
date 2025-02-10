@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 
@@ -9,8 +10,8 @@ import (
 
 type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
-	// Deprecated: Use normal Get instead
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
+	GetWithBandMembers(artist *model.Artist, id uuid.UUID) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.Artist,
@@ -23,9 +24,20 @@ type ArtistRepository interface {
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	Create(artist *model.Artist) error
 	Update(artist *model.Artist) error
+	UpdateWithAssociations(artist *model.Artist) error
 	Delete(id uuid.UUID) error
 	DeleteAlbums(id uuid.UUID) error
 	DeleteSongs(id uuid.UUID) error
+
+	GetBandMember(bandMember *model.BandMember, id uuid.UUID) error
+	GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error
+	CreateBandMember(bandMember *model.BandMember) error
+	UpdateBandMember(bandMember *model.BandMember) error
+	ReplaceRolesFromBandMember(roles []model.BandMemberRole, bandMember *model.BandMember) error
+	DeleteBandMember(id uuid.UUID) error
+
+	GetBandMemberRoles(roles *[]model.BandMemberRole, userID uuid.UUID) error
+	GetBandMemberRolesByIDs(roles *[]model.BandMemberRole, ids []uuid.UUID) error
 }
 
 type artistRepository struct {
@@ -43,7 +55,22 @@ func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
 }
 
 func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
-	return a.client.DB.Find(&artist, model.Artist{ID: id}).Error
+	return a.client.DB.
+		Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
+			return db.Order("band_members.order")
+		}).
+		Preload("BandMembers.Roles").
+		Find(&artist, model.Artist{ID: id}).
+		Error
+}
+
+func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID) error {
+	return a.client.DB.
+		Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
+			return db.Order("band_members.order")
+		}).
+		Find(&artist, model.Artist{ID: id}).
+		Error
 }
 
 func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
@@ -84,6 +111,13 @@ func (a artistRepository) Update(artist *model.Artist) error {
 	return a.client.DB.Save(&artist).Error
 }
 
+func (a artistRepository) UpdateWithAssociations(artist *model.Artist) error {
+	return a.client.DB.
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Updates(&artist).
+		Error
+}
+
 func (a artistRepository) Delete(id uuid.UUID) error {
 	return a.client.DB.Delete(&model.Artist{}, id).Error
 }
@@ -94,4 +128,40 @@ func (a artistRepository) DeleteAlbums(id uuid.UUID) error {
 
 func (a artistRepository) DeleteSongs(id uuid.UUID) error {
 	return a.client.DB.Where("artist_id = ?", id).Delete(&model.Song{}).Error
+}
+
+// Band Member
+
+func (a artistRepository) GetBandMember(bandMember *model.BandMember, id uuid.UUID) error {
+	return a.client.DB.Find(&bandMember, id).Error
+}
+
+func (a artistRepository) GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error {
+	return a.client.DB.Preload("Artist").Find(&bandMember, id).Error
+}
+
+func (a artistRepository) CreateBandMember(bandMember *model.BandMember) error {
+	return a.client.DB.Create(&bandMember).Error
+}
+
+func (a artistRepository) UpdateBandMember(bandMember *model.BandMember) error {
+	return a.client.DB.Save(&bandMember).Error
+}
+
+func (a artistRepository) ReplaceRolesFromBandMember(roles []model.BandMemberRole, bandMember *model.BandMember) error {
+	return a.client.DB.Model(&bandMember).Association("Roles").Replace(roles)
+}
+
+func (a artistRepository) DeleteBandMember(id uuid.UUID) error {
+	return a.client.DB.Delete(&model.BandMember{}, id).Error
+}
+
+// Band Member - Roles
+
+func (a artistRepository) GetBandMemberRoles(bandMemberRoles *[]model.BandMemberRole, userID uuid.UUID) error {
+	return a.client.DB.Find(&bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
+}
+
+func (a artistRepository) GetBandMemberRolesByIDs(bandMemberRoles *[]model.BandMemberRole, ids []uuid.UUID) error {
+	return a.client.DB.Find(&bandMemberRoles, ids).Error
 }

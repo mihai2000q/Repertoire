@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -36,11 +37,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
-  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -52,8 +53,8 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     navigate(`/songs`, { replace: true })
     toast.success(`${song.title} deleted!`)
   }
@@ -69,6 +70,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <PerfectRehearsalMenuItem songId={song.id} />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
@@ -208,6 +210,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </HeaderPanelCard>
   )

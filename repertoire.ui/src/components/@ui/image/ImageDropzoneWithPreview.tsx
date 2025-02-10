@@ -11,12 +11,20 @@ import {
   Stack,
   Tooltip
 } from '@mantine/core'
-import { IconMusic, IconPhotoFilled, IconTrashFilled, IconUpload, IconX } from '@tabler/icons-react'
+import {
+  IconMusic,
+  IconPhotoFilled,
+  IconRestore,
+  IconTrashFilled,
+  IconUpload,
+  IconX
+} from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
 interface ImageDropzoneWithPreviewProps {
-  image: FileWithPath | null
-  setImage: Dispatch<SetStateAction<FileWithPath | null>>
+  image: FileWithPath | string | null
+  setImage: Dispatch<SetStateAction<FileWithPath | string | null>>
+  defaultValue?: string | null
   w?: number
   h?: number
   icon?: ReactElement
@@ -28,6 +36,7 @@ function ImageDropzoneWithPreview({
   image,
   setImage,
   icon,
+  defaultValue,
   w = 92,
   h = 92,
   iconSizes = 45,
@@ -37,6 +46,10 @@ function ImageDropzoneWithPreview({
 
   function handleRemoveImage() {
     setImage(null)
+  }
+
+  function handleResetImage() {
+    setImage(defaultValue)
   }
 
   function handleImageChange(image: FileWithPath) {
@@ -49,7 +62,7 @@ function ImageDropzoneWithPreview({
       <Box pos={'relative'}>
         <AspectRatio>
           <Image
-            src={URL.createObjectURL(image)}
+            src={typeof image === 'string' ? image : URL.createObjectURL(image)}
             w={w}
             h={h}
             radius={radius}
@@ -106,6 +119,15 @@ function ImageDropzoneWithPreview({
                     </Menu.Item>
                   )}
                 </FileButton>
+                {defaultValue && (
+                  <Menu.Item
+                    disabled={defaultValue === image}
+                    leftSection={<IconRestore size={18} />}
+                    onClick={handleResetImage}
+                  >
+                    Reset Image
+                  </Menu.Item>
+                )}
                 <Menu.Item
                   c={'red'}
                   leftSection={<IconTrashFilled size={18} />}

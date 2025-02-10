@@ -43,6 +43,7 @@ import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
 import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
+import PerfectRehearsalMenuItem from "../../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -60,7 +61,7 @@ function SongDrawer() {
   }
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   useEffect(() => {
     if (song && opened && !isFetching)
@@ -90,8 +91,8 @@ function SongDrawer() {
     navigate(`/song/${songId}`)
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     dispatch(deleteSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${song.title} deleted!`)
@@ -144,6 +145,7 @@ function SongDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <PerfectRehearsalMenuItem songId={song.id} />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
@@ -422,6 +424,7 @@ function SongDrawer() {
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
       <YoutubeModal
         title={song.title}

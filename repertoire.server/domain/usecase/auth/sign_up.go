@@ -68,6 +68,8 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 	var guitarTunings []model.GuitarTuning
 	var songSectionTypes []model.SongSectionType
+	var bandMemberRoles []model.BandMemberRole
+	var instruments []model.Instrument
 
 	for i, guitarTuning := range model.DefaultGuitarTunings {
 		guitarTunings = append(guitarTunings, model.GuitarTuning{
@@ -87,6 +89,26 @@ func (s *SignUp) createAndAttachDefaultData(user *model.User) {
 		})
 	}
 
+	for i, bandMemberRole := range model.DefaultBandMemberRoles {
+		bandMemberRoles = append(bandMemberRoles, model.BandMemberRole{
+			ID:     uuid.New(),
+			Name:   bandMemberRole,
+			Order:  uint(i),
+			UserID: user.ID,
+		})
+	}
+
+	for i, instrument := range model.DefaultInstruments {
+		instruments = append(instruments, model.Instrument{
+			ID:     uuid.New(),
+			Name:   instrument,
+			Order:  uint(i),
+			UserID: user.ID,
+		})
+	}
+
 	user.GuitarTunings = guitarTunings
 	user.SongSectionTypes = songSectionTypes
+	user.BandMemberRoles = bandMemberRoles
+	user.Instruments = instruments
 }

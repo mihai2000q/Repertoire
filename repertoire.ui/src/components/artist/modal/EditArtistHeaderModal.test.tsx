@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditArtistHeaderModal from './EditArtistHeaderModal.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { act, screen } from '@testing-library/react'
@@ -9,12 +9,9 @@ import { UpdateArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 
 describe('Edit Artist Header Modal', () => {
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    albums: [],
-    songs: [],
-    createdAt: '',
-    updatedAt: '',
     imageUrl: 'some-image.png'
   }
 
@@ -35,11 +32,21 @@ describe('Edit Artist Header Modal', () => {
     expect(screen.getByRole('heading', { name: /edit artist header/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', artist.imageUrl)
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute(
+      'src',
+      artist.imageUrl
+    )
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(artist.name)
+
+    expect(screen.getByRole('checkbox', { name: 'is-band' })).toBeInTheDocument()
+    if (artist.isBand) {
+      expect(screen.getByRole('checkbox', { name: 'is-band' })).toBeChecked()
+    } else {
+      expect(screen.getByRole('checkbox', { name: 'is-band' })).not.toBeChecked()
+    }
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
@@ -66,10 +73,12 @@ describe('Edit Artist Header Modal', () => {
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
+    const isBandCheckbox = screen.getByRole('checkbox', { name: 'is-band' })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     await user.clear(nameField)
     await user.type(nameField, newName)
+    await user.click(isBandCheckbox)
     await user.click(saveButton)
 
     expect(await screen.findByText(/artist updated/i)).toBeInTheDocument()
@@ -78,7 +87,8 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
-      name: newName
+      name: newName,
+      isBand: true
     })
   })
 
@@ -116,6 +126,7 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
+      isBand: artist.isBand,
       name: artist.name
     })
     expect(capturedSaveImageFormData.get('id')).toBe(artist.id)
@@ -162,6 +173,7 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
+      isBand: artist.isBand,
       name: artist.name
     })
     expect(capturedSaveImageFormData.get('id')).toBe(artist.id)
@@ -199,6 +211,7 @@ describe('Edit Artist Header Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: artist.id,
+      isBand: artist.isBand,
       name: artist.name
     })
   })

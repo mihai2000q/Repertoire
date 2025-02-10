@@ -1,7 +1,8 @@
 import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import Song, { GuitarTuning, SongSectionType } from '../../types/models/Song.ts'
+import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/models/Song.ts'
 import {
+  AddPerfectSongRehearsalRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
@@ -9,7 +10,8 @@ import {
   MoveSongSectionRequest,
   SaveImageToSongRequest,
   UpdateSongRequest,
-  UpdateSongSectionRequest
+  UpdateSongSectionRequest,
+  UpdateSongSectionsOccurrencesRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
@@ -34,6 +36,14 @@ const songsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Songs', 'Artists', 'Albums']
+    }),
+    addPerfectSongRehearsal: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalRequest>({
+      query: (body) => ({
+        url: 'songs/perfect-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
     }),
     updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
       query: (body) => ({
@@ -84,6 +94,17 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    updateSongSectionsOccurrences: build.mutation<
+      HttpMessageResponse,
+      UpdateSongSectionsOccurrencesRequest
+    >({
+      query: (body) => ({
+        url: 'songs/sections/occurrences',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections/move',
@@ -110,6 +131,12 @@ const songsApi = api.injectEndpoints({
     getGuitarTunings: build.query<GuitarTuning[], void>({
       query: () => 'songs/guitar-tunings',
       providesTags: ['GuitarTunings']
+    }),
+
+    // instruments
+    getInstruments: build.query<Instrument[], void>({
+      query: () => 'songs/instruments',
+      providesTags: ['Instruments']
     })
   })
 })
@@ -118,14 +145,17 @@ export const {
   useGetSongsQuery,
   useGetSongQuery,
   useCreateSongMutation,
+  useAddPerfectSongRehearsalMutation,
   useUpdateSongMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,
   useDeleteSongMutation,
   useGetGuitarTuningsQuery,
+  useGetInstrumentsQuery,
   useGetSongSectionTypesQuery,
   useCreateSongSectionMutation,
   useUpdateSongSectionMutation,
+  useUpdateSongSectionsOccurrencesMutation,
   useMoveSongSectionMutation,
   useDeleteSongSectionMutation
 } = songsApi

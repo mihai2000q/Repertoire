@@ -1,6 +1,6 @@
 import Difficulty from '../../utils/enums/Difficulty.ts'
 import Album from './Album.ts'
-import Artist from './Artist.ts'
+import Artist, { BandMember } from './Artist.ts'
 
 export default interface Song {
   id: string
@@ -39,7 +39,10 @@ export interface SongSection {
   rehearsals: number
   confidence: number
   progress: number
+  occurrences: number
   songSectionType: SongSectionType
+  bandMember?: BandMember
+  instrument?: Instrument
 }
 
 export interface SongSectionType {
@@ -48,6 +51,11 @@ export interface SongSectionType {
 }
 
 export interface GuitarTuning {
+  id: string
+  name: string
+}
+
+export interface Instrument {
   id: string
   name: string
 }

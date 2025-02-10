@@ -3,7 +3,6 @@ package provider
 import (
 	"mime/multipart"
 	"repertoire/server/domain/provider"
-	"repertoire/server/internal"
 	"repertoire/server/model"
 	"testing"
 
@@ -67,6 +66,32 @@ func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(
 
 	// then
 	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() + "/image" + fileExtension
+
+	assert.Equal(t, expectedImagePath, imagePath)
+}
+
+func TestStorageFilePathProvider_GetBandMemberImagePath_ShouldReturnBandMemberImagePath(t *testing.T) {
+	// given
+	_uut := provider.NewStorageFilePathProvider()
+
+	fileExtension := ".jpg"
+	file := new(multipart.FileHeader)
+	file.Filename = "something" + fileExtension
+	artist := model.Artist{
+		ID:     uuid.New(),
+		UserID: uuid.New(),
+	}
+	bandMember := model.BandMember{
+		ID:     uuid.New(),
+		Artist: artist,
+	}
+
+	// when
+	imagePath := _uut.GetBandMemberImagePath(file, bandMember)
+
+	// then
+	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() +
+		"/members/" + bandMember.ID.String() + "/image" + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -198,140 +223,4 @@ func TestStorageFilePathProvider_GetSongDirectoryPath_ShouldReturnAlbumDirectory
 	expectedDirectoryPath := song.UserID.String() + "/songs/" + song.ID.String() + "/"
 
 	assert.Equal(t, expectedDirectoryPath, directoryPath)
-}
-
-func TestStorageFilePathProvider_HasAlbumFiles_ShouldReturnAlbumDirectoryPath(t *testing.T) {
-	tests := []struct {
-		name  string
-		album model.Album
-		want  bool
-	}{
-		{
-			"With Image",
-			model.Album{
-				ImageURL: &[]internal.FilePath{"somePath"}[0],
-			},
-			true,
-		},
-		{
-			"Without Files",
-			model.Album{},
-			false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := provider.NewStorageFilePathProvider()
-
-			// when
-			result := _uut.HasAlbumFiles(tt.album)
-
-			// then
-			assert.Equal(t, tt.want, result)
-		})
-	}
-}
-
-func TestStorageFilePathProvider_HasArtistFiles_ShouldReturnAlbumDirectoryPath(t *testing.T) {
-	tests := []struct {
-		name   string
-		artist model.Artist
-		want   bool
-	}{
-		{
-			"With Image",
-			model.Artist{
-				ImageURL: &[]internal.FilePath{"somePath"}[0],
-			},
-			true,
-		},
-		{
-			"Without Files",
-			model.Artist{},
-			false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := provider.NewStorageFilePathProvider()
-
-			// when
-			result := _uut.HasArtistFiles(tt.artist)
-
-			// then
-			assert.Equal(t, tt.want, result)
-		})
-	}
-}
-
-func TestStorageFilePathProvider_HasPlaylistFiles_ShouldReturnAlbumDirectoryPath(t *testing.T) {
-	tests := []struct {
-		name     string
-		playlist model.Playlist
-		want     bool
-	}{
-		{
-			"With Image",
-			model.Playlist{
-				ImageURL: &[]internal.FilePath{"somePath"}[0],
-			},
-			true,
-		},
-		{
-			"Without Files",
-			model.Playlist{},
-			false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := provider.NewStorageFilePathProvider()
-
-			// when
-			result := _uut.HasPlaylistFiles(tt.playlist)
-
-			// then
-			assert.Equal(t, tt.want, result)
-		})
-	}
-}
-
-func TestStorageFilePathProvider_HasSongFiles_ShouldReturnAlbumDirectoryPath(t *testing.T) {
-	tests := []struct {
-		name string
-		song model.Song
-		want bool
-	}{
-		{
-			"With Image",
-			model.Song{
-				ImageURL: &[]internal.FilePath{"somePath"}[0],
-			},
-			true,
-		},
-		{
-			"Without Files",
-			model.Song{},
-			false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := provider.NewStorageFilePathProvider()
-
-			// when
-			result := _uut.HasSongFiles(tt.song)
-
-			// then
-			assert.Equal(t, tt.want, result)
-		})
-	}
 }

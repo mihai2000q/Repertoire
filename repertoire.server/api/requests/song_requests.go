@@ -30,6 +30,10 @@ type CreateSongRequest struct {
 	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
+type AddPerfectSongRehearsalRequest struct {
+	ID uuid.UUID `validate:"required"`
+}
+
 type UpdateSongRequest struct {
 	ID             uuid.UUID `validate:"required"`
 	Title          string    `validate:"required,max=100"`
@@ -48,31 +52,29 @@ type CreateSectionRequest struct {
 	TypeID uuid.UUID `validate:"required"`
 }
 
-// Guitar Tunings
-
-type CreateGuitarTuningRequest struct {
-	Name string `validate:"required,max=16"`
-}
-
-type MoveGuitarTuningRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	OverID uuid.UUID `validate:"required"`
-}
-
 // Sections
 
 type CreateSongSectionRequest struct {
-	SongID uuid.UUID `validate:"required"`
-	Name   string    `validate:"required,max=30"`
-	TypeID uuid.UUID `validate:"required"`
+	SongID       uuid.UUID `validate:"required"`
+	Name         string    `validate:"required,max=30"`
+	TypeID       uuid.UUID `validate:"required"`
+	BandMemberID *uuid.UUID
+	InstrumentID *uuid.UUID
 }
 
 type UpdateSongSectionRequest struct {
-	ID         uuid.UUID `validate:"required"`
-	Name       string    `validate:"required,max=30"`
-	Confidence uint      `validate:"max=100"`
-	Rehearsals uint
-	TypeID     uuid.UUID `validate:"required"`
+	ID           uuid.UUID `validate:"required"`
+	Name         string    `validate:"required,max=30"`
+	Confidence   uint      `validate:"max=100"`
+	Rehearsals   uint
+	TypeID       uuid.UUID `validate:"required"`
+	BandMemberID *uuid.UUID
+	InstrumentID *uuid.UUID
+}
+
+type UpdateSongSectionsOccurrencesRequest struct {
+	SongID   uuid.UUID                         `validate:"required"`
+	Sections []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
 }
 
 type MoveSongSectionRequest struct {
@@ -81,13 +83,7 @@ type MoveSongSectionRequest struct {
 	SongID uuid.UUID `validate:"required"`
 }
 
-// Sections - Types
-
-type CreateSongSectionTypeRequest struct {
-	Name string `validate:"required,max=16"`
-}
-
-type MoveSongSectionTypeRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	OverID uuid.UUID `validate:"required"`
+type UpdateSectionOccurrencesRequest struct {
+	ID          uuid.UUID `validate:"required"`
+	Occurrences uint
 }

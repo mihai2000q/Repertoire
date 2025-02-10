@@ -1,4 +1,4 @@
-import { mantineRender } from '../../../test-utils.tsx'
+import { emptyArtist, mantineRender } from '../../../test-utils.tsx'
 import ArtistInfoModal from './ArtistInfoModal.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { screen } from '@testing-library/react'
@@ -6,10 +6,9 @@ import dayjs from 'dayjs'
 
 describe('Artist Info Modal', () => {
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    albums: [],
-    songs: [],
     createdAt: '2024-11-25T22:00:00',
     updatedAt: '2024-12-12T05:00:00'
   }

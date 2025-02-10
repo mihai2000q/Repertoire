@@ -11,6 +11,9 @@ import {
   Modal,
   NavLink,
   NumberFormatter,
+  NumberInput,
+  ScrollArea,
+  ScrollAreaAutosize,
   Select,
   StylesApiProps,
   Tabs,
@@ -149,6 +152,7 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
+      fw: 500,
       styles: (theme) => ({
         root: {
           borderRadius: '16px',
@@ -181,6 +185,21 @@ export const components = {
       decimalScale: 0
     }
   }),
+  NumberInput: NumberInput.extend({
+    defaultProps: {
+      clampBehavior: 'strict'
+    }
+  }),
+  ScrollArea: ScrollArea.extend({
+    defaultProps: {
+      type: 'hover'
+    }
+  }),
+  ScrollAreaAutosize: ScrollAreaAutosize.extend({
+    defaultProps: {
+      type: 'hover'
+    }
+  }),
   Select: Select.extend({
     defaultProps: {
       comboboxProps: {
@@ -189,6 +208,9 @@ export const components = {
           transition: 'scale-y',
           duration: 160
         }
+      },
+      scrollAreaProps: {
+        type: 'hover'
       }
     }
   }),

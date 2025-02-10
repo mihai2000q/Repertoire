@@ -16,6 +16,7 @@ func (s SongRouter) RegisterRoutes() {
 		api.GET("/:id", s.handler.Get)
 		api.GET("", s.handler.GetAll)
 		api.POST("", s.handler.Create)
+		api.POST("/perfect-rehearsal", s.handler.AddPerfectRehearsal)
 		api.PUT("", s.handler.Update)
 		api.DELETE("/:id", s.handler.Delete)
 	}
@@ -26,29 +27,19 @@ func (s SongRouter) RegisterRoutes() {
 		imagesApi.DELETE("/:id", s.handler.DeleteImage)
 	}
 
-	guitarTuningsApi := api.Group("/guitar-tunings")
-	{
-		guitarTuningsApi.GET("", s.handler.GetGuitarTunings)
-		guitarTuningsApi.POST("", s.handler.CreateGuitarTuning)
-		guitarTuningsApi.PUT("/move", s.handler.MoveGuitarTuning)
-		guitarTuningsApi.DELETE("/:id", s.handler.DeleteGuitarTuning)
-	}
+	api.Group("/guitar-tunings").GET("", s.handler.GetGuitarTunings)
+	api.Group("/instruments").GET("", s.handler.GetInstruments)
 
 	sectionsApi := api.Group("/sections")
 	{
 		sectionsApi.POST("", s.handler.CreateSection)
 		sectionsApi.PUT("", s.handler.UpdateSection)
+		sectionsApi.PUT("/occurrences", s.handler.UpdateSectionsOccurrences)
 		sectionsApi.PUT("/move", s.handler.MoveSection)
 		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
 	}
 
-	sectionTypesApi := sectionsApi.Group("/types")
-	{
-		sectionTypesApi.GET("", s.handler.GetSectionTypes)
-		sectionTypesApi.POST("", s.handler.CreateSectionType)
-		sectionTypesApi.PUT("/move", s.handler.MoveSectionType)
-		sectionTypesApi.DELETE("/:id", s.handler.DeleteSectionType)
-	}
+	sectionsApi.Group("/types").GET("", s.handler.GetSectionTypes)
 }
 
 func NewSongRouter(

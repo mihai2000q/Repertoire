@@ -1,4 +1,4 @@
-import { reduxRender } from '../../../../test-utils.tsx'
+import { emptyArtist, reduxRender } from '../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
@@ -11,28 +11,19 @@ import ArtistAutocomplete from './ArtistAutocomplete.tsx'
 describe('Artist Autocomplete', () => {
   const artists: Artist[] = [
     {
+      ...emptyArtist,
       id: '1',
-      name: 'Artist 1',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 1'
     },
     {
+      ...emptyArtist,
       id: '2',
-      name: 'Artist 2',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 2'
     },
     {
+      ...emptyArtist,
       id: '3',
-      name: 'Artist 3',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 3'
     }
   ]
 

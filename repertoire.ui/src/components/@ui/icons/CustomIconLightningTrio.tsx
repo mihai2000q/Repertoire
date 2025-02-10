@@ -2,7 +2,7 @@ import { forwardRef, SVGProps } from 'react'
 
 interface CustomIconLightningTrioProps extends SVGProps<SVGSVGElement> {
   color?: string
-  size?: number
+  size?: number | string
 }
 
 const CustomIconLightningTrio = forwardRef<SVGSVGElement, CustomIconLightningTrioProps>(

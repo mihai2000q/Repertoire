@@ -23,7 +23,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconDotsVertical, IconEye, IconTrash, IconUser } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
@@ -44,7 +44,7 @@ function ArtistDrawer() {
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
@@ -78,8 +78,8 @@ function ArtistDrawer() {
     navigate(`/artist/${artist.id}`)
   }
 
-  function handleDelete() {
-    deleteArtistMutation({ id: artist.id })
+  async function handleDelete() {
+    await deleteArtistMutation({ id: artist.id }).unwrap()
     dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${artist.name} deleted!`)
@@ -147,9 +147,42 @@ function ArtistDrawer() {
 
           <Group ml={2} gap={4}>
             <Text fw={500} fz={'sm'} c={'dimmed'}>
+              {artist.isBand
+                ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+                : ''}
               {albums.totalCount} album{plural(albums.totalCount)} • {songs.totalCount} song
               {plural(songs.totalCount)}
             </Text>
+          </Group>
+
+          {artist.isBand && artist.bandMembers.length > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Band Members
+              </Text>
+              <Divider />
+            </Stack>
+          )}
+
+          <Group align={'start'} px={6} gap={'sm'}>
+            {artist.bandMembers.map((bandMember) => (
+              <Stack key={bandMember.id} align={'center'} gap={4} w={53}>
+                <Avatar
+                  variant={'light'}
+                  size={42}
+                  color={bandMember.color}
+                  src={bandMember.imageUrl ?? null}
+                  alt={bandMember.name}
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                >
+                  <IconUser size={19} />
+                </Avatar>
+
+                <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
+                  {bandMember.name}
+                </Text>
+              </Stack>
+            ))}
           </Group>
 
           {albums.totalCount > 0 && (
@@ -224,6 +257,7 @@ function ArtistDrawer() {
         title={'Delete Artist'}
         description={`Are you sure you want to delete this artist?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </RightSideEntityDrawer>
   )

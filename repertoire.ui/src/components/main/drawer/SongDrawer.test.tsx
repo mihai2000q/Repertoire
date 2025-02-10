@@ -1,4 +1,10 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import SongDrawer from './SongDrawer.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
@@ -11,38 +17,30 @@ import Album from '../../../types/models/Album.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { closeSongDrawer, openSongDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import {
+  closeSongDrawer,
+  openSongDrawer,
+  setDocumentTitle
+} from '../../../state/slice/globalSlice.ts'
 
 describe('Song Drawer', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
-    title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
+    title: 'Song 1'
   }
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: '2023-09-10',
-    songs: []
+    releaseDate: '2023-09-10'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const getSong = (song: Song) =>
@@ -280,6 +278,7 @@ describe('Song Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

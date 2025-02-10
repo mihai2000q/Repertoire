@@ -10,6 +10,7 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
+import PerfectRehearsalMenuItem from "../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
 
 interface PlaylistSongCardProps {
   song: Song
@@ -32,7 +33,7 @@ function PlaylistSongCard({
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = hovered || isMenuOpened || isDragging
+  const isSelected = hovered || isMenuOpened || isDragging || openedMenu
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -66,6 +67,7 @@ function PlaylistSongCard({
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <PerfectRehearsalMenuItem songId={song.id} />
       <Menu.Item
         leftSection={<IconTrash size={14} />}
         c={'red.5'}

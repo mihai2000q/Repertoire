@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import AddNewAlbumSongModal from './AddNewAlbumSongModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
@@ -39,14 +39,7 @@ describe('Add New Album Song Modal', () => {
       ...album,
       releaseDate: '2024-12-10',
       imageUrl: 'something.png',
-      artist: {
-        id: '',
-        name: '',
-        albums: [],
-        songs: [],
-        createdAt: '',
-        updatedAt: ''
-      }
+      artist: emptyArtist
     }
 
     reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={localAlbum} />)

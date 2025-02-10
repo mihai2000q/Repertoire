@@ -7,12 +7,20 @@ interface WarningModalProps {
   title: string
   description: string | ReactNode
   onYes: () => void
+  isLoading?: boolean
 }
 
-function WarningModal({ opened, onClose, title, description, onYes }: WarningModalProps) {
+function WarningModal({
+  opened,
+  onClose,
+  title,
+  description,
+  onYes,
+  isLoading
+}: WarningModalProps) {
   function internalOnYes() {
-    onClose()
     onYes()
+    onClose()
   }
 
   return (
@@ -24,7 +32,9 @@ function WarningModal({ opened, onClose, title, description, onYes }: WarningMod
             <Button variant={'subtle'} onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={internalOnYes}>Yes</Button>
+            <Button onClick={internalOnYes} loading={isLoading}>
+              Yes
+            </Button>
           </Group>
         </Stack>
       </Modal.Body>

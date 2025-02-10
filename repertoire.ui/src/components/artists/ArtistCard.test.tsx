@@ -1,5 +1,5 @@
 import Artist from 'src/types/models/Artist.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import { emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import ArtistCard from './ArtistCard.tsx'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -8,12 +8,9 @@ import { http, HttpResponse } from 'msw'
 
 describe('Artist Card', () => {
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const server = setupServer()
@@ -40,7 +37,10 @@ describe('Artist Card', () => {
     reduxRouterRender(<ArtistCard artist={localArtist} />)
 
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute('src', localArtist.imageUrl)
+    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute(
+      'src',
+      localArtist.imageUrl
+    )
     expect(screen.getByText(localArtist.name)).toBeInTheDocument()
   })
 

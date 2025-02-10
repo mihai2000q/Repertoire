@@ -30,7 +30,7 @@ function ArtistHeaderCard({
 }: ArtistHeaderCardProps) {
   const navigate = useNavigate()
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
 
@@ -40,12 +40,12 @@ function ArtistHeaderCard({
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleDelete() {
-    deleteArtistMutation({
+  async function handleDelete() {
+    await deleteArtistMutation({
       id: artist.id,
       withAlbums: deleteWithAssociations,
       withSongs: deleteWithAssociations
-    })
+    }).unwrap()
     navigate(`/artists`, { replace: true })
     toast.success(`${artist.name} deleted!`)
   }
@@ -77,7 +77,7 @@ function ArtistHeaderCard({
             boxShadow: theme.shadows.lg,
             ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
           })}
-          onClick={!isUnknownArtist && artist.imageUrl && openImage}
+          onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
         />
         <Stack
           gap={4}
@@ -98,6 +98,9 @@ function ArtistHeaderCard({
             </Title>
           )}
           <Text fw={500} fz={'sm'} c={'dimmed'}>
+            {!isUnknownArtist && artist?.isBand
+              ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+              : ''}
             {albumsTotalCount} album{plural(albumsTotalCount)} • {songsTotalCount} song
             {plural(songsTotalCount)}
           </Text>
@@ -137,6 +140,7 @@ function ArtistHeaderCard({
               </Stack>
             }
             onYes={handleDelete}
+            isLoading={isDeleteLoading}
           />
         </>
       )}

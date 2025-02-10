@@ -1,7 +1,13 @@
 import { screen } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
-import { reduxRouterRender, withToastify } from '../../test-utils'
+import {
+  emptyArtist,
+  emptySong,
+  emptySongSection,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import Difficulty from '../../utils/enums/Difficulty.ts'
@@ -11,25 +17,15 @@ import { setupServer } from 'msw/node'
 
 describe('Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '',
-    title: 'Some song',
-    description: '',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: ''
+    title: 'Some song'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const server = setupServer()
@@ -137,7 +133,8 @@ describe('Song Card', () => {
           },
           rehearsals: 0,
           confidence: 0,
-          progress: 0
+          progress: 0,
+          occurrences: 0
         }
       ]
     }
@@ -157,26 +154,20 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 1',
           songSectionType: {
             id: '',
             name: 'Solo'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         },
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 2',
           songSectionType: {
             id: '',
             name: 'Solo'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         }
       ]
     }
@@ -196,26 +187,20 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Riff 1',
           songSectionType: {
             id: '',
             name: 'Riff'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         },
         {
-          id: '',
+          ...emptySongSection,
           name: 'Riff 2',
           songSectionType: {
             id: '',
             name: 'Riff'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         }
       ]
     }
@@ -237,6 +222,8 @@ describe('Song Card', () => {
       keys: '[MouseRight>]',
       target: screen.getByRole('img', { name: song.title })
     })
+
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

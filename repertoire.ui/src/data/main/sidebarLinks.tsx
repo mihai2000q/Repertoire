@@ -1,11 +1,8 @@
 import { ReactElement } from 'react'
-import {
-  IconAlbum,
-  IconHomeFilled,
-  IconMusic,
-  IconPlaylist,
-  IconUserFilled
-} from '@tabler/icons-react'
+import { IconHomeFilled, IconUserFilled } from '@tabler/icons-react'
+import CustomIconMusicNote from '../../components/@ui/icons/CustomIconMusicNote.tsx'
+import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconPlaylist2 from '../../components/@ui/icons/CustomIconPlaylist2.tsx'
 
 interface SidebarLink {
   icon: ReactElement
@@ -17,10 +14,10 @@ interface SidebarLink {
 export const sidebarLinks: SidebarLink[] = [
   { icon: <IconHomeFilled />, label: 'Home', link: '/home', subLinks: [] },
   { icon: <IconUserFilled />, label: 'Artists', link: '/artists', subLinks: ['/artist'] },
-  { icon: <IconAlbum />, label: 'Albums', link: '/albums', subLinks: ['/album'] },
-  { icon: <IconMusic stroke={1.75} />, label: 'Songs', link: '/songs', subLinks: ['/song'] },
+  { icon: <CustomIconAlbumVinyl />, label: 'Albums', link: '/albums', subLinks: ['/album'] },
+  { icon: <CustomIconMusicNote />, label: 'Songs', link: '/songs', subLinks: ['/song'] },
   {
-    icon: <IconPlaylist stroke={1.75} />,
+    icon: <CustomIconPlaylist2 />,
     label: 'Playlists',
     link: '/playlists',
     subLinks: ['/playlist']
