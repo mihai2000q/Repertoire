@@ -51,6 +51,7 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 			return db.Order("song_sections.order")
 		}).
 		Preload("Sections.SongSectionType").
+		Preload("Sections.Instrument").
 		Preload("Sections.BandMember").
 		Preload("Sections.BandMember.Roles").
 		Preload("Artist.BandMembers").
