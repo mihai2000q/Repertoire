@@ -91,6 +91,7 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 			return db.Order("song_sections.order")
 		}).
 		Preload("Sections.SongSectionType").
+		Preload("Sections.Instrument").
 		Preload("Sections.BandMember").
 		Preload("Sections.BandMember.Roles").
 		Find(&song, model.Song{ID: id}).
@@ -108,6 +109,7 @@ func (s songRepository) GetAllByUser(
 	tx := s.client.DB.Model(&model.Song{}).
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
+		Preload("Sections.Instrument").
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
