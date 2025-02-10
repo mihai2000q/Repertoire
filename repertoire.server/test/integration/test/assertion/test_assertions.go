@@ -197,6 +197,11 @@ func ResponseSongSection(
 	assert.Equal(t, songSection.Progress, response.Progress)
 
 	ResponseSongSectionType(t, songSection.SongSectionType, response.SongSectionType)
+	if songSection.Instrument != nil {
+		ResponseInstrument(t, *songSection.Instrument, *response.Instrument)
+	} else {
+		assert.Nil(t, response.Instrument)
+	}
 	if withBandMember {
 		if songSection.BandMember != nil {
 			ResponseBandMember(t, *songSection.BandMember, *response.BandMember, true)

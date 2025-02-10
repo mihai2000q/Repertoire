@@ -34,6 +34,7 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 		Joins("Artist").
 		Joins("GuitarTuning").
 		Preload("Sections").
+		Preload("Sections.Instrument").
 		Preload("Sections.SongSectionType").
 		Find(&songs)
 

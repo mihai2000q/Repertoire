@@ -1,12 +1,12 @@
 import { forwardRef, SVGProps } from 'react'
 
-interface CustomIconFlyingVGuitarProps extends SVGProps<SVGSVGElement> {
+interface CustomIconKingVGuitarProps extends SVGProps<SVGSVGElement> {
   color?: string
-  size?: number
+  size?: number | string
 }
 
-const CustomIconFlyingVGuitar = forwardRef<SVGSVGElement, CustomIconFlyingVGuitarProps>(
-  ({ color, size = 24, ...props }, ref) => (
+const CustomIconKingVGuitar = forwardRef<SVGSVGElement, CustomIconKingVGuitarProps>(
+  ({ color, size = 24, strokeWidth = 2, ...props }, ref) => (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
@@ -40,6 +40,6 @@ const CustomIconFlyingVGuitar = forwardRef<SVGSVGElement, CustomIconFlyingVGuita
   )
 )
 
-CustomIconFlyingVGuitar.displayName = 'CustomIconFlyingVGuitar'
+CustomIconKingVGuitar.displayName = 'CustomIconKingVGuitar'
 
-export default CustomIconFlyingVGuitar
+export default CustomIconKingVGuitar

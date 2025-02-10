@@ -2,7 +2,7 @@ import { forwardRef, SVGProps } from 'react'
 
 interface CustomIconGuitarHeadProps extends SVGProps<SVGSVGElement> {
   color?: string
-  size?: number
+  size?: number | string
 }
 
 const CustomIconGuitarHead = forwardRef<SVGSVGElement, CustomIconGuitarHeadProps>(

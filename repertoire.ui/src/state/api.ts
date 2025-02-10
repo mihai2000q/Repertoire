@@ -16,6 +16,7 @@ export const api = createApi({
     'Artists',
     'Playlists',
     'GuitarTunings',
+    'Instruments',
     'BandMemberRoles',
     'SongSectionTypes',
     'User'

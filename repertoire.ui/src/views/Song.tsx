@@ -45,7 +45,11 @@ function Song() {
           <Stack>
             <SongDescriptionCard song={song} />
 
-            <SongSectionsCard songId={songId} sections={song.sections} />
+            <SongSectionsCard
+              songId={songId}
+              sections={song.sections}
+              bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
+            />
           </Stack>
         </Grid.Col>
       </Grid>

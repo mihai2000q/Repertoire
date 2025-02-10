@@ -72,13 +72,22 @@ describe('Song Sections Card', () => {
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'edit-occurrences' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
 
     const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
     for (let i = 0; i < sections.length; i++) {
       expect(renderedSections[i]).toHaveAccessibleName(`song-section-${sections[i].name}`)
     }
     screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
+  })
+
+  it('should disable a few options when there are no sections', () => {
+    reduxRender(<SongSectionsCard sections={[]} songId={''} />)
+
+    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
   describe('on toolbar options', () => {

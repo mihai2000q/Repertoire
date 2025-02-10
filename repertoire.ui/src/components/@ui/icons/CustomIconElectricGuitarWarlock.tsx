@@ -1,11 +1,11 @@
 import { forwardRef, SVGProps } from 'react'
 
-interface CustomIconElectricGuitarProps extends SVGProps<SVGSVGElement> {
+interface CustomIconElectricGuitarWarlockProps extends SVGProps<SVGSVGElement> {
   color?: string
-  size?: number
+  size?: number | string
 }
 
-const CustomIconElectricGuitar = forwardRef<SVGSVGElement, CustomIconElectricGuitarProps>(
+const CustomIconElectricGuitarWarlock = forwardRef<SVGSVGElement, CustomIconElectricGuitarWarlockProps>(
   ({ color, size = 24, ...props }, ref) => (
     <svg
       ref={ref}
@@ -41,6 +41,6 @@ const CustomIconElectricGuitar = forwardRef<SVGSVGElement, CustomIconElectricGui
   )
 )
 
-CustomIconElectricGuitar.displayName = 'CustomIconElectricGuitar'
+CustomIconElectricGuitarWarlock.displayName = 'CustomIconElectricGuitarWarlock'
 
-export default CustomIconElectricGuitar
+export default CustomIconElectricGuitarWarlock

@@ -66,6 +66,8 @@ export interface UpdateSongSectionRequest {
   name: string
   rehearsals: number
   confidence: number
+  bandMemberId?: string
+  instrumentId?: string
 }
 
 export interface UpdateSongSectionsOccurrencesRequest {
