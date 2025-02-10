@@ -20,7 +20,7 @@ interface PlaylistHeaderCardProps {
 function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
   const navigate = useNavigate()
 
-  const [deletePlaylistMutation] = useDeletePlaylistMutation()
+  const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
@@ -28,8 +28,8 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleDelete() {
-    deletePlaylistMutation(playlist.id)
+  async function handleDelete() {
+    await deletePlaylistMutation(playlist.id).unwrap()
     navigate(`/playlists`, { replace: true })
     toast.success(`${playlist.title} deleted!`)
   }
@@ -100,6 +100,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
         title={'Delete Playlist'}
         description={`Are you sure you want to delete this playlist?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </HeaderPanelCard>
   )

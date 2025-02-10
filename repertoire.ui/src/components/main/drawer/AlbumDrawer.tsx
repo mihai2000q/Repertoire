@@ -43,7 +43,7 @@ function AlbumDrawer() {
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
-  const [deleteAlbumMutation] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
 
   const { data: album, isFetching } = useGetAlbumQuery({ id: albumId }, { skip: !albumId })
 
@@ -63,8 +63,8 @@ function AlbumDrawer() {
     navigate(`/album/${album.id}`)
   }
 
-  function handleDelete() {
-    deleteAlbumMutation({ id: album.id })
+  async function handleDelete() {
+    await deleteAlbumMutation({ id: album.id }).unwrap()
     dispatch(deleteAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${album.title} deleted!`)
@@ -198,6 +198,7 @@ function AlbumDrawer() {
         title={'Delete Album'}
         description={`Are you sure you want to delete this album?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </RightSideEntityDrawer>
   )

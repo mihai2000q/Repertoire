@@ -25,6 +25,7 @@ import CustomIconMusicNote from './CustomIconMusicNote.tsx'
 import CustomIconMusicNoteEighth from './CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist from './CustomIconPlaylist.tsx'
 import CustomIconPlaylist2 from './CustomIconPlaylist2.tsx'
+import CustomIconQuestionMark from './CustomIconQuestionMark.tsx'
 
 describe.concurrent('Custom Icons', () => {
   it('should render Custom Icon Arrow Left', () => {
@@ -105,6 +106,10 @@ describe.concurrent('Custom Icons', () => {
 
   it('should render Custom Icon Playlist 2', () => {
     render(<CustomIconPlaylist2 />)
+  })
+
+  it('should render Custom Icon Question Mark', () => {
+    render(<CustomIconQuestionMark />)
   })
 
   it('should render Custom Icon Rhoads Guitar', () => {

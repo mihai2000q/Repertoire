@@ -40,7 +40,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteAlbumMutation] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
 
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
@@ -54,8 +54,8 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
     dispatch(openArtistDrawer(album.artist.id))
   }
 
-  function handleDelete() {
-    deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs })
+  async function handleDelete() {
+    await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
     navigate(`/albums`, { replace: true })
     toast.success(`${album.title} deleted!`)
   }
@@ -90,7 +90,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               boxShadow: theme.shadows.lg,
               ...(!isUnknownAlbum && album.imageUrl && { cursor: 'pointer' })
             })}
-            onClick={!isUnknownAlbum && album.imageUrl && openImage}
+            onClick={!isUnknownAlbum && album.imageUrl ? openImage : undefined}
           />
         </AspectRatio>
         <Stack
@@ -190,6 +190,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               </Stack>
             }
             onYes={handleDelete}
+            isLoading={isDeleteLoading}
           />
         </>
       )}

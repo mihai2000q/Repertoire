@@ -55,7 +55,7 @@ function SongSectionCard({
   bandMembers
 }: SongSectionCardProps) {
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
-  const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
+  const [deleteSongSectionMutation, { isLoading: isDeleteLoading }] = useDeleteSongSectionMutation()
 
   const getInstrumentIcon = useInstrumentIcon()
 
@@ -74,8 +74,8 @@ function SongSectionCard({
     })
   }
 
-  function handleDelete() {
-    deleteSongSectionMutation({ id: section.id, songId: songId })
+  async function handleDelete() {
+    await deleteSongSectionMutation({ id: section.id, songId: songId }).unwrap()
     toast.success(`${section.name} deleted!`)
   }
 
@@ -153,7 +153,8 @@ function SongSectionCard({
                       </Text>
                       {section.bandMember.roles.slice(0, 2).map((role, index) => (
                         <Text key={role.id} c={'dimmed'} fz={'xs'} lineClamp={1} lh={1.05}>
-                          {role.name}{index === 1 && section.bandMember.roles.length > 2 && ' ...'}
+                          {role.name}
+                          {index === 1 && section.bandMember.roles.length > 2 && ' ...'}
                         </Text>
                       ))}
                     </Stack>
@@ -266,6 +267,7 @@ function SongSectionCard({
           </Group>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Menu>
   )

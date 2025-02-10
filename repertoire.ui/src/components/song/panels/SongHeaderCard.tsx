@@ -37,7 +37,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
@@ -53,8 +53,8 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     navigate(`/songs`, { replace: true })
     toast.success(`${song.title} deleted!`)
   }
@@ -210,6 +210,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </HeaderPanelCard>
   )

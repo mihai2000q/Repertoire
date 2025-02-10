@@ -18,7 +18,7 @@ interface BandMemberCardProps {
 }
 
 function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberCardProps) {
-  const [deleteBandMember] = useDeleteBandMemberMutation()
+  const [deleteBandMember, { isLoading: isDeleteLoading }] = useDeleteBandMemberMutation()
   const { ref, hovered } = useHover()
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
@@ -66,7 +66,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
             variant={'light'}
             size={'lg'}
             color={bandMember.color}
-            src={bandMember.imageUrl ?? bandMember.color}
+            src={bandMember.imageUrl ?? null}
             alt={bandMember.name}
             sx={(theme) => ({
               transition: '0.3s',
@@ -118,6 +118,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
           </Group>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )
