@@ -12,7 +12,7 @@ import {
   Text
 } from '@mantine/core'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
-import { IconAlbum, IconDisc, IconDots, IconPlus } from '@tabler/icons-react'
+import { IconDisc, IconDots, IconPlus } from '@tabler/icons-react'
 import ArtistAlbumCard from '../ArtistAlbumCard.tsx'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -107,8 +107,8 @@ function ArtistAlbumsCard({
               ariaLabel={'new-albums-card'}
               borderRadius={'8px'}
               onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
-              icon={<IconAlbum size={16} />}
-              p={'10px 9px 6px 9px'}
+              icon={<IconDisc size={18} />}
+              p={'9px 8px 5px 8px'}
             >
               Add New Albums
             </NewHorizontalCard>

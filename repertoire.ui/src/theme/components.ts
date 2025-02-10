@@ -152,6 +152,7 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
+      fw: 500,
       styles: (theme) => ({
         root: {
           borderRadius: '16px',

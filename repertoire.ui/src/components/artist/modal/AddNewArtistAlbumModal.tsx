@@ -7,9 +7,12 @@ import {
   addNewArtistAlbumValidation
 } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
-import { useCreateAlbumMutation, useSaveImageToAlbumMutation } from '../../../state/api/albumsApi.ts'
+import {
+  useCreateAlbumMutation,
+  useSaveImageToAlbumMutation
+} from '../../../state/api/albumsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
-import { IconAlbum } from '@tabler/icons-react'
+import { IconDisc } from '@tabler/icons-react'
 
 interface AddNewArtistAlbumModalProps {
   opened: boolean
@@ -61,7 +64,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
               <ImageDropzoneWithPreview
                 image={image}
                 setImage={setImage}
-                icon={<IconAlbum size={45} />}
+                icon={<IconDisc size={45} />}
               />
               <TextInput
                 flex={1}

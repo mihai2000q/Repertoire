@@ -19,6 +19,12 @@ import CustomIconUkulele from './CustomIconUkulele.tsx'
 import CustomIconViolin from './CustomIconViolin.tsx'
 import CustomIconVoice from './CustomIconVoice.tsx'
 import CustomIconTriangleMusic from './CustomIconTriangleMusic.tsx'
+import CustomIconAlbumMusicNote from './CustomIconAlbumMusicNote.tsx'
+import CustomIconAlbumVinyl from './CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNote from './CustomIconMusicNote.tsx'
+import CustomIconMusicNoteEighth from './CustomIconMusicNoteEighth.tsx'
+import CustomIconPlaylist from './CustomIconPlaylist.tsx'
+import CustomIconPlaylist2 from './CustomIconPlaylist2.tsx'
 
 describe.concurrent('Custom Icons', () => {
   it('should render Custom Icon Arrow Left', () => {
@@ -31,6 +37,14 @@ describe.concurrent('Custom Icons', () => {
 
   it('should render Custom Icon Acoustic Guitar', () => {
     render(<CustomIconAcousticGuitar />)
+  })
+
+  it('should render Custom Icon Album Music Note', () => {
+    render(<CustomIconAlbumMusicNote />)
+  })
+
+  it('should render Custom Icon Album Vinyl', () => {
+    render(<CustomIconAlbumVinyl />)
   })
 
   it('should render Custom Icon Electric Guitar Warlock', () => {
@@ -69,12 +83,28 @@ describe.concurrent('Custom Icons', () => {
     render(<CustomIconMetronome />)
   })
 
+  it('should render Custom Icon Music Note', () => {
+    render(<CustomIconMusicNote />)
+  })
+
+  it('should render Custom Icon Music Note Eighth', () => {
+    render(<CustomIconMusicNoteEighth />)
+  })
+
   it('should render Custom Icon Piano', () => {
     render(<CustomIconPiano />)
   })
 
   it('should render Custom Icon Piano Keyboard', () => {
     render(<CustomIconPianoKeyboard />)
+  })
+
+  it('should render Custom Icon Playlist', () => {
+    render(<CustomIconPlaylist />)
+  })
+
+  it('should render Custom Icon Playlist 2', () => {
+    render(<CustomIconPlaylist2 />)
   })
 
   it('should render Custom Icon Rhoads Guitar', () => {
