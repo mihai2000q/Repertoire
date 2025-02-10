@@ -147,9 +147,42 @@ function ArtistDrawer() {
 
           <Group ml={2} gap={4}>
             <Text fw={500} fz={'sm'} c={'dimmed'}>
+              {artist.isBand
+                ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+                : ''}
               {albums.totalCount} album{plural(albums.totalCount)} • {songs.totalCount} song
               {plural(songs.totalCount)}
             </Text>
+          </Group>
+
+          {artist.isBand && artist.bandMembers.length > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Band Members
+              </Text>
+              <Divider />
+            </Stack>
+          )}
+
+          <Group align={'start'} px={6} gap={'sm'}>
+            {artist.bandMembers.map((bandMember) => (
+              <Stack key={bandMember.id} align={'center'} gap={4} w={53}>
+                <Avatar
+                  variant={'light'}
+                  size={42}
+                  color={bandMember.color}
+                  src={bandMember.imageUrl ?? null}
+                  alt={bandMember.name}
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                >
+                  <IconUser size={19} />
+                </Avatar>
+
+                <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
+                  {bandMember.name}
+                </Text>
+              </Stack>
+            ))}
           </Group>
 
           {albums.totalCount > 0 && (

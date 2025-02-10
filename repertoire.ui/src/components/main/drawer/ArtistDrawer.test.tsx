@@ -97,7 +97,16 @@ describe('Artist Drawer', () => {
     ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    imageUrl: 'something.png'
+    imageUrl: 'something.png',
+    isBand: true,
+    bandMembers: [
+      {
+        id: '1',
+        name: 'Member 1',
+        roles: [],
+        imageUrl: 'something.png'
+      }
+    ]
   }
 
   const getArtist = (artist: Artist) =>
@@ -154,10 +163,19 @@ describe('Artist Drawer', () => {
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
-    expect(screen.getByText(`${albums.length} albums • ${songs.length} songs`)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        `${artist.bandMembers.length} members • ${albums.length} albums • ${songs.length} songs`
+      )
+    ).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
       prevDocumentTitle + ' - ' + artist.name
     )
+
+    artist.bandMembers.forEach((bandMember) => {
+      expect(screen.getByText(bandMember.name)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+    })
 
     albums.forEach((album) => {
       expect(screen.getByText(album.title)).toBeInTheDocument()
