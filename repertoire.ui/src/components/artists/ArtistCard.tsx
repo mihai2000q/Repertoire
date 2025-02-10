@@ -19,6 +19,8 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
   const [deleteArtistMutation] = useDeleteArtistMutation()
 
+  const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
+
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
@@ -30,8 +32,12 @@ function ArtistCard({ artist }: ArtistCardProps) {
     navigate(`/artist/${artist.id}`)
   }
 
-  function handleDelete() {
-    deleteArtistMutation({ id: artist.id })
+  async function handleDelete() {
+    await deleteArtistMutation({
+      id: artist.id,
+      withAlbums: deleteWithAssociations,
+      withSongs: deleteWithAssociations
+    }).unwrap()
     toast.success(`${artist.name} deleted!`)
   }
 
@@ -80,11 +86,23 @@ function ArtistCard({ artist }: ArtistCardProps) {
         onClose={closeDeleteWarning}
         title={`Delete Artist`}
         description={
-          <Group gap={4}>
-            <Text>Are you sure you want to delete</Text>
-            <Text fw={600}>{artist.name}</Text>
-            <Text>?</Text>
-          </Group>
+          <Stack gap={'xs'}>
+            <Group gap={4}>
+              <Text>Are you sure you want to delete</Text>
+              <Text fw={600}>{artist.name}</Text>
+              <Text>?</Text>
+            </Group>
+            <Checkbox
+              checked={deleteWithAssociations}
+              onChange={(event) => setDeleteWithAssociations(event.currentTarget.checked)}
+              label={
+                <Text c={'dimmed'}>
+                  Delete all associated <b>albums</b> and <b>songs</b>
+                </Text>
+              }
+              styles={{ label: { paddingLeft: 8 } }}
+            />
+          </Stack>
         }
         onYes={handleDelete}
       />
