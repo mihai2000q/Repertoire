@@ -1,20 +1,22 @@
-import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
+import { Box, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { AddNewArtistSongForm } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import { AddNewAlbumSongForm, addNewAlbumSongValidation } from '../../../validation/albumsForm.ts'
+import Album from '../../../types/models/Album.ts'
+import { IconInfoCircleFilled } from '@tabler/icons-react'
 
 interface AddNewAlbumSongModalProps {
   opened: boolean
   onClose: () => void
-  albumId: string | undefined
+  album: Album | undefined
 }
 
-function AddNewAlbumSongModal({ opened, onClose, albumId }: AddNewAlbumSongModalProps) {
+function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalProps) {
   const [createSongMutation, { isLoading: isCreateSongLoading }] = useCreateSongMutation()
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
   const isLoading = isCreateSongLoading || isSaveImageLoading
@@ -25,6 +27,11 @@ function AddNewAlbumSongModal({ opened, onClose, albumId }: AddNewAlbumSongModal
     onClose()
     setImage(null)
   }
+
+  const inheritedValues = [
+    ...(album?.releaseDate ? ['release date'] : []),
+    ...(album?.artist ? ['artist'] : [])
+  ]
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -40,7 +47,7 @@ function AddNewAlbumSongModal({ opened, onClose, albumId }: AddNewAlbumSongModal
   async function addSong({ title }: AddNewAlbumSongForm) {
     title = title.trim()
 
-    const res = await createSongMutation({ title, description: '', albumId }).unwrap()
+    const res = await createSongMutation({ title, description: '', albumId: album?.id }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
@@ -55,17 +62,44 @@ function AddNewAlbumSongModal({ opened, onClose, albumId }: AddNewAlbumSongModal
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addSong)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview image={image} setImage={setImage} />
-              <TextInput
-                flex={1}
-                withAsterisk={true}
-                maxLength={100}
-                label="Title"
-                placeholder="The title of the song"
-                key={form.key('title')}
-                {...form.getInputProps('title')}
-              />
+
+              <Stack flex={1} gap={0}>
+                <TextInput
+                  withAsterisk={true}
+                  maxLength={100}
+                  label="Title"
+                  placeholder="The title of the song"
+                  key={form.key('title')}
+                  {...form.getInputProps('title')}
+                />
+
+                <Stack gap={0} mt={3}>
+                  {!image && album?.imageUrl && (
+                    <Group gap={4}>
+                      <Box c={'primary.8'}>
+                        <IconInfoCircleFilled size={13} />
+                      </Box>
+
+                      <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                        If no image is uploaded, it will be inherited.
+                      </Text>
+                    </Group>
+                  )}
+                  {inheritedValues.length > 0 && (
+                    <Group gap={4} wrap={'nowrap'}>
+                      <Box c={'primary.8'}>
+                        <IconInfoCircleFilled size={13} />
+                      </Box>
+
+                      <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                        The new song will inherit the <b>{inheritedValues.join(', ')}</b>.
+                      </Text>
+                    </Group>
+                  )}
+                </Stack>
+              </Stack>
             </Group>
 
             <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>

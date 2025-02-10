@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useGetAlbumsQuery } from '../state/albumsApi.ts'
+import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
 import {
   ActionIcon,
   Box,
@@ -21,15 +20,22 @@ import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabl
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
 import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import albumsSearchParamsState from '../state/searchParams/AlbumsSearchParamsState.ts'
 
 function Albums() {
-  const [currentPage, setCurrentPage] = useState(1)
+  useFixedDocumentTitle('Albums')
+  const [searchParams, setSearchParams] = useSearchParamsState(albumsSearchParamsState)
+  const { currentPage } = searchParams
+
+  const pageSize = 40
   const {
     data: albums,
     isLoading,
     isFetching
   } = useGetAlbumsQuery({
-    pageSize: 20,
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
@@ -38,16 +44,20 @@ function Albums() {
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     albums?.totalCount + (showUnknownAlbum ? 1 : 0),
-    20,
+    pageSize,
     currentPage
   )
 
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
 
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
+
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <Group gap={4} align={'center'}>
+      <Group gap={4}>
         <Title order={3} fw={800}>
           Albums
         </Title>
@@ -80,7 +90,8 @@ function Albums() {
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
-        {((albums?.totalCount > 0 && currentPage == totalPages) || showUnknownAlbum) && (
+        {((albums?.totalCount > 0 && currentPage == totalPages) ||
+          (albums?.totalCount === 0 && showUnknownAlbum)) && (
           <Card
             aria-label={'new-album-card'}
             w={150}
@@ -98,12 +109,12 @@ function Albums() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
+      <Box style={{ alignSelf: 'center' }} pb={'md'}>
         {!isFetching ? (
           <Pagination
             data-testid={'albums-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (

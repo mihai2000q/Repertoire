@@ -3,6 +3,7 @@ package song
 import (
 	"errors"
 	"github.com/google/uuid"
+	"net/http"
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -50,15 +51,13 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		}
 	}
 
-	if d.storageFilePathProvider.HasSongFiles(song) {
-		directoryPath := d.storageFilePathProvider.GetSongDirectoryPath(song)
-		err = d.storageService.DeleteDirectory(directoryPath)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
+	directoryPath := d.storageFilePathProvider.GetSongDirectoryPath(song)
+	errCode := d.storageService.DeleteDirectory(directoryPath)
+	if errCode != nil && errCode.Code != http.StatusNotFound {
+		return errCode
 	}
 
-	errCode := d.reorderSongsInPlaylists(song)
+	errCode = d.reorderSongsInPlaylists(song)
 	if errCode != nil {
 		return errCode
 	}

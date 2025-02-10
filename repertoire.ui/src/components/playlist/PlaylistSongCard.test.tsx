@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -6,41 +6,30 @@ import { userEvent } from '@testing-library/user-event'
 import Artist from '../../types/models/Artist.ts'
 import Album from '../../types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
+import { expect } from 'vitest'
 
 describe('Playlist Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
     title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
     playlistTrackNo: 1
   }
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
-    title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
+    title: 'Album 1'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   it('should render and display minimal info', () => {
-    reduxRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
     expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
@@ -51,42 +40,116 @@ describe('Playlist Song Card', () => {
   it('should render and display maximal info', () => {
     const localSong = {
       ...song,
+      imageUrl: 'something.png',
       artist: artist,
       album: album
     }
 
-    reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
+    reduxRouterRender(
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+    )
 
     expect(screen.getByText(localSong.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
     expect(screen.getByText(localSong.title)).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
 
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRouterRender(
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+    )
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(
+      <PlaylistSongCard song={localSongWithAlbum} handleRemove={() => {}} isDragging={false} />
+    )
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
+  })
+
+  it('should display menu on right click', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`song-card-${song.title}`)
+    })
+
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+  })
+
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<PlaylistSongCard song={song} handleRemove={() => {}} />)
+    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
+    it('should navigate to song when clicking on view details', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /view details/i }))
+
+      expect(window.location.pathname).toBe(`/song/${song.id}`)
+
+      // restore
+      window.location.pathname = '/'
+    })
+
     it('should display warning modal and remove, when clicking on remove', async () => {
       const user = userEvent.setup()
 
       const handleRemove = vitest.fn()
 
-      reduxRender(<PlaylistSongCard song={song} handleRemove={handleRemove} />)
+      reduxRouterRender(
+        <PlaylistSongCard song={song} handleRemove={handleRemove} isDragging={false} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /remove/i }))
 
-      expect(screen.getByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 
@@ -104,7 +167,9 @@ describe('Playlist Song Card', () => {
       album: album
     }
 
-    const [_, store] = reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
+    const [_, store] = reduxRouterRender(
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+    )
 
     await user.click(screen.getByText(localSong.album.title))
 
@@ -120,7 +185,9 @@ describe('Playlist Song Card', () => {
       artist: artist
     }
 
-    const [_, store] = reduxRender(<PlaylistSongCard song={localSong} handleRemove={() => {}} />)
+    const [_, store] = reduxRouterRender(
+      <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+    )
 
     await user.click(screen.getByText(localSong.artist.name))
 

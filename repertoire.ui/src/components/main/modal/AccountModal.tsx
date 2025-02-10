@@ -1,14 +1,27 @@
-import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
+import {
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import User from '../../../types/models/User.ts'
 import { AccountForm, accountValidation } from '../../../validation/mainForm.ts'
 import {
-  useDeleteProfilePictureFromUserMutation,
-  useSaveProfilePictureToUserMutation,
+  useDeleteProfilePictureMutation,
+  useSaveProfilePictureMutation,
   useUpdateUserMutation
 } from '../../../state/api.ts'
+import { toast } from 'react-toastify'
+import { useDidUpdate } from '@mantine/hooks'
+import { FileWithPath } from '@mantine/dropzone'
+import dayjs from 'dayjs'
 
 interface AccountModalProps {
   opened: boolean
@@ -19,9 +32,9 @@ interface AccountModalProps {
 function AccountModal({ opened, onClose, user }: AccountModalProps) {
   const [updateUserMutation, { isLoading: isUpdateLoading }] = useUpdateUserMutation()
   const [saveProfilePictureMutation, { isLoading: isSaveProfilePictureLoading }] =
-    useSaveProfilePictureToUserMutation()
+    useSaveProfilePictureMutation()
   const [deleteProfilePictureMutation, { isLoading: isDeleteProfilePictureLoading }] =
-    useDeleteProfilePictureFromUserMutation()
+    useDeleteProfilePictureMutation()
   const isLoading = isUpdateLoading || isSaveProfilePictureLoading || isDeleteProfilePictureLoading
 
   const [hasChanged, setHasChanged] = useState(false)
@@ -30,7 +43,7 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     mode: 'uncontrolled',
     initialValues: {
       name: user.name,
-      profilePicture: user.profilePictureUrl ?? null
+      profilePicture: user.profilePictureUrl
     } as AccountForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -41,15 +54,16 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     }
   })
 
-  const [profilePicture, setProfilePicture] = useState(user.profilePictureUrl ?? null)
+  const [profilePicture, setProfilePicture] = useState<string | FileWithPath>(
+    user.profilePictureUrl
+  )
   useEffect(() => form.setFieldValue('profilePicture', profilePicture), [profilePicture])
-  useEffect(() => setProfilePicture(user.profilePictureUrl), [user])
+  useDidUpdate(() => setProfilePicture(user.profilePictureUrl), [user])
 
   async function updateUser({ name, profilePicture }: AccountForm) {
     name = name.trim()
 
     await updateUserMutation({
-      ...user,
       name: name
     }).unwrap()
 
@@ -61,6 +75,7 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
       await deleteProfilePictureMutation()
     }
 
+    toast.info('Account updated!')
     onClose()
     setHasChanged(false)
   }
@@ -76,6 +91,8 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
               image={profilePicture}
               setImage={setProfilePicture}
               defaultValue={user.profilePictureUrl}
+              label={'Picture'}
+              ariaLabel={'profile-picture'}
             />
 
             <TextInput
@@ -88,6 +105,18 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
             />
 
             <TextInput label="Email" disabled={true} defaultValue={user.email} />
+
+            <Group justify={'space-between'}>
+              <Text fz={'sm'} fw={500} c={'dimmed'} inline>
+                Created on <b>{dayjs(user.createdAt).format('DD MMM YYYY')}</b>
+              </Text>
+
+              {user.createdAt !== user.updatedAt && (
+                <Text fz={'sm'} fw={500} c={'dimmed'} inline>
+                  Last Modified on <b>{dayjs(user.updatedAt).format('DD MMM YYYY')}</b>
+                </Text>
+              )}
+            </Group>
 
             <Tooltip
               disabled={hasChanged}

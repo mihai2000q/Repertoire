@@ -11,7 +11,7 @@ import {
   useCombobox
 } from '@mantine/core'
 import albumPlaceholder from '../../../../assets/image-placeholder-1.jpg'
-import { useGetAlbumsQuery } from '../../../../state/albumsApi.ts'
+import { useGetAlbumsQuery } from '../../../../state/api/albumsApi.ts'
 import Album from '../../../../types/models/Album.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import dayjs from 'dayjs'
@@ -64,7 +64,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
         />
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Group gap={'xs'} maw={200} align={'center'} wrap={'nowrap'}>
+        <Group gap={'xs'} maw={200} wrap={'nowrap'}>
           <Avatar
             size={'lg'}
             radius={'md'}
@@ -134,7 +134,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
-          <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
+          <ScrollArea.Autosize mah={200} scrollbarSize={5}>
             {albums?.totalCount === 0 ? (
               <Combobox.Empty>No album found</Combobox.Empty>
             ) : (
@@ -145,7 +145,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                   aria-label={album.title}
                   onClick={() => setAlbum(album)}
                 >
-                  <Group gap={'xs'} align={'center'} wrap={'nowrap'}>
+                  <Group gap={'xs'} wrap={'nowrap'}>
                     <Avatar
                       size={'sm'}
                       radius={'md'}
@@ -157,7 +157,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                         {album.title}
                       </Text>
                       {album.artist && (
-                        <Text inline c={'dimmed'} fz={'xs'} fw={500} truncate={'end'}>
+                        <Text inline c={'dimmed'} fz={'xs'} fw={500} lineClamp={1}>
                           {album.artist.name}
                         </Text>
                       )}

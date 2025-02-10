@@ -29,13 +29,27 @@ func NewAlbumHandler(
 }
 
 func (a AlbumHandler) Get(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	var request requests.GetAlbumRequest
+	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := a.service.Get(id)
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := a.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	user, errorCode := a.service.Get(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
@@ -104,7 +118,7 @@ func (a AlbumHandler) AddSongs(c *gin.Context) {
 		return
 	}
 
-	a.SendMessage(c, "song has been added to album successfully")
+	a.SendMessage(c, "songs have been added to album successfully")
 }
 
 func (a AlbumHandler) Update(c *gin.Context) {
@@ -155,17 +169,31 @@ func (a AlbumHandler) RemoveSongs(c *gin.Context) {
 		return
 	}
 
-	a.SendMessage(c, "song has been removed from album successfully")
+	a.SendMessage(c, "songs have been removed from album successfully")
 }
 
 func (a AlbumHandler) Delete(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	var request requests.DeleteAlbumRequest
+	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	errorCode := a.service.Delete(id)
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := a.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.Delete(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

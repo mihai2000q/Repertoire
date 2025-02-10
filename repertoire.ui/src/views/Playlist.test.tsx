@@ -1,26 +1,14 @@
 import Playlist from './Playlist.tsx'
-import { reduxMemoryRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxMemoryRouterRender } from '../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import Song from '../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { default as PlaylistType } from './../types/models/Playlist.ts'
+import { RootState } from '../state/store.ts'
 
 describe('Playlist', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
@@ -65,10 +53,13 @@ describe('Playlist', () => {
   afterAll(() => server.close())
 
   it('should render and display playlist info and songs', async () => {
-    reduxMemoryRouterRender(<Playlist />, '/playlist/:id', [`/playlist/${playlist.id}`])
+    const [_, store] = reduxMemoryRouterRender(<Playlist />, '/playlist/:id', [
+      `/playlist/${playlist.id}`
+    ])
 
     expect(screen.getByTestId('playlist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(playlist.title)
   })
 })

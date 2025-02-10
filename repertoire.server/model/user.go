@@ -20,7 +20,9 @@ type User struct {
 	Playlists        []Playlist        `json:"-"`
 	Songs            []Song            `json:"-"`
 	SongSectionTypes []SongSectionType `json:"-"`
+	Instruments      []Instrument      `json:"-"`
 	GuitarTunings    []GuitarTuning    `json:"-"`
+	BandMemberRoles  []BandMemberRole  `json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`

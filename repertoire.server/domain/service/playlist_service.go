@@ -11,6 +11,8 @@ import (
 )
 
 type PlaylistService interface {
+	AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode
+	AddArtists(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode
 	AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -24,6 +26,8 @@ type PlaylistService interface {
 }
 
 type playlistService struct {
+	addAlbumsToPlaylist     playlist.AddAlbumsToPlaylist
+	addArtistsToPlaylist    playlist.AddArtistsToPlaylist
 	addSongsToPlaylist      playlist.AddSongsToPlaylist
 	createPlaylist          playlist.CreatePlaylist
 	deletePlaylist          playlist.DeletePlaylist
@@ -37,7 +41,9 @@ type playlistService struct {
 }
 
 func NewPlaylistService(
-	addSongToPlaylist playlist.AddSongsToPlaylist,
+	addAlbumsToPlaylist playlist.AddAlbumsToPlaylist,
+	addArtistsToPlaylist playlist.AddArtistsToPlaylist,
+	addSongsToPlaylist playlist.AddSongsToPlaylist,
 	createPlaylist playlist.CreatePlaylist,
 	deletePlaylist playlist.DeletePlaylist,
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist,
@@ -49,7 +55,9 @@ func NewPlaylistService(
 	updatePlaylist playlist.UpdatePlaylist,
 ) PlaylistService {
 	return &playlistService{
-		addSongsToPlaylist:      addSongToPlaylist,
+		addAlbumsToPlaylist:     addAlbumsToPlaylist,
+		addArtistsToPlaylist:    addArtistsToPlaylist,
+		addSongsToPlaylist:      addSongsToPlaylist,
 		createPlaylist:          createPlaylist,
 		deletePlaylist:          deletePlaylist,
 		deleteImageFromPlaylist: deleteImageFromPlaylist,
@@ -60,6 +68,14 @@ func NewPlaylistService(
 		saveImageToPlaylist:     saveImageToPlaylist,
 		updatePlaylist:          updatePlaylist,
 	}
+}
+
+func (p *playlistService) AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode {
+	return p.addAlbumsToPlaylist.Handle(request)
+}
+
+func (p *playlistService) AddArtists(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode {
+	return p.addArtistsToPlaylist.Handle(request)
 }
 
 func (p *playlistService) AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode {

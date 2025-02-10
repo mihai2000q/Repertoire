@@ -34,7 +34,7 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             </Text>
           </Grid.Col>
           <Grid.Col span={secondColSize}>
-            {song.difficulty ? <DifficultyBar difficulty={song.difficulty} /> : <NotSet />}
+            {song.difficulty ? <DifficultyBar difficulty={song.difficulty} maw={40} /> : <NotSet />}
           </Grid.Col>
 
           <Grid.Col span={firstColSize}>
@@ -70,8 +70,8 @@ function SongInformationCard({ song }: SongInformationCardProps) {
                 aria-label={'recorded-icon'}
                 sx={(theme) => ({
                   cursor: 'default',
-                  backgroundColor: theme.colors.cyan[5],
-                  '&:hover': { backgroundColor: theme.colors.cyan[5] },
+                  backgroundColor: theme.colors.primary[5],
+                  '&:hover': { backgroundColor: theme.colors.primary[5] },
                   '&:active': { transform: 'none' }
                 })}
               >

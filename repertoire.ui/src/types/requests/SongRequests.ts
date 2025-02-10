@@ -25,6 +25,10 @@ export interface CreateSongRequest {
   artistName?: string
 }
 
+export interface AddPerfectSongRehearsalRequest {
+  id: string
+}
+
 export interface CreateSectionRequest {
   name: string
   typeId: string
@@ -48,6 +52,8 @@ export interface SaveImageToSongRequest {
   id: string
 }
 
+// Sections
+
 export interface CreateSongSectionRequest {
   songId: string
   typeId: string
@@ -60,6 +66,13 @@ export interface UpdateSongSectionRequest {
   name: string
   rehearsals: number
   confidence: number
+  bandMemberId?: string
+  instrumentId?: string
+}
+
+export interface UpdateSongSectionsOccurrencesRequest {
+  songId: string
+  sections: { id: string, occurrences: number }[]
 }
 
 export interface MoveSongSectionRequest {

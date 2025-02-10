@@ -14,7 +14,7 @@ import {
   useDeleteImageFromSongMutation,
   useSaveImageToSongMutation,
   useUpdateSongMutation
-} from '../../../state/songsApi.ts'
+} from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validation/songsForm.ts'
@@ -22,6 +22,8 @@ import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
+import { FileWithPath } from '@mantine/dropzone'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -43,7 +45,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     initialValues: {
       title: song.title,
       releaseDate: song.releaseDate && new Date(song.releaseDate),
-      image: song.imageUrl ?? null
+      image: song.imageUrl
     } as EditSongHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -58,9 +60,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     }
   })
 
-  const [image, setImage] = useState(song.imageUrl ?? null)
+  const [image, setImage] = useState<string | FileWithPath>(song.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useEffect(() => setImage(song.imageUrl), [song])
+  useDidUpdate(() => setImage(song.imageUrl), [song])
 
   async function updateSong({ title, releaseDate, image }: EditSongHeaderForm) {
     title = title.trim()
@@ -102,7 +104,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
             {!image && song.album?.imageUrl && (
               <Group gap={6}>
-                <Box c={'cyan.8'} mt={3}>
+                <Box c={'primary.8'} mt={3}>
                   <IconInfoCircleFilled size={15} />
                 </Box>
 

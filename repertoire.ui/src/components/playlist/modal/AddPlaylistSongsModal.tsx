@@ -15,8 +15,8 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useAddSongsToPlaylistMutation } from '../../../state/playlistsApi.ts'
-import { useGetSongsQuery } from '../../../state/songsApi.ts'
+import { useAddSongsToPlaylistMutation } from '../../../state/api/playlistsApi.ts'
+import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
@@ -41,7 +41,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     orderBy: ['title asc'],
     searchBy: [
       `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
-      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })
 
@@ -114,6 +114,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
               <Checkbox
                 aria-label={songIds.length === songs.models.length ? 'deselect-all' : 'select-all'}
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
+                checked={songIds.length === songs.models.length}
               />
               <Text>{songIds.length === songs.models.length ? 'Deselect' : 'Select'} All</Text>
             </Group>
@@ -144,10 +145,11 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     transition: '0.3s',
                     '&:hover': {
                       boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -163,23 +165,23 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     alt={song.title}
                   />
                   <Stack gap={0} style={{ overflow: 'hidden' }}>
-                    <Group gap={4}>
+                    <Group gap={4} wrap={'nowrap'}>
                       <Text fw={500} truncate={'end'}>
                         {song.title}
                       </Text>
                       {song.album && (
-                        <Group gap={4}>
+                        <Group gap={4} wrap={'nowrap'}>
                           <Text fz={'sm'} c={'dimmed'}>
                             -
                           </Text>
-                          <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                          <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
                             {song.album.title}
                           </Text>
                         </Group>
                       )}
                     </Group>
                     {song.artist && (
-                      <Text fz={'sm'} c={'dimmed'}>
+                      <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
                         {song.artist.name}
                       </Text>
                     )}

@@ -2,7 +2,7 @@ import { forwardRef, SVGProps } from 'react'
 
 interface CustomIconLesPaulGuitarOutlinedProps extends SVGProps<SVGSVGElement> {
   color?: string
-  size?: number
+  size?: number | string
 }
 
 const CustomIconLesPaulGuitarOutlined = forwardRef<

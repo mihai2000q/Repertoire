@@ -11,8 +11,12 @@ import {
   Modal,
   NavLink,
   NumberFormatter,
+  NumberInput,
+  ScrollArea,
+  ScrollAreaAutosize,
   Select,
   StylesApiProps,
+  Tabs,
   Text,
   Title,
   Tooltip,
@@ -81,11 +85,11 @@ export const components = {
           cursor: 'pointer',
           transition: '0.3s',
           boxShadow: theme.shadows.xxl,
-          color: theme.colors.cyan[7],
+          color: theme.colors.primary[7],
           '&:hover': {
             boxShadow: theme.shadows.xxl_hover,
-            color: theme.colors.cyan[8],
-            backgroundColor: alpha(theme.colors.cyan[0], 0.2),
+            color: theme.colors.primary[8],
+            backgroundColor: alpha(theme.colors.primary[0], 0.2),
             transform: 'scale(1.1)'
           }
         }
@@ -148,6 +152,7 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
+      fw: 500,
       styles: (theme) => ({
         root: {
           borderRadius: '16px',
@@ -160,12 +165,12 @@ export const components = {
           },
 
           '&:where([data-active])': {
-            backgroundColor: alpha(theme.colors.cyan[4], 0.1),
-            color: theme.colors.cyan[4],
+            backgroundColor: alpha(theme.colors.primary[4], 0.1),
+            color: theme.colors.primary[4],
 
             '&:hover': {
-              backgroundColor: alpha(theme.colors.cyan[4], 0.15),
-              color: theme.colors.cyan[5],
+              backgroundColor: alpha(theme.colors.primary[4], 0.15),
+              color: theme.colors.primary[5],
               transform: 'scale(1)'
             }
           }
@@ -180,6 +185,21 @@ export const components = {
       decimalScale: 0
     }
   }),
+  NumberInput: NumberInput.extend({
+    defaultProps: {
+      clampBehavior: 'strict'
+    }
+  }),
+  ScrollArea: ScrollArea.extend({
+    defaultProps: {
+      type: 'hover'
+    }
+  }),
+  ScrollAreaAutosize: ScrollAreaAutosize.extend({
+    defaultProps: {
+      type: 'hover'
+    }
+  }),
   Select: Select.extend({
     defaultProps: {
       comboboxProps: {
@@ -188,7 +208,28 @@ export const components = {
           transition: 'scale-y',
           duration: 160
         }
+      },
+      scrollAreaProps: {
+        type: 'hover'
       }
+    }
+  }),
+  Tabs: Tabs.extend({
+    defaultProps: {
+      styles: (theme) => ({
+        tab: {
+          transition: 'border 200ms, background-color 200ms',
+          '&:hover': {
+            borderColor: theme.colors.gray[5],
+            backgroundColor: alpha(theme.colors.gray[3], 0.6)
+          },
+          '&[data-active]': {
+            '&:hover': {
+              borderColor: theme.colors.primary[5]
+            }
+          }
+        }
+      })
     }
   }),
   Text: Text.extend({
@@ -203,12 +244,12 @@ export const components = {
   }),
   Tooltip: Tooltip.extend({
     defaultProps: {
-      bg: 'cyan.9'
+      bg: 'primary.9'
     }
   }),
   TooltipFloating: TooltipFloating.extend({
     defaultProps: {
-      bg: 'cyan.9'
+      bg: 'primary.9'
     }
   })
 }

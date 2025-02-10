@@ -2,8 +2,7 @@ import { forwardRef, SVGProps } from 'react'
 
 interface CustomIconMetronomeProps extends SVGProps<SVGSVGElement> {
   color?: string
-  size?: number
-  strokeWidth?: number
+  size?: number | string
 }
 
 const CustomIconMetronome = forwardRef<SVGSVGElement, CustomIconMetronomeProps>(

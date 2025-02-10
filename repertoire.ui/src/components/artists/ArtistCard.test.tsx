@@ -1,5 +1,5 @@
 import Artist from 'src/types/models/Artist.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import { emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import ArtistCard from './ArtistCard.tsx'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -8,12 +8,9 @@ import { http, HttpResponse } from 'msw'
 
 describe('Artist Card', () => {
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const server = setupServer()
@@ -24,11 +21,27 @@ describe('Artist Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render', () => {
+  it('should render with minimal info', () => {
     reduxRouterRender(<ArtistCard artist={artist} />)
 
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
     expect(screen.getByText(artist.name)).toBeInTheDocument()
+  })
+
+  it('should render with maximal info', () => {
+    const localArtist: Artist = {
+      ...artist,
+      imageUrl: 'something.png'
+    }
+
+    reduxRouterRender(<ArtistCard artist={localArtist} />)
+
+    expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute(
+      'src',
+      localArtist.imageUrl
+    )
+    expect(screen.getByText(localArtist.name)).toBeInTheDocument()
   })
 
   it('should display menu on right click', async () => {
@@ -61,7 +74,7 @@ describe('Artist Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 

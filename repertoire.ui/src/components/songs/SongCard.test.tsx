@@ -1,7 +1,13 @@
 import { screen } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
-import { reduxRouterRender, withToastify } from '../../test-utils'
+import {
+  emptyArtist,
+  emptySong,
+  emptySongSection,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import Difficulty from '../../utils/enums/Difficulty.ts'
@@ -11,25 +17,15 @@ import { setupServer } from 'msw/node'
 
 describe('Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '',
-    title: 'Some song',
-    description: '',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: ''
+    title: 'Some song'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const server = setupServer()
@@ -45,6 +41,39 @@ describe('Song Card', () => {
 
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
+  })
+
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRouterRender(<SongCard song={localSong} />)
+
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(<SongCard song={localSongWithAlbum} />)
+
+    expect(screen.getByRole('img', { name: localSongWithAlbum.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
   })
 
   it('should render and display icons when the song is recorded, has guitar tuning, and songsterr and youtube links', async () => {
@@ -104,7 +133,8 @@ describe('Song Card', () => {
           },
           rehearsals: 0,
           confidence: 0,
-          progress: 0
+          progress: 0,
+          occurrences: 0
         }
       ]
     }
@@ -124,26 +154,20 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 1',
           songSectionType: {
             id: '',
             name: 'Solo'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         },
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 2',
           songSectionType: {
             id: '',
             name: 'Solo'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         }
       ]
     }
@@ -163,26 +187,20 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Riff 1',
           songSectionType: {
             id: '',
             name: 'Riff'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         },
         {
-          id: '',
+          ...emptySongSection,
           name: 'Riff 2',
           songSectionType: {
             id: '',
             name: 'Riff'
-          },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0
+          }
         }
       ]
     }
@@ -204,6 +222,8 @@ describe('Song Card', () => {
       keys: '[MouseRight>]',
       target: screen.getByRole('img', { name: song.title })
     })
+
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -225,7 +245,7 @@ describe('Song Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
@@ -256,5 +276,26 @@ describe('Song Card', () => {
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
+  })
+
+  it('should open youtube modal on youtube icon click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      youtubeLink: 'https://youtube.com/watch?v=123456789'
+    }
+
+    server.use(
+      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRouterRender(<SongCard song={localSong} />)
+
+    await user.click(screen.getByLabelText('youtube-icon'))
+
+    expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
   })
 })

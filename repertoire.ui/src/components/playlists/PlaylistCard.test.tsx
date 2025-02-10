@@ -31,6 +31,19 @@ describe('Playlist Card', () => {
     expect(screen.getByText(playlist.title)).toBeInTheDocument()
   })
 
+  it('should render maximal info', () => {
+    const localPlaylist: Playlist = {
+      ...playlist,
+      imageUrl: 'something.png'
+    }
+
+    reduxRouterRender(<PlaylistCard playlist={localPlaylist} />)
+
+    expect(screen.getByRole('img', { name: localPlaylist.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localPlaylist.title })).toHaveAttribute('src', localPlaylist.imageUrl)
+    expect(screen.getByText(localPlaylist.title)).toBeInTheDocument()
+  })
+
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
@@ -61,7 +74,7 @@ describe('Playlist Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 

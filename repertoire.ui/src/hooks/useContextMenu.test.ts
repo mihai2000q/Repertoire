@@ -1,17 +1,16 @@
-import { act, renderHook } from '@testing-library/react'
+import {act, renderHook} from '@testing-library/react'
 import useContextMenu from './useContextMenu.ts'
 import React from 'react'
 
-describe('useAuth', () => {
+describe('use Context Menu', () => {
   it('should return change menu state on open', () => {
-    const expectedClientX = 10
-    const expectedClientY = 10
+    const expectedPageX = 10
+    const expectedPageY = 10
 
     const { result, rerender } = renderHook(() => useContextMenu())
 
     const [opened, props, { openMenu }] = result.current
 
-    // open menu
     expect(opened).toBeFalsy()
     expect(props).toStrictEqual({
       style: {
@@ -21,29 +20,30 @@ describe('useAuth', () => {
       }
     })
 
-    act(() =>
-      openMenu(
-        new MouseEvent('mousemove', {
-          clientX: expectedClientX,
-          clientY: expectedClientY
-        }) as unknown as React.MouseEvent
-      )
-    )
+    // open menu
+    // noinspection JSUnusedGlobalSymbols
+    const event = new class {
+      pageX = expectedPageX
+      pageY = expectedPageY
+    } as React.MouseEvent
+    event.preventDefault = vitest.fn()
+    act(() => openMenu(event))
     rerender()
 
-    // on menu change
-    const [opened2, props2, { onMenuChange }] = result.current
+    const [opened2, props2, { closeMenu }] = result.current
 
+    expect(event.preventDefault).toHaveBeenCalledOnce()
     expect(opened2).toBeTruthy()
     expect(props2).toStrictEqual({
       style: {
         position: 'absolute',
-        top: expectedClientY,
-        left: expectedClientX
+        top: expectedPageY,
+        left: expectedPageX
       }
     })
 
-    act(() => onMenuChange(false))
+    // close menu
+    act(() => closeMenu())
     rerender()
 
     const [opened3] = result.current

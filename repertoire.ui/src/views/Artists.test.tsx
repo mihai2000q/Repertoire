@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Artists from './Artists.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptyArtist, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
@@ -8,30 +8,25 @@ import { userEvent } from '@testing-library/user-event'
 import Artist from '../types/models/Artist.ts'
 import Song from '../types/models/Song.ts'
 import Album from '../types/models/Album.ts'
+import { RootState } from '../state/store.ts'
 
 describe('Artists', () => {
   const artists: Artist[] = [
     {
+      ...emptyArtist,
       id: '1',
-      name: 'Artist 1',
-      albums: [],
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 1'
     },
     {
+      ...emptyArtist,
       id: '2',
-      name: 'Artist 2',
-      albums: [],
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      name: 'Artist 2'
     }
   ]
   const totalCount = 2
 
   const initialCurrentPage = 1
-  const pageSize = 20
+  const pageSize = 40
 
   const getSongsWithoutArtists = () =>
     http.get('/songs', async () => {
@@ -72,7 +67,7 @@ describe('Artists', () => {
       return HttpResponse.json(response)
     })
 
-  const getArtistsWithPagination = (totalCount: number = 30) =>
+  const getArtistsWithPagination = (totalCount: number = 50) =>
     http.get('/artists', async (req) => {
       const currentPage = new URL(req.request.url).searchParams.get('currentPage')
       const response: WithTotalCountResponse<Artist> =
@@ -126,13 +121,17 @@ describe('Artists', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    window.location.search = ''
+    server.resetHandlers()
+  })
 
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are artists', async () => {
-    reduxRouterRender(<Artists />)
+    const [_, store] = reduxRouterRender(<Artists />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/artists/i)
     expect(screen.getByRole('heading', { name: /artists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-artist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-artists/i })).toBeInTheDocument()
@@ -199,7 +198,7 @@ describe('Artists', () => {
   it('should paginate the artists', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getArtistsWithPagination(totalCount))
 
@@ -221,9 +220,10 @@ describe('Artists', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount} artists out of ${totalCount}`)
     ).toBeInTheDocument()
+    expect(window.location.search).toContain('p=2')
   })
 
-  it('the new artist card should not be displayed on first page, but on the last', async () => {
+  it('should display the new artist card on last page, but not on the first page', async () => {
     const user = userEvent.setup()
 
     server.use(getArtistsWithPagination())
@@ -271,11 +271,11 @@ describe('Artists', () => {
     [true, false],
     [true, true]
   ])(
-    'should display unknown artist card when there are songs or albums without artist on the last page, but not on the first',
+    'should display the new artist and unknown artist cards on the last page, but not the first page',
     async (withAlbum, withSong) => {
       const user = userEvent.setup()
 
-      const totalCount = 30
+      const totalCount = 50
 
       server.use(getArtistsWithPagination(totalCount))
       if (withAlbum) {
@@ -289,6 +289,7 @@ describe('Artists', () => {
 
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
       expect(screen.queryByLabelText('unknown-artist-card')).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('new-artist-card')).not.toBeInTheDocument()
       expect(
         screen.getByText(`${initialCurrentPage} - ${pageSize} artists out of ${totalCount + 1}`)
       ).toBeInTheDocument()
@@ -297,7 +298,8 @@ describe('Artists', () => {
       await user.click(pagination)
 
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
-      expect(screen.queryByLabelText('unknown-artist-card')).toBeInTheDocument()
+      expect(screen.getByLabelText('unknown-artist-card')).toBeInTheDocument()
+      expect(screen.getByLabelText('new-artist-card')).toBeInTheDocument()
       expect(
         screen.getByText(`${pageSize + 1} - ${totalCount + 1} artists out of ${totalCount + 1}`)
       ).toBeInTheDocument()

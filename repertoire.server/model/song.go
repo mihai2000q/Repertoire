@@ -66,28 +66,13 @@ func (s *Song) AfterFind(*gorm.DB) error {
 	return nil
 }
 
-// Guitar Tuning
-
-type GuitarTuning struct {
-	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name  string    `gorm:"size:16; not null" json:"name"`
-	Order uint      `gorm:"not null" json:"-"`
-	Songs []Song    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
-}
-
-var DefaultGuitarTunings = []string{
-	"E Standard", "Eb Standard", "D Standard", "C# Standard", "C Standard", "B Standard", "A# Standard", "A Standard",
-	"Drop D", "Drop C#", "Drop C", "Drop B", "Drop A#", "Drop A",
-}
-
 // Song Sections
 
 type SongSection struct {
-	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name  string    `gorm:"size:30" json:"name"`
-	Order uint      `gorm:"not null" json:"-"`
+	ID          uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name        string    `gorm:"size:30" json:"name"`
+	Order       uint      `gorm:"not null" json:"-"`
+	Occurrences uint      `gorm:"not null" json:"occurrences"`
 
 	Rehearsals      uint   `gorm:"not null" json:"rehearsals"`
 	Confidence      uint   `gorm:"not null; size:100" json:"confidence"`
@@ -95,24 +80,20 @@ type SongSection struct {
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
 
-	SongID            uuid.UUID       `gorm:"not null" json:"-"`
-	SongSectionTypeID uuid.UUID       `gorm:"not null" json:"-"`
-	Song              Song            `json:"-"`
-	SongSectionType   SongSectionType `json:"songSectionType"`
+	SongID            uuid.UUID  `gorm:"not null" json:"-"`
+	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
+	InstrumentID      *uuid.UUID `json:"-"`
+	BandMemberID      *uuid.UUID `json:"-"`
+
+	Song            Song            `json:"-"`
+	SongSectionType SongSectionType `json:"songSectionType"`
+	BandMember      *BandMember     `json:"bandMember"`
+	Instrument      *Instrument     `json:"instrument"`
 
 	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-}
-
-type SongSectionType struct {
-	ID       uuid.UUID     `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name     string        `gorm:"size:16" json:"name"`
-	Order    uint          `gorm:"not null" json:"-"`
-	Sections []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"-"`
-
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }
 
 type SongSectionHistory struct {
@@ -133,5 +114,3 @@ const (
 )
 
 var DefaultSongSectionConfidence uint = 0
-
-var DefaultSongSectionTypes = []string{"Intro", "Verse", "Chorus", "Interlude", "Breakdown", "Solo", "Riff", "Outro"}

@@ -123,18 +123,18 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 			// when
 			w := httptest.NewRecorder()
-			core.NewTestHandler().POST(w, "/api/albums/add-songs", tt.request)
+			core.NewTestHandler().POST(w, "/api/albums/add-songs", test.request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
-			assertSongsAddedToAlbum(t, tt.request)
+			assertSongsAddedToAlbum(t, test.request)
 		})
 	}
 }

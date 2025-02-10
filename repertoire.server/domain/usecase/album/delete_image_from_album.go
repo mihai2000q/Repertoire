@@ -39,9 +39,9 @@ func (d DeleteImageFromAlbum) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.BadRequestError(errors.New("album does not have an image"))
 	}
 
-	err = d.storageService.DeleteFile(*album.ImageURL)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	errCode := d.storageService.DeleteFile(*album.ImageURL)
+	if errCode != nil {
+		return errCode
 	}
 
 	album.ImageURL = nil

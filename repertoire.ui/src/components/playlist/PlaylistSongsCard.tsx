@@ -1,6 +1,6 @@
 import {
   ActionIcon,
-  Button,
+  Box,
   Card,
   Group,
   LoadingOverlay,
@@ -9,16 +9,23 @@ import {
   Stack,
   Text
 } from '@mantine/core'
-import { IconCaretDownFilled, IconCheck, IconDots, IconPlus } from '@tabler/icons-react'
+import { IconDots, IconPlus } from '@tabler/icons-react'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
-import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import Playlist from '../../types/models/Playlist.ts'
 import { useState } from 'react'
 import Order from '../../types/Order.ts'
-import { useRemoveSongsFromPlaylistMutation } from '../../state/playlistsApi.ts'
-import { useDisclosure } from '@mantine/hooks'
+import {
+  useMoveSongFromPlaylistMutation,
+  useRemoveSongsFromPlaylistMutation
+} from '../../state/api/playlistsApi.ts'
+import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
+import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
+import Song from '../../types/models/Song.ts'
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
+import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
+import SongProperty from '../../utils/enums/SongProperty.ts'
 
 interface PlaylistSongsCardProps {
   playlist: Playlist
@@ -26,48 +33,45 @@ interface PlaylistSongsCardProps {
 }
 
 function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
+  const [moveSongFromPlaylist, { isLoading: isMoveLoading }] = useMoveSongFromPlaylistMutation()
   const [removeSongsFromPlaylist] = useRemoveSongsFromPlaylistMutation()
 
   const [order, setOrder] = useState<Order>(playlistSongsOrders[0])
 
   const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 
+  const [internalSongs, { reorder, setState }] = useListState<Song>(playlist.songs)
+  useDidUpdate(() => setState(playlist.songs), [playlist])
+
   function handleRemoveSongsFromPlaylist(songIds: string[]) {
     removeSongsFromPlaylist({ id: playlist.id, songIds })
   }
 
+  function onSongsDragEnd({ source, destination }) {
+    reorder({ from: source.index, to: destination?.index || 0 })
+
+    if (!destination || source.index === destination.index) return
+
+    moveSongFromPlaylist({
+      id: playlist.id,
+      songId: playlist.songs[source.index].id,
+      overSongId: playlist.songs[destination.index].id
+    })
+  }
+
   return (
-    <Card variant={'panel'} aria-label={'songs-card'} h={'100%'} p={0} mx={'xs'}>
+    <Card variant={'panel'} aria-label={'songs-card'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'} align={'center'}>
+        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
 
-          <Menu shadow={'sm'}>
-            <Menu.Target>
-              <Button
-                variant={'subtle'}
-                size={'compact-xs'}
-                rightSection={<IconCaretDownFilled size={11} />}
-                styles={{ section: { marginLeft: 4 } }}
-              >
-                {order.label}
-              </Button>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              {playlistSongsOrders.map((o) => (
-                <Menu.Item
-                  key={o.value}
-                  leftSection={order === o && <IconCheck size={12} />}
-                  onClick={() => setOrder(o)}
-                >
-                  {o.label}
-                </Menu.Item>
-              ))}
-            </Menu.Dropdown>
-          </Menu>
+          <CompactOrderButton
+            availableOrders={playlistSongsOrders}
+            order={order}
+            setOrder={setOrder}
+          />
 
           <Space flex={1} />
 
@@ -86,13 +90,36 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
         </Group>
 
         <Stack gap={0}>
-          {playlist.songs.map((song) => (
-            <PlaylistSongCard
-              key={song.id}
-              song={song}
-              handleRemove={() => handleRemoveSongsFromPlaylist([song.id])}
-            />
-          ))}
+          <DragDropContext onDragEnd={onSongsDragEnd}>
+            <Droppable droppableId="dnd-list" direction="vertical">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  {internalSongs.map((song, index) => (
+                    <Draggable
+                      key={song.id}
+                      index={index}
+                      draggableId={song.id}
+                      isDragDisabled={
+                        isMoveLoading || order.property !== SongProperty.PlaylistTrackNo
+                      }
+                    >
+                      {(provided, snapshot) => (
+                        <PlaylistSongCard
+                          key={song.id}
+                          song={song}
+                          handleRemove={() => handleRemoveSongsFromPlaylist([song.id])}
+                          isDragging={snapshot.isDragging}
+                          draggableProvided={provided}
+                        />
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Box>
+              )}
+            </Droppable>
+          </DragDropContext>
+
           {playlist.songs.length === 0 && (
             <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>
               Add Songs

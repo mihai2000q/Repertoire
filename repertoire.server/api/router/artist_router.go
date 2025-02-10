@@ -29,6 +29,25 @@ func (a ArtistRouter) RegisterRoutes() {
 		imagesApi.PUT("", a.handler.SaveImage)
 		imagesApi.DELETE("/:id", a.handler.DeleteImage)
 	}
+
+	bandMembersApi := api.Group("/band-members")
+	{
+		bandMembersApi.POST("", a.handler.CreateBandMember)
+		bandMembersApi.PUT("", a.handler.UpdateBandMember)
+		bandMembersApi.PUT("/move", a.handler.MoveBandMember)
+		bandMembersApi.DELETE("/:id/from/:artistID", a.handler.DeleteBandMember)
+	}
+
+	bandMemberImagesApi := bandMembersApi.Group("/images")
+	{
+		bandMemberImagesApi.PUT("", a.handler.SaveBandMemberImage)
+		bandMemberImagesApi.DELETE("/:id", a.handler.DeleteBandMemberImage)
+	}
+
+	bandMemberRolesApi := bandMembersApi.Group("/roles")
+	{
+		bandMemberRolesApi.GET("", a.handler.GetBandMemberRoles)
+	}
 }
 
 func NewArtistRouter(

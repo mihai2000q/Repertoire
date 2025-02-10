@@ -6,6 +6,7 @@ import { http, HttpResponse } from 'msw'
 import Playlist from '../types/models/Playlist.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
+import { RootState } from '../state/store.ts'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -29,9 +30,9 @@ describe('Playlists', () => {
   const totalCount = 2
 
   const initialCurrentPage = 1
-  const pageSize = 20
+  const pageSize = 40
 
-  const getSongsWithPagination = (totalCount: number = 30) =>
+  const getSongsWithPagination = (totalCount: number = 50) =>
     http.get('/playlists', async (req) => {
       const currentPage = new URL(req.request.url).searchParams.get('currentPage')
       const response: WithTotalCountResponse<Playlist> =
@@ -67,13 +68,17 @@ describe('Playlists', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    window.location.search = ''
+    server.resetHandlers()
+  })
 
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are playlists', async () => {
-    reduxRouterRender(<Playlists />)
+    const [_, store] = reduxRouterRender(<Playlists />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/playlists/i)
     expect(screen.getByRole('heading', { name: /playlists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-playlists/i })).toBeInTheDocument()
@@ -132,7 +137,7 @@ describe('Playlists', () => {
   it('should paginate the playlists', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getSongsWithPagination(totalCount))
 
@@ -154,6 +159,7 @@ describe('Playlists', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount} playlists out of ${totalCount}`)
     ).toBeInTheDocument()
+    expect(window.location.search).toContain('p=2')
   })
 
   it('the new playlist card should not be displayed on first page, but on the last', async () => {

@@ -1,4 +1,4 @@
-import { useGetSongsQuery } from '../state/songsApi.ts'
+import { useGetSongsQuery } from '../state/api/songsApi.ts'
 
 export default function useShowUnknownAlbum(): boolean {
   const { data: songs } = useGetSongsQuery({

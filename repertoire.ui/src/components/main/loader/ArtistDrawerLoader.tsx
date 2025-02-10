@@ -19,7 +19,7 @@ function ArtistDrawerLoader() {
 
         <SimpleGrid cols={2} px={'xs'}>
           {Array.from({ length: 4 }).map((_, i) => (
-            <Group key={i} align={'center'} wrap={'nowrap'} gap={'xs'}>
+            <Group key={i} wrap={'nowrap'} gap={'xs'}>
               <Skeleton radius={'8px'} w={28} h={28} />
               <Stack gap={2}>
                 <Skeleton w={90} h={15} />
@@ -36,7 +36,7 @@ function ArtistDrawerLoader() {
 
         <SimpleGrid cols={2} px={'xs'}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <Group key={i} align={'center'} wrap={'nowrap'} gap={'xs'}>
+            <Group key={i} wrap={'nowrap'} gap={'xs'}>
               <Skeleton radius={'8px'} w={28} h={28} />
               <Stack gap={2}>
                 <Skeleton w={80} h={15} />

@@ -8,6 +8,7 @@ describe('Large Image Dropzone With Preview', () => {
     mantineRender(<LargeImageDropzoneWithPreview image={null} setImage={() => {}} />)
 
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
+    expect(screen.getByText(/drag image/i)).toBeInTheDocument()
   })
 
   it('should show preview when an image is uploaded on the dropzone', async () => {
@@ -32,6 +33,38 @@ describe('Large Image Dropzone With Preview', () => {
     expect(screen.queryByRole('button', { name: 'reset-image' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'remove-image' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'upload-image' })).toBeInTheDocument()
+
+    expect(screen.getByTestId('upload-image-input')).toBeInTheDocument()
+  })
+
+  it('should be able to replace the label and the aria label', async () => {
+    const user = userEvent.setup()
+
+    const label = 'Picture'
+    const ariaLabel = 'picture'
+
+    const image = new File([''], 'image.png', { type: 'image/png' })
+
+    const { rerender } = mantineRender(
+      <LargeImageDropzoneWithPreview image={null} setImage={() => {}} label={label} ariaLabel={ariaLabel} />
+    )
+
+    // when image is null
+    expect(screen.getByRole('presentation', { name: `${ariaLabel}-dropzone` })).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(`drag ${label}`, 'i'))).toBeInTheDocument()
+
+    await user.upload(screen.getByTestId(`${ariaLabel}-dropzone-input`), image)
+
+    rerender(<LargeImageDropzoneWithPreview image={image} setImage={() => {}} label={label} ariaLabel={ariaLabel} />)
+
+    // with image
+    expect(screen.getByRole('img', { name: `${ariaLabel}-preview` })).toBeInTheDocument()
+
+    expect(screen.queryByRole('button', { name: `reset-${ariaLabel}` })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: `remove-${ariaLabel}` })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: `upload-${ariaLabel}` })).toBeInTheDocument()
+
+    expect(screen.getByTestId(`upload-${ariaLabel}-input`)).toBeInTheDocument()
   })
 
   it('should re-upload image', async () => {
@@ -83,6 +116,9 @@ describe('Large Image Dropzone With Preview', () => {
         defaultValue={defaultImage}
       />
     )
+
+    expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', defaultImage)
 
     let resetImageButton = screen.getByRole('button', { name: 'reset-image' })
     expect(resetImageButton).toBeInTheDocument()

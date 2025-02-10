@@ -1,52 +1,79 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import ArtistDrawer from './ArtistDrawer.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import Song from '../../../types/models/Song.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import Album from '../../../types/models/Album.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import dayjs from 'dayjs'
+import { expect } from 'vitest'
+import { openArtistDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
 
 describe('Artist Drawer', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
       id: '1',
-      title: 'Song 1'
+      title: 'Song 1',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
       id: '2',
-      title: 'Song 2',
+      title: 'Song 2'
+    },
+    {
+      ...emptySong,
+      id: '3',
+      title: 'Song 3',
+      imageUrl: 'something.png',
       album: {
         ...emptyAlbum,
-        id: '12',
-        title: 'Song Album'
+        id: '1',
+        title: 'Song Album 1',
+        imageUrl: 'something-album.png'
+      }
+    },
+    {
+      ...emptySong,
+      id: '4',
+      title: 'Song 4',
+      album: {
+        ...emptyAlbum,
+        id: '2',
+        title: 'Song Album 2',
+        imageUrl: 'something-album.png'
+      }
+    },
+    {
+      ...emptySong,
+      id: '5',
+      title: 'Song 5',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        id: '3',
+        title: 'Song Album 3'
+      }
+    },
+    {
+      ...emptySong,
+      id: '6',
+      title: 'Song 6',
+      album: {
+        ...emptyAlbum,
+        id: '4',
+        title: 'Song Album 4'
       }
     }
   ]
@@ -61,17 +88,25 @@ describe('Artist Drawer', () => {
     {
       ...emptyAlbum,
       id: '2',
-      title: 'Album 2'
+      title: 'Album 2',
+      imageUrl: 'something.png'
     }
   ]
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    imageUrl: 'something.png',
+    isBand: true,
+    bandMembers: [
+      {
+        id: '1',
+        name: 'Member 1',
+        roles: [],
+        imageUrl: 'something.png'
+      }
+    ]
   }
 
   const getArtist = (artist: Artist) =>
@@ -105,9 +140,12 @@ describe('Artist Drawer', () => {
 
   afterAll(() => server.close())
 
+  const prevDocumentTitle = 'previous document title'
+
   const render = (id: string | null = artist.id) =>
     reduxRouterRender(<ArtistDrawer />, {
       global: {
+        documentTitle: prevDocumentTitle,
         artistDrawer: {
           open: true,
           artistId: id
@@ -118,24 +156,51 @@ describe('Artist Drawer', () => {
     })
 
   it('should render', async () => {
-    render()
+    const [_, store] = render()
 
     expect(screen.getByTestId('artist-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
-    expect(screen.getByText(`${albums.length} albums • ${songs.length} songs`)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        `${artist.bandMembers.length} member • ${albums.length} albums • ${songs.length} songs`
+      )
+    ).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(
+      prevDocumentTitle + ' - ' + artist.name
+    )
+
+    artist.bandMembers.forEach((bandMember) => {
+      expect(screen.getByText(bandMember.name)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+    })
 
     albums.forEach((album) => {
-      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
       expect(screen.getByText(album.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+      if (album.imageUrl) {
+        expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
+          'src',
+          album.imageUrl
+        )
+      }
       if (album.releaseDate) {
         expect(screen.getByText(dayjs(album.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
       }
     })
     songs.forEach((song) => {
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
       if (song.album) {
         expect(screen.getByText(song.album.title)).toBeInTheDocument()
       }
@@ -146,6 +211,34 @@ describe('Artist Drawer', () => {
     render(null)
 
     expect(screen.getByTestId('artist-drawer-loader')).toBeInTheDocument()
+  })
+
+  it('should change document title on opening and closing, correctly', async () => {
+    const newArtist: Artist = {
+      ...artist,
+      id: 'another-id-another-artist',
+      name: 'new Name'
+    }
+
+    const [_, store] = render()
+
+    await waitFor(() => {
+      expect((store.getState() as RootState).global.documentTitle).toBe(
+        prevDocumentTitle + ' - ' + artist.name
+      )
+    })
+
+    // change back the document title (as if the drawer closed)
+    await act(() => store.dispatch(setDocumentTitle(prevDocumentTitle)))
+
+    // make sure it doesn't use the old name when a new artist is introduced
+    server.use(getArtist(newArtist))
+    await act(() => store.dispatch(openArtistDrawer(newArtist.id)))
+    await waitFor(() => {
+      expect((store.getState() as RootState).global.documentTitle).toBe(
+        prevDocumentTitle + ' - ' + newArtist.name
+      )
+    })
   })
 
   it('should display menu when clicking on more', async () => {
@@ -162,11 +255,12 @@ describe('Artist Drawer', () => {
     it('should navigate to artist when clicking on view details', async () => {
       const user = userEvent.setup()
 
-      render()
+      const [_, store] = render()
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/artist/${artist.id}`)
+      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
 
       // restore
       window.location.pathname = '/'
@@ -183,6 +277,7 @@ describe('Artist Drawer', () => {
 
       const [_, store] = reduxRouterRender(withToastify(<ArtistDrawer />), {
         global: {
+          documentTitle: prevDocumentTitle,
           artistDrawer: {
             open: true,
             artistId: artist.id
@@ -195,12 +290,13 @@ describe('Artist Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
       expect((store.getState() as RootState).global.artistDrawer.open).toBeFalsy()
       expect((store.getState() as RootState).global.artistDrawer.artistId).toBeUndefined()
+      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
     })
   })

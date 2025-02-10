@@ -4,7 +4,7 @@ import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
-import { useDeletePlaylistMutation } from '../../state/playlistsApi.ts'
+import { useDeletePlaylistMutation } from '../../state/api/playlistsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useState } from 'react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -17,10 +17,10 @@ interface PlaylistCardProps {
 function PlaylistCard({ playlist }: PlaylistCardProps) {
   const navigate = useNavigate()
 
-  const [deletePlaylistMutation] = useDeletePlaylistMutation()
+  const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
   const [isImageHovered, setIsImageHovered] = useState(false)
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -29,8 +29,8 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
     navigate(`/playlist/${playlist.id}`)
   }
 
-  function handleDelete() {
-    deletePlaylistMutation(playlist.id)
+  async function handleDelete() {
+    await deletePlaylistMutation(playlist.id).unwrap()
     toast.success(`${playlist.title} deleted!`)
   }
 
@@ -42,7 +42,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
       style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
       w={150}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
           <AspectRatio>
             <Image
@@ -91,6 +91,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
           </Group>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )

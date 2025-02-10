@@ -1,5 +1,5 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Avatar, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { Avatar, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import unknownPlaceholder from '../../../assets/unknown-placeholder.png'
 import artistPlaceholder from '../../../assets/user-placeholder.jpg'
@@ -9,9 +9,11 @@ import ArtistInfoModal from '../modal/ArtistInfoModal.tsx'
 import EditArtistHeaderModal from '../modal/EditArtistHeaderModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useDeleteArtistMutation } from '../../../state/artistsApi.ts'
+import { useDeleteArtistMutation } from '../../../state/api/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
+import ImageModal from '../../@ui/modal/ImageModal.tsx'
+import { useState } from 'react'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -28,29 +30,35 @@ function ArtistHeaderCard({
 }: ArtistHeaderCardProps) {
   const navigate = useNavigate()
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
+  const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
+
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] = useDisclosure(false)
-  const [openedEditArtistHeader, { open: openEditArtistHeader, close: closeEditArtistHeader }] =
-    useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleDelete() {
-    deleteArtistMutation(artist.id)
+  async function handleDelete() {
+    await deleteArtistMutation({
+      id: artist.id,
+      withAlbums: deleteWithAssociations,
+      withSongs: deleteWithAssociations
+    }).unwrap()
     navigate(`/artists`, { replace: true })
     toast.success(`${artist.name} deleted!`)
   }
 
   return (
     <HeaderPanelCard
-      onEditClick={openEditArtistHeader}
+      onEditClick={openEdit}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openArtistInfo}>
             Info
           </Menu.Item>
-          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditArtistHeader}>
+          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
@@ -64,10 +72,12 @@ function ArtistHeaderCard({
         <Avatar
           src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
           size={125}
-          style={(theme) => ({
-            boxShadow: theme.shadows.md
-          })}
           alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
+          sx={(theme) => ({
+            boxShadow: theme.shadows.lg,
+            ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
+          })}
+          onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
         />
         <Stack
           gap={4}
@@ -88,6 +98,9 @@ function ArtistHeaderCard({
             </Title>
           )}
           <Text fw={500} fz={'sm'} c={'dimmed'}>
+            {!isUnknownArtist && artist?.isBand
+              ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+              : ''}
             {albumsTotalCount} album{plural(albumsTotalCount)} • {songsTotalCount} song
             {plural(songsTotalCount)}
           </Text>
@@ -96,20 +109,38 @@ function ArtistHeaderCard({
 
       {!isUnknownArtist && (
         <>
+          <ImageModal
+            opened={openedImage}
+            onClose={closeImage}
+            title={artist.name}
+            image={artist.imageUrl}
+          />
+
           <ArtistInfoModal opened={openedArtistInfo} onClose={closeArtistInfo} artist={artist} />
 
-          <EditArtistHeaderModal
-            artist={artist}
-            opened={openedEditArtistHeader}
-            onClose={closeEditArtistHeader}
-          />
+          <EditArtistHeaderModal artist={artist} opened={openedEdit} onClose={closeEdit} />
 
           <WarningModal
             opened={openedDeleteWarning}
             onClose={closeDeleteWarning}
             title={'Delete Artist'}
-            description={`Are you sure you want to delete this artist?`}
+            description={
+              <Stack gap={'xs'}>
+                <Text fw={500}>Are you sure you want to delete this artist?</Text>
+                <Checkbox
+                  checked={deleteWithAssociations}
+                  onChange={(event) => setDeleteWithAssociations(event.currentTarget.checked)}
+                  label={
+                    <Text c={'dimmed'}>
+                      Delete all associated <b>albums</b> and <b>songs</b>
+                    </Text>
+                  }
+                  styles={{ label: { paddingLeft: 8 } }}
+                />
+              </Stack>
+            }
             onYes={handleDelete}
+            isLoading={isDeleteLoading}
           />
         </>
       )}

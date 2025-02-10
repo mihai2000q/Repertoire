@@ -22,15 +22,12 @@ describe('Main', () => {
   })
 
   it('should render and display just the outlet and title bar when user is not authenticated', () => {
-    import.meta.env.VITE_PLATFORM = 'desktop'
+    vi.stubEnv('VITE_PLATFORM', 'desktop')
 
     render()
 
     expect(screen.getByTestId('outlet')).toBeInTheDocument()
     expect(screen.getByTestId('title-bar')).toBeInTheDocument()
-
-    // restore
-    import.meta.env.VITE_PLATFORM = ''
   })
 
   it('should render and display topbar, sidebar and outlet when user is authenticated', () => {
@@ -42,13 +39,10 @@ describe('Main', () => {
   })
 
   it('should display title bar when platform is desktop', () => {
-    import.meta.env.VITE_PLATFORM = 'desktop'
+    vi.stubEnv('VITE_PLATFORM', 'desktop')
 
     render()
 
     expect(screen.getByTestId('title-bar')).toBeInTheDocument()
-
-    // restore
-    import.meta.env.VITE_PLATFORM = ''
   })
 })

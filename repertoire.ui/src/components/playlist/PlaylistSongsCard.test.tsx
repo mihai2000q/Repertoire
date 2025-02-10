@@ -1,4 +1,4 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
@@ -10,19 +10,6 @@ import { setupServer } from 'msw/node'
 import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 
 describe('Playlist Songs Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const playlist: Playlist = {
     id: '1',
     title: 'Song 1',
@@ -33,12 +20,49 @@ describe('Playlist Songs Card', () => {
       {
         ...emptySong,
         id: '1',
-        title: 'Song 1'
+        title: 'Song 1',
+        imageUrl: 'something.png',
+        album: {
+          ...emptyAlbum,
+          imageUrl: 'something-album.png'
+        }
       },
       {
         ...emptySong,
         id: '2',
-        title: 'Song 2'
+        title: 'Song 2',
+        album: {
+          ...emptyAlbum,
+          imageUrl: 'something-album.png'
+        }
+      },
+      {
+        ...emptySong,
+        id: '3',
+        title: 'Song 3',
+        imageUrl: 'something.png',
+        album: {
+          ...emptyAlbum
+        }
+      },
+      {
+        ...emptySong,
+        id: '4',
+        title: 'Song 4',
+        album: {
+          ...emptyAlbum
+        }
+      },
+      {
+        ...emptySong,
+        id: '5',
+        title: 'Song 5',
+        imageUrl: 'something.png'
+      },
+      {
+        ...emptySong,
+        id: '6',
+        title: 'Song 6'
       }
     ]
   }
@@ -62,7 +86,7 @@ describe('Playlist Songs Card', () => {
   afterAll(() => server.close())
 
   it("should render and display playlist's songs", () => {
-    reduxRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -76,7 +100,7 @@ describe('Playlist Songs Card', () => {
   it('should display menu', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
@@ -87,25 +111,25 @@ describe('Playlist Songs Card', () => {
     it('should open add playlist songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<PlaylistSongsCard playlist={playlist} />)
+      reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add songs/i }))
 
-      expect(screen.getByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
     })
   })
 
   it('should display new song card when there are no playlist songs and open Add playlist songs modal', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<PlaylistSongsCard playlist={{ ...playlist, songs: [] }} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={{ ...playlist, songs: [] }} />)
 
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText('new-song-card'))
 
-    expect(screen.getByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
   })
 
   it("should send 'remove songs from playlist request' when clicking on the more menu of a song card", async () => {
@@ -121,7 +145,7 @@ describe('Playlist Songs Card', () => {
       })
     )
 
-    reduxRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
 
     const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
 
@@ -132,4 +156,6 @@ describe('Playlist Songs Card', () => {
     expect(capturedRequest.id).toBe(playlist.id)
     expect(capturedRequest.songIds).toStrictEqual([song.id])
   })
+
+  it.skip('should be able to reorder', () => {})
 })

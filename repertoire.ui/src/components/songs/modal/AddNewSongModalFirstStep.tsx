@@ -6,10 +6,10 @@ import AlbumAutocomplete from '../../@ui/form/input/AlbumAutocomplete.tsx'
 import Album from '../../../types/models/Album.ts'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import { IconInfoCircleFilled } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface AddNewSongModalFirstStepProps {
-  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  form: UseFormReturnType<AddNewSongForm>
   artist: Artist
   setArtist: (artist: Artist) => void
   album: Album
@@ -23,7 +23,7 @@ function AddNewSongModalFirstStep({
   album,
   setAlbum
 }: AddNewSongModalFirstStepProps) {
-  useEffect(() => {
+  useDidUpdate(() => {
     setArtist(album?.artist)
     form.setFieldValue('artistName', album?.artist?.name)
   }, [album])
@@ -39,7 +39,7 @@ function AddNewSongModalFirstStep({
         {...form.getInputProps('title')}
       />
 
-      <Group align={'center'}>
+      <Group>
         <AlbumAutocomplete
           album={album}
           setAlbum={setAlbum}
@@ -48,7 +48,7 @@ function AddNewSongModalFirstStep({
           {...form.getInputProps('albumTitle')}
         />
 
-        <Group flex={1} gap={0} align={'center'}>
+        <Group flex={1} gap={0}>
           <ArtistAutocomplete
             artist={artist}
             setArtist={setArtist}
@@ -57,14 +57,14 @@ function AddNewSongModalFirstStep({
             {...form.getInputProps('artistName')}
           />
           {album && (
-            <Box c={'cyan.8'} mt={'lg'} ml={4}>
+            <Box c={'primary.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
                 ta={'center'}
                 label={'Song will inherit artist from album (even if it has one or not)'}
               >
-                <IconInfoCircleFilled size={18} />
+                <IconInfoCircleFilled aria-label={'artist-info'} size={18} />
               </Tooltip>
             </Box>
           )}

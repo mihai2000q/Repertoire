@@ -1,5 +1,5 @@
-import { ComboboxItem, Group, Loader, Select, Text } from '@mantine/core'
-import { useGetGuitarTuningsQuery } from '../../../../state/songsApi.ts'
+import { ComboboxItem, Select } from '@mantine/core'
+import { useGetGuitarTuningsQuery } from '../../../../state/api/songsApi.ts'
 import CustomIconGuitarHead from '../../icons/CustomIconGuitarHead.tsx'
 
 interface GuitarTuningSelectProps {
@@ -14,18 +14,12 @@ function GuitarTuningSelect({ option, onChange }: GuitarTuningSelectProps) {
     label: guitarTuning.name
   }))
 
-  return isLoading ? (
-    <Group gap={'xs'} flex={1.25}>
-      <Loader size={25} />
-      <Text fz={'sm'} c={'dimmed'}>
-        Loading Tunings...
-      </Text>
-    </Group>
-  ) : (
+  return (
     <Select
       flex={1.25}
       leftSection={<CustomIconGuitarHead size={20} />}
       label={'Guitar Tuning'}
+      disabled={isLoading}
       placeholder={'Select Guitar Tuning'}
       data={guitarTunings}
       value={option?.value ?? null}

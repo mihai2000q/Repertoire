@@ -1,5 +1,7 @@
-import { Card, Grid, NumberFormatter, Progress, Stack, Text, Tooltip } from '@mantine/core'
+import { Card, Grid, NumberFormatter, Stack, Text, Tooltip } from '@mantine/core'
 import Song from '../../../types/models/Song.ts'
+import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
+import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
 
 interface SongOverallCardProps {
   song: Song
@@ -43,16 +45,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Tooltip>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Tooltip.Floating
-              role={'tooltip'}
-              label={
-                <>
-                  <NumberFormatter value={song.confidence} />%
-                </>
-              }
-            >
-              <Progress aria-label={'confidence'} flex={1} size={'sm'} value={song.confidence} />
-            </Tooltip.Floating>
+            <SongConfidenceBar confidence={song.confidence} flex={1} />
           </Grid.Col>
 
           <Grid.Col span={6}>
@@ -63,15 +56,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Tooltip>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Tooltip.Floating role={'tooltip'} label={<NumberFormatter value={song.progress} />}>
-              <Progress
-                aria-label={'progress'}
-                flex={1}
-                size={'sm'}
-                value={song.progress / 10}
-                color={'green'}
-              />
-            </Tooltip.Floating>
+            <SongProgressBar progress={song.progress} flex={1} />
           </Grid.Col>
         </Grid>
       </Stack>

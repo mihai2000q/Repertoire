@@ -1,59 +1,74 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import AlbumDrawer from './AlbumDrawer.tsx'
 import Album from '../../../types/models/Album.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import Song from '../../../types/models/Song.ts'
 import Artist from '../../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import dayjs from 'dayjs'
+import { expect } from 'vitest'
+import { openAlbumDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
 
 describe('Album Drawer', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
       id: '1',
       title: 'Song 1',
-      albumTrackNo: 1
+      albumTrackNo: 1,
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png'
+      }
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
-      albumTrackNo: 2
+      albumTrackNo: 2,
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png'
+      }
+    },
+    {
+      ...emptySong,
+      id: '3',
+      title: 'Song 3',
+      albumTrackNo: 3,
+      imageUrl: 'something.png',
+      album: emptyAlbum
+    },
+    {
+      ...emptySong,
+      id: '4',
+      title: 'Song 4',
+      albumTrackNo: 4,
+      album: emptyAlbum
     }
   ]
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
     songs: songs
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const getAlbum = (album: Album) =>
@@ -71,9 +86,12 @@ describe('Album Drawer', () => {
 
   afterAll(() => server.close())
 
+  const prevDocumentTitle = 'previous document title'
+
   const render = (id: string | null = album.id) =>
     reduxRouterRender(<AlbumDrawer />, {
       global: {
+        documentTitle: prevDocumentTitle,
         albumDrawer: {
           open: true,
           albumId: id
@@ -84,18 +102,29 @@ describe('Album Drawer', () => {
     })
 
   it('should render and display minimal info', async () => {
-    render()
+    const [_, store] = render()
 
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText(`${album.songs.length} songs`)).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(
+      prevDocumentTitle + ' - ' + album.title
+    )
 
     album.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
     })
   })
 
@@ -104,22 +133,34 @@ describe('Album Drawer', () => {
 
     const localAlbum = {
       ...album,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-16',
       artist: artist
     }
 
     server.use(getAlbum(localAlbum))
 
-    render()
+    const [_, store] = render()
 
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
+      'src',
+      localAlbum.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByText(dayjs(localAlbum.releaseDate).format('YYYY'))).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.artist.name })).toHaveAttribute(
+      'src',
+      localAlbum.artist.imageUrl
+    )
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
     expect(screen.getByText(`${localAlbum.songs.length} songs`)).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(
+      prevDocumentTitle + ' - ' + localAlbum.title
+    )
 
     await user.hover(screen.getByText(dayjs(localAlbum.releaseDate).format('YYYY')))
     expect(
@@ -128,8 +169,16 @@ describe('Album Drawer', () => {
 
     localAlbum.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
+      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
     })
   })
 
@@ -137,6 +186,34 @@ describe('Album Drawer', () => {
     render(null)
 
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
+  })
+
+  it('should change document title on opening and closing, correctly', async () => {
+    const newAlbum: Album = {
+      ...album,
+      id: 'another-id-another-album',
+      title: 'new Title'
+    }
+
+    const [_, store] = render()
+
+    await waitFor(() => {
+      expect((store.getState() as RootState).global.documentTitle).toBe(
+        prevDocumentTitle + ' - ' + album.title
+      )
+    })
+
+    // change back the document title (as if the drawer closed)
+    await act(() => store.dispatch(setDocumentTitle(prevDocumentTitle)))
+
+    // make sure it doesn't use the old title when a new album is introduced
+    server.use(getAlbum(newAlbum))
+    await act(() => store.dispatch(openAlbumDrawer(newAlbum.id)))
+    await waitFor(() => {
+      expect((store.getState() as RootState).global.documentTitle).toBe(
+        prevDocumentTitle + ' - ' + newAlbum.title
+      )
+    })
   })
 
   it('should display menu when clicking on more', async () => {
@@ -153,11 +230,12 @@ describe('Album Drawer', () => {
     it('should navigate to album when clicking on view details', async () => {
       const user = userEvent.setup()
 
-      render()
+      const [_, store] = render()
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/album/${album.id}`)
+      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
 
       // restore
       window.location.pathname = '/'
@@ -174,6 +252,7 @@ describe('Album Drawer', () => {
 
       const [_, store] = reduxRouterRender(withToastify(<AlbumDrawer />), {
         global: {
+          documentTitle: prevDocumentTitle,
           albumDrawer: {
             open: true,
             albumId: album.id
@@ -186,12 +265,13 @@ describe('Album Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
       expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
       expect((store.getState() as RootState).global.albumDrawer.albumId).toBeUndefined()
+      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
   })

@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useGetPlaylistsQuery } from '../state/playlistsApi.ts'
+import { useGetPlaylistsQuery } from '../state/api/playlistsApi.ts'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import { useDisclosure } from '@mantine/hooks'
 import {
@@ -19,22 +18,29 @@ import AddNewPlaylistModal from '../components/playlists/modal/AddNewPlaylistMod
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import PlaylistsLoader from '../components/playlists/PlaylistsLoader.tsx'
 import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import useSearchParamsState from '../hooks/useSearchParamsState.ts'
+import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
 
 function Playlists() {
-  const [currentPage, setCurrentPage] = useState(1)
+  useFixedDocumentTitle('Playlists')
+  const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
+  const { currentPage } = searchParams
+
+  const pageSize = 40
   const {
     data: playlists,
     isLoading,
     isFetching
   } = useGetPlaylistsQuery({
-    pageSize: 20,
+    pageSize: pageSize,
     currentPage: currentPage,
     orderBy: ['created_at DESC']
   })
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     playlists?.totalCount,
-    20,
+    pageSize,
     currentPage
   )
 
@@ -43,9 +49,13 @@ function Playlists() {
     { open: openAddNewPlaylistModal, close: closeAddNewPlaylistModal }
   ] = useDisclosure(false)
 
+  const handleCurrentPageChange = (p: number) => {
+    setSearchParams({ ...searchParams, currentPage: p })
+  }
+
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <Group align={'center'} gap={4}>
+      <Group gap={4}>
         <Title order={3} fw={800}>
           Playlists
         </Title>
@@ -97,12 +107,12 @@ function Playlists() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'xs'}>
+      <Box style={{ alignSelf: 'center' }} pb={'md'}>
         {!isFetching ? (
           <Pagination
             data-testid={'playlists-pagination'}
             value={currentPage}
-            onChange={setCurrentPage}
+            onChange={handleCurrentPageChange}
             total={totalPages}
           />
         ) : (

@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSaveImageFromArtist_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestSaveImageToArtist_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -32,7 +32,7 @@ func TestSaveImageFromArtist_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *t
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestSaveImageFromArtist_WhenSuccessful_ShouldUpdateArtistAndSaveImage(t *testing.T) {
+func TestSaveImageToArtist_WhenSuccessful_ShouldUpdateArtistAndSaveImage(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 

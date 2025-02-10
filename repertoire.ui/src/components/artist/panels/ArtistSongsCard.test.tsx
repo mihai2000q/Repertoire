@@ -1,4 +1,4 @@
-import { reduxRender } from '../../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistSongsCard from './ArtistSongsCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { screen, within } from '@testing-library/react'
@@ -11,35 +11,59 @@ import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 
 describe('Artist Songs Card', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songModels: Song[] = [
     {
       ...emptySong,
       id: '1',
-      title: 'Song 1'
+      title: 'Song 1',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png'
+      }
     },
     {
       ...emptySong,
       id: '2',
-      title: 'Song 2'
+      title: 'Song 2',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png'
+      }
+    },
+    {
+      ...emptySong,
+      id: '3',
+      title: 'Song 3',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum
+      }
+    },
+    {
+      ...emptySong,
+      id: '4',
+      title: 'Song 4',
+      album: {
+        ...emptyAlbum
+      }
+    },
+    {
+      ...emptySong,
+      id: '5',
+      title: 'Song 5',
+      imageUrl: 'something.png'
+    },
+    {
+      ...emptySong,
+      id: '6',
+      title: 'Song 6'
     }
   ]
 
   const songs: WithTotalCountResponse<Song> = {
     models: songModels,
-    totalCount: 2
+    totalCount: songModels.length
   }
 
   const artistId = '1'
@@ -70,7 +94,7 @@ describe('Artist Songs Card', () => {
   it('should render and display songs', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -99,7 +123,7 @@ describe('Artist Songs Card', () => {
   })
 
   it('should display loader on loading', async () => {
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -120,7 +144,7 @@ describe('Artist Songs Card', () => {
     const newOrder = artistSongsOrders[0]
     const setOrder = vitest.fn()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -145,7 +169,7 @@ describe('Artist Songs Card', () => {
   it('should display more menu', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -165,7 +189,7 @@ describe('Artist Songs Card', () => {
   it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -186,7 +210,7 @@ describe('Artist Songs Card', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistSongsCard
           songs={songs}
           artistId={artistId}
@@ -200,13 +224,13 @@ describe('Artist Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
 
-      expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
     })
 
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      reduxRouterRender(
         <ArtistSongsCard
           songs={songs}
           artistId={artistId}
@@ -220,14 +244,14 @@ describe('Artist Songs Card', () => {
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
 
-      expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
     })
   })
 
   it('should open Add existing songs modal, when clicking new song card and the artist is not unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -240,13 +264,13 @@ describe('Artist Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-songs-card'))
 
-    expect(screen.getByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add existing songs/i })).toBeInTheDocument()
   })
 
   it('should open Add new song modal, when clicking new song card and the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}
@@ -259,7 +283,7 @@ describe('Artist Songs Card', () => {
 
     await user.click(screen.getByLabelText('new-songs-card'))
 
-    expect(screen.getByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it("should send 'remove songs from artist request' when clicking on the more menu of a song card", async () => {
@@ -275,7 +299,7 @@ describe('Artist Songs Card', () => {
       })
     )
 
-    reduxRender(
+    reduxRouterRender(
       <ArtistSongsCard
         songs={songs}
         artistId={artistId}

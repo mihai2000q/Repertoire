@@ -1,5 +1,5 @@
 import Album from 'src/types/models/Album.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import {emptyAlbum, emptyArtist, reduxRouterRender, withToastify} from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
 import Artist from 'src/types/models/Artist.ts'
@@ -10,20 +10,15 @@ import { RootState } from 'src/state/store.ts'
 
 describe('Album Card', () => {
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
   }
 
   const server = setupServer()
@@ -45,12 +40,14 @@ describe('Album Card', () => {
   it('should render maximal info', async () => {
     const localAlbum = {
       ...album,
+      imageUrl: 'something.png',
       artist: artist
     }
 
     reduxRouterRender(<AlbumCard album={localAlbum} />)
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute('src', localAlbum.imageUrl)
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
   })
@@ -85,7 +82,7 @@ describe('Album Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 

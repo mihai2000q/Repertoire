@@ -11,17 +11,16 @@ import {
   Image,
   Menu,
   NumberFormatter,
-  Progress,
   Stack,
   Text,
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteSongMutation, useGetSongQuery } from '../../../state/songsApi.ts'
+import { useDeleteSongMutation, useGetSongQuery } from '../../../state/api/songsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
-import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -32,14 +31,19 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { closeSongDrawer, deleteSongDrawer } from '../../../state/globalSlice.ts'
+import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
+import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
+import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
+import PerfectRehearsalMenuItem from "../../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -47,13 +51,22 @@ const secondColumnSize = 8
 function SongDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const setDocumentTitle = useDynamicDocumentTitle()
 
   const opened = useAppSelector((state) => state.global.songDrawer.open)
   const songId = useAppSelector((state) => state.global.songDrawer.songId)
-  const onClose = () => dispatch(closeSongDrawer())
+  const onClose = () => {
+    dispatch(closeSongDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
+
+  useEffect(() => {
+    if (song && opened && !isFetching)
+      setDocumentTitle((prevTitle) => prevTitle + ' - ' + song.title)
+  }, [song, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -71,15 +84,17 @@ function SongDrawer() {
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
   function handleViewDetails() {
     onClose()
     navigate(`/song/${songId}`)
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     dispatch(deleteSongDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${song.title} deleted!`)
   }
 
@@ -109,7 +124,7 @@ function SongDrawer() {
           <AspectRatio ratio={4 / 3}>
             <Image
               src={song.imageUrl ?? song.album?.imageUrl}
-              fallbackSrc={imagePlaceholder}
+              fallbackSrc={songPlaceholder}
               alt={song.title}
             />
           </AspectRatio>
@@ -130,6 +145,7 @@ function SongDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <PerfectRehearsalMenuItem songId={song.id} />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
@@ -143,7 +159,7 @@ function SongDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'xs'} gap={4}>
-          <Title order={5} fw={700}>
+          <Title order={5} fw={700} lineClamp={2}>
             {song.title}
           </Title>
 
@@ -191,11 +207,11 @@ function SongDrawer() {
                     </Text>
                   </HoverCard.Target>
                   <HoverCard.Dropdown maw={300}>
-                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                    <Group gap={'xs'} wrap={'nowrap'}>
                       <Avatar
                         size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? songPlaceholder}
+                        src={song.album.imageUrl ?? albumPlaceholder}
                         alt={song.album.title}
                       />
                       <Stack gap={2}>
@@ -254,7 +270,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <DifficultyBar difficulty={song.difficulty} />
+                  <DifficultyBar difficulty={song.difficulty} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -299,8 +315,8 @@ function SongDrawer() {
                     aria-label={'recorded-icon'}
                     sx={(theme) => ({
                       cursor: 'default',
-                      backgroundColor: theme.colors.cyan[5],
-                      '&:hover': { backgroundColor: theme.colors.cyan[5] },
+                      backgroundColor: theme.colors.primary[5],
+                      '&:hover': { backgroundColor: theme.colors.primary[5] },
                       '&:active': { transform: 'none' }
                     })}
                   >
@@ -346,16 +362,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating
-                    role={'tooltip'}
-                    label={
-                      <>
-                        <NumberFormatter value={song.confidence} />%
-                      </>
-                    }
-                  >
-                    <Progress aria-label={'confidence'} flex={1} size={7} value={song.confidence} />
-                  </Tooltip.Floating>
+                  <SongConfidenceBar confidence={song.confidence} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -368,18 +375,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Tooltip.Floating
-                    role={'tooltip'}
-                    label={<NumberFormatter value={song.progress} />}
-                  >
-                    <Progress
-                      aria-label={'progress'}
-                      flex={1}
-                      size={7}
-                      value={song.progress / 10}
-                      color={'green'}
-                    />
-                  </Tooltip.Floating>
+                  <SongProgressBar progress={song.progress} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -406,16 +402,15 @@ function SongDrawer() {
 
               {song.youtubeLink && (
                 <Tooltip label={'Open Youtube'}>
-                  <Anchor
-                    underline={'never'}
-                    href={song.youtubeLink}
-                    target="_blank"
-                    rel="noreferrer"
+                  <ActionIcon
+                    mb={3}
+                    variant={'transparent'}
+                    c={'red.7'}
+                    aria-label={'youtube'}
+                    onClick={openYoutube}
                   >
-                    <ActionIcon variant={'transparent'} c={'red.7'} aria-label={'youtube'}>
-                      <IconBrandYoutubeFilled size={25} />
-                    </ActionIcon>
-                  </Anchor>
+                    <IconBrandYoutubeFilled size={25} />
+                  </ActionIcon>
                 </Tooltip>
               )}
             </Tooltip.Group>
@@ -429,6 +424,13 @@ function SongDrawer() {
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
+      />
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
       />
     </RightSideEntityDrawer>
   )

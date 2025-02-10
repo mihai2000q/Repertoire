@@ -7,7 +7,7 @@ import {
   addNewArtistSongValidation
 } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/songsApi.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 
 interface AddNewArtistSongModalProps {
@@ -56,7 +56,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
       <Modal.Body p={'xs'}>
         <form onSubmit={form.onSubmit(addSong)}>
           <Stack>
-            <Group align={'center'}>
+            <Group>
               <ImageDropzoneWithPreview image={image} setImage={setImage} />
               <TextInput
                 flex={1}

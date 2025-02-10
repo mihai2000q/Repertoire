@@ -3,12 +3,16 @@ import { MantineProvider } from '@mantine/core'
 import { theme } from './theme/theme'
 import { ReactNode } from 'react'
 import { Provider } from 'react-redux'
-import { configureStore, EnhancedStore } from '@reduxjs/toolkit'
-import { reducer, RootState } from './state/store'
-import { api } from './state/api'
+import { EnhancedStore } from '@reduxjs/toolkit'
+import { RootState, setupStore } from './state/store'
 import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { ToastContainer } from 'react-toastify'
+import Album from './types/models/Album.ts'
+import Song, { SongSection } from './types/models/Song.ts'
+import Artist from './types/models/Artist.ts'
+import Order from './types/Order.ts'
+import User from './types/models/User.ts'
 
 // Custom Matchers
 
@@ -84,11 +88,7 @@ export function reduxRender(
   ui: ReactNode,
   preloadedState?: Partial<RootState>
 ): [RenderResult, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     render(ui, {
@@ -106,11 +106,7 @@ export function reduxRouterRender(
   ui: ReactNode,
   preloadedState?: Partial<RootState>
 ): [RenderResult, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     render(ui, {
@@ -132,11 +128,7 @@ export function reduxMemoryRouterRender(
   initialEntries: string[],
   preloadedState?: Partial<RootState>
 ): [RenderResult, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+  const store = setupStore(preloadedState)
 
   return [
     render(ui, {
@@ -158,7 +150,7 @@ export function reduxMemoryRouterRender(
 
 // Hooks
 
-export function mantineRenderHook(hook: (props: unknown) => unknown) {
+export function mantineRenderHook<T>(hook: (props: T) => T) {
   return renderHook(hook, {
     wrapper: ({ children }: { children: ReactNode }) => (
       <MantineProviderComponent>{children}</MantineProviderComponent>
@@ -166,15 +158,17 @@ export function mantineRenderHook(hook: (props: unknown) => unknown) {
   })
 }
 
-export function reduxRenderHook(
-  hook: (props: unknown) => unknown,
-  preloadedState?: Partial<RootState>
-): [RenderHookResult<unknown, unknown>, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
+export function routerRenderHook<T>(hook: (props: T) => T): RenderHookResult<T, T> {
+  return renderHook(hook, {
+    wrapper: ({ children }: { children: ReactNode }) => <BrowserRouter>{children}</BrowserRouter>
   })
+}
+
+export function reduxRenderHook<T>(
+  hook: (props: T) => T,
+  preloadedState?: Partial<RootState>
+): [RenderHookResult<T, T>, EnhancedStore] {
+  const store = setupStore(preloadedState)
 
   return [
     renderHook(hook, {
@@ -186,15 +180,11 @@ export function reduxRenderHook(
   ]
 }
 
-export function reduxRouterRenderHook(
-  hook: (props: unknown) => unknown,
+export function reduxRouterRenderHook<T>(
+  hook: (props: T) => T,
   preloadedState?: Partial<RootState>
-): [RenderHookResult<unknown, unknown>, EnhancedStore] {
-  const store = configureStore({
-    reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
-    preloadedState
-  })
+): [RenderHookResult<T, T>, EnhancedStore] {
+  const store = setupStore(preloadedState)
 
   return [
     renderHook(hook, {
@@ -206,4 +196,65 @@ export function reduxRouterRenderHook(
     }),
     store
   ]
+}
+
+// Empty Types
+
+export const emptyUser: User = {
+  createdAt: '',
+  email: '',
+  id: '',
+  name: '',
+  updatedAt: ''
+}
+
+export const emptyArtist: Artist = {
+  id: '',
+  name: '',
+  isBand: false,
+  createdAt: '',
+  updatedAt: '',
+  albums: [],
+  songs: [],
+  bandMembers: []
+}
+
+export const emptyAlbum: Album = {
+  createdAt: '',
+  id: '',
+  songs: [],
+  title: '',
+  updatedAt: ''
+}
+
+export const emptySong: Song = {
+  id: '',
+  title: '',
+  description: '',
+  isRecorded: false,
+  rehearsals: 0,
+  confidence: 0,
+  progress: 0,
+  sections: [],
+  createdAt: '',
+  updatedAt: '',
+  releaseDate: null
+}
+
+export const emptySongSection: SongSection = {
+  id: '',
+  name: '',
+  confidence: 0,
+  progress: 0,
+  rehearsals: 0,
+  occurrences: 0,
+  songSectionType: {
+    id: '',
+    name: ''
+  }
+}
+
+export const emptyOrder: Order = {
+  label: '',
+  value: ''
 }

@@ -25,6 +25,40 @@ describe('Add New Artist Song Modal', () => {
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
+  it('should send create request even when no artist is specified (the artist is unknown)', async () => {
+    const user = userEvent.setup()
+
+    const newTitle = 'New Song'
+
+    const onClose = vitest.fn()
+
+    let capturedRequest: CreateSongRequest
+    server.use(
+      http.post('/songs', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongRequest
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(
+      withToastify(<AddNewArtistSongModal opened={true} onClose={onClose} artistId={undefined} />)
+    )
+
+    await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+    await user.click(screen.getByRole('button', { name: /submit/i }))
+
+    await waitFor(() =>
+      expect(capturedRequest).toStrictEqual({
+        title: newTitle,
+        description: ''
+      })
+    )
+    expect(onClose).toHaveBeenCalledOnce()
+
+    expect(screen.getByText(`${newTitle} added!`))
+    expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+  })
+
   it('should send only create request when no image is uploaded', async () => {
     const user = userEvent.setup()
 

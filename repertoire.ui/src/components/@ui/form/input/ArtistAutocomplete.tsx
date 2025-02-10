@@ -10,7 +10,7 @@ import {
   useCombobox
 } from '@mantine/core'
 import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
-import { useGetArtistsQuery } from '../../../../state/artistsApi.ts'
+import { useGetArtistsQuery } from '../../../../state/api/artistsApi.ts'
 import Artist from '../../../../types/models/Artist.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import { IconUserFilled } from '@tabler/icons-react'
@@ -62,7 +62,7 @@ function ArtistAutocomplete({
         <Avatar size={23} src={artist.imageUrl ?? artistPlaceholder} alt={artist.name} />
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Group gap={'xs'} maw={200} align={'center'} wrap={'nowrap'}>
+        <Group gap={'xs'} maw={200} wrap={'nowrap'}>
           <Avatar size={'md'} src={artist.imageUrl ?? artistPlaceholder} alt={artist.name} />
           <Text inline fw={500} lineClamp={2}>
             {artist.name}
@@ -116,7 +116,7 @@ function ArtistAutocomplete({
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
-          <ScrollArea.Autosize type={'scroll'} mah={200} scrollbarSize={5}>
+          <ScrollArea.Autosize mah={200} scrollbarSize={5}>
             {artists?.totalCount === 0 ? (
               <Combobox.Empty>No artist found</Combobox.Empty>
             ) : (
@@ -127,7 +127,7 @@ function ArtistAutocomplete({
                   aria-label={artist.name}
                   onClick={() => setArtist(artist)}
                 >
-                  <Group gap={'xs'} align={'center'} wrap={'nowrap'}>
+                  <Group gap={'xs'} wrap={'nowrap'}>
                     <Avatar
                       size={'sm'}
                       src={artist.imageUrl ?? artistPlaceholder}

@@ -15,8 +15,8 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useAddAlbumsToArtistMutation } from '../../../state/artistsApi.ts'
-import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
+import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
+import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
@@ -107,7 +107,7 @@ function AddExistingArtistAlbumsModal({
               ta={'center'}
               label={'All songs related to the added album will be added to the artist too'}
             >
-              <Box c={'cyan.8'}>
+              <Box c={'primary.8'}>
                 <IconInfoCircleFilled size={15} aria-label={'info-icon'} />
               </Box>
             </Tooltip>
@@ -163,10 +163,11 @@ function AddExistingArtistAlbumsModal({
                     transition: '0.3s',
                     '&:hover': {
                       boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -181,7 +182,7 @@ function AddExistingArtistAlbumsModal({
                     src={album.imageUrl ?? albumPlaceholder}
                     alt={album.title}
                   />
-                  <Text fw={500}>{album.title}</Text>
+                  <Text fw={500} lineClamp={2}>{album.title}</Text>
                 </Group>
               ))
             )}

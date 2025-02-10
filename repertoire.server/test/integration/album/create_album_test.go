@@ -44,8 +44,8 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -55,7 +55,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
 				WithUser(user).
-				POST(w, "/api/albums", tt.request)
+				POST(w, "/api/albums", test.request)
 
 			// then
 			var response struct{ ID uuid.UUID }
@@ -63,7 +63,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
-			assertCreatedAlbum(t, tt.request, response.ID, user.ID)
+			assertCreatedAlbum(t, test.request, response.ID, user.ID)
 		})
 	}
 }

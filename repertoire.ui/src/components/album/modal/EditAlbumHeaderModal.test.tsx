@@ -36,6 +36,7 @@ describe('Edit Album Header Modal', () => {
     expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', album.imageUrl)
 
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
@@ -179,7 +180,7 @@ describe('Edit Album Header Modal', () => {
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete image request when the image is first added', async () => {
+  it('should send edit request and delete image request', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()

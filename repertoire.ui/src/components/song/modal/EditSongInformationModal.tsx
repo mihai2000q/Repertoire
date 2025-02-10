@@ -11,7 +11,7 @@ import {
   Stack,
   Tooltip
 } from '@mantine/core'
-import { useUpdateSongMutation } from '../../../state/songsApi.ts'
+import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
@@ -81,15 +81,17 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
         <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack>
-          <Group align={'center'}>
+          <Group>
             <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
             <DifficultySelect option={difficulty} onChange={setDifficulty} />
           </Group>
 
-          <Group align={'center'}>
+          <Group>
             <NumberInput
               min={1}
+              allowNegative={false}
+              allowDecimal={false}
               leftSection={<CustomIconMetronome size={20} />}
               label="Bpm"
               placeholder="Enter Bpm"

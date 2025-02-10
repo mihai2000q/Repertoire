@@ -4,10 +4,7 @@ import TokenResponse from '../types/responses/TokenResponse'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
 import User from '../types/models/User'
 import { SignInRequest, SignUpRequest } from '../types/requests/AuthRequests.ts'
-import {
-  SaveProfilePictureToUserRequest,
-  UpdateUserRequest
-} from '../types/requests/UserRequests.ts'
+import { SaveProfilePictureRequest, UpdateUserRequest } from '../types/requests/UserRequests.ts'
 import createFormData from '../utils/createFormData.ts'
 
 export const api = createApi({
@@ -19,6 +16,8 @@ export const api = createApi({
     'Artists',
     'Playlists',
     'GuitarTunings',
+    'Instruments',
+    'BandMemberRoles',
     'SongSectionTypes',
     'User'
   ],
@@ -53,10 +52,15 @@ export const api = createApi({
         }),
         invalidatesTags: ['User']
       }),
-      saveProfilePictureToUser: build.mutation<
-        HttpMessageResponse,
-        SaveProfilePictureToUserRequest
-      >({
+      deleteUser: build.mutation<HttpMessageResponse, void>({
+        query: (body) => ({
+          url: 'users',
+          method: 'DELETE',
+          body: body
+        }),
+      }),
+
+      saveProfilePicture: build.mutation<HttpMessageResponse, SaveProfilePictureRequest>({
         query: (request) => ({
           url: 'users/pictures',
           method: 'PUT',
@@ -65,7 +69,7 @@ export const api = createApi({
         }),
         invalidatesTags: ['User']
       }),
-      deleteProfilePictureFromUser: build.mutation<HttpMessageResponse, void>({
+      deleteProfilePicture: build.mutation<HttpMessageResponse, void>({
         query: () => ({
           url: 'users/pictures',
           method: 'DELETE'
@@ -81,6 +85,7 @@ export const {
   useSignInMutation,
   useGetCurrentUserQuery,
   useUpdateUserMutation,
-  useSaveProfilePictureToUserMutation,
-  useDeleteProfilePictureFromUserMutation
+  useDeleteUserMutation,
+  useSaveProfilePictureMutation,
+  useDeleteProfilePictureMutation
 } = api

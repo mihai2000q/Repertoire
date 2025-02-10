@@ -90,6 +90,40 @@ func (p PlaylistHandler) Create(c *gin.Context) {
 	})
 }
 
+func (p PlaylistHandler) AddAlbums(c *gin.Context) {
+	var request requests.AddAlbumsToPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.AddAlbums(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "albums have been added to playlist successfully")
+}
+
+func (p PlaylistHandler) AddArtists(c *gin.Context) {
+	var request requests.AddArtistsToPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.AddArtists(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "artists have been added to playlist successfully")
+}
+
 func (p PlaylistHandler) AddSongs(c *gin.Context) {
 	var request requests.AddSongsToPlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
@@ -104,7 +138,7 @@ func (p PlaylistHandler) AddSongs(c *gin.Context) {
 		return
 	}
 
-	p.SendMessage(c, "song has been added to playlist successfully")
+	p.SendMessage(c, "songs have been added to playlist successfully")
 }
 
 func (p PlaylistHandler) Update(c *gin.Context) {
@@ -171,7 +205,7 @@ func (p PlaylistHandler) RemoveSongs(c *gin.Context) {
 		return
 	}
 
-	p.SendMessage(c, "song has been removed from playlist successfully")
+	p.SendMessage(c, "songs have been removed from playlist successfully")
 }
 
 // Images

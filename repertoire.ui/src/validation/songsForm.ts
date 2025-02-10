@@ -73,6 +73,8 @@ export interface EditSongSectionForm {
   rehearsals: number | string
   confidence: number
   typeId: string
+  bandMemberId?: string
+  instrumentId?: string
 }
 
 export const editSongSectionValidation = z.object({

@@ -1,19 +1,26 @@
 import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from '../components/song/SongLoader.tsx'
-import { useGetSongQuery } from '../state/songsApi.ts'
-import SongSections from '../components/song/SongSections.tsx'
+import { useGetSongQuery } from '../state/api/songsApi.ts'
+import SongSectionsCard from '../components/song/SongSectionsCard.tsx'
 import SongInformationCard from '../components/song/panels/SongInformationCard.tsx'
 import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'
 import SongOverallCard from '../components/song/panels/SongOverallCard.tsx'
 import SongDescriptionCard from '../components/song/panels/SongDescriptionCard.tsx'
 import SongHeaderCard from '../components/song/panels/SongHeaderCard.tsx'
+import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
+import { useEffect } from 'react'
 
 function Song() {
   const params = useParams()
+  const setDocumentTitle = useDynamicDocumentTitle()
   const songId = params['id'] ?? ''
 
   const { data: song, isLoading } = useGetSongQuery(songId)
+
+  useEffect(() => {
+    if (song) setDocumentTitle(song.title)
+  }, [song])
 
   if (isLoading) return <SongLoader />
 
@@ -38,7 +45,11 @@ function Song() {
           <Stack>
             <SongDescriptionCard song={song} />
 
-            <SongSections songId={songId} sections={song.sections} />
+            <SongSectionsCard
+              songId={songId}
+              sections={song.sections}
+              bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
+            />
           </Stack>
         </Grid.Col>
       </Grid>

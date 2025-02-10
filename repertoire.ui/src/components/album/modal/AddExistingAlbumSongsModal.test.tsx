@@ -1,4 +1,10 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import AddExistingAlbumSongsModal from './AddExistingAlbumSongsModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -9,47 +15,54 @@ import { userEvent } from '@testing-library/user-event'
 import { AddSongsToAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
 
 describe('Add Existing Album Songs Modal', () => {
-  const emptySong: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const songs: Song[] = [
     {
       ...emptySong,
       id: '1',
-      title: 'Song 1'
+      title: 'Song 1',
+      imageUrl: 'something.png',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png'
+      }
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
+      album: {
+        ...emptyAlbum,
+        imageUrl: 'something-album.png'
+      },
       artist: {
+        ...emptyArtist,
         id: '1',
-        name: 'Artist',
-        albums: [],
-        songs: [],
-        createdAt: '',
-        updatedAt: ''
+        name: 'Artist'
       }
     },
     {
       ...emptySong,
       id: '3',
-      title: 'Song 11'
+      title: 'Song 11',
+      imageUrl: 'something.png',
+      album: emptyAlbum
     },
     {
       ...emptySong,
       id: '4',
-      title: 'Song 12'
+      title: 'Song 12',
+      album: emptyAlbum
+    },
+    {
+      ...emptySong,
+      id: '5',
+      title: 'Song 512',
+      imageUrl: 'something.png'
+    },
+    {
+      ...emptySong,
+      id: '6',
+      title: 'Song 6'
     }
   ]
 
@@ -58,7 +71,7 @@ describe('Add Existing Album Songs Modal', () => {
       const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
       let localSongs = songs
       if (searchBy.length === 3) {
-        const searchValue = searchBy[2].replace('title ~* ', '').replaceAll("'", '')
+        const searchValue = searchBy[2].replace('songs.title ~* ', '').replaceAll("'", '')
         localSongs = localSongs.filter((song) => song.title.startsWith(searchValue))
       }
       const response: WithTotalCountResponse<Song> = {
@@ -111,6 +124,14 @@ describe('Add Existing Album Songs Modal', () => {
       expect(screen.getByRole('checkbox', { name: song.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: song.title })).not.toBeChecked()
       expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+      if (song.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else if (song.album?.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          song.album.imageUrl
+        )
+      }
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.artist) expect(within(renderedSong).getByText(song.artist.name)).toBeInTheDocument()
     }
@@ -187,7 +208,7 @@ describe('Add Existing Album Songs Modal', () => {
 
     await waitFor(() => {
       expect(capturedSearchBy.getAll('searchBy')).toHaveLength(3)
-      expect(capturedSearchBy.getAll('searchBy')[2]).toBe(`title ~* '${searchValue}'`)
+      expect(capturedSearchBy.getAll('searchBy')[2]).toBe(`songs.title ~* '${searchValue}'`)
     })
   })
 

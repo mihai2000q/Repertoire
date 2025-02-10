@@ -12,7 +12,7 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/artistsApi.ts'
+import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/user-placeholder.jpg'
@@ -20,26 +20,31 @@ import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconDotsVertical, IconEye, IconTrash, IconUser } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
-import { useGetAlbumsQuery } from '../../../state/albumsApi.ts'
-import { useGetSongsQuery } from '../../../state/songsApi.ts'
+import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
+import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
-import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/globalSlice.ts'
+import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/slice/globalSlice.ts'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const setDocumentTitle = useDynamicDocumentTitle()
 
   const opened = useAppSelector((state) => state.global.artistDrawer.open)
   const artistId = useAppSelector((state) => state.global.artistDrawer.artistId)
-  const onClose = () => dispatch(closeArtistDrawer())
+  const onClose = () => {
+    dispatch(closeArtistDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
@@ -57,6 +62,11 @@ function ArtistDrawer() {
     { skip: !artistId }
   )
 
+  useEffect(() => {
+    if (artist && opened && !isFetching)
+      setDocumentTitle((prevTitle) => prevTitle + ' - ' + artist.name)
+  }, [artist, opened, isFetching])
+
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
@@ -68,9 +78,10 @@ function ArtistDrawer() {
     navigate(`/artist/${artist.id}`)
   }
 
-  function handleDelete() {
-    deleteArtistMutation(artist.id)
+  async function handleDelete() {
+    await deleteArtistMutation({ id: artist.id }).unwrap()
     dispatch(deleteArtistDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${artist.name} deleted!`)
   }
 
@@ -130,27 +141,62 @@ function ArtistDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'md'} gap={4}>
-          <Title order={5} fw={700} lh={1}>
+          <Title order={5} fw={700} lh={1} lineClamp={2}>
             {artist.name}
           </Title>
 
           <Group ml={2} gap={4}>
             <Text fw={500} fz={'sm'} c={'dimmed'}>
+              {artist.isBand
+                ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+                : ''}
               {albums.totalCount} album{plural(albums.totalCount)} • {songs.totalCount} song
               {plural(songs.totalCount)}
             </Text>
           </Group>
 
-          <Stack gap={0} my={6}>
-            <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-              Albums
-            </Text>
-            <Divider />
-          </Stack>
+          {artist.isBand && artist.bandMembers.length > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Band Members
+              </Text>
+              <Divider />
+            </Stack>
+          )}
+
+          <Group align={'start'} px={6} gap={'sm'}>
+            {artist.bandMembers.map((bandMember) => (
+              <Stack key={bandMember.id} align={'center'} gap={4} w={53}>
+                <Avatar
+                  variant={'light'}
+                  size={42}
+                  color={bandMember.color}
+                  src={bandMember.imageUrl ?? null}
+                  alt={bandMember.name}
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                >
+                  <IconUser size={19} />
+                </Avatar>
+
+                <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
+                  {bandMember.name}
+                </Text>
+              </Stack>
+            ))}
+          </Group>
+
+          {albums.totalCount > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Albums
+              </Text>
+              <Divider />
+            </Stack>
+          )}
 
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
-              <Group key={album.id} align={'center'} wrap={'nowrap'} gap={'xs'}>
+              <Group key={album.id} wrap={'nowrap'} gap={'xs'}>
                 <Avatar
                   radius={'8px'}
                   size={28}
@@ -171,23 +217,25 @@ function ArtistDrawer() {
             ))}
           </SimpleGrid>
 
-          <Stack gap={0} my={6}>
-            <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-              Songs
-            </Text>
-            <Divider />
-          </Stack>
+          {songs.totalCount > 0 && (
+            <Stack gap={0} my={6}>
+              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                Songs
+              </Text>
+              <Divider />
+            </Stack>
+          )}
 
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
-              <Group key={song.id} align={'center'} gap={'xs'} wrap={'nowrap'}>
+              <Group key={song.id} gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   radius={'8px'}
                   size={28}
                   src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
                   alt={song.title}
                 />
-                <Stack gap={1}>
+                <Stack gap={1} style={{ overflow: 'hidden' }}>
                   <Text fw={500} truncate={'end'} inline>
                     {song.title}
                   </Text>
@@ -209,6 +257,7 @@ function ArtistDrawer() {
         title={'Delete Artist'}
         description={`Are you sure you want to delete this artist?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </RightSideEntityDrawer>
   )

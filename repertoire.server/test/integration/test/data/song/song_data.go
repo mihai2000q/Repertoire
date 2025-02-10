@@ -37,6 +37,18 @@ var Users = []model.User{
 		Name:     "John Doe",
 		Email:    "johndoe@gmail.com",
 		Password: "",
+		Instruments: []model.Instrument{
+			{
+				ID:    uuid.New(),
+				Name:  "Guitar",
+				Order: 0,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Piano",
+				Order: 1,
+			},
+		},
 		GuitarTunings: []model.GuitarTuning{
 			{
 				ID:    uuid.New(),
@@ -71,6 +83,23 @@ var Users = []model.User{
 				Order: 2,
 			},
 		},
+		BandMemberRoles: []model.BandMemberRole{
+			{
+				ID:    uuid.New(),
+				Name:  "Guitarist",
+				Order: 0,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Vocalist",
+				Order: 1,
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Manager",
+				Order: 2,
+			},
+		},
 	},
 }
 
@@ -80,6 +109,29 @@ var Artists = []model.Artist{
 		Name:     "Arduino",
 		ImageURL: &[]internal.FilePath{"userId/Some artist image path/somewhere.jpeg"}[0],
 		UserID:   Users[0].ID,
+		BandMembers: []model.BandMember{
+			{
+				ID:    uuid.New(),
+				Name:  "Member 1",
+				Order: 0,
+				Roles: []model.BandMemberRole{
+					Users[0].BandMemberRoles[0],
+					Users[0].BandMemberRoles[1],
+				},
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Member 2",
+				Order: 1,
+				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[1]},
+			},
+			{
+				ID:    uuid.New(),
+				Name:  "Member 3",
+				Order: 2,
+				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[0]},
+			},
+		},
 	},
 	{
 		ID:     uuid.New(),
@@ -109,6 +161,8 @@ var songSections = []model.SongSection{
 		ID:                uuid.New(),
 		Name:              "Verse 1 - used on update",
 		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
+		BandMemberID:      &Artists[0].BandMembers[0].ID,
+		InstrumentID:      &Users[0].Instruments[1].ID,
 		Order:             0,
 		Confidence:        10,
 		Rehearsals:        10,
@@ -140,12 +194,14 @@ var songSections = []model.SongSection{
 		ID:                uuid.New(),
 		Name:              "Chorus 1 - used on delete",
 		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		BandMemberID:      &Artists[0].BandMembers[1].ID,
 		Order:             1,
 		Confidence:        25,
 		Rehearsals:        50,
 		ConfidenceScore:   30,
 		RehearsalsScore:   550,
 		Progress:          99,
+		InstrumentID:      &Users[0].Instruments[0].ID,
 	},
 	{
 		ID:                uuid.New(),
@@ -215,8 +271,39 @@ var Songs = []model.Song{
 
 	{
 		ID:     uuid.New(),
-		Title:  "Test Song 5 - No Album",
+		Title:  "Test Song 5 - No Album - But Has Section Occurrences",
 		UserID: Users[0].ID,
+		Sections: []model.SongSection{
+			{
+				ID:                uuid.New(),
+				Name:              "Test Song Section 1",
+				Order:             0,
+				Rehearsals:        15,
+				Occurrences:       2,
+				SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
+				History: []model.SongSectionHistory{
+					{
+						ID:       uuid.New(),
+						From:     0,
+						To:       15,
+						Property: model.RehearsalsProperty,
+					},
+				},
+			},
+			{
+				ID:                uuid.New(),
+				Name:              "Test Song Section 2",
+				Order:             1,
+				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+			},
+			{
+				ID:                uuid.New(),
+				Name:              "Test Song Section 3",
+				Order:             1,
+				Occurrences:       10,
+				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+			},
+		},
 	},
 
 	{

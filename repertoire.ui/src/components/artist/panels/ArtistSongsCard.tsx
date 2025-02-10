@@ -3,31 +3,16 @@ import Order from '../../../types/Order.ts'
 import { Dispatch, SetStateAction } from 'react'
 import Song from '../../../types/models/Song.ts'
 import ArtistSongsLoader from '../loader/ArtistSongsLoader.tsx'
-import {
-  ActionIcon,
-  Button,
-  Card,
-  Group,
-  LoadingOverlay,
-  Menu,
-  Space,
-  Stack,
-  Text
-} from '@mantine/core'
+import { ActionIcon, Card, Group, LoadingOverlay, Menu, Space, Stack, Text } from '@mantine/core'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
-import {
-  IconCaretDownFilled,
-  IconCheck,
-  IconDots,
-  IconMusicPlus,
-  IconPlus
-} from '@tabler/icons-react'
+import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import ArtistSongCard from '../ArtistSongCard.tsx'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewArtistSongModal from '../modal/AddNewArtistSongModal.tsx'
 import AddExistingArtistSongsModal from '../modal/AddExistingArtistSongsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { useRemoveSongsFromArtistMutation } from '../../../state/artistsApi.ts'
+import { useRemoveSongsFromArtistMutation } from '../../../state/api/artistsApi.ts'
+import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 
 interface ArtistSongsCardProps {
   songs: WithTotalCountResponse<Song>
@@ -61,37 +46,18 @@ function ArtistSongsCard({
   if (isLoading) return <ArtistSongsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'songs-card'} p={0} h={'100%'} mb={'xs'}>
+    <Card variant={'panel'} aria-label={'songs-card'} p={0} h={'100%'} mb={'lg'}>
       <Stack gap={0}>
         <LoadingOverlay visible={isFetching} />
 
-        <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
+        <Group px={'md'} py={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
 
-          <Menu shadow={'sm'}>
-            <Menu.Target>
-              <Button
-                variant={'subtle'}
-                size={'compact-xs'}
-                rightSection={<IconCaretDownFilled size={11} />}
-                styles={{ section: { marginLeft: 4 } }}
-              >
-                {order.label}
-              </Button>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              {artistSongsOrders.map((o) => (
-                <Menu.Item
-                  key={o.value}
-                  leftSection={order === o && <IconCheck size={12} />}
-                  onClick={() => setOrder(o)}
-                >
-                  {o.label}
-                </Menu.Item>
-              ))}
-            </Menu.Dropdown>
-          </Menu>
+          <CompactOrderButton
+            availableOrders={artistSongsOrders}
+            order={order}
+            setOrder={setOrder}
+          />
 
           <Space flex={1} />
 
@@ -120,6 +86,7 @@ function ArtistSongsCard({
               song={song}
               handleRemove={() => handleRemoveSongsFromArtist([song.id])}
               isUnknownArtist={isUnknownArtist}
+              order={order}
             />
           ))}
           {songs.models.length === songs.totalCount && (

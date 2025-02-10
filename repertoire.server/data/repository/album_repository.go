@@ -11,7 +11,7 @@ import (
 type AlbumRepository interface {
 	Get(album *model.Album, id uuid.UUID) error
 	GetWithSongs(album *model.Album, id uuid.UUID) error
-	GetWithAssociations(album *model.Album, id uuid.UUID) error
+	GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.Album,
@@ -27,6 +27,7 @@ type AlbumRepository interface {
 	UpdateWithAssociations(album *model.Album) error
 	UpdateAllWithSongs(albums *[]model.Album) error
 	Delete(id uuid.UUID) error
+	DeleteWithSongs(id uuid.UUID) error
 	RemoveSongs(album *model.Album, song *[]model.Song) error
 }
 
@@ -53,10 +54,10 @@ func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
 		Error
 }
 
-func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID) error {
+func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error {
 	return a.client.DB.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
-			return db.Order("songs.album_track_no")
+			return database.OrderBy(db, songsOrderBy)
 		}).
 		Joins("Artist").
 		Find(&album, model.Album{ID: id}).
@@ -128,13 +129,17 @@ func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
 }
 
 func (a albumRepository) Delete(id uuid.UUID) error {
+	return a.client.DB.Delete(&model.Album{}, id).Error
+}
+
+func (a albumRepository) DeleteWithSongs(id uuid.UUID) error {
 	return a.client.DB.Transaction(func(tx *gorm.DB) error {
-		/*err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
+		err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
 		if err != nil {
 			return err
-		}*/
+		}
 
-		err := tx.Delete(&model.Album{}, id).Error
+		err = tx.Delete(&model.Album{}, id).Error
 		if err != nil {
 			return err
 		}

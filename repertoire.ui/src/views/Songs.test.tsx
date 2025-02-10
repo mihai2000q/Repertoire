@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Songs from './Songs.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Song, { GuitarTuning, SongSectionType } from '../types/models/Song.ts'
@@ -8,40 +8,27 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import Artist from '../types/models/Artist.ts'
 import Album from '../types/models/Album.ts'
+import { RootState } from '../state/store.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
     {
+      ...emptySong,
       id: '1',
-      title: 'All for justice',
-      description: '',
-      isRecorded: false,
-      sections: [],
-      rehearsals: 0,
-      confidence: 0,
-      progress: 0,
-      createdAt: '',
-      updatedAt: ''
+      title: 'All for justice'
     },
     {
+      ...emptySong,
       id: '2',
-      description: '',
-      title: 'Seek and Destroy',
-      isRecorded: true,
-      sections: [],
-      rehearsals: 0,
-      confidence: 0,
-      progress: 0,
-      createdAt: '',
-      updatedAt: ''
+      title: 'Seek and Destroy'
     }
   ]
   const totalCount = 2
 
   const initialCurrentPage = 1
-  const pageSize = 20
+  const pageSize = 40
 
-  const getSongsWithPagination = (totalCount: number = 30) =>
+  const getSongsWithPagination = (totalCount: number = 50) =>
     http.get('/songs', async (req) => {
       const currentPage = new URL(req.request.url).searchParams.get('currentPage')
       const response: WithTotalCountResponse<Song> =
@@ -93,13 +80,17 @@ describe('Songs', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    window.location.search = ''
+    server.resetHandlers()
+  })
 
   afterAll(() => server.close())
 
   it('should render and display relevant info when there are songs', async () => {
-    reduxRouterRender(<Songs />)
+    const [_, store] = reduxRouterRender(<Songs />)
 
+    expect((store.getState() as RootState).global.documentTitle).toMatch(/songs/i)
     expect(screen.getByRole('heading', { name: /songs/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-song/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-songs/i })).toBeInTheDocument()
@@ -158,7 +149,7 @@ describe('Songs', () => {
   it('should paginate the songs', async () => {
     const user = userEvent.setup()
 
-    const totalCount = 30
+    const totalCount = 50
 
     server.use(getSongsWithPagination(totalCount))
 
@@ -180,6 +171,7 @@ describe('Songs', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount} songs out of ${totalCount}`)
     ).toBeInTheDocument()
+    expect(window.location.search).toContain('p=2')
   })
 
   it('the new song card should not be displayed on first page, but on the last', async () => {

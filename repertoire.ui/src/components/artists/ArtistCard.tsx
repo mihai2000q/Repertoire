@@ -1,12 +1,12 @@
 import Artist from '../../types/models/Artist.ts'
-import { Avatar, Group, Menu, Stack, Text } from '@mantine/core'
+import {Avatar, Checkbox, Group, Menu, Stack, Text} from '@mantine/core'
 import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import useContextMenu from '../../hooks/useContextMenu.ts'
-import { useDeleteArtistMutation } from '../../state/artistsApi.ts'
+import { useDeleteArtistMutation } from '../../state/api/artistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 
@@ -17,11 +17,13 @@ interface ArtistCardProps {
 function ArtistCard({ artist }: ArtistCardProps) {
   const navigate = useNavigate()
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
+
+  const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
 
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
 
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -30,8 +32,12 @@ function ArtistCard({ artist }: ArtistCardProps) {
     navigate(`/artist/${artist.id}`)
   }
 
-  function handleDelete() {
-    deleteArtistMutation(artist.id)
+  async function handleDelete() {
+    await deleteArtistMutation({
+      id: artist.id,
+      withAlbums: deleteWithAssociations,
+      withSongs: deleteWithAssociations
+    }).unwrap()
     toast.success(`${artist.name} deleted!`)
   }
 
@@ -47,7 +53,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         })
       }}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
           <Avatar
             onMouseEnter={() => setIsAvatarHovered(true)}
@@ -78,15 +84,28 @@ function ArtistCard({ artist }: ArtistCardProps) {
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete Artist`}
+        title={'Delete Artist'}
         description={
-          <Group gap={4}>
-            <Text>Are you sure you want to delete</Text>
-            <Text fw={600}>{artist.name}</Text>
-            <Text>?</Text>
-          </Group>
+          <Stack gap={'xs'}>
+            <Group gap={4}>
+              <Text>Are you sure you want to delete</Text>
+              <Text fw={600}>{artist.name}</Text>
+              <Text>?</Text>
+            </Group>
+            <Checkbox
+              checked={deleteWithAssociations}
+              onChange={(event) => setDeleteWithAssociations(event.currentTarget.checked)}
+              label={
+                <Text c={'dimmed'}>
+                  Delete all associated <b>albums</b> and <b>songs</b>
+                </Text>
+              }
+              styles={{ label: { paddingLeft: 8 } }}
+            />
+          </Stack>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )

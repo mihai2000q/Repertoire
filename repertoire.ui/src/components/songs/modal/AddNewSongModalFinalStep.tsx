@@ -12,7 +12,7 @@ import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import Album from '../../../types/models/Album.ts'
 
 interface AddNewSongModalFinalStepProps {
-  form: UseFormReturnType<AddNewSongForm, (values: AddNewSongForm) => AddNewSongForm>
+  form: UseFormReturnType<AddNewSongForm>
   image: FileWithPath | null
   setImage: Dispatch<SetStateAction<FileWithPath | null>>
   album: Album | null
@@ -40,7 +40,7 @@ function AddNewSongModalFinalStep({ form, image, setImage, album }: AddNewSongMo
 
       {!image && album?.imageUrl && (
         <Group gap={6}>
-          <Box c={'cyan.8'} mt={3}>
+          <Box c={'primary.8'} mt={3}>
             <IconInfoCircleFilled size={15} />
           </Box>
 

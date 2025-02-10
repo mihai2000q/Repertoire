@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingArtistAlbumsModal from './AddExistingArtistAlbumsModal.tsx'
 import Album from '../../../types/models/Album.ts'
 import { http, HttpResponse } from 'msw'
@@ -9,19 +9,12 @@ import { userEvent } from '@testing-library/user-event'
 import { AddAlbumsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 
 describe('Add Existing Artist Albums Modal', () => {
-  const emptyAlbum: Album = {
-    id: '',
-    title: '',
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const albums: Album[] = [
     {
       ...emptyAlbum,
       id: '1',
-      title: 'Album 1'
+      title: 'Album 1',
+      imageUrl: 'something.png'
     },
     {
       ...emptyAlbum,
@@ -96,6 +89,12 @@ describe('Add Existing Artist Albums Modal', () => {
       expect(screen.getByRole('checkbox', { name: album.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: album.title })).not.toBeChecked()
       expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+      if (album.imageUrl) {
+        expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
+          'src',
+          album.imageUrl
+        )
+      }
       expect(screen.getByText(album.title)).toBeInTheDocument()
     }
   })

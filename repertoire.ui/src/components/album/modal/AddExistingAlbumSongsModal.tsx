@@ -15,11 +15,11 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useGetSongsQuery } from '../../../state/songsApi.ts'
+import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
-import { useAddSongsToAlbumMutation } from '../../../state/albumsApi.ts'
+import { useAddSongsToAlbumMutation } from '../../../state/api/albumsApi.ts'
 
 interface AddExistingAlbumSongsModalProps {
   opened: boolean
@@ -48,7 +48,7 @@ function AddExistingAlbumSongsModal({
     searchBy: [
       'album_id IS NULL',
       `songs.artist_id IS NULL${artistId ? ` OR songs.artist_id = '${artistId}'` : ''}`,
-      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })
 
@@ -105,7 +105,7 @@ function AddExistingAlbumSongsModal({
               Choose songs
             </Text>
             <Tooltip label={'All songs will inherit the artist of the album'}>
-              <Box c={'cyan.8'}>
+              <Box c={'primary.8'}>
                 <IconInfoCircleFilled aria-label={'info-icon'} size={15} />
               </Box>
             </Tooltip>
@@ -159,10 +159,11 @@ function AddExistingAlbumSongsModal({
                     transition: '0.3s',
                     '&:hover': {
                       boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -178,9 +179,9 @@ function AddExistingAlbumSongsModal({
                     alt={song.title}
                   />
                   <Stack gap={0}>
-                    <Text fw={500}>{song.title}</Text>
+                    <Text fw={500} lineClamp={2}>{song.title}</Text>
                     {song.artist && (
-                      <Text fz={'sm'} c={'dimmed'}>
+                      <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
                         {song.artist.name}
                       </Text>
                     )}

@@ -21,7 +21,6 @@ function NewHorizontalCard({
 }: NewHorizontalCardProps) {
   return (
     <Group
-      align={'center'}
       wrap={'nowrap'}
       px={'md'}
       py={'xs'}
@@ -33,7 +32,7 @@ function NewHorizontalCard({
         '&:hover': {
           boxShadow: theme.shadows.xl,
           color: theme.colors.gray[7],
-          backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+          backgroundColor: alpha(theme.colors.primary[0], 0.15)
         }
       })}
       onClick={onClick}

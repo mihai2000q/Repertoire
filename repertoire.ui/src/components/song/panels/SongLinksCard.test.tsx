@@ -7,7 +7,7 @@ import SongLinksCard from './SongLinksCard.tsx'
 describe('Song Links Card', () => {
   const song: Song = {
     id: '',
-    title: '',
+    title: 'Some title',
     description: '',
     isRecorded: false,
     sections: [],
@@ -26,7 +26,6 @@ describe('Song Links Card', () => {
     expect(screen.getByRole('button', { name: 'edit-panel' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /youtube/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /songsterr/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /youtube/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /songsterr/i })).toBeInTheDocument()
   })
 
@@ -43,6 +42,17 @@ describe('Song Links Card', () => {
     reduxRender(<SongLinksCard song={song} />)
 
     await user.click(screen.getByRole('button', { name: 'edit-panel' }))
-    expect(screen.getByRole('dialog', { name: /edit song links/i })).toBeInTheDocument()
+
+    expect(await screen.findByRole('dialog', { name: /edit song links/i })).toBeInTheDocument()
+  })
+
+  it('should open youtube modal on youtube click', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<SongLinksCard song={song} />)
+
+    await user.click(screen.getByRole('button', { name: /youtube/i }))
+
+    expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
   })
 })

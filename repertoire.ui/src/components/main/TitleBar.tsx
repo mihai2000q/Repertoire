@@ -2,6 +2,8 @@ import { ActionIcon, Avatar, Group, Space, Stack, Text } from '@mantine/core'
 import { IconArrowDownLeft, IconArrowsDiagonal, IconX } from '@tabler/icons-react'
 import useTitleBarHeight from '../../hooks/useTitleBarHeight'
 import logo from '../../assets/logo.png'
+import {useAppSelector} from "../../state/store.ts";
+import {useDocumentTitle} from "@mantine/hooks";
 
 function TitleBar() {
   function handleMinimize() {
@@ -24,6 +26,9 @@ function TitleBar() {
 
   const height = useTitleBarHeight()
 
+  const title = useAppSelector((state) => state.global.documentTitle)
+  useDocumentTitle(title)
+
   return (
     <Stack
       data-testid="title-bar"
@@ -32,17 +37,17 @@ function TitleBar() {
       top={0}
       w={'100%'}
       gap={0}
-      style={{ zIndex: 2, WebkitAppRegion: 'drag' }}
+      style={{ zIndex: 100, WebkitAppRegion: 'drag' }}
     >
-      <Group gap={0} h={height} px={'xs'} align={'center'}>
+      <Group gap={0} h={height} px={'xs'} wrap={'nowrap'}>
         <Avatar src={logo} size={25} />
-        <Text c={'gray.7'} fw={600} pl={6}>
-          {window.document.title}
+        <Text c={'gray.7'} fw={600} pl={6} truncate={'end'}>
+          {title}
         </Text>
 
         <Space flex={1} />
 
-        <Group gap={4} style={{ WebkitAppRegion: 'no-drag' }}>
+        <Group gap={4} style={{ WebkitAppRegion: 'no-drag' }} wrap={'nowrap'}>
           <ActionIcon
             aria-label={'minimize'}
             variant={'subtle'}

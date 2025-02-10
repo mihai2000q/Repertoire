@@ -2,7 +2,6 @@ import { Dispatch, SetStateAction } from 'react'
 import ArtistAlbumsLoader from '../loader/ArtistAlbumsLoader.tsx'
 import {
   ActionIcon,
-  Button,
   Card,
   Group,
   LoadingOverlay,
@@ -13,23 +12,17 @@ import {
   Text
 } from '@mantine/core'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
-import {
-  IconAlbum,
-  IconCaretDownFilled,
-  IconCheck,
-  IconDisc,
-  IconDots,
-  IconPlus
-} from '@tabler/icons-react'
+import { IconDisc, IconDots, IconPlus } from '@tabler/icons-react'
 import ArtistAlbumCard from '../ArtistAlbumCard.tsx'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { useRemoveAlbumsFromArtistMutation } from '../../../state/artistsApi.ts'
+import { useRemoveAlbumsFromArtistMutation } from '../../../state/api/artistsApi.ts'
 import Order from '../../../types/Order.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Album from '../../../types/models/Album.ts'
 import AddNewArtistAlbumModal from '../modal/AddNewArtistAlbumModal.tsx'
 import AddExistingArtistAlbumsModal from '../modal/AddExistingArtistAlbumsModal.tsx'
+import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 
 interface ArtistAlbumsCardProps {
   albums: WithTotalCountResponse<Album>
@@ -64,37 +57,18 @@ function ArtistAlbumsCard({
   if (isLoading) return <ArtistAlbumsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'albums-card'} p={0} h={'100%'} mb={'xs'}>
+    <Card variant={'panel'} aria-label={'albums-card'} p={0} h={'100%'} mb={'lg'}>
       <Stack gap={0}>
         <LoadingOverlay visible={isFetching} />
 
-        <Group px={'md'} py={'xs'} gap={'xs'} align={'center'}>
+        <Group px={'md'} py={'xs'} gap={'xs'}>
           <Text fw={600}>Albums</Text>
 
-          <Menu shadow={'sm'}>
-            <Menu.Target>
-              <Button
-                variant={'subtle'}
-                size={'compact-xs'}
-                rightSection={<IconCaretDownFilled size={11} />}
-                styles={{ section: { marginLeft: 4 } }}
-              >
-                {order.label}
-              </Button>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              {artistAlbumsOrders.map((o) => (
-                <Menu.Item
-                  key={o.value}
-                  leftSection={order === o && <IconCheck size={12} />}
-                  onClick={() => setOrder(o)}
-                >
-                  {o.label}
-                </Menu.Item>
-              ))}
-            </Menu.Dropdown>
-          </Menu>
+          <CompactOrderButton
+            availableOrders={artistAlbumsOrders}
+            order={order}
+            setOrder={setOrder}
+          />
 
           <Space flex={1} />
 
@@ -104,6 +78,7 @@ function ArtistAlbumsCard({
                 <IconDots size={15} />
               </ActionIcon>
             </Menu.Target>
+
             <Menu.Dropdown>
               {!isUnknownArtist && (
                 <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingAlbums}>
@@ -124,6 +99,7 @@ function ArtistAlbumsCard({
               album={album}
               handleRemove={() => handleRemoveAlbumsFromArtist([album.id])}
               isUnknownArtist={isUnknownArtist}
+              order={order}
             />
           ))}
           {albums.models.length === albums.totalCount && (
@@ -131,8 +107,8 @@ function ArtistAlbumsCard({
               ariaLabel={'new-albums-card'}
               borderRadius={'8px'}
               onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
-              icon={<IconAlbum size={16} />}
-              p={'10px 9px 6px 9px'}
+              icon={<IconDisc size={18} />}
+              p={'9px 8px 5px 8px'}
             >
               Add New Albums
             </NewHorizontalCard>

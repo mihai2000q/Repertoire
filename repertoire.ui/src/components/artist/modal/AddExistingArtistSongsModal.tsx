@@ -15,8 +15,8 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useAddSongsToArtistMutation } from '../../../state/artistsApi.ts'
-import { useGetSongsQuery } from '../../../state/songsApi.ts'
+import { useAddSongsToArtistMutation } from '../../../state/api/artistsApi.ts'
+import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
@@ -45,7 +45,7 @@ function AddExistingArtistSongsModal({
     orderBy: ['title asc'],
     searchBy: [
       'songs.artist_id IS NULL',
-      ...(searchValue.trim() === '' ? [] : [`title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })
 
@@ -149,10 +149,11 @@ function AddExistingArtistSongsModal({
                     transition: '0.3s',
                     '&:hover': {
                       boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.cyan[0], 0.15)
+                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
                     }
                   })}
                   w={'100%'}
+                  wrap={'nowrap'}
                   px={'xl'}
                   py={'xs'}
                 >
@@ -168,9 +169,9 @@ function AddExistingArtistSongsModal({
                     alt={song.title}
                   />
                   <Stack gap={0}>
-                    <Text fw={500}>{song.title}</Text>
+                    <Text fw={500} lineClamp={2}>{song.title}</Text>
                     {song.album && (
-                      <Text fz={'sm'} c={'dimmed'}>
+                      <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
                         {song.album.title}
                       </Text>
                     )}

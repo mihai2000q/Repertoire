@@ -1,30 +1,76 @@
-import { ActionIcon, Card, Group, LoadingOverlay, Menu, Space, Stack, Text } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Card,
+  Group,
+  LoadingOverlay,
+  Menu,
+  Space,
+  Stack,
+  Text
+} from '@mantine/core'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import AlbumSongCard from './AlbumSongCard.tsx'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewAlbumSongModal from './modal/AddNewAlbumSongModal.tsx'
 import AddExistingAlbumSongsModal from './modal/AddExistingAlbumSongsModal.tsx'
-import { useRemoveSongsFromAlbumMutation } from '../../state/albumsApi.ts'
-import { useDisclosure } from '@mantine/hooks'
+import {
+  useMoveSongFromAlbumMutation,
+  useRemoveSongsFromAlbumMutation
+} from '../../state/api/albumsApi.ts'
+import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import Album from '../../types/models/Album.ts'
 import Song from '../../types/models/Song.ts'
+import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
+import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
+import Order from '../../types/Order.ts'
+import { Dispatch, SetStateAction } from 'react'
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
+import SongProperty from '../../utils/enums/SongProperty.ts'
 
 interface AlbumSongsCardProps {
   album: Album | undefined
   songs: Song[] | undefined
   isUnknownAlbum: boolean
+  order: Order
+  setOrder: Dispatch<SetStateAction<Order>>
   isFetching?: boolean
 }
 
-function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongsCardProps) {
+function AlbumSongsCard({
+  album,
+  songs,
+  isUnknownAlbum,
+  order,
+  setOrder,
+  isFetching
+}: AlbumSongsCardProps) {
+  const [moveSongFromAlbum, { isLoading: isMoveLoading }] = useMoveSongFromAlbumMutation()
   const [removeSongsFromAlbum] = useRemoveSongsFromAlbumMutation()
 
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
+  const [internalSongs, { reorder, setState }] = useListState<Song>(
+    isUnknownAlbum ? [] : album.songs
+  )
+  useDidUpdate(() => setState(album.songs), [album])
+
   function handleRemoveSongsFromAlbum(songIds: string[]) {
     removeSongsFromAlbum({ id: album?.id, songIds })
+  }
+
+  function onSongsDragEnd({ source, destination }) {
+    reorder({ from: source.index, to: destination?.index || 0 })
+
+    if (!destination || source.index === destination.index) return
+
+    moveSongFromAlbum({
+      id: album.id,
+      songId: album.songs[source.index].id,
+      overSongId: album.songs[destination.index].id
+    })
   }
 
   return (
@@ -32,9 +78,18 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'}>
+        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
+
+          <CompactOrderButton
+            availableOrders={albumSongsOrders}
+            order={order}
+            setOrder={setOrder}
+            disabledOrders={isUnknownAlbum ? [albumSongsOrders[0]] : []}
+          />
+
           <Space flex={1} />
+
           <Menu position={'bottom-end'}>
             <Menu.Target>
               <ActionIcon aria-label={'songs-more-menu'} size={'md'} variant={'grey'}>
@@ -55,14 +110,40 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
         </Group>
 
         <Stack gap={0}>
-          {(isUnknownAlbum ? songs : album.songs).map((song) => (
-            <AlbumSongCard
-              key={song.id}
-              song={song}
-              handleRemove={() => handleRemoveSongsFromAlbum([song.id])}
-              isUnknownAlbum={isUnknownAlbum}
-            />
-          ))}
+          <DragDropContext onDragEnd={onSongsDragEnd}>
+            <Droppable droppableId="dnd-list" direction="vertical">
+              {(provided) => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  {(isUnknownAlbum ? songs : internalSongs).map((song, index) => (
+                    <Draggable
+                      key={song.id}
+                      index={index}
+                      draggableId={song.id}
+                      isDragDisabled={
+                        isMoveLoading ||
+                        isUnknownAlbum ||
+                        order.property !== SongProperty.AlbumTrackNo
+                      }
+                    >
+                      {(provided, snapshot) => (
+                        <AlbumSongCard
+                          key={song.id}
+                          song={song}
+                          handleRemove={() => handleRemoveSongsFromAlbum([song.id])}
+                          isUnknownAlbum={isUnknownAlbum}
+                          order={order}
+                          isDragging={snapshot.isDragging}
+                          draggableProvided={provided}
+                        />
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Box>
+              )}
+            </Droppable>
+          </DragDropContext>
+
           {(isUnknownAlbum || album.songs.length === 0) && (
             <NewHorizontalCard
               ariaLabel={`new-song-card`}
@@ -74,11 +155,7 @@ function AlbumSongsCard({ album, songs, isUnknownAlbum, isFetching }: AlbumSongs
         </Stack>
       </Stack>
 
-      <AddNewAlbumSongModal
-        opened={openedAddNewSong}
-        onClose={closeAddNewSong}
-        albumId={album?.id}
-      />
+      <AddNewAlbumSongModal opened={openedAddNewSong} onClose={closeAddNewSong} album={album} />
       <AddExistingAlbumSongsModal
         opened={openedAddExistingSongs}
         onClose={closeAddExistingSongs}

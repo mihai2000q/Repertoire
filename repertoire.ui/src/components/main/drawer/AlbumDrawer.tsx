@@ -13,7 +13,7 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/albumsApi.ts'
+import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/api/albumsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
 import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
@@ -21,26 +21,36 @@ import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
-import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/globalSlice.ts'
+import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 
 function AlbumDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const setDocumentTitle = useDynamicDocumentTitle()
 
   const opened = useAppSelector((state) => state.global.albumDrawer.open)
   const albumId = useAppSelector((state) => state.global.albumDrawer.albumId)
-  const onClose = () => dispatch(closeAlbumDrawer())
+  const onClose = () => {
+    dispatch(closeAlbumDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
-  const [deleteAlbumMutation] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
 
-  const { data: album, isFetching } = useGetAlbumQuery(albumId, { skip: !albumId })
+  const { data: album, isFetching } = useGetAlbumQuery({ id: albumId }, { skip: !albumId })
+
+  useEffect(() => {
+    if (album && opened && !isFetching)
+      setDocumentTitle((prevTitle) => prevTitle + ' - ' + album.title)
+  }, [album, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -53,9 +63,10 @@ function AlbumDrawer() {
     navigate(`/album/${album.id}`)
   }
 
-  function handleDelete() {
-    deleteAlbumMutation(album.id)
+  async function handleDelete() {
+    await deleteAlbumMutation({ id: album.id }).unwrap()
     dispatch(deleteAlbumDrawer())
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${album.title} deleted!`)
   }
 
@@ -115,7 +126,7 @@ function AlbumDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'md'} gap={4}>
-          <Title order={5} fw={700}>
+          <Title order={5} fw={700} lineClamp={2}>
             {album.title}
           </Title>
 
@@ -187,6 +198,7 @@ function AlbumDrawer() {
         title={'Delete Album'}
         description={`Are you sure you want to delete this album?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </RightSideEntityDrawer>
   )

@@ -1,7 +1,7 @@
-import { useCreateSongSectionMutation } from '../../state/songsApi.ts'
+import { useCreateSongSectionMutation } from '../../state/api/songsApi.ts'
 import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
+import { useDidUpdate, useFocusTrap, useInputState, useScrollIntoView } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
 
@@ -13,6 +13,8 @@ interface AddNewSongSectionProps {
 
 function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) {
   const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
+
+  const nameInputRef = useFocusTrap(opened)
 
   const [name, setName] = useInputState('')
   const [nameError, setNameError] = useState(false)
@@ -27,7 +29,13 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
     setTypeError(false)
   }, [opened])
 
-  const nameInputRef = useFocusTrap(opened)
+  const { scrollIntoView, targetRef: scrollIntoViewRef } = useScrollIntoView({
+    offset: 20
+  })
+
+  function handleOnTransitionEnd() {
+    if (opened) scrollIntoView({ alignment: 'end' })
+  }
 
   async function addSection() {
     if (!type || name.trim().length === 0) {
@@ -52,8 +60,14 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
   }
 
   return (
-    <Collapse in={opened}>
-      <Group align={'center'} gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-section'}>
+    <Collapse in={opened} onTransitionEnd={handleOnTransitionEnd}>
+      <Group
+        ref={scrollIntoViewRef}
+        gap={'xs'}
+        py={'xs'}
+        px={'md'}
+        aria-label={'add-new-song-section'}
+      >
         <SongSectionTypeSelect option={type} onChange={setType} error={typeError} />
 
         <TextInput

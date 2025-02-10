@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestRemoveSongFromAlbum_WhenGetWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenGetWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewRemoveSongsFromAlbum(albumRepository)
@@ -41,7 +41,7 @@ func TestRemoveSongFromAlbum_WhenGetWithSongsFails_ShouldReturnInternalServerErr
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewRemoveSongsFromAlbum(albumRepository)
@@ -67,7 +67,7 @@ func TestRemoveSongFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testi
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromAlbum_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewRemoveSongsFromAlbum(albumRepository)
@@ -100,7 +100,7 @@ func TestRemoveSongFromAlbum_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *t
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromAlbum_WhenRemoveSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenRemoveSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewRemoveSongsFromAlbum(albumRepository)
@@ -137,7 +137,7 @@ func TestRemoveSongFromAlbum_WhenRemoveSongsFails_ShouldReturnInternalServerErro
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewRemoveSongsFromAlbum(albumRepository)
@@ -178,7 +178,7 @@ func TestRemoveSongFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerErro
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewRemoveSongsFromAlbum(albumRepository)

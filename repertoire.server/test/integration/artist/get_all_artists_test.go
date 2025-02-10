@@ -34,6 +34,6 @@ func TestGetAllArtists_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 	db.Find(&artists)
 
 	for i := range responseArtists {
-		assertion.ResponseArtist(t, artists[i], responseArtists[i])
+		assertion.ResponseArtist(t, artists[i], responseArtists[i], false)
 	}
 }

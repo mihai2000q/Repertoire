@@ -13,16 +13,19 @@ import {
 } from '@mantine/core'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../state/store.ts'
-import { useSignUpMutation } from '../state/api.ts'
+import { api, useSignUpMutation } from '../state/api.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 import { useForm, zodResolver } from '@mantine/form'
-import { setToken } from '../state/authSlice.ts'
+import { setToken } from '../state/slice/authSlice.ts'
 import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
+import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 
 function SignUp(): ReactElement {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+
+  useFixedDocumentTitle('Sign Up')
 
   const [signUpMutation, { error, isLoading }] = useSignUpMutation()
   const signUpError = (error as HttpErrorResponse | undefined)?.data?.error
@@ -44,6 +47,7 @@ function SignUp(): ReactElement {
     try {
       const res = await signUpMutation({ name, email, password }).unwrap()
       dispatch(setToken(res.token))
+      dispatch(api.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/
@@ -58,7 +62,7 @@ function SignUp(): ReactElement {
         </Title>
         <Text c="dimmed" size="sm" ta="center" mt={5}>
           Do you have an account already?{' '}
-          <Anchor c={'cyan.5'} size="sm" component={Link} to={'/sign-in'}>
+          <Anchor c={'primary.5'} size="sm" component={Link} to={'/sign-in'}>
             Sign in
           </Anchor>
         </Text>

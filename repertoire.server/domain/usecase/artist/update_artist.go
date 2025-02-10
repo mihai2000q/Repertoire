@@ -28,6 +28,7 @@ func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *wrapper.Erro
 	}
 
 	artist.Name = request.Name
+	artist.IsBand = request.IsBand
 
 	err = u.repository.Update(&artist)
 	if err != nil {

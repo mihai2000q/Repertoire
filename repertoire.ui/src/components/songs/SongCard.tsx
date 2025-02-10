@@ -15,7 +15,7 @@ import {
 } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer } from '../../state/globalSlice.ts'
+import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, ReactElement } from 'react'
 import {
   IconBoltFilled,
@@ -28,12 +28,14 @@ import {
 } from '@tabler/icons-react'
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
-import { useDeleteSongMutation } from '../../state/songsApi.ts'
+import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -63,33 +65,39 @@ function SongCard({ song }: SongCardProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   const { color: difficultyColor } = useDifficultyInfo(song?.difficulty)
   const solos = song.sections.filter((s) => s.songSectionType.name === 'Solo').length
   const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
 
-  const [openedMenu, menuDropdownProps, { openMenu, onMenuChange }] = useContextMenu()
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
   function handleClick() {
     navigate(`/song/${song.id}`)
   }
 
-  function handleArtistClick(e: MouseEvent<HTMLParagraphElement>) {
+  function handleArtistClick(e: MouseEvent<HTMLElement>) {
     e.stopPropagation()
     dispatch(openArtistDrawer(song.artist.id))
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  function handleOpenYoutube(e: MouseEvent<HTMLElement>) {
+    e.stopPropagation()
+    openYoutube()
+  }
+
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     toast.success(`${song.title} deleted!`)
   }
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onChange={onMenuChange}>
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
       <Menu.Target>
         <Card
           aria-label={`song-card-${song.title}`}
@@ -130,7 +138,7 @@ function SongCard({ song }: SongCardProps) {
                   <Text
                     fz={'sm'}
                     c="dimmed"
-                    truncate={'end'}
+                    lineClamp={1}
                     onClick={handleArtistClick}
                     sx={{ '&:hover': { textDecoration: 'underline' } }}
                   >
@@ -142,7 +150,7 @@ function SongCard({ song }: SongCardProps) {
                   </Text>
                 )}
               </Box>
-              <Group c={'cyan.9'} gap={4} align={'end'} pb={1}>
+              <Group c={'primary.9'} gap={4} align={'end'} pb={1}>
                 <Tooltip.Group openDelay={200}>
                   {song.isRecorded && (
                     <LocalTooltip label={'This song is recorded'}>
@@ -189,13 +197,11 @@ function SongCard({ song }: SongCardProps) {
                     </LocalAnchor>
                   )}
                   {song.youtubeLink && (
-                    <LocalAnchor link={song.youtubeLink}>
-                      <LocalTooltip label={'This song has a youtube link'}>
-                        <Center c={'red.7'}>
-                          <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
-                        </Center>
-                      </LocalTooltip>
-                    </LocalAnchor>
+                    <LocalTooltip label={'This song has a youtube link'}>
+                      <Center c={'red.7'} onClick={handleOpenYoutube}>
+                        <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
+                      </Center>
+                    </LocalTooltip>
                   )}
                 </Tooltip.Group>
               </Group>
@@ -205,6 +211,7 @@ function SongCard({ song }: SongCardProps) {
       </Menu.Target>
 
       <Menu.Dropdown {...menuDropdownProps}>
+        <PerfectRehearsalMenuItem songId={song.id} />
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
           Delete
         </Menu.Item>
@@ -222,6 +229,13 @@ function SongCard({ song }: SongCardProps) {
           </Group>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
+      />
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
       />
     </Menu>
   )

@@ -13,18 +13,21 @@ import {
 } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import EditSongHeaderModal from '../modal/EditSongHeaderModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { openAlbumDrawer, openArtistDrawer } from '../../../state/globalSlice.ts'
+import { openAlbumDrawer, openArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import { toast } from 'react-toastify'
-import { useDeleteSongMutation } from '../../../state/songsApi.ts'
+import { useDeleteSongMutation } from '../../../state/api/songsApi.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
+import ImageModal from '../../@ui/modal/ImageModal.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -34,10 +37,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
-  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedInfo, { open: openInfo, close: closeInfo }] = useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -49,8 +53,8 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     navigate(`/songs`, { replace: true })
     toast.success(`${song.title} deleted!`)
   }
@@ -66,6 +70,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <PerfectRehearsalMenuItem songId={song.id} />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
@@ -75,14 +80,16 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            h={150}
+            w={150}
             src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
             alt={song.title}
             radius={'lg'}
-            style={(theme) => ({
-              boxShadow: theme.shadows.lg
+            sx={(theme) => ({
+              boxShadow: theme.shadows.lg,
+              ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })
             })}
+            onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
           />
         </AspectRatio>
         <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
@@ -92,9 +99,9 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Title order={1} fw={700} lineClamp={2}>
             {song.title}
           </Title>
-          <Group gap={4}>
+          <Group gap={4} wrap={'nowrap'}>
             {song.artist && (
-              <Group gap={'xs'}>
+              <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   size={35}
                   src={song.artist.imageUrl ?? userPlaceholder}
@@ -109,6 +116,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                   }}
                   inline
                   onClick={handleArtistClick}
+                  lineClamp={1}
                 >
                   {song.artist.name}
                 </Text>
@@ -116,7 +124,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
             )}
 
             {song.album && (
-              <Group gap={0}>
+              <Group gap={0} wrap={'nowrap'}>
                 {song.artist && (
                   <Text fw={500} c={'dimmed'} inline pr={4}>
                     on
@@ -127,6 +135,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                     <Text
                       fw={600}
                       inline
+                      lineClamp={1}
                       c={'dark'}
                       sx={{
                         cursor: 'pointer',
@@ -138,11 +147,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                     </Text>
                   </HoverCard.Target>
                   <HoverCard.Dropdown maw={300}>
-                    <Group align={'center'} gap={'xs'} wrap={'nowrap'}>
+                    <Group gap={'xs'} wrap={'nowrap'}>
                       <Avatar
                         size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? songPlaceholder}
+                        src={song.album.imageUrl ?? albumPlaceholder}
                         alt={song.album.title}
                       />
                       <Stack gap={2}>
@@ -186,15 +195,22 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         </Stack>
       </Group>
 
+      <ImageModal
+        opened={openedImage}
+        onClose={closeImage}
+        title={song.title}
+        image={song.imageUrl || song.album?.imageUrl}
+      />
+
       <SongInfoModal opened={openedInfo} onClose={closeInfo} song={song} />
       <EditSongHeaderModal song={song} opened={openedEdit} onClose={closeEdit} />
-
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </HeaderPanelCard>
   )

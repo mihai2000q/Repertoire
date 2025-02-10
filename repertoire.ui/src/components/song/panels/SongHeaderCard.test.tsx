@@ -1,4 +1,10 @@
-import { reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import SongHeaderCard from './SongHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
@@ -12,35 +18,22 @@ import dayjs from 'dayjs'
 
 describe('Song Header Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
-    title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: null
+    title: 'Song 1'
   }
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: '2022-10-15',
-    songs: []
+    releaseDate: '2022-10-15'
   }
 
   const artist: Artist = {
+    ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
-    createdAt: '',
-    updatedAt: '',
-    albums: [],
-    songs: []
+    name: 'Artist 1'
   }
 
   const handlers = [
@@ -74,6 +67,7 @@ describe('Song Header Card', () => {
 
     const localSong: Song = {
       ...song,
+      imageUrl: 'something.png',
       releaseDate: '2024-10-21T10:30:00',
       artist: artist,
       album: album
@@ -82,8 +76,16 @@ describe('Song Header Card', () => {
     reduxRouterRender(<SongHeaderCard song={localSong} />)
 
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.title })).toHaveAttribute(
+      'src',
+      localSong.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localSong.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localSong.artist.name })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.artist.name })).toHaveAttribute(
+      'src',
+      localSong.artist.imageUrl
+    )
     expect(screen.getByText(localSong.artist.name)).toBeInTheDocument()
     expect(screen.getByText(localSong.album.title)).toBeInTheDocument()
     expect(screen.getByText(dayjs(localSong.releaseDate).format('YYYY'))).toBeInTheDocument()
@@ -97,10 +99,53 @@ describe('Song Header Card', () => {
 
     await user.hover(screen.getByText(localSong.album.title))
     expect(await screen.findByRole('img', { name: localSong.album.title })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: localSong.album.title })).toHaveAttribute(
+      'src',
+      localSong.album.imageUrl
+    )
     expect(screen.getAllByText(localSong.album.title)).toHaveLength(2)
     expect(
       screen.getByText(dayjs(localSong.album.releaseDate).format('D MMM YYYY'))
     ).toBeInTheDocument()
+  })
+
+  it("should display song's image if the song has one, if not the album's image", () => {
+    const localSong: Song = {
+      ...song,
+      imageUrl: 'something.png'
+    }
+
+    const [{ rerender }] = reduxRouterRender(<SongHeaderCard song={localSong} />)
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
+
+    const localSongWithAlbum: Song = {
+      ...song,
+      album: {
+        id: '',
+        title: '',
+        songs: [],
+        createdAt: '',
+        updatedAt: '',
+        imageUrl: 'something-album.png'
+      }
+    }
+
+    rerender(<SongHeaderCard song={localSongWithAlbum} />)
+
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+      'src',
+      localSongWithAlbum.album.imageUrl
+    )
+  })
+
+  it('should display image modal, when clicking the image', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<SongHeaderCard song={{ ...song, imageUrl: 'something.png' }} />)
+
+    await user.click(screen.getByRole('img', { name: song.title }))
+    expect(await screen.findByRole('dialog', { name: song.title + '-image' })).toBeInTheDocument()
   })
 
   it('should display menu on click', async () => {
@@ -111,6 +156,7 @@ describe('Song Header Card', () => {
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -123,7 +169,7 @@ describe('Song Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /info/i }))
 
-      expect(screen.getByRole('dialog', { name: /song info/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /song info/i })).toBeInTheDocument()
     })
 
     it('should display edit header modal', async () => {
@@ -134,7 +180,7 @@ describe('Song Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
-      expect(screen.getByRole('dialog', { name: /edit song header/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /edit song header/i })).toBeInTheDocument()
     })
 
     it('should display warning modal and delete song', async () => {
@@ -151,7 +197,7 @@ describe('Song Header Card', () => {
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-      expect(screen.getByRole('dialog', { name: /delete song/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /delete song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /delete song/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
@@ -167,7 +213,7 @@ describe('Song Header Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'edit-header' }))
 
-    expect(screen.getByRole('dialog', { name: /edit song header/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /edit song header/i })).toBeInTheDocument()
   })
 
   it('should open artist drawer on artist click', async () => {

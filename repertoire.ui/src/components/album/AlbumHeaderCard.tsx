@@ -1,5 +1,16 @@
 import Album from '../../types/models/Album.ts'
-import { AspectRatio, Avatar, Group, Image, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
+import {
+  AspectRatio,
+  Avatar,
+  Checkbox,
+  Group,
+  Image,
+  Menu,
+  Stack,
+  Text,
+  Title,
+  Tooltip
+} from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
 import unknownPlaceholder from '../../assets/unknown-placeholder.png'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
@@ -7,15 +18,17 @@ import userPlaceholder from '../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../utils/plural.ts'
 import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
-import { openArtistDrawer } from '../../state/globalSlice.ts'
+import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { toast } from 'react-toastify'
 import { useDisclosure } from '@mantine/hooks'
-import { useDeleteAlbumMutation } from '../../state/albumsApi.ts'
+import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
+import ImageModal from '../@ui/modal/ImageModal.tsx'
+import { useState } from 'react'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -27,11 +40,13 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteAlbumMutation] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
 
+  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
+
+  const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedAlbumInfo, { open: openAlbumInfo, close: closeAlbumInfo }] = useDisclosure(false)
-  const [openedEditAlbumHeader, { open: openEditAlbumHeader, close: closeEditAlbumHeader }] =
-    useDisclosure(false)
+  const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
@@ -39,21 +54,21 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
     dispatch(openArtistDrawer(album.artist.id))
   }
 
-  function handleDelete() {
-    deleteAlbumMutation(album.id)
+  async function handleDelete() {
+    await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
     navigate(`/albums`, { replace: true })
     toast.success(`${album.title} deleted!`)
   }
 
   return (
     <HeaderPanelCard
-      onEditClick={openEditAlbumHeader}
+      onEditClick={openEdit}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openAlbumInfo}>
             Info
           </Menu.Item>
-          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditAlbumHeader}>
+          <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
@@ -66,14 +81,16 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            h={150}
+            w={150}
             src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
             fallbackSrc={albumPlaceholder}
             radius={'lg'}
             alt={isUnknownAlbum ? 'unknown-album' : album.title}
-            style={(theme) => ({
-              boxShadow: theme.shadows.lg
+            sx={(theme) => ({
+              boxShadow: theme.shadows.lg,
+              ...(!isUnknownAlbum && album.imageUrl && { cursor: 'pointer' })
             })}
+            onClick={!isUnknownAlbum && album.imageUrl ? openImage : undefined}
           />
         </AspectRatio>
         <Stack
@@ -94,10 +111,10 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               {album.title}
             </Title>
           )}
-          <Group gap={4}>
+          <Group gap={4} wrap={'nowrap'}>
             {album?.artist && (
               <>
-                <Group gap={'xs'}>
+                <Group gap={'xs'} wrap={'nowrap'}>
                   <Avatar
                     size={35}
                     src={album.artist.imageUrl ?? userPlaceholder}
@@ -111,6 +128,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                       '&:hover': { textDecoration: 'underline' }
                     }}
                     onClick={handleArtistClick}
+                    lineClamp={1}
                   >
                     {album.artist.name}
                   </Text>
@@ -144,20 +162,35 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
       {!isUnknownAlbum && (
         <>
+          <ImageModal
+            opened={openedImage}
+            onClose={closeImage}
+            title={album.title}
+            image={album.imageUrl}
+          />
+
           <AlbumInfoModal opened={openedAlbumInfo} onClose={closeAlbumInfo} album={album} />
 
-          <EditAlbumHeaderModal
-            album={album}
-            opened={openedEditAlbumHeader}
-            onClose={closeEditAlbumHeader}
-          />
+          <EditAlbumHeaderModal album={album} opened={openedEdit} onClose={closeEdit} />
 
           <WarningModal
             opened={openedDeleteWarning}
             onClose={closeDeleteWarning}
             title={'Delete Album'}
-            description={`Are you sure you want to delete this album?`}
+            description={
+              <Stack gap={5}>
+                <Text fw={500}>Are you sure you want to delete this album?</Text>
+                <Checkbox
+                  checked={deleteWithSongs}
+                  onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
+                  label={'Delete all associated songs'}
+                  c={'dimmed'}
+                  styles={{ label: { paddingLeft: 8 } }}
+                />
+              </Stack>
+            }
             onYes={handleDelete}
+            isLoading={isDeleteLoading}
           />
         </>
       )}

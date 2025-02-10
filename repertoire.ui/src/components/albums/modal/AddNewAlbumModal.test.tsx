@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import {emptyArtist, reduxRender, withToastify} from '../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import AddNewAlbumModal from './AddNewAlbumModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
@@ -11,28 +11,19 @@ import WithTotalCountResponse from '../../../types/responses/WithTotalCountRespo
 describe('Add New Album Modal', () => {
   const artists: Artist[] = [
     {
+      ...emptyArtist,
       id: '1',
       name: 'Artist 1',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
     },
     {
+      ...emptyArtist,
       id: '2',
       name: 'Artist 2',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
     },
     {
+      ...emptyArtist,
       id: '3',
       name: 'Artist 3',
-      songs: [],
-      albums: [],
-      createdAt: '',
-      updatedAt: ''
     }
   ]
 
@@ -105,6 +96,7 @@ describe('Add New Album Modal', () => {
       const newArtistName = 'New Artist Name'
       const now = new Date()
       const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const whichDayIsCurrentDay = newReleaseDate.getDate() > 15 ? 1 : 0
 
       const onClose = vitest.fn()
 
@@ -121,7 +113,7 @@ describe('Add New Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getByText(newReleaseDate.getDate().toString()))
+      await user.click(screen.getAllByText(newReleaseDate.getDate().toString())[whichDayIsCurrentDay])
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
       await waitFor(() =>

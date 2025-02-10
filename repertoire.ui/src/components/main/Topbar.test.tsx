@@ -1,4 +1,4 @@
-import { reduxRouterRender } from '../../test-utils.tsx'
+import {emptyUser, reduxRouterRender} from '../../test-utils.tsx'
 import Topbar from './Topbar.tsx'
 import { AppShell } from '@mantine/core'
 import { screen } from '@testing-library/react'
@@ -18,9 +18,10 @@ describe('Topbar', () => {
     )
 
   const user: User = {
+    ...emptyUser,
     id: '1',
     email: 'Gigi@yahoo.com',
-    name: 'Gigi'
+    name: 'Gigi',
   }
 
   const handlers = [
@@ -71,7 +72,7 @@ describe('Topbar', () => {
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /account/i }))
 
-      expect(screen.getByRole('dialog', { name: /account/i })).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /account/i })).toBeInTheDocument()
     })
 
     it('should sign out when clicking on sign out', async () => {
