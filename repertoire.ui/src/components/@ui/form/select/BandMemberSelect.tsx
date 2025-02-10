@@ -77,8 +77,15 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
       value={member.name}
       aria-label={member.name}
       onClick={() => {
-        setBandMember(member)
-        setValue(member.name)
+        if (bandMember === member) {
+          setBandMember(null)
+          setValue('')
+          setSearch('')
+        } else {
+          setBandMember(member)
+          setValue(member.name)
+          setSearch(member.name)
+        }
       }}
     >
       <Group gap={'xs'} wrap={'nowrap'}>

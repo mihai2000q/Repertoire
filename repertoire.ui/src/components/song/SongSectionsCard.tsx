@@ -21,10 +21,12 @@ import SongSectionCard from './SongSectionCard.tsx'
 import { useState } from 'react'
 import EditSongSectionsOccurrencesModal from './modal/EditSongSectionsOccurrencesModal.tsx'
 import { toast } from 'react-toastify'
+import { BandMember } from '../../types/models/Artist.ts'
 
 interface SongSectionsCardProps {
   sections: SongSectionModel[]
   songId: string
+  bandMembers?: BandMember[]
 }
 
 function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
@@ -205,6 +207,7 @@ function SongSectionsCard({ sections, songId }: SongSectionsCardProps) {
                           isDragging={snapshot.isDragging}
                           showDetails={showDetails}
                           maxSectionProgress={maxSectionProgress}
+                          bandMembers={bandMembers}
                         />
                       )}
                     </Draggable>

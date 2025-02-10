@@ -193,6 +193,7 @@ function SongSectionCard({
         opened={openedEditSongSection}
         onClose={closeEditSongSection}
         section={section}
+        bandMembers={bandMembers}
       />
       <WarningModal
         opened={openedDeleteWarning}

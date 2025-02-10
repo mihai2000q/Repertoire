@@ -19,14 +19,23 @@ import { EditSongSectionForm, editSongSectionValidation } from '../../../validat
 import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
+import { BandMember } from '../../../types/models/Artist.ts'
+import BandMemberSelect from '../../@ui/form/select/BandMemberSelect.tsx'
+import InstrumentSelect from '../../@ui/form/select/InstrumentSelect.tsx'
 
 interface EditSongSectionModalProps {
   opened: boolean
   onClose: () => void
   section: SongSection
+  bandMembers: BandMember[]
 }
 
-function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModalProps) {
+function EditSongSectionModal({
+  opened,
+  onClose,
+  section,
+  bandMembers
+}: EditSongSectionModalProps) {
   const [updateSongSectionMutation, { isLoading }] = useUpdateSongSectionMutation()
 
   const [hasChanged, setHasChanged] = useState(false)
@@ -39,7 +48,9 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
       name: section.name,
       rehearsals: section.rehearsals,
       confidence: section.confidence,
-      typeId: section.songSectionType.id
+      typeId: section.songSectionType.id,
+      bandMemberId: section.bandMember?.id,
+      instrumentId: section.instrument?.id
     } as EditSongSectionForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -50,7 +61,9 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
         values.name !== section.name ||
           (typeof values.rehearsals === 'number' && values.rehearsals !== section.rehearsals) ||
           values.confidence !== section.confidence ||
-          values.typeId !== section.songSectionType.id
+          values.typeId !== section.songSectionType.id ||
+          values.bandMemberId !== section.bandMember?.id ||
+          values.instrumentId !== section.instrument?.id
       )
 
       if (typeof values.rehearsals !== 'number') setRehearsalsError('Cannot be blank')
@@ -67,11 +80,22 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
     value: section.songSectionType.id,
     label: section.songSectionType.name
   })
-  useEffect(() => {
-    form.setFieldValue('typeId', type?.value ?? null)
-  }, [type])
+  useEffect(() => form.setFieldValue('typeId', type?.value), [type])
 
-  async function updateSongSection({ name, rehearsals, confidence }) {
+  const [bandMember, setBandMember] = useState<BandMember>(section.bandMember)
+  useEffect(() => form.setFieldValue('bandMemberId', bandMember?.id), [bandMember])
+
+  const [instrument, setInstrument] = useState<ComboboxItem>(
+    section.instrument
+      ? {
+          value: section.instrument.id,
+          label: section.instrument.name
+        }
+      : undefined
+  )
+  useEffect(() => form.setFieldValue('instrumentId', instrument?.value), [instrument])
+
+  async function updateSongSection({ name, rehearsals, confidence, bandMemberId, instrumentId }: EditSongSectionForm) {
     name = name.trim()
 
     if (rehearsalsError) return
@@ -80,8 +104,10 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
       id: section.id,
       typeId: type.value,
       name: name,
-      rehearsals: rehearsals,
-      confidence: confidence
+      rehearsals: typeof rehearsals !== 'string' ? rehearsals : section.rehearsals,
+      confidence: confidence,
+      bandMemberId: bandMemberId,
+      instrumentId: instrumentId
     }).unwrap()
 
     onClose()
@@ -123,6 +149,15 @@ function EditSongSectionModal({ opened, onClose, section }: EditSongSectionModal
                 {...form.getInputProps('rehearsals')}
                 error={rehearsalsError}
               />
+            </Group>
+
+            <Group>
+              <BandMemberSelect
+                bandMember={bandMember}
+                setBandMember={setBandMember}
+                bandMembers={bandMembers === null ? [] : bandMembers}
+              />
+              <InstrumentSelect option={instrument} onOptionChange={setInstrument} flex={1} />
             </Group>
 
             <Stack gap={0}>
