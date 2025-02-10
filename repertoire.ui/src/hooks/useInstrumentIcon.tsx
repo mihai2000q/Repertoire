@@ -12,6 +12,7 @@ import CustomIconUkulele from '../components/@ui/icons/CustomIconUkulele.tsx'
 import CustomIconBass from '../components/@ui/icons/CustomIconBass.tsx'
 import CustomIconKingVGuitar from '../components/@ui/icons/CustomIconKingVGuitar.tsx'
 import CustomIconTriangleMusic from '../components/@ui/icons/CustomIconTriangleMusic.tsx'
+import { Instrument } from '../types/models/Song.ts'
 
 const instrumentIcons = new Map<string, ReactNode>([
   ['Voice', <CustomIconVoice key={'voice'} size={'100%'} />],
@@ -29,7 +30,13 @@ const instrumentIcons = new Map<string, ReactNode>([
 ])
 
 export default function useInstrumentIcon() {
-  function getInstrumentIcon(instrumentName: string | null | undefined): ReactNode {
+  function getInstrumentIcon(instrument: string | null | undefined | Instrument): ReactNode {
+    const instrumentName: string | null =
+      (instrument as Instrument)?.name !== undefined
+        ? (instrument as Instrument).name
+        : typeof instrument === 'string'
+          ? instrument
+          : null
     return instrumentIcons.get(instrumentName) ?? <CustomIconTriangleMusic size={'100%'} />
   }
 
