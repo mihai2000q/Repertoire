@@ -1,11 +1,12 @@
 import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
 import SongSectionCard from './SongSectionCard.tsx'
-import { SongSection } from './../../types/models/Song.ts'
+import { Instrument, SongSection } from './../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
+import { BandMember } from '../../types/models/Artist.ts'
 
 describe('Song Section Card', () => {
   const section: SongSection = {
@@ -22,7 +23,10 @@ describe('Song Section Card', () => {
   }
 
   const handlers = [
-    http.get(`/songs/sections/types`, async () => {
+    http.get(`/songs/sections/types`, () => {
+      return HttpResponse.json([])
+    }),
+    http.get(`/songs/instruments`, () => {
       return HttpResponse.json([])
     })
   ]
@@ -35,7 +39,7 @@ describe('Song Section Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render', () => {
+  it('should render and display minimal info', () => {
     reduxRender(
       <SongSectionCard
         section={section}
@@ -51,6 +55,48 @@ describe('Song Section Card', () => {
     expect(screen.getByText(section.name)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
+  })
+
+  it('should render and display maximal info', async () => {
+    const user = userEvent.setup()
+
+    const bandMember: BandMember = {
+      id: '1',
+      name: 'Mike',
+      roles: [{ id: '1', name: 'Guitarist' }],
+      imageUrl: 'default.png'
+    }
+
+    const instrument: Instrument = {
+      id: '1',
+      name: 'Electric Guitar'
+    }
+
+    reduxRender(
+      <SongSectionCard
+        section={{
+          ...section,
+          bandMember: bandMember,
+          instrument: instrument
+        }}
+        songId={''}
+        maxSectionProgress={0}
+        showDetails={false}
+        isDragging={false}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+    expect(screen.getByLabelText('instrument-icon')).toBeInTheDocument()
+    expect(screen.getByText(section.name)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
+
+    await user.hover(screen.getByRole('img', { name: bandMember.name }))
+    expect(await screen.findByText(bandMember.name)).toBeInTheDocument()
+    expect(screen.getAllByRole('img', { name: bandMember.name })).toHaveLength(2)
+    expect(screen.getByText(bandMember.roles[0].name)).toBeInTheDocument()
   })
 
   it('should show details', async () => {

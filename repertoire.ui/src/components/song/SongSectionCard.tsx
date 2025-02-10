@@ -2,8 +2,11 @@ import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
+  Avatar,
+  Box,
   Collapse,
   Group,
+  HoverCard,
   Menu,
   NumberFormatter,
   Progress,
@@ -16,15 +19,21 @@ import {
   IconEdit,
   IconGripVertical,
   IconLocationPlus,
-  IconTrash
+  IconTrash,
+  IconUser
 } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useDeleteSongSectionMutation, useUpdateSongSectionMutation } from '../../state/api/songsApi.ts'
+import {
+  useDeleteSongSectionMutation,
+  useUpdateSongSectionMutation
+} from '../../state/api/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
+import { BandMember } from '../../types/models/Artist.ts'
+import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
 
 interface SongSectionCardProps {
   section: SongSectionModel
@@ -33,18 +42,22 @@ interface SongSectionCardProps {
   showDetails: boolean
   maxSectionProgress: number
   draggableProvided?: DraggableProvided
+  bandMembers?: BandMember[]
 }
 
 function SongSectionCard({
   section,
   songId,
   isDragging,
-  draggableProvided,
   showDetails,
-  maxSectionProgress
+  maxSectionProgress,
+  draggableProvided,
+  bandMembers
 }: SongSectionCardProps) {
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation] = useDeleteSongSectionMutation()
+
+  const getInstrumentIcon = useInstrumentIcon()
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
@@ -110,6 +123,52 @@ function SongSectionCard({
             >
               <IconGripVertical size={20} />
             </ActionIcon>
+
+            {section.bandMember && (
+              <HoverCard withArrow={true} openDelay={200} position="top" shadow={'md'}>
+                <HoverCard.Target>
+                  <Avatar
+                    size={25}
+                    color={section.bandMember.color}
+                    src={section.bandMember.imageUrl ?? section.bandMember.color}
+                    alt={section.bandMember.name}
+                  >
+                    <IconUser size={15} />
+                  </Avatar>
+                </HoverCard.Target>
+                <HoverCard.Dropdown>
+                  <Group gap={'xs'} maw={200} wrap={'nowrap'}>
+                    <Avatar
+                      size={60}
+                      color={section.bandMember.color}
+                      src={section.bandMember.imageUrl ?? section.bandMember.color}
+                      alt={section.bandMember.name}
+                      style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                    >
+                      <IconUser size={30} />
+                    </Avatar>
+                    <Stack gap={0}>
+                      <Text fw={500} lineClamp={2}>
+                        {section.bandMember.name}
+                      </Text>
+                      {section.bandMember.roles.slice(0, 2).map((role, index) => (
+                        <Text key={role.id} c={'dimmed'} fz={'xs'} lineClamp={1} lh={1.05}>
+                          {role.name}{index === 1 && section.bandMember.roles.length > 2 && ' ...'}
+                        </Text>
+                      ))}
+                    </Stack>
+                  </Group>
+                </HoverCard.Dropdown>
+              </HoverCard>
+            )}
+
+            {section.instrument && (
+              <Box aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>
+                <Tooltip openDelay={200} label={section.instrument?.name} withArrow>
+                  {getInstrumentIcon(section.instrument)}
+                </Tooltip>
+              </Box>
+            )}
 
             <Text inline fw={600}>
               {section.songSectionType.name}
