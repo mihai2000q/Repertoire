@@ -115,7 +115,7 @@ const artistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Artists']
+      invalidatesTags: ['Artists', 'Songs']
     }),
     updateBandMember: build.mutation<HttpMessageResponse, UpdateBandMemberRequest>({
       query: (body) => ({
