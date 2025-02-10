@@ -17,7 +17,7 @@ interface PlaylistCardProps {
 function PlaylistCard({ playlist }: PlaylistCardProps) {
   const navigate = useNavigate()
 
-  const [deletePlaylistMutation] = useDeletePlaylistMutation()
+  const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
   const [isImageHovered, setIsImageHovered] = useState(false)
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
@@ -29,8 +29,8 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
     navigate(`/playlist/${playlist.id}`)
   }
 
-  function handleDelete() {
-    deletePlaylistMutation(playlist.id)
+  async function handleDelete() {
+    await deletePlaylistMutation(playlist.id).unwrap()
     toast.success(`${playlist.title} deleted!`)
   }
 
@@ -91,6 +91,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
           </Group>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )

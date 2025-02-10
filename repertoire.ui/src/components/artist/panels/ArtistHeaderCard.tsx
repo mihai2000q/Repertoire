@@ -30,7 +30,7 @@ function ArtistHeaderCard({
 }: ArtistHeaderCardProps) {
   const navigate = useNavigate()
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
 
@@ -40,12 +40,12 @@ function ArtistHeaderCard({
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleDelete() {
-    deleteArtistMutation({
+  async function handleDelete() {
+    await deleteArtistMutation({
       id: artist.id,
       withAlbums: deleteWithAssociations,
       withSongs: deleteWithAssociations
-    })
+    }).unwrap()
     navigate(`/artists`, { replace: true })
     toast.success(`${artist.name} deleted!`)
   }
@@ -140,6 +140,7 @@ function ArtistHeaderCard({
               </Stack>
             }
             onYes={handleDelete}
+            isLoading={isDeleteLoading}
           />
         </>
       )}

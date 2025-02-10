@@ -41,7 +41,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         <Avatar
           size={24}
           color={bandMember.color}
-          src={bandMember.imageUrl ?? bandMember.color}
+          src={bandMember.imageUrl ?? null}
           alt={bandMember.name}
         >
           <IconUser size={15} />
@@ -52,7 +52,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
           <Avatar
             size={'lg'}
             color={bandMember.color}
-            src={bandMember.imageUrl ?? bandMember.color}
+            src={bandMember.imageUrl ?? null}
             alt={bandMember.name}
           >
             <IconUser size={30} />

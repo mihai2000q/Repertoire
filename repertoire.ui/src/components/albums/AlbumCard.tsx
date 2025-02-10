@@ -1,5 +1,5 @@
 import Album from '../../types/models/Album.ts'
-import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
+import { AspectRatio, Checkbox, Group, Image, Menu, Stack, Text } from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
@@ -20,7 +20,8 @@ function AlbumCard({ album }: AlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteAlbumMutation] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
+
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   const [isImageHovered, setIsImageHovered] = useState(false)
@@ -129,6 +130,7 @@ function AlbumCard({ album }: AlbumCardProps) {
           </Stack>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )

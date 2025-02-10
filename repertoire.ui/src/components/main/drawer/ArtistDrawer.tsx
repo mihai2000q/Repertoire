@@ -23,7 +23,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconDotsVertical, IconEye, IconTrash, IconUser } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
@@ -44,7 +44,7 @@ function ArtistDrawer() {
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
@@ -78,8 +78,8 @@ function ArtistDrawer() {
     navigate(`/artist/${artist.id}`)
   }
 
-  function handleDelete() {
-    deleteArtistMutation({ id: artist.id })
+  async function handleDelete() {
+    await deleteArtistMutation({ id: artist.id }).unwrap()
     dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${artist.name} deleted!`)
@@ -257,6 +257,7 @@ function ArtistDrawer() {
         title={'Delete Artist'}
         description={`Are you sure you want to delete this artist?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </RightSideEntityDrawer>
   )

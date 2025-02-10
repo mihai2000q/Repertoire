@@ -61,7 +61,7 @@ function SongDrawer() {
   }
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
-  const [deleteSongMutation] = useDeleteSongMutation()
+  const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   useEffect(() => {
     if (song && opened && !isFetching)
@@ -91,8 +91,8 @@ function SongDrawer() {
     navigate(`/song/${songId}`)
   }
 
-  function handleDelete() {
-    deleteSongMutation(song.id)
+  async function handleDelete() {
+    await deleteSongMutation(song.id).unwrap()
     dispatch(deleteSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${song.title} deleted!`)
@@ -424,6 +424,7 @@ function SongDrawer() {
         title={'Delete Song'}
         description={`Are you sure you want to delete this song?`}
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
       <YoutubeModal
         title={song.title}

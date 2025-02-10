@@ -1,5 +1,5 @@
 import Artist from '../../types/models/Artist.ts'
-import { Avatar, Group, Menu, Stack, Text } from '@mantine/core'
+import {Avatar, Checkbox, Group, Menu, Stack, Text} from '@mantine/core'
 import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -17,7 +17,7 @@ interface ArtistCardProps {
 function ArtistCard({ artist }: ArtistCardProps) {
   const navigate = useNavigate()
 
-  const [deleteArtistMutation] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
 
@@ -84,7 +84,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete Artist`}
+        title={'Delete Artist'}
         description={
           <Stack gap={'xs'}>
             <Group gap={4}>
@@ -105,6 +105,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
           </Stack>
         }
         onYes={handleDelete}
+        isLoading={isDeleteLoading}
       />
     </Stack>
   )
