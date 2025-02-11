@@ -210,8 +210,8 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist, order }: ArtistSo
         onClose={closeRemoveWarning}
         title={`Remove Song`}
         description={
-          <Stack gap={4}>
-            <Group gap={4}>
+          <Stack gap={'xxs'}>
+            <Group gap={'xxs'}>
               <Text>Are you sure you want to remove</Text>
               <Text fw={600}>{song.title}</Text>
               <Text>from this artist?</Text>

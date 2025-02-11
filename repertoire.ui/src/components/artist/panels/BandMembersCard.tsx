@@ -71,7 +71,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
           <Text fw={600}>Band Members</Text>
 
           {bandMembers.length > 0 && (
-            <Group gap={4}>
+            <Group gap={'xxs'}>
               <ActionIcon
                 aria-label={'back-button'}
                 size={'sm'}
@@ -160,7 +160,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
                 aria-label={`add-new-band-member-card`}
                 align={'center'}
                 w={75}
-                gap={4}
+                gap={'xxs'}
                 sx={{
                   cursor: 'pointer',
                   transition: '0.3s',

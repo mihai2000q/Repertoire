@@ -158,12 +158,12 @@ function SongDrawer() {
           </Box>
         </Box>
 
-        <Stack px={'md'} pb={'xs'} gap={4}>
+        <Stack px={'md'} pb={'xs'} gap={'xxs'}>
           <Title order={5} fw={700} lineClamp={2}>
             {song.title}
           </Title>
 
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             {song.artist && (
               <Group gap={'xs'}>
                 <Avatar

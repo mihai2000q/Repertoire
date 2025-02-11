@@ -28,7 +28,7 @@ function WarningModal({
       <Modal.Body px={'xs'} py={0}>
         <Stack>
           {typeof description === 'string' ? <Text fw={500}>{description}</Text> : description}
-          <Group gap={4} style={{ alignSelf: 'end' }}>
+          <Group gap={'xxs'} style={{ alignSelf: 'end' }}>
             <Button variant={'subtle'} onClick={onClose}>
               Cancel
             </Button>

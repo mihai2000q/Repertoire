@@ -78,7 +78,7 @@ function SongSectionsCard({ sections, songId, bandMembers }: SongSectionsCardPro
   return (
     <Card variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
-        <Group p={'md'} gap={4}>
+        <Group p={'md'} gap={'xxs'}>
           <Text fw={600} inline>
             Sections
           </Text>
@@ -159,11 +159,11 @@ function SongSectionsCard({ sections, songId, bandMembers }: SongSectionsCardPro
               </Popover.Target>
 
               <Popover.Dropdown>
-                <Group gap={4}>
+                <Group gap={'xxs'}>
                   <Text c={'dimmed'} fw={500} fz={'sm'}>
                     Increase sections&#39; rehearsals based on occurrences
                   </Text>
-                  <Group gap={4}>
+                  <Group gap={'xxs'}>
                     <ActionIcon
                       variant={'subtle'}
                       aria-label={'cancel-perfect-rehearsal'}

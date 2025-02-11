@@ -50,6 +50,9 @@ export const theme = createTheme({
     xl: '88em',
     xxl: '105em',
   },
+  spacing: {
+    xxs: rem(4)
+  },
 
   headings: {
     fontWeight: '500',

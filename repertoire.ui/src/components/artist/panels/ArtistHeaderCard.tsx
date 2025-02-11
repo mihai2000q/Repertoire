@@ -80,7 +80,7 @@ function ArtistHeaderCard({
           onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
         />
         <Stack
-          gap={4}
+          gap={'xxs'}
           style={{ ...(!isUnknownArtist && { alignSelf: 'start', paddingTop: '16px' }) }}
         >
           {!isUnknownArtist && (

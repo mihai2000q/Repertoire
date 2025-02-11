@@ -57,7 +57,7 @@ function Artists() {
 
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <Group gap={4}>
+      <Group gap={'xxs'}>
         <Title order={3} fw={800}>
           Artists
         </Title>

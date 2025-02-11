@@ -92,14 +92,14 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
             onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
           />
         </AspectRatio>
-        <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
+        <Stack gap={'xxs'} style={{ alignSelf: 'start' }} pt={'xs'}>
           <Text fw={500} inline>
             Song
           </Text>
           <Title order={1} fw={700} lineClamp={2}>
             {song.title}
           </Title>
-          <Group gap={4} wrap={'nowrap'}>
+          <Group gap={'xxs'} wrap={'nowrap'}>
             {song.artist && (
               <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar

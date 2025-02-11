@@ -7,7 +7,7 @@ function AlbumDrawerLoader() {
 
       <Stack px={'md'} pb={'md'} gap={6}>
         <Skeleton w={220} h={25} />
-        <Group gap={4}>
+        <Group gap={'xxs'}>
           <Skeleton radius={'50%'} w={35} h={35} />
           <Skeleton w={80} h={15} />
           <Skeleton w={35} h={15} />

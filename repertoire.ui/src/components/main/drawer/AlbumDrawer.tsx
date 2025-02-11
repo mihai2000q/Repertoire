@@ -125,12 +125,12 @@ function AlbumDrawer() {
           </Box>
         </Box>
 
-        <Stack px={'md'} pb={'md'} gap={4}>
+        <Stack px={'md'} pb={'md'} gap={'xxs'}>
           <Title order={5} fw={700} lineClamp={2}>
             {album.title}
           </Title>
 
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             {album.artist && (
               <>
                 <Group gap={6}>

@@ -16,7 +16,7 @@ function DifficultyBar({ difficulty, size = 5, ...props }: DifficultyBarProps) {
       openDelay={400}
       position={'top'}
     >
-      <Group grow gap={4} role={'progressbar'} aria-label={'difficulty'}>
+      <Group grow gap={'xxs'} role={'progressbar'} aria-label={'difficulty'}>
         {Array.from(Array(Object.entries(Difficulty).length)).map((_, i) => (
           <Progress
             key={i}

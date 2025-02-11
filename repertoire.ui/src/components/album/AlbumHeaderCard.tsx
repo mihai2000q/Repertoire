@@ -94,7 +94,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
           />
         </AspectRatio>
         <Stack
-          gap={4}
+          gap={'xxs'}
           style={{ ...(!isUnknownAlbum && { alignSelf: 'start', paddingTop: '10px' }) }}
         >
           {!isUnknownAlbum && (
@@ -111,7 +111,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
               {album.title}
             </Title>
           )}
-          <Group gap={4} wrap={'nowrap'}>
+          <Group gap={'xxs'} wrap={'nowrap'}>
             {album?.artist && (
               <>
                 <Group gap={'xs'} wrap={'nowrap'}>

@@ -128,8 +128,8 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: Artist
         onClose={closeRemoveWarning}
         title={`Remove Album`}
         description={
-          <Stack gap={4}>
-            <Group gap={4}>
+          <Stack gap={'xxs'}>
+            <Group gap={'xxs'}>
               <Text>Are you sure you want to remove</Text>
               <Text fw={600}>{album.title}</Text>
               <Text>from this artist?</Text>

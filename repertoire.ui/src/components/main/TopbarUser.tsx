@@ -46,7 +46,7 @@ function TopbarUser() {
             }
           })}
         >
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Avatar src={user.profilePictureUrl ?? userPlaceholder} />
             <IconCaretDownFilled size={12} />
           </Group>

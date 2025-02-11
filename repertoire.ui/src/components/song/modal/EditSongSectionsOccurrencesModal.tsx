@@ -77,7 +77,7 @@ function EditSongSectionsOccurrencesModal({
         <Stack>
           <Stack gap={'xs'}>
             {sections.map((section) => (
-              <Group key={section.id} aria-label={`section-${section.name}`} gap={4}>
+              <Group key={section.id} aria-label={`section-${section.name}`} gap={'xxs'}>
                 <TextInput
                   size={'xs'}
                   w={75}
@@ -93,7 +93,7 @@ function EditSongSectionsOccurrencesModal({
                   value={section.name}
                   readOnly={true}
                 />
-                <Group gap={4}>
+                <Group gap={'xxs'}>
                   <ActionIcon
                     aria-label={'decrease-occurrences'}
                     size={'sm'}
