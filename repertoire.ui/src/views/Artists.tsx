@@ -57,8 +57,8 @@ function Artists() {
 
   return (
     <Stack h={'100%'} gap={'xs'}>
-      <Group gap={4}>
-        <Title order={3} fw={800}>
+      <Group gap={'xxs'}>
+        <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Artists
         </Title>
         <ActionIcon
@@ -70,14 +70,14 @@ function Artists() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-artists'} variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'order-artists'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon aria-label={'filter-artists'} variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'filter-artists'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
-      {!isFetching && (
+      {!isLoading && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
           {artists?.totalCount + (showUnknownArtist ? 1 : 0)}

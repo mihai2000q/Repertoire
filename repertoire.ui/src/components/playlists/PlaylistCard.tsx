@@ -84,7 +84,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
         onClose={closeDeleteWarning}
         title={`Delete Playlist`}
         description={
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Text>Are you sure you want to delete</Text>
             <Text fw={600}>{playlist.title}</Text>
             <Text>?</Text>

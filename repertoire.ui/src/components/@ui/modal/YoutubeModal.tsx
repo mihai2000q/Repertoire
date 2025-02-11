@@ -9,7 +9,7 @@ interface YoutubeModalProps {
 
 function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
   return (
-    <Modal.Root opened={opened} onClose={onClose} size={'100%'} centered>
+    <Modal.Root opened={opened} onClose={onClose} size={'min(80vw, 1000px)'} centered>
       <Modal.Overlay />
       <Modal.Content>
         <Modal.Header>

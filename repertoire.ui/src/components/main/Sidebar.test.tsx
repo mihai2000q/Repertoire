@@ -5,10 +5,12 @@ import { AppShell } from '@mantine/core'
 import { UserEvent, userEvent } from '@testing-library/user-event'
 
 describe('Sidebar', () => {
-  const render = () => {
+  const render = (toggleSidebar: () => void = () => {}) => {
     routerRender(
-      <AppShell>
-        <Sidebar />
+      <AppShell
+        navbar={{ width: 200, breakpoint: 'sm', collapsed: { mobile: false, desktop: false } }}
+      >
+        <Sidebar toggleSidebar={toggleSidebar} />
       </AppShell>
     )
   }
@@ -42,4 +44,23 @@ describe('Sidebar', () => {
     expect(window.location.pathname).toMatch(link)
     expect(navLink).toHaveAttribute('data-active', 'true')
   }
+
+  it.skip('should display navigation menu button, when screen is small', async () => {
+    const userEventDispatcher = userEvent.setup()
+
+    const originalInnerWidth = window.innerWidth
+    vi.spyOn(window, 'innerWidth', 'get').mockImplementation(() => 500)
+
+    const toggleSidebar = vitest.fn()
+
+    render(toggleSidebar)
+
+    const button = screen.getByRole('button', { name: 'toggle-sidebar' })
+    expect(button).toBeInTheDocument()
+    await userEventDispatcher.click(button)
+    expect(toggleSidebar).toHaveBeenCalledOnce()
+
+    // restore
+    vi.spyOn(window, 'innerWidth', 'get').mockImplementation(() => originalInnerWidth)
+  })
 })

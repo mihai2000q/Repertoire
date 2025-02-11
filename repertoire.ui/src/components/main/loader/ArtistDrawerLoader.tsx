@@ -7,7 +7,7 @@ function ArtistDrawerLoader() {
 
       <Stack px={'md'} pb={'md'} gap={6}>
         <Skeleton w={200} h={25} />
-        <Group ml={2} gap={4}>
+        <Group ml={2} gap={'xxs'}>
           <Skeleton w={55} h={15} />
           <Skeleton w={45} h={15} />
         </Group>

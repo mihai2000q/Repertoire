@@ -140,12 +140,12 @@ function ArtistDrawer() {
           </Box>
         </Box>
 
-        <Stack px={'md'} pb={'md'} gap={4}>
+        <Stack px={'md'} pb={'md'} gap={'xxs'}>
           <Title order={5} fw={700} lh={1} lineClamp={2}>
             {artist.name}
           </Title>
 
-          <Group ml={2} gap={4}>
+          <Group ml={2} gap={'xxs'}>
             <Text fw={500} fz={'sm'} c={'dimmed'}>
               {artist.isBand
                 ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
@@ -166,7 +166,7 @@ function ArtistDrawer() {
 
           <Group align={'start'} px={6} gap={'sm'}>
             {artist.bandMembers.map((bandMember) => (
-              <Stack key={bandMember.id} align={'center'} gap={4} w={53}>
+              <Stack key={bandMember.id} align={'center'} gap={'xxs'} w={53}>
                 <Avatar
                   variant={'light'}
                   size={42}

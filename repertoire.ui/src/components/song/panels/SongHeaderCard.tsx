@@ -28,6 +28,7 @@ import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import titleFontSize from "../../../utils/titleFontSize.ts";
 
 interface SongHeaderCardProps {
   song: Song
@@ -80,7 +81,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            w={150}
+            w={'max(12vw, 150px)'}
             src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
             alt={song.title}
@@ -92,14 +93,19 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
             onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
           />
         </AspectRatio>
-        <Stack gap={4} style={{ alignSelf: 'start' }} pt={'xs'}>
+        <Stack gap={'xxs'}>
           <Text fw={500} inline>
             Song
           </Text>
-          <Title order={1} fw={700} lineClamp={2}>
+          <Title
+            order={1}
+            fw={700}
+            lineClamp={2}
+            fz={titleFontSize(song.title)}
+          >
             {song.title}
           </Title>
-          <Group gap={4} wrap={'nowrap'}>
+          <Group gap={'xxs'} wrap={'nowrap'}>
             {song.artist && (
               <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar

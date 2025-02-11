@@ -262,7 +262,7 @@ function SongSectionCard({
         onClose={closeDeleteWarning}
         title={`Delete Section`}
         description={
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Text>Are you sure you want to delete</Text>
             <Text fw={600}>{section.name}</Text>
             <Text>?</Text>
