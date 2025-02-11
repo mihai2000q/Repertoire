@@ -154,12 +154,23 @@ export const components = {
       px: 'lg',
       styles: (theme) => ({
         body: { flex: 'unset' },
+        section: {
+          [`@media(min-width: ${theme.breakpoints.xxl})`]: {
+            '& svg': {
+              width: '26px',
+              height: '26px',
+            }
+          }
+        },
         label: {
-          fontSize: theme.fontSizes.md,
+          fontSize: theme.fontSizes.sm,
           fontWeight: 500,
           [`@media(max-width: ${theme.breakpoints.sm})`]: {
             fontSize: theme.fontSizes.lg,
             fontWeight: 600
+          },
+          [`@media(min-width: ${theme.breakpoints.xxl})`]: {
+            fontSize: theme.fontSizes.md,
           }
         },
         root: {

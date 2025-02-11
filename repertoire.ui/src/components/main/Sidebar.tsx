@@ -71,13 +71,13 @@ function Sidebar({ toggleSidebar }: SidebarProps): ReactElement {
           </Title>
         </Group>
 
-        <Stack align={'center'}>
+        <Stack align={'center'} gap={2}>
           {sidebarLinks.map((sidebarLink) => (
             <NavLink
               key={sidebarLink.label}
+              role={'link'}
               label={sidebarLink.label}
               leftSection={sidebarLink.icon}
-              role={'link'}
               active={
                 location.pathname === sidebarLink.link ||
                 sidebarLink.subLinks.some((link) => location.pathname.startsWith(link))
