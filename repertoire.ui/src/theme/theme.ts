@@ -42,6 +42,14 @@ export const theme = createTheme({
     lg: '1.6',
     xl: '1.65'
   },
+  breakpoints: {
+    xs: '36em',
+    sm: '48em',
+    md: '62em',
+    lg: '75em',
+    xl: '88em',
+    xxl: '105em',
+  },
 
   headings: {
     fontWeight: '500',
