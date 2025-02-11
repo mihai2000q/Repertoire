@@ -43,14 +43,29 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
           variant={'grey'}
           size={'lg'}
           onClick={toggleSidebar}
+          style={{ order: 0 }}
         >
           <IconMenu2 />
         </ActionIcon>
 
-        <TopbarSearch w={'max(15vw, 200px)'} visibleFrom={'xs'} />
+        <TopbarSearch
+          w={'max(15vw, 200px)'}
+          sx={(theme) => ({
+            order: 1,
+            [`@media(max-width: ${theme.breakpoints.sm})`]: {
+              order: 3,
+              justifySelf: 'center'
+            }
+          })}
+        />
+
+        <Space hiddenFrom={'sm'} flex={1} style={{ order: 2 }} />
 
         {isDesktop && (
-          <Group gap={0} ml={'xs'}>
+          <Group gap={0} ml={'xs'} sx={(theme) => ({
+            order: 3,
+            [`@media(max-width: ${theme.breakpoints.sm})`]: { order: 1 }
+          })}>
             <ActionIcon
               aria-label={'back-button'}
               size={'lg'}
@@ -75,7 +90,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
           </Group>
         )}
 
-        <Space flex={1} />
+        <Space flex={1} style={{ order: 4 }} />
 
         <ActionIcon
           variant={'subtle'}
@@ -89,11 +104,12 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
               color: theme.colors.primary[6]
             }
           })}
+          style={{ order: 5 }}
         >
           <IconBellFilled size={18} />
         </ActionIcon>
 
-        <TopbarUser />
+        <TopbarUser style={{ order: 6 }} />
       </Group>
     </AppShell.Header>
   )

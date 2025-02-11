@@ -1,4 +1,14 @@
-import { alpha, Avatar, Group, Loader, Menu, Stack, Text, UnstyledButton } from '@mantine/core'
+import {
+  alpha,
+  Avatar,
+  Group,
+  Loader,
+  Menu,
+  Stack,
+  Text,
+  UnstyledButton,
+  UnstyledButtonProps
+} from '@mantine/core'
 import userPlaceholder from '../../assets/user-placeholder.jpg'
 import { IconCaretDownFilled, IconLogout2, IconSettings, IconUser } from '@tabler/icons-react'
 import AccountModal from './modal/AccountModal.tsx'
@@ -9,7 +19,7 @@ import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
 import { useAppDispatch } from '../../state/store.ts'
 
-function TopbarUser() {
+function TopbarUser({ ...others }: UnstyledButtonProps) {
   const dispatch = useAppDispatch()
 
   const { data: user } = useGetCurrentUserQuery(undefined, {
@@ -45,6 +55,7 @@ function TopbarUser() {
               transform: 'scale(0.85)'
             }
           })}
+          {...others}
         >
           <Group gap={'xxs'}>
             <Avatar src={user.profilePictureUrl ?? userPlaceholder} />
