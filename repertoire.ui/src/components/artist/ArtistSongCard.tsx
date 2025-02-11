@@ -25,7 +25,7 @@ import SongConfidenceBar from '../@ui/misc/SongConfidenceBar.tsx'
 import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
-import PerfectRehearsalMenuItem from "../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -132,51 +132,55 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist, order }: ArtistSo
                 </>
               )}
             </Group>
-            {order.property === SongProperty.ReleaseDate && (
-              <Tooltip
-                label={`Song was released on ${dayjs(song.releaseDate).format('DD MMMM YYYY')}`}
-                openDelay={400}
-                disabled={!song.releaseDate}
-              >
-                <Text fz={'xs'} c={'dimmed'}>
-                  {song.releaseDate && dayjs(song.releaseDate).format('D MMM YYYY')}
-                </Text>
-              </Tooltip>
-            )}
-            {order.property === SongProperty.Difficulty && (
-              <DifficultyBar difficulty={song.difficulty} maw={25} mt={4} />
-            )}
-            {order.property === SongProperty.Rehearsals && (
-              <Tooltip.Floating
-                role={'tooltip'}
-                label={
-                  <>
-                    Rehearsals: <NumberFormatter value={song.rehearsals} />
-                  </>
-                }
-              >
-                <Text fz={'xs'} c={'dimmed'}>
-                  <NumberFormatter value={song.rehearsals} />
-                </Text>
-              </Tooltip.Floating>
-            )}
-            {order.property === SongProperty.Confidence && (
-              <SongConfidenceBar confidence={song.confidence} w={100} mt={4} />
-            )}
-            {order.property === SongProperty.Progress && (
-              <SongProgressBar progress={song.progress} w={100} mt={4} />
-            )}
-            {order.property === SongProperty.LastTimePlayed && (
-              <Tooltip
-                label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('DD MMMM YYYY')}`}
-                openDelay={400}
-                disabled={!song.lastTimePlayed}
-              >
-                <Text fz={'xs'} c={'dimmed'}>
-                  {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('D MMM YYYY') : 'never'}
-                </Text>
-              </Tooltip>
-            )}
+            <Group>
+              {order.property === SongProperty.ReleaseDate && (
+                <Tooltip
+                  label={`Song was released on ${dayjs(song.releaseDate).format('DD MMMM YYYY')}`}
+                  openDelay={400}
+                  disabled={!song.releaseDate}
+                >
+                  <Text fz={'xs'} c={'dimmed'}>
+                    {song.releaseDate && dayjs(song.releaseDate).format('D MMM YYYY')}
+                  </Text>
+                </Tooltip>
+              )}
+              {order.property === SongProperty.Difficulty && (
+                <DifficultyBar difficulty={song.difficulty} w={25} mt={4} />
+              )}
+              {order.property === SongProperty.Rehearsals && (
+                <Tooltip.Floating
+                  role={'tooltip'}
+                  label={
+                    <>
+                      Rehearsals: <NumberFormatter value={song.rehearsals} />
+                    </>
+                  }
+                >
+                  <Text fz={'xs'} c={'dimmed'}>
+                    <NumberFormatter value={song.rehearsals} />
+                  </Text>
+                </Tooltip.Floating>
+              )}
+              {order.property === SongProperty.Confidence && (
+                <SongConfidenceBar confidence={song.confidence} w={100} mt={4} />
+              )}
+              {order.property === SongProperty.Progress && (
+                <SongProgressBar progress={song.progress} w={100} mt={4} />
+              )}
+              {order.property === SongProperty.LastTimePlayed && (
+                <Tooltip
+                  label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('DD MMMM YYYY')}`}
+                  openDelay={400}
+                  disabled={!song.lastTimePlayed}
+                >
+                  <Text fz={'xs'} c={'dimmed'}>
+                    {song.lastTimePlayed
+                      ? dayjs(song.lastTimePlayed).format('D MMM YYYY')
+                      : 'never'}
+                  </Text>
+                </Tooltip>
+              )}
+            </Group>
           </Stack>
 
           <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
