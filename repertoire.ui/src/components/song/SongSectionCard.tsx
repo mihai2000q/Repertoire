@@ -70,6 +70,8 @@ function SongSectionCard({
     updateSongSectionMutation({
       ...section,
       typeId: section.songSectionType.id,
+      bandMemberId: section.bandMember?.id,
+      instrumentId: section.instrument?.id,
       rehearsals: section.rehearsals + 1
     })
   }
