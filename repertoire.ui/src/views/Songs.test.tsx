@@ -94,7 +94,9 @@ describe('Songs', () => {
     expect(screen.getByRole('heading', { name: /songs/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-song/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-songs/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filter-songs/i })).toBeDisabled()
     expect(screen.getByTestId('songs-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-song-card')).toBeInTheDocument()
@@ -106,6 +108,8 @@ describe('Songs', () => {
       expect(screen.getByLabelText(`song-card-${song.title}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('songs-pagination')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-songs/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /filter-songs/i })).not.toBeDisabled()
   })
 
   it('should open the add new song modal when clicking the new song button', async () => {

@@ -82,7 +82,9 @@ describe('Playlists', () => {
     expect(screen.getByRole('heading', { name: /playlists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-playlists/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-playlists/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-playlists/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filter-playlists/i })).toBeDisabled()
     expect(screen.getByTestId('playlists-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-playlist-card')).toBeInTheDocument()
@@ -94,6 +96,8 @@ describe('Playlists', () => {
       expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('playlists-pagination')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-playlists/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /filter-playlists/i })).not.toBeDisabled()
   })
 
   it('should open the add new playlist modal when clicking the new playlist button', async () => {
