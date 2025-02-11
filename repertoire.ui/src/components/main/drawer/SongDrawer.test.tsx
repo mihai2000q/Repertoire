@@ -337,7 +337,7 @@ describe('Song Drawer', () => {
 
     const localSong = {
       ...song,
-      youtubeLink: 'https://www.youtube.com/watch?v=123456789'
+      youtubeLink: 'https://www.youtube.com/watch?v=E0ozmU9cJDg'
     }
 
     server.use(
