@@ -34,7 +34,11 @@ import CustomIconArrowLeft from '../@ui/icons/CustomIconArrowLeft.tsx'
 import CustomIconArrowRight from '../@ui/icons/CustomIconArrowRight.tsx'
 import SettingsModal from './modal/SettingsModal.tsx'
 
-function Topbar(): ReactElement {
+interface TopbarProps {
+  toggleSidebar: () => void
+}
+
+function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const isDesktop = useIsDesktop()
@@ -92,6 +96,15 @@ function Topbar(): ReactElement {
             }
           })}
         />
+        <ActionIcon
+          hiddenFrom={'sm'}
+          aria-label={'toggle-sidebar'}
+          variant={'grey'}
+          size={'lg'}
+          onClick={toggleSidebar}
+        >
+          <IconMenu2 />
+        </ActionIcon>
 
         {isDesktop && (
           <Group gap={0} ml={'xs'}>

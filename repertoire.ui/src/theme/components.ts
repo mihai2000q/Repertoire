@@ -152,9 +152,22 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
-      fw: 500,
       styles: (theme) => ({
+        body: { flex: 'unset' },
+        label: {
+          fontSize: theme.fontSizes.md,
+          fontWeight: 500,
+          [`@media(max-width: ${theme.breakpoints.sm})`]: {
+            fontSize: theme.fontSizes.lg,
+            fontWeight: 600
+          }
+        },
         root: {
+          [`@media(max-width: ${theme.breakpoints.sm})`]: {
+            justifyContent: 'center',
+            width: 'max(60vw, 200px)'
+          },
+
           borderRadius: '16px',
           transition: '0.25s',
           color: theme.colors.gray[6],
