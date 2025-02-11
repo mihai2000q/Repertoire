@@ -1,76 +1,79 @@
 -- +goose Up
 -- +goose StatementBegin
 
--- to preserve the order of types, we decided to remove them all and add them again
-DELETE FROM public.song_section_types WHERE true;
+-- insert new types and reorder the old ones
+DO
+$$
+    DECLARE
+        current_user_id uuid;
+    BEGIN
+        -- Loop through users
+        FOR current_user_id IN (SELECT id FROM public.users)
+            LOOP
+                INSERT INTO public.song_section_types
+                VALUES (gen_random_uuid(), 'Pre-Chorus', 2, current_user_id),
+                       (gen_random_uuid(), 'Bridge', 6, current_user_id);
+            END LOOP;
+    END
+$$;
 
--- define new Song Section Types' names
-WITH section_types AS (
-    SELECT unnest(ARRAY[
-        'Intro', 'Verse', 'Pre-Chorus', 'Chorus', 'Interlude',
-        'Bridge', 'Breakdown', 'Solo', 'Riff', 'Outro'
-    ]) AS name,
-    generate_series(0, 9) AS name_order
-),
+UPDATE public.song_section_types
+SET "order" = 3
+WHERE name = 'Chorus';
 
--- generate a sequence of order indices for each user instrument together with the name
-user_section_types AS (
-    SELECT
-        users.id AS user_id,
-        section_types.name,
-        section_types.name_order AS order_index
-    FROM
-        users
-    CROSS JOIN
-        section_types
-)
+UPDATE public.song_section_types
+SET "order" = 4
+WHERE name = 'Interlude';
 
--- Insert new user instruments
-INSERT INTO public.song_section_types (id, name, "order", user_id)
-SELECT
-    gen_random_uuid() AS id,
-    us.name,
-    us.order_index,
-    us.user_id
-FROM
-    user_section_types us;
+UPDATE public.song_section_types
+SET "order" = 5
+WHERE name = 'Breakdown';
+
+UPDATE public.song_section_types
+SET "order" = 7
+WHERE name = 'Solo';
+
+UPDATE public.song_section_types
+SET "order" = 8
+WHERE name = 'Riff';
+
+UPDATE public.song_section_types
+SET "order" = 9
+WHERE name = 'Outro';
 
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 
--- to preserve the order of types, remove them all and add them again
-DELETE FROM public.song_section_types WHERE true;
+-- remove new types and reorder
+DELETE
+FROM public.song_section_types
+WHERE name = 'Pre-Chorus'
+   OR name = 'Bridge';
 
--- define old Song Section Types' names
-WITH section_types AS (
-    SELECT unnest(ARRAY[
-        'Intro', 'Verse', 'Chorus', 'Interlude', 'Breakdown', 'Solo', 'Riff', 'Outro'
-    ]) AS name,
-    generate_series(0, 9) AS name_order
-),
+UPDATE public.song_section_types
+SET "order" = 2
+WHERE name = 'Chorus';
 
--- generate a sequence of order indices for each user song section type together with the name
-     user_section_types AS (
-         SELECT
-             users.id AS user_id,
-             section_types.name,
-             section_types.name_order AS order_index
-         FROM
-             users
-                 CROSS JOIN
-             section_types
-     )
+UPDATE public.song_section_types
+SET "order" = 3
+WHERE name = 'Interlude';
 
--- Insert new user song section types
-INSERT INTO public.song_section_types (id, name, "order", user_id)
-SELECT
-    gen_random_uuid() AS id,
-    us.name,
-    us.order_index,
-    us.user_id
-FROM
-    user_section_types us;
+UPDATE public.song_section_types
+SET "order" = 4
+WHERE name = 'Breakdown';
+
+UPDATE public.song_section_types
+SET "order" = 5
+WHERE name = 'Solo';
+
+UPDATE public.song_section_types
+SET "order" = 6
+WHERE name = 'Riff';
+
+UPDATE public.song_section_types
+SET "order" = 7
+WHERE name = 'Outro';
 
 -- +goose StatementEnd
