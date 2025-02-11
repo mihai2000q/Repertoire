@@ -55,6 +55,7 @@ function Sidebar({ toggleSidebar }: SidebarProps): ReactElement {
       <Stack pos={'relative'} gap={0}>
         <Group hiddenFrom={'sm'} pos={'relative'} mb={'lg'}>
           <ActionIcon
+            aria-label={'toggle-sidebar'}
             variant={'grey'}
             size={'xl'}
             pos={'absolute'}

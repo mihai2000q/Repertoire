@@ -1,5 +1,5 @@
 import User from '../../types/models/User.ts'
-import { emptyUser, reduxRender } from '../../test-utils.tsx'
+import { emptyUser, reduxRouterRender } from '../../test-utils.tsx'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
@@ -8,6 +8,8 @@ import { RootState } from '../../state/store.ts'
 import TopbarUser from './TopbarUser.tsx'
 
 describe('Topbar User', () => {
+  const render = () => reduxRouterRender(<TopbarUser />, { auth: { token: 'some token' } })
+
   const user: User = {
     ...emptyUser,
     id: '1',
@@ -32,7 +34,7 @@ describe('Topbar User', () => {
   it('should display menu when clicking on the user button', async () => {
     const userEventDispatcher = userEvent.setup()
 
-    reduxRender(<TopbarUser />)
+    render()
 
     const userButton = await screen.findByRole('button', { name: 'user' })
     await userEventDispatcher.click(userButton)
@@ -48,7 +50,7 @@ describe('Topbar User', () => {
     it('should display account modal when clicking on account', async () => {
       const userEventDispatcher = userEvent.setup()
 
-      reduxRender(<TopbarUser />)
+      render()
 
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /account/i }))
@@ -59,7 +61,7 @@ describe('Topbar User', () => {
     it('should display settings modal when clicking on settings', async () => {
       const userEventDispatcher = userEvent.setup()
 
-      reduxRender(<TopbarUser />)
+      render()
 
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /settings/i }))
@@ -70,7 +72,7 @@ describe('Topbar User', () => {
     it('should sign out when clicking on sign out', async () => {
       const userEventDispatcher = userEvent.setup()
 
-      const [_, store] = reduxRender(<TopbarUser />)
+      const [_, store] = render()
 
       await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
       await userEventDispatcher.click(screen.getByRole('menuitem', { name: /sign out/i }))
