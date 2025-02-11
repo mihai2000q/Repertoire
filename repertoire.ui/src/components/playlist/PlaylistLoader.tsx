@@ -5,7 +5,7 @@ function PlaylistLoader() {
     <Stack data-testid={'playlist-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'lg'} w={150} h={150} />
-        <Stack gap={4} pt={'md'}>
+        <Stack gap={'xxs'} pt={'md'}>
           <Skeleton w={80} h={15} />
           <Skeleton w={200} h={45} my={4} />
           <Skeleton w={85} h={15} />

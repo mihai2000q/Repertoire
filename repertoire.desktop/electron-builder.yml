@@ -19,11 +19,10 @@ win:
 nsis:
   allowToChangeInstallationDirectory: true
   artifactName: ${name}-${version}-setup.${ext}
-  createDesktopShortcut: true
   oneClick: false
   perMachine: true
   shortcutName: ${productName}
-  uninstallDisplayName: ${productName}-${version}
+  uninstallDisplayName: ${productName}
 mac:
   target: dmg
   entitlementsInherit: build/entitlements.mac.plist

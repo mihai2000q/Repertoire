@@ -71,7 +71,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             src={album.imageUrl ?? albumPlaceholder}
             alt={album.title}
           />
-          <Stack gap={4}>
+          <Stack gap={'xxs'}>
             <Text inline fw={500} lineClamp={2}>
               {album.title}
             </Text>

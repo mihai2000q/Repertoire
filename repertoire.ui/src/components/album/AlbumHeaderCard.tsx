@@ -29,6 +29,7 @@ import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
+import titleFontSize from "../../utils/titleFontSize.ts";
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -81,7 +82,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            w={150}
+            w={'max(12vw, 150px)'}
             src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
             fallbackSrc={albumPlaceholder}
             radius={'lg'}
@@ -93,25 +94,22 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             onClick={!isUnknownAlbum && album.imageUrl ? openImage : undefined}
           />
         </AspectRatio>
-        <Stack
-          gap={4}
-          style={{ ...(!isUnknownAlbum && { alignSelf: 'start', paddingTop: '10px' }) }}
-        >
+        <Stack gap={'xxs'}>
           {!isUnknownAlbum && (
             <Text fw={500} inline>
               Album
             </Text>
           )}
           {isUnknownAlbum ? (
-            <Title order={3} fw={200} fs={'italic'}>
+            <Title order={3} fw={200} fs={'italic'} fz={'max(2.5vw, 32px)'}>
               Unknown
             </Title>
           ) : (
-            <Title order={1} fw={700} lineClamp={2}>
+            <Title order={1} fw={700} lineClamp={2} fz={titleFontSize(album.title)}>
               {album.title}
             </Title>
           )}
-          <Group gap={4} wrap={'nowrap'}>
+          <Group gap={'xxs'} wrap={'nowrap'}>
             {album?.artist && (
               <>
                 <Group gap={'xs'} wrap={'nowrap'}>
@@ -152,7 +150,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                 </Text>
               </>
             )}
-            <Text fw={500} c={'dimmed'}>
+            <Text fw={500} c={'dimmed'} truncate={'end'}>
               {isUnknownAlbum ? songsTotalCount : album.songs.length} song
               {plural(isUnknownAlbum ? songsTotalCount : album.songs)}
             </Text>

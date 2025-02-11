@@ -66,7 +66,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             onClick={playlist.imageUrl && openImage}
           />
         </AspectRatio>
-        <Stack gap={4} pt={'md'} style={{ alignSelf: 'start' }}>
+        <Stack gap={'xxs'} pt={'md'} style={{ alignSelf: 'start' }}>
           <Text fw={500} inline>
             Playlist
           </Text>

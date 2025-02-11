@@ -8,10 +8,10 @@ function ArtistLoader() {
     <Stack data-testid={'artist-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'50%'} w={125} h={125} />
-        <Stack gap={4} pt={'16px'}>
+        <Stack gap={'xxs'} pt={'16px'}>
           <Skeleton w={80} h={15} />
           <Skeleton w={200} h={37} my={6} />
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Skeleton w={75} h={16} />
             <Skeleton w={55} h={16} />
             <Skeleton w={45} h={16} />

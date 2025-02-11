@@ -118,7 +118,7 @@ function PlaylistSongCard({
           />
 
           <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
-            <Group gap={4}>
+            <Group gap={'xxs'}>
               <Text fw={500} truncate={'end'}>
                 {song.title}
               </Text>
@@ -179,8 +179,8 @@ function PlaylistSongCard({
         onClose={closeRemoveWarning}
         title={`Remove Song`}
         description={
-          <Stack gap={4}>
-            <Group gap={4}>
+          <Stack gap={'xxs'}>
+            <Group gap={'xxs'}>
               <Text>Are you sure you want to remove</Text>
               <Text fw={600}>{song.title}</Text>
               <Text>from this playlist?</Text>

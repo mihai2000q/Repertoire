@@ -14,7 +14,6 @@ import {
 } from '../../../state/api/artistsApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../@ui/form/select/BandMemberRoleMultiSelect.tsx'
-import { useDidUpdate } from '@mantine/hooks'
 import ColorInputButton from '../../@ui/form/input/ColorInputButton.tsx'
 import bandMemberColorSwatches from '../../../data/artist/bandMemberColorSwatches.ts'
 
@@ -33,7 +32,6 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
   const [color, setColor] = useState<string>()
   const [roleIds, setRoleIds] = useState<string[]>([])
   const [rolesError, setRolesError] = useState<boolean>(false)
-  useDidUpdate(() => setRolesError(roleIds.length === 0), [roleIds])
 
   const onCloseWithImage = () => {
     onClose()
@@ -112,7 +110,10 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
 
                 <BandMemberRoleMultiSelect
                   ids={roleIds}
-                  setIds={setRoleIds}
+                  setIds={(ids) => {
+                    setRoleIds(ids)
+                    setRolesError(ids.length === 0)
+                  }}
                   label={'Roles'}
                   placeholder={'Select roles'}
                   withAsterisk

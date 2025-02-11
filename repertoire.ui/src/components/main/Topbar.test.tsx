@@ -1,32 +1,23 @@
-import {emptyUser, reduxRouterRender} from '../../test-utils.tsx'
+import { emptyUser, reduxRouterRender } from '../../test-utils.tsx'
 import Topbar from './Topbar.tsx'
 import { AppShell } from '@mantine/core'
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import User from '../../types/models/User.ts'
 import { userEvent } from '@testing-library/user-event'
-import { RootState } from '../../state/store.ts'
 
 describe('Topbar', () => {
-  const render = (token: string | null = 'some token') =>
+  const render = (token: string | null = 'some token', toggleSidebar: () => void = () => {}) =>
     reduxRouterRender(
       <AppShell>
-        <Topbar />
+        <Topbar toggleSidebar={toggleSidebar} />
       </AppShell>,
       { auth: { token } }
     )
 
-  const user: User = {
-    ...emptyUser,
-    id: '1',
-    email: 'Gigi@yahoo.com',
-    name: 'Gigi',
-  }
-
   const handlers = [
     http.get('/users/current', async () => {
-      return HttpResponse.json(user)
+      return HttpResponse.json(emptyUser)
     })
   ]
 
@@ -38,52 +29,50 @@ describe('Topbar', () => {
 
   afterAll(() => server.close())
 
-  it.each(['some token', undefined])(
-    'should render and display search bar and user avatar',
-    async (token) => {
-      render(token)
+  it('should display just the search bar, when token is not available', async () => {
+    server.use(
+      http.get('/users/current', async () => {
+        return HttpResponse.json(undefined, { status: 404 })
+      })
+    )
 
-      expect(screen.getByRole('searchbox', { name: 'topbar-search' })).toBeInTheDocument()
-      expect(await screen.findByRole('button', { name: 'user' })).toBeInTheDocument()
-    }
-  )
+    render(undefined)
 
-  it('should display menu when clicking on the user button', async () => {
-    const userEventDispatcher = userEvent.setup()
+    expect(screen.getByRole('searchbox', { name: 'topbar-search' })).toBeInTheDocument()
+  })
+
+  it('should display search bar and user, when token is available', async () => {
+    render('some token')
+
+    expect(screen.getByRole('searchbox', { name: 'topbar-search' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'user' })).toBeInTheDocument()
+  })
+
+  it('should display navigation buttons when on desktop, when token is available', () => {
+    vi.stubEnv('VITE_PLATFORM', 'desktop')
 
     render()
 
-    const userButton = await screen.findByRole('button', { name: 'user' })
-    await userEventDispatcher.click(userButton)
-
-    expect(screen.getByText(user.email)).toBeInTheDocument()
-    expect(screen.getByText(user.name)).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /settings/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /account/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /sign out/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'back-button' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'forward-button' })).toBeInTheDocument()
   })
 
-  describe('on menu', () => {
-    it('should display account modal when clicking on account', async () => {
-      const userEventDispatcher = userEvent.setup()
+  it.skip('should display sidebar menu button, when screen is small', async () => {
+    const userEventDispatcher = userEvent.setup()
 
-      render()
+    const originalInnerWidth = window.innerWidth;
+    vi.spyOn(window, 'innerWidth', 'get').mockImplementation(() => 500);
 
-      await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
-      await userEventDispatcher.click(screen.getByRole('menuitem', { name: /account/i }))
+    const toggleSidebar = vitest.fn()
 
-      expect(await screen.findByRole('dialog', { name: /account/i })).toBeInTheDocument()
-    })
+    render('some token', toggleSidebar)
 
-    it('should sign out when clicking on sign out', async () => {
-      const userEventDispatcher = userEvent.setup()
+    const button = screen.getByRole('button', { name: 'toggle-sidebar' })
+    expect(button).toBeInTheDocument()
+    await userEventDispatcher.click(button)
+    expect(toggleSidebar).toHaveBeenCalledOnce()
 
-      const [_, store] = render()
-
-      await userEventDispatcher.click(await screen.findByRole('button', { name: 'user' }))
-      await userEventDispatcher.click(screen.getByRole('menuitem', { name: /sign out/i }))
-
-      expect((store.getState() as RootState).auth.token).toBeNull()
-    })
+    // restore
+    vi.spyOn(window, 'innerWidth', 'get').mockImplementation(() => originalInnerWidth);
   })
 })

@@ -123,7 +123,7 @@ function EditSongSectionModal({
 
           <Stack>
             <TextInput
-              maxLength={100}
+              maxLength={30}
               label="Name"
               placeholder="The name of the song"
               key={form.key('name')}

@@ -9,7 +9,7 @@ function BandMembersLoader() {
         </Group>
         <Group gap={'xs'} wrap={'nowrap'} align={'start'} px={'lg'} pb={'lg'} pt={'xs'}>
           {Array.from(Array(20)).map((_, i) => (
-            <Stack key={i} w={75} gap={4} align={'center'}>
+            <Stack key={i} w={75} gap={'xxs'} align={'center'}>
               <Skeleton radius={'50%'} w={55} h={55} />
               <Stack gap={3} align={'center'}>
                 <Skeleton w={75} h={10} />

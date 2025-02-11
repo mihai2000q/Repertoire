@@ -57,8 +57,8 @@ function Albums() {
 
   return (
     <Stack h={'100%'} gap={'xs'} px={'xl'}>
-      <Group gap={4}>
-        <Title order={3} fw={800}>
+      <Group gap={'xxs'}>
+        <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Albums
         </Title>
         <ActionIcon
@@ -70,14 +70,14 @@ function Albums() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-albums'} variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'order-albums'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon aria-label={'filter-albums'} variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'filter-albums'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
-      {!isFetching && (
+      {!isLoading && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} albums out of {albums?.totalCount + (showUnknownAlbum ? 1 : 0)}
         </Text>
