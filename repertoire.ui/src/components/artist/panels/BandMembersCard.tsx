@@ -11,7 +11,7 @@ import {
   Text
 } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight, IconDots, IconUserPlus } from '@tabler/icons-react'
-import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure, useListState, useViewportSize } from '@mantine/hooks'
 import AddNewBandMemberModal from '../modal/AddNewBandMemberModal.tsx'
 import BandMemberCard from '../BandMemberCard.tsx'
 import { useRef, useState } from 'react'
@@ -28,12 +28,14 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
 
   const viewportRef = useRef<HTMLDivElement>(null)
 
+  const { width } = useViewportSize()
+
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
   useDidUpdate(() => {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
-  }, [viewportRef.current])
+  }, [viewportRef.current, width])
 
   const [internalMembers, { reorder, setState }] = useListState<BandMember>(bandMembers)
   useDidUpdate(() => setState(bandMembers), [bandMembers])
