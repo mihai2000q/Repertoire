@@ -8,6 +8,7 @@ import { setupServer } from 'msw/node'
 import { default as ArtistType } from './../types/models/Artist.ts'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
+import Album from "../types/models/Album.ts";
 
 describe('Artist', () => {
   const artist: ArtistType = {
@@ -30,7 +31,24 @@ describe('Artist', () => {
       return HttpResponse.json(a)
     })
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/songs', async () => {
+      const response: WithTotalCountResponse<Song> = {
+        models: [],
+        totalCount: 0
+      }
+      return HttpResponse.json(response)
+    }),
+    http.get('/albums', async () => {
+      const response: WithTotalCountResponse<Album> = {
+        models: [],
+        totalCount: 0
+      }
+      return HttpResponse.json(response)
+    }),
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
