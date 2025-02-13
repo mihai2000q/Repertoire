@@ -13,6 +13,7 @@ import Song, { SongSection } from './types/models/Song.ts'
 import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
 import User from './types/models/User.ts'
+import Playlist from "./types/models/Playlist.ts";
 
 // Custom Matchers
 
@@ -239,6 +240,15 @@ export const emptySong: Song = {
   createdAt: '',
   updatedAt: '',
   releaseDate: null
+}
+
+export const emptyPlaylist: Playlist = {
+  id: '',
+  title: '',
+  description: '',
+  songs: [],
+  createdAt: '',
+  updatedAt: '',
 }
 
 export const emptySongSection: SongSection = {

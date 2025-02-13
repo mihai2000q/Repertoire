@@ -1,5 +1,5 @@
 import Playlist from '../../types/models/Playlist'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
@@ -51,7 +51,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
               radius={'lg'}
               src={playlist.imageUrl}
               alt={playlist.title}
-              fallbackSrc={albumPlaceholder}
+              fallbackSrc={playlistPlaceholder}
               onClick={handleClick}
               onContextMenu={openMenu}
               sx={(theme) => ({
