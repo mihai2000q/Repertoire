@@ -9,6 +9,10 @@ describe('Home', () => {
     const [_, store] = reduxRender(<Home />)
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/home/i)
-    expect(screen.getByRole('heading', { name: /home/i })).toBeInTheDocument()
+    expect(screen.getByLabelText('top')).toBeInTheDocument()
+    expect(screen.getByLabelText('genres')).toBeInTheDocument()
+    expect(screen.getByLabelText('recently-played-songs')).toBeInTheDocument()
+    expect(screen.getByLabelText('playlists')).toBeInTheDocument()
+    expect(screen.getByLabelText('top-artists')).toBeInTheDocument()
   })
 })

@@ -1,33 +1,33 @@
-import Album from '../../types/models/Album.ts'
+import Song from '../../../types/models/Song.ts'
 import { AspectRatio, Image, Stack, Text } from '@mantine/core'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { useState } from 'react'
-import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
-import { useAppDispatch } from '../../state/store.ts'
+import { openArtistDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
+import { useAppDispatch } from '../../../state/store.ts'
 
-interface HomeAlbumCardProps {
-  album: Album
+interface HomeSongCardProps {
+  song: Song
 }
 
-function HomeAlbumCard({ album }: HomeAlbumCardProps) {
+function HomeSongCard({ song }: HomeSongCardProps) {
   const dispatch = useAppDispatch()
 
   const [isImageHovered, setIsImageHovered] = useState(false)
 
   function handleClick() {
-    dispatch(openAlbumDrawer(album.id))
+    dispatch(openSongDrawer(song.id))
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(album.artist.id))
+    dispatch(openArtistDrawer(song.artist.id))
   }
 
   return (
     <Stack
-      aria-label={`album-card-${album.title}`}
+      aria-label={`song-card-${song.title}`}
       align={'center'}
       gap={0}
-      style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.05)' }) }}
+      style={{ transition: '0.25s', ...(isImageHovered && { transform: 'scale(1.05)' }) }}
       w={150}
     >
       <AspectRatio>
@@ -35,26 +35,24 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
           onMouseEnter={() => setIsImageHovered(true)}
           onMouseLeave={() => setIsImageHovered(false)}
           radius={'lg'}
-          src={album.imageUrl}
-          fallbackSrc={albumPlaceholder}
-          alt={album.title}
+          src={song.imageUrl ?? song.album?.imageUrl}
+          fallbackSrc={songPlaceholder}
+          alt={song.title}
           onClick={handleClick}
           sx={(theme) => ({
             cursor: 'pointer',
-            transition: '0.3s',
-            boxShadow: theme.shadows.xxl,
-            '&:hover': {
-              boxShadow: theme.shadows.xxl_hover
-            }
+            transition: '0.25s',
+            boxShadow: theme.shadows.xl,
+            '&:hover': { boxShadow: theme.shadows.xxl }
           })}
         />
       </AspectRatio>
 
       <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>
-          {album.title}
+          {song.title}
         </Text>
-        {album.artist && (
+        {song.artist && (
           <Text
             fw={500}
             ta={'center'}
@@ -66,7 +64,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
               '&:hover': { textDecoration: 'underline' }
             }}
           >
-            {album.artist.name}
+            {song.artist.name}
           </Text>
         )}
       </Stack>
@@ -74,4 +72,4 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
   )
 }
 
-export default HomeAlbumCard
+export default HomeSongCard
