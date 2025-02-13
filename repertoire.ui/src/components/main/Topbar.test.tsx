@@ -53,8 +53,8 @@ describe('Topbar', () => {
 
     render()
 
-    expect(screen.getByRole('button', { name: 'back-button' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'forward-button' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'forward' })).toBeInTheDocument()
   })
 
   it.skip('should display sidebar menu button, when screen is small', async () => {

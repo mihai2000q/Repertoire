@@ -69,7 +69,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
             })}
           >
             <ActionIcon
-              aria-label={'back-button'}
+              aria-label={'back'}
               size={'lg'}
               variant={'grey'}
               radius={'50%'}
@@ -80,7 +80,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
             </ActionIcon>
 
             <ActionIcon
-              aria-label={'forward-button'}
+              aria-label={'forward'}
               size={'lg'}
               variant={'grey'}
               radius={'50%'}
