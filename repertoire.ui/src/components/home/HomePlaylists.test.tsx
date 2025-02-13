@@ -54,4 +54,20 @@ describe('Home Playlists', () => {
         )
     }
   })
+
+  it('should display empty message when there are no playlists', async () => {
+    server.use(
+      http.get('/playlists', async () => {
+        const response: WithTotalCountResponse<Playlist> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<HomePlaylists />)
+
+    expect(await screen.findByText(/no playlists/i)).toBeInTheDocument()
+  })
 })

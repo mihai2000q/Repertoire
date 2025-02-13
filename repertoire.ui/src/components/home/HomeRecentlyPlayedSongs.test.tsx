@@ -103,6 +103,28 @@ describe('Home Recently Played Songs', () => {
     expect(screen.getAllByText('never')).toHaveLength(songs.filter((s) => !s.lastTimePlayed).length)
   })
 
+  it('should display empty message when there are no songs', async () => {
+    server.use(
+      http.get('/songs', async () => {
+        const response: WithTotalCountResponse<Song> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<HomeRecentlyPlayedSongs />)
+
+    expect(screen.getByText(/recently played/i)).toBeInTheDocument()
+
+    expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
+
+    expect(screen.queryByText(/title/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/progress/i)).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('last-time-played-icon')).not.toBeInTheDocument()
+  })
+
   it('should open song drawer by clicking a song', async () => {
     const user = userEvent.setup()
 

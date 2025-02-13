@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ActionIcon, Button, Group, ScrollArea, Stack, Title } from '@mantine/core'
+import { ActionIcon, Button, Center, Group, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useDidUpdate, useViewportSize } from '@mantine/hooks'
 import { useGetAlbumsQuery } from '../../state/api/albumsApi.ts'
@@ -157,6 +157,28 @@ function HomeTop() {
           </ActionIcon>
         </Group>
       </Group>
+
+      {topEntity === TopEntity.Songs && songs?.models.length === 0 && (
+        <Center h={170}>
+          <Text c={'gray.6'} fw={500}>
+            There are no songs yet to display
+          </Text>
+        </Center>
+      )}
+      {topEntity === TopEntity.Albums && albums?.models.length === 0 && (
+        <Center h={170}>
+          <Text c={'gray.6'} fw={500}>
+            There are no albums yet to display
+          </Text>
+        </Center>
+      )}
+      {topEntity === TopEntity.Artists && artists?.models.length === 0 && (
+        <Center h={158}>
+          <Text c={'gray.6'} fw={500}>
+            There are no artists yet to display
+          </Text>
+        </Center>
+      )}
 
       <ScrollArea
         viewportRef={topRef}

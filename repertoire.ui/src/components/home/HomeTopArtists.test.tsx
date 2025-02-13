@@ -59,6 +59,22 @@ describe('Home Top Artists', () => {
     }
   })
 
+  it('should display empty message when there are no artists', async () => {
+    server.use(
+      http.get('/artists', async () => {
+        const response: WithTotalCountResponse<Artist> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<HomeTopArtists />)
+
+    expect(await screen.findByText(/no artists/i)).toBeInTheDocument()
+  })
+
   it('should open artist drawer on click', async () => {
     const user = userEvent.setup()
 
@@ -66,7 +82,7 @@ describe('Home Top Artists', () => {
 
     const [_, store] = reduxRender(<HomeTopArtists />)
 
-    await user.click(screen.getByRole('img', { name: artist.name }))
+    await user.click(await screen.findByRole('img', { name: artist.name }))
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(artist.id)
   })

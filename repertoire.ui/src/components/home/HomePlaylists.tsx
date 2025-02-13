@@ -79,6 +79,12 @@ function HomePlaylists({ ...others }: CardProps) {
           Playlists
         </Text>
 
+        {playlists?.models.length === 0 && (
+          <Text ta={'center'} c={'gray.6'} fw={500} pt={'lg'}>
+            There are no playlists yet to display
+          </Text>
+        )}
+
         <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7}>
           {/*DO NOT Change the Max Height, it helps with the responsive layout (somehow for some reason)*/}
           {/*Also the value 100 is randomly chosen, it has no effect whatsoever*/}

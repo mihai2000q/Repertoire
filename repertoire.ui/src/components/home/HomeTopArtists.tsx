@@ -137,6 +137,12 @@ function HomeTopArtists({ ...others }: CardProps) {
           </Group>
         </Group>
 
+        {artists?.models.length === 0 && (
+          <Text ta={'center'} c={'gray.6'} fw={500} pt={'xl'}>
+            There are no artists yet to display
+          </Text>
+        )}
+
         <ScrollArea
           h={'100%'}
           scrollbars={'x'}

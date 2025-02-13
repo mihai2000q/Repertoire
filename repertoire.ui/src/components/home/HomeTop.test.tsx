@@ -1,13 +1,13 @@
-import {emptyAlbum, emptyArtist, emptySong, reduxRender} from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRender } from '../../test-utils.tsx'
 import HomeTop from './HomeTop.tsx'
 import { screen } from '@testing-library/react'
-import Album from "../../types/models/Album.ts";
-import Artist from "../../types/models/Artist.ts";
-import Song from "../../types/models/Song.ts";
-import {http, HttpResponse} from "msw";
-import WithTotalCountResponse from "../../types/responses/WithTotalCountResponse.ts";
-import {setupServer} from "msw/node";
-import {userEvent} from "@testing-library/user-event";
+import Album from '../../types/models/Album.ts'
+import Artist from '../../types/models/Artist.ts'
+import Song from '../../types/models/Song.ts'
+import { http, HttpResponse } from 'msw'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import { setupServer } from 'msw/node'
+import { userEvent } from '@testing-library/user-event'
 
 describe('Home Top', () => {
   const albums: Album[] = [
@@ -16,13 +16,13 @@ describe('Home Top', () => {
       id: '1',
       title: 'Album 1',
       imageUrl: 'something-album.png',
-      artist: emptyArtist,
+      artist: emptyArtist
     },
     {
       ...emptyAlbum,
       id: '2',
       title: 'Album 2'
-    },
+    }
   ]
 
   const artists: Artist[] = [
@@ -170,5 +170,43 @@ describe('Home Top', () => {
     for (const artist of artists) {
       expect(await screen.findByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
     }
+  })
+
+  it('should display empty message when there are no songs, albums or artists', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.get('/songs', async () => {
+        const response: WithTotalCountResponse<Song> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      }),
+      http.get('/albums', async () => {
+        const response: WithTotalCountResponse<Album> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      }),
+      http.get('/artists', async () => {
+        const response: WithTotalCountResponse<Artist> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<HomeTop />)
+
+    expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /songs/i }))
+    expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /artists/i }))
+    expect(await screen.findByText(/no artists/i)).toBeInTheDocument()
   })
 })

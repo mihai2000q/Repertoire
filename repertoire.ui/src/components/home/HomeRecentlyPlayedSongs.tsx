@@ -143,21 +143,29 @@ function HomeRecentlyPlayedSongs() {
           Recently Played
         </Text>
 
-        <Grid columns={12} pl={'lg'} pr={'sm'}>
-          <Grid.Col span={{ base: 4.5, md: 10, xxl: 4.5 }}>
-            <Text fz={'sm'} fw={500} c={'gray.5'}>
-              Title
-            </Text>
-          </Grid.Col>
-          <Grid.Col span={6} display={{ base: 'block', md: 'none', xxl: 'block' }}>
-            <Text ta={'center'} fz={'sm'} fw={500} c={'gray.5'}>
-              Progress
-            </Text>
-          </Grid.Col>
-          <Grid.Col span={{ base: 1.5, md: 2, xxl: 1.5 }} c={'gray.5'}>
-            <IconClock size={15} aria-label={'last-time-played-icon'} />
-          </Grid.Col>
-        </Grid>
+        {songs?.models.length !== 0 && (
+          <Grid columns={12} pl={'lg'} pr={'sm'}>
+            <Grid.Col span={{ base: 4.5, md: 10, xxl: 4.5 }}>
+              <Text fz={'sm'} fw={500} c={'gray.5'}>
+                Title
+              </Text>
+            </Grid.Col>
+            <Grid.Col span={6} display={{ base: 'block', md: 'none', xxl: 'block' }}>
+              <Text ta={'center'} fz={'sm'} fw={500} c={'gray.5'}>
+                Progress
+              </Text>
+            </Grid.Col>
+            <Grid.Col span={{ base: 1.5, md: 2, xxl: 1.5 }} c={'gray.5'}>
+              <IconClock size={15} aria-label={'last-time-played-icon'} />
+            </Grid.Col>
+          </Grid>
+        )}
+
+        {songs?.models.length === 0 && (
+          <Text ta={'center'} c={'gray.6'} fw={500} pt={'lg'}>
+            There are no songs yet to display
+          </Text>
+        )}
 
         <ScrollArea scrollbars={'y'} scrollbarSize={7}>
           <Stack gap={'xxs'} h={'100%'}>
