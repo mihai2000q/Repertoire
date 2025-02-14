@@ -63,12 +63,14 @@ export const components = {
   }),
   Button: Button.extend({
     defaultProps: {
-      style: {
-        transition: '0.18s'
-      },
       loaderProps: {
         type: 'dots'
-      }
+      },
+      styles: () => ({
+        root: {
+          transition: '0.18s',
+        }
+      })
     }
   }),
   Card: Card.extend({
@@ -158,7 +160,7 @@ export const components = {
           [`@media(min-width: ${theme.breakpoints.xxl})`]: {
             '& svg': {
               width: '26px',
-              height: '26px',
+              height: '26px'
             }
           }
         },
@@ -170,7 +172,7 @@ export const components = {
             fontWeight: 600
           },
           [`@media(min-width: ${theme.breakpoints.xxl})`]: {
-            fontSize: theme.fontSizes.md,
+            fontSize: theme.fontSizes.md
           }
         },
         root: {

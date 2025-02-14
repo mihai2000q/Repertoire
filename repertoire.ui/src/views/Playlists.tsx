@@ -54,7 +54,7 @@ function Playlists() {
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'}>
+    <Stack h={'100%'} gap={'xs'} px={'xl'}>
       <Group gap={'xxs'}>
         <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Playlists

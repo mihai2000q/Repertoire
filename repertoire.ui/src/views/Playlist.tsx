@@ -21,7 +21,7 @@ function Playlist() {
   if (isLoading) return <PlaylistLoader />
 
   return (
-    <Stack>
+    <Stack px={'xl'}>
       <PlaylistHeaderCard playlist={playlist} />
 
       <Divider />

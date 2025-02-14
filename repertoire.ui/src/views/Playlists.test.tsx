@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Playlists from './Playlists.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptyPlaylist, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Playlist from '../types/models/Playlist.ts'
@@ -11,20 +11,14 @@ import { RootState } from '../state/store.ts'
 describe('Playlists', () => {
   const playlists: Playlist[] = [
     {
+      ...emptyPlaylist,
       id: '1',
-      title: 'Playlist 1',
-      description: '',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      title: 'Playlist 1'
     },
     {
+      ...emptyPlaylist,
       id: '2',
-      title: 'Playlist 2',
-      description: '',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      title: 'Playlist 2'
     }
   ]
   const totalCount = 2

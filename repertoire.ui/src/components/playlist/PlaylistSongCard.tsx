@@ -118,7 +118,7 @@ function PlaylistSongCard({
           />
 
           <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
-            <Group gap={'xxs'}>
+            <Group gap={'xxs'} wrap={'nowrap'}>
               <Text fw={500} truncate={'end'}>
                 {song.title}
               </Text>
@@ -145,6 +145,7 @@ function PlaylistSongCard({
                 sx={{ '&:hover': { textDecoration: 'underline' } }}
                 style={{ cursor: 'pointer', alignSelf: 'start' }}
                 onClick={handleArtistClick}
+                lineClamp={1}
               >
                 {song.artist.name}
               </Text>

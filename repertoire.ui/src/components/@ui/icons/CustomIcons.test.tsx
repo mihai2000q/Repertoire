@@ -1,6 +1,4 @@
 import { render } from '@testing-library/react'
-import CustomIconArrowLeft from './CustomIconArrowLeft.tsx'
-import CustomIconArrowRight from './CustomIconArrowRight.tsx'
 import CustomIconElectricGuitarWarlock from './CustomIconElectricGuitarWarlock.tsx'
 import CustomIconKingVGuitar from './CustomIconKingVGuitar.tsx'
 import CustomIconRhoadsGuitar from './CustomIconRhoadsGuitar.tsx'
@@ -26,16 +24,10 @@ import CustomIconMusicNoteEighth from './CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist from './CustomIconPlaylist.tsx'
 import CustomIconPlaylist2 from './CustomIconPlaylist2.tsx'
 import CustomIconQuestionMark from './CustomIconQuestionMark.tsx'
+import CustomIconDrums from './CustomIconDrums.tsx'
+import CustomIconBass from './CustomIconBass.tsx'
 
 describe.concurrent('Custom Icons', () => {
-  it('should render Custom Icon Arrow Left', () => {
-    render(<CustomIconArrowLeft />)
-  })
-
-  it('should render Custom Icon Arrow Right', () => {
-    render(<CustomIconArrowRight />)
-  })
-
   it('should render Custom Icon Acoustic Guitar', () => {
     render(<CustomIconAcousticGuitar />)
   })
@@ -46,6 +38,14 @@ describe.concurrent('Custom Icons', () => {
 
   it('should render Custom Icon Album Vinyl', () => {
     render(<CustomIconAlbumVinyl />)
+  })
+
+  it('should render Custom Icon Bass', () => {
+    render(<CustomIconBass />)
+  })
+
+  it('should render Custom Icon Drums', () => {
+    render(<CustomIconDrums />)
   })
 
   it('should render Custom Icon Electric Guitar Warlock', () => {

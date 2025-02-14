@@ -75,7 +75,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
           {bandMembers.length > 0 && (
             <Group gap={'xxs'}>
               <ActionIcon
-                aria-label={'back-button'}
+                aria-label={'back'}
                 size={'sm'}
                 variant={'grey'}
                 radius={'50%'}
@@ -87,7 +87,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
               </ActionIcon>
 
               <ActionIcon
-                aria-label={'forward-button'}
+                aria-label={'forward'}
                 size={'sm'}
                 variant={'grey'}
                 radius={'50%'}

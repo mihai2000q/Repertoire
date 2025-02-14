@@ -1,11 +1,9 @@
 import { ReactElement } from 'react'
 import { ActionIcon, AppShell, Group, Space } from '@mantine/core'
-import { IconBellFilled, IconMenu2 } from '@tabler/icons-react'
+import { IconBellFilled, IconChevronLeft, IconChevronRight, IconMenu2 } from '@tabler/icons-react'
 import { useWindowScroll } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
-import CustomIconArrowLeft from '../@ui/icons/CustomIconArrowLeft.tsx'
-import CustomIconArrowRight from '../@ui/icons/CustomIconArrowRight.tsx'
 import TopbarSearch from './TopbarSearch.tsx'
 import TopbarUser from './TopbarUser.tsx'
 
@@ -62,30 +60,34 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
         <Space hiddenFrom={'sm'} flex={1} style={{ order: 2 }} />
 
         {isDesktop && (
-          <Group gap={0} ml={'xs'} sx={(theme) => ({
-            order: 3,
-            [`@media(max-width: ${theme.breakpoints.sm})`]: { order: 1 }
-          })}>
+          <Group
+            gap={0}
+            ml={'xs'}
+            sx={(theme) => ({
+              order: 3,
+              [`@media(max-width: ${theme.breakpoints.sm})`]: { order: 1 }
+            })}
+          >
             <ActionIcon
-              aria-label={'back-button'}
+              aria-label={'back'}
               size={'lg'}
               variant={'grey'}
               radius={'50%'}
               disabled={window.history.state?.idx < 1}
               onClick={handleGoBack}
             >
-              <CustomIconArrowLeft />
+              <IconChevronLeft size={20} />
             </ActionIcon>
 
             <ActionIcon
-              aria-label={'forward-button'}
+              aria-label={'forward'}
               size={'lg'}
               variant={'grey'}
               radius={'50%'}
               disabled={window.history.state?.idx >= window.history.length - 1}
               onClick={handleGoForward}
             >
-              <CustomIconArrowRight />
+              <IconChevronRight size={20} />
             </ActionIcon>
           </Group>
         )}
