@@ -10,7 +10,6 @@ function SongSectionTypeSelect({
   option,
   onOptionChange,
   label,
-  flex,
   placeholder = 'Type',
   ...others
 }: SongSectionTypeSelectProps) {
@@ -22,8 +21,6 @@ function SongSectionTypeSelect({
 
   return (
     <Select
-      w={!flex && 95}
-      flex={flex}
       label={label}
       disabled={isLoading}
       placeholder={placeholder}
