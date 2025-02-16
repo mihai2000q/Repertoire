@@ -770,7 +770,8 @@ describe('Add New Song Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /bpm/i }), newBpm.toString())
 
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getAllByText(newReleaseDate.getDate().toString())[whichDayIsCurrentDay])
+      const dates = screen.getAllByText(newReleaseDate.getDate().toString())
+      await user.click(dates.length > 1 ? dates[whichDayIsCurrentDay] : dates[0])
 
       // sections
       await user.click(screen.getByRole('button', { name: /add section/i }))
