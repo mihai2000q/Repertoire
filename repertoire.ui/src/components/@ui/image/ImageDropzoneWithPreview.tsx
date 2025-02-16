@@ -1,7 +1,6 @@
 import { Dispatch, ReactElement, SetStateAction, useState } from 'react'
 import {
   ActionIcon,
-  alpha,
   AspectRatio,
   Box,
   FileButton,
@@ -43,6 +42,7 @@ function ImageDropzoneWithPreview({
   radius = '24px'
 }: ImageDropzoneWithPreviewProps) {
   const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const [isOptionsHovered, setIsOptionsHovered] = useState(false)
 
   function handleRemoveImage() {
     setImage(null)
@@ -67,6 +67,10 @@ function ImageDropzoneWithPreview({
             h={h}
             radius={radius}
             alt={'image-preview'}
+            sx={{
+              transition: '0.3s',
+              ...(isOptionsHovered && { filter: 'brightness(0.5)' })
+            }}
           />
         </AspectRatio>
 
@@ -82,18 +86,16 @@ function ImageDropzoneWithPreview({
               <Menu.Target>
                 <Tooltip label={'Open image options menu'} openDelay={500}>
                   <ActionIcon
+                    onMouseEnter={() => setIsOptionsHovered(true)}
+                    onMouseLeave={() => setIsOptionsHovered(false)}
                     aria-label={'image-options'}
                     h={'100%'}
                     w={'100%'}
                     radius={radius}
-                    style={(theme) => ({
-                      transition: '0.3s',
-                      backgroundColor: alpha(theme.black, 0.5),
-                      color: theme.white
-                    })}
+                    bg={'transparent'}
                     sx={{
-                      opacity: isMenuOpened ? 1 : 0,
-                      '&:hover': { opacity: 1 }
+                      transition: '0.3s',
+                      opacity: isMenuOpened || isOptionsHovered ? 1 : 0
                     }}
                   >
                     <IconPhotoFilled size={iconSizes / 1.2} />
