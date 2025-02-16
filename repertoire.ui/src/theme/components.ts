@@ -26,11 +26,9 @@ import { DatePickerInput } from '@mantine/dates'
 
 export const components = {
   ActionIcon: ActionIcon.extend({
-    defaultProps: {
-      style: { transition: '0.16s' }
-    },
     styles: (theme) => ({
       root: {
+        transition: '0.16s',
         '&[data-variant="grey"]': {
           color: theme.colors.gray[5],
           backgroundColor: theme.colors.gray[0],

@@ -3,9 +3,9 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { BandMember } from '../../../../types/models/Artist.ts'
-import BandMemberSelect from './BandMemberSelect.tsx'
+import BandMemberCompactSelect from './BandMemberCompactSelect.tsx'
 
-describe('Band Member Select', () => {
+describe('Band Member Compact Select', () => {
   const bandMembers: BandMember[] = [
     {
       id: '1',
@@ -35,13 +35,22 @@ describe('Band Member Select', () => {
     const setBandMember = vitest.fn()
 
     const [{ rerender }] = reduxRender(
-      <BandMemberSelect bandMember={null} setBandMember={setBandMember} bandMembers={bandMembers} />
+      <BandMemberCompactSelect
+        bandMember={null}
+        setBandMember={setBandMember}
+        bandMembers={bandMembers}
+      />
     )
 
-    const select = screen.getByRole('textbox', { name: /band member/i })
-    expect(select).toHaveValue('')
-    expect(select).not.toBeDisabled()
-    await user.click(select)
+    const selectButton = screen.getByRole('button', { name: 'select-band-member' })
+    expect(selectButton).not.toBeDisabled()
+
+    await user.hover(selectButton)
+    expect(await screen.findByRole('tooltip', { name: /choose a band member/i })).toBeInTheDocument()
+
+    await user.click(selectButton)
+
+    expect(screen.getByRole('textbox', { name: /search/i })).toHaveValue('')
 
     for (const member of bandMembers) {
       expect(await screen.findByRole('option', { name: member.name })).toBeInTheDocument()
@@ -54,14 +63,36 @@ describe('Band Member Select', () => {
     expect(setBandMember).toHaveBeenCalledWith(newBandMember)
 
     rerender(
-      <BandMemberSelect
+      <BandMemberCompactSelect
         bandMember={newBandMember}
         setBandMember={setBandMember}
         bandMembers={bandMembers}
       />
     )
 
-    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(newBandMember.name)
+    expect(screen.queryByRole('button', { name: 'select-band-member' })).not.toBeInTheDocument()
+
+    const memberButton = screen.getByRole('button', { name: newBandMember.name })
+    expect(memberButton).toBeInTheDocument()
+
+    await user.hover(memberButton)
+    expect(await screen.findByRole('tooltip', { name: new RegExp(newBandMember.name, 'i') })).toBeInTheDocument()
+
+    await user.click(memberButton)
+    expect(screen.getByRole('textbox', { name: /search/i })).toHaveValue(newBandMember.name)
+
+    // reset the value from outside component
+    rerender(
+      <BandMemberCompactSelect
+        bandMember={null}
+        setBandMember={setBandMember}
+        bandMembers={bandMembers}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'select-band-member' }))
+    expect(screen.getByRole('textbox', { name: /search/i })).toHaveValue('')
   })
 
   it('should filter by name', async () => {
@@ -70,10 +101,15 @@ describe('Band Member Select', () => {
     const searchValue = 't'
 
     reduxRender(
-      <BandMemberSelect bandMember={null} setBandMember={() => {}} bandMembers={bandMembers} />
+      <BandMemberCompactSelect
+        bandMember={null}
+        setBandMember={() => {}}
+        bandMembers={bandMembers}
+      />
     )
 
-    await user.type(screen.getByRole('textbox', { name: /band member/i }), searchValue)
+    await user.click(screen.getByRole('button', { name: 'select-band-member' }))
+    await user.type(screen.getByRole('textbox', { name: /search/i }), searchValue)
 
     const filteredMembers = bandMembers.filter((b) => b.name.includes(searchValue))
     expect(await screen.findAllByRole('option')).toHaveLength(filteredMembers.length)
@@ -86,10 +122,10 @@ describe('Band Member Select', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <BandMemberSelect bandMember={null} setBandMember={() => {}} bandMembers={undefined} />
+      <BandMemberCompactSelect bandMember={null} setBandMember={() => {}} bandMembers={undefined} />
     )
 
-    const button = screen.getByRole('textbox', { name: /band member/i })
+    const button = screen.getByRole('button', { name: 'select-band-member' })
     expect(button).toBeDisabled()
     await user.hover(button)
     expect(await screen.findByRole('tooltip', { name: /not a band/i })).toBeInTheDocument()

@@ -48,7 +48,7 @@ describe('Song Section Type Select', () => {
     const label = 'label'
 
     const [{ rerender }] = reduxRender(
-      <SongSectionTypeSelect label={label} option={null} onChange={onChange} />
+      <SongSectionTypeSelect label={label} option={null} onOptionChange={onChange} />
     )
 
 
@@ -68,7 +68,7 @@ describe('Song Section Type Select', () => {
     expect(onChange).toHaveBeenCalledOnce()
     expect(onChange).toHaveBeenCalledWith(newOption)
 
-    rerender(<SongSectionTypeSelect label={label} option={newOption} onChange={onChange} />)
+    rerender(<SongSectionTypeSelect label={label} option={newOption} onOptionChange={onChange} />)
 
     expect(screen.getByRole('textbox', { name: label })).toHaveValue(type.name)
   })

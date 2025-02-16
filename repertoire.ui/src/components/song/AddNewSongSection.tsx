@@ -4,16 +4,23 @@ import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState, useScrollIntoView } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
+import { BandMember } from '../../types/models/Artist.ts'
+import BandMemberCompactSelect from '../@ui/form/select/BandMemberCompactSelect.tsx'
+import InstrumentCompactSelect from '../@ui/form/select/InstrumentCompactSelect.tsx'
 
 interface AddNewSongSectionProps {
-  songId: string
   opened: boolean
   onClose: () => void
+  songId: string
+  bandMembers?: BandMember[] | undefined
 }
 
-function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) {
+function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongSectionProps) {
   const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
 
+  const { scrollIntoView, targetRef: scrollIntoViewRef } = useScrollIntoView({
+    offset: 20
+  })
   const nameInputRef = useFocusTrap(opened)
 
   const [name, setName] = useInputState('')
@@ -29,9 +36,8 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
     setTypeError(false)
   }, [opened])
 
-  const { scrollIntoView, targetRef: scrollIntoViewRef } = useScrollIntoView({
-    offset: 20
-  })
+  const [bandMember, setBandMember] = useState<BandMember>(null)
+  const [instrument, setInstrument] = useState<ComboboxItem>(null)
 
   function handleOnTransitionEnd() {
     if (opened) scrollIntoView({ alignment: 'end' })
@@ -49,14 +55,18 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
     await createSongSectionMutation({
       typeId: type.value,
       name: nameTrimmed,
-      songId: songId
+      songId: songId,
+      bandMemberId: bandMember?.id,
+      instrumentId: instrument?.value
     }).unwrap()
 
     toast.success(nameTrimmed + ' added!')
 
     onClose()
-    setName('')
+    setBandMember(null)
+    setInstrument(null)
     setType(null)
+    setName('')
   }
 
   return (
@@ -68,7 +78,32 @@ function AddNewSongSection({ opened, onClose, songId }: AddNewSongSectionProps) 
         px={'md'}
         aria-label={'add-new-song-section'}
       >
-        <SongSectionTypeSelect option={type} onChange={setType} error={typeError} />
+        <Group gap={8}>
+          <BandMemberCompactSelect
+            bandMember={bandMember}
+            setBandMember={setBandMember}
+            bandMembers={bandMembers === null ? [] : bandMembers}
+            position={'top'}
+            transitionProps={{ duration: 160, transition: 'fade-up' }}
+          />
+
+          <InstrumentCompactSelect
+            option={instrument}
+            onOptionChange={setInstrument}
+            position={'top'}
+            transitionProps={{ duration: 160, transition: 'fade-up' }}
+          />
+
+          <SongSectionTypeSelect
+            option={type}
+            onOptionChange={setType}
+            error={typeError}
+            comboboxProps={{
+              position: 'top',
+              transitionProps: { duration: 160, transition: 'fade-up' }
+            }}
+          />
+        </Group>
 
         <TextInput
           ref={nameInputRef}

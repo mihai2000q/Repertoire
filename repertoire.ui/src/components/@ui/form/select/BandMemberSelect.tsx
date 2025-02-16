@@ -36,12 +36,12 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
       : bandMembers
 
   const BandMemberHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
+    <HoverCard withArrow={true} openDelay={200} shadow={'md'}>
       <HoverCard.Target>
         <Avatar
           size={24}
           color={bandMember.color}
-          src={bandMember.imageUrl ?? null}
+          src={bandMember.imageUrl}
           alt={bandMember.name}
         >
           <IconUser size={15} />
@@ -52,7 +52,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
           <Avatar
             size={'lg'}
             color={bandMember.color}
-            src={bandMember.imageUrl ?? null}
+            src={bandMember.imageUrl}
             alt={bandMember.name}
           >
             <IconUser size={30} />
@@ -93,7 +93,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
           size={'sm'}
           variant={'light'}
           color={member.color}
-          src={member.imageUrl ?? member.color}
+          src={member.imageUrl}
           alt={member.name}
         >
           <IconUser size={14} />

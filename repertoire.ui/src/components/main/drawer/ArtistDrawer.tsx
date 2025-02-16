@@ -171,7 +171,7 @@ function ArtistDrawer() {
                   variant={'light'}
                   size={42}
                   color={bandMember.color}
-                  src={bandMember.imageUrl ?? null}
+                  src={bandMember.imageUrl}
                   alt={bandMember.name}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
                 >

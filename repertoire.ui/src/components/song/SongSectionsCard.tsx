@@ -242,7 +242,12 @@ function SongSectionsCard({ sections, songId, bandMembers }: SongSectionsCardPro
             </NewHorizontalCard>
           )}
 
-          <AddNewSongSection songId={songId} opened={openedAdd} onClose={closeAdd} />
+          <AddNewSongSection
+            songId={songId}
+            opened={openedAdd}
+            onClose={closeAdd}
+            bandMembers={bandMembers}
+          />
         </Stack>
       </Stack>
 

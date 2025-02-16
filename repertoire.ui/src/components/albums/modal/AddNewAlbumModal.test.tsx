@@ -113,7 +113,8 @@ describe('Add New Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getAllByText(newReleaseDate.getDate().toString())[whichDayIsCurrentDay])
+      const dates = screen.getAllByText(newReleaseDate.getDate().toString())
+      await user.click(dates.length > 1 ? dates[whichDayIsCurrentDay] : dates[0])
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
       await waitFor(() =>

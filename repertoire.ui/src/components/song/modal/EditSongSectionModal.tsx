@@ -136,7 +136,7 @@ function EditSongSectionModal({
                 label={'Type'}
                 placeholder={'Enter Type'}
                 option={type}
-                onChange={setType}
+                onOptionChange={setType}
               />
 
               <NumberInput

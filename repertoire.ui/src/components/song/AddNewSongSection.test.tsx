@@ -4,8 +4,9 @@ import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import { SongSectionType } from '../../types/models/Song.ts'
+import { Instrument, SongSectionType } from '../../types/models/Song.ts'
 import { CreateSongSectionRequest } from '../../types/requests/SongRequests.ts'
+import { BandMember } from '../../types/models/Artist.ts'
 
 describe('Add New Song Section', () => {
   const sectionTypes: SongSectionType[] = [
@@ -19,7 +20,25 @@ describe('Add New Song Section', () => {
     }
   ]
 
+  const instruments: Instrument[] = [
+    {
+      id: '1',
+      name: 'Guitar'
+    },
+    {
+      id: '2',
+      name: 'Piano'
+    },
+    {
+      id: '3',
+      name: 'Flute'
+    }
+  ]
+
   const handlers = [
+    http.get('/songs/instruments', async () => {
+      return HttpResponse.json(instruments)
+    }),
     http.get('/songs/sections/types', async () => {
       return HttpResponse.json(sectionTypes)
     })
@@ -45,7 +64,7 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
   })
 
-  it('should send create request when name is typed and type is select', async () => {
+  it('should send create request when name is typed and type is selected', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
@@ -79,6 +98,75 @@ describe('Add New Song Section', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
     expect(await screen.findByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
+
+    expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
+  })
+
+  it('should send create request when all fields are filled', async () => {
+    const user = userEvent.setup()
+
+    const onClose = vitest.fn()
+    const songId = 'some id'
+    const bandMembers: BandMember[] = [
+      {
+        id: '1',
+        name: 'Michael',
+        roles: []
+      }
+    ]
+
+    const newSectionType = sectionTypes[0]
+    const newName = 'Section 1'
+    const newInstrument = instruments[0]
+    const newBandMember = bandMembers[0]
+
+    let capturedRequest: CreateSongSectionRequest
+    server.use(
+      http.post('/songs/sections', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
+        return HttpResponse.json({ message: 'section added!' })
+      })
+    )
+
+    reduxRender(
+      withToastify(
+        <AddNewSongSection
+          opened={true}
+          onClose={onClose}
+          songId={songId}
+          bandMembers={bandMembers}
+        />
+      )
+    )
+
+    // fill fields
+    await user.click(screen.getByRole('button', { name: 'select-band-member' }))
+    await user.click(await screen.findByRole('option', { name: newBandMember.name }))
+
+    await user.click(screen.getByRole('button', { name: 'select-instrument' }))
+    await user.click(await screen.findByRole('option', { name: newInstrument.name }))
+
+    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
+    await user.click(await screen.findByText(newSectionType.name))
+
+    await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
+
+    await user.click(screen.getByRole('button', { name: /add/i }))
+
+    expect(capturedRequest).toStrictEqual({
+      bandMemberId: newBandMember.id,
+      instrumentId: newInstrument.id,
+      typeId: newSectionType.id,
+      name: newName,
+      songId: songId
+    })
+    expect(onClose).toHaveBeenCalledOnce()
+
+    // reset fields
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
+    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
 
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
   })
