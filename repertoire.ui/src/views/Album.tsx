@@ -6,9 +6,10 @@ import { useGetSongsQuery } from '../state/api/songsApi.ts'
 import AlbumHeaderCard from '../components/album/AlbumHeaderCard.tsx'
 import AlbumSongsCard from '../components/album/AlbumSongsCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
-import { useEffect, useState } from 'react'
-import Order from '../types/Order.ts'
+import { useEffect } from 'react'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
+import { useLocalStorage } from '@mantine/hooks'
+import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
 
 function Album() {
   const params = useParams()
@@ -17,7 +18,12 @@ function Album() {
 
   const isUnknownAlbum = albumId === 'unknown'
 
-  const [order, setOrder] = useState<Order>(isUnknownAlbum ? albumSongsOrders[1] : albumSongsOrders[0])
+  const [order, setOrder] = useLocalStorage({
+    key: isUnknownAlbum
+      ? LocalStorageKeys.UnknownAlbumSongsOrder
+      : LocalStorageKeys.AlbumSongsOrder,
+    defaultValue: isUnknownAlbum ? albumSongsOrders[1] : albumSongsOrders[0]
+  })
 
   const {
     data: album,
