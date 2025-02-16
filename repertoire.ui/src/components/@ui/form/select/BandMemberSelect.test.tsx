@@ -27,7 +27,7 @@ describe('Band Member Select', () => {
     }
   ]
 
-  it('should render and band members', async () => {
+  it('should render and change band members', async () => {
     const user = userEvent.setup()
 
     const newBandMember = bandMembers[0]
@@ -40,6 +40,7 @@ describe('Band Member Select', () => {
 
     const select = screen.getByRole('textbox', { name: /band member/i })
     expect(select).toHaveValue('')
+    expect(select).not.toBeDisabled()
     await user.click(select)
 
     for (const member of bandMembers) {
@@ -61,5 +62,36 @@ describe('Band Member Select', () => {
     )
 
     expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(newBandMember.name)
+  })
+
+  it('should filter by name', async () => {
+    const user = userEvent.setup()
+
+    const searchValue = 't'
+
+    reduxRender(
+      <BandMemberSelect bandMember={null} setBandMember={() => {}} bandMembers={bandMembers} />
+    )
+
+    await user.type(screen.getByRole('textbox', { name: /band member/i }), searchValue)
+
+    const filteredMembers = bandMembers.filter((b) => b.name.includes(searchValue))
+    expect(await screen.findAllByRole('option')).toHaveLength(filteredMembers.length)
+    for (const member of filteredMembers) {
+      expect(screen.getByRole('option', { name: member.name })).toBeInTheDocument()
+    }
+  })
+
+  it('should be disabled when the band members are undefined', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(
+      <BandMemberSelect bandMember={null} setBandMember={() => {}} bandMembers={undefined} />
+    )
+
+    const button = screen.getByRole('textbox', { name: /band member/i })
+    expect(button).toBeDisabled()
+    await user.hover(button)
+    expect(await screen.findByRole('tooltip', { name: /not a band/i })).toBeInTheDocument()
   })
 })

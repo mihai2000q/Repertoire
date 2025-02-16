@@ -149,7 +149,7 @@ function AddNewSongModalSecondStep({
                           <SongSectionTypeSelect
                             placeholder={'Type'}
                             option={section.type}
-                            onChange={(option) =>
+                            onOptionChange={(option) =>
                               sectionsHandlers.setItem(index, {
                                 ...section,
                                 type: option,

@@ -66,7 +66,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
             variant={'light'}
             size={'lg'}
             color={bandMember.color}
-            src={bandMember.imageUrl ?? null}
+            src={bandMember.imageUrl}
             alt={bandMember.name}
             sx={(theme) => ({
               transition: '0.3s',

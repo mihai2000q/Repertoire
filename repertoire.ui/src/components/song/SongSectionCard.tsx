@@ -132,7 +132,7 @@ function SongSectionCard({
                   <Avatar
                     size={25}
                     color={section.bandMember.color}
-                    src={section.bandMember.imageUrl ?? section.bandMember.color}
+                    src={section.bandMember.imageUrl}
                     alt={section.bandMember.name}
                   >
                     <IconUser size={15} />
@@ -143,7 +143,7 @@ function SongSectionCard({
                     <Avatar
                       size={60}
                       color={section.bandMember.color}
-                      src={section.bandMember.imageUrl ?? section.bandMember.color}
+                      src={section.bandMember.imageUrl}
                       alt={section.bandMember.name}
                       style={(theme) => ({ boxShadow: theme.shadows.sm })}
                     >
