@@ -4,6 +4,7 @@ import {
   Box,
   Combobox,
   ComboboxItem,
+  ComboboxProps,
   Group,
   ScrollArea,
   Text,
@@ -16,12 +17,16 @@ import useInstrumentIcon from '../../../../hooks/useInstrumentIcon.tsx'
 import { useEffect, useState } from 'react'
 import CustomIconTriangleMusic from '../../icons/CustomIconTriangleMusic.tsx'
 
-interface InstrumentCompactSelectProps {
+interface InstrumentCompactSelectProps extends ComboboxProps {
   option: ComboboxItem | null
   onOptionChange: (comboboxItem: ComboboxItem | null) => void
 }
 
-function InstrumentCompactSelect({ option, onOptionChange }: InstrumentCompactSelectProps) {
+function InstrumentCompactSelect({
+  option,
+  onOptionChange,
+  ...others
+}: InstrumentCompactSelectProps) {
   const { data: instruments, isLoading } = useGetInstrumentsQuery()
   const data = instruments?.map((type) => ({
     value: type.id,
@@ -97,13 +102,7 @@ function InstrumentCompactSelect({ option, onOptionChange }: InstrumentCompactSe
   }
 
   return (
-    <Combobox
-      onOptionSubmit={handleSubmit}
-      store={combobox}
-      withArrow
-      position={'top'}
-      transitionProps={{ duration: 160, transition: 'fade-up' }}
-    >
+    <Combobox onOptionSubmit={handleSubmit} store={combobox} withArrow {...others}>
       <Combobox.Target withAriaAttributes={false}>
         {!option ? (
           <Tooltip

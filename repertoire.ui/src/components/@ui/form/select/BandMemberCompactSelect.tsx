@@ -3,6 +3,7 @@ import {
   alpha,
   Avatar,
   Combobox,
+  ComboboxProps,
   Group,
   ScrollArea,
   Text,
@@ -12,9 +13,9 @@ import {
 } from '@mantine/core'
 import { BandMember } from '../../../../types/models/Artist.ts'
 import { IconSearch, IconUser } from '@tabler/icons-react'
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 
-interface BandMemberCompactSelectProps {
+interface BandMemberCompactSelectProps extends ComboboxProps {
   bandMember: BandMember | null
   setBandMember: (bandMember: BandMember | null) => void
   bandMembers: BandMember[] | undefined
@@ -23,7 +24,8 @@ interface BandMemberCompactSelectProps {
 function BandMemberCompactSelect({
   bandMember,
   setBandMember,
-  bandMembers
+  bandMembers,
+  ...others
 }: BandMemberCompactSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => {
@@ -89,13 +91,7 @@ function BandMemberCompactSelect({
   }
 
   return (
-    <Combobox
-      onOptionSubmit={handleSubmit}
-      store={combobox}
-      withArrow
-      position={'top'}
-      transitionProps={{ duration: 160, transition: 'fade-up' }}
-    >
+    <Combobox onOptionSubmit={handleSubmit} store={combobox} withArrow {...others}>
       <Combobox.Target withAriaAttributes={false}>
         {bandMember ? (
           <Tooltip label={`${bandMember.name} is selected`} openDelay={200}>
