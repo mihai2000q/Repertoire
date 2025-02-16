@@ -95,11 +95,13 @@ function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongS
           />
 
           <SongSectionTypeSelect
+            w={100}
             option={type}
             onOptionChange={setType}
             error={typeError}
             comboboxProps={{
-              position: 'top',
+              position: 'top-start',
+              width: 125,
               transitionProps: { duration: 160, transition: 'fade-up' }
             }}
           />

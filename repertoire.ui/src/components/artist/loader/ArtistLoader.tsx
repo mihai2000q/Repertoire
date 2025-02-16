@@ -5,7 +5,7 @@ import BandMembersLoader from "./BandMembersLoader.tsx";
 
 function ArtistLoader() {
   return (
-    <Stack data-testid={'artist-loader'}>
+    <Stack px={'xl'} data-testid={'artist-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'50%'} w={125} h={125} />
         <Stack gap={'xxs'} pt={'16px'}>

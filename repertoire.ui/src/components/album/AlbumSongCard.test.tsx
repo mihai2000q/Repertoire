@@ -51,32 +51,20 @@ describe('Album Song Card', () => {
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
 
-    const localSongWithAlbum: Song = {
-      ...song,
-      album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
-        imageUrl: 'something-album.png'
-      }
-    }
+    const albumImageUrl = 'something.png'
 
     rerender(
       <AlbumSongCard
-        song={localSongWithAlbum}
+        song={song}
         handleRemove={() => {}}
         isUnknownAlbum={false}
         order={emptyOrder}
         isDragging={false}
+        albumImageUrl={albumImageUrl}
       />
     )
 
-    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
-      'src',
-      localSongWithAlbum.album.imageUrl
-    )
+    expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', albumImageUrl)
   })
 
   describe('on order property change', () => {

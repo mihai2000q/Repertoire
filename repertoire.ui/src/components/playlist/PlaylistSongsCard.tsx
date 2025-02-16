@@ -14,18 +14,17 @@ import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import Playlist from '../../types/models/Playlist.ts'
-import { useState } from 'react'
-import Order from '../../types/Order.ts'
 import {
   useMoveSongFromPlaylistMutation,
   useRemoveSongsFromPlaylistMutation
 } from '../../state/api/playlistsApi.ts'
-import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure, useListState, useLocalStorage } from '@mantine/hooks'
 import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
 import Song from '../../types/models/Song.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import SongProperty from '../../utils/enums/SongProperty.ts'
+import LocalStorageKeys from '../../utils/enums/LocalStorageKeys.ts'
 
 interface PlaylistSongsCardProps {
   playlist: Playlist
@@ -36,7 +35,10 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
   const [moveSongFromPlaylist, { isLoading: isMoveLoading }] = useMoveSongFromPlaylistMutation()
   const [removeSongsFromPlaylist] = useRemoveSongsFromPlaylistMutation()
 
-  const [order, setOrder] = useState<Order>(playlistSongsOrders[0])
+  const [order, setOrder] = useLocalStorage({
+    key: LocalStorageKeys.PlaylistSongsOrder,
+    defaultValue: playlistSongsOrders[0]
+  })
 
   const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 

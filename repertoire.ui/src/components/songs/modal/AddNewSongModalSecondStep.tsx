@@ -147,6 +147,8 @@ function AddNewSongModalSecondStep({
                           </ActionIcon>
 
                           <SongSectionTypeSelect
+                            w={100}
+                            comboboxProps={{ position: 'bottom-start', width: 125 }}
                             placeholder={'Type'}
                             option={section.type}
                             onOptionChange={(option) =>

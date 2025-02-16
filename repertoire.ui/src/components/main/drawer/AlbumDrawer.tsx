@@ -177,7 +177,7 @@ function AlbumDrawer() {
                   <Avatar
                     radius={'8px'}
                     size={28}
-                    src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+                    src={song.imageUrl ?? album.imageUrl ?? songPlaceholder}
                     alt={song.title}
                   />
                 </Grid.Col>

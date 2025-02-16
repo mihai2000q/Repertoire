@@ -1,8 +1,8 @@
-import { Box, Skeleton, Stack } from '@mantine/core'
+import { Group, Skeleton, Stack } from '@mantine/core'
 
 function HomeSongsLoader() {
   return (
-    <Box data-testid={'home-songs-loader'}>
+    <Group wrap={'nowrap'} gap={'lg'} data-testid={'home-songs-loader'}>
       {Array.from(Array(20)).map((_, i) => (
         <Stack key={i} gap={'xs'} align={'center'}>
           <Skeleton
@@ -17,7 +17,7 @@ function HomeSongsLoader() {
           </Stack>
         </Stack>
       ))}
-    </Box>
+    </Group>
   )
 }
 

@@ -26,36 +26,19 @@ describe('Album Drawer', () => {
       title: 'Song 1',
       albumTrackNo: 1,
       imageUrl: 'something.png',
-      album: {
-        ...emptyAlbum,
-        imageUrl: 'something-album.png'
-      }
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
       albumTrackNo: 2,
-      album: {
-        ...emptyAlbum,
-        imageUrl: 'something-album.png'
-      }
     },
     {
       ...emptySong,
       id: '3',
       title: 'Song 3',
       albumTrackNo: 3,
-      imageUrl: 'something.png',
-      album: emptyAlbum
     },
-    {
-      ...emptySong,
-      id: '4',
-      title: 'Song 4',
-      albumTrackNo: 4,
-      album: emptyAlbum
-    }
   ]
 
   const album: Album = {
@@ -119,11 +102,6 @@ describe('Album Drawer', () => {
       expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
-      } else if (song.album?.imageUrl) {
-        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
-          'src',
-          song.album.imageUrl
-        )
       }
     })
   })
@@ -173,10 +151,10 @@ describe('Album Drawer', () => {
       expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
-      } else if (song.album?.imageUrl) {
+      } else if (album?.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
           'src',
-          song.album.imageUrl
+          album.imageUrl
         )
       }
     })

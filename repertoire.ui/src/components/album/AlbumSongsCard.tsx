@@ -134,6 +134,7 @@ function AlbumSongsCard({
                           order={order}
                           isDragging={snapshot.isDragging}
                           draggableProvided={provided}
+                          albumImageUrl={album?.imageUrl}
                         />
                       )}
                     </Draggable>
