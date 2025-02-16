@@ -5,8 +5,8 @@ import YoutubeModal from './YoutubeModal.tsx'
 describe('Youtube Modal', () => {
   it('should render', async () => {
     const title = 'Some Song'
-    const link = 'https://www.youtube.com/watch?v=tmmFtw4qR8U'
-    const expectedLinkToRender = 'https://www.youtube.com/embed/tmmFtw4qR8U'
+    const link = 'https://www.youtube.com/watch?v=tAGnKpE4NCI'
+    const expectedLinkToRender = 'https://www.youtube.com/embed/tAGnKpE4NCI'
 
     reduxRender(<YoutubeModal title={title} link={link} opened={true} onClose={() => {}} />)
 

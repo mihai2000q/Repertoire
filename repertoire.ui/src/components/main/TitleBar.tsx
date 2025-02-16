@@ -47,7 +47,7 @@ function TitleBar() {
 
         <Space flex={1} />
 
-        <Group gap={4} style={{ WebkitAppRegion: 'no-drag' }} wrap={'nowrap'}>
+        <Group gap={'xxs'} style={{ WebkitAppRegion: 'no-drag' }} wrap={'nowrap'}>
           <ActionIcon
             aria-label={'minimize'}
             variant={'subtle'}

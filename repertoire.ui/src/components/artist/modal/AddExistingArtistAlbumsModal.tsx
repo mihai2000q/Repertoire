@@ -97,7 +97,7 @@ function AddExistingArtistAlbumsModal({
         <LoadingOverlay visible={addAlbumIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
-          <Group gap={4} align={'start'}>
+          <Group gap={'xxs'} align={'start'}>
             <Text fw={500} ta={'center'} fz={'lg'}>
               Choose albums
             </Text>

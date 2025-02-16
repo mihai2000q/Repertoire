@@ -16,7 +16,7 @@ describe('Song Links Card', () => {
     progress: 0,
     createdAt: '',
     updatedAt: '',
-    youtubeLink: 'https://www.youtube.com/watch?v=123456789',
+    youtubeLink: 'https://www.youtube.com/watch?v=tAGnKpE4NCI',
     songsterrLink: 'https://www.songsterr.com/song'
   }
 

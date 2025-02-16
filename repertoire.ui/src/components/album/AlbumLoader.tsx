@@ -2,13 +2,13 @@ import { Divider, Group, Skeleton, Stack } from '@mantine/core'
 
 function AlbumLoader() {
   return (
-    <Stack data-testid={'album-loader'}>
+    <Stack px={'xl'} data-testid={'album-loader'}>
       <Group align={'start'}>
         <Skeleton radius={'lg'} w={150} h={150} />
-        <Stack gap={4} pt={'10px'}>
+        <Stack gap={'xxs'} pt={'10px'}>
           <Skeleton w={75} h={15} />
           <Skeleton w={200} h={45} my={4} />
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Skeleton radius={'50%'} w={35} h={35} />
             <Skeleton w={80} h={15} />
             <Skeleton w={35} h={15} />

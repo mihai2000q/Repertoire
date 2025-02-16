@@ -150,7 +150,7 @@ function SongCard({ song }: SongCardProps) {
                   </Text>
                 )}
               </Box>
-              <Group c={'primary.9'} gap={4} align={'end'} pb={1}>
+              <Group c={'primary.9'} gap={'xxs'} align={'end'} pb={1}>
                 <Tooltip.Group openDelay={200}>
                   {song.isRecorded && (
                     <LocalTooltip label={'This song is recorded'}>
@@ -222,7 +222,7 @@ function SongCard({ song }: SongCardProps) {
         onClose={closeDeleteWarning}
         title={`Delete Song`}
         description={
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Text>Are you sure you want to delete</Text>
             <Text fw={600}>{song.title}</Text>
             <Text>?</Text>

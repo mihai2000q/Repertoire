@@ -4,8 +4,7 @@ import { useGetArtistQuery } from '../state/api/artistsApi.ts'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
 import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
 import { useGetSongsQuery } from '../state/api/songsApi.ts'
-import { useEffect, useState } from 'react'
-import Order from '../types/Order.ts'
+import { useEffect } from 'react'
 import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
 import ArtistAlbumsCard from '../components/artist/panels/ArtistAlbumsCard.tsx'
@@ -13,6 +12,8 @@ import ArtistSongsCard from '../components/artist/panels/ArtistSongsCard.tsx'
 import ArtistHeaderCard from '../components/artist/panels/ArtistHeaderCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import BandMembersCard from '../components/artist/panels/BandMembersCard.tsx'
+import { useLocalStorage } from '@mantine/hooks'
+import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
 
 function Artist() {
   const params = useParams()
@@ -27,8 +28,14 @@ function Artist() {
     else if (artist) setDocumentTitle(artist.name)
   }, [artist, isUnknownArtist])
 
-  const [albumsOrder, setAlbumsOrder] = useState<Order>(artistAlbumsOrders[0])
-  const [songsOrder, setSongsOrder] = useState<Order>(artistSongsOrders[0])
+  const [albumsOrder, setAlbumsOrder] = useLocalStorage({
+    key: LocalStorageKeys.ArtistAlbumsOrder,
+    defaultValue: artistAlbumsOrders[0]
+  })
+  const [songsOrder, setSongsOrder] = useLocalStorage({
+    key: LocalStorageKeys.ArtistSongsOrder,
+    defaultValue: artistSongsOrders[0]
+  })
 
   const {
     data: albums,
@@ -50,7 +57,7 @@ function Artist() {
   if (isLoading) return <ArtistLoader />
 
   return (
-    <Stack>
+    <Stack px={'xl'}>
       <ArtistHeaderCard
         artist={artist}
         albumsTotalCount={albums?.totalCount}

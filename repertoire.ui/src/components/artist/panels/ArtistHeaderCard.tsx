@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
+import lowerTitleFontSize from '../../../utils/lowerTitleFontSize.ts'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -71,7 +72,7 @@ function ArtistHeaderCard({
       <Group wrap={'nowrap'}>
         <Avatar
           src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
-          size={125}
+          size={'max(11vw, 125px)'}
           alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
           sx={(theme) => ({
             boxShadow: theme.shadows.lg,
@@ -79,21 +80,18 @@ function ArtistHeaderCard({
           })}
           onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
         />
-        <Stack
-          gap={4}
-          style={{ ...(!isUnknownArtist && { alignSelf: 'start', paddingTop: '16px' }) }}
-        >
+        <Stack gap={'xxs'}>
           {!isUnknownArtist && (
             <Text fw={500} inline>
               Artist
             </Text>
           )}
           {isUnknownArtist ? (
-            <Title order={3} fw={200} fs={'italic'} mb={2}>
+            <Title order={3} fw={200} fs={'italic'} mb={2} fz={'max(2.5vw, 32px)'}>
               Unknown
             </Title>
           ) : (
-            <Title order={1} fw={700} lineClamp={2}>
+            <Title order={1} fw={700} lineClamp={2} fz={lowerTitleFontSize(artist?.name)}>
               {artist?.name}
             </Title>
           )}

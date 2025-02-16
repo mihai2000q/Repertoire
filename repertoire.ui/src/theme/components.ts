@@ -26,11 +26,9 @@ import { DatePickerInput } from '@mantine/dates'
 
 export const components = {
   ActionIcon: ActionIcon.extend({
-    defaultProps: {
-      style: { transition: '0.16s' }
-    },
     styles: (theme) => ({
       root: {
+        transition: '0.16s',
         '&[data-variant="grey"]': {
           color: theme.colors.gray[5],
           backgroundColor: theme.colors.gray[0],
@@ -63,12 +61,14 @@ export const components = {
   }),
   Button: Button.extend({
     defaultProps: {
-      style: {
-        transition: '0.18s'
-      },
       loaderProps: {
         type: 'dots'
-      }
+      },
+      styles: () => ({
+        root: {
+          transition: '0.18s',
+        }
+      })
     }
   }),
   Card: Card.extend({
@@ -152,9 +152,33 @@ export const components = {
     defaultProps: {
       py: 'md',
       px: 'lg',
-      fw: 500,
       styles: (theme) => ({
+        body: { flex: 'unset' },
+        section: {
+          [`@media(min-width: ${theme.breakpoints.xxl})`]: {
+            '& svg': {
+              width: '26px',
+              height: '26px'
+            }
+          }
+        },
+        label: {
+          fontSize: theme.fontSizes.sm,
+          fontWeight: 500,
+          [`@media(max-width: ${theme.breakpoints.sm})`]: {
+            fontSize: theme.fontSizes.lg,
+            fontWeight: 600
+          },
+          [`@media(min-width: ${theme.breakpoints.xxl})`]: {
+            fontSize: theme.fontSizes.md
+          }
+        },
         root: {
+          [`@media(max-width: ${theme.breakpoints.sm})`]: {
+            justifyContent: 'center',
+            width: 'max(60vw, 200px)'
+          },
+
           borderRadius: '16px',
           transition: '0.25s',
           color: theme.colors.gray[6],

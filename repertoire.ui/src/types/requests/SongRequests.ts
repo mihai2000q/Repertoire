@@ -58,6 +58,8 @@ export interface CreateSongSectionRequest {
   songId: string
   typeId: string
   name: string
+  instrumentId?: string
+  bandMemberId?: string
 }
 
 export interface UpdateSongSectionRequest {

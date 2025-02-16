@@ -54,9 +54,9 @@ function Playlists() {
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'}>
-      <Group gap={4}>
-        <Title order={3} fw={800}>
+    <Stack h={'100%'} gap={'xs'} px={'xl'}>
+      <Group gap={'xxs'}>
+        <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Playlists
         </Title>
         <ActionIcon
@@ -68,14 +68,14 @@ function Playlists() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-playlists'} variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'order-playlists'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon aria-label={'filter-playlists'} variant={'grey'} size={'lg'}>
+        <ActionIcon aria-label={'filter-playlists'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
-      {!isFetching && (
+      {!isLoading && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} playlists out of {playlists?.totalCount}
         </Text>

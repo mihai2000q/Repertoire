@@ -158,14 +158,14 @@ function SongDrawer() {
           </Box>
         </Box>
 
-        <Stack px={'md'} pb={'xs'} gap={4}>
-          <Title order={5} fw={700} lineClamp={2}>
+        <Stack px={'md'} pb={'xs'} gap={'xxs'}>
+          <Title order={5} fw={700} lineClamp={2} fz={'max(1.85vw, 24px)'}>
             {song.title}
           </Title>
 
-          <Group gap={4}>
+          <Group gap={'xxs'} wrap={'nowrap'}>
             {song.artist && (
-              <Group gap={'xs'}>
+              <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   size={28}
                   src={song.artist.imageUrl ?? userPlaceholder}
@@ -179,6 +179,7 @@ function SongDrawer() {
                     '&:hover': { textDecoration: 'underline' }
                   }}
                   inline
+                  lineClamp={1}
                 >
                   {song.artist.name}
                 </Text>
@@ -186,7 +187,7 @@ function SongDrawer() {
             )}
 
             {song.album && (
-              <Group gap={0}>
+              <Group gap={0} wrap={'nowrap'}>
                 {song.artist && (
                   <Text fw={500} c={'dimmed'} inline pr={4}>
                     on
@@ -202,6 +203,7 @@ function SongDrawer() {
                         cursor: 'pointer',
                         '&:hover': { textDecoration: 'underline' }
                       }}
+                      lineClamp={1}
                     >
                       {song.album.title}
                     </Text>

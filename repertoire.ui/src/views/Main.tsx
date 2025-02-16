@@ -11,12 +11,15 @@ import useTitleBarHeight from '../hooks/useTitleBarHeight'
 import SongDrawer from '../components/main/drawer/SongDrawer.tsx'
 import AlbumDrawer from '../components/main/drawer/AlbumDrawer.tsx'
 import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
+import { useDisclosure } from '@mantine/hooks'
 
 function Main(): ReactElement {
   useErrorRedirection()
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
+
+  const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
   return (
     <Box w={'100%'} h={'100%'}>
@@ -25,18 +28,17 @@ function Main(): ReactElement {
         layout={'alt'}
         header={{ height: 65 }}
         navbar={{
-          width: 250,
-          breakpoint: 'xs',
-          collapsed: { mobile: true, desktop: false }
+          width: 'max(15vw, 250px)',
+          breakpoint: 'sm',
+          collapsed: { mobile: !mobileSidebarOpened, desktop: false }
         }}
-        px={'xl'}
         w={'100%'}
         h={`calc(100% - ${titleBarHeight})`}
         mt={titleBarHeight}
         disabled={!useAuth()}
       >
-        <Topbar />
-        <Sidebar />
+        <Topbar toggleSidebar={toggleSidebarMobile} />
+        <Sidebar toggleSidebar={toggleSidebarMobile} />
         <AppShell.Main h={'100%'} mih={0}>
           <Outlet />
         </AppShell.Main>

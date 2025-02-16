@@ -12,7 +12,7 @@ function ArtistAlbumsLoader() {
           {Array.from(Array(8)).map((_, i) => (
             <Group key={i} px={'md'} py={'xs'} wrap={'nowrap'}>
               <Skeleton radius={'md'} w={40} h={40} />
-              <Stack gap={4}>
+              <Stack gap={'xxs'}>
                 <Skeleton w={100} h={14} />
                 <Skeleton w={50} h={8} />
               </Stack>

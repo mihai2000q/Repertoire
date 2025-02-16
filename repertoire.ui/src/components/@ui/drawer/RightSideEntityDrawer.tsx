@@ -26,6 +26,7 @@ function RightSideEntityDrawer({
       onClose={onClose}
       position="right"
       overlayProps={{ backgroundOpacity: 0.1, blur: 1 }}
+      size={'max(28%, 440px)'}
       shadow="xl"
       radius={'8 0 0 8'}
       styles={{

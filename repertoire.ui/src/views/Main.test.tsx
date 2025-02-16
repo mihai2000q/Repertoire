@@ -1,9 +1,25 @@
-import { reduxRouterRender } from '../test-utils.tsx'
+import {emptyUser, reduxRouterRender} from '../test-utils.tsx'
 import Main from './Main.tsx'
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
+import {setupServer} from "msw/node";
+import {http, HttpResponse} from "msw";
 
 describe('Main', () => {
+  const handlers = [
+    http.get('/users/current', async () => {
+      return HttpResponse.json(emptyUser)
+    })
+  ]
+
+  const server = setupServer(...handlers)
+
+  beforeAll(() => server.listen())
+
+  afterEach(() => server.resetHandlers())
+
+  afterAll(() => server.close())
+
   const render = (token?: string) =>
     reduxRouterRender(
       <Routes>

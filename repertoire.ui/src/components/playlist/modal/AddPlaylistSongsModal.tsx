@@ -165,12 +165,12 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     alt={song.title}
                   />
                   <Stack gap={0} style={{ overflow: 'hidden' }}>
-                    <Group gap={4} wrap={'nowrap'}>
+                    <Group gap={'xxs'} wrap={'nowrap'}>
                       <Text fw={500} truncate={'end'}>
                         {song.title}
                       </Text>
                       {song.album && (
-                        <Group gap={4} wrap={'nowrap'}>
+                        <Group gap={'xxs'} wrap={'nowrap'}>
                           <Text fz={'sm'} c={'dimmed'}>
                             -
                           </Text>

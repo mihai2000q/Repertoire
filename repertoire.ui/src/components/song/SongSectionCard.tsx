@@ -70,6 +70,8 @@ function SongSectionCard({
     updateSongSectionMutation({
       ...section,
       typeId: section.songSectionType.id,
+      bandMemberId: section.bandMember?.id,
+      instrumentId: section.instrument?.id,
       rehearsals: section.rehearsals + 1
     })
   }
@@ -130,7 +132,7 @@ function SongSectionCard({
                   <Avatar
                     size={25}
                     color={section.bandMember.color}
-                    src={section.bandMember.imageUrl ?? section.bandMember.color}
+                    src={section.bandMember.imageUrl}
                     alt={section.bandMember.name}
                   >
                     <IconUser size={15} />
@@ -141,7 +143,7 @@ function SongSectionCard({
                     <Avatar
                       size={60}
                       color={section.bandMember.color}
-                      src={section.bandMember.imageUrl ?? section.bandMember.color}
+                      src={section.bandMember.imageUrl}
                       alt={section.bandMember.name}
                       style={(theme) => ({ boxShadow: theme.shadows.sm })}
                     >
@@ -260,7 +262,7 @@ function SongSectionCard({
         onClose={closeDeleteWarning}
         title={`Delete Section`}
         description={
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Text>Are you sure you want to delete</Text>
             <Text fw={600}>{section.name}</Text>
             <Text>?</Text>

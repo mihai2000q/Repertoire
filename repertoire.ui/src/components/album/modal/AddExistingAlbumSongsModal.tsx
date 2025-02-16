@@ -100,7 +100,7 @@ function AddExistingAlbumSongsModal({
         <LoadingOverlay visible={addSongIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
-          <Group gap={4} align={'start'}>
+          <Group gap={'xxs'} align={'start'}>
             <Text fw={500} ta={'center'} fz={'lg'}>
               Choose songs
             </Text>

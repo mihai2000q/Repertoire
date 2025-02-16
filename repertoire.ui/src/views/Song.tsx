@@ -25,7 +25,7 @@ function Song() {
   if (isLoading) return <SongLoader />
 
   return (
-    <Stack>
+    <Stack px={'xl'}>
       <SongHeaderCard song={song} />
 
       <Divider />

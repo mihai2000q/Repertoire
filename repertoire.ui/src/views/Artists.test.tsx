@@ -135,7 +135,9 @@ describe('Artists', () => {
     expect(screen.getByRole('heading', { name: /artists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-artist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-artists/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-artists/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-artists/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filter-artists/i })).toBeDisabled()
     expect(screen.getByTestId('artists-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-artist-card')).toBeInTheDocument()
@@ -147,6 +149,8 @@ describe('Artists', () => {
       expect(screen.getByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('artists-pagination')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-artists/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /filter-artists/i })).not.toBeDisabled()
   })
 
   it('should open the add new artist modal when clicking the new artist button', async () => {

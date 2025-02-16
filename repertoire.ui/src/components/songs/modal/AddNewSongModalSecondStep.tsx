@@ -80,7 +80,7 @@ function AddNewSongModalSecondStep({
           {...form.getInputProps('bpm')}
         />
 
-        <Group flex={1} gap={4}>
+        <Group flex={1} gap={'xxs'}>
           <DatePickerInput
             flex={1}
             leftSection={<IconCalendarFilled size={20} />}
@@ -104,7 +104,7 @@ function AddNewSongModalSecondStep({
         </Group>
       </Group>
 
-      <Stack gap={4}>
+      <Stack gap={'xxs'}>
         <Text fw={500} fz={'sm'}>
           Sections
         </Text>
@@ -147,9 +147,11 @@ function AddNewSongModalSecondStep({
                           </ActionIcon>
 
                           <SongSectionTypeSelect
+                            w={100}
+                            comboboxProps={{ position: 'bottom-start', width: 125 }}
                             placeholder={'Type'}
                             option={section.type}
-                            onChange={(option) =>
+                            onOptionChange={(option) =>
                               sectionsHandlers.setItem(index, {
                                 ...section,
                                 type: option,

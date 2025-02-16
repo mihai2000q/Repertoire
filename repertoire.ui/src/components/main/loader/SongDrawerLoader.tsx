@@ -5,16 +5,16 @@ function SongDrawerLoader() {
     <Stack gap={'xs'} data-testid={'song-drawer-loader'}>
       <Skeleton radius={0} w={'100%'} h={330} />
 
-      <Stack px={'md'} pb={'xs'} gap={4}>
+      <Stack px={'md'} pb={'xs'} gap={'xxs'}>
         <Skeleton w={220} h={25} />
-        <Group gap={4}>
+        <Group gap={'xxs'}>
           <Skeleton radius={'50%'} w={35} h={35} />
           <Skeleton w={80} h={15} />
           <Skeleton w={110} h={15} />
           <Skeleton w={45} h={15} />
         </Group>
 
-        <Stack gap={4} my={'xs'} px={'xs'}>
+        <Stack gap={'xxs'} my={'xs'} px={'xs'}>
           <Skeleton w={'100%'} h={8} />
           <Skeleton w={'100%'} h={8} />
           <Skeleton w={50} h={8} />

@@ -1,0 +1,12 @@
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('21d12de3-bcf1-4696-89b1-4e6f599f86ce', 'Voice', 0, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('c0003560-74c6-43da-b669-3aebc37f15c0', 'Piano', 1, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('5e1fd8ef-d936-418b-a29a-67112ec8c99e', 'Keyboard', 2, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('33e449cb-ef35-49be-b6e3-737a4505baf0', 'Drums', 3, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('7f9ed3e2-4c0e-4b17-ae25-2794dd5cdc5f', 'Electric Guitar', 4, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('6452b4f4-48ee-4b6b-9a73-82283d473599', 'Acoustic Guitar', 5, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('613b308c-d10a-42e9-96bf-13a206e5d345', 'Bass', 6, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('087b3593-91d8-4387-83ae-884e87ca8477', 'Ukulele', 7, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('bb1d24fa-a4a2-4250-92f9-4f024b00c2d9', 'Violin', 8, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('3caec8bb-09ff-44bf-a1f1-8c89dec3a3ff', 'Saxophone', 9, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('6030b5f2-075e-451a-bea7-35dedfef5784', 'Flute', 10, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.instruments (id, name, "order", user_id) VALUES ('fe6e1767-2b7c-494d-beb3-61bec204cd55', 'Harp', 11, '10000000-0000-0000-0000-000000000000');

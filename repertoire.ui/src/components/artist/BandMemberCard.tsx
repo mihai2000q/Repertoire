@@ -55,7 +55,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
       w={75}
       align={'center'}
       aria-label={`band-member-card-${bandMember.name}`}
-      gap={4}
+      gap={'xxs'}
       sx={{ transition: '0.3s', ...(isSelected && { transform: 'scale(1.1)' }) }}
       {...draggableProvided?.draggableProps}
     >
@@ -66,7 +66,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
             variant={'light'}
             size={'lg'}
             color={bandMember.color}
-            src={bandMember.imageUrl ?? null}
+            src={bandMember.imageUrl}
             alt={bandMember.name}
             sx={(theme) => ({
               transition: '0.3s',
@@ -111,7 +111,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
         onClose={closeDeleteWarning}
         title={`Delete Band Member`}
         description={
-          <Group gap={4}>
+          <Group gap={'xxs'}>
             <Text>Are you sure you want to delete</Text>
             <Text fw={600}>{bandMember.name}</Text>
             <Text>?</Text>

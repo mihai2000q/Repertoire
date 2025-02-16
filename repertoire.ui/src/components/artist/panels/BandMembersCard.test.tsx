@@ -41,8 +41,8 @@ describe('Band Members Card', () => {
     reduxRender(<BandMembersCard bandMembers={bandMembers} artistId={''} />)
 
     expect(screen.getByText(/band members/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'back-button' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'forward-button' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'forward' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'band-members-more-menu' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'band-members-more-menu' }))
@@ -60,8 +60,8 @@ describe('Band Members Card', () => {
     reduxRender(<BandMembersCard bandMembers={[]} artistId={''} />)
 
     expect(screen.getByText(/band members/i)).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'back-button' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'forward-button' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'back' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'forward' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'band-members-more-menu' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'band-members-more-menu' }))

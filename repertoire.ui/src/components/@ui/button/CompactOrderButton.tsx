@@ -28,7 +28,7 @@ function CompactOrderButton({ availableOrders, order, setOrder, disabledOrders }
         {availableOrders.map((o) => (
           <Menu.Item
             key={o.value}
-            leftSection={order === o && <IconCheck size={12} />}
+            leftSection={order.value === o.value && <IconCheck size={12} />}
             disabled={disabledOrders?.includes(o)}
             onClick={() => setOrder(o)}
           >

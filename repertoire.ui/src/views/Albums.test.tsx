@@ -118,7 +118,9 @@ describe('Albums', () => {
     expect(screen.getByRole('heading', { name: /albums/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /new-album/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /order-albums/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-albums/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-albums/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /filter-albums/i })).toBeDisabled()
     expect(screen.getByTestId('albums-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-album-card')).toBeInTheDocument()
@@ -130,6 +132,8 @@ describe('Albums', () => {
       expect(screen.getByLabelText(`album-card-${album.title}`)).toBeInTheDocument()
     )
     expect(screen.getByTestId('albums-pagination')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /order-albums/i })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: /filter-albums/i })).not.toBeDisabled()
   })
 
   it('should open the add new album modal when clicking the new album button', async () => {

@@ -125,21 +125,21 @@ function AlbumDrawer() {
           </Box>
         </Box>
 
-        <Stack px={'md'} pb={'md'} gap={4}>
-          <Title order={5} fw={700} lineClamp={2}>
+        <Stack px={'md'} pb={'md'} gap={'xxs'}>
+          <Title order={5} fw={700} lineClamp={2} fz={'max(1.85vw, 24px)'}>
             {album.title}
           </Title>
 
-          <Group gap={4}>
+          <Group gap={'xxs'} wrap={'nowrap'}>
             {album.artist && (
               <>
-                <Group gap={6}>
+                <Group gap={6} wrap={'nowrap'}>
                   <Avatar
                     size={28}
                     src={album.artist.imageUrl ?? userPlaceholder}
                     alt={album.artist.name}
                   />
-                  <Text fw={600} fz={'lg'}>
+                  <Text fw={600} fz={'lg'} lineClamp={1}>
                     {album.artist.name}
                   </Text>
                 </Group>
@@ -158,7 +158,7 @@ function AlbumDrawer() {
                 <Text fw={500}>•</Text>
               </>
             )}
-            <Text fw={500} c={'dimmed'}>
+            <Text fw={500} c={'dimmed'} truncate={'end'}>
               {album.songs.length} song{plural(album.songs)}
             </Text>
           </Group>
@@ -177,7 +177,7 @@ function AlbumDrawer() {
                   <Avatar
                     radius={'8px'}
                     size={28}
-                    src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+                    src={song.imageUrl ?? album.imageUrl ?? songPlaceholder}
                     alt={song.title}
                   />
                 </Grid.Col>

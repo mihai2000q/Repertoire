@@ -29,7 +29,7 @@ import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import PerfectRehearsalMenuItem from "../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface AlbumSongCardProps {
   song: Song
@@ -37,6 +37,7 @@ interface AlbumSongCardProps {
   isUnknownAlbum: boolean
   order: Order
   isDragging: boolean
+  albumImageUrl?: string | null | undefined
   draggableProvided?: DraggableProvided
 }
 
@@ -46,6 +47,7 @@ function AlbumSongCard({
   isUnknownAlbum,
   order,
   isDragging,
+  albumImageUrl,
   draggableProvided
 }: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
@@ -129,7 +131,7 @@ function AlbumSongCard({
           )}
           <Avatar
             radius={'8px'}
-            src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+            src={song.imageUrl ?? albumImageUrl ?? songPlaceholder}
             alt={song.title}
           />
 
@@ -200,8 +202,8 @@ function AlbumSongCard({
         onClose={closeRemoveWarning}
         title={`Remove Song`}
         description={
-          <Stack gap={4}>
-            <Group gap={4}>
+          <Stack gap={'xxs'}>
+            <Group gap={'xxs'}>
               <Text>Are you sure you want to remove</Text>
               <Text fw={600}>{song.title}</Text>
               <Text>from this album?</Text>

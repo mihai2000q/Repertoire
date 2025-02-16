@@ -117,7 +117,7 @@ function DeleteAccountModal({
           >
             {(styles) => (
               <Stack style={styles} pos={activeStep === 1 ? 'unset' : 'absolute'}>
-                <Stack gap={4}>
+                <Stack gap={'xxs'}>
                   <Text fw={500}>Are you sure you want to delete your account?</Text>
                   <Text fz={'xs'} fw={500} c={'dimmed'}>
                     This action will result in the immediate loss of access to Repertoire and the
@@ -125,7 +125,7 @@ function DeleteAccountModal({
                   </Text>
                 </Stack>
 
-                <Group gap={4} style={{ alignSelf: 'end' }}>
+                <Group gap={'xxs'} style={{ alignSelf: 'end' }}>
                   <Button variant={'subtle'} onClick={onCloseWithStep}>
                     Keep Account
                   </Button>
@@ -160,7 +160,7 @@ function DeleteAccountModal({
                     disabled={isLoading}
                   />
 
-                  <Group gap={4} style={{ alignSelf: 'end' }}>
+                  <Group gap={'xxs'} style={{ alignSelf: 'end' }}>
                     <Button variant={'subtle'} onClick={onCloseWithStep}>
                       Cancel
                     </Button>
