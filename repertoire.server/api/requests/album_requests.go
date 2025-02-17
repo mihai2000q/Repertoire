@@ -34,6 +34,7 @@ type UpdateAlbumRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`
 	ReleaseDate *time.Time
+	ArtistID    *uuid.UUID
 }
 
 type MoveSongFromAlbumRequest struct {

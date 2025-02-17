@@ -346,6 +346,7 @@ func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				ID:          uuid.New(),
 				Title:       validAlbumTitle,
 				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
 	}

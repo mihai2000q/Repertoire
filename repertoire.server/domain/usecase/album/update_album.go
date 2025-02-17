@@ -10,11 +10,18 @@ import (
 )
 
 type UpdateAlbum struct {
-	repository repository.AlbumRepository
+	repository     repository.AlbumRepository
+	songRepository repository.SongRepository
 }
 
-func NewUpdateAlbum(repository repository.AlbumRepository) UpdateAlbum {
-	return UpdateAlbum{repository: repository}
+func NewUpdateAlbum(
+	repository repository.AlbumRepository,
+	songRepository repository.SongRepository,
+) UpdateAlbum {
+	return UpdateAlbum{
+		repository:     repository,
+		songRepository: songRepository,
+	}
 }
 
 func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
@@ -27,10 +34,38 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
+	artistHasChanged := album.ArtistID != request.ArtistID
+
 	album.Title = request.Title
 	album.ReleaseDate = request.ReleaseDate
+	album.ArtistID = request.ArtistID
 
 	err = u.repository.Update(&album)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	if artistHasChanged {
+		errCode := u.updateAlbumSongsArtist(request)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
+	return nil
+}
+
+func (u UpdateAlbum) updateAlbumSongsArtist(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
+	var album model.Album
+	err := u.repository.GetWithSongs(&album, request.ID)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	for i := range album.Songs {
+		album.Songs[i].ArtistID = request.ArtistID
+	}
+	err = u.songRepository.UpdateAll(&album.Songs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
