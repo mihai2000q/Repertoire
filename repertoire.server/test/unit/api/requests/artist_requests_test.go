@@ -607,7 +607,7 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 				Color:    &[]string{""}[0],
 			},
 			"Color",
-			"isColor",
+			"color",
 		},
 		{
 			"Color is invalid because the format is wrong",
@@ -618,7 +618,7 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 				Color:    &[]string{""}[0],
 			},
 			"Color",
-			"isColor",
+			"color",
 		},
 		{
 			"Color is invalid because the format is wrong",
@@ -629,7 +629,7 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 				Color:    &[]string{"123456"}[0],
 			},
 			"Color",
-			"isColor",
+			"color",
 		},
 		{
 			"Color is invalid because the format is wrong",
@@ -640,7 +640,7 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 				Color:    &[]string{"#12345"}[0],
 			},
 			"Color",
-			"isColor",
+			"color",
 		},
 		// Role IDs Test Cases
 		{

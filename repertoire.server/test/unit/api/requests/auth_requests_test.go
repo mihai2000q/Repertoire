@@ -174,19 +174,19 @@ func TestValidateSignUpRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t
 			"Password is invalid because it doesn't have an uppercase letter",
 			requests.SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("a", 9)},
 			"Password",
-			"hasUpper",
+			"has_upper",
 		},
 		{
 			"Password is invalid because it doesn't have a lowercase letter",
 			requests.SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("A", 9)},
 			"Password",
-			"hasLower",
+			"has_lower",
 		},
 		{
 			"Password is invalid because it doesn't have any digit",
 			requests.SignUpRequest{Name: validName, Email: validEmail, Password: strings.Repeat("A", 4) + strings.Repeat("a", 4)},
 			"Password",
-			"hasDigit",
+			"has_digit",
 		},
 	}
 	for _, tt := range tests {

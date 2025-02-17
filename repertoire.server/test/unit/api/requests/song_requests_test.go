@@ -206,7 +206,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 				YoutubeLink: &[]string{"https://google.com"}[0],
 			},
 			[]string{"YoutubeLink"},
-			[]string{"isYoutubeLink"},
+			[]string{"youtube_link"},
 		},
 		// Difficulty Test Cases
 		{
@@ -216,7 +216,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 				Difficulty: &[]enums.Difficulty{"Something else"}[0],
 			},
 			[]string{"Difficulty"},
-			[]string{"isDifficultyEnum"},
+			[]string{"difficulty_enum"},
 		},
 		// Album ID
 		{
@@ -440,7 +440,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 				YoutubeLink: &[]string{"https://google.com"}[0],
 			},
 			"YoutubeLink",
-			"isYoutubeLink",
+			"youtube_link",
 		},
 		// Difficulty Test Cases
 		{
@@ -451,7 +451,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 				Difficulty: &[]enums.Difficulty{"Something else"}[0],
 			},
 			"Difficulty",
-			"isDifficultyEnum",
+			"difficulty_enum",
 		},
 	}
 	for _, tt := range tests {
