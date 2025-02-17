@@ -97,7 +97,8 @@ func TestUpdateAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *tes
 func TestUpdateAlbum_WhenGetSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album.NewUpdateAlbum(albumRepository, nil)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := album.NewUpdateAlbum(albumRepository, songRepository)
 
 	request := requests.UpdateAlbumRequest{
 		ID:       uuid.New(),
@@ -114,7 +115,7 @@ func TestUpdateAlbum_WhenGetSongsFails_ShouldReturnInternalServerError(t *testin
 	albumRepository.On("Update", mock.IsType(mockAlbum)).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("GetWithSongs", new(model.Album), request.ID).
+	songRepository.On("GetAllByAlbum", new([]model.Song), request.ID).
 		Return(internalError).
 		Once()
 
@@ -126,6 +127,7 @@ func TestUpdateAlbum_WhenGetSongsFails_ShouldReturnInternalServerError(t *testin
 	assert.Equal(t, internalError, errCode.Error)
 
 	albumRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
 }
 
 func TestUpdateAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -148,14 +150,10 @@ func TestUpdateAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *tes
 	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
 	albumRepository.On("Update", mock.IsType(mockAlbum)).Return(nil).Once()
 
-	mockAlbumWithSongs := &model.Album{
-		ID:    request.ID,
-		Title: "Some Album",
-		Songs: []model.Song{{ID: uuid.New()}},
-	}
+	songs := []model.Song{{ID: uuid.New()}}
 
-	albumRepository.On("GetWithSongs", new(model.Album), request.ID).
-		Return(nil, mockAlbumWithSongs).
+	songRepository.On("GetAllByAlbum", new([]model.Song), request.ID).
+		Return(nil, &songs).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -275,13 +273,10 @@ func TestUpdateAlbum_WhenArtistHasChanged_ShouldUpdateAlbumAndSongsAndNotReturnA
 				Return(nil).
 				Once()
 
-			albumWithSongs := &model.Album{
-				ID:    tt.request.ID,
-				Songs: []model.Song{{ID: uuid.New()}, {ID: uuid.New()}, {ID: uuid.New()}},
-			}
+			songs := []model.Song{{ID: uuid.New()}, {ID: uuid.New()}, {ID: uuid.New()}}
 
-			albumRepository.On("GetWithSongs", new(model.Album), tt.request.ID).
-				Return(nil, albumWithSongs).
+			songRepository.On("GetAllByAlbum", new([]model.Song), tt.request.ID).
+				Return(nil, &songs).
 				Once()
 			songRepository.On("UpdateAll", mock.IsType(&[]model.Song{})).
 				Run(func(args mock.Arguments) {

@@ -56,16 +56,16 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 }
 
 func (u UpdateAlbum) updateAlbumSongsArtist(request requests.UpdateAlbumRequest) *wrapper.ErrorCode {
-	var album model.Album
-	err := u.repository.GetWithSongs(&album, request.ID)
+	var songs []model.Song
+	err := u.songRepository.GetAllByAlbum(&songs, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	for i := range album.Songs {
-		album.Songs[i].ArtistID = request.ArtistID
+	for i := range songs {
+		songs[i].ArtistID = request.ArtistID
 	}
-	err = u.songRepository.UpdateAll(&album.Songs)
+	err = u.songRepository.UpdateAll(&songs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

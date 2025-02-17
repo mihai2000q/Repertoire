@@ -45,6 +45,8 @@ type UpdateSongRequest struct {
 	ReleaseDate    *time.Time
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
+	ArtistID       *uuid.UUID
+	AlbumID        *uuid.UUID
 }
 
 type CreateSectionRequest struct {
