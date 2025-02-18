@@ -19,9 +19,9 @@ type CreateSongRequest struct {
 	Description    string
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
-	YoutubeLink    *string `validate:"omitempty,isYoutubeLink"`
+	YoutubeLink    *string `validate:"omitempty,youtube_link"`
 	ReleaseDate    *time.Time
-	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
 	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle ArtistID ArtistName"`
@@ -41,10 +41,12 @@ type UpdateSongRequest struct {
 	IsRecorded     bool
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
-	YoutubeLink    *string `validate:"omitempty,isYoutubeLink"`
+	YoutubeLink    *string `validate:"omitempty,youtube_link"`
 	ReleaseDate    *time.Time
-	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
+	ArtistID       *uuid.UUID
+	AlbumID        *uuid.UUID
 }
 
 type CreateSectionRequest struct {

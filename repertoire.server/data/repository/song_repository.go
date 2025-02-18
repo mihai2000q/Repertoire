@@ -21,9 +21,11 @@ type SongRepository interface {
 		searchBy []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
+	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
+	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
 	Update(song *model.Song) error
@@ -133,6 +135,12 @@ func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error 
 	return s.client.DB.Model(&model.Song{}).Find(&songs, ids).Error
 }
 
+func (s songRepository) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
+	return s.client.DB.Model(&model.Song{}).
+		Find(&songs, model.Song{AlbumID: &albumID}).
+		Error
+}
+
 func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error {
 	return s.client.DB.Model(&model.Song{}).
 		Where("album_id = ? AND album_track_no > ?", albumID, trackNo).
@@ -146,6 +154,13 @@ func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUI
 		Preload("Album").
 		Preload("Album.Songs").
 		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) CountByAlbum(count *int64, albumID uuid.UUID) error {
+	return s.client.DB.Model(&model.Song{}).
+		Where("album_id = ?", albumID).
+		Count(count).
 		Error
 }
 
