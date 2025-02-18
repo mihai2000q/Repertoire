@@ -154,6 +154,12 @@ var Albums = []model.Album{
 		Title:  "Test Album 2",
 		UserID: Users[0].ID,
 	},
+	{
+		ID:       uuid.New(),
+		Title:    "Test Album 3",
+		UserID:   Users[0].ID,
+		ArtistID: &[]uuid.UUID{Artists[1].ID}[0],
+	},
 }
 
 var songSections = []model.SongSection{
@@ -325,6 +331,14 @@ var Songs = []model.Song{
 		ID:     uuid.New(),
 		Title:  "Test Song 9 - In Playlist",
 		UserID: Users[0].ID,
+	},
+
+	{
+		ID:           uuid.New(),
+		Title:        "Test Song 10 - In Another Album",
+		UserID:       Users[0].ID,
+		AlbumID:      &[]uuid.UUID{Albums[2].ID}[0],
+		AlbumTrackNo: &[]uint{1}[0],
 	},
 }
 

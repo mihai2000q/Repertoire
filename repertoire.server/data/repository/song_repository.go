@@ -25,6 +25,7 @@ type SongRepository interface {
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
+	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
 	Update(song *model.Song) error
@@ -153,6 +154,13 @@ func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUI
 		Preload("Album").
 		Preload("Album.Songs").
 		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) CountByAlbum(count *int64, albumID uuid.UUID) error {
+	return s.client.DB.Model(&model.Song{}).
+		Where("album_id = ?", albumID).
+		Count(count).
 		Error
 }
 

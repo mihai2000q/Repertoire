@@ -118,7 +118,7 @@ func (s *SongRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID, s
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) CountByAlbum(count *int64, albumID *uuid.UUID) error {
+func (s *SongRepositoryMock) CountByAlbum(count *int64, albumID uuid.UUID) error {
 	args := s.Called(count, albumID)
 
 	if len(args) > 1 {
