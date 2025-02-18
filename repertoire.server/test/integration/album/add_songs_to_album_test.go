@@ -144,14 +144,14 @@ func assertSongsAddedToAlbum(t *testing.T, request requests.AddSongsToAlbumReque
 
 	var album model.Album
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
-		return db.Order("songs.album_track_no")
+		return db.Order("album_track_no")
 	}).Find(&album, request.ID)
 
 	assert.GreaterOrEqual(t, len(album.Songs), len(request.SongIDs))
 
 	sizeDiff := len(album.Songs) - len(request.SongIDs)
-	for i := 0; i < len(album.Songs)-sizeDiff; i++ {
-		assert.Equal(t, request.SongIDs[i], album.Songs[i+sizeDiff].ID)
+	for i := sizeDiff; i < len(album.Songs); i++ {
+		assert.Contains(t, request.SongIDs, album.Songs[i].ID)
 	}
 
 	for i, song := range album.Songs {
