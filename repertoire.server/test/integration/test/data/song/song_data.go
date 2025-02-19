@@ -305,7 +305,7 @@ var Songs = []model.Song{
 			{
 				ID:                uuid.New(),
 				Name:              "Test Song Section 3",
-				Order:             1,
+				Order:             2,
 				Occurrences:       10,
 				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 			},
