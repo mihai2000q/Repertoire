@@ -89,22 +89,6 @@ describe('Edit Album Header Modal', () => {
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
 
-  it('should display info message when image changes', async () => {
-    const user = userEvent.setup()
-
-    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
-
-    reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
-
-    // change image
-    await user.upload(screen.getByTestId('upload-image-input'), newImage)
-    expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
-
-    // reset image
-    await user.click(screen.getByRole('button', { name: 'reset-image' }))
-    expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
-  })
-
   it('should send only edit request when the image is unchanged', async () => {
     const user = userEvent.setup()
 
@@ -331,6 +315,40 @@ describe('Edit Album Header Modal', () => {
     // remove image
     await user.click(screen.getByRole('button', { name: 'remove-image' }))
     expect(saveButton).not.toHaveAttribute('data-disabled')
+  })
+
+  it('should display info message when image changes', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+
+    reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
+
+    // change image
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
+
+    // reset image
+    await user.click(screen.getByRole('button', { name: 'reset-image' }))
+    expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
+  })
+
+  it('should display info message when artist changes', async () => {
+    const user = userEvent.setup()
+
+    const newArtist = artists[0]
+
+    reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
+
+    // change artist
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('option', { name: newArtist.name }))
+    expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
+
+    // reset artist
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('option', { name: newArtist.name }))
+    expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
   })
 
   it('should validate the title textbox', async () => {

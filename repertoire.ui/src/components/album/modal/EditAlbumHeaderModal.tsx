@@ -115,7 +115,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
                 </Box>
 
                 <Text inline fw={500} c={'dimmed'} fz={'xs'}>
-                  This image change will update all the associated songs
+                  This change will update all the associated songs
                 </Text>
               </Group>
             )}
@@ -129,18 +129,32 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
               {...form.getInputProps('title')}
             />
 
-            <Group gap={'sm'}>
-              <ArtistSelect flex={1} artist={artist} setArtist={setArtist} />
+            <Stack gap={6}>
+              <Group gap={'sm'}>
+                <ArtistSelect flex={1} artist={artist} setArtist={setArtist} />
 
-              <DatePickerInput
-                flex={1}
-                label={'Release Date'}
-                leftSection={<IconCalendarFilled size={20} />}
-                placeholder={'Choose the release date'}
-                key={form.key('releaseDate')}
-                {...form.getInputProps('releaseDate')}
-              />
-            </Group>
+                <DatePickerInput
+                  flex={1}
+                  label={'Release Date'}
+                  leftSection={<IconCalendarFilled size={20} />}
+                  placeholder={'Choose the release date'}
+                  key={form.key('releaseDate')}
+                  {...form.getInputProps('releaseDate')}
+                />
+              </Group>
+
+              {album.artist?.id !== artist?.id && (
+                <Group gap={'xxs'}>
+                  <Box c={'primary.8'}>
+                    <IconInfoCircleFilled size={13} />
+                  </Box>
+
+                  <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                    This change will update all the associated songs&#39; artist
+                  </Text>
+                </Group>
+              )}
+            </Stack>
 
             <Tooltip
               disabled={hasChanged}
