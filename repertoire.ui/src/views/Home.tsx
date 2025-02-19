@@ -14,7 +14,7 @@ function Home(): ReactElement {
     <Stack h={'100%'}>
       <HomeTop />
 
-      <SimpleGrid px={'xl'} cols={{ base: 1, md: 2, lg: 3 }} h={'100%'} mb={'md'} mih={300}>
+      <SimpleGrid px={'xl'} cols={{ base: 1, md: 2, lg: 3 }} h={'100%'} mb={'lg'} mih={300}>
         <HomeGenres visibleFrom={'md'} />
         <HomeRecentlyPlayedSongs />
         <Stack visibleFrom={'lg'}>
