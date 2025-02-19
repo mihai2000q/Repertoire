@@ -90,6 +90,18 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
               defaultValue={album.imageUrl}
             />
 
+            {album.imageUrl !== image && (
+              <Group gap={'xxs'}>
+                <Box c={'primary.8'}>
+                  <IconInfoCircleFilled size={13} />
+                </Box>
+
+                <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                  This image change will update all the associated songs
+                </Text>
+              </Group>
+            )}
+
             <TextInput
               withAsterisk={true}
               maxLength={100}

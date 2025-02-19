@@ -53,6 +53,22 @@ describe('Edit Album Header Modal', () => {
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
 
+  it('should display info message when image changes', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+
+    reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
+
+    // change image
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
+
+    // reset image
+    await user.click(screen.getByRole('button', { name: 'reset-image' }))
+    expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
+  })
+
   it('should send only edit request when the image is unchanged', async () => {
     const user = userEvent.setup()
 
