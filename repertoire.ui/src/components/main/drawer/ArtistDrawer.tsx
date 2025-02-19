@@ -49,14 +49,14 @@ function ArtistDrawer() {
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
     {
-      orderBy: ['release_date desc', 'title asc'],
+      orderBy: ['release_date desc nulls last', 'title asc'],
       searchBy: [`artist_id = '${artistId}'`]
     },
     { skip: !artistId }
   )
   const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
     {
-      orderBy: ['release_date desc', 'title asc'],
+      orderBy: ['release_date desc nulls last', 'title asc'],
       searchBy: [`songs.artist_id = '${artistId}'`]
     },
     { skip: !artistId }
