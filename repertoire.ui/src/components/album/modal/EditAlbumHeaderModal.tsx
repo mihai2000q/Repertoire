@@ -1,5 +1,15 @@
 import Album from '../../../types/models/Album.ts'
-import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Group,
+  LoadingOverlay,
+  Modal,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip
+} from '@mantine/core'
 import {
   useDeleteImageFromAlbumMutation,
   useSaveImageToAlbumMutation,
@@ -9,11 +19,12 @@ import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
-import { IconCalendarFilled } from '@tabler/icons-react'
+import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
+import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -35,7 +46,8 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     initialValues: {
       title: album.title,
       releaseDate: album.releaseDate && new Date(album.releaseDate),
-      image: album.imageUrl
+      image: album.imageUrl,
+      artist: album.artist?.id
     } as EditAlbumHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -44,7 +56,9 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== album.title ||
-          values.releaseDate?.toISOString() !== new Date(album.releaseDate).toISOString() ||
+          values.releaseDate?.getTime() !==
+            (album.releaseDate ? new Date(album.releaseDate).getTime() : undefined) ||
+          values.artistId !== album.artist?.id ||
           values.image !== album.imageUrl
       )
     }
@@ -54,13 +68,17 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(album.imageUrl), [album])
 
-  async function updateAlbum({ title, releaseDate, image }: EditAlbumHeaderForm) {
+  const [artist, setArtist] = useState(album.artist)
+  useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
+
+  async function updateAlbum({ title, releaseDate, image, artistId }: EditAlbumHeaderForm) {
     title = title.trim()
 
     await updateAlbumMutation({
       id: album.id,
       title: title,
-      releaseDate: releaseDate
+      releaseDate: releaseDate,
+      artistId: artistId
     }).unwrap()
 
     if (image && typeof image !== 'string') {
@@ -111,13 +129,18 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
               {...form.getInputProps('title')}
             />
 
-            <DatePickerInput
-              label={'Release Date'}
-              leftSection={<IconCalendarFilled size={20} />}
-              placeholder={'Choose the release date'}
-              key={form.key('releaseDate')}
-              {...form.getInputProps('releaseDate')}
-            />
+            <Group gap={'sm'}>
+              <ArtistSelect flex={1} artist={artist} setArtist={setArtist} />
+
+              <DatePickerInput
+                flex={1}
+                label={'Release Date'}
+                leftSection={<IconCalendarFilled size={20} />}
+                placeholder={'Choose the release date'}
+                key={form.key('releaseDate')}
+                {...form.getInputProps('releaseDate')}
+              />
+            </Group>
 
             <Tooltip
               disabled={hasChanged}
