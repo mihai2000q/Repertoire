@@ -2,8 +2,8 @@ import {
   alpha,
   Avatar,
   Group,
-  Loader,
   Menu,
+  Skeleton,
   Stack,
   Text,
   UnstyledButton,
@@ -33,7 +33,7 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
     dispatch(signOut())
   }
 
-  if (!user) return <Loader size={'sm'} />
+  if (!user) return <Skeleton w={36} h={36} mx={'xs'} radius={'50%'} style={{ order: 6 }} />
 
   return (
     <Menu shadow={'lg'} width={200}>
