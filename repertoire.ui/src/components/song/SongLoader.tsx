@@ -3,11 +3,11 @@ import { Divider, Grid, Group, Skeleton, Stack } from '@mantine/core'
 function SongLoader() {
   return (
     <Stack px={'xl'} data-testid={'song-loader'}>
-      <Group align={'start'}>
-        <Skeleton radius={'lg'} w={150} h={150} />
+      <Group>
+        <Skeleton radius={'lg'} w={'max(12vw, 150px)'} h={'max(12vw, 150px)'} />
         <Stack gap={'xxs'} pt={'10px'}>
           <Skeleton w={65} h={15} />
-          <Skeleton w={250} h={45} my={4} />
+          <Skeleton w={'max(25vw, 200px)'} h={'max(4vw, 48px)'} my={'xs'} />
           <Group gap={'xxs'}>
             <Skeleton radius={'50%'} w={35} h={35} />
             <Skeleton w={80} h={15} />
@@ -30,8 +30,8 @@ function SongLoader() {
 
         <Grid.Col span={{ sm: 12, md: 7.5 }}>
           <Stack>
-            <Skeleton w={'100%'} h={100} />
-            <Skeleton w={'100%'} h={240} />
+            <Skeleton w={'100%'} h={120} />
+            <Skeleton w={'100%'} h={385} />
           </Stack>
         </Grid.Col>
       </Grid>

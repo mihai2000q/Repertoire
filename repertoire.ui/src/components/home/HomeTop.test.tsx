@@ -132,7 +132,6 @@ describe('Home Top', () => {
     expect(screen.getByRole('button', { name: /albums/i })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByRole('button', { name: /artists/i })).toBeInTheDocument()
 
-    expect(screen.getByTestId('home-albums-loader')).toBeInTheDocument()
     for (const album of albums) {
       expect(await screen.findByLabelText(`album-card-${album.title}`)).toBeInTheDocument()
     }

@@ -1,6 +1,5 @@
 import {
   AspectRatio,
-  Box,
   Card,
   CardProps,
   Group,
@@ -17,22 +16,22 @@ import Playlist from '../../types/models/Playlist.ts'
 
 function Loader() {
   return (
-    <Box data-testid={'playlists-loader'}>
+    <>
       {Array.from(Array(20)).map((_, i) => (
-        <Group key={i} gap={'xxs'} align={'center'}>
+        <Group key={i} wrap={'nowrap'}>
           <Skeleton
-            radius={'md'}
-            h={150}
-            w={150}
+            radius={'lg'}
+            h={60}
+            w={60}
             style={(theme) => ({ boxShadow: theme.shadows.md })}
           />
-          <Stack gap={0} align={'center'}>
-            <Skeleton w={100} h={15} mb={4} />
-            <Skeleton w={60} h={10} />
+          <Stack gap={'xxs'}>
+            <Skeleton w={100} h={13} />
+            <Skeleton w={75} h={13} />
           </Stack>
         </Group>
       ))}
-    </Box>
+    </>
   )
 }
 

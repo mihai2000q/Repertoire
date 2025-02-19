@@ -82,7 +82,6 @@ describe('Home Recently Played Songs', () => {
     expect(screen.getByText(/progress/i)).toBeInTheDocument()
     expect(screen.getByLabelText('last-time-played-icon')).toBeInTheDocument()
 
-    expect(screen.getByTestId('recently-played-songs-loader')).toBeInTheDocument()
     for (const song of songs) {
       expect(await screen.findByText(song.title)).toBeInTheDocument()
       if (song.artist) expect(screen.getByText(song.artist.name)).toBeInTheDocument()

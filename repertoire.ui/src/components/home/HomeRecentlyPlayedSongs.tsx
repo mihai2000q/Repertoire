@@ -2,7 +2,6 @@ import { useGetSongsQuery } from '../../state/api/songsApi.ts'
 import {
   alpha,
   Avatar,
-  Box,
   Card,
   Center,
   Grid,
@@ -24,7 +23,7 @@ import Song from '../../types/models/Song.ts'
 
 function Loader() {
   return (
-    <Box data-testid={'recently-played-songs-loader'}>
+    <>
       {Array.from(Array(20)).map((_, i) => (
         <Group key={i} pl={'lg'} pr={'xxs'} py={'xs'}>
           <Skeleton
@@ -51,7 +50,7 @@ function Loader() {
           </Grid>
         </Group>
       ))}
-    </Box>
+    </>
   )
 }
 
