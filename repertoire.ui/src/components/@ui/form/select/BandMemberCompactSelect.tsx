@@ -58,10 +58,7 @@ function BandMemberCompactSelect({
       key={member.id}
       value={member.name}
       aria-label={member.name}
-      onClick={() => {
-        if (bandMember === member) setBandMember(null)
-        else setBandMember(member)
-      }}
+      onClick={() => setBandMember(bandMember === member ? null : member)}
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar
@@ -81,7 +78,7 @@ function BandMemberCompactSelect({
   )
 
   function handleSubmit(valueString: string) {
-    setValue(value)
+    setValue(valueString)
     setSearch(valueString)
     combobox.closeDropdown()
   }

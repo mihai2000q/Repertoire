@@ -66,10 +66,7 @@ function InstrumentCompactSelect({
       key={instrumentOption.value}
       value={instrumentOption.label}
       aria-label={instrumentOption.label}
-      onClick={() => {
-        if (instrumentOption.value === option?.value) onOptionChange(null)
-        else onOptionChange(instrumentOption)
-      }}
+      onClick={() => onOptionChange(instrumentOption.value === option?.value ? null : instrumentOption)}
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Box c={'primary.7'} w={19} h={19}>
@@ -92,7 +89,7 @@ function InstrumentCompactSelect({
   )
 
   function handleSubmit(valueString: string) {
-    setValue(value)
+    setValue(valueString)
     setSearch(valueString)
     combobox.closeDropdown()
   }
