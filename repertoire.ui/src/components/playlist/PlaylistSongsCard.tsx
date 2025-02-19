@@ -62,7 +62,7 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
   }
 
   return (
-    <Card variant={'panel'} aria-label={'songs-card'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
+    <Card variant={'panel'} aria-label={'songs-card'} p={0} mx={'xs'} mb={'lg'}>
       <LoadingOverlay visible={isFetching} />
 
       <Stack gap={0}>

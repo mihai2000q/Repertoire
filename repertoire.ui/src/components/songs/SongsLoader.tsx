@@ -3,7 +3,7 @@ import { Card, Group, Skeleton, Stack } from '@mantine/core'
 function SongsLoader() {
   return (
     <Group data-testid={'songs-loader'}>
-      {Array.from(Array(20)).map((_, i) => (
+      {Array.from(Array(40)).map((_, i) => (
         <Card key={i} p={0} radius={'lg'} shadow={'md'} w={175}>
           <Stack gap={0}>
             <Skeleton radius={'16px'} h={(175 * 7) / 8} />

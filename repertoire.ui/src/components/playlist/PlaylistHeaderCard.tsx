@@ -12,6 +12,7 @@ import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
+import titleFontSize from "../../utils/titleFontSize.ts";
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -54,7 +55,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
       <Group wrap={'nowrap'}>
         <AspectRatio>
           <Image
-            w={150}
+            w={'max(12vw, 150px)'}
             src={playlist.imageUrl}
             alt={playlist.title}
             fallbackSrc={playlistPlaceholder}
@@ -66,12 +67,12 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             onClick={playlist.imageUrl && openImage}
           />
         </AspectRatio>
-        <Stack gap={'xxs'} pt={'md'} style={{ alignSelf: 'start' }}>
+        <Stack gap={'xxs'} pt={'md'}>
           <Text fw={500} inline>
             Playlist
           </Text>
 
-          <Title order={1} fw={700} lineClamp={2}>
+          <Title order={1} fw={700} lineClamp={2} fz={titleFontSize(playlist.title)}>
             {playlist.title}
           </Title>
 

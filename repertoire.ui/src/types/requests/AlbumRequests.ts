@@ -23,6 +23,7 @@ export interface UpdateAlbumRequest {
   id: string
   title: string
   releaseDate?: Date | string
+  artistId?: string
 }
 
 export interface SaveImageToAlbumRequest {

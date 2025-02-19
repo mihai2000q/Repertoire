@@ -76,17 +76,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
       key={member.id}
       value={member.name}
       aria-label={member.name}
-      onClick={() => {
-        if (bandMember === member) {
-          setBandMember(null)
-          setValue('')
-          setSearch('')
-        } else {
-          setBandMember(member)
-          setValue(member.name)
-          setSearch(member.name)
-        }
-      }}
+      onClick={() => setBandMember(bandMember === member ? null : member)}
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar
@@ -106,7 +96,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
   )
 
   function handleSubmit(valueString: string) {
-    setValue(value)
+    setValue(valueString)
     setSearch(valueString)
     combobox.closeDropdown()
   }
