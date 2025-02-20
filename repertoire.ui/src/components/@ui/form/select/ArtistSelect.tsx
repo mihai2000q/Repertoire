@@ -12,10 +12,10 @@ import {
 } from '@mantine/core'
 import Artist from '../../../../types/models/Artist.ts'
 import { IconUserFilled } from '@tabler/icons-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGetArtistsQuery } from '../../../../state/api/artistsApi.ts'
 import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
-import {useDebouncedValue} from "@mantine/hooks";
+import { useDebouncedValue } from '@mantine/hooks'
 
 interface ArtistSelectProps extends TextInputProps {
   artist: Artist | null
@@ -27,9 +27,14 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
     onDropdownClose: () => combobox.resetSelectedOption()
   })
 
-  const [value, setValue] = useState(artist?.name ?? '')
-  const [search, setSearch] = useState(artist?.name ?? '')
+  const [value, setValue] = useState('')
+  const [search, setSearch] = useState('')
   const [searchQuery] = useDebouncedValue(search, 200)
+
+  useEffect(() => {
+    setValue(artist?.name ?? '')
+    setSearch(artist?.name ?? '')
+  }, [artist])
 
   const { data: artists, isFetching } = useGetArtistsQuery({
     currentPage: 1,
@@ -96,7 +101,11 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
           placeholder={'Choose an artist'}
           leftSection={artist ? <ArtistHoverCard /> : <IconUserFilled size={20} />}
           rightSection={
-            artist ? <Combobox.ClearButton onClear={handleClear} /> : <Combobox.Chevron />
+            artist && others.disabled !== true ? (
+              <Combobox.ClearButton onClear={handleClear} />
+            ) : (
+              <Combobox.Chevron />
+            )
           }
           value={search}
           onChange={(e) => {

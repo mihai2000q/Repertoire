@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditSongHeaderModal from './EditSongHeaderModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { act, screen } from '@testing-library/react'
@@ -7,6 +7,9 @@ import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
 import { http, HttpResponse } from 'msw'
 import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
+import Artist from '../../../types/models/Artist.ts'
+import Album from '../../../types/models/Album.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 describe('Edit Song Header Modal', () => {
   const song: Song = {
@@ -24,7 +27,67 @@ describe('Edit Song Header Modal', () => {
     updatedAt: ''
   }
 
-  const server = setupServer()
+  const albums: Album[] = [
+    {
+      ...emptyAlbum,
+      id: '1',
+      title: 'Album 1',
+      imageUrl: 'something-album.png',
+      artist: {
+        ...emptyArtist,
+        id: '1',
+        name: 'Album Artist'
+      },
+      releaseDate: '2024-10-12T10:30'
+    },
+    {
+      ...emptyAlbum,
+      id: '2',
+      title: 'Album 2'
+    },
+    {
+      ...emptyAlbum,
+      id: '3',
+      title: 'Album 3'
+    }
+  ]
+
+  const artists: Artist[] = [
+    {
+      ...emptyArtist,
+      id: '1',
+      name: 'Artist 1'
+    },
+    {
+      ...emptyArtist,
+      id: '2',
+      name: 'Artist 2'
+    },
+    {
+      ...emptyArtist,
+      id: '3',
+      name: 'Artist 3'
+    }
+  ]
+
+  const handlers = [
+    http.get('/albums', async () => {
+      const response: WithTotalCountResponse<Album> = {
+        models: albums,
+        totalCount: albums.length
+      }
+      return HttpResponse.json(response)
+    }),
+    http.get('/artists', async () => {
+      const response: WithTotalCountResponse<Artist> = {
+        models: artists,
+        totalCount: artists.length
+      }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -47,6 +110,13 @@ describe('Edit Song Header Modal', () => {
     expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue(song.title)
 
+    expect(screen.getByRole('textbox', { name: /album/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue(song.album?.title ?? '')
+
+    expect(screen.getByRole('textbox', { name: /artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /artist/i })).not.toBeDisabled()
+    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue(song.artist?.name ?? '')
+
     expect(screen.getByRole('button', { name: /release date/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(
       dayjs(song.releaseDate).format('D MMMM YYYY')
@@ -58,11 +128,12 @@ describe('Edit Song Header Modal', () => {
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
 
-  it('should send only edit request when the image is unchanged', async () => {
+  it('should send only edit request when the image is unchanged - with album and album artist', async () => {
     const user = userEvent.setup()
 
     const newTitle = 'New Song'
     const newReleaseDate = dayjs('2024-12-24')
+    const newAlbum = albums[0]
     const onClose = vitest.fn()
 
     let capturedRequest: UpdateSongRequest
@@ -80,8 +151,13 @@ describe('Edit Song Header Modal', () => {
 
     await user.clear(titleField)
     await user.type(titleField, newTitle)
+
     await user.click(screen.getByRole('button', { name: /release date/i }))
     await user.click(screen.getByText(newReleaseDate.date()))
+
+    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(await screen.getByRole('option', { name: newAlbum.title }))
+
     await user.click(saveButton)
 
     expect(await screen.findByText(/song header updated/i)).toBeInTheDocument()
@@ -92,7 +168,48 @@ describe('Edit Song Header Modal', () => {
       ...song,
       id: song.id,
       title: newTitle,
-      releaseDate: newReleaseDate.toISOString()
+      releaseDate: newReleaseDate.toISOString(),
+      albumId: newAlbum.id,
+      artistId: newAlbum.artist.id,
+    })
+  })
+
+  it('should send only edit request when the image is unchanged - with artist', async () => {
+    const user = userEvent.setup()
+
+    const newArtist = artists[0]
+    const newReleaseDate = dayjs('2024-12-24')
+    const onClose = vitest.fn()
+
+    let capturedRequest: UpdateSongRequest
+    server.use(
+      http.put('/songs', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateSongRequest
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(withToastify(<EditSongHeaderModal opened={true} onClose={onClose} song={song} />))
+
+    const saveButton = screen.getByRole('button', { name: /save/i })
+
+    await user.click(screen.getByRole('button', { name: /release date/i }))
+    await user.click(screen.getByText(newReleaseDate.date()))
+
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(await screen.getByRole('option', { name: newArtist.name }))
+
+    await user.click(saveButton)
+
+    expect(await screen.findByText(/song header updated/i)).toBeInTheDocument()
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    expect(onClose).toHaveBeenCalledOnce()
+    expect(capturedRequest).toStrictEqual({
+      ...song,
+      id: song.id,
+      releaseDate: newReleaseDate.toISOString(),
+      artistId: newArtist.id,
     })
   })
 
@@ -239,16 +356,35 @@ describe('Edit Song Header Modal', () => {
     expect(screen.getByText(/song image is inherited from the album/i)).toBeInTheDocument()
   })
 
+  it('should disable the artist field when an album is selected and show info icon', async () => {
+    const user = userEvent.setup()
+
+    const newAlbum = albums[0]
+
+    reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
+
+    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(await screen.findByRole('option', { name: newAlbum.title }))
+
+    expect(screen.getByRole('textbox', { name: /artist/i })).toBeDisabled()
+    expect(screen.getByLabelText('artist-info')).toBeInTheDocument()
+  })
+
   it('should disable the save button when no changes are made', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
-    const day = new Date(song.releaseDate).getDate()
+    const day = dayjs(song.releaseDate).date()
+    const nextDay = dayjs(song.releaseDate).add(1, 'day').date()
+    const newAlbum = albums[0]
+    const newArtist = artists[0]
 
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
     const titleField = screen.getByRole('textbox', { name: /title/i })
     const releaseDateField = screen.getByRole('button', { name: /release date/i })
+    const albumField = screen.getByRole('textbox', { name: /album/i })
+    const artistField = screen.getByRole('textbox', { name: /artist/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     // change image
@@ -271,12 +407,32 @@ describe('Edit Song Header Modal', () => {
 
     // change release date
     await user.click(releaseDateField)
-    await user.click(screen.getByText((day + 1).toString()))
+    await user.click(screen.getByText(nextDay.toString()))
     expect(saveButton).not.toHaveAttribute('data-disabled')
 
     // reset release date
     await user.click(releaseDateField)
     await user.click(screen.getByText(day.toString()))
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    // change album
+    await user.click(albumField)
+    await user.click(await screen.findByRole('option', { name: newAlbum.title }))
+    expect(saveButton).not.toHaveAttribute('data-disabled')
+
+    // reset album
+    await user.click(albumField)
+    await user.click(await screen.findByRole('option', { name: newAlbum.title }))
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    // change artist
+    await user.click(artistField)
+    await user.click(await screen.findByRole('option', { name: newArtist.name }))
+    expect(saveButton).not.toHaveAttribute('data-disabled')
+
+    // reset artist
+    await user.click(artistField)
+    await user.click(await screen.findByRole('option', { name: newArtist.name }))
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     // remove image
