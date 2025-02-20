@@ -34,6 +34,8 @@ export interface EditSongHeaderForm {
   title: string
   releaseDate: Date
   image: string | FileWithPath | null
+  artistId?: string
+  albumId?: string
 }
 
 export const editSongHeaderValidation = z.object({

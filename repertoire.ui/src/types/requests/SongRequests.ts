@@ -45,6 +45,8 @@ export interface UpdateSongRequest {
   releaseDate?: Date | string
   difficulty?: Difficulty
   guitarTuningId?: string
+  albumId?: string
+  artistId?: string
 }
 
 export interface SaveImageToSongRequest {
