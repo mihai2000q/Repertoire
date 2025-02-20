@@ -26,6 +26,7 @@ interface ArtistsAutocompleteProps {
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void
   onFocus?: (event: FocusEvent<HTMLInputElement>) => void
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
+  disabled?: boolean
 }
 
 function ArtistAutocomplete({
@@ -89,7 +90,7 @@ function ArtistAutocomplete({
           label={'Artist'}
           placeholder={`${artists?.models?.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
           leftSection={artist ? <ArtistHoverCard /> : <IconUserFilled size={20} />}
-          rightSection={artist && <Combobox.ClearButton onClear={handleClear} />}
+          rightSection={artist && inputProps.disabled !== true && <Combobox.ClearButton onClear={handleClear} />}
           onClick={() => combobox.openDropdown()}
           {...inputProps}
           onChange={(event) => {
