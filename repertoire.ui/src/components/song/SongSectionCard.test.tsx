@@ -72,7 +72,8 @@ describe('Song Section Card', () => {
       name: 'Electric Guitar'
     }
 
-    reduxRender(
+    // when artist is a band
+    const [{ rerender }] = reduxRender(
       <SongSectionCard
         section={{
           ...section,
@@ -83,6 +84,7 @@ describe('Song Section Card', () => {
         maxSectionProgress={0}
         showDetails={false}
         isDragging={false}
+        isArtistBand={true}
       />
     )
 
@@ -97,6 +99,24 @@ describe('Song Section Card', () => {
     expect(await screen.findByText(bandMember.name)).toBeInTheDocument()
     expect(screen.getAllByRole('img', { name: bandMember.name })).toHaveLength(2)
     expect(screen.getByText(bandMember.roles[0].name)).toBeInTheDocument()
+
+    // when artist is not a band
+    rerender(
+      <SongSectionCard
+        section={{
+          ...section,
+          bandMember: bandMember,
+          instrument: instrument
+        }}
+        songId={''}
+        maxSectionProgress={0}
+        showDetails={false}
+        isDragging={false}
+        isArtistBand={false}
+      />
+    )
+
+    expect(screen.queryByRole('img', { name: bandMember.name })).not.toBeInTheDocument()
   })
 
   it('should show details', async () => {

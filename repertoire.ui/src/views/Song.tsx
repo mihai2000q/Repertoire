@@ -49,6 +49,7 @@ function Song() {
               songId={songId}
               sections={song.sections}
               bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
+              isArtistBand={song.artist?.isBand}
             />
           </Stack>
         </Grid.Col>
