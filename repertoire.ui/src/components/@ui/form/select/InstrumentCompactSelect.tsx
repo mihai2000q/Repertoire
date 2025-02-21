@@ -66,7 +66,9 @@ function InstrumentCompactSelect({
       key={instrumentOption.value}
       value={instrumentOption.label}
       aria-label={instrumentOption.label}
-      onClick={() => onOptionChange(instrumentOption.value === option?.value ? null : instrumentOption)}
+      onClick={() =>
+        onOptionChange(instrumentOption.value === option?.value ? null : instrumentOption)
+      }
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Box c={'primary.7'} w={19} h={19}>
@@ -135,7 +137,12 @@ function InstrumentCompactSelect({
             </ActionIcon>
           </Tooltip>
         ) : (
-          <Tooltip label={`${option.label} is selected`} openDelay={200} position={'top'}>
+          <Tooltip
+            label={`${option.label} is selected`}
+            openDelay={200}
+            position={'top'}
+            disabled={combobox.dropdownOpened}
+          >
             <ActionIcon
               aria-label={option.label}
               variant={'subtle'}

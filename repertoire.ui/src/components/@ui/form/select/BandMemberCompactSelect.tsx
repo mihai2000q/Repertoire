@@ -91,10 +91,14 @@ function BandMemberCompactSelect({
     <Combobox onOptionSubmit={handleSubmit} store={combobox} withArrow {...others}>
       <Combobox.Target withAriaAttributes={false}>
         {bandMember ? (
-          <Tooltip label={`${bandMember.name} is selected`} openDelay={200}>
+          <Tooltip
+            label={`${bandMember.name} is selected`}
+            openDelay={200}
+            disabled={combobox.dropdownOpened}
+          >
             <UnstyledButton aria-label={bandMember.name} onClick={() => combobox.toggleDropdown()}>
               <Avatar
-                size={24}
+                size={28}
                 color={bandMember.color}
                 src={bandMember.imageUrl}
                 sx={{ transition: '0.25s', '&:hover': { filter: 'brightness(0.7)' } }}
