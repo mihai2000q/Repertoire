@@ -82,7 +82,7 @@ function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongS
           <BandMemberCompactSelect
             bandMember={bandMember}
             setBandMember={setBandMember}
-            bandMembers={bandMembers === null ? [] : bandMembers}
+            bandMembers={bandMembers}
             position={'top'}
             transitionProps={{ duration: 160, transition: 'fade-up' }}
           />
