@@ -54,6 +54,9 @@ describe('Song Sections Card', () => {
   const handlers = [
     http.get('/songs/sections/types', async () => {
       return HttpResponse.json([])
+    }),
+    http.get('/songs/instruments', async () => {
+      return HttpResponse.json([])
     })
   ]
 

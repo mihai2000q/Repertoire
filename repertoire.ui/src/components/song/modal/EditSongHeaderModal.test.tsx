@@ -1,7 +1,7 @@
 import { emptyAlbum, emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditSongHeaderModal from './EditSongHeaderModal.tsx'
 import Song from '../../../types/models/Song.ts'
-import { act, screen } from '@testing-library/react'
+import {act, screen, waitFor} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
@@ -170,7 +170,7 @@ describe('Edit Song Header Modal', () => {
       title: newTitle,
       releaseDate: newReleaseDate.toISOString(),
       albumId: newAlbum.id,
-      artistId: newAlbum.artist.id,
+      artistId: newAlbum.artist.id
     })
   })
 
@@ -209,7 +209,7 @@ describe('Edit Song Header Modal', () => {
       ...song,
       id: song.id,
       releaseDate: newReleaseDate.toISOString(),
-      artistId: newArtist.id,
+      artistId: newArtist.id
     })
   })
 
@@ -423,7 +423,7 @@ describe('Edit Song Header Modal', () => {
     // reset album
     await user.click(albumField)
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    await waitFor(() => expect(saveButton).toHaveAttribute('data-disabled', 'true'))
 
     // change artist
     await user.click(artistField)
