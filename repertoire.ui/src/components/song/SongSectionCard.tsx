@@ -43,6 +43,7 @@ interface SongSectionCardProps {
   maxSectionProgress: number
   draggableProvided?: DraggableProvided
   bandMembers?: BandMember[]
+  isArtistBand?: boolean
 }
 
 function SongSectionCard({
@@ -52,7 +53,8 @@ function SongSectionCard({
   showDetails,
   maxSectionProgress,
   draggableProvided,
-  bandMembers
+  bandMembers,
+  isArtistBand
 }: SongSectionCardProps) {
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation, { isLoading: isDeleteLoading }] = useDeleteSongSectionMutation()
@@ -126,7 +128,7 @@ function SongSectionCard({
               <IconGripVertical size={20} />
             </ActionIcon>
 
-            {section.bandMember && (
+            {isArtistBand && section.bandMember && (
               <HoverCard withArrow={true} openDelay={200} position="top" shadow={'md'}>
                 <HoverCard.Target>
                   <Avatar

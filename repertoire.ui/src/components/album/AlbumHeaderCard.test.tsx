@@ -14,6 +14,7 @@ import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
 import dayjs from 'dayjs'
+import WithTotalCountResponse from "../../types/responses/WithTotalCountResponse.ts";
 
 describe('Album Header Card', () => {
   const album: Album = {
@@ -29,7 +30,17 @@ describe('Album Header Card', () => {
     name: 'Artist 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/artists', async () => {
+      const response: WithTotalCountResponse<Artist> = {
+        models: [],
+        totalCount: 0
+      }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 

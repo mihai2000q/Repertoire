@@ -27,7 +27,16 @@ const songsApi = api.injectEndpoints({
     }),
     getSong: build.query<Song, string>({
       query: (arg) => `songs/${arg}`,
-      providesTags: ['Songs']
+      providesTags: ['Songs'],
+      transformResponse: (response: Song) => ({
+        ...response,
+        artist: response.artist
+          ? {
+              ...response.artist,
+              bandMembers: response.artist.bandMembers === null ? [] : response.artist.bandMembers
+            }
+          : response.artist
+      })
     }),
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
       query: (body) => ({

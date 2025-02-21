@@ -155,7 +155,7 @@ function EditSongSectionModal({
               <BandMemberSelect
                 bandMember={bandMember}
                 setBandMember={setBandMember}
-                bandMembers={bandMembers === null ? [] : bandMembers}
+                bandMembers={bandMembers}
               />
               <InstrumentSelect option={instrument} onOptionChange={setInstrument} flex={1} />
             </Group>

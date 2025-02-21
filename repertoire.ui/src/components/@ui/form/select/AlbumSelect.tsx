@@ -4,7 +4,8 @@ import {
   Group,
   HoverCard,
   LoadingOverlay,
-  ScrollArea, Stack,
+  ScrollArea,
+  Stack,
   Text,
   TextInput,
   TextInputProps,
@@ -12,11 +13,11 @@ import {
 } from '@mantine/core'
 import Album from '../../../../types/models/Album.ts'
 import { IconUserFilled } from '@tabler/icons-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGetAlbumsQuery } from '../../../../state/api/albumsApi.ts'
 import albumPlaceholder from '../../../../assets/image-placeholder-1.jpg'
-import {useDebouncedValue} from "@mantine/hooks";
-import dayjs from "dayjs";
+import { useDebouncedValue } from '@mantine/hooks'
+import dayjs from 'dayjs'
 
 interface AlbumSelectProps extends TextInputProps {
   album: Album | null
@@ -28,9 +29,14 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
     onDropdownClose: () => combobox.resetSelectedOption()
   })
 
-  const [value, setValue] = useState(album?.title ?? '')
-  const [search, setSearch] = useState(album?.title ?? '')
+  const [value, setValue] = useState('')
+  const [search, setSearch] = useState('')
   const [searchQuery] = useDebouncedValue(search, 200)
+
+  useEffect(() => {
+    setSearch(album?.title ?? '')
+    setValue(album?.title ?? '')
+  }, [album])
 
   const { data: albums, isFetching } = useGetAlbumsQuery({
     currentPage: 1,
@@ -42,7 +48,12 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
   const AlbumHoverCard = () => (
     <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
       <HoverCard.Target>
-        <Avatar radius={'md'} size={23} src={album.imageUrl ?? albumPlaceholder} alt={album.title} />
+        <Avatar
+          radius={'md'}
+          size={23}
+          src={album.imageUrl ?? albumPlaceholder}
+          alt={album.title}
+        />
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
@@ -77,7 +88,7 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
       key={localAlbum.id}
       value={localAlbum.title}
       aria-label={localAlbum.title}
-      onClick={() => setAlbum(album === localAlbum ? null : localAlbum)}
+      onClick={() => setAlbum(album?.id === localAlbum?.id ? null : localAlbum)}
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar

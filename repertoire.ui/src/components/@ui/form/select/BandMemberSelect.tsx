@@ -25,12 +25,14 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
     onDropdownClose: () => combobox.resetSelectedOption()
   })
 
+  bandMember = bandMembers ? bandMember : null
+
   const [value, setValue] = useState<string>(bandMember?.name ?? '')
   const [search, setSearch] = useState(bandMember?.name ?? '')
 
   const filteredMembers =
     search.trim() !== ''
-      ? bandMembers.filter((member) =>
+      ? bandMembers?.filter((member) =>
           member.name.toLowerCase().includes(search.toLowerCase().trim())
         )
       : bandMembers

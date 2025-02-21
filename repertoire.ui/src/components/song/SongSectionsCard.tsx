@@ -27,9 +27,10 @@ interface SongSectionsCardProps {
   sections: SongSection[]
   songId: string
   bandMembers?: BandMember[]
+  isArtistBand?: boolean
 }
 
-function SongSectionsCard({ sections, songId, bandMembers }: SongSectionsCardProps) {
+function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
@@ -223,6 +224,7 @@ function SongSectionsCard({ sections, songId, bandMembers }: SongSectionsCardPro
                           showDetails={showDetails}
                           maxSectionProgress={maxSectionProgress}
                           bandMembers={bandMembers}
+                          isArtistBand={isArtistBand}
                         />
                       )}
                     </Draggable>
