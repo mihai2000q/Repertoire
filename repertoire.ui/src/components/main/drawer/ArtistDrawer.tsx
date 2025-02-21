@@ -165,7 +165,7 @@ function ArtistDrawer() {
           )}
 
           <Group align={'start'} px={6} gap={'sm'}>
-            {artist.bandMembers.map((bandMember) => (
+            {artist.isBand && artist.bandMembers.map((bandMember) => (
               <Stack key={bandMember.id} align={'center'} gap={'xxs'} w={53}>
                 <Avatar
                   variant={'light'}
