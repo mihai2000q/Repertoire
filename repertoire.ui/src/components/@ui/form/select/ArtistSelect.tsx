@@ -64,7 +64,7 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
       key={localArtist.id}
       value={localArtist.name}
       aria-label={localArtist.name}
-      onClick={() => setArtist(artist === localArtist ? null : localArtist)}
+      onClick={() => setArtist(artist?.id === localArtist?.id ? null : localArtist)}
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar

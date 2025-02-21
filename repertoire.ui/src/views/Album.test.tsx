@@ -9,6 +9,7 @@ import { default as AlbumType } from './../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
 import { expect } from 'vitest'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
+import Artist from '../types/models/Artist.ts'
 
 describe('Album', () => {
   const songs: Song[] = [
@@ -44,6 +45,13 @@ describe('Album', () => {
       const response: WithTotalCountResponse<Song> = {
         models: songs,
         totalCount: songs.length
+      }
+      return HttpResponse.json(response)
+    }),
+    http.get('/artists', async () => {
+      const response: WithTotalCountResponse<Artist> = {
+        models: [],
+        totalCount: 0
       }
       return HttpResponse.json(response)
     })
