@@ -1,21 +1,17 @@
-import { Group, Skeleton, Stack } from '@mantine/core'
+import { Skeleton, Stack } from '@mantine/core'
 
 function PlaylistsLoader() {
-  return (
-    <Group data-testid={'playlists-loader'} gap={'lg'}>
-      {Array.from(Array(40)).map((_, i) => (
-        <Stack key={i} gap={'xs'} align={'center'}>
-          <Skeleton
-            radius={'lg'}
-            h={150}
-            w={150}
-            style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          />
-          <Skeleton w={100} h={15} mb={4} />
-        </Stack>
-      ))}
-    </Group>
-  )
+  return Array.from(Array(40)).map((_, i) => (
+    <Stack key={i} gap={'xs'} align={'center'}>
+      <Skeleton
+        radius={'lg'}
+        w={'100%'}
+        pb={'100%'}
+        style={(theme) => ({ boxShadow: theme.shadows.sm })}
+      />
+      <Skeleton w={100} h={15} mb={4} />
+    </Stack>
+  ))
 }
 
 export default PlaylistsLoader
