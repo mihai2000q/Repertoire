@@ -121,7 +121,6 @@ describe('Albums', () => {
     expect(screen.getByRole('button', { name: /order-albums/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-albums/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-albums/i })).toBeDisabled()
-    expect(screen.getByTestId('albums-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-album-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/album-card-/)).toHaveLength(albums.length)

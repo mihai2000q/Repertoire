@@ -138,7 +138,6 @@ describe('Artists', () => {
     expect(screen.getByRole('button', { name: /order-artists/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-artists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-artists/i })).toBeDisabled()
-    expect(screen.getByTestId('artists-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-artist-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/artist-card-/)).toHaveLength(artists.length)

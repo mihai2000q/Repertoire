@@ -96,7 +96,11 @@ function BandMemberCompactSelect({
             openDelay={200}
             disabled={combobox.dropdownOpened}
           >
-            <UnstyledButton aria-label={bandMember.name} onClick={() => combobox.toggleDropdown()}>
+            <UnstyledButton
+              aria-label={bandMember.name}
+              onClick={() => combobox.toggleDropdown()}
+              style={{ borderRadius: '50%' }}
+            >
               <Avatar
                 size={28}
                 color={bandMember.color}

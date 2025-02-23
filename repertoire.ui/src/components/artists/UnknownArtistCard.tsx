@@ -29,8 +29,10 @@ function UnknownArtistCard() {
         onMouseLeave={() => setIsAvatarHovered(false)}
         src={unknownPlaceholder}
         alt={'unknown-artist'}
-        size={125}
+        w={'100%'}
+        h={'unset'}
         style={(theme) => ({
+          aspectRatio: 1,
           cursor: 'pointer',
           transition: '0.3s',
           boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl

@@ -49,7 +49,6 @@ function AlbumCard({ album }: AlbumCardProps) {
       align={'center'}
       gap={0}
       style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
-      w={150}
     >
       <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
@@ -57,7 +56,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             <Image
               onMouseEnter={() => setIsImageHovered(true)}
               onMouseLeave={() => setIsImageHovered(false)}
-              radius={'lg'}
+              radius={'10%'}
               src={album.imageUrl}
               fallbackSrc={albumPlaceholder}
               alt={album.title}
@@ -67,9 +66,7 @@ function AlbumCard({ album }: AlbumCardProps) {
                 cursor: 'pointer',
                 transition: '0.3s',
                 boxShadow: theme.shadows.xxl,
-                '&:hover': {
-                  boxShadow: theme.shadows.xxl_hover
-                }
+                '&:hover': { boxShadow: theme.shadows.xxl_hover },
               })}
             />
           </AspectRatio>

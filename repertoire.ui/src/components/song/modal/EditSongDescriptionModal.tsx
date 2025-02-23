@@ -27,6 +27,8 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
     await updateSongMutation({
       ...song,
       guitarTuningId: song.guitarTuning?.id,
+      albumId: song.album?.id,
+      artistId: song.album?.id,
       id: song.id,
       description: description
     }).unwrap()

@@ -22,7 +22,6 @@ function UnknownArtistCard() {
         transition: '0.3s',
         ...(isImageHovered && { transform: 'scale(1.1)' })
       }}
-      w={150}
     >
       <AspectRatio>
         <Image
@@ -36,9 +35,7 @@ function UnknownArtistCard() {
             cursor: 'pointer',
             transition: '0.3s',
             boxShadow: theme.shadows.xxl,
-            '&:hover': {
-              boxShadow: theme.shadows.xxl_hover
-            }
+            '&:hover': { boxShadow: theme.shadows.xxl_hover }
           })}
         />
       </AspectRatio>

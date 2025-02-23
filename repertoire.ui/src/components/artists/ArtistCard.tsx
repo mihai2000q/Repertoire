@@ -1,5 +1,5 @@
 import Artist from '../../types/models/Artist.ts'
-import {Avatar, Checkbox, Group, Menu, Stack, Text} from '@mantine/core'
+import { Avatar, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
 import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -60,11 +60,14 @@ function ArtistCard({ artist }: ArtistCardProps) {
             onMouseLeave={() => setIsAvatarHovered(false)}
             src={artist.imageUrl ?? artistPlaceholder}
             alt={artist.name}
-            size={125}
+            w={'100%'}
+            h={'unset'}
             style={(theme) => ({
+              aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
-              boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
+              boxShadow: theme.shadows.xxl,
+              '&:hover': { boxShadow: theme.shadows.xxl_hover }
             })}
             onClick={handleClick}
             onContextMenu={openMenu}
@@ -77,7 +80,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Text maw={120} fw={600} ta={'center'} lineClamp={2}>
+      <Text px={'xs'} fw={600} ta={'center'} lineClamp={2}>
         {artist.name}
       </Text>
 
