@@ -102,7 +102,7 @@ function SongCard({ song }: SongCardProps) {
         <Card
           aria-label={`song-card-${song.title}`}
           p={0}
-          radius={'lg'}
+          radius={'10%'}
           onClick={handleClick}
           onContextMenu={openMenu}
           sx={(theme) => ({

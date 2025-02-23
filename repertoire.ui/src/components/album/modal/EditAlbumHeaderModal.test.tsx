@@ -1,7 +1,7 @@
 import { emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditAlbumHeaderModal from './EditAlbumHeaderModal.tsx'
 import Album from '../../../types/models/Album.ts'
-import { act, screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
@@ -348,7 +348,9 @@ describe('Edit Album Header Modal', () => {
     // reset artist
     await user.click(screen.getByRole('textbox', { name: /artist/i }))
     await user.click(screen.getByRole('option', { name: newArtist.name }))
-    expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
+    )
   })
 
   it('should validate the title textbox', async () => {

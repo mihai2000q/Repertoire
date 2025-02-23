@@ -47,7 +47,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
             <Image
               onMouseEnter={() => setIsImageHovered(true)}
               onMouseLeave={() => setIsImageHovered(false)}
-              radius={'lg'}
+              radius={'10%'}
               src={playlist.imageUrl}
               alt={playlist.title}
               fallbackSrc={playlistPlaceholder}

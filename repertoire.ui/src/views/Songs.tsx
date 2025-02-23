@@ -94,11 +94,11 @@ function Songs(): ReactElement {
             variant={'add-new'}
             aria-label={'new-song-card'}
             radius={'lg'}
-            mih={175}
             onClick={openAddNewSongModal}
           >
             <Center h={'100%'}>
               <IconMusicPlus size={40} />
+              <Box pb={'100%'} />
             </Center>
           </Card>
         )}
