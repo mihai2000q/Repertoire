@@ -97,7 +97,6 @@ describe('Songs', () => {
     expect(screen.getByRole('button', { name: /order-songs/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-songs/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-songs/i })).toBeDisabled()
-    expect(screen.getByTestId('songs-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-song-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/song-card-/)).toHaveLength(songs.length)

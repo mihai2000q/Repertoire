@@ -103,7 +103,6 @@ function SongCard({ song }: SongCardProps) {
           aria-label={`song-card-${song.title}`}
           p={0}
           radius={'lg'}
-          w={175}
           onClick={handleClick}
           onContextMenu={openMenu}
           sx={(theme) => ({
@@ -150,7 +149,7 @@ function SongCard({ song }: SongCardProps) {
                   </Text>
                 )}
               </Box>
-              <Group c={'primary.9'} gap={'xxs'} align={'end'} pb={1}>
+              <Group wrap={'nowrap'} c={'primary.9'} gap={'xxs'} align={'end'} pb={1}>
                 <Tooltip.Group openDelay={200}>
                   {song.isRecorded && (
                     <LocalTooltip label={'This song is recorded'}>
@@ -189,7 +188,7 @@ function SongCard({ song }: SongCardProps) {
                   )}
                   {song.songsterrLink && (
                     <LocalAnchor link={song.songsterrLink}>
-                      <LocalTooltip label={'This song has a songsterr link'}>
+                      <LocalTooltip label={'Open Songsterr'}>
                         <Center c={'blue.7'}>
                           <IconGuitarPickFilled size={iconSize} aria-label={'songsterr-icon'} />
                         </Center>
@@ -197,7 +196,7 @@ function SongCard({ song }: SongCardProps) {
                     </LocalAnchor>
                   )}
                   {song.youtubeLink && (
-                    <LocalTooltip label={'This song has a youtube link'}>
+                    <LocalTooltip label={'Open Youtube'}>
                       <Center c={'red.7'} onClick={handleOpenYoutube}>
                         <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
                       </Center>
