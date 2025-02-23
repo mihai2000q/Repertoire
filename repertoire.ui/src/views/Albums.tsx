@@ -7,6 +7,7 @@ import {
   Group,
   Loader,
   Pagination,
+  SimpleGrid,
   Space,
   Stack,
   Text,
@@ -16,7 +17,7 @@ import AlbumsLoader from '../components/albums/AlbumsLoader.tsx'
 import AlbumCard from '../components/albums/AlbumCard.tsx'
 import AddNewAlbumModal from '../components/albums/modal/AddNewAlbumModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
+import { IconArrowsSort, IconDisc, IconFilterFilled, IconPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
 import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
@@ -86,26 +87,29 @@ function Albums() {
       {albums?.totalCount === 0 && !showUnknownAlbum && (
         <Text mt={'sm'}>There are no albums yet. Try to add one</Text>
       )}
-      <Group gap={'xl'} align={'start'}>
+      <SimpleGrid
+        cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
+        verticalSpacing={{ base: 'lg', md: 'xl' }}
+        spacing={{ base: 'lg', md: 'xl' }}
+      >
         {isLoading && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
         {((albums?.totalCount > 0 && currentPage == totalPages) ||
           (albums?.totalCount === 0 && showUnknownAlbum)) && (
           <Card
+            variant={'add-new'}
             aria-label={'new-album-card'}
-            w={150}
-            h={150}
             radius={'lg'}
             onClick={openAddNewAlbumModal}
-            variant={'add-new'}
+            style={{ aspectRatio: 1 }}
           >
             <Center h={'100%'}>
-              <IconMusicPlus size={40} />
+              <IconDisc size={40} />
             </Center>
           </Card>
         )}
-      </Group>
+      </SimpleGrid>
 
       <Space flex={1} />
 
