@@ -2,7 +2,9 @@ package data
 
 import (
 	"go.uber.org/fx"
+	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
+	"repertoire/server/data/http"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 )
@@ -23,6 +25,8 @@ var services = fx.Options(
 )
 
 var Module = fx.Options(
+	fx.Provide(cache.NewCache),
+	fx.Provide(http.NewRestyClient),
 	fx.Provide(database.NewClient),
 	repositories,
 	services,
