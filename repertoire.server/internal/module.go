@@ -6,6 +6,4 @@ import (
 
 var Module = fx.Options(
 	fx.Provide(NewEnv),
-	fx.Provide(NewCache),
-	fx.Provide(NewRestyClient),
 )

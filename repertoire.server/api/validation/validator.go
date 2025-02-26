@@ -64,6 +64,11 @@ func registerCustomValidators(validate *validator.Validate) error {
 		return err
 	}
 
+	err = validate.RegisterValidation("search_type_enum", SearchTypeEnum)
+	if err != nil {
+		return err
+	}
+
 	err = validate.RegisterValidation("youtube_link", YoutubeLink)
 	if err != nil {
 		return err

@@ -10,6 +10,7 @@
 ![GORM](https://img.shields.io/badge/GORM-38B6FF?style=flat&logo=go&logoColor=white)
 ![Goose](https://img.shields.io/badge/Goose-00ADD8?style=flat&logo=duckduckgo&logoColor=white)
 ![Postgres](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![Meilisearch](https://img.shields.io/badge/Meilisearch-FF5CAA?style=flat&logo=meilisearch&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
 

@@ -76,7 +76,7 @@ func Start(envPath ...string) *TestServer {
 	// apply migrations to database
 	postgresDB, _ := gorm.Open(postgres.Open(Dsn))
 	db, _ := postgresDB.DB()
-	if err = goose.Up(db, relativePath+"migrations/"); err != nil {
+	if err = goose.Up(db, relativePath+"migrations/database/"); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 	_ = db.Close()
