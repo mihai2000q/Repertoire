@@ -36,3 +36,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  meilisearch:
+    image: "getmeili/meilisearch:v1.13.0"
+    container_name: Repertoire-Meilisearch
+    ports:
+      - "${MEILI_PORT}:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    volumes:
+      - ./.temp/meili_data:/meili_data
