@@ -8,7 +8,7 @@ import (
 	"repertoire/server/internal/wrapper"
 )
 
-type MeiliSearchService interface {
+type SearchEngineService interface {
 	Get(
 		query string,
 		currentPage *int,
@@ -18,15 +18,15 @@ type MeiliSearchService interface {
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
 }
 
-type meiliSearchService struct {
+type searchEngineService struct {
 	client meilisearch.ServiceManager
 }
 
-func NewMeiliSearchService(client meilisearch.ServiceManager) MeiliSearchService {
-	return meiliSearchService{client: client}
+func NewSearchEngineService(client meilisearch.ServiceManager) SearchEngineService {
+	return searchEngineService{client: client}
 }
 
-func (m meiliSearchService) Get(
+func (s searchEngineService) Get(
 	query string,
 	currentPage *int,
 	pageSize *int,
@@ -41,12 +41,12 @@ func (m meiliSearchService) Get(
 	}
 
 	if searchType != nil {
-		request.Filter = "type = " + string(*searchType) + " AND user_id = " + userID.String()
+		request.Filter = "type = " + string(*searchType) + " AND userId = " + userID.String()
 	} else {
-		request.Filter = "user_id = " + userID.String()
+		request.Filter = "userId = " + userID.String()
 	}
 
-	searchResult, err := m.client.Index("search").Search(query, request)
+	searchResult, err := s.client.Index("search").Search(query, request)
 	if err != nil {
 		return wrapper.WithTotalCount[any]{}, wrapper.InternalServerError(err)
 	}
@@ -57,7 +57,7 @@ func (m meiliSearchService) Get(
 
 	result := wrapper.WithTotalCount[any]{
 		Models:     searchResult.Hits,
-		TotalCount: searchResult.TotalHits,
+		TotalCount: searchResult.EstimatedTotalHits,
 	}
 
 	return result, nil

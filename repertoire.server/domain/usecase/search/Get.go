@@ -1,6 +1,7 @@
 package search
 
 import (
+	"github.com/goccy/go-json"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/enums"
@@ -11,12 +12,12 @@ import (
 
 type Get struct {
 	jwtService         service.JwtService
-	meiliSearchService service.MeiliSearchService
+	meiliSearchService service.SearchEngineService
 }
 
 func NewGet(
 	jwtService service.JwtService,
-	meiliSearchService service.MeiliSearchService,
+	meiliSearchService service.SearchEngineService,
 ) Get {
 	return Get{
 		jwtService:         jwtService,
@@ -43,24 +44,35 @@ func (g Get) Handle(
 
 	var results []any
 	for _, curr := range searchResult.Models {
-		switch curr.(model.SearchBase).Type {
-		case enums.Artist:
-			var artist = curr.(model.ArtistSearch)
+		switch curr.(map[string]interface{})["type"] {
+		case string(enums.Artist):
+			var artist model.ArtistSearch
+			jsonRes, _ := json.Marshal(curr)
+			_ = json.Unmarshal(jsonRes, &artist)
+
 			artist.ID = strings.Replace(artist.ID, "artist-", "", 1)
 			artist.ImageUrl = artist.ImageUrl.ToFullURL(artist.UpdatedAt)
+
 			results = append(results, artist)
 
-		case enums.Album:
-			var album = curr.(model.AlbumSearch)
+		case string(enums.Album):
+			var album model.AlbumSearch
+			jsonRes, _ := json.Marshal(curr)
+			_ = json.Unmarshal(jsonRes, &album)
+
 			album.ID = strings.Replace(album.ID, "album-", "", 1)
 			album.ImageUrl = album.ImageUrl.ToFullURL(album.UpdatedAt)
 			if album.Artist != nil {
 				album.Artist.ImageUrl = album.Artist.ImageUrl.ToFullURL(album.Artist.UpdatedAt)
 			}
+
 			results = append(results, album)
 
-		case enums.Song:
-			var song = curr.(model.SongSearch)
+		case string(enums.Song):
+			var song model.SongSearch
+			jsonRes, _ := json.Marshal(curr)
+			_ = json.Unmarshal(jsonRes, &song)
+
 			song.ID = strings.Replace(song.ID, "song-", "", 1)
 			song.ImageUrl = song.ImageUrl.ToFullURL(song.UpdatedAt)
 			if song.Artist != nil {
@@ -69,12 +81,17 @@ func (g Get) Handle(
 			if song.Album != nil {
 				song.Album.ImageUrl = song.Album.ImageUrl.ToFullURL(song.Album.UpdatedAt)
 			}
+
 			results = append(results, song)
 
-		case enums.Playlist:
-			var playlist = curr.(model.PlaylistSearch)
+		case string(enums.Playlist):
+			var playlist model.PlaylistSearch
+			jsonRes, _ := json.Marshal(curr)
+			_ = json.Unmarshal(jsonRes, &playlist)
+
 			playlist.ID = strings.Replace(playlist.ID, "playlist-", "", 1)
 			playlist.ImageUrl = playlist.ImageUrl.ToFullURL(playlist.UpdatedAt)
+
 			results = append(results, playlist)
 		}
 	}
