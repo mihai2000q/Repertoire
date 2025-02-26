@@ -35,7 +35,7 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 	}
 }
 
-func (v *Validator) Validate(request interface{}) *wrapper.ErrorCode {
+func (v *Validator) Validate(request any) *wrapper.ErrorCode {
 	err := v.validate.Struct(request)
 	if err != nil {
 		return wrapper.BadRequestError(err)

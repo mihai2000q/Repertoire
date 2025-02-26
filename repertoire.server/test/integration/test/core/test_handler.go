@@ -18,8 +18,8 @@ type TestHandler interface {
 	WithInvalidToken() TestHandler
 	WithUser(user model.User) TestHandler
 	GET(w http.ResponseWriter, url string)
-	POST(w http.ResponseWriter, url string, body interface{})
-	PUT(w http.ResponseWriter, url string, body interface{})
+	POST(w http.ResponseWriter, url string, body any)
+	PUT(w http.ResponseWriter, url string, body any)
 	PUTForm(w http.ResponseWriter, url string, bodyForm *bytes.Buffer, contentType string)
 	DELETE(w http.ResponseWriter, url string)
 }
@@ -65,7 +65,7 @@ func (t *testHandler) GET(w http.ResponseWriter, url string) {
 	t.httpServer.Handler.ServeHTTP(w, req)
 }
 
-func (t *testHandler) POST(w http.ResponseWriter, url string, body interface{}) {
+func (t *testHandler) POST(w http.ResponseWriter, url string, body any) {
 	jsonBody, _ := json.Marshal(body)
 	reqBody := bytes.NewBuffer(jsonBody)
 	req, _ := http.NewRequest("POST", url, reqBody)
@@ -75,7 +75,7 @@ func (t *testHandler) POST(w http.ResponseWriter, url string, body interface{}) 
 	t.httpServer.Handler.ServeHTTP(w, req)
 }
 
-func (t *testHandler) PUT(w http.ResponseWriter, url string, body interface{}) {
+func (t *testHandler) PUT(w http.ResponseWriter, url string, body any) {
 	jsonBody, _ := json.Marshal(body)
 	reqBody := bytes.NewBuffer(jsonBody)
 	req, _ := http.NewRequest("PUT", url, reqBody)

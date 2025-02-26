@@ -6,7 +6,6 @@ import (
 	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
-	"repertoire/server/model"
 )
 
 type MeiliSearchService interface {
@@ -16,7 +15,7 @@ type MeiliSearchService interface {
 		pageSize *int,
 		searchType *enums.SearchType,
 		userID uuid.UUID,
-	) (wrapper.WithTotalCount[model.SearchBase], *wrapper.ErrorCode)
+	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
 }
 
 type meiliSearchService struct {
@@ -33,7 +32,7 @@ func (m meiliSearchService) Get(
 	pageSize *int,
 	searchType *enums.SearchType,
 	userID uuid.UUID,
-) (wrapper.WithTotalCount[model.SearchBase], *wrapper.ErrorCode) {
+) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
 	request := &meilisearch.SearchRequest{}
 
 	if currentPage != nil && pageSize != nil {
@@ -49,14 +48,14 @@ func (m meiliSearchService) Get(
 
 	searchResult, err := m.client.Index("search").Search(query, request)
 	if err != nil {
-		return wrapper.WithTotalCount[model.SearchBase]{}, wrapper.InternalServerError(err)
+		return wrapper.WithTotalCount[any]{}, wrapper.InternalServerError(err)
 	}
 
 	for _, hit := range searchResult.Hits {
 		fmt.Println(hit)
 	}
 
-	result := wrapper.WithTotalCount[model.SearchBase]{
+	result := wrapper.WithTotalCount[any]{
 		Models:     searchResult.Hits,
 		TotalCount: searchResult.TotalHits,
 	}
