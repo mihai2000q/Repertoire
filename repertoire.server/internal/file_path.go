@@ -8,7 +8,7 @@ import (
 
 type FilePath string
 
-func (f *FilePath) ToFullURL(lastModifiedAt *time.Time) *FilePath {
+func (f *FilePath) ToFullURL(lastModifiedAt time.Time) *FilePath {
 	if f == nil {
 		return nil
 	}

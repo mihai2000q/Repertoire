@@ -54,13 +54,13 @@ func (s *Song) BeforeSave(*gorm.DB) error {
 }
 
 func (s *Song) AfterFind(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.ToFullURL(&s.UpdatedAt)
+	s.ImageURL = s.ImageURL.ToFullURL(s.UpdatedAt)
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if s.Artist != nil {
-		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(&s.Artist.UpdatedAt)
+		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(s.Artist.UpdatedAt)
 	}
 	if s.Album != nil {
-		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(&s.Album.UpdatedAt)
+		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(s.Album.UpdatedAt)
 	}
 
 	return nil
