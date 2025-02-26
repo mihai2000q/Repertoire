@@ -4,11 +4,10 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/internal/wrapper"
-	"repertoire/server/model"
 )
 
 type SearchService interface {
-	Get(request requests.SearchGetRequest, token string) (wrapper.WithTotalCount[model.SearchBase], *wrapper.ErrorCode)
+	Get(request requests.SearchGetRequest, token string) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
 }
 
 type searchService struct {
@@ -19,6 +18,6 @@ func NewSearchService(get search.Get) SearchService {
 	return &searchService{get: get}
 }
 
-func (s searchService) Get(request requests.SearchGetRequest, token string) (wrapper.WithTotalCount[model.SearchBase], *wrapper.ErrorCode) {
+func (s searchService) Get(request requests.SearchGetRequest, token string) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
 	return s.get.Handle(request, token)
 }
