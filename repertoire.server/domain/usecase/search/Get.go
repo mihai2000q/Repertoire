@@ -42,6 +42,10 @@ func (g Get) Handle(
 		userID,
 	)
 
+	if errCode != nil {
+		return wrapper.WithTotalCount[any]{}, errCode
+	}
+
 	var results []any
 	for _, curr := range searchResult.Models {
 		switch curr.(map[string]interface{})["type"] {
@@ -99,5 +103,5 @@ func (g Get) Handle(
 	return wrapper.WithTotalCount[any]{
 		Models:     results,
 		TotalCount: searchResult.TotalCount,
-	}, errCode
+	}, nil
 }
