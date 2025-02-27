@@ -6,6 +6,7 @@ import (
 	"repertoire/server/domain/usecase/artist/band/member"
 	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/search"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/domain/usecase/udata/band/member/role"
@@ -74,6 +75,10 @@ var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewUpdatePlaylist),
 )
 
+var searchUseCases = fx.Options(
+	fx.Provide(search.NewGet),
+)
+
 var songUseCases = fx.Options(
 	fx.Provide(song.NewAddPerfectSongRehearsal),
 	fx.Provide(song.NewCreateSong),
@@ -126,6 +131,7 @@ var Module = fx.Options(
 	artistUseCases,
 	authUseCases,
 	playlistUseCases,
+	searchUseCases,
 	songUseCases,
 	userDataUseCases,
 	userUseCases,

@@ -35,7 +35,7 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 	}
 }
 
-func (v *Validator) Validate(request interface{}) *wrapper.ErrorCode {
+func (v *Validator) Validate(request any) *wrapper.ErrorCode {
 	err := v.validate.Struct(request)
 	if err != nil {
 		return wrapper.BadRequestError(err)
@@ -60,6 +60,11 @@ func registerCustomValidators(validate *validator.Validate) error {
 	}
 
 	err = validate.RegisterValidation("difficulty_enum", DifficultyEnum)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("search_type_enum", SearchTypeEnum)
 	if err != nil {
 		return err
 	}

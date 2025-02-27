@@ -46,6 +46,16 @@ func DifficultyEnum(fl validator.FieldLevel) bool {
 	return slices.Contains(difficulties, difficulty)
 }
 
+func SearchTypeEnum(fl validator.FieldLevel) bool {
+	searchTypes := []enums.SearchType{enums.Artist, enums.Album, enums.Song, enums.Playlist}
+
+	searchType, ok := fl.Field().Interface().(enums.SearchType)
+	if !ok {
+		return false
+	}
+	return slices.Contains(searchTypes, searchType)
+}
+
 func YoutubeLink(fl validator.FieldLevel) bool {
 	regex := regexp.MustCompile(`^(https?://)?(www\.)?(youtube\.com|youtu\.be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})`)
 	return regex.MatchString(fl.Field().String())
