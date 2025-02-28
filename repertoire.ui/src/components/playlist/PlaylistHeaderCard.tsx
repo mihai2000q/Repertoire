@@ -59,7 +59,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             src={playlist.imageUrl}
             alt={playlist.title}
             fallbackSrc={playlistPlaceholder}
-            radius={'lg'}
+            radius={'10%'}
             sx={(theme) => ({
               boxShadow: theme.shadows.lg,
               ...(playlist.imageUrl && { cursor: 'pointer' })

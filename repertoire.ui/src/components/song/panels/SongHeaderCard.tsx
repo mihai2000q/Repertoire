@@ -85,7 +85,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
             src={song.imageUrl ?? song.album?.imageUrl}
             fallbackSrc={songPlaceholder}
             alt={song.title}
-            radius={'lg'}
+            radius={'10%'}
             sx={(theme) => ({
               boxShadow: theme.shadows.lg,
               ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })

@@ -85,7 +85,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             w={'max(12vw, 150px)'}
             src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
             fallbackSrc={albumPlaceholder}
-            radius={'lg'}
+            radius={'10%'}
             alt={isUnknownAlbum ? 'unknown-album' : album.title}
             sx={(theme) => ({
               boxShadow: theme.shadows.lg,
