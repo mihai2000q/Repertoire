@@ -38,13 +38,13 @@ describe('Topbar', () => {
 
     render(undefined)
 
-    expect(screen.getByRole('searchbox', { name: 'topbar-search' })).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: 'search' })).toBeInTheDocument()
   })
 
   it('should display search bar and user, when token is available', async () => {
     render('some token')
 
-    expect(screen.getByRole('searchbox', { name: 'topbar-search' })).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: 'search' })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'user' })).toBeInTheDocument()
   })
 

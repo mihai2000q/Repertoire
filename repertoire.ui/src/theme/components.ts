@@ -5,7 +5,9 @@ import {
   Button,
   Card,
   CardFactory,
+  Chip,
   Combobox,
+  Highlight,
   LoadingOverlay,
   Menu,
   Modal,
@@ -66,7 +68,7 @@ export const components = {
       },
       styles: () => ({
         root: {
-          transition: '0.18s',
+          transition: '0.18s'
         }
       })
     }
@@ -96,6 +98,14 @@ export const components = {
       }
     })
   }),
+  Chip: Chip.extend({
+    styles: () => ({
+      label: {
+        transition: '0.15s',
+        fontWeight: 500
+      }
+    })
+  }),
   Combobox: Combobox.extend({
     defaultProps: {
       shadow: 'sm',
@@ -117,6 +127,12 @@ export const components = {
           duration: 160
         }
       }
+    }
+  }),
+  Highlight: Highlight.extend({
+    defaultProps: {
+      color: 'transparent',
+      highlightStyles: { fontWeight: 700 }
     }
   }),
   LoadingOverlay: LoadingOverlay.extend({

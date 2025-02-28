@@ -14,6 +14,7 @@ services:
       - DB_PORT=5432
       - AUTH_STORAGE_URL=http://Repertoire-Storage:8020/oauth/token
       - UPLOAD_STORAGE_URL=http://Repertoire-Storage:8020/storage
+      - MEILI_URL=http://Repertoire-Meilisearch:7700
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:

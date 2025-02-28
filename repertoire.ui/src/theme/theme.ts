@@ -36,11 +36,12 @@ export const theme = createTheme({
     xl: rem(16)
   },
   lineHeights: {
-    xs: '1.4',
-    sm: '1.45',
+    xxs: '1.15',
+    xs: '1.3',
+    sm: '1.4',
     md: '1.55',
     lg: '1.6',
-    xl: '1.65'
+    xl: '1.7'
   },
   breakpoints: {
     xs: '36em',

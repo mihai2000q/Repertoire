@@ -66,8 +66,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
               aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
-              boxShadow: theme.shadows.xxl,
-              '&:hover': { boxShadow: theme.shadows.xxl_hover }
+              boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
             })}
             onClick={handleClick}
             onContextMenu={openMenu}
