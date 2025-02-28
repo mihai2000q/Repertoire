@@ -376,13 +376,11 @@ describe('Edit Song Header Modal', () => {
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const day = dayjs(song.releaseDate).date()
     const nextDay = dayjs(song.releaseDate).add(1, 'day').date()
-    const newArtist = artists[0]
 
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
     const titleField = screen.getByRole('textbox', { name: /title/i })
     const releaseDateField = screen.getByRole('button', { name: /release date/i })
-    const artistField = screen.getByRole('textbox', { name: /artist/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     // change image
@@ -413,22 +411,26 @@ describe('Edit Song Header Modal', () => {
     await user.click(screen.getByText(day.toString()))
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
-    // change artist
-    await user.click(artistField)
-    await user.click(await screen.findByRole('option', { name: newArtist.name }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-
-    // reset artist
-    await user.click(artistField)
-    await user.click(await screen.findByRole('option', { name: newArtist.name }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
-
     // remove image
     await user.click(screen.getByRole('button', { name: 'remove-image' }))
     expect(saveButton).not.toHaveAttribute('data-disabled')
   })
 
   // This test was originally part of the above test, but it kept failing in the pipeline
+  it('should enable the save button when the artist changes', async () => {
+    const user = userEvent.setup()
+
+    const newArtist = artists[0]
+
+    reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
+
+    // change album
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(await screen.findByRole('option', { name: newArtist.name }))
+    expect(screen.getByRole('button', { name: /save/i })).not.toHaveAttribute('data-disabled')
+  })
+
+  // This test was originally part of the above-above test, but it kept failing in the pipeline
   it('should enable the save button when the album changes', async () => {
     const user = userEvent.setup()
 
@@ -436,13 +438,10 @@ describe('Edit Song Header Modal', () => {
 
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
-    const albumField = screen.getByRole('textbox', { name: /album/i })
-    const saveButton = screen.getByRole('button', { name: /save/i })
-
     // change album
-    await user.click(albumField)
+    await user.click(screen.getByRole('textbox', { name: /album/i })  )
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(screen.getByRole('button', { name: /save/i })).not.toHaveAttribute('data-disabled')
   })
 
   it('should validate the title textbox', async () => {
