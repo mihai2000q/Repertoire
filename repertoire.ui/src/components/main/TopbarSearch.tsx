@@ -83,7 +83,7 @@ const TypeChip = ({
 )
 
 interface TopbarSearchProps extends TextInputProps {
-  comboboxProps: ComboboxProps
+  comboboxProps?: ComboboxProps
   dropdownMinHeight?: number | string
 }
 
@@ -186,7 +186,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
-          src={song.imageUrl ?? songPlaceholder}
+          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
           alt={song.title}
           icon={<CustomIconMusicNoteEighth size={12} />}
         />
@@ -264,7 +264,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
         <TextInput
           ref={textInputRef}
           role={'searchbox'}
-          aria-label={'topbar-search'}
+          aria-label={'search'}
           placeholder={'Search'}
           leftSection={<IconSearch size={16} stroke={2} />}
           value={value}
