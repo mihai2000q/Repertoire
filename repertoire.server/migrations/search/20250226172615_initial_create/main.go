@@ -6,7 +6,6 @@ import (
 	"repertoire/server/data/database"
 	"repertoire/server/data/search"
 	"repertoire/server/internal"
-	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"time"
 )
@@ -50,18 +49,7 @@ func addArtists(dbClient database.Client, meiliClient meilisearch.ServiceManager
 
 	var meiliArtists []model.ArtistSearch
 	for _, artist := range artists {
-		meiliArtist := model.ArtistSearch{
-			ImageUrl:  artist.ImageURL.StripURL(),
-			Name:      artist.Name,
-			UpdatedAt: artist.UpdatedAt,
-			SearchBase: model.SearchBase{
-				ID:     "artist-" + artist.ID.String(),
-				Type:   enums.Artist,
-				UserID: artist.UserID,
-			},
-		}
-
-		meiliArtists = append(meiliArtists, meiliArtist)
+		meiliArtists = append(meiliArtists, artist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliArtists)
 	if err != nil {
@@ -82,26 +70,7 @@ func addAlbums(dbClient database.Client, meiliClient meilisearch.ServiceManager)
 
 	var meiliAlbums []model.AlbumSearch
 	for _, album := range albums {
-		meiliAlbum := model.AlbumSearch{
-			ImageUrl:  album.ImageURL.StripURL(),
-			Title:     album.Title,
-			UpdatedAt: album.UpdatedAt,
-			SearchBase: model.SearchBase{
-				ID:     "album-" + album.ID.String(),
-				Type:   enums.Album,
-				UserID: album.UserID,
-			},
-		}
-
-		if album.Artist != nil {
-			meiliAlbum.Artist = &model.AlbumArtistSearch{
-				ID:       album.Artist.ID,
-				Name:     album.Artist.Name,
-				ImageUrl: album.Artist.ImageURL.StripURL(),
-			}
-		}
-
-		meiliAlbums = append(meiliAlbums, meiliAlbum)
+		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
 	if err != nil {
@@ -122,33 +91,7 @@ func addSongs(dbClient database.Client, meiliClient meilisearch.ServiceManager) 
 
 	var meiliSongs []model.SongSearch
 	for _, song := range songs {
-		meiliSong := model.SongSearch{
-			ImageUrl:  song.ImageURL.StripURL(),
-			Title:     song.Title,
-			UpdatedAt: song.UpdatedAt,
-			SearchBase: model.SearchBase{
-				ID:     "song-" + song.ID.String(),
-				Type:   enums.Song,
-				UserID: song.UserID,
-			},
-		}
-
-		if song.Artist != nil {
-			meiliSong.Artist = &model.SongArtistSearch{
-				ID:       song.Artist.ID,
-				Name:     song.Artist.Name,
-				ImageUrl: song.Artist.ImageURL.StripURL(),
-			}
-		}
-
-		if song.Album != nil {
-			meiliSong.Album = &model.SongAlbumSearch{
-				ID:       song.Album.ID,
-				Title:    song.Album.Title,
-				ImageUrl: song.Album.ImageURL.StripURL(),
-			}
-		}
-
+		meiliSong := song.ToSearch()
 		meiliSongs = append(meiliSongs, meiliSong)
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
@@ -170,18 +113,7 @@ func addPlaylists(dbClient database.Client, meiliClient meilisearch.ServiceManag
 
 	var meiliPlaylists []model.PlaylistSearch
 	for _, playlist := range playlists {
-		meiliPlaylist := model.PlaylistSearch{
-			ImageUrl:  playlist.ImageURL.StripURL(),
-			Title:     playlist.Title,
-			UpdatedAt: playlist.UpdatedAt,
-			SearchBase: model.SearchBase{
-				ID:     "playlist-" + playlist.ID.String(),
-				Type:   enums.Playlist,
-				UserID: playlist.UserID,
-			},
-		}
-
-		meiliPlaylists = append(meiliPlaylists, meiliPlaylist)
+		meiliPlaylists = append(meiliPlaylists, playlist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliPlaylists)
 	if err != nil {
