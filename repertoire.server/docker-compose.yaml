@@ -32,7 +32,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./.sample-data:/.sample-data
-      - ./.temp/postgres-data:/var/lib/postgresql/data
+      - ./.container-data/postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -47,4 +47,4 @@ services:
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     volumes:
-      - ./.temp/meili_data:/meili_data
+      - ./.container-data/meili_data:/meili_data

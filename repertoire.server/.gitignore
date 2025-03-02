@@ -29,4 +29,6 @@ go.work.sum
 
 # Temp
 tmp/
-.temp/
+
+# Docker Containers Data
+.container-data/
