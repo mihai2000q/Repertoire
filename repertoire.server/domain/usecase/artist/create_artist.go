@@ -11,14 +11,20 @@ import (
 )
 
 type CreateArtist struct {
-	jwtService service.JwtService
-	repository repository.ArtistRepository
+	jwtService          service.JwtService
+	repository          repository.ArtistRepository
+	searchEngineService service.SearchEngineService
 }
 
-func NewCreateArtist(jwtService service.JwtService, repository repository.ArtistRepository) CreateArtist {
+func NewCreateArtist(
+	jwtService service.JwtService,
+	repository repository.ArtistRepository,
+	searchEngineService service.SearchEngineService,
+) CreateArtist {
 	return CreateArtist{
-		jwtService: jwtService,
-		repository: repository,
+		jwtService:          jwtService,
+		repository:          repository,
+		searchEngineService: searchEngineService,
 	}
 }
 
@@ -38,5 +44,11 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
+
+	errCode = c.searchEngineService.Add([]any{artist.ToSearch()})
+	if errCode != nil {
+		return uuid.Nil, errCode
+	}
+
 	return artist.ID, nil
 }

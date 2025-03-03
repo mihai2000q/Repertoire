@@ -1,24 +1,32 @@
 package album
 
 import (
+	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type CreateAlbum struct {
-	jwtService service.JwtService
-	repository repository.AlbumRepository
+	jwtService          service.JwtService
+	repository          repository.AlbumRepository
+	artistRepository    repository.ArtistRepository
+	searchEngineService service.SearchEngineService
 }
 
-func NewCreateAlbum(jwtService service.JwtService, repository repository.AlbumRepository) CreateAlbum {
+func NewCreateAlbum(
+	jwtService service.JwtService,
+	repository repository.AlbumRepository,
+	artistRepository repository.ArtistRepository,
+	searchEngineService service.SearchEngineService,
+) CreateAlbum {
 	return CreateAlbum{
-		jwtService: jwtService,
-		repository: repository,
+		jwtService:          jwtService,
+		repository:          repository,
+		artistRepository:    artistRepository,
+		searchEngineService: searchEngineService,
 	}
 }
 
@@ -40,6 +48,12 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
+
+	errCode = c.addToSearchEngine(album)
+	if errCode != nil {
+		return uuid.Nil, errCode
+	}
+
 	return album.ID, nil
 }
 
@@ -53,4 +67,28 @@ func (c CreateAlbum) createArtist(request requests.CreateAlbumRequest, userID uu
 		}
 	}
 	return artist
+}
+
+func (c CreateAlbum) addToSearchEngine(album model.Album) *wrapper.ErrorCode {
+	var searches []any
+	albumSearch := album.ToSearch()
+
+	if album.ArtistID != nil {
+		var artist model.Artist
+		err := c.artistRepository.Get(&artist, *album.ArtistID)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+		albumSearch.Artist = artist.ToAlbumSearch()
+	}
+	searches = append(searches, albumSearch)
+	if album.Artist != nil {
+		searches = append(searches, album.Artist.ToSearch())
+	}
+
+	errCode := c.searchEngineService.Add(searches)
+	if errCode != nil {
+		return errCode
+	}
+	return nil
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/meilisearch/meilisearch-go"
@@ -16,6 +17,7 @@ type SearchEngineService interface {
 		searchType *enums.SearchType,
 		userID uuid.UUID,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
+	Add(items []any) *wrapper.ErrorCode
 }
 
 type searchEngineService struct {
@@ -61,4 +63,27 @@ func (s searchEngineService) Get(
 	}
 
 	return result, nil
+}
+
+func (s searchEngineService) Add(items []any) *wrapper.ErrorCode {
+	var results []map[string]interface{}
+	for _, item := range items {
+		jsonData, err := json.Marshal(item)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+
+		var result map[string]interface{}
+		err = json.Unmarshal(jsonData, &result)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+		results = append(results, result)
+	}
+
+	_, err := s.client.Index("search").AddDocuments(results)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+	return nil
 }

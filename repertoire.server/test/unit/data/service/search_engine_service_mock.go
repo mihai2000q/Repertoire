@@ -27,3 +27,14 @@ func (s *SearchEngineServiceMock) Get(
 
 	return args.Get(0).(wrapper.WithTotalCount[any]), errCode
 }
+
+func (s *SearchEngineServiceMock) Add(items []any) *wrapper.ErrorCode {
+	args := s.Called(items)
+
+	var errCode *wrapper.ErrorCode
+	if a := args.Get(0); a != nil {
+		errCode = a.(*wrapper.ErrorCode)
+	}
+
+	return errCode
+}

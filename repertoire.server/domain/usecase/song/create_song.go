@@ -13,20 +13,26 @@ import (
 )
 
 type CreateSong struct {
-	jwtService      service.JwtService
-	repository      repository.SongRepository
-	albumRepository repository.AlbumRepository
+	jwtService          service.JwtService
+	repository          repository.SongRepository
+	albumRepository     repository.AlbumRepository
+	artistRepository    repository.ArtistRepository
+	searchEngineService service.SearchEngineService
 }
 
 func NewCreateSong(
 	jwtService service.JwtService,
 	repository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
+	artistRepository repository.ArtistRepository,
+	searchEngineService service.SearchEngineService,
 ) CreateSong {
 	return CreateSong{
-		jwtService:      jwtService,
-		repository:      repository,
-		albumRepository: albumRepository,
+		jwtService:          jwtService,
+		repository:          repository,
+		albumRepository:     albumRepository,
+		artistRepository:    artistRepository,
+		searchEngineService: searchEngineService,
 	}
 }
 
@@ -65,6 +71,12 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
+
+	errCode = c.addToSearchEngine(song)
+	if errCode != nil {
+		return uuid.Nil, errCode
+	}
+
 	return song.ID, nil
 }
 
@@ -78,7 +90,6 @@ func (c CreateSong) createArtist(song *model.Song, request requests.CreateSongRe
 		Name:   *request.ArtistName,
 		UserID: song.UserID,
 	}
-	song.ArtistID = &song.Artist.ID
 }
 
 func (c CreateSong) createSections(request []requests.CreateSectionRequest, songID uuid.UUID) []model.SongSection {
@@ -134,5 +145,42 @@ func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequ
 		song.ReleaseDate = album.ReleaseDate
 	}
 
+	return nil
+}
+
+func (c CreateSong) addToSearchEngine(song model.Song) *wrapper.ErrorCode {
+	var searches []any
+	songSearch := song.ToSearch()
+
+	if song.ArtistID != nil {
+		var artist model.Artist
+		err := c.artistRepository.Get(&artist, *song.ArtistID)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+		songSearch.Artist = artist.ToSongSearch()
+	}
+	if song.AlbumID != nil {
+		var album model.Album
+		err := c.albumRepository.Get(&album, *song.AlbumID)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
+		songSearch.Album = album.ToSongSearch()
+	}
+
+	searches = append(searches, songSearch)
+
+	if song.Artist != nil {
+		searches = append(searches, song.Artist.ToSearch())
+	}
+	if song.Album != nil {
+		searches = append(searches, song.Album.ToSearch())
+	}
+
+	errCode := c.searchEngineService.Add(searches)
+	if errCode != nil {
+		return errCode
+	}
 	return nil
 }

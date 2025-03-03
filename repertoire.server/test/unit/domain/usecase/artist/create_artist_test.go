@@ -19,7 +19,7 @@ import (
 func TestCreateArtist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := artist.NewCreateArtist(jwtService, nil)
+	_uut := artist.NewCreateArtist(jwtService, nil, nil)
 
 	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
@@ -44,7 +44,7 @@ func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := artist.NewCreateArtist(jwtService, artistRepository)
+	_uut := artist.NewCreateArtist(jwtService, artistRepository, nil)
 
 	request := requests.CreateArtistRequest{
 		Name: "Some Artist",
@@ -71,11 +71,49 @@ func TestCreateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 	artistRepository.AssertExpectations(t)
 }
 
+func TestCreateArtist_WhenAddToSearchEngineFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	jwtService := new(service.JwtServiceMock)
+	searchEngineService := new(service.SearchEngineServiceMock)
+	_uut := artist.NewCreateArtist(jwtService, artistRepository, searchEngineService)
+
+	request := requests.CreateArtistRequest{
+		Name: "Some Artist",
+	}
+	token := "this is a token"
+	userID := uuid.New()
+
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	artistRepository.On("Create", mock.IsType(new(model.Artist))).
+		Return(nil).
+		Once()
+
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	searchEngineService.On("Add", mock.IsType([]any{})).
+		Return(internalError).
+		Once()
+
+	// when
+	id, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Empty(t, id)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, internalError, errCode)
+
+	jwtService.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
+	searchEngineService.AssertExpectations(t)
+}
+
 func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := artist.NewCreateArtist(jwtService, artistRepository)
+	searchEngineService := new(service.SearchEngineServiceMock)
+	_uut := artist.NewCreateArtist(jwtService, artistRepository, searchEngineService)
 
 	request := requests.CreateArtistRequest{
 		Name:   "Some Artist",
@@ -96,6 +134,15 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
+	searchEngineService.On("Add", mock.IsType([]any{})).
+		Run(func(args mock.Arguments) {
+			searches := args.Get(0).([]any)
+			assert.Len(t, searches, 1)
+			assert.Contains(t, searches[0].(model.ArtistSearch).ID, artistID.String())
+		}).
+		Return(nil).
+		Once()
+
 	// when
 	id, errCode := _uut.Handle(request, token)
 
@@ -105,6 +152,7 @@ func TestCreateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 	jwtService.AssertExpectations(t)
 	artistRepository.AssertExpectations(t)
+	searchEngineService.AssertExpectations(t)
 }
 
 func assertCreatedArtist(

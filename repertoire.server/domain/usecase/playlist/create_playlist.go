@@ -11,14 +11,20 @@ import (
 )
 
 type CreatePlaylist struct {
-	jwtService service.JwtService
-	repository repository.PlaylistRepository
+	jwtService          service.JwtService
+	repository          repository.PlaylistRepository
+	searchEngineService service.SearchEngineService
 }
 
-func NewCreatePlaylist(jwtService service.JwtService, repository repository.PlaylistRepository) CreatePlaylist {
+func NewCreatePlaylist(
+	jwtService service.JwtService,
+	repository repository.PlaylistRepository,
+	searchEngineService service.SearchEngineService,
+) CreatePlaylist {
 	return CreatePlaylist{
-		jwtService: jwtService,
-		repository: repository,
+		jwtService:          jwtService,
+		repository:          repository,
+		searchEngineService: searchEngineService,
 	}
 }
 
@@ -38,5 +44,11 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
+
+	errCode = c.searchEngineService.Add([]any{playlist.ToSearch()})
+	if errCode != nil {
+		return uuid.Nil, errCode
+	}
+
 	return playlist.ID, nil
 }
