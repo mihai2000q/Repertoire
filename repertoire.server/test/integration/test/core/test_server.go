@@ -31,6 +31,7 @@ type TestServer struct {
 	app           *fx.App
 	container     *postgresTest.PostgresContainer
 	storageServer *httptest.Server
+	searchServer  *httptest.Server
 }
 
 func Start(envPath ...string) *TestServer {
@@ -103,6 +104,12 @@ func Start(envPath ...string) *TestServer {
 	_ = os.Setenv("AUTH_STORAGE_URL", ts.storageServer.URL)
 	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
 
+	// Start Search Engine Server
+	ts.searchServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusAccepted)
+	}))
+	_ = os.Setenv("MEILI_URL", ts.searchServer.URL)
+
 	// Setup application modules and populate the router
 	// Implicitly, the application will connect to the database
 	gin.SetMode(gin.TestMode)
@@ -124,6 +131,7 @@ func Start(envPath ...string) *TestServer {
 
 func Stop(ts *TestServer) {
 	ts.storageServer.Close()
+	ts.searchServer.Close()
 	if err := ts.app.Stop(context.Background()); err != nil {
 		log.Fatal(err)
 	}
