@@ -2,9 +2,9 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/meilisearch/meilisearch-go"
+	"log"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
 )
@@ -17,7 +17,7 @@ type SearchEngineService interface {
 		searchType *enums.SearchType,
 		userID uuid.UUID,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
-	Add(items []any) *wrapper.ErrorCode
+	Add(items []any)
 }
 
 type searchEngineService struct {
@@ -53,10 +53,6 @@ func (s searchEngineService) Get(
 		return wrapper.WithTotalCount[any]{}, wrapper.InternalServerError(err)
 	}
 
-	for _, hit := range searchResult.Hits {
-		fmt.Println(hit)
-	}
-
 	result := wrapper.WithTotalCount[any]{
 		Models:     searchResult.Hits,
 		TotalCount: searchResult.EstimatedTotalHits,
@@ -65,25 +61,26 @@ func (s searchEngineService) Get(
 	return result, nil
 }
 
-func (s searchEngineService) Add(items []any) *wrapper.ErrorCode {
-	var results []map[string]interface{}
-	for _, item := range items {
-		jsonData, err := json.Marshal(item)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+func (s searchEngineService) Add(items []any) {
+	go func() {
+		var results []map[string]interface{}
+		for _, item := range items {
+			jsonData, err := json.Marshal(item)
+			if err != nil {
+				log.Println(err)
+			}
+
+			var result map[string]interface{}
+			err = json.Unmarshal(jsonData, &result)
+			if err != nil {
+				log.Println(err)
+			}
+			results = append(results, result)
 		}
 
-		var result map[string]interface{}
-		err = json.Unmarshal(jsonData, &result)
+		_, err := s.client.Index("search").AddDocuments(results)
 		if err != nil {
-			return wrapper.InternalServerError(err)
+			log.Println(err)
 		}
-		results = append(results, result)
-	}
-
-	_, err := s.client.Index("search").AddDocuments(results)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	return nil
+	}()
 }

@@ -45,10 +45,7 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	errCode = c.searchEngineService.Add([]any{artist.ToSearch()})
-	if errCode != nil {
-		return uuid.Nil, errCode
-	}
+	c.searchEngineService.Add([]any{artist.ToSearch()})
 
 	return artist.ID, nil
 }

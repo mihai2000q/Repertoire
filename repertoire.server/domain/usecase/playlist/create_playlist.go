@@ -45,10 +45,7 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	errCode = c.searchEngineService.Add([]any{playlist.ToSearch()})
-	if errCode != nil {
-		return uuid.Nil, errCode
-	}
+	c.searchEngineService.Add([]any{playlist.ToSearch()})
 
 	return playlist.ID, nil
 }

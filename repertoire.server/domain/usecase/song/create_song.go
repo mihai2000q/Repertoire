@@ -178,9 +178,6 @@ func (c CreateSong) addToSearchEngine(song model.Song) *wrapper.ErrorCode {
 		searches = append(searches, song.Album.ToSearch())
 	}
 
-	errCode := c.searchEngineService.Add(searches)
-	if errCode != nil {
-		return errCode
-	}
+	c.searchEngineService.Add(searches)
 	return nil
 }

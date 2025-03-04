@@ -71,43 +71,6 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestCreatePlaylist_WhenAddToSearchEngineFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	jwtService := new(service.JwtServiceMock)
-	playlistRepository := new(repository.PlaylistRepositoryMock)
-	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, searchEngineService)
-
-	request := requests.CreatePlaylistRequest{
-		Title: "Some Playlist",
-	}
-	token := "this is a token"
-	userID := uuid.New()
-
-	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
-
-	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
-		Return(nil).
-		Once()
-
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
-	searchEngineService.On("Add", mock.IsType([]any{})).
-		Return(internalError).
-		Once()
-
-	// when
-	id, errCode := _uut.Handle(request, token)
-
-	// then
-	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
-	assert.Equal(t, internalError, errCode)
-
-	jwtService.AssertExpectations(t)
-	playlistRepository.AssertExpectations(t)
-	searchEngineService.AssertExpectations(t)
-}
-
 func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
@@ -139,7 +102,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			assert.Len(t, searches, 1)
 			assert.Contains(t, searches[0].(model.PlaylistSearch).ID, playlistID.String())
 		}).
-		Return(nil).
+		Return().
 		Once()
 
 	// when

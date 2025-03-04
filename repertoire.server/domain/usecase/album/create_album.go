@@ -86,9 +86,6 @@ func (c CreateAlbum) addToSearchEngine(album model.Album) *wrapper.ErrorCode {
 		searches = append(searches, album.Artist.ToSearch())
 	}
 
-	errCode := c.searchEngineService.Add(searches)
-	if errCode != nil {
-		return errCode
-	}
+	c.searchEngineService.Add(searches)
 	return nil
 }
