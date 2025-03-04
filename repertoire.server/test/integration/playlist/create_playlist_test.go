@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"repertoire/server/api/requests"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
@@ -53,17 +54,22 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
-			assertCreatedPlaylist(t, test.request, response.ID, user.ID)
+
+			db := utils.GetDatabase(t)
+			var playlist model.Playlist
+			db.Find(&playlist, response.ID)
+			assertCreatedPlaylist(t, test.request, playlist, user.ID)
+
+			searchClient := utils.GetSearchClient(t)
+			var playlistSearch model.PlaylistSearch
+			searchID := "playlist-" + response.ID.String()
+			utils.GetSearchDocumentWithRetry(searchClient, searchID, &playlistSearch)
+			assertion.PlaylistSearch(t, playlistSearch, playlist)
 		})
 	}
 }
 
-func assertCreatedPlaylist(t *testing.T, request requests.CreatePlaylistRequest, playlistID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase(t)
-
-	var playlist model.Playlist
-	db.Find(&playlist, playlistID)
-
+func assertCreatedPlaylist(t *testing.T, request requests.CreatePlaylistRequest, playlist model.Playlist, userID uuid.UUID) {
 	assert.Equal(t, request.Title, playlist.Title)
 	assert.Equal(t, request.Description, playlist.Description)
 	assert.Nil(t, playlist.ImageURL)

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"repertoire/server/api/requests"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
@@ -38,15 +39,20 @@ func TestCreateArtist_WhenSuccessful_ShouldCreateArtist(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.NotEmpty(t, response)
-	assertCreatedArtist(t, request, response.ID, user.ID)
+
+	db := utils.GetDatabase(t)
+	var artist model.Artist
+	db.Find(&artist, response.ID)
+	assertCreatedArtist(t, request, artist, user.ID)
+
+	searchClient := utils.GetSearchClient(t)
+	var artistSearch model.ArtistSearch
+	searchID := "artist-" + response.ID.String()
+	utils.GetSearchDocumentWithRetry(searchClient, searchID, &artistSearch)
+	assertion.ArtistSearch(t, artistSearch, artist)
 }
 
-func assertCreatedArtist(t *testing.T, request requests.CreateArtistRequest, artistID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase(t)
-
-	var artist model.Artist
-	db.Find(&artist, artistID)
-
+func assertCreatedArtist(t *testing.T, request requests.CreateArtistRequest, artist model.Artist, userID uuid.UUID) {
 	assert.Equal(t, request.Name, artist.Name)
 	assert.Equal(t, request.IsBand, artist.IsBand)
 	assert.Nil(t, artist.ImageURL)

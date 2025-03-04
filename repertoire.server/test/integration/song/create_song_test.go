@@ -116,17 +116,23 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
 
+			db := utils.GetDatabase(t)
 			var song model.Song
-			utils.GetDatabase(t).
-				Preload("Artist").
-				Preload("Album").
+			db.
+				Joins("Artist").
+				Joins("Album").
+				Joins("GuitarTuning").
 				Preload("Album.Songs").
-				Preload("GuitarTuning").
 				Preload("Sections").
 				Preload("Sections.SongSectionType").
 				Find(&song, response.ID)
-
 			assertCreatedSong(t, test.request, song, user.ID)
+
+			searchClient := utils.GetSearchClient(t)
+			var songSearch model.SongSearch
+			searchID := "song-" + response.ID.String()
+			utils.GetSearchDocumentWithRetry(searchClient, searchID, &songSearch)
+			assertion.SongSearch(t, songSearch, song)
 		})
 	}
 }
