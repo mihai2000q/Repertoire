@@ -49,7 +49,7 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	errCode = c.addToSearchEngine(album)
+	errCode = c.syncSearchEngine(album)
 	if errCode != nil {
 		return uuid.Nil, errCode
 	}
@@ -69,7 +69,7 @@ func (c CreateAlbum) createArtist(request requests.CreateAlbumRequest, userID uu
 	return artist
 }
 
-func (c CreateAlbum) addToSearchEngine(album model.Album) *wrapper.ErrorCode {
+func (c CreateAlbum) syncSearchEngine(album model.Album) *wrapper.ErrorCode {
 	var searches []any
 	albumSearch := album.ToSearch()
 

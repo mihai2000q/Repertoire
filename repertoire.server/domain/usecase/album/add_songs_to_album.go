@@ -15,12 +15,12 @@ type AddSongsToAlbum struct {
 }
 
 func NewAddSongsToAlbum(
-	albumRepository repository.AlbumRepository,
-	repository repository.SongRepository,
+	repository repository.AlbumRepository,
+	songRepository repository.SongRepository,
 ) AddSongsToAlbum {
 	return AddSongsToAlbum{
-		repository:     albumRepository,
-		songRepository: repository,
+		repository:     repository,
+		songRepository: songRepository,
 	}
 }
 

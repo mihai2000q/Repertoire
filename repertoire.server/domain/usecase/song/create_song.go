@@ -72,7 +72,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	errCode = c.addToSearchEngine(song)
+	errCode = c.syncSearchEngine(song)
 	if errCode != nil {
 		return uuid.Nil, errCode
 	}
@@ -148,7 +148,7 @@ func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequ
 	return nil
 }
 
-func (c CreateSong) addToSearchEngine(song model.Song) *wrapper.ErrorCode {
+func (c CreateSong) syncSearchEngine(song model.Song) *wrapper.ErrorCode {
 	var searches []any
 	songSearch := song.ToSearch()
 
