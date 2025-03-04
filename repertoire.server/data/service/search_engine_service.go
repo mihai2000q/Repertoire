@@ -10,7 +10,7 @@ import (
 )
 
 type SearchEngineService interface {
-	Get(
+	Search(
 		query string,
 		currentPage *int,
 		pageSize *int,
@@ -28,7 +28,7 @@ func NewSearchEngineService(client meilisearch.ServiceManager) SearchEngineServi
 	return searchEngineService{client: client}
 }
 
-func (s searchEngineService) Get(
+func (s searchEngineService) Search(
 	query string,
 	currentPage *int,
 	pageSize *int,

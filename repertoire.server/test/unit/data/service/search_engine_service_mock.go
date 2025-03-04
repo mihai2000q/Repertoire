@@ -11,7 +11,7 @@ type SearchEngineServiceMock struct {
 	mock.Mock
 }
 
-func (s *SearchEngineServiceMock) Get(
+func (s *SearchEngineServiceMock) Search(
 	query string,
 	currentPage *int,
 	pageSize *int,
