@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/meilisearch/meilisearch-go"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -19,6 +20,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pressly/goose"
 	"github.com/testcontainers/testcontainers-go"
+	meilisearchTest "github.com/testcontainers/testcontainers-go/modules/meilisearch"
 	postgresTest "github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/fx"
@@ -28,10 +30,10 @@ var Dsn string
 var httpServer *http.Server
 
 type TestServer struct {
-	app           *fx.App
-	container     *postgresTest.PostgresContainer
-	storageServer *httptest.Server
-	searchServer  *httptest.Server
+	app            *fx.App
+	dbContainer    *postgresTest.PostgresContainer
+	storageServer  *httptest.Server
+	meiliContainer *meilisearchTest.MeilisearchContainer
 }
 
 func Start(envPath ...string) *TestServer {
@@ -46,8 +48,49 @@ func Start(envPath ...string) *TestServer {
 
 	env := internal.NewEnv()
 
-	// Setup Postgres Docker Container
-	postgresContainer, err := postgresTest.Run(context.Background(),
+	ts.setupPostgresContainer(env, relativePath)
+	ts.setupMeiliContainer(env)
+	ts.setupStorageServer()
+
+	// Setup application modules and populate the router
+	// Implicitly, the application will connect to the database
+	gin.SetMode(gin.TestMode)
+	ts.app = fx.New(
+		internal.Module,
+		data.Module,
+		domain.Module,
+		api.Module,
+		fx.Populate(&httpServer),
+	)
+
+	// Start application
+	if err := ts.app.Start(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+
+	return ts
+}
+
+func Stop(ts *TestServer) {
+	ts.storageServer.Close()
+	if err := ts.app.Stop(context.Background()); err != nil {
+		log.Fatal(err)
+	}
+	if err := testcontainers.TerminateContainer(ts.dbContainer); err != nil {
+		log.Printf("failed to terminate postgres dbContainer: %s", err)
+	}
+	if err := testcontainers.TerminateContainer(ts.meiliContainer); err != nil {
+		log.Printf("failed to terminate meiliearch dbContainer: %s", err)
+	}
+}
+
+func getHttpServer() *http.Server {
+	return httpServer
+}
+
+func (ts *TestServer) setupPostgresContainer(env internal.Env, relativePath string) {
+	// Setup Container
+	container, err := postgresTest.Run(context.Background(),
 		"postgres:17",
 		postgresTest.WithDatabase(env.DatabaseName),
 		postgresTest.WithUsername(env.DatabaseUser),
@@ -57,13 +100,13 @@ func Start(envPath ...string) *TestServer {
 				WithOccurrence(2).
 				WithStartupTimeout(5*time.Second)),
 	)
-	ts.container = postgresContainer
+	ts.dbContainer = container
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Get Random Port and set the environment variable
-	port, _ := ts.container.MappedPort(context.Background(), "5432/tcp")
+	port, _ := ts.dbContainer.MappedPort(context.Background(), "5432/tcp")
 	_ = os.Setenv("DB_PORT", port.Port())
 	Dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		env.DatabaseHost,
@@ -81,8 +124,9 @@ func Start(envPath ...string) *TestServer {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 	_ = db.Close()
+}
 
-	// Start Storage Server
+func (ts *TestServer) setupStorageServer() {
 	ts.storageServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
@@ -103,43 +147,40 @@ func Start(envPath ...string) *TestServer {
 	}))
 	_ = os.Setenv("AUTH_STORAGE_URL", ts.storageServer.URL)
 	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
+}
 
-	// Start Search Engine Server
-	ts.searchServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusAccepted)
-	}))
-	_ = os.Setenv("MEILI_URL", ts.searchServer.URL)
-
-	// Setup application modules and populate the router
-	// Implicitly, the application will connect to the database
-	gin.SetMode(gin.TestMode)
-	ts.app = fx.New(
-		internal.Module,
-		data.Module,
-		domain.Module,
-		api.Module,
-		fx.Populate(&httpServer),
+func (ts *TestServer) setupMeiliContainer(env internal.Env) {
+	// Setup Container
+	container, err := meilisearchTest.Run(
+		context.Background(),
+		"getmeili/meilisearch:v1.13.0",
+		meilisearchTest.WithMasterKey(env.MeiliMasterKey),
 	)
-
-	// Start application
-	if err = ts.app.Start(context.Background()); err != nil {
+	if err != nil {
 		log.Fatal(err)
 	}
+	ts.meiliContainer = container
 
-	return ts
-}
+	// Get Random Port and set the environment variable
+	port, _ := ts.meiliContainer.MappedPort(context.Background(), "7700/tcp")
+	_ = os.Setenv("MEILI_PORT", port.Port())
 
-func Stop(ts *TestServer) {
-	ts.storageServer.Close()
-	ts.searchServer.Close()
-	if err := ts.app.Stop(context.Background()); err != nil {
-		log.Fatal(err)
+	// Initialize Indexes and Filterable Attributes
+	url := "http://" + env.MeiliHost + ":" + port.Port()
+	meiliClient := meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
+
+	_, err = meiliClient.CreateIndex(&meilisearch.IndexConfig{
+		Uid:        "search",
+		PrimaryKey: "id",
+	})
+	if err != nil {
+		log.Println(err)
 	}
-	if err := testcontainers.TerminateContainer(ts.container); err != nil {
-		log.Printf("failed to terminate container: %s", err)
-	}
-}
 
-func getHttpServer() *http.Server {
-	return httpServer
+	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{"type", "userId"})
+	if err != nil {
+		log.Println(err)
+	}
+
+	meiliClient.Close()
 }
