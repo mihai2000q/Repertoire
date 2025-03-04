@@ -94,9 +94,10 @@ func (a *Artist) ToAlbumSearch() *AlbumArtistSearch {
 		return nil
 	}
 	return &AlbumArtistSearch{
-		ID:       a.ID,
-		Name:     a.Name,
-		ImageUrl: a.ImageURL.StripURL(),
+		ID:        a.ID,
+		Name:      a.Name,
+		UpdatedAt: a.UpdatedAt,
+		ImageUrl:  a.ImageURL.StripURL(),
 	}
 }
 
@@ -153,9 +154,10 @@ func (a *Artist) ToSongSearch() *SongArtistSearch {
 		return nil
 	}
 	return &SongArtistSearch{
-		ID:       a.ID,
-		Name:     a.Name,
-		ImageUrl: a.ImageURL.StripURL(),
+		ID:        a.ID,
+		Name:      a.Name,
+		UpdatedAt: a.UpdatedAt,
+		ImageUrl:  a.ImageURL.StripURL(),
 	}
 }
 
@@ -164,9 +166,10 @@ func (a *Album) ToSongSearch() *SongAlbumSearch {
 		return nil
 	}
 	return &SongAlbumSearch{
-		ID:       a.ID,
-		Title:    a.Title,
-		ImageUrl: a.ImageURL.StripURL(),
+		ID:        a.ID,
+		Title:     a.Title,
+		UpdatedAt: a.UpdatedAt,
+		ImageUrl:  a.ImageURL.StripURL(),
 	}
 }
 
