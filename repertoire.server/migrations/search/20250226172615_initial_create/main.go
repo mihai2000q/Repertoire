@@ -33,7 +33,7 @@ func main() {
 	addSongs(dbClient, meiliClient)
 	addPlaylists(dbClient, meiliClient)
 
-	fmt.Println(time.Now().Format("YYYY/MM/DD hh/mm/ss") + " OK 20250226172615_initial_create imported!")
+	fmt.Println(time.Now().Format("2006/01/02 15:01:05") + " OK 20250226172615_initial_create imported!")
 }
 
 func addArtists(dbClient database.Client, meiliClient meilisearch.ServiceManager) {
