@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/meilisearch/meilisearch-go"
 	"mime/multipart"
 	"os"
 	"repertoire/server/internal"
@@ -23,6 +24,25 @@ func GetDatabase(t *testing.T) *gorm.DB {
 		_ = d.Close()
 	})
 	return db
+}
+
+func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
+	env := GetEnv()
+	url := "http://" + env.MeiliHost + ":" + env.MeiliPort
+	client := meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	t.Cleanup(func() {
+		client.Close()
+	})
+	return client
+}
+
+func GetSearchDocumentWithRetry(client meilisearch.ServiceManager, id string, documentPtr interface{}) {
+	for {
+		err := client.Index("search").GetDocument(id, &meilisearch.DocumentQuery{}, &documentPtr)
+		if err == nil {
+			break
+		}
+	}
 }
 
 func GetEnv() internal.Env {
