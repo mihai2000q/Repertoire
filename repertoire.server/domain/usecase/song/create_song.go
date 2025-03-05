@@ -90,6 +90,7 @@ func (c CreateSong) createArtist(song *model.Song, request requests.CreateSongRe
 		Name:   *request.ArtistName,
 		UserID: song.UserID,
 	}
+	song.ArtistID = &song.Artist.ID
 }
 
 func (c CreateSong) createSections(request []requests.CreateSectionRequest, songID uuid.UUID) []model.SongSection {
