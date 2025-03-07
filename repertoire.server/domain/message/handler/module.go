@@ -7,6 +7,7 @@ import (
 	"repertoire/server/domain/message/handler/search"
 var albumHandlers = fx.Options(
 	fx.Provide(album.NewAlbumCreatedHandler),
+	fx.Provide(album.NewAlbumDeletedHandler),
 )
 
 var artistHandlers = fx.Options(

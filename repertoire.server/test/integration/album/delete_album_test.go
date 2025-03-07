@@ -5,7 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
@@ -44,6 +46,8 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
+			messages := utils.SubscribeToTopic(topics.AlbumDeletedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().DELETE(w, "/api/albums/"+test.album.ID.String())
@@ -67,6 +71,10 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 				db.Find(&songs, ids)
 				assert.NotEmpty(t, songs)
 			}
+
+			assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
+				assert.Equal(t, test.album.ID, payloadAlbum.ID)
+			})
 		})
 	}
 }
@@ -76,6 +84,8 @@ func TestDeleteAlbum_WhenWithSongs_ShouldDeleteAlbumAndSongs(t *testing.T) {
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 	album := albumData.Albums[0]
+
+	messages := utils.SubscribeToTopic(topics.AlbumDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -98,4 +108,8 @@ func TestDeleteAlbum_WhenWithSongs_ShouldDeleteAlbumAndSongs(t *testing.T) {
 	var songs []model.Song
 	db.Find(&songs, ids)
 	assert.Empty(t, songs)
+
+	assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
+		assert.Equal(t, album.ID, payloadAlbum.ID)
+	})
 }
