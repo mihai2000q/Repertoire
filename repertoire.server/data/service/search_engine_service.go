@@ -1,10 +1,8 @@
 package service
 
 import (
-	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/meilisearch/meilisearch-go"
-	"log"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
 )
@@ -17,7 +15,9 @@ type SearchEngineService interface {
 		searchType *enums.SearchType,
 		userID uuid.UUID,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
-	Add(items []any)
+	Add(items []any) error
+	Update(items []any) error
+	Delete(ids []string) error
 }
 
 type searchEngineService struct {
@@ -61,26 +61,23 @@ func (s searchEngineService) Search(
 	return result, nil
 }
 
-func (s searchEngineService) Add(items []any) {
-	go func() {
-		var results []map[string]interface{}
-		for _, item := range items {
-			jsonData, err := json.Marshal(item)
-			if err != nil {
-				log.Println(err)
-			}
+func (s searchEngineService) Add(items []any) error {
+	_, err := s.client.Index("search").AddDocuments(&items)
+	return err
+}
 
-			var result map[string]interface{}
-			err = json.Unmarshal(jsonData, &result)
-			if err != nil {
-				log.Println(err)
-			}
-			results = append(results, result)
-		}
+func (s searchEngineService) Update(items []any) error {
+	_, err := s.client.Index("search").UpdateDocuments(&items)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-		_, err := s.client.Index("search").AddDocuments(results)
-		if err != nil {
-			log.Println(err)
-		}
-	}()
+func (s searchEngineService) Delete(ids []string) error {
+	_, err := s.client.Index("search").DeleteDocuments(ids)
+	if err != nil {
+		return err
+	}
+	return nil
 }
