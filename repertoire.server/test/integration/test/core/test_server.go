@@ -13,6 +13,7 @@ import (
 	"os"
 	"repertoire/server/api"
 	"repertoire/server/data"
+	"repertoire/server/data/message"
 	"repertoire/server/domain"
 	"repertoire/server/internal"
 	"time"
@@ -27,6 +28,7 @@ import (
 )
 
 var Dsn string
+var MessageBroker message.Publisher
 var httpServer *http.Server
 
 type TestServer struct {
@@ -63,6 +65,7 @@ func (ts *TestServer) Start() {
 		domain.Module,
 		api.Module,
 		fx.Populate(&httpServer),
+		fx.Populate(&MessageBroker),
 	)
 
 	// Start application

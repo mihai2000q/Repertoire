@@ -1,6 +1,8 @@
 package assertion
 
 import (
+	"encoding/json"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
@@ -53,6 +55,21 @@ func Token(t *testing.T, actual string, user model.User) {
 	assert.Equal(t, env.JwtIssuer, iss)
 	assert.WithinDuration(t, time.Now().UTC(), iat.Time, 10*time.Second)
 	assert.WithinDuration(t, time.Now().Add(expiresIn).UTC(), exp.Time, 10*time.Second)
+}
+
+func AssertMessage[T any](
+	t *testing.T,
+	messages <-chan *message.Message,
+	assertFunc func(T),
+) {
+	select {
+	case msg := <-messages:
+		var unmarshalledPayload T
+		_ = json.Unmarshal(msg.Payload, &unmarshalledPayload)
+		assertFunc(unmarshalledPayload)
+	case <-time.After(5 * time.Millisecond):
+		t.Fatal("Timed out waiting for message")
+	}
 }
 
 // models

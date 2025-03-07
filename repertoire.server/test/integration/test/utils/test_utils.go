@@ -1,10 +1,13 @@
 package utils
 
 import (
+	"context"
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/meilisearch/meilisearch-go"
 	"mime/multipart"
 	"os"
 	"repertoire/server/internal"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	"testing"
@@ -95,6 +98,11 @@ func CreateCustomToken(sub string, jti string) string {
 	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
 
 	return token
+}
+
+func SubscribeToTopic(topic topics.Topic) <-chan *message.Message {
+	messages, _ := core.MessageBroker.Subscribe(context.Background(), string(topics.TopicToQueueMap[topic]))
+	return messages
 }
 
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
