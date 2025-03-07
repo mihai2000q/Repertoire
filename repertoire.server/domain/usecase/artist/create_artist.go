@@ -4,6 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -11,20 +12,20 @@ import (
 )
 
 type CreateArtist struct {
-	jwtService          service.JwtService
-	repository          repository.ArtistRepository
-	searchEngineService service.SearchEngineService
+	jwtService              service.JwtService
+	repository              repository.ArtistRepository
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateArtist(
 	jwtService service.JwtService,
 	repository repository.ArtistRepository,
-	searchEngineService service.SearchEngineService,
+	messagePublisherService service.MessagePublisherService,
 ) CreateArtist {
 	return CreateArtist{
-		jwtService:          jwtService,
-		repository:          repository,
-		searchEngineService: searchEngineService,
+		jwtService:              jwtService,
+		repository:              repository,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -45,7 +46,10 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	c.searchEngineService.Add([]any{artist.ToSearch()})
+	err = c.messagePublisherService.Publish(topics.ArtistCreatedTopic, artist)
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
+	}
 
 	return artist.ID, nil
 }
