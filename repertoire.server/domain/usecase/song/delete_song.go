@@ -8,6 +8,7 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
@@ -17,6 +18,7 @@ type DeleteSong struct {
 	playlistRepository      repository.PlaylistRepository
 	storageService          service.StorageService
 	storageFilePathProvider provider.StorageFilePathProvider
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteSong(
@@ -24,12 +26,14 @@ func NewDeleteSong(
 	playlistRepository repository.PlaylistRepository,
 	storageService service.StorageService,
 	storageFilePathProvider provider.StorageFilePathProvider,
+	messagePublisherService service.MessagePublisherService,
 ) DeleteSong {
 	return DeleteSong{
 		repository:              repository,
 		playlistRepository:      playlistRepository,
 		storageService:          storageService,
 		storageFilePathProvider: storageFilePathProvider,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -50,7 +54,7 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 			return errCode
 		}
 	}
-
+	
 	directoryPath := d.storageFilePathProvider.GetSongDirectoryPath(song)
 	errCode := d.storageService.DeleteDirectory(directoryPath)
 	if errCode != nil && errCode.Code != http.StatusNotFound {
@@ -66,6 +70,12 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
+
+	err = d.messagePublisherService.Publish(topics.SongDeletedTopic, song)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
 	return nil
 }
 
