@@ -29,10 +29,10 @@ var services = fx.Options(
 
 var Module = fx.Options(
 	fx.Provide(cache.NewCache),
-	fx.Provide(search.NewMeiliClient),
 	fx.Provide(database.NewClient),
 	fx.Provide(http.NewRestyClient),
 	fx.Provide(message.NewPublisher),
 	repositories,
+	fx.Provide(search.NewMeiliClient),
 	services,
 )

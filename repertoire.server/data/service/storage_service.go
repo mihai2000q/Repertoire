@@ -3,15 +3,14 @@ package service
 import (
 	"bytes"
 	"errors"
-	"github.com/patrickmn/go-cache"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"repertoire/server/data/cache"
+	dataHttp "repertoire/server/data/http"
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"time"
-
-	"github.com/go-resty/resty/v2"
 )
 
 type StorageService interface {
@@ -21,12 +20,12 @@ type StorageService interface {
 }
 
 type storageService struct {
-	httpClient *resty.Client
+	httpClient dataHttp.Client
 	env        internal.Env
-	cache      *cache.Cache
+	cache      cache.Cache
 }
 
-func NewStorageService(httpClient *resty.Client, env internal.Env, cache *cache.Cache) StorageService {
+func NewStorageService(httpClient dataHttp.Client, env internal.Env, cache cache.Cache) StorageService {
 	return &storageService{
 		httpClient: httpClient,
 		env:        env,

@@ -5,7 +5,11 @@ import (
 	"repertoire/server/internal"
 )
 
-func NewRestyClient(env internal.Env) *resty.Client {
+type Client interface {
+	R() *resty.Request
+}
+
+func NewRestyClient(env internal.Env) Client {
 	return resty.New().
 		SetBaseURL(env.StorageUrl)
 }
