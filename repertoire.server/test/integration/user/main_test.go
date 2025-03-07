@@ -7,10 +7,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	ts := core.Start()
+	ts := &core.TestServer{}
+	ts.Start()
 
 	code := m.Run()
 
-	core.Stop(ts)
+	ts.Stop()
 	os.Exit(code)
 }

@@ -30,26 +30,28 @@ var Dsn string
 var httpServer *http.Server
 
 type TestServer struct {
+	WithMeili      bool
+	EnvPath        string
 	app            *fx.App
 	dbContainer    *postgresTest.PostgresContainer
 	storageServer  *httptest.Server
 	meiliContainer *meilisearchTest.MeilisearchContainer
 }
 
-func Start(envPath ...string) *TestServer {
-	ts := &TestServer{}
-
+func (ts *TestServer) Start() {
 	// Setup Environment Variable to anything, so that it checks the right path of .env
 	relativePath := "../../../"
-	if len(envPath) > 0 {
-		relativePath = envPath[0]
+	if ts.EnvPath != "" {
+		relativePath = ts.EnvPath
 	}
 	_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", relativePath+".env")
 
 	env := internal.NewEnv()
 
 	ts.setupPostgresContainer(env, relativePath)
-	ts.setupMeiliContainer(env)
+	if ts.WithMeili {
+		ts.setupMeiliContainer(env)
+	}
 	ts.setupStorageServer()
 
 	// Setup application modules and populate the router
@@ -67,11 +69,9 @@ func Start(envPath ...string) *TestServer {
 	if err := ts.app.Start(context.Background()); err != nil {
 		log.Fatal(err)
 	}
-
-	return ts
 }
 
-func Stop(ts *TestServer) {
+func (ts *TestServer) Stop() {
 	ts.storageServer.Close()
 	if err := ts.app.Stop(context.Background()); err != nil {
 		log.Fatal(err)
@@ -79,8 +79,10 @@ func Stop(ts *TestServer) {
 	if err := testcontainers.TerminateContainer(ts.dbContainer); err != nil {
 		log.Printf("failed to terminate postgres dbContainer: %s", err)
 	}
-	if err := testcontainers.TerminateContainer(ts.meiliContainer); err != nil {
-		log.Printf("failed to terminate meiliearch dbContainer: %s", err)
+	if ts.WithMeili {
+		if err := testcontainers.TerminateContainer(ts.meiliContainer); err != nil {
+			log.Printf("failed to terminate meiliearch dbContainer: %s", err)
+		}
 	}
 }
 
