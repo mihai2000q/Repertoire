@@ -5,28 +5,26 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
 type CreateAlbum struct {
-	jwtService          service.JwtService
-	repository          repository.AlbumRepository
-	artistRepository    repository.ArtistRepository
-	searchEngineService service.SearchEngineService
+	jwtService              service.JwtService
+	repository              repository.AlbumRepository
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateAlbum(
 	jwtService service.JwtService,
 	repository repository.AlbumRepository,
-	artistRepository repository.ArtistRepository,
-	searchEngineService service.SearchEngineService,
+	messagePublisherService service.MessagePublisherService,
 ) CreateAlbum {
 	return CreateAlbum{
-		jwtService:          jwtService,
-		repository:          repository,
-		artistRepository:    artistRepository,
-		searchEngineService: searchEngineService,
+		jwtService:              jwtService,
+		repository:              repository,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -49,9 +47,9 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	errCode = c.syncSearchEngine(album)
-	if errCode != nil {
-		return uuid.Nil, errCode
+	err = c.messagePublisherService.Publish(topics.AlbumCreatedTopic, album)
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
 	return album.ID, nil
@@ -67,25 +65,4 @@ func (c CreateAlbum) createArtist(request requests.CreateAlbumRequest, userID uu
 		}
 	}
 	return artist
-}
-
-func (c CreateAlbum) syncSearchEngine(album model.Album) *wrapper.ErrorCode {
-	var searches []any
-	albumSearch := album.ToSearch()
-
-	if album.ArtistID != nil {
-		var artist model.Artist
-		err := c.artistRepository.Get(&artist, *album.ArtistID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		albumSearch.Artist = artist.ToAlbumSearch()
-	}
-	searches = append(searches, albumSearch)
-	if album.Artist != nil {
-		searches = append(searches, album.Artist.ToSearch())
-	}
-
-	c.searchEngineService.Add(searches)
-	return nil
 }

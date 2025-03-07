@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -51,6 +52,8 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 
 			user := albumData.Users[0]
 
+			messages := utils.SubscribeToTopic(topics.AlbumCreatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
@@ -69,11 +72,9 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 			db.Joins("Artist").Find(&album, response.ID)
 			assertCreatedAlbum(t, test.request, album, user.ID)
 
-			searchClient := utils.GetSearchClient(t)
-			var albumSearch model.AlbumSearch
-			searchID := "album-" + response.ID.String()
-			utils.GetSearchDocumentWithRetry(searchClient, searchID, &albumSearch)
-			assertion.AlbumSearch(t, albumSearch, album)
+			assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
+				assert.Equal(t, album.ID, payloadAlbum.ID)
+			})
 		})
 	}
 }

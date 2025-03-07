@@ -6,6 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"repertoire/server/data/service"
+	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/internal/message/topics"
 
@@ -24,12 +25,17 @@ type messageHandler interface {
 func NewRouter(
 	lc fx.Lifecycle,
 	messagePublisherService service.MessagePublisherService,
+
+	albumCreatedHandler album.AlbumCreatedHandler,
 	artistCreatedHandler artist.ArtistCreatedHandler,
+
 	addToSearchEngineHandler search.AddToSearchEngineHandler,
 	deleteFromSearchEngineHandler search.DeleteFromSearchEngineHandler,
 ) *message.Router {
 	handlers := []messageHandler{
+		albumCreatedHandler,
 		artistCreatedHandler,
+
 		addToSearchEngineHandler,
 		deleteFromSearchEngineHandler,
 	}

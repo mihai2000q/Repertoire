@@ -2,8 +2,11 @@ package handler
 
 import (
 	"go.uber.org/fx"
+	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/domain/message/handler/artist"
 	"repertoire/server/domain/message/handler/search"
+var albumHandlers = fx.Options(
+	fx.Provide(album.NewAlbumCreatedHandler),
 )
 
 var artistHandlers = fx.Options(
@@ -16,6 +19,7 @@ var searchHandlers = fx.Options(
 )
 
 var Module = fx.Options(
+	albumHandlers,
 	artistHandlers,
 	searchHandlers,
 )
