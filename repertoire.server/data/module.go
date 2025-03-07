@@ -5,6 +5,7 @@ import (
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
 	"repertoire/server/data/http"
+	"repertoire/server/data/message"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/search"
 	"repertoire/server/data/service"
@@ -31,6 +32,7 @@ var Module = fx.Options(
 	fx.Provide(search.NewMeiliClient),
 	fx.Provide(database.NewClient),
 	fx.Provide(http.NewRestyClient),
+	fx.Provide(message.NewPublisher),
 	repositories,
 	services,
 )
