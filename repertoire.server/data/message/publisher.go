@@ -14,6 +14,6 @@ type Publisher interface {
 }
 
 func NewPublisher() Publisher {
-	logger := watermill.NewStdLogger(true, true)
+	logger := watermill.NewStdLogger(false, false)
 	return gochannel.NewGoChannel(gochannel.Config{}, logger)
 }

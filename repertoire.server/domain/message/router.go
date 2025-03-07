@@ -34,7 +34,7 @@ func NewRouter(
 		deleteFromSearchEngineHandler,
 	}
 
-	logger := watermill.NewStdLogger(true, true)
+	logger := watermill.NewStdLogger(false, false)
 	router, err := message.NewRouter(message.RouterConfig{}, logger)
 	if err != nil {
 		log.Fatal(err)
