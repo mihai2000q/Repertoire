@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"repertoire/server/domain/message"
 	"repertoire/server/domain/processor"
 	"repertoire/server/domain/provider"
 	"repertoire/server/domain/service"
@@ -32,6 +33,7 @@ var services = fx.Options(
 var Module = fx.Options(
 	processors,
 	providers,
+	message.Module,
 	usecase.Module,
 	services,
 )
