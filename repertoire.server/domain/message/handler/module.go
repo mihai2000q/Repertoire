@@ -4,6 +4,7 @@ import (
 	"go.uber.org/fx"
 	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/domain/message/handler/artist"
+	"repertoire/server/domain/message/handler/playlist"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/domain/message/handler/song"
 )
@@ -15,6 +16,10 @@ var albumHandlers = fx.Options(
 
 var artistHandlers = fx.Options(
 	fx.Provide(artist.NewArtistCreatedHandler),
+)
+
+var playlistHandlers = fx.Options(
+	fx.Provide(playlist.NewPlaylistCreatedHandler),
 )
 
 var songHandlers = fx.Options(
@@ -30,6 +35,7 @@ var searchHandlers = fx.Options(
 var Module = fx.Options(
 	albumHandlers,
 	artistHandlers,
+	playlistHandlers,
 	songHandlers,
 	searchHandlers,
 )

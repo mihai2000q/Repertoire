@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -71,12 +72,12 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	jwtService := new(service.JwtServiceMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, searchEngineService)
+	jwtService := new(service.JwtServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, messagePublisherService)
 
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
@@ -86,35 +87,71 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	var playlistID uuid.UUID
 	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
-		Run(func(args mock.Arguments) {
-			newPlaylist := args.Get(0).(*model.Playlist)
-			assertCreatedPlaylist(t, *newPlaylist, request, userID)
-			playlistID = newPlaylist.ID
-		}).
 		Return(nil).
 		Once()
 
-	searchEngineService.On("Add", mock.IsType([]any{})).
-		Run(func(args mock.Arguments) {
-			searches := args.Get(0).([]any)
-			assert.Len(t, searches, 1)
-			assert.Contains(t, searches[0].(model.PlaylistSearch).ID, playlistID.String())
-		}).
-		Return().
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.PlaylistCreatedTopic, mock.IsType(model.Playlist{})).
+		Return(internalError).
 		Once()
 
 	// when
 	id, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, playlistID, id)
+	assert.Empty(t, id)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, messagePublisherService)
+
+	request := requests.CreatePlaylistRequest{
+		Title: "Some Playlist",
+	}
+	token := "this is a token"
+	userID := uuid.New()
+
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	var createdPlaylist model.Playlist
+	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
+		Run(func(args mock.Arguments) {
+			newPlaylist := args.Get(0).(*model.Playlist)
+			assertCreatedPlaylist(t, *newPlaylist, request, userID)
+			createdPlaylist = *newPlaylist
+		}).
+		Return(nil).
+		Once()
+
+	messagePublisherService.On("Publish", mock.IsType([]any{})).
+		Run(func(args mock.Arguments) {
+			assert.Contains(t, createdPlaylist, args.Get(1).(model.Playlist))
+		}).
+		Return(nil).
+		Once()
+
+	// when
+	id, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Equal(t, createdPlaylist.ID, id)
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
 	playlistRepository.AssertExpectations(t)
-	searchEngineService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }
 
 func assertCreatedPlaylist(

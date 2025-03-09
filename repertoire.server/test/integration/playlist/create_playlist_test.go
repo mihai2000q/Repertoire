@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -42,6 +43,8 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 
 			user := playlistData.Users[0]
 
+			messages := utils.SubscribeToTopic(topics.PlaylistCreatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
@@ -60,11 +63,9 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 			db.Find(&playlist, response.ID)
 			assertCreatedPlaylist(t, test.request, playlist, user.ID)
 
-			searchClient := utils.GetSearchClient(t)
-			var playlistSearch model.PlaylistSearch
-			searchID := "playlist-" + response.ID.String()
-			utils.GetSearchDocumentWithRetry(searchClient, searchID, &playlistSearch)
-			assertion.PlaylistSearch(t, playlistSearch, playlist)
+			assertion.AssertMessage(t, messages, func(payloadPlaylist model.Playlist) {
+				assert.Equal(t, response.ID, payloadPlaylist.ID)
+			})
 		})
 	}
 }

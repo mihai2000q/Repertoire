@@ -4,6 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -11,20 +12,20 @@ import (
 )
 
 type CreatePlaylist struct {
-	jwtService          service.JwtService
-	repository          repository.PlaylistRepository
-	searchEngineService service.SearchEngineService
+	jwtService              service.JwtService
+	repository              repository.PlaylistRepository
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreatePlaylist(
 	jwtService service.JwtService,
 	repository repository.PlaylistRepository,
-	searchEngineService service.SearchEngineService,
+	messagePublisherService service.MessagePublisherService,
 ) CreatePlaylist {
 	return CreatePlaylist{
-		jwtService:          jwtService,
-		repository:          repository,
-		searchEngineService: searchEngineService,
+		jwtService:              jwtService,
+		repository:              repository,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -45,7 +46,10 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	c.searchEngineService.Add([]any{playlist.ToSearch()})
+	err = c.messagePublisherService.Publish(topics.AddToSearchEngineTopic, playlist)
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
+	}
 
 	return playlist.ID, nil
 }
