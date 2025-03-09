@@ -7,7 +7,9 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/message/handler/album"
+	"repertoire/server/domain/message/handler/playlist"
 	"repertoire/server/domain/message/handler/search"
+	"repertoire/server/domain/message/handler/song"
 	"repertoire/server/internal/message/topics"
 
 	"go.uber.org/fx"
@@ -27,14 +29,32 @@ func NewRouter(
 	messagePublisherService service.MessagePublisherService,
 
 	albumCreatedHandler album.AlbumCreatedHandler,
+	albumDeletedHandler album.AlbumDeletedHandler,
+
 	artistCreatedHandler artist.ArtistCreatedHandler,
+
+	playlistCreatedHandler playlist.PlaylistCreatedHandler,
+	playlistDeletedHandler playlist.PlaylistDeletedHandler,
+
+	songCreatedHandler song.SongCreatedHandler,
+	songDeletedHandler song.SongDeletedHandler,
+	songUpdatedHandler song.SongUpdatedHandler,
 
 	addToSearchEngineHandler search.AddToSearchEngineHandler,
 	deleteFromSearchEngineHandler search.DeleteFromSearchEngineHandler,
 ) *message.Router {
 	handlers := []messageHandler{
 		albumCreatedHandler,
+		albumDeletedHandler,
+
 		artistCreatedHandler,
+
+		playlistCreatedHandler,
+		playlistDeletedHandler,
+
+		songCreatedHandler,
+		songDeletedHandler,
+		songUpdatedHandler,
 
 		addToSearchEngineHandler,
 		deleteFromSearchEngineHandler,

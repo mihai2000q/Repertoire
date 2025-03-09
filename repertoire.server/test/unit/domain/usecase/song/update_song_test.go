@@ -6,8 +6,10 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal/enums"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/data/service"
 	"slices"
 	"testing"
 	"time"
@@ -20,7 +22,7 @@ import (
 func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -44,7 +46,7 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -68,7 +70,7 @@ func TestUpdateSong_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, albumRepository)
+	_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:      uuid.New(),
@@ -103,7 +105,7 @@ func TestUpdateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, albumRepository)
+	_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:      uuid.New(),
@@ -172,7 +174,7 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnBadReq
 			// given
 			songRepository := new(repository.SongRepositoryMock)
 			albumRepository := new(repository.AlbumRepositoryMock)
-			_uut := song.NewUpdateSong(songRepository, albumRepository)
+			_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
 
 			songRepository.On("Get", new(model.Song), tt.request.ID).
 				Return(nil, &tt.song).
@@ -199,7 +201,7 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnBadReq
 func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID: uuid.New(),
@@ -239,7 +241,7 @@ func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(
 func TestUpdateSong_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID: uuid.New(),
@@ -284,7 +286,7 @@ func TestUpdateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testi
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, albumRepository)
+	_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:       uuid.New(),
@@ -323,7 +325,7 @@ func TestUpdateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testi
 func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -351,6 +353,45 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+}
+
+func TestUpdateSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewUpdateSong(songRepository, nil, messagePublisherService)
+
+	request := requests.UpdateSongRequest{
+		ID:    uuid.New(),
+		Title: "New Song",
+	}
+
+	mockSong := &model.Song{
+		ID:    request.ID,
+		Title: "Some Song",
+	}
+	songRepository.On("Get", new(model.Song), request.ID).
+		Return(nil, mockSong).
+		Once()
+
+	songRepository.On("Update", mock.IsType(mockSong)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.SongUpdatedTopic, mock.IsType(*mockSong)).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }
 
 func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
@@ -454,7 +495,8 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := song.NewUpdateSong(songRepository, nil)
+			messagePublisherService := new(service.MessagePublisherServiceMock)
+			_uut := song.NewUpdateSong(songRepository, nil, messagePublisherService)
 
 			songRepository.On("Get", new(model.Song), tt.request.ID).
 				Return(nil, tt.song).
@@ -462,10 +504,18 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 			assertOldAlbumReordered(t, songRepository, *tt.song, tt.request.AlbumID)
 
+			var newSong *model.Song
 			songRepository.On("Update", mock.IsType(tt.song)).
 				Run(func(args mock.Arguments) {
-					newSong := args.Get(0).(*model.Song)
+					newSong = args.Get(0).(*model.Song)
 					assertUpdatedSong(t, tt.request, newSong)
+				}).
+				Return(nil).
+				Once()
+
+			messagePublisherService.On("Publish", topics.SongUpdatedTopic, mock.IsType(*tt.song)).
+				Run(func(args mock.Arguments) {
+					assert.Equal(t, *newSong, args.Get(1).(model.Song))
 				}).
 				Return(nil).
 				Once()
@@ -477,6 +527,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			assert.Nil(t, errCode)
 
 			songRepository.AssertExpectations(t)
+			messagePublisherService.AssertExpectations(t)
 		})
 	}
 }
@@ -609,7 +660,8 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
 			albumRepository := new(repository.AlbumRepositoryMock)
-			_uut := song.NewUpdateSong(songRepository, albumRepository)
+			messagePublisherService := new(service.MessagePublisherServiceMock)
+			_uut := song.NewUpdateSong(songRepository, albumRepository, messagePublisherService)
 
 			songRepository.On("Get", new(model.Song), tt.request.ID).
 				Return(nil, &tt.song).
@@ -626,11 +678,19 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 				Return(nil, &songsCount).
 				Once()
 
+			var newSong *model.Song
 			songRepository.On("Update", mock.IsType(&tt.song)).
 				Run(func(args mock.Arguments) {
-					newSong := args.Get(0).(*model.Song)
+					newSong = args.Get(0).(*model.Song)
 					assertUpdatedSong(t, tt.request, newSong)
 					assert.Equal(t, uint(songsCount+1), *newSong.AlbumTrackNo)
+				}).
+				Return(nil).
+				Once()
+
+			messagePublisherService.On("Publish", topics.SongUpdatedTopic, mock.IsType(tt.song)).
+				Run(func(args mock.Arguments) {
+					assert.Equal(t, *newSong, args.Get(1).(model.Song))
 				}).
 				Return(nil).
 				Once()
@@ -643,6 +703,7 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 
 			songRepository.AssertExpectations(t)
 			albumRepository.AssertExpectations(t)
+			messagePublisherService.AssertExpectations(t)
 		})
 	}
 }

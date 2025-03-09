@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -38,13 +39,16 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
+	song := songData.Songs[0]
 	request := requests.UpdateSongRequest{
-		ID:          songData.Songs[0].ID,
+		ID:          song.ID,
 		Title:       "New Title",
 		ReleaseDate: &[]time.Time{time.Now()}[0],
-		AlbumID:     songData.Songs[0].AlbumID,
-		ArtistID:    songData.Songs[0].ArtistID,
+		AlbumID:     song.AlbumID,
+		ArtistID:    song.ArtistID,
 	}
+
+	messages := utils.SubscribeToTopic(topics.SongUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -53,11 +57,15 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var song model.Song
+	var updatedSong model.Song
 	db := utils.GetDatabase(t)
-	db.Find(&song, request.ID)
+	db.Find(&updatedSong, request.ID)
 
-	assertUpdatedSong(t, request, song)
+	assertUpdatedSong(t, request, updatedSong)
+
+	assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
+		assert.Equal(t, song.ID, payloadSong.ID)
+	})
 }
 
 func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *testing.T) {
@@ -81,6 +89,8 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *te
 	newAlbumSongsCount := len(slices.DeleteFunc(slices.Clone(songData.Songs), func(s model.Song) bool {
 		return s.AlbumID == nil || *s.AlbumID != *request.AlbumID
 	}))
+
+	messages := utils.SubscribeToTopic(topics.SongUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -106,6 +116,10 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *te
 	for i, s := range newAlbum.Songs {
 		assert.Equal(t, uint(i+1), *s.AlbumTrackNo)
 	}
+
+	assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
+		assert.Equal(t, song.ID, payloadSong.ID)
+	})
 }
 
 func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song model.Song) {

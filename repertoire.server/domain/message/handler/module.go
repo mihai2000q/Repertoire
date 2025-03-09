@@ -26,6 +26,7 @@ var playlistHandlers = fx.Options(
 var songHandlers = fx.Options(
 	fx.Provide(song.NewSongCreatedHandler),
 	fx.Provide(song.NewSongDeletedHandler),
+	fx.Provide(song.NewSongUpdatedHandler),
 )
 
 var searchHandlers = fx.Options(

@@ -11,6 +11,7 @@ type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
+	GetWithArtistAndAlbum(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.Song,
@@ -70,7 +71,8 @@ func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID)
 	return s.client.DB.
 		Preload("Playlists").
 		Preload("Playlists.PlaylistSongs").
-		Find(&song, model.Song{ID: id}).Error
+		Find(&song, model.Song{ID: id}).
+		Error
 }
 
 func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
@@ -78,6 +80,14 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_sections.order")
 		}).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithArtistAndAlbum(song *model.Song, id uuid.UUID) error {
+	return s.client.DB.
+		Joins("Artist").
+		Joins("Album").
 		Find(&song, model.Song{ID: id}).
 		Error
 }
