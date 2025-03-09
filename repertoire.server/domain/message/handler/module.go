@@ -32,6 +32,7 @@ var songHandlers = fx.Options(
 var searchHandlers = fx.Options(
 	fx.Provide(search.NewAddToSearchEngineHandler),
 	fx.Provide(search.NewDeleteFromSearchEngineHandler),
+	fx.Provide(search.NewUpdateFromSearchEngineHandler),
 )
 
 var Module = fx.Options(

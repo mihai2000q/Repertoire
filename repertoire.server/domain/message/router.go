@@ -42,6 +42,7 @@ func NewRouter(
 
 	addToSearchEngineHandler search.AddToSearchEngineHandler,
 	deleteFromSearchEngineHandler search.DeleteFromSearchEngineHandler,
+	updateFromSearchEngineHandler search.UpdateFromSearchEngineHandler,
 ) *message.Router {
 	handlers := []messageHandler{
 		albumCreatedHandler,
@@ -58,6 +59,7 @@ func NewRouter(
 
 		addToSearchEngineHandler,
 		deleteFromSearchEngineHandler,
+		updateFromSearchEngineHandler,
 	}
 
 	logger := watermill.NewStdLogger(false, false)
