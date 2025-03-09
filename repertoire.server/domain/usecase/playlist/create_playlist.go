@@ -46,7 +46,7 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	err = c.messagePublisherService.Publish(topics.AddToSearchEngineTopic, playlist)
+	err = c.messagePublisherService.Publish(topics.PlaylistCreatedTopic, playlist)
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}

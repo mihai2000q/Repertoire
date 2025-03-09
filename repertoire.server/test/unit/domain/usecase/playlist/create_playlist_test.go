@@ -72,7 +72,7 @@ func TestCreatePlaylist_WhenCreateFails_ShouldReturnInternalServerError(t *testi
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreatePlaylist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
@@ -135,9 +135,9 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
-	messagePublisherService.On("Publish", mock.IsType([]any{})).
+	messagePublisherService.On("Publish", topics.PlaylistCreatedTopic, mock.IsType(model.Playlist{})).
 		Run(func(args mock.Arguments) {
-			assert.Contains(t, createdPlaylist, args.Get(1).(model.Playlist))
+			assert.Equal(t, createdPlaylist, args.Get(1).(model.Playlist))
 		}).
 		Return(nil).
 		Once()
