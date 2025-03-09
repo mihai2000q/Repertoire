@@ -22,24 +22,24 @@ func NewArtistCreatedHandler(messagePublisherService service.MessagePublisherSer
 	}
 }
 
-func (h ArtistCreatedHandler) Handle(msg *watermillMessage.Message) error {
+func (a ArtistCreatedHandler) Handle(msg *watermillMessage.Message) error {
 	var artist model.Artist
 	err := json.Unmarshal(msg.Payload, &artist)
 	if err != nil {
 		return err
 	}
 
-	err = h.messagePublisherService.Publish(topics.AddToSearchEngineTopic, []any{artist.ToSearch()})
+	err = a.messagePublisherService.Publish(topics.AddToSearchEngineTopic, []any{artist.ToSearch()})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (h ArtistCreatedHandler) GetName() string {
-	return h.name
+func (a ArtistCreatedHandler) GetName() string {
+	return a.name
 }
 
-func (h ArtistCreatedHandler) GetTopic() topics.Topic {
-	return h.topic
+func (a ArtistCreatedHandler) GetTopic() topics.Topic {
+	return a.topic
 }

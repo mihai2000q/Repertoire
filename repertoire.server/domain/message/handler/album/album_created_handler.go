@@ -28,7 +28,7 @@ func NewAlbumCreatedHandler(
 	}
 }
 
-func (h AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
+func (a AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
 	var album model.Album
 	err := json.Unmarshal(msg.Payload, &album)
 	if err != nil {
@@ -40,7 +40,7 @@ func (h AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
 
 	if album.ArtistID != nil {
 		var artist model.Artist
-		err = h.artistRepository.Get(&artist, *album.ArtistID)
+		err = a.artistRepository.Get(&artist, *album.ArtistID)
 		if err != nil {
 			return err
 		}
@@ -51,17 +51,17 @@ func (h AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
 		searches = append(searches, album.Artist.ToSearch())
 	}
 
-	err = h.messagePublisherService.Publish(topics.AddToSearchEngineTopic, searches)
+	err = a.messagePublisherService.Publish(topics.AddToSearchEngineTopic, searches)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (h AlbumCreatedHandler) GetName() string {
-	return h.name
+func (a AlbumCreatedHandler) GetName() string {
+	return a.name
 }
 
-func (h AlbumCreatedHandler) GetTopic() topics.Topic {
-	return h.topic
+func (a AlbumCreatedHandler) GetTopic() topics.Topic {
+	return a.topic
 }

@@ -22,7 +22,7 @@ func NewAlbumDeletedHandler(messagePublisherService service.MessagePublisherServ
 	}
 }
 
-func (h AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
+func (a AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	var album model.Album
 	err := json.Unmarshal(msg.Payload, &album)
 	if err != nil {
@@ -34,7 +34,7 @@ func (h AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
 		ids = append(ids, song.ToSearch().ID)
 	}
 
-	err = h.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
+	err = a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
 	if err != nil {
 		return err
 	}
@@ -42,10 +42,10 @@ func (h AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	return nil
 }
 
-func (h AlbumDeletedHandler) GetName() string {
-	return h.name
+func (a AlbumDeletedHandler) GetName() string {
+	return a.name
 }
 
-func (h AlbumDeletedHandler) GetTopic() topics.Topic {
-	return h.topic
+func (a AlbumDeletedHandler) GetTopic() topics.Topic {
+	return a.topic
 }

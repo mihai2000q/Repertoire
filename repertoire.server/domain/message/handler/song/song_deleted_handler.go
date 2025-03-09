@@ -22,24 +22,24 @@ func NewSongDeletedHandler(messagePublisherService service.MessagePublisherServi
 	}
 }
 
-func (h SongDeletedHandler) Handle(msg *watermillMessage.Message) error {
+func (s SongDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	var song model.Song
 	err := json.Unmarshal(msg.Payload, &song)
 	if err != nil {
 		return err
 	}
 
-	err = h.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, []string{song.ToSearch().ID})
+	err = s.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, []string{song.ToSearch().ID})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (h SongDeletedHandler) GetName() string {
-	return h.name
+func (s SongDeletedHandler) GetName() string {
+	return s.name
 }
 
-func (h SongDeletedHandler) GetTopic() topics.Topic {
-	return h.topic
+func (s SongDeletedHandler) GetTopic() topics.Topic {
+	return s.topic
 }

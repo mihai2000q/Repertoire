@@ -7,11 +7,10 @@ import (
 type Topic string
 
 const (
-	ArtistCreatedTopic Topic = "artist_created_topic"
-
 	AlbumCreatedTopic Topic = "album_created_topic"
 	AlbumDeletedTopic Topic = "album_deleted_topic"
 
+	ArtistCreatedTopic Topic = "artist_created_topic"
 
 	PlaylistCreatedTopic Topic = "playlist_created_topic"
 
@@ -23,11 +22,10 @@ const (
 )
 
 var TopicToQueueMap = map[Topic]queues.Queue{
-	ArtistCreatedTopic: queues.MainQueue,
-
 	AlbumCreatedTopic: queues.MainQueue,
 	AlbumDeletedTopic: queues.MainQueue,
 
+	ArtistCreatedTopic: queues.MainQueue,
 
 	PlaylistCreatedTopic: queues.MainQueue,
 

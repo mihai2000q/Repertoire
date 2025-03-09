@@ -21,21 +21,21 @@ func NewDeleteFromSearchEngineHandler(searchEngineService service.SearchEngineSe
 	}
 }
 
-func (s DeleteFromSearchEngineHandler) Handle(msg *message.Message) error {
+func (d DeleteFromSearchEngineHandler) Handle(msg *message.Message) error {
 	var ids []string
 	err := json.Unmarshal(msg.Payload, &ids)
 	if err != nil {
 		return err
 	}
 
-	err = s.searchEngineService.Delete(ids)
+	err = d.searchEngineService.Delete(ids)
 	return err
 }
 
-func (s DeleteFromSearchEngineHandler) GetName() string {
-	return s.name
+func (d DeleteFromSearchEngineHandler) GetName() string {
+	return d.name
 }
 
-func (s DeleteFromSearchEngineHandler) GetTopic() topics.Topic {
-	return s.topic
+func (d DeleteFromSearchEngineHandler) GetTopic() topics.Topic {
+	return d.topic
 }

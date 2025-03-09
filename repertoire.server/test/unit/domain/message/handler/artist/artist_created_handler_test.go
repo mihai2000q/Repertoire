@@ -27,7 +27,7 @@ func TestArtistCreatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 		Once()
 
 	// when
-	payload, _ := json.Marshal(&mockArtist)
+	payload, _ := json.Marshal(mockArtist)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -38,7 +38,7 @@ func TestArtistCreatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestArtistCreatedHandler_WhenSuccessful_ShouldPublishMessageToAddArtistToSearchEngine(t *testing.T) {
+func TestArtistCreatedHandler_WhenSuccessful_ShouldPublishMessageToAddToSearchEngine(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	_uut := artist.NewArtistCreatedHandler(messagePublisherService)
@@ -55,7 +55,7 @@ func TestArtistCreatedHandler_WhenSuccessful_ShouldPublishMessageToAddArtistToSe
 		Once()
 
 	// when
-	payload, _ := json.Marshal(&mockArtist)
+	payload, _ := json.Marshal(mockArtist)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 

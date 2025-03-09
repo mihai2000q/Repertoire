@@ -21,21 +21,21 @@ func NewAddToSearchEngineHandler(searchEngineService service.SearchEngineService
 	}
 }
 
-func (s AddToSearchEngineHandler) Handle(msg *message.Message) error {
+func (a AddToSearchEngineHandler) Handle(msg *message.Message) error {
 	var searches []any
 	err := json.Unmarshal(msg.Payload, &searches)
 	if err != nil {
 		return err
 	}
 
-	err = s.searchEngineService.Add(searches)
+	err = a.searchEngineService.Add(searches)
 	return err
 }
 
-func (s AddToSearchEngineHandler) GetName() string {
-	return s.name
+func (a AddToSearchEngineHandler) GetName() string {
+	return a.name
 }
 
-func (s AddToSearchEngineHandler) GetTopic() topics.Topic {
-	return s.topic
+func (a AddToSearchEngineHandler) GetTopic() topics.Topic {
+	return a.topic
 }

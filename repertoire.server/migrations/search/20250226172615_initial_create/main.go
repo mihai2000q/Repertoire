@@ -91,8 +91,7 @@ func addSongs(dbClient database.Client, meiliClient meilisearch.ServiceManager) 
 
 	var meiliSongs []model.SongSearch
 	for _, song := range songs {
-		meiliSong := song.ToSearch()
-		meiliSongs = append(meiliSongs, meiliSong)
+		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
 	if err != nil {

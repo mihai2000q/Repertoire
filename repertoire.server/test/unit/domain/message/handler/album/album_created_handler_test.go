@@ -63,7 +63,7 @@ func TestAlbumCreatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestAlbumCreatedHandler_WhenSuccessful_ShouldPublishMessageToAddAlbumToSearchEngine(t *testing.T) {
+func TestAlbumCreatedHandler_WhenSuccessful_ShouldPublishMessageToAddToSearchEngine(t *testing.T) {
 	tests := []struct {
 		name  string
 		album model.Album

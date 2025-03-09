@@ -41,7 +41,7 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *
 	jwtService.AssertExpectations(t)
 }
 
-func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreatePlaylist_WhenCreateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
