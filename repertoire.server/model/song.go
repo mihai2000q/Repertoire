@@ -27,8 +27,8 @@ type Song struct {
 	Confidence     float64            `gorm:"not null" json:"confidence"`
 	Progress       float64            `gorm:"not null" json:"progress"`
 
-	AlbumID        *uuid.UUID     `json:"-"`
-	ArtistID       *uuid.UUID     `json:"-"`
+	AlbumID        *uuid.UUID     `json:"albumId"`
+	ArtistID       *uuid.UUID     `json:"artistId"`
 	GuitarTuningID *uuid.UUID     `json:"-"`
 	Artist         *Artist        `json:"artist"`
 	Album          *Album         `json:"album"`

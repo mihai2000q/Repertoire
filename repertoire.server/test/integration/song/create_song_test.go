@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"repertoire/server/api/requests"
 	"repertoire/server/internal/enums"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -103,6 +104,8 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 
 			user := songData.Users[0]
 
+			messages := utils.SubscribeToTopic(topics.SongCreatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
@@ -128,11 +131,9 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Find(&song, response.ID)
 			assertCreatedSong(t, test.request, song, user.ID)
 
-			searchClient := utils.GetSearchClient(t)
-			var songSearch model.SongSearch
-			searchID := "song-" + response.ID.String()
-			utils.GetSearchDocumentWithRetry(searchClient, searchID, &songSearch)
-			assertion.SongSearch(t, songSearch, song)
+			assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
+				assert.Equal(t, song.ID, payloadSong.ID)
+			})
 		})
 	}
 }

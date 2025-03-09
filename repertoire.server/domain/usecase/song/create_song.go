@@ -6,6 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -13,26 +14,23 @@ import (
 )
 
 type CreateSong struct {
-	jwtService          service.JwtService
-	repository          repository.SongRepository
-	albumRepository     repository.AlbumRepository
-	artistRepository    repository.ArtistRepository
-	searchEngineService service.SearchEngineService
+	jwtService              service.JwtService
+	repository              repository.SongRepository
+	albumRepository         repository.AlbumRepository
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateSong(
 	jwtService service.JwtService,
 	repository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
-	artistRepository repository.ArtistRepository,
-	searchEngineService service.SearchEngineService,
+	messagePublisherService service.MessagePublisherService,
 ) CreateSong {
 	return CreateSong{
-		jwtService:          jwtService,
-		repository:          repository,
-		albumRepository:     albumRepository,
-		artistRepository:    artistRepository,
-		searchEngineService: searchEngineService,
+		jwtService:              jwtService,
+		repository:              repository,
+		albumRepository:         albumRepository,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -72,9 +70,9 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	errCode = c.syncSearchEngine(song)
-	if errCode != nil {
-		return uuid.Nil, errCode
+	err = c.messagePublisherService.Publish(topics.SongCreatedTopic, song)
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
 	return song.ID, nil
@@ -146,39 +144,5 @@ func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequ
 		song.ReleaseDate = album.ReleaseDate
 	}
 
-	return nil
-}
-
-func (c CreateSong) syncSearchEngine(song model.Song) *wrapper.ErrorCode {
-	var searches []any
-	songSearch := song.ToSearch()
-
-	if song.ArtistID != nil {
-		var artist model.Artist
-		err := c.artistRepository.Get(&artist, *song.ArtistID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		songSearch.Artist = artist.ToSongSearch()
-	}
-	if song.AlbumID != nil {
-		var album model.Album
-		err := c.albumRepository.Get(&album, *song.AlbumID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		songSearch.Album = album.ToSongSearch()
-	}
-
-	searches = append(searches, songSearch)
-
-	if song.Artist != nil {
-		searches = append(searches, song.Artist.ToSearch())
-	}
-	if song.Album != nil {
-		searches = append(searches, song.Album.ToSearch())
-	}
-
-	c.searchEngineService.Add(searches)
 	return nil
 }
