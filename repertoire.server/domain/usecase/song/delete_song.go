@@ -11,6 +11,7 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"sync"
 )
 
 type DeleteSong struct {
@@ -47,22 +48,29 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	// TODO: RUN IN PARALLEL (GOROUTINES)
-	if song.AlbumID != nil {
-		errCode := d.reorderAlbum(song)
-		if errCode != nil {
-			return errCode
+	var wg sync.WaitGroup
+	errChan := make(chan *wrapper.ErrorCode, 2)
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		errChan <- d.reorderAlbum(song)
+	}()
+	go func() {
+		defer wg.Done()
+		errChan <- d.reorderSongsInPlaylists(song)
+	}()
+
+	wg.Wait()
+	close(errChan)
+	for errorCode := range errChan {
+		if errorCode != nil {
+			return errorCode
 		}
 	}
 	
 	directoryPath := d.storageFilePathProvider.GetSongDirectoryPath(song)
 	errCode := d.storageService.DeleteDirectory(directoryPath)
 	if errCode != nil && errCode.Code != http.StatusNotFound {
-		return errCode
-	}
-
-	errCode = d.reorderSongsInPlaylists(song)
-	if errCode != nil {
 		return errCode
 	}
 
@@ -80,6 +88,10 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 }
 
 func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
+	if song.AlbumID == nil {
+		return nil
+	}
+
 	var albumSongs []model.Song
 	err := d.repository.GetAllByAlbumAndTrackNo(&albumSongs, *song.AlbumID, *song.AlbumTrackNo)
 	if err != nil {
