@@ -13,6 +13,7 @@ const (
 	ArtistCreatedTopic Topic = "artist_created_topic"
 
 	PlaylistCreatedTopic Topic = "playlist_created_topic"
+	PlaylistDeletedTopic Topic = "playlist_deleted_topic"
 
 	SongCreatedTopic Topic = "song_created_topic"
 	SongDeletedTopic Topic = "song_deleted_topic"
@@ -28,6 +29,7 @@ var TopicToQueueMap = map[Topic]queues.Queue{
 	ArtistCreatedTopic: queues.MainQueue,
 
 	PlaylistCreatedTopic: queues.MainQueue,
+	PlaylistDeletedTopic: queues.MainQueue,
 
 	SongCreatedTopic: queues.MainQueue,
 	SongDeletedTopic: queues.MainQueue,

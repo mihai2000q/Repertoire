@@ -7,6 +7,7 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -17,17 +18,20 @@ type DeletePlaylist struct {
 	repository              repository.PlaylistRepository
 	storageService          service.StorageService
 	storageFilePathProvider provider.StorageFilePathProvider
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeletePlaylist(
 	repository repository.PlaylistRepository,
 	storageService service.StorageService,
 	storageFilePathProvider provider.StorageFilePathProvider,
+	messagePublisherService service.MessagePublisherService,
 ) DeletePlaylist {
 	return DeletePlaylist{
 		repository:              repository,
 		storageService:          storageService,
 		storageFilePathProvider: storageFilePathProvider,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -48,6 +52,11 @@ func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	}
 
 	err = d.repository.Delete(id)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	err = d.messagePublisherService.Publish(topics.PlaylistDeletedTopic, playlist)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
