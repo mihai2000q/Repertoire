@@ -28,6 +28,11 @@ func (s *SearchEngineServiceMock) Search(
 	return args.Get(0).(wrapper.WithTotalCount[any]), errCode
 }
 
+func (s *SearchEngineServiceMock) GetDocuments(filter string) ([]map[string]any, error) {
+	args := s.Called(filter)
+	return args.Get(0).([]map[string]any), args.Error(1)
+}
+
 func (s *SearchEngineServiceMock) Add(items []any) error {
 	args := s.Called(items)
 	return args.Error(0)

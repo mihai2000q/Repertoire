@@ -15,6 +15,7 @@ type SearchEngineService interface {
 		searchType *enums.SearchType,
 		userID uuid.UUID,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
+	GetDocuments(filter string) ([]map[string]any, error)
 	Add(items []any) error
 	Update(items []any) error
 	Delete(ids []string) error
@@ -59,6 +60,18 @@ func (s searchEngineService) Search(
 	}
 
 	return result, nil
+}
+
+func (s searchEngineService) GetDocuments(filter string) ([]map[string]any, error) {
+	var result meilisearch.DocumentsResult
+	err := s.client.Index("search").GetDocuments(&meilisearch.DocumentsQuery{
+		Filter: filter,
+	}, &result)
+	if err != nil {
+		return []map[string]any{}, err
+	}
+
+	return result.Results, nil
 }
 
 func (s searchEngineService) Add(items []any) error {
