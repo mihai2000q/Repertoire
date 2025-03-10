@@ -141,10 +141,7 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 			assertSongsAddedToAlbum(t, test.request)
 
 			assertion.AssertMessage(t, messages, func(ids uuid.UUID) {
-				assert.Len(t, ids, len(test.request.SongIDs))
-				for _, id := range test.request.SongIDs {
-					assert.Contains(t, ids, id)
-				}
+				assert.Equal(t, ids, test.request.SongIDs)
 			})
 		})
 	}

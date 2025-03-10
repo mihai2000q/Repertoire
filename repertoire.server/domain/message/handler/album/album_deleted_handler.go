@@ -17,7 +17,10 @@ type AlbumDeletedHandler struct {
 	searchEngineService     service.SearchEngineService
 }
 
-func NewAlbumDeletedHandler(messagePublisherService service.MessagePublisherService, searchEngineService service.SearchEngineService) AlbumDeletedHandler {
+func NewAlbumDeletedHandler(
+	messagePublisherService service.MessagePublisherService,
+	searchEngineService service.SearchEngineService,
+) AlbumDeletedHandler {
 	return AlbumDeletedHandler{
 		name:                    "album_deleted_handler",
 		topic:                   topics.AlbumDeletedTopic,

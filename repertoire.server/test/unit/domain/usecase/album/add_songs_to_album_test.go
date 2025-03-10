@@ -267,8 +267,12 @@ func TestAddSongsToAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *tes
 		Return(nil, songs).
 		Once()
 
-	internalError := errors.New("internal error")
 	songRepository.On("UpdateAll", mock.IsType(songs)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, request.SongIDs).
 		Return(internalError).
 		Once()
 
@@ -376,11 +380,7 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 				Return(nil).
 				Once()
 
-			messagePublisherService.On("Publish", topics.SongsUpdatedTopic, mock.IsType([]uuid.UUID{})).
-				Run(func(args mock.Arguments) {
-					ids := args.Get(1).([]uuid.UUID)
-					assert.Equal(t, tt.request.SongIDs, ids)
-				}).
+			messagePublisherService.On("Publish", topics.SongsUpdatedTopic, tt.request.SongIDs).
 				Return(nil).
 				Once()
 

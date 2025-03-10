@@ -38,7 +38,7 @@ func TestPlaylistUpdatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T)
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestPlaylistUpdatedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
+func TestPlaylistUpdatedHandler_WhenSuccessful_ShouldPublishMessageToUpdateFromSearchEngine(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	_uut := playlist.NewPlaylistUpdatedHandler(messagePublisherService)
