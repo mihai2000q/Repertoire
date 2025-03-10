@@ -35,6 +35,7 @@ func NewRouter(
 
 	playlistCreatedHandler playlist.PlaylistCreatedHandler,
 	playlistDeletedHandler playlist.PlaylistDeletedHandler,
+	playlistUpdatedHandler playlist.PlaylistUpdatedHandler,
 
 	songCreatedHandler song.SongCreatedHandler,
 	songDeletedHandler song.SongDeletedHandler,
@@ -52,6 +53,7 @@ func NewRouter(
 
 		playlistCreatedHandler,
 		playlistDeletedHandler,
+		playlistUpdatedHandler,
 
 		songCreatedHandler,
 		songDeletedHandler,

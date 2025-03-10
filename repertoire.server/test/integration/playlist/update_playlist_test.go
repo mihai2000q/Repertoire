@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
@@ -42,6 +44,8 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldUpdatePlaylist(t *testing.T) {
 		Description: "New description",
 	}
 
+	messages := utils.SubscribeToTopic(topics.PlaylistUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().PUT(w, "/api/playlists", request)
@@ -53,6 +57,10 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldUpdatePlaylist(t *testing.T) {
 	db.Find(&playlist, playlist.ID)
 
 	assertUpdatedPlaylist(t, request, playlist)
+
+	assertion.AssertMessage(t, messages, func(payloadPlaylist model.Playlist) {
+		assert.Equal(t, playlist.ID, payloadPlaylist.ID)
+	})
 }
 
 func assertUpdatedPlaylist(t *testing.T, request requests.UpdatePlaylistRequest, playlist model.Playlist) {

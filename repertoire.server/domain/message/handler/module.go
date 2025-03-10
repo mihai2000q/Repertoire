@@ -21,6 +21,7 @@ var artistHandlers = fx.Options(
 var playlistHandlers = fx.Options(
 	fx.Provide(playlist.NewPlaylistCreatedHandler),
 	fx.Provide(playlist.NewPlaylistDeletedHandler),
+	fx.Provide(playlist.NewPlaylistUpdatedHandler),
 )
 
 var songHandlers = fx.Options(
