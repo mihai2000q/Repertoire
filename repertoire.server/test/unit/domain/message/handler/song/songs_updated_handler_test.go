@@ -15,21 +15,20 @@ import (
 	"testing"
 )
 
-func TestSongUpdatedHandler_WhenGetSongFails_ShouldReturnError(t *testing.T) {
+func TestSongUpdatedHandler_WhenGetSongsFails_ShouldReturnError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := song.NewSongUpdatedHandler(songRepository, messagePublisherService)
+	_uut := song.NewSongsUpdatedHandler(songRepository, nil)
 
-	mockSong := model.Song{ID: uuid.New()}
+	songIDs := []uuid.UUID{uuid.New()}
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetWithArtistAndAlbum", &mockSong, mockSong.ID).
+	songRepository.On("GetAllByIDsWithArtistAndAlbum", new([]model.Song), songIDs).
 		Return(internalError).
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockSong)
+	payload, _ := json.Marshal(songIDs)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -37,19 +36,20 @@ func TestSongUpdatedHandler_WhenGetSongFails_ShouldReturnError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, err, internalError)
 
-	messagePublisherService.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
 }
 
 func TestSongUpdatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := song.NewSongUpdatedHandler(songRepository, messagePublisherService)
+	_uut := song.NewSongsUpdatedHandler(songRepository, messagePublisherService)
 
-	mockSong := model.Song{ID: uuid.New()}
+	songIDs := []uuid.UUID{uuid.New()}
 
-	songRepository.On("GetWithArtistAndAlbum", &mockSong, mockSong.ID).
-		Return(nil, &mockSong).
+	songs := []model.Song{{ID: uuid.New()}}
+	songRepository.On("GetAllByIDsWithArtistAndAlbum", new([]model.Song), songIDs).
+		Return(nil, &songs).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -58,7 +58,7 @@ func TestSongUpdatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockSong)
+	payload, _ := json.Marshal(songIDs)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -66,36 +66,64 @@ func TestSongUpdatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, err, internalError)
 
+	songRepository.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestSongUpdatedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
+func TestSongUpdatedHandler_WhenThereAreNoSongs_ShouldReturnNoError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := song.NewSongUpdatedHandler(songRepository, messagePublisherService)
+	_uut := song.NewSongsUpdatedHandler(songRepository, nil)
 
-	mockSong := model.Song{ID: uuid.New()}
-	songRepository.On("GetWithArtistAndAlbum", &mockSong, mockSong.ID).
-		Return(nil, &mockSong).
-		Once()
+	songIDs := []uuid.UUID{uuid.New()}
 
-	messagePublisherService.On("Publish", topics.UpdateFromSearchEngineTopic, mock.IsType([]any{})).
-		Run(func(args mock.Arguments) {
-			searches := args.Get(1).([]any)
-			assert.Len(t, searches, 1)
-			assert.Contains(t, searches[0].(model.SongSearch).ID, mockSong.ID.String())
-		}).
+	songRepository.On("GetAllByIDsWithArtistAndAlbum", new([]model.Song), songIDs).
 		Return(nil).
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockSong)
+	payload, _ := json.Marshal(songIDs)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
 	// then
 	assert.NoError(t, err)
 
+	songRepository.AssertExpectations(t)
+}
+
+func TestSongUpdatedHandler_WhenSuccessful_ShouldPublishMessageToUpdateFromSearchEngine(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewSongsUpdatedHandler(songRepository, messagePublisherService)
+
+	songIDs := []uuid.UUID{uuid.New(), uuid.New()}
+
+	songs := []model.Song{{ID: uuid.New()}}
+	songRepository.On("GetAllByIDsWithArtistAndAlbum", new([]model.Song), songIDs).
+		Return(nil, &songs).
+		Once()
+
+	messagePublisherService.On("Publish", topics.UpdateFromSearchEngineTopic, mock.IsType([]any{})).
+		Run(func(args mock.Arguments) {
+			searches := args.Get(1).([]any)
+			assert.Len(t, searches, len(songs))
+			for i := range searches {
+				assert.Contains(t, searches[i].(model.SongSearch).ID, songs[i].ID.String())
+			}
+		}).
+		Return(nil).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(songIDs)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.NoError(t, err)
+
+	songRepository.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
 }

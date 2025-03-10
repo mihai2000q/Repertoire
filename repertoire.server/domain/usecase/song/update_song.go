@@ -2,6 +2,7 @@ package song
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -82,7 +83,7 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 		return wrapper.InternalServerError(err)
 	}
 
-	err = u.messagePublisherService.Publish(topics.SongUpdatedTopic, song)
+	err = u.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

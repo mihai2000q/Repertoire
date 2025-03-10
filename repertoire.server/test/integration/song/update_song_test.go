@@ -48,7 +48,7 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 		ArtistID:    song.ArtistID,
 	}
 
-	messages := utils.SubscribeToTopic(topics.SongUpdatedTopic)
+	messages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -90,7 +90,7 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *te
 		return s.AlbumID == nil || *s.AlbumID != *request.AlbumID
 	}))
 
-	messages := utils.SubscribeToTopic(topics.SongUpdatedTopic)
+	messages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -117,8 +117,9 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *te
 		assert.Equal(t, uint(i+1), *s.AlbumTrackNo)
 	}
 
-	assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
-		assert.Equal(t, song.ID, payloadSong.ID)
+	assertion.AssertMessage(t, messages, func(payloadIDs uuid.UUID) {
+		assert.Len(t, payloadIDs, 1)
+		assert.Equal(t, song.ID, payloadIDs[0])
 	})
 }
 

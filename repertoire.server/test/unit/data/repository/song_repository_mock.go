@@ -41,16 +41,6 @@ func (s *SongRepositoryMock) GetWithSections(song *model.Song, id uuid.UUID) err
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetWithArtistAndAlbum(song *model.Song, id uuid.UUID) error {
-	args := s.Called(song, id)
-
-	if len(args) > 1 {
-		*song = *args.Get(1).(*model.Song)
-	}
-
-	return args.Error(0)
-}
-
 func (s *SongRepositoryMock) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	args := s.Called(song, id)
 
@@ -92,6 +82,16 @@ func (s *SongRepositoryMock) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) e
 }
 
 func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
 	if len(args) > 1 {

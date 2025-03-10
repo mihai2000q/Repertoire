@@ -379,7 +379,7 @@ func TestUpdateSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 		Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.SongUpdatedTopic, mock.IsType(*mockSong)).
+	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, mock.IsType([]uuid.UUID{})).
 		Return(internalError).
 		Once()
 
@@ -513,9 +513,11 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				Return(nil).
 				Once()
 
-			messagePublisherService.On("Publish", topics.SongUpdatedTopic, mock.IsType(*tt.song)).
+			messagePublisherService.On("Publish", topics.SongsUpdatedTopic, mock.IsType([]uuid.UUID{})).
 				Run(func(args mock.Arguments) {
-					assert.Equal(t, *newSong, args.Get(1).(model.Song))
+					ids := args.Get(1).([]uuid.UUID)
+					assert.Len(t, ids, 1)
+					assert.Equal(t, newSong.ID, ids[0])
 				}).
 				Return(nil).
 				Once()
@@ -688,9 +690,11 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 				Return(nil).
 				Once()
 
-			messagePublisherService.On("Publish", topics.SongUpdatedTopic, mock.IsType(tt.song)).
+			messagePublisherService.On("Publish", topics.SongsUpdatedTopic, mock.IsType([]uuid.UUID{})).
 				Run(func(args mock.Arguments) {
-					assert.Equal(t, *newSong, args.Get(1).(model.Song))
+					ids := args.Get(1).([]uuid.UUID)
+					assert.Len(t, ids, 1)
+					assert.Equal(t, newSong.ID, ids[0])
 				}).
 				Return(nil).
 				Once()

@@ -16,9 +16,9 @@ const (
 	PlaylistDeletedTopic Topic = "playlist_deleted_topic"
 	PlaylistUpdatedTopic Topic = "playlist_updated_topic"
 
-	SongCreatedTopic Topic = "song_created_topic"
-	SongDeletedTopic Topic = "song_deleted_topic"
-	SongUpdatedTopic Topic = "song_updated_topic"
+	SongCreatedTopic  Topic = "song_created_topic"
+	SongDeletedTopic  Topic = "song_deleted_topic"
+	SongsUpdatedTopic Topic = "songs_updated_topic"
 
 	AddToSearchEngineTopic      Topic = "add_to_search_engine_topic"
 	DeleteFromSearchEngineTopic Topic = "delete_from_search_engine_topic"

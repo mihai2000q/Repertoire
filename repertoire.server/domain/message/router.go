@@ -39,7 +39,7 @@ func NewRouter(
 
 	songCreatedHandler song.SongCreatedHandler,
 	songDeletedHandler song.SongDeletedHandler,
-	songUpdatedHandler song.SongUpdatedHandler,
+	songsUpdatedHandler song.SongsUpdatedHandler,
 
 	addToSearchEngineHandler search.AddToSearchEngineHandler,
 	deleteFromSearchEngineHandler search.DeleteFromSearchEngineHandler,
@@ -57,7 +57,7 @@ func NewRouter(
 
 		songCreatedHandler,
 		songDeletedHandler,
-		songUpdatedHandler,
+		songsUpdatedHandler,
 
 		addToSearchEngineHandler,
 		deleteFromSearchEngineHandler,
