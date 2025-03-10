@@ -86,7 +86,7 @@ func TestRemoveSongsFromAlbum_WhenSuccessful_ShouldDeleteSongsFromAlbum(t *testi
 	}).Find(&album, album.ID)
 	assertRemoveSongsFromAlbum(t, request, album, oldSongsLength)
 
-	assertion.AssertMessage(t, messages, func(ids uuid.UUID) {
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
 		assert.Equal(t, ids, request.SongIDs)
 	})
 }
