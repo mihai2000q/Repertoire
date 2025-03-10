@@ -23,7 +23,9 @@ func main() {
 		panic(err)
 	}
 
-	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{"type", "userId"})
+	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{
+		"type", "userId", "album", "album.id", "artist", "artist.id",
+	})
 	if err != nil {
 		panic(err)
 	}
