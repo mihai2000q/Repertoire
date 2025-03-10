@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
@@ -128,6 +130,8 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
+			messages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().POST(w, "/api/albums/add-songs", test.request)
@@ -135,6 +139,13 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 			assertSongsAddedToAlbum(t, test.request)
+
+			assertion.AssertMessage(t, messages, func(ids uuid.UUID) {
+				assert.Len(t, ids, len(test.request.SongIDs))
+				for _, id := range test.request.SongIDs {
+					assert.Contains(t, ids, id)
+				}
+			})
 		})
 	}
 }
