@@ -32,6 +32,16 @@ func (a *AlbumRepositoryMock) GetWithSongs(album *model.Album, id uuid.UUID) err
 	return args.Error(0)
 }
 
+func (a *AlbumRepositoryMock) GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error {
+	args := a.Called(album, id)
+
+	if len(args) > 1 {
+		*album = *args.Get(1).(*model.Album)
+	}
+
+	return args.Error(0)
+}
+
 func (a *AlbumRepositoryMock) GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error {
 	args := a.Called(album, id, songsOrderBy)
 
