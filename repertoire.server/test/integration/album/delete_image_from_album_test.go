@@ -5,6 +5,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
@@ -43,6 +45,8 @@ func TestDeleteImageFromAlbum_WhenSuccessful_ShouldUpdateAlbumAndDeleteImage(t *
 
 	album := albumData.Albums[1]
 
+	messages := utils.SubscribeToTopic(topics.AlbumUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().DELETE(w, "/api/albums/images/"+album.ID.String())
@@ -54,4 +58,8 @@ func TestDeleteImageFromAlbum_WhenSuccessful_ShouldUpdateAlbumAndDeleteImage(t *
 	db.Find(&album, album.ID)
 
 	assert.Nil(t, album.ImageURL)
+
+	assertion.AssertMessage(t, messages, func(albumID uuid.UUID) {
+		assert.Equal(t, album.ID, albumID)
+	})
 }

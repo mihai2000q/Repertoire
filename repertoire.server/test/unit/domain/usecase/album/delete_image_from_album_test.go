@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +20,7 @@ import (
 func TestDeleteImageFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -41,7 +42,7 @@ func TestDeleteImageFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(
 func TestDeleteImageFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -62,7 +63,7 @@ func TestDeleteImageFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *test
 func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -85,7 +86,7 @@ func TestDeleteImageFromAlbum_WhenDeleteImageFails_ShouldReturnInternalServerErr
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService, nil)
 
 	id := uuid.New()
 
@@ -111,7 +112,7 @@ func TestDeleteImageFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerErr
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService, nil)
 
 	id := uuid.New()
 
@@ -138,11 +139,49 @@ func TestDeleteImageFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerErr
 	storageService.AssertExpectations(t)
 }
 
+func TestDeleteImageFromAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	storageService := new(service.StorageServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService, messagePublisherService)
+
+	id := uuid.New()
+
+	// given - mocking
+	mockAlbum := &model.Album{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
+	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
+
+	storageService.On("DeleteFile", *mockAlbum.ImageURL).Return(nil).Once()
+
+	albumRepository.On("Update", mock.IsType(mockAlbum)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	albumRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestDeleteImageFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := album.NewDeleteImageFromAlbum(albumRepository, storageService, messagePublisherService)
 
 	id := uuid.New()
 
@@ -160,6 +199,10 @@ func TestDeleteImageFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 		Return(nil).
 		Once()
 
+	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+		Return(nil).
+		Once()
+
 	// when
 	errCode := _uut.Handle(id)
 
@@ -168,4 +211,5 @@ func TestDeleteImageFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 
 	albumRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }
