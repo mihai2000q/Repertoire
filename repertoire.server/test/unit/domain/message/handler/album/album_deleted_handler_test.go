@@ -70,7 +70,7 @@ func TestAlbumDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestAlbumDeletedHandler_WhenPublishUpdateFails_ShouldReturnError(t *testing.T) {
+func TestAlbumDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
@@ -84,6 +84,37 @@ func TestAlbumDeletedHandler_WhenPublishUpdateFails_ShouldReturnError(t *testing
 
 	searchEngineService.On("GetDocuments", mock.IsType("")).
 		Return([]map[string]any{}, nil).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(mockAlbum)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.NoError(t, err)
+
+	messagePublisherService.AssertExpectations(t)
+	searchEngineService.AssertExpectations(t)
+}
+
+func TestAlbumDeletedHandler_WhenPublishUpdateFails_ShouldReturnError(t *testing.T) {
+	// given
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	searchEngineService := new(service.SearchEngineServiceMock)
+	_uut := album.NewAlbumDeletedHandler(messagePublisherService, searchEngineService)
+
+	mockAlbum := model.Album{ID: uuid.New()}
+
+	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
+		Return(nil).
+		Once()
+
+	songsToUpdate := []map[string]any{
+		{"id": uuid.New().String()},
+	}
+	searchEngineService.On("GetDocuments", mock.IsType("")).
+		Return(songsToUpdate, nil).
 		Once()
 
 	internalError := errors.New("internal error")

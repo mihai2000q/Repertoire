@@ -59,6 +59,10 @@ func (a AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	if err != nil {
 		return err
 	}
+	if len(meiliSongs) == 0 {
+		return nil
+	}
+
 	var songsToUpdate []any
 	for _, s := range meiliSongs {
 		var song model.SongSearch
