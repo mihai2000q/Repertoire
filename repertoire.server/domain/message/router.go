@@ -10,6 +10,7 @@ import (
 	"repertoire/server/domain/message/handler/playlist"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/domain/message/handler/song"
+	"repertoire/server/domain/message/handler/user"
 	"repertoire/server/internal/message/topics"
 
 	"go.uber.org/fx"
@@ -41,6 +42,8 @@ func NewRouter(
 	songDeletedHandler song.SongDeletedHandler,
 	songsUpdatedHandler song.SongsUpdatedHandler,
 
+	userDeletedHandler user.UserDeletedHandler,
+
 	addToSearchEngineHandler search.AddToSearchEngineHandler,
 	deleteFromSearchEngineHandler search.DeleteFromSearchEngineHandler,
 	updateFromSearchEngineHandler search.UpdateFromSearchEngineHandler,
@@ -58,6 +61,8 @@ func NewRouter(
 		songCreatedHandler,
 		songDeletedHandler,
 		songsUpdatedHandler,
+
+		userDeletedHandler,
 
 		addToSearchEngineHandler,
 		deleteFromSearchEngineHandler,

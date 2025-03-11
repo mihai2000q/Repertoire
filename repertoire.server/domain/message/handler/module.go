@@ -7,6 +7,7 @@ import (
 	"repertoire/server/domain/message/handler/playlist"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/domain/message/handler/song"
+	"repertoire/server/domain/message/handler/user"
 )
 
 var albumHandlers = fx.Options(
@@ -30,6 +31,10 @@ var songHandlers = fx.Options(
 	fx.Provide(song.NewSongsUpdatedHandler),
 )
 
+var userHandlers = fx.Options(
+	fx.Provide(user.NewUserDeletedHandler),
+)
+
 var searchHandlers = fx.Options(
 	fx.Provide(search.NewAddToSearchEngineHandler),
 	fx.Provide(search.NewDeleteFromSearchEngineHandler),
@@ -42,4 +47,5 @@ var Module = fx.Options(
 	playlistHandlers,
 	songHandlers,
 	searchHandlers,
+	userHandlers,
 )

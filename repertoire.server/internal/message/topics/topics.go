@@ -20,6 +20,8 @@ const (
 	SongDeletedTopic  Topic = "song_deleted_topic"
 	SongsUpdatedTopic Topic = "songs_updated_topic"
 
+	UserDeletedTopic Topic = "user_deleted_topic"
+
 	AddToSearchEngineTopic      Topic = "add_to_search_engine_topic"
 	DeleteFromSearchEngineTopic Topic = "delete_from_search_engine_topic"
 	UpdateFromSearchEngineTopic Topic = "update_from_search_engine_topic"
@@ -37,6 +39,8 @@ var TopicToQueueMap = map[Topic]queues.Queue{
 
 	SongCreatedTopic: queues.MainQueue,
 	SongDeletedTopic: queues.MainQueue,
+
+	UserDeletedTopic: queues.MainQueue,
 
 	AddToSearchEngineTopic:      queues.SearchQueue,
 	DeleteFromSearchEngineTopic: queues.SearchQueue,
