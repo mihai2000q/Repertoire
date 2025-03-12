@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -19,7 +20,7 @@ import (
 func TestSaveImageToArtist_WhenGetArtistFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewSaveImageToArtist(artistRepository, nil, nil)
+	_uut := artist.NewSaveImageToArtist(artistRepository, nil, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -42,7 +43,7 @@ func TestSaveImageToArtist_WhenGetArtistFails_ShouldReturnNotFoundError(t *testi
 func TestSaveImageToArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewSaveImageToArtist(artistRepository, nil, nil)
+	_uut := artist.NewSaveImageToArtist(artistRepository, nil, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -66,7 +67,7 @@ func TestSaveImageToArtist_WhenStorageUploadFails_ShouldReturnInternalServerErro
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := artist.NewSaveImageToArtist(artistRepository, storageFilePathProvider, storageService)
+	_uut := artist.NewSaveImageToArtist(artistRepository, storageFilePathProvider, storageService, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -99,7 +100,7 @@ func TestSaveImageToArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := artist.NewSaveImageToArtist(artistRepository, storageFilePathProvider, storageService)
+	_uut := artist.NewSaveImageToArtist(artistRepository, storageFilePathProvider, storageService, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -131,12 +132,66 @@ func TestSaveImageToArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError
 	storageService.AssertExpectations(t)
 }
 
+func TestSaveImageToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	storageService := new(service.StorageServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewSaveImageToArtist(
+		artistRepository,
+		storageFilePathProvider,
+		storageService,
+		messagePublisherService,
+	)
+
+	file := new(multipart.FileHeader)
+	id := uuid.New()
+
+	// given - mocking
+	mockArtist := &model.Artist{ID: id, ImageURL: nil}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
+
+	imagePath := "artists file path"
+	storageFilePathProvider.On("GetArtistImagePath", file, *mockArtist).Return(imagePath).Once()
+
+	storageService.On("Upload", file, imagePath).Return(nil).Once()
+
+	artistRepository.On("Update", mock.IsType(new(model.Artist))).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(file, id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	artistRepository.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestSaveImageToArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := artist.NewSaveImageToArtist(artistRepository, storageFilePathProvider, storageService)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewSaveImageToArtist(
+		artistRepository,
+		storageFilePathProvider,
+		storageService,
+		messagePublisherService,
+	)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -158,6 +213,10 @@ func TestSaveImageToArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(nil).
+		Once()
+
 	// when
 	errCode := _uut.Handle(file, id)
 
@@ -167,4 +226,5 @@ func TestSaveImageToArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	artistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }

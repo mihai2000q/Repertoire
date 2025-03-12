@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +20,7 @@ import (
 func TestDeleteImageFromArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -41,7 +42,7 @@ func TestDeleteImageFromArtist_WhenGetArtistFails_ShouldReturnInternalServerErro
 func TestDeleteImageFromArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -62,7 +63,7 @@ func TestDeleteImageFromArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *te
 func TestDeleteImageFromArtist_WhenArtistHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil, nil)
 
 	id := uuid.New()
 
@@ -85,7 +86,7 @@ func TestDeleteImageFromArtist_WhenDeleteImageFails_ShouldReturnInternalServerEr
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService, nil)
 
 	id := uuid.New()
 
@@ -112,7 +113,7 @@ func TestDeleteImageFromArtist_WhenUpdateArtistFails_ShouldReturnInternalServerE
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService, nil)
 
 	id := uuid.New()
 
@@ -139,11 +140,49 @@ func TestDeleteImageFromArtist_WhenUpdateArtistFails_ShouldReturnInternalServerE
 	storageService.AssertExpectations(t)
 }
 
+func TestDeleteImageFromArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	storageService := new(service.StorageServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService, messagePublisherService)
+
+	id := uuid.New()
+
+	// given - mocking
+	mockArtist := &model.Artist{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
+
+	storageService.On("DeleteFile", *mockArtist.ImageURL).Return(nil).Once()
+
+	artistRepository.On("Update", mock.IsType(mockArtist)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	artistRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestDeleteImageFromArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewDeleteImageFromArtist(artistRepository, storageService, messagePublisherService)
 
 	id := uuid.New()
 
@@ -161,6 +200,10 @@ func TestDeleteImageFromArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T)
 		Return(nil).
 		Once()
 
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(nil).
+		Once()
+
 	// when
 	errCode := _uut.Handle(id)
 
@@ -169,4 +212,5 @@ func TestDeleteImageFromArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T)
 
 	artistRepository.AssertExpectations(t)
 	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }

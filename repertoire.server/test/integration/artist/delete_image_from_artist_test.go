@@ -3,6 +3,8 @@ package artist
 import (
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
@@ -44,6 +46,8 @@ func TestDeleteImageFromArtist_WhenSuccessful_ShouldUpdateArtistAndDeleteImage(t
 
 	artist := artistData.Artists[0]
 
+	messages := utils.SubscribeToTopic(topics.ArtistUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().DELETE(w, "/api/artists/images/"+artist.ID.String())
@@ -55,4 +59,8 @@ func TestDeleteImageFromArtist_WhenSuccessful_ShouldUpdateArtistAndDeleteImage(t
 	db.Find(&artist, artist.ID)
 
 	assert.Nil(t, artist.ImageURL)
+
+	assertion.AssertMessage(t, messages, func(id uuid.UUID) {
+		assert.Equal(t, artist.ID, id)
+	})
 }

@@ -8,6 +8,7 @@ import (
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -18,17 +19,20 @@ type SaveImageToArtist struct {
 	repository              repository.ArtistRepository
 	storageFilePathProvider provider.StorageFilePathProvider
 	storageService          service.StorageService
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewSaveImageToArtist(
 	repository repository.ArtistRepository,
 	storageFilePathProvider provider.StorageFilePathProvider,
 	storageService service.StorageService,
+	messagePublisherService service.MessagePublisherService,
 ) SaveImageToArtist {
 	return SaveImageToArtist{
 		repository:              repository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -51,6 +55,11 @@ func (s SaveImageToArtist) Handle(file *multipart.FileHeader, id uuid.UUID) *wra
 
 	artist.ImageURL = (*internal.FilePath)(&imagePath)
 	err = s.repository.Update(&artist)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	err = s.messagePublisherService.Publish(topics.ArtistUpdatedTopic, artist)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
