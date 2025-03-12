@@ -2,6 +2,8 @@ package utils
 
 import (
 	"context"
+	"encoding/json"
+	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/meilisearch/meilisearch-go"
 	"mime/multipart"
@@ -39,10 +41,18 @@ func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
 	return client
 }
 
-func GetSearchDocumentWithRetry(client meilisearch.ServiceManager, id string, documentPtr interface{}) {
+func WaitForAllTasks(client meilisearch.ServiceManager) {
 	for {
-		err := client.Index("search").GetDocument(id, &meilisearch.DocumentQuery{}, &documentPtr)
-		if err == nil {
+		breakOuterFor := true
+		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
+		for _, taskResult := range tasks.Results {
+			if taskResult.Status == meilisearch.TaskStatusEnqueued ||
+				taskResult.Status == meilisearch.TaskStatusProcessing {
+				breakOuterFor = false
+				break
+			}
+		}
+		if breakOuterFor {
 			break
 		}
 	}
@@ -100,6 +110,17 @@ func CreateCustomToken(sub string, jti string) string {
 	return token
 }
 
+func PublishToTopic(topic topics.Topic, data any) error {
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	msg := message.NewMessage(watermill.NewUUID(), bytes)
+	msg.Metadata.Set("topic", string(topic))
+	queue := string(topics.TopicToQueueMap[topic])
+	return core.MessageBroker.Publish(queue, msg)
+}
+
 func SubscribeToTopic(topic topics.Topic) <-chan *message.Message {
 	messages, _ := core.MessageBroker.Subscribe(context.Background(), string(topics.TopicToQueueMap[topic]))
 	return messages
@@ -112,5 +133,15 @@ func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
 		for _, user := range users {
 			db.Select(clause.Associations).Delete(user)
 		}
+	})
+}
+
+func SeedAndCleanupSearchData(t *testing.T, items []any) {
+	searchClient := GetSearchClient(t)
+
+	_, _ = searchClient.Index("search").AddDocuments(items)
+
+	t.Cleanup(func() {
+		_, _ = searchClient.Index("search").DeleteAllDocuments()
 	})
 }
