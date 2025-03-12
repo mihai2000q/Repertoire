@@ -54,7 +54,7 @@ func (d DeleteImageFromAlbum) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.AlbumUpdatedTopic, album.ID)
+	err = d.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

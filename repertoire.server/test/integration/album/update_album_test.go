@@ -46,7 +46,7 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 		ArtistID:    album.ArtistID,
 	}
 
-	messages := utils.SubscribeToTopic(topics.AlbumUpdatedTopic)
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -78,7 +78,7 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 		ArtistID:    &albumData.Artists[1].ID,
 	}
 
-	messages := utils.SubscribeToTopic(topics.AlbumUpdatedTopic)
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()

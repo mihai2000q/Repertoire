@@ -159,7 +159,7 @@ func TestDeleteImageFromAlbum_WhenPublishFails_ShouldReturnInternalServerError(t
 		Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, []uuid.UUID{mockAlbum.ID}).
 		Return(internalError).
 		Once()
 
@@ -199,7 +199,7 @@ func TestDeleteImageFromAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 		Return(nil).
 		Once()
 
-	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, []uuid.UUID{mockAlbum.ID}).
 		Return(nil).
 		Once()
 

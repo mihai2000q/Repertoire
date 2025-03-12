@@ -194,7 +194,7 @@ func TestUpdateAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing
 	albumRepository.On("Update", mock.IsType(mockAlbum)).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, mockAlbum.ID).
 		Return(internalError).
 		Once()
 
@@ -238,7 +238,7 @@ func TestUpdateAlbum_WhenArtistHasNotChanged_ShouldUpdateOnlyAlbumAndNotReturnAn
 		Return(nil).
 		Once()
 
-	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, []uuid.UUID{mockAlbum.ID}).
 		Return(nil).
 		Once()
 
@@ -334,7 +334,7 @@ func TestUpdateAlbum_WhenArtistHasChanged_ShouldUpdateAlbumAndSongsAndNotReturnA
 				Return(nil).
 				Once()
 
-			messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, tt.request.ID).
+			messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, []uuid.UUID{tt.request.ID}).
 				Return(nil).
 				Once()
 

@@ -162,7 +162,7 @@ func TestSaveImageToAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *te
 		Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, []uuid.UUID{mockAlbum.ID}).
 		Return(internalError).
 		Once()
 
@@ -213,7 +213,7 @@ func TestSaveImageToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
-	messagePublisherService.On("Publish", topics.AlbumUpdatedTopic, mockAlbum.ID).
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, []uuid.UUID{mockAlbum.ID}).
 		Return(nil).
 		Once()
 

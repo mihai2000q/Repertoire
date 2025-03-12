@@ -2,6 +2,7 @@ package album
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -57,7 +58,7 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 		}
 	}
 
-	err = u.messagePublisherService.Publish(topics.AlbumUpdatedTopic, album.ID)
+	err = u.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

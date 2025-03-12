@@ -59,7 +59,7 @@ func (s SaveImageToAlbum) Handle(file *multipart.FileHeader, id uuid.UUID) *wrap
 		return wrapper.InternalServerError(err)
 	}
 
-	err = s.messagePublisherService.Publish(topics.AlbumUpdatedTopic, album.ID)
+	err = s.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

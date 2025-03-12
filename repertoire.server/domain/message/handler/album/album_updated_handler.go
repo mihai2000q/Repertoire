@@ -10,43 +10,46 @@ import (
 	"repertoire/server/model"
 )
 
-type AlbumUpdatedHandler struct {
+type AlbumsUpdatedHandler struct {
 	name                    string
 	topic                   topics.Topic
 	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
-func NewAlbumUpdatedHandler(
+func NewAlbumsUpdatedHandler(
 	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
-) AlbumUpdatedHandler {
-	return AlbumUpdatedHandler{
-		name:                    "album_updated_handler",
-		topic:                   topics.AlbumUpdatedTopic,
+) AlbumsUpdatedHandler {
+	return AlbumsUpdatedHandler{
+		name:                    "albums_updated_handler",
+		topic:                   topics.AlbumsUpdatedTopic,
 		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (a AlbumUpdatedHandler) Handle(msg *watermillMessage.Message) error {
-	var albumID uuid.UUID
-	err := json.Unmarshal(msg.Payload, &albumID)
+func (a AlbumsUpdatedHandler) Handle(msg *watermillMessage.Message) error {
+	var ids []uuid.UUID
+	err := json.Unmarshal(msg.Payload, &ids)
 	if err != nil {
 		return err
 	}
 
-	var album model.Album
-	err = a.albumRepository.GetWithSongsAndArtist(&album, albumID)
+	var albums []model.Album
+	err = a.albumRepository.GetAllByIDsWithSongsAndArtist(&albums, ids)
 	if err != nil {
 		return err
 	}
 
-	documentsToUpdate := []any{album.ToSearch()}
-	for _, song := range album.Songs {
-		songSearch := song.ToSearch()
-		songSearch.Album = album.ToSongSearch()
-		documentsToUpdate = append(documentsToUpdate, songSearch)
+	var documentsToUpdate []any
+	for _, album := range albums {
+		documentsToUpdate = append(documentsToUpdate, album.ToSearch())
+		for _, song := range album.Songs {
+			songSearch := song.ToSearch()
+			songSearch.Album = album.ToSongSearch()
+			documentsToUpdate = append(documentsToUpdate, songSearch)
+		}
 	}
 
 	err = a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, documentsToUpdate)
@@ -57,10 +60,10 @@ func (a AlbumUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	return nil
 }
 
-func (a AlbumUpdatedHandler) GetName() string {
+func (a AlbumsUpdatedHandler) GetName() string {
 	return a.name
 }
 
-func (a AlbumUpdatedHandler) GetTopic() topics.Topic {
+func (a AlbumsUpdatedHandler) GetTopic() topics.Topic {
 	return a.topic
 }

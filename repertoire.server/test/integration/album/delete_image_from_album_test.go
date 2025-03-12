@@ -45,7 +45,7 @@ func TestDeleteImageFromAlbum_WhenSuccessful_ShouldUpdateAlbumAndDeleteImage(t *
 
 	album := albumData.Albums[1]
 
-	messages := utils.SubscribeToTopic(topics.AlbumUpdatedTopic)
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -59,7 +59,8 @@ func TestDeleteImageFromAlbum_WhenSuccessful_ShouldUpdateAlbumAndDeleteImage(t *
 
 	assert.Nil(t, album.ImageURL)
 
-	assertion.AssertMessage(t, messages, func(albumID uuid.UUID) {
-		assert.Equal(t, album.ID, albumID)
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+		assert.Len(t, ids, 1)
+		assert.Equal(t, album.ID, ids[0])
 	})
 }
