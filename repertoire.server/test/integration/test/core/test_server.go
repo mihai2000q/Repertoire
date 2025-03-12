@@ -182,7 +182,9 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 		log.Println(err)
 	}
 
-	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{"type", "userId"})
+	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{
+		"type", "userId", "album", "album.id", "artist", "artist.id",
+	})
 	if err != nil {
 		log.Println(err)
 	}
