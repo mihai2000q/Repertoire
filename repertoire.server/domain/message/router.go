@@ -31,6 +31,7 @@ func NewRouter(
 
 	albumCreatedHandler album.AlbumCreatedHandler,
 	albumDeletedHandler album.AlbumDeletedHandler,
+	albumsUpdatedHandler album.AlbumsUpdatedHandler,
 
 	artistCreatedHandler artist.ArtistCreatedHandler,
 	artistDeletedHandler artist.ArtistDeletedHandler,
@@ -53,6 +54,7 @@ func NewRouter(
 	handlers := []messageHandler{
 		albumCreatedHandler,
 		albumDeletedHandler,
+		albumsUpdatedHandler,
 
 		artistCreatedHandler,
 		artistDeletedHandler,
