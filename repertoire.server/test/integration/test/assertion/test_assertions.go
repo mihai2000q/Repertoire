@@ -267,8 +267,24 @@ func ResponseUser(t *testing.T, user model.User, response model.User) {
 
 // Search
 
+func ArtistSearchID(t *testing.T, id uuid.UUID, searchID string) {
+	assert.Equal(t, "artist-"+id.String(), searchID)
+}
+
+func AlbumSearchID(t *testing.T, id uuid.UUID, searchID string) {
+	assert.Equal(t, "album-"+id.String(), searchID)
+}
+
+func SongSearchID(t *testing.T, id uuid.UUID, searchID string) {
+	assert.Equal(t, "song-"+id.String(), searchID)
+}
+
+func PlaylistSearchID(t *testing.T, id uuid.UUID, searchID string) {
+	assert.Equal(t, "playlist-"+id.String(), searchID)
+}
+
 func ArtistSearch(t *testing.T, artistSearch model.ArtistSearch, artist model.Artist) {
-	assert.Equal(t, "artist-"+artist.ID.String(), artistSearch.ID)
+	ArtistSearchID(t, artist.ID, artistSearch.ID)
 	assert.Equal(t, artist.Name, artistSearch.Name)
 	assert.Equal(t, artist.ImageURL.StripURL(), artistSearch.ImageUrl)
 	assert.Equal(t, artist.UpdatedAt, artistSearch.UpdatedAt.Local())
@@ -276,7 +292,7 @@ func ArtistSearch(t *testing.T, artistSearch model.ArtistSearch, artist model.Ar
 }
 
 func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album) {
-	assert.Equal(t, "album-"+album.ID.String(), albumSearch.ID)
+	AlbumSearchID(t, album.ID, albumSearch.ID)
 	assert.Equal(t, album.Title, albumSearch.Title)
 	assert.Equal(t, album.ImageURL.StripURL(), albumSearch.ImageUrl)
 	assert.Equal(t, album.UpdatedAt, albumSearch.UpdatedAt.Local())
@@ -293,7 +309,7 @@ func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album)
 }
 
 func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
-	assert.Equal(t, "song-"+song.ID.String(), songSearch.ID)
+	SongSearchID(t, song.ID, songSearch.ID)
 	assert.Equal(t, song.Title, songSearch.Title)
 	assert.Equal(t, song.ImageURL.StripURL(), songSearch.ImageUrl)
 	assert.Equal(t, song.UpdatedAt, songSearch.UpdatedAt.Local())
@@ -319,7 +335,7 @@ func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 }
 
 func PlaylistSearch(t *testing.T, playlistSearch model.PlaylistSearch, playlist model.Playlist) {
-	assert.Equal(t, "playlist-"+playlist.ID.String(), playlistSearch.ID)
+	PlaylistSearchID(t, playlist.ID, playlistSearch.ID)
 	assert.Equal(t, playlist.Title, playlistSearch.Title)
 	assert.Equal(t, playlist.ImageURL.StripURL(), playlistSearch.ImageUrl)
 	assert.Equal(t, playlist.UpdatedAt, playlistSearch.UpdatedAt.Local())
