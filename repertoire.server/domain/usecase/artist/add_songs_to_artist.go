@@ -4,16 +4,25 @@ import (
 	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
 type AddSongsToArtist struct {
-	songRepository repository.SongRepository
+	songRepository          repository.SongRepository
+	messagePublisherService service.MessagePublisherService
 }
 
-func NewAddSongsToArtist(songRepository repository.SongRepository) AddSongsToArtist {
-	return AddSongsToArtist{songRepository: songRepository}
+func NewAddSongsToArtist(
+	songRepository repository.SongRepository,
+	messagePublisherService service.MessagePublisherService,
+) AddSongsToArtist {
+	return AddSongsToArtist{
+		songRepository:          songRepository,
+		messagePublisherService: messagePublisherService,
+	}
 }
 
 func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode {
@@ -40,6 +49,11 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrap
 	}
 
 	err = a.songRepository.UpdateAllWithAssociations(&songs)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	err = a.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
