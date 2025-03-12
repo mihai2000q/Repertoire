@@ -145,3 +145,10 @@ func SeedAndCleanupSearchData(t *testing.T, items []any) {
 		_, _ = searchClient.Index("search").DeleteAllDocuments()
 	})
 }
+
+func UnmarshallDocument[T any](document any) T {
+	bytes, _ := json.Marshal(document)
+	var marshalledDocument T
+	_ = json.Unmarshal(bytes, &marshalledDocument)
+	return marshalledDocument
+}
