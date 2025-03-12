@@ -18,6 +18,7 @@ var albumHandlers = fx.Options(
 
 var artistHandlers = fx.Options(
 	fx.Provide(artist.NewArtistCreatedHandler),
+	fx.Provide(artist.NewArtistUpdatedHandler),
 )
 
 var playlistHandlers = fx.Options(
