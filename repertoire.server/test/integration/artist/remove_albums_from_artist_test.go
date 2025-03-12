@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
@@ -51,6 +53,8 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *t
 		},
 	}
 
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().PUT(w, "/api/artists/remove-albums", request)
@@ -71,6 +75,10 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *t
 			assert.Nil(t, song.ArtistID)
 		}
 	}
+
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+		assert.Equal(t, request.AlbumIDs, ids)
+	})
 }
 
 func assertRemoveAlbumsFromArtist(
