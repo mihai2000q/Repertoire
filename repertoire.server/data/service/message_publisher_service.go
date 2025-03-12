@@ -26,11 +26,11 @@ func (m messagePublisherService) GetClient() message.Publisher {
 }
 
 func (m messagePublisherService) Publish(topic topics.Topic, data any) error {
-	artistBytes, err := json.Marshal(data)
+	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
-	msg := watermillMessage.NewMessage(watermill.NewUUID(), artistBytes)
+	msg := watermillMessage.NewMessage(watermill.NewUUID(), bytes)
 	msg.Metadata.Set("topic", string(topic))
 	queue := string(topics.TopicToQueueMap[topic])
 	return m.client.Publish(queue, msg)
