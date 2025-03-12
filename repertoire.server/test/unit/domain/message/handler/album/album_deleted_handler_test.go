@@ -216,6 +216,7 @@ func TestAlbumDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSear
 			assert.NoError(t, err)
 
 			messagePublisherService.AssertExpectations(t)
+			searchEngineService.AssertExpectations(t)
 		})
 	}
 }

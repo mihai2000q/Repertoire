@@ -160,7 +160,7 @@ func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
-	messagePublisherService.On("Publish", topics.ArtistDeletedTopic, mockArtist.ID).
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
 		Return(nil).
 		Once()
 

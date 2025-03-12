@@ -23,7 +23,7 @@ func NewArtistUpdatedHandler(
 ) ArtistUpdatedHandler {
 	return ArtistUpdatedHandler{
 		name:                    "artist_updated_handler",
-		topic:                   topics.AlbumUpdatedTopic,
+		topic:                   topics.ArtistUpdatedTopic,
 		artistRepository:        artistRepository,
 		messagePublisherService: messagePublisherService,
 	}

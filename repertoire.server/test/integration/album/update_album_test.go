@@ -60,8 +60,9 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 
 	assertUpdatedAlbum(t, request, album)
 
-	assertion.AssertMessage(t, messages, func(albumID uuid.UUID) {
-		assert.Equal(t, album.ID, albumID)
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+		assert.Len(t, ids, 1)
+		assert.Equal(t, album.ID, ids[0])
 	})
 }
 
@@ -96,8 +97,9 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 		assert.Equal(t, song.ArtistID, request.ArtistID)
 	}
 
-	assertion.AssertMessage(t, messages, func(albumID uuid.UUID) {
-		assert.Equal(t, album.ID, albumID)
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+		assert.Len(t, ids, 1)
+		assert.Equal(t, album.ID, ids[0])
 	})
 }
 

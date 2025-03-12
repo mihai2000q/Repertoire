@@ -44,7 +44,7 @@ func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *wrapper.Erro
 		return wrapper.InternalServerError(err)
 	}
 
-	err = u.messagePublisherService.Publish(topics.ArtistUpdatedTopic, artist)
+	err = u.messagePublisherService.Publish(topics.ArtistUpdatedTopic, artist.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
