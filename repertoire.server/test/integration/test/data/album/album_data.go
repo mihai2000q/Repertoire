@@ -89,6 +89,11 @@ var Albums = []model.Album{
 			},
 		},
 	},
+	{
+		ID:     uuid.New(),
+		Title:  "Test Album 3",
+		UserID: Users[0].ID,
+	},
 }
 
 var Songs = []model.Song{
