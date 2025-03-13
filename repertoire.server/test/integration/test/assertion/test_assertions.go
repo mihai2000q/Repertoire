@@ -292,7 +292,7 @@ func ArtistSearch(t *testing.T, artistSearch model.ArtistSearch, artist model.Ar
 	ArtistSearchID(t, artist.ID, artistSearch.ID)
 	assert.Equal(t, artist.Name, artistSearch.Name)
 	assert.Equal(t, artist.ImageURL.StripURL(), artistSearch.ImageUrl)
-	assert.Equal(t, artist.UpdatedAt, artistSearch.UpdatedAt.Local())
+	Time(t, &artist.UpdatedAt, &[]time.Time{artistSearch.UpdatedAt.Local()}[0])
 	assert.Equal(t, enums.Artist, artistSearch.Type)
 }
 
@@ -300,13 +300,13 @@ func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album)
 	AlbumSearchID(t, album.ID, albumSearch.ID)
 	assert.Equal(t, album.Title, albumSearch.Title)
 	assert.Equal(t, album.ImageURL.StripURL(), albumSearch.ImageUrl)
-	assert.Equal(t, album.UpdatedAt, albumSearch.UpdatedAt.Local())
+	Time(t, &album.UpdatedAt, &[]time.Time{albumSearch.UpdatedAt.Local()}[0])
 	assert.Equal(t, enums.Album, albumSearch.Type)
 
 	if album.Artist != nil {
 		assert.Equal(t, album.Artist.ID, albumSearch.Artist.ID)
 		assert.Equal(t, album.Artist.Name, albumSearch.Artist.Name)
-		assert.Equal(t, album.Artist.UpdatedAt, albumSearch.Artist.UpdatedAt.Local())
+		Time(t, &album.Artist.UpdatedAt, &[]time.Time{albumSearch.Artist.UpdatedAt.Local()}[0])
 		assert.Equal(t, album.Artist.ImageURL.StripURL(), albumSearch.Artist.ImageUrl)
 	} else {
 		assert.Nil(t, albumSearch.Artist)
@@ -317,13 +317,13 @@ func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 	SongSearchID(t, song.ID, songSearch.ID)
 	assert.Equal(t, song.Title, songSearch.Title)
 	assert.Equal(t, song.ImageURL.StripURL(), songSearch.ImageUrl)
-	assert.Equal(t, song.UpdatedAt, songSearch.UpdatedAt.Local())
+	Time(t, &song.UpdatedAt, &[]time.Time{songSearch.UpdatedAt.Local()}[0])
 	assert.Equal(t, enums.Song, songSearch.Type)
 
 	if song.Artist != nil {
 		assert.Equal(t, song.Artist.ID, songSearch.Artist.ID)
 		assert.Equal(t, song.Artist.Name, songSearch.Artist.Name)
-		assert.Equal(t, song.Artist.UpdatedAt, songSearch.Artist.UpdatedAt.Local())
+		Time(t, &song.Artist.UpdatedAt, &[]time.Time{songSearch.Artist.UpdatedAt.Local()}[0])
 		assert.Equal(t, song.Artist.ImageURL.StripURL(), songSearch.Artist.ImageUrl)
 	} else {
 		assert.Nil(t, songSearch.Artist)
@@ -332,7 +332,7 @@ func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 	if song.Album != nil {
 		assert.Equal(t, song.Album.ID, songSearch.Album.ID)
 		assert.Equal(t, song.Album.Title, songSearch.Album.Title)
-		assert.Equal(t, song.Album.UpdatedAt, songSearch.Album.UpdatedAt.Local())
+		Time(t, &song.Album.UpdatedAt, &[]time.Time{songSearch.Album.UpdatedAt.Local()}[0])
 		assert.Equal(t, song.Album.ImageURL.StripURL(), songSearch.Album.ImageUrl)
 	} else {
 		assert.Nil(t, songSearch.Album)
@@ -343,6 +343,6 @@ func PlaylistSearch(t *testing.T, playlistSearch model.PlaylistSearch, playlist 
 	PlaylistSearchID(t, playlist.ID, playlistSearch.ID)
 	assert.Equal(t, playlist.Title, playlistSearch.Title)
 	assert.Equal(t, playlist.ImageURL.StripURL(), playlistSearch.ImageUrl)
-	assert.Equal(t, playlist.UpdatedAt, playlistSearch.UpdatedAt.Local())
+	Time(t, &playlist.UpdatedAt, &[]time.Time{playlist.UpdatedAt.Local()}[0])
 	assert.Equal(t, enums.Playlist, playlistSearch.Type)
 }
