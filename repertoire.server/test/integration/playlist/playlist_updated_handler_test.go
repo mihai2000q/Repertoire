@@ -1,7 +1,6 @@
 package playlist
 
 import (
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -17,27 +16,17 @@ func TestPlaylistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 
 	messages := utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 
-	ids := []uuid.UUID{
-		playlistData.Playlists[0].ID,
-		playlistData.Playlists[1].ID,
-		playlistData.Playlists[2].ID,
-	}
+	playlist := playlistData.Playlists[0]
 
 	// when
-	err := utils.PublishToTopic(topics.PlaylistUpdatedTopic, ids)
+	err := utils.PublishToTopic(topics.PlaylistUpdatedTopic, playlist)
 
 	// then
 	assert.NoError(t, err)
 
-	db := utils.GetDatabase(t)
-	var playlists []model.Playlist
-	db.Model(&model.Playlist{}).Find(&playlists, ids)
-
 	assertion.AssertMessage(t, messages, topics.UpdateFromSearchEngineTopic, func(documents []any) {
-		assert.Len(t, documents, len(playlists))
-		for i := range playlists {
-			playlistSearch := utils.UnmarshallDocument[model.PlaylistSearch](documents[i])
-			assertion.PlaylistSearch(t, playlistSearch, playlists[i])
-		}
+		assert.Len(t, documents, 1)
+		playlistSearch := utils.UnmarshallDocument[model.PlaylistSearch](documents[0])
+		assertion.PlaylistSearch(t, playlistSearch, playlist)
 	})
 }
