@@ -41,7 +41,7 @@ func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
 	return client
 }
 
-func WaitForSearchAllTasks(client meilisearch.ServiceManager) {
+func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 	for {
 		breakOuterFor := true
 		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
@@ -140,7 +140,7 @@ func SeedAndCleanupSearchData(t *testing.T, items []any) {
 	searchClient := GetSearchClient(t)
 
 	_, _ = searchClient.Index("search").AddDocuments(items)
-	WaitForSearchAllTasks(searchClient)
+	WaitForAllSearchTasks(searchClient)
 
 	t.Cleanup(func() {
 		_, _ = searchClient.Index("search").DeleteAllDocuments()
