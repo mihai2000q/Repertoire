@@ -97,11 +97,11 @@ func TestDeleteArtist_WhenWithAlbums_ShouldDeleteArtistAndAlbums(t *testing.T) {
 
 	artist := artistData.Artists[1]
 
+	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().DELETE(w, "/api/artists/"+artist.ID.String()+"?withAlbums=true")
-
-	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
