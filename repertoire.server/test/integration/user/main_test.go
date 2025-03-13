@@ -7,7 +7,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	ts := &core.TestServer{}
+	ts := &core.TestServer{
+		WithMeili: true,
+	}
 	ts.Start()
 
 	code := m.Run()
