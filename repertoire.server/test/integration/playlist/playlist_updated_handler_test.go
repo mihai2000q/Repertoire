@@ -12,8 +12,6 @@ import (
 
 func TestPlaylistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
-
 	messages := utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 
 	playlist := playlistData.Playlists[0]

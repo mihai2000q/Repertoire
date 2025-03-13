@@ -6,7 +6,6 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
-	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
@@ -14,8 +13,6 @@ import (
 
 func TestPlaylistCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// given
-	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
-
 	messages := utils.SubscribeToTopic(topics.AddToSearchEngineTopic)
 
 	playlist := model.Playlist{
