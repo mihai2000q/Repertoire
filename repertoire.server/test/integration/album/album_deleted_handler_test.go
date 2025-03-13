@@ -29,6 +29,29 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 				UserID:    uuid.New(),
 			},
 		},
+		{
+			"With related songs",
+			model.Album{
+				ID:        albumData.AlbumSearchID,
+				Title:     "Album 2",
+				ImageURL:  &[]internal.FilePath{"something.png"}[0],
+				UpdatedAt: time.Now().UTC(),
+				UserID:    uuid.New(),
+			},
+		},
+		{
+			"Delete with songs",
+			model.Album{
+				ID:        uuid.New(),
+				Title:     "Album 3",
+				UpdatedAt: time.Now().UTC(),
+				UserID:    uuid.New(),
+				Songs: []model.Song{
+					{ID: uuid.New()},
+					{ID: uuid.New()},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -43,21 +66,21 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 			}
 
 			// when
-			err := utils.PublishToTopic(topics.AlbumCreatedTopic, test.album)
+			err := utils.PublishToTopic(topics.AlbumDeletedTopic, test.album)
 
 			// then
 			assert.NoError(t, err)
 
-			assertion.AssertMessage(t, deleteMessages, func(ids []string) {
+			assertion.AssertMessage(t, deleteMessages, topics.DeleteFromSearchEngineTopic, func(ids []string) {
 				assert.Len(t, ids, len(test.album.Songs)+1)
-				assertion.ArtistSearchID(t, test.album.Songs[0].ID, ids[0])
+				assertion.AlbumSearchID(t, test.album.ID, ids[0])
 				for i, song := range test.album.Songs {
 					assertion.SongSearchID(t, song.ID, ids[i+1])
 				}
 			})
 
 			if len(test.album.Songs) == 0 {
-				assertion.AssertMessage(t, updateMessages, func(documents []any) {
+				assertion.AssertMessage(t, updateMessages, topics.UpdateFromSearchEngineTopic, func(documents []any) {
 					assert.Len(t, documents, len(albumData.SongSearches))
 					for i, songSearch := range albumData.SongSearches {
 						assert.Equal(t, documents[i].(model.SongSearch).ID, songSearch.(model.SongSearch).ID)

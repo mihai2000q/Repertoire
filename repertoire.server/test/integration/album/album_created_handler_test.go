@@ -24,7 +24,7 @@ func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 				ID:        uuid.New(),
 				Title:     "Album 1",
 				ImageURL:  &[]internal.FilePath{"something.png"}[0],
-				UpdatedAt: time.Now().UTC(),
+				UpdatedAt: time.Now(),
 				UserID:    uuid.New(),
 			},
 		},
@@ -32,13 +32,13 @@ func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			"With New Artist",
 			model.Album{
 				ID:        uuid.New(),
-				Title:     "Album 1",
-				UpdatedAt: time.Now().UTC(),
+				Title:     "Album 2",
+				UpdatedAt: time.Now(),
 				UserID:    uuid.New(),
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Artist 1",
-					UpdatedAt: time.Now().UTC(),
+					UpdatedAt: time.Now(),
 				},
 			},
 		},
@@ -46,8 +46,8 @@ func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			"With Existing Artist",
 			model.Album{
 				ID:        uuid.New(),
-				Title:     "Album 1",
-				UpdatedAt: time.Now().UTC(),
+				Title:     "Album 3",
+				UpdatedAt: time.Now(),
 				UserID:    uuid.New(),
 				ArtistID:  &[]uuid.UUID{albumData.Artists[0].ID}[0],
 			},
@@ -67,14 +67,19 @@ func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			// then
 			assert.NoError(t, err)
 
-			assertion.AssertMessage(t, messages, func(documents []any) {
+			assertion.AssertMessage(t, messages, topics.AddToSearchEngineTopic, func(documents []any) {
 				if test.album.Artist != nil {
+					artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[1])
+					assertion.ArtistSearch(t, artistSearch, *test.album.Artist)
 					assert.Len(t, documents, 2)
-					assertion.ArtistSearch(t, documents[1].(model.ArtistSearch), *test.album.Artist)
 				} else {
 					assert.Len(t, documents, 1)
 				}
-				assertion.AlbumSearch(t, documents[0].(model.AlbumSearch), test.album)
+				albumSearch := utils.UnmarshallDocument[model.AlbumSearch](documents[0])
+				if test.album.ArtistID != nil {
+					test.album.Artist = &albumData.Artists[0]
+				}
+				assertion.AlbumSearch(t, albumSearch, test.album)
 			})
 		})
 	}
