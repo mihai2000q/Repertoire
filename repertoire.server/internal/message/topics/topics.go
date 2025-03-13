@@ -43,8 +43,9 @@ var TopicToQueueMap = map[Topic]queues.Queue{
 	PlaylistDeletedTopic: queues.MainQueue,
 	PlaylistUpdatedTopic: queues.MainQueue,
 
-	SongCreatedTopic: queues.MainQueue,
-	SongDeletedTopic: queues.MainQueue,
+	SongCreatedTopic:  queues.MainQueue,
+	SongDeletedTopic:  queues.MainQueue,
+	SongsUpdatedTopic: queues.MainQueue,
 
 	UserDeletedTopic: queues.MainQueue,
 
