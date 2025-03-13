@@ -40,13 +40,16 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 		},
 	}
 
+	searchClient := utils.GetSearchClient(t)
+	tasks, _ := searchClient.GetTasks(&meilisearch.TasksQuery{})
+
 	// when
 	err := utils.PublishToTopic(topics.UpdateFromSearchEngineTopic, newEntities)
 
 	// then
 	assert.NoError(t, err)
 
-	searchClient := utils.GetSearchClient(t)
+	utils.WaitForSearchTasksToStart(searchClient, tasks.Total)
 	utils.WaitForAllSearchTasks(searchClient)
 	for _, expectedEntity := range newEntities {
 		unmarshalledExpectedEntity := utils.UnmarshallDocument[map[string]any](expectedEntity)
@@ -58,6 +61,6 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 		)
 		assert.NoError(t, getErr)
 		assert.NotNil(t, actualEntity)
-		assert.Equal(t, expectedEntity, *actualEntity)
+		assert.Equal(t, unmarshalledExpectedEntity, *actualEntity)
 	}
 }

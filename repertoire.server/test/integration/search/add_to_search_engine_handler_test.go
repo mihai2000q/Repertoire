@@ -24,13 +24,16 @@ func TestAddToSearchEngine_WhenSuccessful_ShouldAddDataToMeilisearch(t *testing.
 		},
 	}
 
+	searchClient := utils.GetSearchClient(t)
+	tasks, _ := searchClient.GetTasks(&meilisearch.TasksQuery{})
+
 	// when
 	err := utils.PublishToTopic(topics.AddToSearchEngineTopic, data)
 
 	// then
 	assert.NoError(t, err)
 
-	searchClient := utils.GetSearchClient(t)
+	utils.WaitForSearchTasksToStart(searchClient, tasks.Total)
 	utils.WaitForAllSearchTasks(searchClient)
 	var result meilisearch.DocumentsResult
 	_ = searchClient.Index("search").GetDocuments(&meilisearch.DocumentsQuery{}, &result)

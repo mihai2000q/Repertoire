@@ -41,6 +41,15 @@ func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
 	return client
 }
 
+func WaitForSearchTasksToStart(client meilisearch.ServiceManager, totalTasks int64) {
+	for {
+		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
+		if tasks.Total != totalTasks {
+			break
+		}
+	}
+}
+
 func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 	for {
 		breakOuterFor := true

@@ -19,13 +19,16 @@ func TestDeleteFromSearchEngine_WhenSuccessful_ShouldDeleteDataFromMeilisearch(t
 		searchData.SongSearches[0].(model.SongSearch).ID,
 	}
 
+	searchClient := utils.GetSearchClient(t)
+	tasks, _ := searchClient.GetTasks(&meilisearch.TasksQuery{})
+
 	// when
 	err := utils.PublishToTopic(topics.DeleteFromSearchEngineTopic, ids)
 
 	// then
 	assert.NoError(t, err)
 
-	searchClient := utils.GetSearchClient(t)
+	utils.WaitForSearchTasksToStart(searchClient, tasks.Total)
 	utils.WaitForAllSearchTasks(searchClient)
 	for _, id := range ids {
 		var entity *map[string]any
