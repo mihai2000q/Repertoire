@@ -59,7 +59,7 @@ func TestSaveImageFromSong_WhenSuccessful_ShouldUpdateSongAndSaveImage(t *testin
 
 	assert.NotNil(t, song.ImageURL)
 
-	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+	assertion.AssertMessage(t, messages, topics.SongsUpdatedTopic, func(ids []uuid.UUID) {
 		assert.Len(t, ids, 1)
 		assert.Equal(t, song.ID, ids[0])
 	})

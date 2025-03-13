@@ -72,7 +72,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 			db.Joins("Artist").Find(&album, response.ID)
 			assertCreatedAlbum(t, test.request, album, user.ID)
 
-			assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
+			assertion.AssertMessage(t, messages, topics.AlbumCreatedTopic, func(payloadAlbum model.Album) {
 				assert.Equal(t, album.ID, payloadAlbum.ID)
 			})
 		})

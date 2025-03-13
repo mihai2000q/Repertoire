@@ -60,7 +60,7 @@ func TestSaveImageToArtist_WhenSuccessful_ShouldUpdateArtistAndSaveImage(t *test
 
 	assert.NotNil(t, artist.ImageURL)
 
-	assertion.AssertMessage(t, messages, func(id uuid.UUID) {
+	assertion.AssertMessage(t, messages, topics.ArtistUpdatedTopic, func(id uuid.UUID) {
 		assert.Equal(t, artist.ID, id)
 	})
 }

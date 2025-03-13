@@ -69,7 +69,7 @@ func TestRemoveSongsFromArtist_WhenSuccessful_ShouldDeleteSongsFromArtist(t *tes
 	db.Preload("Songs").Find(&artist, artist.ID)
 	assertRemoveSongsFromArtist(t, request, artist, oldSongsLength)
 
-	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+	assertion.AssertMessage(t, messages, topics.SongsUpdatedTopic, func(ids []uuid.UUID) {
 		assert.Equal(t, request.SongIDs, ids)
 	})
 }

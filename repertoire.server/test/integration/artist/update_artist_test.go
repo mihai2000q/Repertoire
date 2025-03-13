@@ -59,7 +59,7 @@ func TestUpdateArtist_WhenSuccessful_ShouldUpdateArtist(t *testing.T) {
 
 	assertUpdatedArtist(t, request, artist)
 
-	assertion.AssertMessage(t, messages, func(id uuid.UUID) {
+	assertion.AssertMessage(t, messages, topics.ArtistUpdatedTopic, func(id uuid.UUID) {
 		assert.Equal(t, artist.ID, id)
 	})
 }

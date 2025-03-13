@@ -66,7 +66,7 @@ func TestAddAlbumsToArtist_WhenSuccessful_ShouldAddAlbumsToArtist(t *testing.T) 
 	db.Preload("Albums").Preload("Albums.Songs").Find(&artist, artist.ID)
 	assertAddedAlbumsToArtist(t, request, artist, oldAlbumsLength)
 
-	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+	assertion.AssertMessage(t, messages, topics.AlbumsUpdatedTopic, func(ids []uuid.UUID) {
 		assert.Equal(t, request.AlbumIDs, ids)
 	})
 }

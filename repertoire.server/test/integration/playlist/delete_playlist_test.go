@@ -62,7 +62,7 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 
 			assert.Empty(t, deletedPlaylist)
 
-			assertion.AssertMessage(t, messages, func(payloadPlaylist model.Playlist) {
+			assertion.AssertMessage(t, messages, topics.PlaylistDeletedTopic, func(payloadPlaylist model.Playlist) {
 				assert.Equal(t, test.playlist.ID, payloadPlaylist.ID)
 			})
 		})

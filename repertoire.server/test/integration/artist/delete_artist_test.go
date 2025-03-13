@@ -84,7 +84,7 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 				assert.NotEmpty(t, songs)
 			}
 
-			assertion.AssertMessage(t, messages, func(payloadArtist model.Artist) {
+			assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
 				assert.Equal(t, test.artist.ID, payloadArtist.ID)
 			})
 		})
@@ -100,6 +100,8 @@ func TestDeleteArtist_WhenWithAlbums_ShouldDeleteArtistAndAlbums(t *testing.T) {
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().DELETE(w, "/api/artists/"+artist.ID.String()+"?withAlbums=true")
+
+	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -118,6 +120,10 @@ func TestDeleteArtist_WhenWithAlbums_ShouldDeleteArtistAndAlbums(t *testing.T) {
 	var albums []model.Album
 	db.Find(&albums, ids)
 	assert.Empty(t, albums)
+
+	assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+		assert.Equal(t, artist.ID, payloadArtist.ID)
+	})
 }
 
 func TestDeleteArtist_WhenWithSongs_ShouldDeleteArtistAndSongs(t *testing.T) {
@@ -125,6 +131,8 @@ func TestDeleteArtist_WhenWithSongs_ShouldDeleteArtistAndSongs(t *testing.T) {
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
 	artist := artistData.Artists[1]
+
+	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -147,6 +155,10 @@ func TestDeleteArtist_WhenWithSongs_ShouldDeleteArtistAndSongs(t *testing.T) {
 	var songs []model.Song
 	db.Find(&songs, ids)
 	assert.Empty(t, songs)
+
+	assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+		assert.Equal(t, artist.ID, payloadArtist.ID)
+	})
 }
 
 func TestDeleteArtist_WhenWithAlbumsAndSongs_ShouldDeleteArtistAndAlbumsAndSongs(t *testing.T) {
@@ -154,6 +166,8 @@ func TestDeleteArtist_WhenWithAlbumsAndSongs_ShouldDeleteArtistAndAlbumsAndSongs
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
 	artist := artistData.Artists[1]
+
+	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -185,4 +199,8 @@ func TestDeleteArtist_WhenWithAlbumsAndSongs_ShouldDeleteArtistAndAlbumsAndSongs
 	var songs []model.Song
 	db.Find(&songs, songIds)
 	assert.Empty(t, songs)
+
+	assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+		assert.Equal(t, artist.ID, payloadArtist.ID)
+	})
 }

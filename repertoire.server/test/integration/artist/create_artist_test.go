@@ -47,7 +47,7 @@ func TestCreateArtist_WhenSuccessful_ShouldCreateArtist(t *testing.T) {
 	db.Find(&artist, response.ID)
 	assertCreatedArtist(t, request, artist, user.ID)
 
-	assertion.AssertMessage(t, messages, func(payloadArtist model.Artist) {
+	assertion.AssertMessage(t, messages, topics.ArtistCreatedTopic, func(payloadArtist model.Artist) {
 		assert.Equal(t, artist.ID, payloadArtist.ID)
 	})
 }

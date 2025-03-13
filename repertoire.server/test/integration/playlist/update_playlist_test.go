@@ -58,7 +58,7 @@ func TestUpdatePlaylist_WhenSuccessful_ShouldUpdatePlaylist(t *testing.T) {
 
 	assertUpdatedPlaylist(t, request, playlist)
 
-	assertion.AssertMessage(t, messages, func(payloadPlaylist model.Playlist) {
+	assertion.AssertMessage(t, messages, topics.PlaylistUpdatedTopic, func(payloadPlaylist model.Playlist) {
 		assert.Equal(t, playlist.ID, payloadPlaylist.ID)
 	})
 }

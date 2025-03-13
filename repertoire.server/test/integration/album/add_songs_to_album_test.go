@@ -140,7 +140,7 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 			assertSongsAddedToAlbum(t, test.request)
 
-			assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+			assertion.AssertMessage(t, messages, topics.AlbumsUpdatedTopic, func(ids []uuid.UUID) {
 				assert.Equal(t, ids, test.request.SongIDs)
 			})
 		})

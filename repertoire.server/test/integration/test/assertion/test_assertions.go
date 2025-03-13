@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/internal/enums"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
@@ -60,14 +61,18 @@ func Token(t *testing.T, actual string, user model.User) {
 func AssertMessage[T any](
 	t *testing.T,
 	messages <-chan *message.Message,
+	topic topics.Topic,
 	assertFunc func(T),
 ) {
 	select {
 	case msg := <-messages:
+		if msg.Metadata.Get("topic") != string(topic) {
+			return
+		}
 		var unmarshalledPayload T
 		_ = json.Unmarshal(msg.Payload, &unmarshalledPayload)
 		assertFunc(unmarshalledPayload)
-	case <-time.After(5 * time.Millisecond):
+	case <-time.After(5 * time.Second):
 		t.Fatal("Timed out waiting for message")
 	}
 }

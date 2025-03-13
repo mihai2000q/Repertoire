@@ -79,7 +79,7 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldAddSongsToArtist(t *testing.T) {
 
 	assertAddedSongsToArtist(t, request, artist, oldSongsLength, albumSongs)
 
-	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+	assertion.AssertMessage(t, messages, topics.SongsUpdatedTopic, func(ids []uuid.UUID) {
 		assert.Equal(t, request.SongIDs, ids)
 	})
 }
