@@ -11,6 +11,7 @@ import (
 	"repertoire/server/domain/message/handler/playlist"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/domain/message/handler/song"
+	"repertoire/server/domain/message/handler/storage"
 	"repertoire/server/domain/message/handler/user"
 	"repertoire/server/internal/message/topics"
 
@@ -51,6 +52,8 @@ func NewRouter(
 	addToSearchEngineHandler search.AddToSearchEngineHandler,
 	deleteFromSearchEngineHandler search.DeleteFromSearchEngineHandler,
 	updateFromSearchEngineHandler search.UpdateFromSearchEngineHandler,
+
+	deleteDirectoriesStorageHandler storage.DeleteDirectoriesStorageHandler,
 ) *message.Router {
 	handlers := []messageHandler{
 		albumCreatedHandler,
@@ -74,6 +77,8 @@ func NewRouter(
 		addToSearchEngineHandler,
 		deleteFromSearchEngineHandler,
 		updateFromSearchEngineHandler,
+
+		deleteDirectoriesStorageHandler,
 	}
 
 	logger := watermill.NewStdLogger(false, false)
