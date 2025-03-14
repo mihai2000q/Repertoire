@@ -5,6 +5,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
+	"github.com/cenkalti/backoff/v4"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/domain/message/handler/playlist"
@@ -82,7 +83,8 @@ func NewRouter(
 	}
 
 	router.AddMiddleware(
-		middleware.Retry{
+		middleware.CorrelationID,
+		CustomRetryMiddleware{
 			MaxRetries:      2,
 			InitialInterval: time.Millisecond * 100,
 			Logger:          logger,
@@ -122,4 +124,63 @@ func NewRouter(
 	})
 
 	return router
+}
+
+// Copied the Retry Middleware implementation and ACKNOWLEDGED the message on the last retry
+// to fix infinite loop of retrying the message
+
+type CustomRetryMiddleware struct {
+	MaxRetries      int
+	InitialInterval time.Duration
+	Logger          watermill.LoggerAdapter
+}
+
+func (c CustomRetryMiddleware) Middleware(h message.HandlerFunc) message.HandlerFunc {
+	return func(msg *message.Message) ([]*message.Message, error) {
+		producedMessages, err := h(msg)
+		if err == nil {
+			return producedMessages, nil
+		}
+
+		expBackoff := backoff.NewExponentialBackOff()
+		expBackoff.InitialInterval = c.InitialInterval
+
+		ctx := msg.Context()
+
+		retryNum := 1
+		expBackoff.Reset()
+	retryLoop:
+		for {
+			waitTime := expBackoff.NextBackOff()
+			select {
+			case <-ctx.Done():
+				msg.Ack() // Acknowledge the message to stop retrying
+				return producedMessages, err
+			case <-time.After(waitTime):
+				// go on
+			}
+
+			producedMessages, err = h(msg)
+			if err == nil {
+				return producedMessages, nil
+			}
+
+			if c.Logger != nil {
+				c.Logger.Error("Error occurred, retrying", err, watermill.LogFields{
+					"retry_no":     retryNum,
+					"max_retries":  c.MaxRetries,
+					"wait_time":    waitTime,
+					"elapsed_time": expBackoff.GetElapsedTime(),
+				})
+			}
+
+			retryNum++
+			if retryNum > c.MaxRetries {
+				msg.Ack() // Acknowledge the message to stop retrying
+				break retryLoop
+			}
+		}
+
+		return nil, err
+	}
 }
