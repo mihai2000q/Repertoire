@@ -8,7 +8,8 @@ import (
 
 func TestMain(m *testing.M) {
 	ts := &core.TestServer{
-		EnvPath: "../../../../../",
+		EnvPath:     "../../../../../",
+		WithStorage: true,
 	}
 	ts.Start()
 
