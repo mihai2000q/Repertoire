@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -12,17 +13,20 @@ import (
 )
 
 type DeleteImageFromArtist struct {
-	repository     repository.ArtistRepository
-	storageService service.StorageService
+	repository              repository.ArtistRepository
+	storageService          service.StorageService
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteImageFromArtist(
 	repository repository.ArtistRepository,
 	storageService service.StorageService,
+	messagePublisherService service.MessagePublisherService,
 ) DeleteImageFromArtist {
 	return DeleteImageFromArtist{
-		repository:     repository,
-		storageService: storageService,
+		repository:              repository,
+		storageService:          storageService,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -46,6 +50,11 @@ func (d DeleteImageFromArtist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 
 	artist.ImageURL = nil
 	err = d.repository.Update(&artist)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	err = d.messagePublisherService.Publish(topics.ArtistUpdatedTopic, artist.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

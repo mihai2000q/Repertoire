@@ -31,7 +31,7 @@ type Env struct {
 	StorageClientID     string
 	StorageClientSecret string
 
-	MeiliUrl       string
+	MeiliHost      string
 	MeiliPort      string
 	MeiliMasterKey string
 }
@@ -71,7 +71,7 @@ func NewEnv() Env {
 		StorageClientID:     os.Getenv("STORAGE_CLIENT_ID"),
 		StorageClientSecret: os.Getenv("STORAGE_CLIENT_SECRET"),
 
-		MeiliUrl:       os.Getenv("MEILI_URL"),
+		MeiliHost:      os.Getenv("MEILI_HOST"),
 		MeiliPort:      os.Getenv("MEILI_PORT"),
 		MeiliMasterKey: os.Getenv("MEILI_MASTER_KEY"),
 	}

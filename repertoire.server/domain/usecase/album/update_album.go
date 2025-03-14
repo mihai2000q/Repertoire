@@ -2,25 +2,31 @@ package album
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
+	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
 type UpdateAlbum struct {
-	repository     repository.AlbumRepository
-	songRepository repository.SongRepository
+	repository              repository.AlbumRepository
+	songRepository          repository.SongRepository
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewUpdateAlbum(
 	repository repository.AlbumRepository,
 	songRepository repository.SongRepository,
+	messagePublisherService service.MessagePublisherService,
 ) UpdateAlbum {
 	return UpdateAlbum{
-		repository:     repository,
-		songRepository: songRepository,
+		repository:              repository,
+		songRepository:          songRepository,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -50,6 +56,11 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 		if errCode != nil {
 			return errCode
 		}
+	}
+
+	err = u.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID})
+	if err != nil {
+		return wrapper.InternalServerError(err)
 	}
 
 	return nil

@@ -7,6 +7,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
@@ -37,6 +39,8 @@ func TestSaveImageFromSong_WhenSuccessful_ShouldUpdateSongAndSaveImage(t *testin
 
 	song := songData.Songs[0]
 
+	messages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
+
 	var requestBody bytes.Buffer
 	multiWriter := multipart.NewWriter(&requestBody)
 	utils.AttachFileToMultipartBody("test-file.jpeg", "image", multiWriter)
@@ -54,4 +58,9 @@ func TestSaveImageFromSong_WhenSuccessful_ShouldUpdateSongAndSaveImage(t *testin
 	db.Find(&song, song.ID)
 
 	assert.NotNil(t, song.ImageURL)
+
+	assertion.AssertMessage(t, messages, topics.SongsUpdatedTopic, func(ids []uuid.UUID) {
+		assert.Len(t, ids, 1)
+		assert.Equal(t, song.ID, ids[0])
+	})
 }

@@ -5,6 +5,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
@@ -44,6 +46,8 @@ func TestSaveImageToArtist_WhenSuccessful_ShouldUpdateArtistAndSaveImage(t *test
 	_ = multiWriter.WriteField("id", artist.ID.String())
 	_ = multiWriter.Close()
 
+	messages := utils.SubscribeToTopic(topics.ArtistUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().PUTForm(w, "/api/artists/images", &requestBody, multiWriter.FormDataContentType())
@@ -55,4 +59,8 @@ func TestSaveImageToArtist_WhenSuccessful_ShouldUpdateArtistAndSaveImage(t *test
 	db.Find(&artist, artist.ID)
 
 	assert.NotNil(t, artist.ImageURL)
+
+	assertion.AssertMessage(t, messages, topics.ArtistUpdatedTopic, func(id uuid.UUID) {
+		assert.Equal(t, artist.ID, id)
+	})
 }

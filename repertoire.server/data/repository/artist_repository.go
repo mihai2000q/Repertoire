@@ -12,6 +12,9 @@ type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
 	GetWithBandMembers(artist *model.Artist, id uuid.UUID) error
+	GetWithAlbums(artist *model.Artist, id uuid.UUID) error
+	GetWithSongs(artist *model.Artist, id uuid.UUID) error
+	GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.Artist,
@@ -69,6 +72,30 @@ func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID)
 		Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
 			return db.Order("band_members.order")
 		}).
+		Find(&artist, model.Artist{ID: id}).
+		Error
+}
+
+func (a artistRepository) GetWithAlbums(artist *model.Artist, id uuid.UUID) error {
+	return a.client.DB.
+		Preload("Albums").
+		Find(&artist, model.Artist{ID: id}).
+		Error
+}
+
+func (a artistRepository) GetWithSongs(artist *model.Artist, id uuid.UUID) error {
+	return a.client.DB.
+		Preload("Songs").
+		Preload("Songs.Album").
+		Find(&artist, model.Artist{ID: id}).
+		Error
+}
+
+func (a artistRepository) GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error {
+	return a.client.DB.
+		Preload("Albums").
+		Preload("Songs").
+		Preload("Songs.Album").
 		Find(&artist, model.Artist{ID: id}).
 		Error
 }

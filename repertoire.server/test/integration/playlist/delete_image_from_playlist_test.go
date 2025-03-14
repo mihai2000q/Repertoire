@@ -5,6 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
+	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
@@ -43,6 +46,8 @@ func TestDeleteImageFromPlaylist_WhenSuccessful_ShouldUpdatePlaylistAndDeleteIma
 
 	playlist := playlistData.Playlists[0]
 
+	messages := utils.SubscribeToTopic(topics.PlaylistUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().DELETE(w, "/api/playlists/images/"+playlist.ID.String())
@@ -54,4 +59,8 @@ func TestDeleteImageFromPlaylist_WhenSuccessful_ShouldUpdatePlaylistAndDeleteIma
 	db.Find(&playlist, playlist.ID)
 
 	assert.Nil(t, playlist.ImageURL)
+
+	assertion.AssertMessage(t, messages, topics.PlaylistUpdatedTopic, func(payloadPlaylist model.Playlist) {
+		assert.Equal(t, playlist.ID, payloadPlaylist.ID)
+	})
 }

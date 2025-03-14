@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -45,6 +46,8 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 		ArtistID:    album.ArtistID,
 	}
 
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().PUT(w, "/api/albums", request)
@@ -56,6 +59,11 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 	db.Find(&album, album.ID)
 
 	assertUpdatedAlbum(t, request, album)
+
+	assertion.AssertMessage(t, messages, topics.AlbumsUpdatedTopic, func(ids []uuid.UUID) {
+		assert.Len(t, ids, 1)
+		assert.Equal(t, album.ID, ids[0])
+	})
 }
 
 func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) {
@@ -70,6 +78,8 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 		ReleaseDate: &[]time.Time{time.Now()}[0],
 		ArtistID:    &albumData.Artists[1].ID,
 	}
+
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -86,6 +96,11 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 	for _, song := range album.Songs {
 		assert.Equal(t, song.ArtistID, request.ArtistID)
 	}
+
+	assertion.AssertMessage(t, messages, topics.AlbumsUpdatedTopic, func(ids []uuid.UUID) {
+		assert.Len(t, ids, 1)
+		assert.Equal(t, album.ID, ids[0])
+	})
 }
 
 func assertUpdatedAlbum(t *testing.T, request requests.UpdateAlbumRequest, album model.Album) {

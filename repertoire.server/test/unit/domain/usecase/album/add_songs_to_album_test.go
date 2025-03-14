@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/data/service"
 	"testing"
 	"time"
 
@@ -18,7 +20,7 @@ import (
 func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, nil)
+	_uut := album.NewAddSongsToAlbum(albumRepository, nil, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -45,7 +47,7 @@ func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerEr
 func TestAddSongsToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, nil)
+	_uut := album.NewAddSongsToAlbum(albumRepository, nil, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -72,7 +74,7 @@ func TestAddSongsToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t 
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -105,7 +107,7 @@ func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnBadReque
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -139,7 +141,7 @@ func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturn
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -173,7 +175,7 @@ func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnBadRequestError(t *test
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -207,7 +209,7 @@ func TestAddSongsToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t 
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, nil)
 
 	request := requests.AddSongsToAlbumRequest{
 		ID:      uuid.New(),
@@ -240,6 +242,51 @@ func TestAddSongsToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t 
 
 	albumRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, messagePublisherService)
+
+	request := requests.AddSongsToAlbumRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// given - mocking
+	mockAlbum := &model.Album{ID: request.ID}
+	albumRepository.On("GetWithSongs", mock.IsType(mockAlbum), request.ID).
+		Return(nil, mockAlbum).
+		Once()
+
+	songs := &[]model.Song{{ID: request.SongIDs[0]}}
+	songRepository.On("GetAllByIDs", mock.IsType(songs), request.SongIDs).
+		Return(nil, songs).
+		Once()
+
+	songRepository.On("UpdateAll", mock.IsType(songs)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, request.SongIDs).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	albumRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }
 
 func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
@@ -303,7 +350,8 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			// given
 			albumRepository := new(repository.AlbumRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := album.NewAddSongsToAlbum(albumRepository, songRepository)
+			messagePublisherService := new(service.MessagePublisherServiceMock)
+			_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, messagePublisherService)
 
 			// given - mocking
 			albumRepository.On("GetWithSongs", mock.IsType(tt.album), tt.request.ID).
@@ -329,6 +377,10 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 						}
 					}
 				}).
+				Return(nil).
+				Once()
+
+			messagePublisherService.On("Publish", topics.SongsUpdatedTopic, tt.request.SongIDs).
 				Return(nil).
 				Once()
 

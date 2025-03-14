@@ -6,5 +6,6 @@ import (
 )
 
 func NewMeiliClient(env internal.Env) meilisearch.ServiceManager {
-	return meilisearch.New(env.MeiliUrl, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	url := "http://" + env.MeiliHost + ":" + env.MeiliPort
+	return meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
 }

@@ -74,7 +74,10 @@ docker compose up -d database
 ```
 
 No matter where the database instance runs, please be aware that it is empty and you need to run the migrations.
-A helper shell script, `apply-migrations.sh`, is provided.
+A helper shell script, `apply-database-migrations.sh`, is provided.
+
+Also, you need to run the search engine migrations as well, `apply-search-migrations.sh`
+(if you decide you want sample data on your database, run the search migrations after that).
 
 If you decide to run the backend application locally, follow the next steps.
 
@@ -97,17 +100,10 @@ go run main.go
 ### Quick Test
 
 Now to be sure that everything works accordingly, try sending an HTTP Request (e.g., via Postman) to
-`http://localhost:1123/api`.
+`http://localhost:8000/api`.
 
 ```js
-PUT
-{
-    {
-        host
-    }
-}
-/auth/sig
-n - in
+PUT {{host}}/auth/sign-in
 ```
 
 And the body of the request shall be:
@@ -128,7 +124,9 @@ A Sample Data has been provided for testing purposes of the application.
 
 To populate the database, simply use the following script: `add-sample-data.sh`.
 
-Also, if you add data outside the application, you also have to run the search migrations(`apply-search-migrations.sh`).
+Also, if you add data outside the application, 
+you also have to re-run the search migrations(`apply-search-migrations.sh`) 
+(it is recommended to remove the docker container if it has already run).
 
 ## Build Executable
 
@@ -182,7 +180,7 @@ One way to add one inside Postman is to go to the *Authorization* tab and under 
 
 `Goose` is the database migration tool that is in use for this purpose.
 
-To update the database schema, please use the provided `apply-migrations.sh` shell script.
+To update the database schema, please use the provided `apply-database-migrations.sh` shell script.
 It sets environment variables for the `goose up` command to run accordingly.
 
 ## Testing

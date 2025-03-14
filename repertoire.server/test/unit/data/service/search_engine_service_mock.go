@@ -11,7 +11,7 @@ type SearchEngineServiceMock struct {
 	mock.Mock
 }
 
-func (s *SearchEngineServiceMock) Get(
+func (s *SearchEngineServiceMock) Search(
 	query string,
 	currentPage *int,
 	pageSize *int,
@@ -26,4 +26,24 @@ func (s *SearchEngineServiceMock) Get(
 	}
 
 	return args.Get(0).(wrapper.WithTotalCount[any]), errCode
+}
+
+func (s *SearchEngineServiceMock) GetDocuments(filter string) ([]map[string]any, error) {
+	args := s.Called(filter)
+	return args.Get(0).([]map[string]any), args.Error(1)
+}
+
+func (s *SearchEngineServiceMock) Add(items []any) error {
+	args := s.Called(items)
+	return args.Error(0)
+}
+
+func (s *SearchEngineServiceMock) Update(items []any) error {
+	args := s.Called(items)
+	return args.Error(0)
+}
+
+func (s *SearchEngineServiceMock) Delete(ids []string) error {
+	args := s.Called(ids)
+	return args.Error(0)
 }

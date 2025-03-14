@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/usecase/user"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -17,7 +18,7 @@ import (
 func TestDeleteUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
 	// give
 	jwtService := new(service.JwtServiceMock)
-	_uut := user.NewDeleteUser(nil, jwtService, nil, nil)
+	_uut := user.NewDeleteUser(nil, jwtService, nil, nil, nil)
 
 	token := "This is a token"
 
@@ -39,7 +40,7 @@ func TestDeleteUser_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *
 	jwtService := new(service.JwtServiceMock)
 	storageService := new(service.StorageServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := user.NewDeleteUser(nil, jwtService, storageService, storageFilePathProvider)
+	_uut := user.NewDeleteUser(nil, jwtService, storageService, storageFilePathProvider, nil)
 
 	token := "This is a token"
 
@@ -70,7 +71,7 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	userRepository := new(repository.UserRepositoryMock)
 	storageService := new(service.StorageServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider)
+	_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider, nil)
 
 	token := "This is a token"
 
@@ -99,6 +100,47 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	userRepository.AssertExpectations(t)
 }
 
+func TestDeleteUser_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// give
+	jwtService := new(service.JwtServiceMock)
+	userRepository := new(repository.UserRepositoryMock)
+	storageService := new(service.StorageServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider, messagePublisherService)
+
+	token := "This is a token"
+
+	id := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(id, nil).Once()
+
+	directoryPath := "some directory path"
+	storageFilePathProvider.On("GetUserDirectoryPath", id).Return(directoryPath).Once()
+
+	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
+
+	userRepository.On("Delete", id).Return(nil).Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.UserDeletedTopic, id).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(token)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	userRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	tests := []struct {
 		name                 string
@@ -121,7 +163,8 @@ func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			userRepository := new(repository.UserRepositoryMock)
 			storageService := new(service.StorageServiceMock)
 			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-			_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider)
+			messagePublisherService := new(service.MessagePublisherServiceMock)
+			_uut := user.NewDeleteUser(userRepository, jwtService, storageService, storageFilePathProvider, messagePublisherService)
 
 			token := "This is a token"
 
@@ -135,6 +178,10 @@ func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 			userRepository.On("Delete", id).Return(nil).Once()
 
+			messagePublisherService.On("Publish", topics.UserDeletedTopic, id).
+				Return(nil).
+				Once()
+
 			// when
 			errCode := _uut.Handle(token)
 
@@ -145,6 +192,7 @@ func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			storageFilePathProvider.AssertExpectations(t)
 			storageService.AssertExpectations(t)
 			userRepository.AssertExpectations(t)
+			messagePublisherService.AssertExpectations(t)
 		})
 	}
 }

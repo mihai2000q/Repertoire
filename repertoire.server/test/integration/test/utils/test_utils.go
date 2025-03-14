@@ -1,9 +1,15 @@
 package utils
 
 import (
+	"context"
+	"encoding/json"
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/meilisearch/meilisearch-go"
 	"mime/multipart"
 	"os"
 	"repertoire/server/internal"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	"testing"
@@ -23,6 +29,42 @@ func GetDatabase(t *testing.T) *gorm.DB {
 		_ = d.Close()
 	})
 	return db
+}
+
+func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
+	env := GetEnv()
+	url := "http://" + env.MeiliHost + ":" + env.MeiliPort
+	client := meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	t.Cleanup(func() {
+		client.Close()
+	})
+	return client
+}
+
+func WaitForSearchTasksToStart(client meilisearch.ServiceManager, totalTasks int64) {
+	for {
+		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
+		if tasks.Total != totalTasks {
+			break
+		}
+	}
+}
+
+func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
+	for {
+		breakOuterFor := true
+		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
+		for _, taskResult := range tasks.Results {
+			if taskResult.Status == meilisearch.TaskStatusEnqueued ||
+				taskResult.Status == meilisearch.TaskStatusProcessing {
+				breakOuterFor = false
+				break
+			}
+		}
+		if breakOuterFor {
+			break
+		}
+	}
 }
 
 func GetEnv() internal.Env {
@@ -77,6 +119,22 @@ func CreateCustomToken(sub string, jti string) string {
 	return token
 }
 
+func PublishToTopic(topic topics.Topic, data any) error {
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	msg := message.NewMessage(watermill.NewUUID(), bytes)
+	msg.Metadata.Set("topic", string(topic))
+	queue := string(topics.TopicToQueueMap[topic])
+	return core.MessageBroker.Publish(queue, msg)
+}
+
+func SubscribeToTopic(topic topics.Topic) <-chan *message.Message {
+	messages, _ := core.MessageBroker.Subscribe(context.Background(), string(topics.TopicToQueueMap[topic]))
+	return messages
+}
+
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
 	db := GetDatabase(t)
 	seed(db)
@@ -85,4 +143,22 @@ func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
 			db.Select(clause.Associations).Delete(user)
 		}
 	})
+}
+
+func SeedAndCleanupSearchData(t *testing.T, items []any) {
+	searchClient := GetSearchClient(t)
+
+	_, _ = searchClient.Index("search").AddDocuments(items)
+	WaitForAllSearchTasks(searchClient)
+
+	t.Cleanup(func() {
+		_, _ = searchClient.Index("search").DeleteAllDocuments()
+	})
+}
+
+func UnmarshallDocument[T any](document any) T {
+	bytes, _ := json.Marshal(document)
+	var marshalledDocument T
+	_ = json.Unmarshal(bytes, &marshalledDocument)
+	return marshalledDocument
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/internal/enums"
@@ -9,13 +8,17 @@ import (
 )
 
 type SearchEngineService interface {
-	Get(
+	Search(
 		query string,
 		currentPage *int,
 		pageSize *int,
 		searchType *enums.SearchType,
 		userID uuid.UUID,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
+	GetDocuments(filter string) ([]map[string]any, error)
+	Add(items []any) error
+	Update(items []any) error
+	Delete(ids []string) error
 }
 
 type searchEngineService struct {
@@ -26,7 +29,7 @@ func NewSearchEngineService(client meilisearch.ServiceManager) SearchEngineServi
 	return searchEngineService{client: client}
 }
 
-func (s searchEngineService) Get(
+func (s searchEngineService) Search(
 	query string,
 	currentPage *int,
 	pageSize *int,
@@ -51,14 +54,43 @@ func (s searchEngineService) Get(
 		return wrapper.WithTotalCount[any]{}, wrapper.InternalServerError(err)
 	}
 
-	for _, hit := range searchResult.Hits {
-		fmt.Println(hit)
-	}
-
 	result := wrapper.WithTotalCount[any]{
 		Models:     searchResult.Hits,
 		TotalCount: searchResult.EstimatedTotalHits,
 	}
 
 	return result, nil
+}
+
+func (s searchEngineService) GetDocuments(filter string) ([]map[string]any, error) {
+	var result meilisearch.DocumentsResult
+	err := s.client.Index("search").GetDocuments(&meilisearch.DocumentsQuery{
+		Filter: filter,
+	}, &result)
+	if err != nil {
+		return []map[string]any{}, err
+	}
+
+	return result.Results, nil
+}
+
+func (s searchEngineService) Add(items []any) error {
+	_, err := s.client.Index("search").AddDocuments(&items)
+	return err
+}
+
+func (s searchEngineService) Update(items []any) error {
+	_, err := s.client.Index("search").UpdateDocuments(&items)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s searchEngineService) Delete(ids []string) error {
+	_, err := s.client.Index("search").DeleteDocuments(ids)
+	if err != nil {
+		return err
+	}
+	return nil
 }

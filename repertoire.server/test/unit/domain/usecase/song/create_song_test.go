@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -20,7 +21,7 @@ import (
 func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := song.NewCreateSong(jwtService, nil, nil)
+	_uut := song.NewCreateSong(jwtService, nil, nil, nil)
 
 	request := requests.CreateSongRequest{
 		Title: "Some Song",
@@ -45,7 +46,7 @@ func TestCreateSong_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := song.NewCreateSong(jwtService, nil, albumRepository)
+	_uut := song.NewCreateSong(jwtService, nil, albumRepository, nil)
 
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
@@ -79,7 +80,7 @@ func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := song.NewCreateSong(jwtService, songRepository, albumRepository)
+	_uut := song.NewCreateSong(jwtService, songRepository, albumRepository, nil)
 
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
@@ -112,7 +113,7 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := song.NewCreateSong(jwtService, songRepository, nil)
+	_uut := song.NewCreateSong(jwtService, songRepository, nil, nil)
 
 	request := requests.CreateSongRequest{
 		Title: "Some Song",
@@ -139,16 +140,58 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 	songRepository.AssertExpectations(t)
 }
 
+func TestCreateSong_WhenCreateSongFails_ShouldReturnBadRequestError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewCreateSong(jwtService, songRepository, nil, messagePublisherService)
+
+	request := requests.CreateSongRequest{
+		Title: "Some Song",
+	}
+	token := "this is a token"
+	userID := uuid.New()
+
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	songRepository.On("Create", mock.IsType(new(model.Song))).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.SongCreatedTopic, mock.IsType(model.Song{})).
+		Return(internalError).
+		Once()
+
+	// when
+	id, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Empty(t, id)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+	requestAlbumID := uuid.New()
+
 	tests := []struct {
 		name    string
 		request requests.CreateSongRequest
+		album   *model.Album
 	}{
 		{
 			"Create song only with title",
 			requests.CreateSongRequest{
 				Title: "Some Song",
 			},
+			nil,
 		},
 		{
 			"Create song with more fields",
@@ -158,6 +201,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				SongsterrLink:  &[]string{"https://songsterr.com/some-song"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 			},
+			nil,
 		},
 		{
 			"Create song with new album and artist",
@@ -167,13 +211,38 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				AlbumTitle:  &[]string{"New Album Title"}[0],
 				ArtistName:  &[]string{"New Artist Name"}[0],
 			},
+			nil,
 		},
 		{
 			"Create song with existing album",
 			requests.CreateSongRequest{
 				Title:   "Some Song",
-				AlbumID: &[]uuid.UUID{uuid.New()}[0],
+				AlbumID: &requestAlbumID,
 			},
+			&model.Album{
+				ID:          requestAlbumID,
+				ReleaseDate: &[]time.Time{time.Now()}[0],
+				Songs:       []model.Song{{}, {}, {}, {}, {}},
+			},
+		},
+		{
+			"Create song with existing album that has an artist",
+			requests.CreateSongRequest{
+				Title:   "Some Song",
+				AlbumID: &requestAlbumID,
+			},
+			&model.Album{
+				ID:       requestAlbumID,
+				ArtistID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
+		{
+			"Create song with existing artist",
+			requests.CreateSongRequest{
+				Title:    "Some Song",
+				ArtistID: &[]uuid.UUID{uuid.New()}[0],
+			},
+			nil,
 		},
 		{
 			"Create song with new album and existing artist",
@@ -182,6 +251,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				AlbumTitle: &[]string{"New Album Title"}[0],
 				ArtistID:   &[]uuid.UUID{uuid.New()}[0],
 			},
+			nil,
 		},
 		{
 			"Create song with sections",
@@ -192,16 +262,23 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 					{Name: "Second Section", TypeID: uuid.New()},
 				},
 			},
+			nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			jwtService := new(service.JwtServiceMock)
 			songRepository := new(repository.SongRepositoryMock)
 			albumRepository := new(repository.AlbumRepositoryMock)
-			jwtService := new(service.JwtServiceMock)
-			_uut := song.NewCreateSong(jwtService, songRepository, albumRepository)
+			messagePublisherService := new(service.MessagePublisherServiceMock)
+			_uut := song.NewCreateSong(
+				jwtService,
+				songRepository,
+				albumRepository,
+				messagePublisherService,
+			)
 
 			token := "this is a token"
 
@@ -209,25 +286,35 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			userID := uuid.New()
 			jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-			var album *model.Album
 			if tt.request.AlbumID != nil {
-				album = &model.Album{
-					ID:          *tt.request.AlbumID,
-					ReleaseDate: &[]time.Time{time.Now()}[0],
-					Songs:       []model.Song{{}, {}, {}, {}, {}},
-					ArtistID:    &[]uuid.UUID{uuid.New()}[0],
-				}
-				albumRepository.On("GetWithSongs", mock.IsType(album), *tt.request.AlbumID).
-					Return(nil, album).
+				albumRepository.On("GetWithSongs", mock.IsType(tt.album), *tt.request.AlbumID).
+					Return(nil, tt.album).
 					Once()
 			}
 
-			var songID uuid.UUID
+			var createdSong model.Song
 			songRepository.On("Create", mock.IsType(new(model.Song))).
 				Run(func(args mock.Arguments) {
 					newSong := args.Get(0).(*model.Song)
-					songID = newSong.ID
-					assertCreatedSong(t, tt.request, *newSong, userID, album)
+					assertCreatedSong(t, tt.request, *newSong, userID, tt.album)
+					createdSong = *newSong
+				}).
+				Return(nil).
+				Once()
+
+			if tt.request.AlbumID != nil {
+				mockAlbum := model.Album{
+					ID:    *tt.request.AlbumID,
+					Title: "Some Title",
+				}
+				albumRepository.On("Get", new(model.Album), *tt.request.AlbumID).
+					Return(nil, &mockAlbum).
+					Once()
+			}
+
+			messagePublisherService.On("Publish", topics.SongCreatedTopic, mock.IsType(createdSong)).
+				Run(func(args mock.Arguments) {
+					assert.Equal(t, createdSong, args.Get(1).(model.Song))
 				}).
 				Return(nil).
 				Once()
@@ -237,7 +324,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 			// then
 			assert.Nil(t, errCode)
-			assert.Equal(t, id, songID)
+			assert.Equal(t, id, createdSong.ID)
 
 			jwtService.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
@@ -291,8 +378,8 @@ func assertCreatedSong(
 	}
 	if request.ArtistName != nil {
 		assert.NotNil(t, song.Artist)
+		assert.Equal(t, *song.ArtistID, song.Artist.ID)
 		assert.NotEmpty(t, song.Artist.ID)
-		assert.Equal(t, song.Artist.ID, *song.ArtistID)
 		assert.Equal(t, *request.ArtistName, song.Artist.Name)
 		assert.Equal(t, song.UserID, song.Artist.UserID)
 	}

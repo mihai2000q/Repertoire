@@ -57,7 +57,7 @@ func TestGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) {
 	errorCode := &wrapper.ErrorCode{Error: errors.New("internalError"), Code: 400}
 	searchEngineService.
 		On(
-			"Get",
+			"Search",
 			request.Query,
 			request.CurrentPage,
 			request.PageSize,
@@ -169,7 +169,7 @@ func TestGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 	}
 	searchEngineService.
 		On(
-			"Get",
+			"Search",
 			request.Query,
 			request.CurrentPage,
 			request.PageSize,

@@ -34,7 +34,7 @@ func (g Get) Handle(
 		return wrapper.WithTotalCount[any]{}, errCode
 	}
 
-	searchResult, errCode := g.meiliSearchService.Get(
+	searchResult, errCode := g.meiliSearchService.Search(
 		request.Query,
 		request.CurrentPage,
 		request.PageSize,

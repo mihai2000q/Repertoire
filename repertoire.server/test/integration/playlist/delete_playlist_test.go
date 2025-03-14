@@ -5,7 +5,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
@@ -44,6 +46,8 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
+			messages := utils.SubscribeToTopic(topics.PlaylistDeletedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().DELETE(w, "/api/playlists/"+test.playlist.ID.String())
@@ -57,6 +61,10 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 			db.Find(&deletedPlaylist, test.playlist.ID)
 
 			assert.Empty(t, deletedPlaylist)
+
+			assertion.AssertMessage(t, messages, topics.PlaylistDeletedTopic, func(payloadPlaylist model.Playlist) {
+				assert.Equal(t, test.playlist.ID, payloadPlaylist.ID)
+			})
 		})
 	}
 }

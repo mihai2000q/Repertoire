@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"repertoire/server/api/requests"
 	"repertoire/server/internal/enums"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -103,6 +104,8 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 
 			user := songData.Users[0]
 
+			messages := utils.SubscribeToTopic(topics.SongCreatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
@@ -116,17 +119,21 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
 
+			db := utils.GetDatabase(t)
 			var song model.Song
-			utils.GetDatabase(t).
-				Preload("Artist").
-				Preload("Album").
+			db.
+				Joins("Artist").
+				Joins("Album").
+				Joins("GuitarTuning").
 				Preload("Album.Songs").
-				Preload("GuitarTuning").
 				Preload("Sections").
 				Preload("Sections.SongSectionType").
 				Find(&song, response.ID)
-
 			assertCreatedSong(t, test.request, song, user.ID)
+
+			assertion.AssertMessage(t, messages, topics.SongCreatedTopic, func(payloadSong model.Song) {
+				assert.Equal(t, song.ID, payloadSong.ID)
+			})
 		})
 	}
 }
@@ -173,6 +180,7 @@ func assertCreatedSong(
 
 	if request.ArtistName != nil {
 		assert.NotNil(t, song.Artist)
+		assert.Equal(t, *song.ArtistID, song.Artist.ID)
 		assert.NotEmpty(t, song.Artist.ID)
 		assert.Equal(t, *request.ArtistName, song.Artist.Name)
 		assert.Equal(t, song.UserID, song.Artist.UserID)

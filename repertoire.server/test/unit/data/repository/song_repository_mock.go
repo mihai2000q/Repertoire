@@ -91,6 +91,16 @@ func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uui
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetAllByUser(
 	songs *[]model.Song,
 	userID uuid.UUID,

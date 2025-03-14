@@ -25,6 +25,7 @@ type SongRepository interface {
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
@@ -70,7 +71,8 @@ func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID)
 	return s.client.DB.
 		Preload("Playlists").
 		Preload("Playlists.PlaylistSongs").
-		Find(&song, model.Song{ID: id}).Error
+		Find(&song, model.Song{ID: id}).
+		Error
 }
 
 func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
@@ -153,6 +155,14 @@ func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUI
 	return s.client.DB.Model(&model.Song{}).
 		Preload("Album").
 		Preload("Album.Songs").
+		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.DB.
+		Joins("Artist").
+		Joins("Album").
 		Find(&songs, ids).
 		Error
 }

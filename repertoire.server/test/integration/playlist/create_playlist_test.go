@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
@@ -41,6 +43,8 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 
 			user := playlistData.Users[0]
 
+			messages := utils.SubscribeToTopic(topics.PlaylistCreatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
@@ -53,17 +57,20 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
-			assertCreatedPlaylist(t, test.request, response.ID, user.ID)
+
+			db := utils.GetDatabase(t)
+			var playlist model.Playlist
+			db.Find(&playlist, response.ID)
+			assertCreatedPlaylist(t, test.request, playlist, user.ID)
+
+			assertion.AssertMessage(t, messages, topics.PlaylistCreatedTopic, func(payloadPlaylist model.Playlist) {
+				assert.Equal(t, response.ID, payloadPlaylist.ID)
+			})
 		})
 	}
 }
 
-func assertCreatedPlaylist(t *testing.T, request requests.CreatePlaylistRequest, playlistID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase(t)
-
-	var playlist model.Playlist
-	db.Find(&playlist, playlistID)
-
+func assertCreatedPlaylist(t *testing.T, request requests.CreatePlaylistRequest, playlist model.Playlist, userID uuid.UUID) {
 	assert.Equal(t, request.Title, playlist.Title)
 	assert.Equal(t, request.Description, playlist.Description)
 	assert.Nil(t, playlist.ImageURL)

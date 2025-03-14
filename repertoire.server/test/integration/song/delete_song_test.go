@@ -6,7 +6,9 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
@@ -56,6 +58,8 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			db := utils.GetDatabase(t)
 			db.Preload("Playlists").Preload("PlaylistSongs").Find(&test.song, test.song.ID)
 
+			messages := utils.SubscribeToTopic(topics.SongDeletedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().DELETE(w, "/api/songs/"+test.song.ID.String())
@@ -67,7 +71,6 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 
 			var deletedSong model.Song
 			db.Find(&deletedSong, test.song.ID)
-
 			assert.Empty(t, deletedSong)
 
 			if test.song.AlbumID != nil {
@@ -85,6 +88,10 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 					assert.Equal(t, uint(i+1), playlistSong.SongTrackNo)
 				}
 			}
+
+			assertion.AssertMessage(t, messages, topics.SongDeletedTopic, func(payloadSong model.Song) {
+				assert.Equal(t, test.song.ID, payloadSong.ID)
+			})
 		})
 	}
 }
