@@ -125,7 +125,7 @@ func PublishToTopic(topic topics.Topic, data any) error {
 		return err
 	}
 	msg := message.NewMessage(watermill.NewUUID(), bytes)
-	msg.Metadata.Set("Topic", string(topic))
+	msg.Metadata.Set("topic", string(topic))
 	queue := string(topics.TopicToQueueMap[topic])
 	return core.MessageBroker.Publish(queue, msg)
 }
