@@ -9,15 +9,15 @@ import (
 	"testing"
 )
 
-func TestUserDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
+func TestUserDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	// given
 	utils.SeedAndCleanupSearchData(t, userData.GetSearchDocuments())
 
 	userID := userData.UserSearchID
 	searches := userData.Searches
 
-	deleteSearchMessage := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
-	deleteStorageMessage := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
+	searchMessage := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
+	storageMessage := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
 	// when
 	err := utils.PublishToTopic(topics.UserDeletedTopic, userID)
@@ -25,13 +25,13 @@ func TestUserDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// then
 	assert.NoError(t, err)
 
-	assertion.AssertMessage(t, deleteSearchMessage, func(ids []string) {
+	assertion.AssertMessage(t, searchMessage, func(ids []string) {
 		assert.Len(t, ids, len(searches))
 		for i := range searches {
 			assert.Equal(t, ids[i], searches[i]["id"].(string))
 		}
 	})
-	assertion.AssertMessage(t, deleteStorageMessage, func(paths []string) {
+	assertion.AssertMessage(t, storageMessage, func(paths []string) {
 		assert.Len(t, paths, 1)
 	})
 }

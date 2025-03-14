@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestSongDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
+func TestSongDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	// given
 	searchMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
 	storageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)

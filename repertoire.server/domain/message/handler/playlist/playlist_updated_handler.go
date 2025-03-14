@@ -22,24 +22,24 @@ func NewPlaylistUpdatedHandler(messagePublisherService service.MessagePublisherS
 	}
 }
 
-func (s PlaylistUpdatedHandler) Handle(msg *watermillMessage.Message) error {
+func (p PlaylistUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	var playlist model.Playlist
 	err := json.Unmarshal(msg.Payload, &playlist)
 	if err != nil {
 		return err
 	}
 
-	err = s.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, []any{playlist.ToSearch()})
+	err = p.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, []any{playlist.ToSearch()})
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s PlaylistUpdatedHandler) GetName() string {
-	return s.name
+func (p PlaylistUpdatedHandler) GetName() string {
+	return p.name
 }
 
-func (s PlaylistUpdatedHandler) GetTopic() topics.Topic {
-	return s.topic
+func (p PlaylistUpdatedHandler) GetTopic() topics.Topic {
+	return p.topic
 }
