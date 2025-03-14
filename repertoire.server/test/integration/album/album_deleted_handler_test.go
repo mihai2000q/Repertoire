@@ -64,6 +64,7 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 			if len(test.album.Songs) == 0 {
 				updateMessages = utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 			}
+			deleteStorageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
 			// when
 			err := utils.PublishToTopic(topics.AlbumDeletedTopic, test.album)
@@ -88,6 +89,10 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 					}
 				})
 			}
+
+			assertion.AssertMessage(t, deleteStorageMessages, topics.DeleteFromSearchEngineTopic, func(directoryPaths []string) {
+				assert.Len(t, directoryPaths, len(test.album.Songs)+1)
+			})
 		})
 	}
 }

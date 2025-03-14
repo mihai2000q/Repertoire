@@ -5,6 +5,7 @@ import (
 	"fmt"
 	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/service"
+	"repertoire/server/domain/provider"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -15,17 +16,20 @@ type AlbumDeletedHandler struct {
 	topic                   topics.Topic
 	messagePublisherService service.MessagePublisherService
 	searchEngineService     service.SearchEngineService
+	storageFilePathProvider provider.StorageFilePathProvider
 }
 
 func NewAlbumDeletedHandler(
 	messagePublisherService service.MessagePublisherService,
 	searchEngineService service.SearchEngineService,
+	storageFilePathProvider provider.StorageFilePathProvider,
 ) AlbumDeletedHandler {
 	return AlbumDeletedHandler{
 		name:                    "album_deleted_handler",
 		topic:                   topics.AlbumDeletedTopic,
 		messagePublisherService: messagePublisherService,
 		searchEngineService:     searchEngineService,
+		storageFilePathProvider: storageFilePathProvider,
 	}
 }
 
@@ -36,14 +40,22 @@ func (a AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
 		return err
 	}
 
-	// previously in delete album, the album was populated with songs,
-	// only if they have to be deleted too
+	err = a.syncWithSearchEngine(album)
+	if err != nil {
+		return err
+	}
+
+	return a.cleanupStorage(album)
+}
+
+func (a AlbumDeletedHandler) syncWithSearchEngine(album model.Album) error {
+	// previously in delete album, the album was populated with songs, only if they have to be deleted too
 	ids := []string{album.ToSearch().ID}
 	for _, song := range album.Songs {
 		ids = append(ids, song.ToSearch().ID)
 	}
 
-	err = a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
+	err := a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
 	if err != nil {
 		return err
 	}
@@ -72,12 +84,20 @@ func (a AlbumDeletedHandler) Handle(msg *watermillMessage.Message) error {
 		songsToUpdate = append(songsToUpdate, song)
 	}
 
-	err = a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, songsToUpdate)
-	if err != nil {
-		return err
+	return a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, songsToUpdate)
+}
+
+func (a AlbumDeletedHandler) cleanupStorage(album model.Album) error {
+	var directoryPaths []string
+	albumDirectoryPath := a.storageFilePathProvider.GetAlbumDirectoryPath(album)
+	directoryPaths = append(directoryPaths, albumDirectoryPath)
+
+	// previously in delete album, the album was populated with songs, only if they have to be deleted too
+	for _, song := range album.Songs {
+		directoryPaths = append(directoryPaths, a.storageFilePathProvider.GetSongDirectoryPath(song))
 	}
 
-	return nil
+	return a.messagePublisherService.Publish(topics.DeleteDirectoriesStorageTopic, directoryPaths)
 }
 
 func (a AlbumDeletedHandler) GetName() string {
