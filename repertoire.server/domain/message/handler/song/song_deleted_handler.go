@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/service"
+	"repertoire/server/domain/provider"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 )
@@ -11,13 +12,18 @@ import (
 type SongDeletedHandler struct {
 	name                    string
 	topic                   topics.Topic
+	storageFilePathProvider provider.StorageFilePathProvider
 	messagePublisherService service.MessagePublisherService
 }
 
-func NewSongDeletedHandler(messagePublisherService service.MessagePublisherService) SongDeletedHandler {
+func NewSongDeletedHandler(
+	storageFilePathProvider provider.StorageFilePathProvider,
+	messagePublisherService service.MessagePublisherService,
+) SongDeletedHandler {
 	return SongDeletedHandler{
 		name:                    "song_deleted_handler",
 		topic:                   topics.SongDeletedTopic,
+		storageFilePathProvider: storageFilePathProvider,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -33,7 +39,9 @@ func (s SongDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	directoryPath := s.storageFilePathProvider.GetSongDirectoryPath(song)
+	return s.messagePublisherService.Publish(topics.DeleteDirectoriesStorageTopic, []string{directoryPath})
 }
 
 func (s SongDeletedHandler) GetName() string {

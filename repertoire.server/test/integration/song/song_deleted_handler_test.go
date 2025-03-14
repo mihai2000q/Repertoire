@@ -12,7 +12,8 @@ import (
 
 func TestSongDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// given
-	messages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
+	searchMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
+	storageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
 	song := model.Song{ID: uuid.New()}
 
@@ -22,8 +23,11 @@ func TestSongDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// then
 	assert.NoError(t, err)
 
-	assertion.AssertMessage(t, messages, func(ids []string) {
+	assertion.AssertMessage(t, searchMessages, func(ids []string) {
 		assert.Len(t, ids, 1)
 		assertion.SongSearchID(t, song.ID, ids[0])
+	})
+	assertion.AssertMessage(t, storageMessages, func(paths []string) {
+		assert.Len(t, paths, 1)
 	})
 }

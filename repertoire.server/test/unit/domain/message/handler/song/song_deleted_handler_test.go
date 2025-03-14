@@ -11,13 +11,14 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/service"
+	"repertoire/server/test/unit/domain/provider"
 	"testing"
 )
 
-func TestSongDeletedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
+func TestSongDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturnError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := song.NewSongDeletedHandler(messagePublisherService)
+	_uut := song.NewSongDeletedHandler(nil, messagePublisherService)
 
 	mockSong := model.Song{ID: uuid.New()}
 
@@ -38,10 +39,43 @@ func TestSongDeletedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	messagePublisherService.AssertExpectations(t)
 }
 
+func TestSongDeletedHandler_WhenPublishDeleteStorageFails_ShouldReturnError(t *testing.T) {
+	// given
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewSongDeletedHandler(storageFilePathProvider, messagePublisherService)
+
+	mockSong := model.Song{ID: uuid.New()}
+	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
+		Return(nil).
+		Once()
+
+	directoryPath := "some_path"
+	storageFilePathProvider.On("GetSongDirectoryPath", mockSong).Return(directoryPath).Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
+		Return(internalError).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(mockSong)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.Error(t, err)
+	assert.Equal(t, err, internalError)
+
+	storageFilePathProvider.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestSongDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
 	// given
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := song.NewSongDeletedHandler(messagePublisherService)
+	_uut := song.NewSongDeletedHandler(storageFilePathProvider, messagePublisherService)
 
 	mockSong := model.Song{ID: uuid.New()}
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
@@ -53,6 +87,13 @@ func TestSongDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearc
 		Return(nil).
 		Once()
 
+	directoryPath := "some_path"
+	storageFilePathProvider.On("GetSongDirectoryPath", mockSong).Return(directoryPath).Once()
+
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
+		Return(nil).
+		Once()
+
 	// when
 	payload, _ := json.Marshal(mockSong)
 	msg := message.NewMessage("1", payload)
@@ -61,5 +102,6 @@ func TestSongDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearc
 	// then
 	assert.NoError(t, err)
 
+	storageFilePathProvider.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
 }

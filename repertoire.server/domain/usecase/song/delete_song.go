@@ -3,11 +3,9 @@ package song
 import (
 	"errors"
 	"github.com/google/uuid"
-	"net/http"
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/domain/provider"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -17,23 +15,17 @@ import (
 type DeleteSong struct {
 	repository              repository.SongRepository
 	playlistRepository      repository.PlaylistRepository
-	storageService          service.StorageService
-	storageFilePathProvider provider.StorageFilePathProvider
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteSong(
 	repository repository.SongRepository,
 	playlistRepository repository.PlaylistRepository,
-	storageService service.StorageService,
-	storageFilePathProvider provider.StorageFilePathProvider,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteSong {
 	return DeleteSong{
 		repository:              repository,
 		playlistRepository:      playlistRepository,
-		storageService:          storageService,
-		storageFilePathProvider: storageFilePathProvider,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -66,12 +58,6 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		if errorCode != nil {
 			return errorCode
 		}
-	}
-	
-	directoryPath := d.storageFilePathProvider.GetSongDirectoryPath(song)
-	errCode := d.storageService.DeleteDirectory(directoryPath)
-	if errCode != nil && errCode.Code != http.StatusNotFound {
-		return errCode
 	}
 
 	err = d.repository.Delete(id)
