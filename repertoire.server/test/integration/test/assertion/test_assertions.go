@@ -2,9 +2,7 @@ package assertion
 
 import (
 	"encoding/json"
-	"github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/internal/enums"
-	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
@@ -60,13 +58,12 @@ func Token(t *testing.T, actual string, user model.User) {
 
 func AssertMessage[T any](
 	t *testing.T,
-	messages <-chan *message.Message,
-	topic topics.Topic,
+	message utils.SubscribedToTopic,
 	assertFunc func(T),
 ) {
 	select {
-	case msg := <-messages:
-		if msg.Metadata.Get("topic") != string(topic) {
+	case msg := <-message.Messages:
+		if msg.Metadata.Get("topic") != string(message.Topic) {
 			return
 		}
 		var unmarshalledPayload T

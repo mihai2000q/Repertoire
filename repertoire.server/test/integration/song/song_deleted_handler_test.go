@@ -22,7 +22,7 @@ func TestSongDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// then
 	assert.NoError(t, err)
 
-	assertion.AssertMessage(t, messages, topics.DeleteFromSearchEngineTopic, func(ids []string) {
+	assertion.AssertMessage(t, messages, func(ids []string) {
 		assert.Len(t, ids, 1)
 		assertion.SongSearchID(t, song.ID, ids[0])
 	})

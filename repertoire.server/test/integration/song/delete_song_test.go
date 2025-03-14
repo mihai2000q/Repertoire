@@ -89,7 +89,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 				}
 			}
 
-			assertion.AssertMessage(t, messages, topics.SongDeletedTopic, func(payloadSong model.Song) {
+			assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
 				assert.Equal(t, test.song.ID, payloadSong.ID)
 			})
 		})

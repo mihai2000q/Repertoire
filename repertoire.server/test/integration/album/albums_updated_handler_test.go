@@ -38,7 +38,7 @@ func TestAlbumsUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 		Preload("Songs.Album").
 		Find(&albums, ids)
 
-	assertion.AssertMessage(t, messages, topics.UpdateFromSearchEngineTopic, func(documents []any) {
+	assertion.AssertMessage(t, messages, func(documents []any) {
 		documentsLength := 0
 		for _, album := range albums {
 			albumSearch := utils.UnmarshallDocument[model.AlbumSearch](documents[documentsLength])

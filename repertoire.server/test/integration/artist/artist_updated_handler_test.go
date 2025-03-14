@@ -34,7 +34,7 @@ func TestArtistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 		Preload("Songs.Album").
 		Find(&artist, artistID)
 
-	assertion.AssertMessage(t, messages, topics.UpdateFromSearchEngineTopic, func(documents []any) {
+	assertion.AssertMessage(t, messages, func(documents []any) {
 		assert.Len(t, documents, len(artist.Albums)+len(artist.Songs)+1)
 
 		artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[0])

@@ -1,7 +1,6 @@
 package artist
 
 import (
-	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal"
@@ -90,7 +89,7 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			utils.SeedAndCleanupSearchData(t, artistData.GetSearchDocuments())
 
 			deleteMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
-			var updateMessages <-chan *message.Message
+			var updateMessages utils.SubscribedToTopic
 			if len(test.artist.Songs) == 0 || len(test.artist.Albums) == 0 {
 				updateMessages = utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 			}
@@ -101,7 +100,7 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			// then
 			assert.NoError(t, err)
 
-			assertion.AssertMessage(t, deleteMessages, topics.DeleteFromSearchEngineTopic, func(ids []string) {
+			assertion.AssertMessage(t, deleteMessages, func(ids []string) {
 				assert.Len(t, ids, len(test.artist.Songs)+len(test.artist.Albums)+1)
 				assertion.ArtistSearchID(t, test.artist.ID, ids[0])
 				for i, song := range test.artist.Songs {
@@ -113,7 +112,7 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			})
 
 			if len(test.artist.Songs) == 0 || len(test.artist.Albums) == 0 {
-				assertion.AssertMessage(t, updateMessages, topics.UpdateFromSearchEngineTopic, func(documents []any) {
+				assertion.AssertMessage(t, updateMessages, func(documents []any) {
 					assert.Len(t, documents, len(artistData.SongSearches)+len(artistData.AlbumSearches))
 					for i, songSearch := range artistData.SongSearches {
 						assert.Equal(t, documents[i].(model.SongSearch).ID, songSearch.(model.SongSearch).ID)

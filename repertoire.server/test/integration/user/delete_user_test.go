@@ -38,7 +38,7 @@ func TestDeleteUser_WhenSuccessful_ShouldDeleteUser(t *testing.T) {
 
 	assert.Empty(t, deletedUser)
 
-	assertion.AssertMessage(t, messages, topics.UserDeletedTopic, func(userId uuid.UUID) {
+	assertion.AssertMessage(t, messages, func(userId uuid.UUID) {
 		assert.Equal(t, user.ID, userId)
 	})
 }

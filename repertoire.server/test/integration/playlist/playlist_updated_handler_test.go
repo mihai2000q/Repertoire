@@ -22,7 +22,7 @@ func TestPlaylistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// then
 	assert.NoError(t, err)
 
-	assertion.AssertMessage(t, messages, topics.UpdateFromSearchEngineTopic, func(documents []any) {
+	assertion.AssertMessage(t, messages, func(documents []any) {
 		assert.Len(t, documents, 1)
 		playlistSearch := utils.UnmarshallDocument[model.PlaylistSearch](documents[0])
 		assertion.PlaylistSearch(t, playlistSearch, playlist)

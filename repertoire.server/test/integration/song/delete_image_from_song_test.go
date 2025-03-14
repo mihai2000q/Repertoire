@@ -59,7 +59,7 @@ func TestDeleteImageFromSong_WhenSuccessful_ShouldUpdateSongAndDeleteImage(t *te
 
 	assert.Nil(t, song.ImageURL)
 
-	assertion.AssertMessage(t, messages, topics.SongsUpdatedTopic, func(ids []uuid.UUID) {
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
 		assert.Len(t, ids, 1)
 		assert.Equal(t, song.ID, ids[0])
 	})
