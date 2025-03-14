@@ -10,13 +10,14 @@ import (
 	"repertoire/server/domain/message/handler/user"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/test/unit/data/service"
+	"repertoire/server/test/unit/domain/provider"
 	"testing"
 )
 
 func TestUserDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := user.NewUserDeletedHandler(searchEngineService, nil)
+	_uut := user.NewUserDeletedHandler(searchEngineService, nil, nil)
 
 	userID := uuid.New()
 
@@ -37,33 +38,11 @@ func TestUserDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.T
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestUserDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *testing.T) {
-	// given
-	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := user.NewUserDeletedHandler(searchEngineService, nil)
-
-	userID := uuid.New()
-
-	searchEngineService.On("GetDocuments", "userId = "+userID.String()).
-		Return([]map[string]any{}, nil).
-		Once()
-
-	// when
-	payload, _ := json.Marshal(userID)
-	msg := message.NewMessage("1", payload)
-	err := _uut.Handle(msg)
-
-	// then
-	assert.NoError(t, err)
-
-	searchEngineService.AssertExpectations(t)
-}
-
-func TestUserDeletedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
+func TestUserDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := user.NewUserDeletedHandler(searchEngineService, messagePublisherService)
+	_uut := user.NewUserDeletedHandler(searchEngineService, nil, messagePublisherService)
 
 	userID := uuid.New()
 
@@ -92,11 +71,87 @@ func TestUserDeletedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	messagePublisherService.AssertExpectations(t)
 }
 
+func TestUserDeletedHandler_WhenPublishDeleteStorageEngineFails_ShouldReturnError(t *testing.T) {
+	// given
+	searchEngineService := new(service.SearchEngineServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := user.NewUserDeletedHandler(searchEngineService, storageFilePathProvider, messagePublisherService)
+
+	userID := uuid.New()
+
+	documents := []map[string]any{
+		{"id": uuid.New().String()},
+	}
+	searchEngineService.On("GetDocuments", "userId = "+userID.String()).
+		Return(documents, nil).
+		Once()
+
+	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
+		Return(nil).
+		Once()
+
+	directoryPath := "some_directory"
+	storageFilePathProvider.On("GetUserDirectoryPath", userID).Return(directoryPath).Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
+		Return(internalError).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(userID)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.Error(t, err)
+	assert.Equal(t, err, internalError)
+
+	searchEngineService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestUserDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *testing.T) {
+	// given
+	searchEngineService := new(service.SearchEngineServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := user.NewUserDeletedHandler(searchEngineService, storageFilePathProvider, messagePublisherService)
+
+	userID := uuid.New()
+
+	searchEngineService.On("GetDocuments", "userId = "+userID.String()).
+		Return([]map[string]any{}, nil).
+		Once()
+
+	directoryPath := "some_directory"
+	storageFilePathProvider.On("GetUserDirectoryPath", userID).Return(directoryPath).Once()
+
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
+		Return(nil).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(userID)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.NoError(t, err)
+
+	searchEngineService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestUserDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := user.NewUserDeletedHandler(searchEngineService, messagePublisherService)
+	_uut := user.NewUserDeletedHandler(searchEngineService, storageFilePathProvider, messagePublisherService)
 
 	userID := uuid.New()
 
@@ -119,6 +174,13 @@ func TestUserDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearc
 		Return(nil).
 		Once()
 
+	directoryPath := "some_directory"
+	storageFilePathProvider.On("GetUserDirectoryPath", userID).Return(directoryPath).Once()
+
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
+		Return(nil).
+		Once()
+
 	// when
 	payload, _ := json.Marshal(userID)
 	msg := message.NewMessage("1", payload)
@@ -128,5 +190,6 @@ func TestUserDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearc
 	assert.NoError(t, err)
 
 	searchEngineService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
 }
