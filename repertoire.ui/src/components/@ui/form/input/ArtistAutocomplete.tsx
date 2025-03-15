@@ -48,7 +48,7 @@ function ArtistAutocomplete({
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const artists = (data?.models ?? []) as ArtistSearch[]
+  const artists = data?.models as ArtistSearch[]
 
   function handleClear() {
     if (setValue) setValue('')
@@ -122,7 +122,7 @@ function ArtistAutocomplete({
             {totalCount === 0 ? (
               <Combobox.Empty>No artist found</Combobox.Empty>
             ) : (
-              artists.map((artist) => (
+              artists?.map((artist) => (
                 <Combobox.Option
                   key={artist.id}
                   value={artist.name}

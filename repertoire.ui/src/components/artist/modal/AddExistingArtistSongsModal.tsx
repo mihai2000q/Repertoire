@@ -51,14 +51,14 @@ function AddExistingArtistSongsModal({
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const songs = (data?.models ?? []) as SongSearch[]
+  const songs = data?.models as SongSearch[]
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToArtistMutation()
 
   const [songIds, songIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    songIdsHandlers.filter((songId) => songs.some((song) => song.id === songId))
+    songIdsHandlers.filter((songId) => songs?.some((song) => song.id === songId))
   }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
@@ -120,11 +120,11 @@ function AddExistingArtistSongsModal({
           {totalCount > 0 && (
             <Group w={'100%'} px={'xl'}>
               <Checkbox
-                aria-label={songIds.length === songs.length ? 'deselect-all' : 'select-all'}
-                checked={songIds.length === songs.length}
+                aria-label={songIds.length === songs?.length ? 'deselect-all' : 'select-all'}
+                checked={songIds.length === songs?.length}
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
               />
-              <Text>{songIds.length === songs.length ? 'Deselect' : 'Select'} All</Text>
+              <Text>{songIds.length === songs?.length ? 'Deselect' : 'Select'} All</Text>
             </Group>
           )}
 

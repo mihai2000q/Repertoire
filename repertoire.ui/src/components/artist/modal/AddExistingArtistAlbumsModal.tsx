@@ -51,14 +51,14 @@ function AddExistingArtistAlbumsModal({
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const albums = (data?.models ?? []) as AlbumSearch[]
+  const albums = data?.models as AlbumSearch[]
 
   const [addAlbumMutation, { isLoading: addAlbumIsLoading }] = useAddAlbumsToArtistMutation()
 
   const [albumIds, albumIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    albumIdsHandlers.filter((albumId) => albums.some((album) => album.id === albumId))
+    albumIdsHandlers.filter((albumId) => albums?.some((album) => album.id === albumId))
   }, [searchValue, albums])
 
   function checkAllAlbums(check: boolean) {
@@ -132,11 +132,11 @@ function AddExistingArtistAlbumsModal({
           {totalCount > 0 && (
             <Group w={'100%'} px={'xl'}>
               <Checkbox
-                aria-label={albumIds.length === albums.length ? 'deselect-all' : 'select-all'}
-                checked={albumIds.length === albums.length}
+                aria-label={albumIds.length === albums?.length ? 'deselect-all' : 'select-all'}
+                checked={albumIds.length === albums?.length}
                 onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
               />
-              <Text>{albumIds.length === albums.length ? 'Deselect' : 'Select'} All</Text>
+              <Text>{albumIds.length === albums?.length ? 'Deselect' : 'Select'} All</Text>
             </Group>
           )}
 

@@ -49,18 +49,18 @@ function AddExistingAlbumSongsModal({
     currentPage: 1,
     pageSize: 20,
     type: SearchType.Song,
-    filter: ['album IS NULL', artistId ? `artist.id = ${artistId}` : 'artist IS NULL'],
+    filter: ['album IS NULL', `artist IS NULL${artistId && ` OR artist.id = ${artistId}`}`],
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const songs = (data?.models ?? []) as SongSearch[]
+  const songs = data?.models as SongSearch[]
 
   const [addSongsMutation, { isLoading: addSongIsLoading }] = useAddSongsToAlbumMutation()
 
   const [songIds, songIdsHandlers] = useListState<string>([])
 
   useEffect(() => {
-    songIdsHandlers.filter((songId) => songs.some((song) => song.id === songId))
+    songIdsHandlers.filter((songId) => songs?.some((song) => song.id === songId))
   }, [searchValue, songs])
 
   function checkAllSongs(check: boolean) {
@@ -129,11 +129,11 @@ function AddExistingAlbumSongsModal({
           {totalCount > 0 && (
             <Group w={'100%'} px={'xl'}>
               <Checkbox
-                aria-label={songIds.length === songs.length ? 'deselect-all' : 'select-all'}
-                checked={songIds.length === songs.length}
+                aria-label={songIds.length === songs?.length ? 'deselect-all' : 'select-all'}
+                checked={songIds.length === songs?.length}
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
               />
-              <Text>{songIds.length === songs.length ? 'Deselect' : 'Select'} All</Text>
+              <Text>{songIds.length === songs?.length ? 'Deselect' : 'Select'} All</Text>
             </Group>
           )}
 

@@ -1,6 +1,5 @@
 import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingArtistAlbumsModal from './AddExistingArtistAlbumsModal.tsx'
-import Album from '../../../types/models/Album.ts'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
@@ -102,8 +101,8 @@ describe('Add Existing Artist Albums Modal', () => {
 
   it('should show text when there are no albums and hide select all checkbox', async () => {
     server.use(
-      http.get('/albums', () => {
-        const response: WithTotalCountResponse<Album> = {
+      http.get('/search', () => {
+        const response: WithTotalCountResponse<AlbumSearch> = {
           models: [],
           totalCount: 0
         }
@@ -120,11 +119,11 @@ describe('Add Existing Artist Albums Modal', () => {
   it('should send updated query when the search box is filled', async () => {
     const user = userEvent.setup()
 
-    let capturedSearchBy: URLSearchParams
+    let capturedSearchParams: URLSearchParams
     server.use(
-      http.get('/albums', (req) => {
-        capturedSearchBy = new URL(req.request.url).searchParams
-        const response: WithTotalCountResponse<Album> = {
+      http.get('/search', (req) => {
+        capturedSearchParams = new URL(req.request.url).searchParams
+        const response: WithTotalCountResponse<AlbumSearch> = {
           models: [],
           totalCount: 0
         }
@@ -136,19 +135,19 @@ describe('Add Existing Artist Albums Modal', () => {
 
     expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
 
-    expect(capturedSearchBy.get('currentPage')).toBe('1')
-    expect(capturedSearchBy.get('pageSize')).toBe('20')
-    expect(capturedSearchBy.get('orderBy')).match(/title ASC/i)
-    expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
-    expect(capturedSearchBy.getAll('searchBy')[0]).match(/artist_id IS NULL/i)
+    expect(capturedSearchParams.get('query')).toBe('')
+    expect(capturedSearchParams.get('currentPage')).toBe('1')
+    expect(capturedSearchParams.get('pageSize')).toBe('20')
+    expect(capturedSearchParams.get('order')).match(/updatedAt:desc/i)
+    expect(capturedSearchParams.getAll('filter')).toHaveLength(1)
+    expect(capturedSearchParams.getAll('filter')[0]).match(/artist IS NULL/i)
 
     // search
     const searchValue = 'Album 1'
     await user.type(screen.getByRole('searchbox', { name: /search/i }), searchValue)
 
     await waitFor(() => {
-      expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`title ~* '${searchValue}'`)
+      expect(capturedSearchParams.get('query')).toBe(searchValue)
     })
   })
 

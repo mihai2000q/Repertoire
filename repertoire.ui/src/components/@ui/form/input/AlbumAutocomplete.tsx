@@ -44,7 +44,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const albums = (data?.models ?? []) as AlbumSearch[]
+  const albums = data?.models as AlbumSearch[]
 
   function handleClear() {
     if (setValue) setValue('')
@@ -137,7 +137,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             {totalCount === 0 ? (
               <Combobox.Empty>No album found</Combobox.Empty>
             ) : (
-              albums.map((album) => (
+              albums?.map((album) => (
                 <Combobox.Option
                   key={album.id}
                   value={album.title}

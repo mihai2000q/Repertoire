@@ -9,6 +9,7 @@ import { setupServer } from 'msw/node'
 import { RemoveSongsFromArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
+import { SongSearch } from '../../../types/models/Search.ts'
 
 describe('Artist Songs Card', () => {
   const songModels: Song[] = [
@@ -74,8 +75,8 @@ describe('Artist Songs Card', () => {
   }
 
   const handlers = [
-    http.get('/songs', async () => {
-      const response: WithTotalCountResponse<Song> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SongSearch> = {
         models: [],
         totalCount: 0
       }

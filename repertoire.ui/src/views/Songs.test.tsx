@@ -6,9 +6,8 @@ import { http, HttpResponse } from 'msw'
 import Song, { GuitarTuning, SongSectionType } from '../types/models/Song.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
-import Artist from '../types/models/Artist.ts'
-import Album from '../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
+import { SearchBase } from '../types/models/Search.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -58,12 +57,8 @@ describe('Songs', () => {
       }
       return HttpResponse.json(response)
     }),
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
-      return HttpResponse.json(response)
-    }),
-    http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = { models: [], totalCount: 0 }
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/songs/guitar-tunings', async () => {
