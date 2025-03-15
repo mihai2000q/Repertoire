@@ -5,4 +5,6 @@ export interface GetSearchRequest {
   currentPage?: number
   pageSize?: number
   type?: SearchType
+  filter?: string[]
+  order?: string[]
 }
