@@ -11,16 +11,17 @@ import {
   useCombobox
 } from '@mantine/core'
 import albumPlaceholder from '../../../../assets/image-placeholder-1.jpg'
-import { useGetAlbumsQuery } from '../../../../state/api/albumsApi.ts'
-import Album from '../../../../types/models/Album.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
+import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
+import { AlbumSearch } from '../../../../types/models/Search.ts'
 
 interface AlbumsAutocompleteProps {
-  album: Album | null
-  setAlbum: (album: Album | null) => void
+  album: AlbumSearch | null
+  setAlbum: (album: AlbumSearch | null) => void
   setValue: (value: string) => void
   value?: string
   defaultValue?: string
@@ -35,17 +36,15 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
 
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: albums, isFetching } = useGetAlbumsQuery({
+  const { data, isFetching } = useGetSearchQuery({
+    query: searchValue,
     currentPage: 1,
     pageSize: 10,
-    orderBy: ['title asc'],
-    searchBy:
-      searchValue.trim() !== ''
-        ? [`title ~* '${searchValue}'`]
-        : album
-          ? [`title ~* '${album.title}'`]
-          : []
+    type: SearchType.Album,
+    order: ['updatedAt:desc']
   })
+  const totalCount = data?.totalCount
+  const albums = (data?.models ?? []) as AlbumSearch[]
 
   function handleClear() {
     if (setValue) setValue('')
@@ -106,7 +105,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
           flex={1}
           maxLength={100}
           label={'Album'}
-          placeholder={`${albums?.models?.length > 0 ? 'Choose or Create Album' : 'Enter New Album Name'}`}
+          placeholder={`${totalCount > 0 ? 'Choose or Create Album' : 'Enter New Album Name'}`}
           leftSection={album ? <AlbumHoverCard /> : <IconDiscFilled size={20} />}
           rightSection={album && <Combobox.ClearButton onClear={handleClear} />}
           {...inputProps}
@@ -135,10 +134,10 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {albums?.totalCount === 0 ? (
+            {totalCount === 0 ? (
               <Combobox.Empty>No album found</Combobox.Empty>
             ) : (
-              albums?.models?.map((album) => (
+              albums.map((album) => (
                 <Combobox.Option
                   key={album.id}
                   value={album.title}
