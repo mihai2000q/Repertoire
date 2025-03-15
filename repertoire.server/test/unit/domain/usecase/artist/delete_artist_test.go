@@ -6,11 +6,9 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
-	"repertoire/server/test/unit/domain/provider"
 	"testing"
 
 	"github.com/google/uuid"
@@ -20,7 +18,7 @@ import (
 func TestDeleteArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteArtist(artistRepository, nil, nil, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID: uuid.New(),
@@ -43,7 +41,7 @@ func TestDeleteArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 func TestDeleteArtist_WhenGetArtistWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteArtist(artistRepository, nil, nil, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID:        uuid.New(),
@@ -67,7 +65,7 @@ func TestDeleteArtist_WhenGetArtistWithSongsFails_ShouldReturnInternalServerErro
 func TestDeleteArtist_WhenGetArtistWithAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteArtist(artistRepository, nil, nil, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID:         uuid.New(),
@@ -91,7 +89,7 @@ func TestDeleteArtist_WhenGetArtistWithAlbumsFails_ShouldReturnInternalServerErr
 func TestDeleteArtist_WhenGetArtistWithAlbumsAndSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteArtist(artistRepository, nil, nil, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID:         uuid.New(),
@@ -116,7 +114,7 @@ func TestDeleteArtist_WhenGetArtistWithAlbumsAndSongsFails_ShouldReturnInternalS
 func TestDeleteArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewDeleteArtist(artistRepository, nil, nil, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID: uuid.New(),
@@ -135,46 +133,10 @@ func TestDeleteArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 	artistRepository.AssertExpectations(t)
 }
 
-func TestDeleteArtist_WhenDeleteDirectoryFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	artistRepository := new(repository.ArtistRepositoryMock)
-	storageService := new(service.StorageServiceMock)
-	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := artist.NewDeleteArtist(artistRepository, storageService, storageFilePathProvider, nil)
-
-	request := requests.DeleteArtistRequest{
-		ID: uuid.New(),
-	}
-
-	mockArtist := &model.Artist{
-		ID: request.ID,
-	}
-	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
-
-	directoryPath := "some directory path"
-	storageFilePathProvider.On("GetArtistDirectoryPath", *mockArtist).Return(directoryPath).Once()
-
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
-	storageService.On("DeleteDirectory", directoryPath).Return(internalError).Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, internalError, errCode)
-
-	artistRepository.AssertExpectations(t)
-	storageService.AssertExpectations(t)
-	storageFilePathProvider.AssertExpectations(t)
-}
-
 func TestDeleteArtist_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	storageService := new(service.StorageServiceMock)
-	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := artist.NewDeleteArtist(artistRepository, storageService, storageFilePathProvider, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID:         uuid.New(),
@@ -188,11 +150,6 @@ func TestDeleteArtist_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServerErro
 		Return(nil, mockArtist).
 		Once()
 
-	directoryPath := "some directory path"
-	storageFilePathProvider.On("GetArtistDirectoryPath", *mockArtist).Return(directoryPath).Once()
-
-	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
-
 	internalError := errors.New("internal error")
 	artistRepository.On("DeleteAlbums", request.ID).Return(internalError).Once()
 
@@ -205,16 +162,12 @@ func TestDeleteArtist_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServerErro
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
-	storageService.AssertExpectations(t)
-	storageFilePathProvider.AssertExpectations(t)
 }
 
 func TestDeleteArtist_WhenDeleteArtistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	storageService := new(service.StorageServiceMock)
-	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := artist.NewDeleteArtist(artistRepository, storageService, storageFilePathProvider, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID:        uuid.New(),
@@ -228,11 +181,6 @@ func TestDeleteArtist_WhenDeleteArtistSongsFails_ShouldReturnInternalServerError
 		Return(nil, mockArtist).
 		Once()
 
-	directoryPath := "some directory path"
-	storageFilePathProvider.On("GetArtistDirectoryPath", *mockArtist).Return(directoryPath).Once()
-
-	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
-
 	internalError := errors.New("internal error")
 	artistRepository.On("DeleteSongs", request.ID).Return(internalError).Once()
 
@@ -245,16 +193,12 @@ func TestDeleteArtist_WhenDeleteArtistSongsFails_ShouldReturnInternalServerError
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
-	storageService.AssertExpectations(t)
-	storageFilePathProvider.AssertExpectations(t)
 }
 
 func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	storageService := new(service.StorageServiceMock)
-	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := artist.NewDeleteArtist(artistRepository, storageService, storageFilePathProvider, nil)
+	_uut := artist.NewDeleteArtist(artistRepository, nil)
 
 	request := requests.DeleteArtistRequest{
 		ID: uuid.New(),
@@ -264,11 +208,6 @@ func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *t
 		ID: request.ID,
 	}
 	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
-
-	directoryPath := "some directory path"
-	storageFilePathProvider.On("GetArtistDirectoryPath", *mockArtist).Return(directoryPath).Once()
-
-	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	artistRepository.On("Delete", request.ID).Return(internalError).Once()
@@ -282,17 +221,13 @@ func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *t
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
-	storageService.AssertExpectations(t)
-	storageFilePathProvider.AssertExpectations(t)
 }
 
 func TestDeleteArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	storageService := new(service.StorageServiceMock)
-	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := artist.NewDeleteArtist(artistRepository, storageService, storageFilePathProvider, messagePublisherService)
+	_uut := artist.NewDeleteArtist(artistRepository, messagePublisherService)
 
 	request := requests.DeleteArtistRequest{
 		ID: uuid.New(),
@@ -302,11 +237,6 @@ func TestDeleteArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testin
 		ID: request.ID,
 	}
 	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
-
-	directoryPath := "some directory path"
-	storageFilePathProvider.On("GetArtistDirectoryPath", *mockArtist).Return(directoryPath).Once()
-
-	storageService.On("DeleteDirectory", directoryPath).Return(nil).Once()
 
 	artistRepository.On("Delete", request.ID).Return(nil).Once()
 
@@ -324,8 +254,6 @@ func TestDeleteArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testin
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
-	storageService.AssertExpectations(t)
-	storageFilePathProvider.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
 }
 
@@ -366,10 +294,8 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			artistRepository := new(repository.ArtistRepositoryMock)
-			storageService := new(service.StorageServiceMock)
-			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 			messagePublisherService := new(service.MessagePublisherServiceMock)
-			_uut := artist.NewDeleteArtist(artistRepository, storageService, storageFilePathProvider, messagePublisherService)
+			_uut := artist.NewDeleteArtist(artistRepository, messagePublisherService)
 
 			request := requests.DeleteArtistRequest{
 				ID:         tt.artist.ID,
@@ -395,15 +321,6 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 					Once()
 			}
 
-			directoryPath := "some directory path"
-			storageFilePathProvider.On("GetArtistDirectoryPath", tt.artist).
-				Return(directoryPath).
-				Once()
-
-			storageService.On("DeleteDirectory", directoryPath).
-				Return(nil).
-				Once()
-
 			if tt.withAlbums {
 				artistRepository.On("DeleteAlbums", request.ID).Return(nil).Once()
 			}
@@ -424,8 +341,6 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			assert.Nil(t, errCode)
 
 			artistRepository.AssertExpectations(t)
-			storageService.AssertExpectations(t)
-			storageFilePathProvider.AssertExpectations(t)
 			messagePublisherService.AssertExpectations(t)
 		})
 	}

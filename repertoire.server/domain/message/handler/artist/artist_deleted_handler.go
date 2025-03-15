@@ -5,6 +5,7 @@ import (
 	"fmt"
 	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/service"
+	"repertoire/server/domain/provider"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -15,17 +16,20 @@ type ArtistDeletedHandler struct {
 	topic                   topics.Topic
 	messagePublisherService service.MessagePublisherService
 	searchEngineService     service.SearchEngineService
+	storageFilePathProvider provider.StorageFilePathProvider
 }
 
 func NewArtistDeletedHandler(
 	messagePublisherService service.MessagePublisherService,
 	searchEngineService service.SearchEngineService,
+	storageFilePathProvider provider.StorageFilePathProvider,
 ) ArtistDeletedHandler {
 	return ArtistDeletedHandler{
 		name:                    "artist_deleted_handler",
 		topic:                   topics.ArtistDeletedTopic,
 		messagePublisherService: messagePublisherService,
 		searchEngineService:     searchEngineService,
+		storageFilePathProvider: storageFilePathProvider,
 	}
 }
 
@@ -36,6 +40,15 @@ func (a ArtistDeletedHandler) Handle(msg *watermillMessage.Message) error {
 		return err
 	}
 
+	err = a.syncWithSearchEngine(artist)
+	if err != nil {
+		return err
+	}
+
+	return a.cleanupStorage(artist)
+}
+
+func (a ArtistDeletedHandler) syncWithSearchEngine(artist model.Artist) error {
 	// previously in delete artist, the artist was populated with songs and albums,
 	// but only if they have to be deleted too
 	ids := []string{artist.ToSearch().ID}
@@ -46,7 +59,7 @@ func (a ArtistDeletedHandler) Handle(msg *watermillMessage.Message) error {
 		ids = append(ids, album.ToSearch().ID)
 	}
 
-	err = a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
+	err := a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
 	if err != nil {
 		return err
 	}
@@ -72,12 +85,24 @@ func (a ArtistDeletedHandler) Handle(msg *watermillMessage.Message) error {
 		documentsToUpdate = append(documentsToUpdate, search)
 	}
 
-	err = a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, documentsToUpdate)
-	if err != nil {
-		return err
+	return a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, documentsToUpdate)
+}
+
+func (a ArtistDeletedHandler) cleanupStorage(artist model.Artist) error {
+	var directoryPaths []string
+	artistDirectoryPath := a.storageFilePathProvider.GetArtistDirectoryPath(artist)
+	directoryPaths = append(directoryPaths, artistDirectoryPath)
+
+	// previously in delete artist, the artist was populated with songs and albums,
+	// only if they have to be deleted too
+	for _, song := range artist.Songs {
+		directoryPaths = append(directoryPaths, a.storageFilePathProvider.GetSongDirectoryPath(song))
+	}
+	for _, album := range artist.Albums {
+		directoryPaths = append(directoryPaths, a.storageFilePathProvider.GetAlbumDirectoryPath(album))
 	}
 
-	return nil
+	return a.messagePublisherService.Publish(topics.DeleteDirectoriesStorageTopic, directoryPaths)
 }
 
 func (a ArtistDeletedHandler) GetName() string {

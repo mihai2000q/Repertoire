@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func TestArtistDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
+func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	tests := []struct {
 		name   string
 		artist model.Artist
@@ -93,6 +93,7 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			if len(test.artist.Songs) == 0 || len(test.artist.Albums) == 0 {
 				updateMessages = utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 			}
+			deleteStorageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
 			// when
 			err := utils.PublishToTopic(topics.ArtistDeletedTopic, test.artist)
@@ -124,6 +125,10 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 					}
 				})
 			}
+
+			assertion.AssertMessage(t, deleteStorageMessages, func(paths []string) {
+				assert.Len(t, paths, len(test.artist.Songs)+len(test.artist.Albums)+1)
+			})
 		})
 	}
 }
