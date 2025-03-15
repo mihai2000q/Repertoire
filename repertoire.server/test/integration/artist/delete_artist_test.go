@@ -84,7 +84,7 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 				assert.NotEmpty(t, songs)
 			}
 
-			assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+			assertion.AssertMessage(t, messages, func(payloadArtist model.Artist) {
 				assert.Equal(t, test.artist.ID, payloadArtist.ID)
 			})
 		})
@@ -121,7 +121,7 @@ func TestDeleteArtist_WhenWithAlbums_ShouldDeleteArtistAndAlbums(t *testing.T) {
 	db.Find(&albums, ids)
 	assert.Empty(t, albums)
 
-	assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+	assertion.AssertMessage(t, messages, func(payloadArtist model.Artist) {
 		assert.Equal(t, artist.ID, payloadArtist.ID)
 	})
 }
@@ -156,7 +156,7 @@ func TestDeleteArtist_WhenWithSongs_ShouldDeleteArtistAndSongs(t *testing.T) {
 	db.Find(&songs, ids)
 	assert.Empty(t, songs)
 
-	assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+	assertion.AssertMessage(t, messages, func(payloadArtist model.Artist) {
 		assert.Equal(t, artist.ID, payloadArtist.ID)
 	})
 }
@@ -200,7 +200,7 @@ func TestDeleteArtist_WhenWithAlbumsAndSongs_ShouldDeleteArtistAndAlbumsAndSongs
 	db.Find(&songs, songIds)
 	assert.Empty(t, songs)
 
-	assertion.AssertMessage(t, messages, topics.ArtistDeletedTopic, func(payloadArtist model.Artist) {
+	assertion.AssertMessage(t, messages, func(payloadArtist model.Artist) {
 		assert.Equal(t, artist.ID, payloadArtist.ID)
 	})
 }

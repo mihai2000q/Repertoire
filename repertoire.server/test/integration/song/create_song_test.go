@@ -131,7 +131,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Find(&song, response.ID)
 			assertCreatedSong(t, test.request, song, user.ID)
 
-			assertion.AssertMessage(t, messages, topics.SongCreatedTopic, func(payloadSong model.Song) {
+			assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
 				assert.Equal(t, song.ID, payloadSong.ID)
 			})
 		})

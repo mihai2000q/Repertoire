@@ -130,9 +130,17 @@ func PublishToTopic(topic topics.Topic, data any) error {
 	return core.MessageBroker.Publish(queue, msg)
 }
 
-func SubscribeToTopic(topic topics.Topic) <-chan *message.Message {
+type SubscribedToTopic struct {
+	Messages <-chan *message.Message
+	Topic    topics.Topic
+}
+
+func SubscribeToTopic(topic topics.Topic) SubscribedToTopic {
 	messages, _ := core.MessageBroker.Subscribe(context.Background(), string(topics.TopicToQueueMap[topic]))
-	return messages
+	return SubscribedToTopic{
+		Messages: messages,
+		Topic:    topic,
+	}
 }
 
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {

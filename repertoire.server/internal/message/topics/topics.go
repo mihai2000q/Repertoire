@@ -28,6 +28,8 @@ const (
 	AddToSearchEngineTopic      Topic = "add_to_search_engine_topic"
 	DeleteFromSearchEngineTopic Topic = "delete_from_search_engine_topic"
 	UpdateFromSearchEngineTopic Topic = "update_from_search_engine_topic"
+
+	DeleteDirectoriesStorageTopic Topic = "delete_directories_storage_topic"
 )
 
 var TopicToQueueMap = map[Topic]queues.Queue{
@@ -52,4 +54,6 @@ var TopicToQueueMap = map[Topic]queues.Queue{
 	AddToSearchEngineTopic:      queues.SearchQueue,
 	DeleteFromSearchEngineTopic: queues.SearchQueue,
 	UpdateFromSearchEngineTopic: queues.SearchQueue,
+
+	DeleteDirectoriesStorageTopic: queues.StorageQueue,
 }

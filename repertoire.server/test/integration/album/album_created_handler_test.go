@@ -67,7 +67,7 @@ func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			// then
 			assert.NoError(t, err)
 
-			assertion.AssertMessage(t, messages, topics.AddToSearchEngineTopic, func(documents []any) {
+			assertion.AssertMessage(t, messages, func(documents []any) {
 				if test.album.Artist != nil {
 					artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[1])
 					assertion.ArtistSearch(t, artistSearch, *test.album.Artist)

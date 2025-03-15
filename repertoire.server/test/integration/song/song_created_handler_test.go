@@ -111,7 +111,7 @@ func TestSongCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			// then
 			assert.NoError(t, err)
 
-			assertion.AssertMessage(t, messages, topics.AddToSearchEngineTopic, func(documents []any) {
+			assertion.AssertMessage(t, messages, func(documents []any) {
 				var artistIndex *int
 				var albumIndex *int
 				if test.song.Artist != nil && test.song.Album != nil {
@@ -140,7 +140,7 @@ func TestSongCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 				if test.song.AlbumID != nil {
 					assert.Equal(t, songSearch.Album.ID, *test.song.AlbumID)
 				}
-				
+
 				if artistIndex != nil {
 					artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[*artistIndex])
 					assertion.ArtistSearch(t, artistSearch, *test.song.Artist)

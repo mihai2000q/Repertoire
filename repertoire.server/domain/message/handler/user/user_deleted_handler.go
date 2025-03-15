@@ -5,6 +5,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
 	"repertoire/server/data/service"
+	"repertoire/server/domain/provider"
 	"repertoire/server/internal/message/topics"
 )
 
@@ -12,29 +13,42 @@ type UserDeletedHandler struct {
 	name                    string
 	topic                   topics.Topic
 	searchEngineService     service.SearchEngineService
+	storageFilePathProvider provider.StorageFilePathProvider
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewUserDeletedHandler(
 	searchEngineService service.SearchEngineService,
+	storageFilePathProvider provider.StorageFilePathProvider,
 	messagePublisherService service.MessagePublisherService,
 ) UserDeletedHandler {
 	return UserDeletedHandler{
 		name:                    "user_deleted_handler",
 		topic:                   topics.UserDeletedTopic,
 		searchEngineService:     searchEngineService,
+		storageFilePathProvider: storageFilePathProvider,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
 func (u UserDeletedHandler) Handle(msg *message.Message) error {
-	var userId uuid.UUID
-	err := json.Unmarshal(msg.Payload, &userId)
+	var userID uuid.UUID
+	err := json.Unmarshal(msg.Payload, &userID)
 	if err != nil {
 		return err
 	}
 
-	documents, err := u.searchEngineService.GetDocuments("userId = " + userId.String())
+	err = u.syncWithSearchEngine(userID)
+	if err != nil {
+		return err
+	}
+
+	directoryPath := u.storageFilePathProvider.GetUserDirectoryPath(userID)
+	return u.messagePublisherService.Publish(topics.DeleteDirectoriesStorageTopic, []string{directoryPath})
+}
+
+func (u UserDeletedHandler) syncWithSearchEngine(userID uuid.UUID) error {
+	documents, err := u.searchEngineService.GetDocuments("userId = " + userID.String())
 	if err != nil {
 		return err
 	}
@@ -47,12 +61,7 @@ func (u UserDeletedHandler) Handle(msg *message.Message) error {
 		idsToDelete = append(idsToDelete, document["id"].(string))
 	}
 
-	err = u.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, idsToDelete)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return u.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, idsToDelete)
 }
 
 func (u UserDeletedHandler) GetName() string {

@@ -1,4 +1,4 @@
-package album
+package storage
 
 import (
 	"os"
@@ -8,7 +8,6 @@ import (
 
 func TestMain(m *testing.M) {
 	ts := &core.TestServer{
-		WithMeili:   true,
 		WithStorage: true,
 	}
 	ts.Start()

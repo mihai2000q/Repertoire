@@ -33,6 +33,7 @@ var httpServer *http.Server
 
 type TestServer struct {
 	WithMeili      bool
+	WithStorage    bool
 	EnvPath        string
 	app            *fx.App
 	dbContainer    *postgresTest.PostgresContainer
@@ -54,7 +55,9 @@ func (ts *TestServer) Start() {
 	if ts.WithMeili {
 		ts.setupMeiliContainer(env)
 	}
-	ts.setupStorageServer()
+	if ts.WithStorage {
+		ts.setupStorageServer()
+	}
 
 	// Setup application modules and populate the router
 	// Implicitly, the application will connect to the database
@@ -75,7 +78,6 @@ func (ts *TestServer) Start() {
 }
 
 func (ts *TestServer) Stop() {
-	ts.storageServer.Close()
 	if err := ts.app.Stop(context.Background()); err != nil {
 		log.Fatal(err)
 	}
@@ -86,6 +88,9 @@ func (ts *TestServer) Stop() {
 		if err := testcontainers.TerminateContainer(ts.meiliContainer); err != nil {
 			log.Printf("failed to terminate meiliearch dbContainer: %s", err)
 		}
+	}
+	if ts.WithStorage {
+		ts.storageServer.Close()
 	}
 }
 

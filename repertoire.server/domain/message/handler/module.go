@@ -7,6 +7,7 @@ import (
 	"repertoire/server/domain/message/handler/playlist"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/domain/message/handler/song"
+	"repertoire/server/domain/message/handler/storage"
 	"repertoire/server/domain/message/handler/user"
 )
 
@@ -44,11 +45,16 @@ var searchHandlers = fx.Options(
 	fx.Provide(search.NewUpdateFromSearchEngineHandler),
 )
 
+var storageHandlers = fx.Options(
+	fx.Provide(storage.NewDeleteDirectoriesStorageHandler),
+)
+
 var Module = fx.Options(
 	albumHandlers,
 	artistHandlers,
 	playlistHandlers,
 	songHandlers,
-	searchHandlers,
 	userHandlers,
+	searchHandlers,
+	storageHandlers,
 )

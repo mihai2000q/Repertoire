@@ -76,7 +76,7 @@ func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *t
 		}
 	}
 
-	assertion.AssertMessage(t, messages, topics.AlbumsUpdatedTopic, func(ids []uuid.UUID) {
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
 		assert.Equal(t, request.AlbumIDs, ids)
 	})
 }

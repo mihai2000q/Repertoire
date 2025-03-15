@@ -2,12 +2,10 @@ package artist
 
 import (
 	"errors"
-	"net/http"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/domain/provider"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -15,21 +13,15 @@ import (
 
 type DeleteArtist struct {
 	repository              repository.ArtistRepository
-	storageService          service.StorageService
-	storageFilePathProvider provider.StorageFilePathProvider
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteArtist(
 	repository repository.ArtistRepository,
-	storageService service.StorageService,
-	storageFilePathProvider provider.StorageFilePathProvider,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteArtist {
 	return DeleteArtist{
 		repository:              repository,
-		storageService:          storageService,
-		storageFilePathProvider: storageFilePathProvider,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -52,13 +44,7 @@ func (d DeleteArtist) Handle(request requests.DeleteArtistRequest) *wrapper.Erro
 	if reflect.ValueOf(artist).IsZero() {
 		return wrapper.NotFoundError(errors.New("artist not found"))
 	}
-
-	directoryPath := d.storageFilePathProvider.GetArtistDirectoryPath(artist)
-	errCode := d.storageService.DeleteDirectory(directoryPath)
-	if errCode != nil && errCode.Code != http.StatusNotFound {
-		return errCode
-	}
-
+	
 	if request.WithAlbums {
 		err = d.repository.DeleteAlbums(request.ID)
 		if err != nil {

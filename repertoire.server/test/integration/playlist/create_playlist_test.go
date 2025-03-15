@@ -63,7 +63,7 @@ func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 			db.Find(&playlist, response.ID)
 			assertCreatedPlaylist(t, test.request, playlist, user.ID)
 
-			assertion.AssertMessage(t, messages, topics.PlaylistCreatedTopic, func(payloadPlaylist model.Playlist) {
+			assertion.AssertMessage(t, messages, func(payloadPlaylist model.Playlist) {
 				assert.Equal(t, response.ID, payloadPlaylist.ID)
 			})
 		})
