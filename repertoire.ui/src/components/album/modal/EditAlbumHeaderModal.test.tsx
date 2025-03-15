@@ -1,4 +1,4 @@
-import { emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditAlbumHeaderModal from './EditAlbumHeaderModal.tsx'
 import Album from '../../../types/models/Album.ts'
 import { act, screen, waitFor } from '@testing-library/react'
@@ -7,8 +7,9 @@ import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
 import { http, HttpResponse } from 'msw'
 import { UpdateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
-import Artist from '../../../types/models/Artist.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import { ArtistSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Edit Album Header Modal', () => {
   const album: Album = {
@@ -21,27 +22,27 @@ describe('Edit Album Header Modal', () => {
     imageUrl: 'some-image.png'
   }
 
-  const artists: Artist[] = [
+  const artists: ArtistSearch[] = [
     {
-      ...emptyArtist,
       id: '1',
-      name: 'Chester'
+      name: 'Chester',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '2',
-      name: 'Michael'
+      name: 'Michael',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '3',
-      name: 'Luther'
+      name: 'Luther',
+      type: SearchType.Artist
     }
   ]
 
   const handlers = [
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<ArtistSearch> = {
         models: artists,
         totalCount: artists.length
       }

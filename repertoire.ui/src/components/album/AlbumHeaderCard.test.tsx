@@ -31,7 +31,7 @@ describe('Album Header Card', () => {
   }
 
   const handlers = [
-    http.get('/artists', async () => {
+    http.get('/search', async () => {
       const response: WithTotalCountResponse<Artist> = {
         models: [],
         totalCount: 0
