@@ -1,4 +1,4 @@
-import { emptyAlbum, reduxRender, withToastify } from '../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingArtistAlbumsModal from './AddExistingArtistAlbumsModal.tsx'
 import Album from '../../../types/models/Album.ts'
 import { http, HttpResponse } from 'msw'
@@ -7,41 +7,42 @@ import { setupServer } from 'msw/node'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddAlbumsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
+import { AlbumSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Add Existing Artist Albums Modal', () => {
-  const albums: Album[] = [
+  const albums: AlbumSearch[] = [
     {
-      ...emptyAlbum,
       id: '1',
       title: 'Album 1',
-      imageUrl: 'something.png'
+      imageUrl: 'something.png',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '2',
-      title: 'Album 2'
+      title: 'Album 2',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '3',
-      title: 'Album 11'
+      title: 'Album 11',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '4',
-      title: 'Album 12'
+      title: 'Album 12',
+      type: SearchType.Album
     }
   ]
 
   const handlers = [
-    http.get('/albums', (req) => {
-      const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+    http.get('/search', (req) => {
+      const query = new URL(req.request.url).searchParams.get('query')
       let localAlbums = albums
-      if (searchBy.length === 2) {
-        const searchValue = searchBy[1].replace('title ~* ', '').replaceAll("'", '')
-        localAlbums = localAlbums.filter((album) => album.title.startsWith(searchValue))
+      if (query !== '') {
+        localAlbums = localAlbums.filter((album) => album.title.startsWith(query))
       }
-      const response: WithTotalCountResponse<Album> = {
+      const response: WithTotalCountResponse<AlbumSearch> = {
         models: localAlbums,
         totalCount: localAlbums.length
       }

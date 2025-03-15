@@ -1,10 +1,4 @@
-import {
-  emptyAlbum,
-  emptyArtist,
-  emptySong,
-  reduxRender,
-  withToastify
-} from '../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingAlbumSongsModal from './AddExistingAlbumSongsModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -13,68 +7,57 @@ import { setupServer } from 'msw/node'
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddSongsToAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
+import { SongSearch } from '../../../types/models/Search.ts'
 
 describe('Add Existing Album Songs Modal', () => {
-  const songs: Song[] = [
+  const songs: SongSearch[] = [
     {
-      ...emptySong,
       id: '1',
       title: 'Song 1',
       imageUrl: 'something.png',
       album: {
-        ...emptyAlbum,
+        id: '1',
+        title: 'Album 1',
         imageUrl: 'something-album.png'
-      }
+      },
+      type: SearchType.Song
     },
     {
-      ...emptySong,
       id: '2',
       title: 'Song 2',
       album: {
-        ...emptyAlbum,
+        id: '2',
+        title: 'Album 2',
         imageUrl: 'something-album.png'
       },
       artist: {
-        ...emptyArtist,
         id: '1',
         name: 'Artist'
-      }
+      },
+      type: SearchType.Song
     },
     {
-      ...emptySong,
       id: '3',
       title: 'Song 11',
       imageUrl: 'something.png',
-      album: emptyAlbum
+      type: SearchType.Song
     },
     {
-      ...emptySong,
       id: '4',
       title: 'Song 12',
-      album: emptyAlbum
-    },
-    {
-      ...emptySong,
-      id: '5',
-      title: 'Song 512',
-      imageUrl: 'something.png'
-    },
-    {
-      ...emptySong,
-      id: '6',
-      title: 'Song 6'
+      type: SearchType.Song
     }
   ]
 
   const handlers = [
-    http.get('/songs', (req) => {
-      const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+    http.get('/search', (req) => {
+      const query = new URL(req.request.url).searchParams.get('query')
       let localSongs = songs
-      if (searchBy.length === 3) {
-        const searchValue = searchBy[2].replace('songs.title ~* ', '').replaceAll("'", '')
-        localSongs = localSongs.filter((song) => song.title.startsWith(searchValue))
+      if (query == '') {
+        localSongs = localSongs.filter((song) => song.title.startsWith(query))
       }
-      const response: WithTotalCountResponse<Song> = {
+      const response: WithTotalCountResponse<SongSearch> = {
         models: localSongs,
         totalCount: localSongs.length
       }
