@@ -60,6 +60,7 @@ type AlbumSearch struct {
 	Title     string             `json:"title"`
 	UpdatedAt time.Time          `json:"updatedAt"`
 	Artist    *AlbumArtistSearch `json:"artist"`
+	ReleaseDate *time.Time         `json:"releaseDate"`
 	SearchBase
 }
 
@@ -72,9 +73,10 @@ type AlbumArtistSearch struct {
 
 func (a *Album) ToSearch() AlbumSearch {
 	search := AlbumSearch{
-		ImageUrl:  a.ImageURL.StripURL(),
-		Title:     a.Title,
 		UpdatedAt: a.UpdatedAt,
+		ImageUrl:    a.ImageURL.StripURL(),
+		Title:       a.Title,
+		ReleaseDate: a.ReleaseDate,
 		SearchBase: SearchBase{
 			ID:     "album-" + a.ID.String(),
 			Type:   enums.Album,
@@ -104,19 +106,21 @@ func (a *Artist) ToAlbumSearch() *AlbumArtistSearch {
 // Song
 
 type SongSearch struct {
-	ImageUrl  *internal.FilePath `json:"imageUrl"`
-	Title     string             `json:"title"`
 	UpdatedAt time.Time          `json:"updatedAt"`
-	Artist    *SongArtistSearch  `json:"artist"`
-	Album     *SongAlbumSearch   `json:"album"`
+	ImageUrl    *internal.FilePath `json:"imageUrl"`
+	Title       string             `json:"title"`
+	ReleaseDate *time.Time         `json:"releaseDate"`
+	Artist      *SongArtistSearch  `json:"artist"`
+	Album       *SongAlbumSearch   `json:"album"`
 	SearchBase
 }
 
 type SongAlbumSearch struct {
-	ID        uuid.UUID          `json:"id"`
-	ImageUrl  *internal.FilePath `json:"imageUrl"`
-	Title     string             `json:"title"`
-	UpdatedAt time.Time          `json:"updatedAt"`
+	ID          uuid.UUID          `json:"id"`
+	ImageUrl    *internal.FilePath `json:"imageUrl"`
+	Title       string             `json:"title"`
+	ReleaseDate *time.Time         `json:"releaseDate"`
+	UpdatedAt   time.Time          `json:"updatedAt"`
 }
 
 type SongArtistSearch struct {
@@ -128,9 +132,10 @@ type SongArtistSearch struct {
 
 func (s *Song) ToSearch() SongSearch {
 	search := SongSearch{
-		ImageUrl:  s.ImageURL.StripURL(),
-		Title:     s.Title,
 		UpdatedAt: s.UpdatedAt,
+		ImageUrl:    s.ImageURL.StripURL(),
+		Title:       s.Title,
+		ReleaseDate: s.ReleaseDate,
 		SearchBase: SearchBase{
 			ID:     "song-" + s.ID.String(),
 			Type:   enums.Song,
@@ -166,10 +171,11 @@ func (a *Album) ToSongSearch() *SongAlbumSearch {
 		return nil
 	}
 	return &SongAlbumSearch{
-		ID:        a.ID,
-		Title:     a.Title,
-		UpdatedAt: a.UpdatedAt,
-		ImageUrl:  a.ImageURL.StripURL(),
+		ID:          a.ID,
+		Title:       a.Title,
+		ReleaseDate: a.ReleaseDate,
+		UpdatedAt:   a.UpdatedAt,
+		ImageUrl:    a.ImageURL.StripURL(),
 	}
 }
 

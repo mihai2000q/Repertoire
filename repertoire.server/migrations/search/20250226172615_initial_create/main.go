@@ -73,6 +73,9 @@ func addAlbums(dbClient database.Client, meiliClient meilisearch.ServiceManager)
 
 	var meiliAlbums []model.AlbumSearch
 	for _, album := range albums {
+		if album.ReleaseDate != nil {
+			album.ReleaseDate = &[]time.Time{album.ReleaseDate.UTC()}[0]
+		}
 		album.UpdatedAt = album.UpdatedAt.UTC()
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
@@ -95,6 +98,9 @@ func addSongs(dbClient database.Client, meiliClient meilisearch.ServiceManager) 
 
 	var meiliSongs []model.SongSearch
 	for _, song := range songs {
+		if song.ReleaseDate != nil {
+			song.ReleaseDate = &[]time.Time{song.ReleaseDate.UTC()}[0]
+		}
 		song.UpdatedAt = song.UpdatedAt.UTC()
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
