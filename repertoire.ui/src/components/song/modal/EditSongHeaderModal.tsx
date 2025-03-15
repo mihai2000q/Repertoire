@@ -26,6 +26,7 @@ import { FileWithPath } from '@mantine/dropzone'
 import { useDidUpdate } from '@mantine/hooks'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
+import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -71,12 +72,12 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(song.imageUrl), [song])
 
-  const [artist, setArtist] = useState(song.artist)
+  const [artist, setArtist] = useState(song.artist as unknown as ArtistSearch)
   useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
 
-  const [album, setAlbum] = useState(song.album)
+  const [album, setAlbum] = useState(song.album as unknown as AlbumSearch)
   useDidUpdate(() => {
-    setArtist(album?.artist)
+    setArtist(album?.artist as unknown as ArtistSearch)
     form.setFieldValue('albumId', album?.id)
   }, [album])
 

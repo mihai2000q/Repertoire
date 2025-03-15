@@ -9,23 +9,18 @@ import (
 	"testing"
 )
 
-var validQuery = "searching"
-
 func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
 		request requests.SearchGetRequest
 	}{
 		{
-			"Without Pagination",
-			requests.SearchGetRequest{
-				Query: validQuery,
-			},
+			"Empty",
+			requests.SearchGetRequest{},
 		},
 		{
 			"With Pagination",
 			requests.SearchGetRequest{
-				Query:       validQuery,
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{20}[0],
 			},
@@ -33,14 +28,12 @@ func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 		{
 			"With Type",
 			requests.SearchGetRequest{
-				Query: validQuery,
-				Type:  &[]enums.SearchType{enums.Song}[0],
+				Type: &[]enums.SearchType{enums.Song}[0],
 			},
 		},
 		{
 			"With Filtering and Sorting",
 			requests.SearchGetRequest{
-				Query:  validQuery,
 				Filter: []string{"release_date > 145023"},
 				Order:  []string{"release_date asc"},
 			},
@@ -68,26 +61,10 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// Query Cases
-		{
-			"Query is invalid because it is required",
-			requests.SearchGetRequest{},
-			"Query",
-			"required",
-		},
-		{
-			"Query is invalid because it is required",
-			requests.SearchGetRequest{
-				Query: "",
-			},
-			"Query",
-			"required",
-		},
 		// Current Page
 		{
 			"Current Page is invalid because page size is required with Page Size",
 			requests.SearchGetRequest{
-				Query:    validQuery,
 				PageSize: &[]int{20}[0],
 			},
 			"CurrentPage",
@@ -97,7 +74,6 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 		{
 			"Page Size is invalid because page size is required with Current Page",
 			requests.SearchGetRequest{
-				Query:       validQuery,
 				CurrentPage: &[]int{1}[0],
 			},
 			"PageSize",
@@ -107,8 +83,7 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 		{
 			"Type is invalid because it is not part of the enum",
 			requests.SearchGetRequest{
-				Query: validQuery,
-				Type:  &[]enums.SearchType{"something"}[0],
+				Type: &[]enums.SearchType{"something"}[0],
 			},
 			"Type",
 			"search_type_enum",

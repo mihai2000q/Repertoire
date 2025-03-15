@@ -1,35 +1,36 @@
-import { emptyArtist, reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
-import Artist from '../../../../types/models/Artist.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import ArtistSelect from './ArtistSelect.tsx'
+import { ArtistSearch } from '../../../../types/models/Search.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
 
 describe('Band Member Select', () => {
-  const artists: Artist[] = [
+  const artists: ArtistSearch[] = [
     {
-      ...emptyArtist,
       id: '1',
-      name: 'Chester'
+      name: 'Chester',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '2',
-      name: 'Michael'
+      name: 'Michael',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '3',
-      name: 'Luther'
+      name: 'Luther',
+      type: SearchType.Artist
     }
   ]
 
   const handlers = [
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<ArtistSearch> = {
         models: artists,
         totalCount: artists.length
       }

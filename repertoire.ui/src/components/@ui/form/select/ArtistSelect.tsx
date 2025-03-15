@@ -10,16 +10,17 @@ import {
   TextInputProps,
   useCombobox
 } from '@mantine/core'
-import Artist from '../../../../types/models/Artist.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import { useGetArtistsQuery } from '../../../../state/api/artistsApi.ts'
 import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
 import { useDebouncedValue } from '@mantine/hooks'
+import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
+import { ArtistSearch } from '../../../../types/models/Search.ts'
 
 interface ArtistSelectProps extends TextInputProps {
-  artist: Artist | null
-  setArtist: (artist: Artist | null) => void
+  artist: ArtistSearch | null
+  setArtist: (artist: ArtistSearch | null) => void
 }
 
 function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
@@ -36,11 +37,12 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
     setSearch(artist?.name ?? '')
   }, [artist])
 
-  const { data: artists, isFetching } = useGetArtistsQuery({
+  const { data: artists, isFetching } = useGetSearchQuery({
+    query: searchQuery,
     currentPage: 1,
     pageSize: 10,
-    orderBy: ['name asc'],
-    searchBy: searchQuery.trim() !== '' ? [`name ~* '${searchQuery.trim()}'`] : []
+    type: SearchType.Artist,
+    order: ['updatedAt:desc']
   })
 
   const ArtistHoverCard = () => (
@@ -59,7 +61,7 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
     </HoverCard>
   )
 
-  const ArtistOption = ({ localArtist }: { localArtist: Artist }) => (
+  const ArtistOption = ({ localArtist }: { localArtist: ArtistSearch }) => (
     <Combobox.Option
       key={localArtist.id}
       value={localArtist.name}
@@ -133,7 +135,9 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
             ) : artists?.totalCount === 0 ? (
               <Combobox.Empty>No artists found</Combobox.Empty>
             ) : (
-              artists?.models.map((artist) => <ArtistOption key={artist.id} localArtist={artist} />)
+              artists?.models.map((artist) => (
+                <ArtistOption key={artist.id} localArtist={artist as ArtistSearch} />
+              ))
             )}
           </ScrollArea.Autosize>
         </Combobox.Options>

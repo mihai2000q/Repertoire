@@ -13,7 +13,8 @@ export interface ArtistSearch extends SearchBase {
 export interface AlbumSearch extends SearchBase {
   title: string
   imageUrl?: string
-  artist: {
+  releaseDate?: string
+  artist?: {
     id: string
     name: string
     imageUrl?: string
@@ -23,12 +24,13 @@ export interface AlbumSearch extends SearchBase {
 export interface SongSearch extends SearchBase {
   title: string
   imageUrl?: string
-  artist: {
+  releaseDate?: string
+  artist?: {
     id: string
     name: string
     imageUrl?: string
   }
-  album: {
+  album?: {
     id: string
     title: string
     imageUrl?: string

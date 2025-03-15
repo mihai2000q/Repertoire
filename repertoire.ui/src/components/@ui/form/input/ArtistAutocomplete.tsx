@@ -10,15 +10,16 @@ import {
   useCombobox
 } from '@mantine/core'
 import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
-import { useGetArtistsQuery } from '../../../../state/api/artistsApi.ts'
-import Artist from '../../../../types/models/Artist.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import { IconUserFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
+import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
+import { ArtistSearch } from '../../../../types/models/Search.ts'
 
 interface ArtistsAutocompleteProps {
-  artist: Artist | null
-  setArtist: (artist: Artist | null) => void
+  artist: ArtistSearch | null
+  setArtist: (artist: ArtistSearch | null) => void
   setValue: (value: string) => void
   value?: string
   defaultValue?: string
@@ -39,17 +40,15 @@ function ArtistAutocomplete({
 
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: artists, isFetching } = useGetArtistsQuery({
+  const { data, isFetching } = useGetSearchQuery({
+    query: searchValue,
     currentPage: 1,
     pageSize: 10,
-    orderBy: ['name asc'],
-    searchBy:
-      searchValue.trim() !== ''
-        ? [`name ~* '${searchValue}'`]
-        : artist
-          ? [`name ~* '${artist.name}'`]
-          : []
+    type: SearchType.Artist,
+    order: ['updatedAt:desc']
   })
+  const totalCount = data?.totalCount
+  const artists = data?.models as ArtistSearch[]
 
   function handleClear() {
     if (setValue) setValue('')
@@ -88,9 +87,11 @@ function ArtistAutocomplete({
           flex={1}
           maxLength={100}
           label={'Artist'}
-          placeholder={`${artists?.models?.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
+          placeholder={`${totalCount > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
           leftSection={artist ? <ArtistHoverCard /> : <IconUserFilled size={20} />}
-          rightSection={artist && inputProps.disabled !== true && <Combobox.ClearButton onClear={handleClear} />}
+          rightSection={
+            artist && inputProps.disabled !== true && <Combobox.ClearButton onClear={handleClear} />
+          }
           onClick={() => combobox.openDropdown()}
           {...inputProps}
           onChange={(event) => {
@@ -118,10 +119,10 @@ function ArtistAutocomplete({
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {artists?.totalCount === 0 ? (
+            {totalCount === 0 ? (
               <Combobox.Empty>No artist found</Combobox.Empty>
             ) : (
-              artists?.models?.map((artist) => (
+              artists?.map((artist) => (
                 <Combobox.Option
                   key={artist.id}
                   value={artist.name}

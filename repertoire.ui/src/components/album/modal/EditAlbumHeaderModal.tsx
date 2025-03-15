@@ -25,6 +25,7 @@ import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
+import {ArtistSearch} from "../../../types/models/Search.ts";
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -68,7 +69,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(album.imageUrl), [album])
 
-  const [artist, setArtist] = useState(album.artist)
+  const [artist, setArtist] = useState(album.artist as unknown as ArtistSearch)
   useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
 
   async function updateAlbum({ title, releaseDate, image, artistId }: EditAlbumHeaderForm) {

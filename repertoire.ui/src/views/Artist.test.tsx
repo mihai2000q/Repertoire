@@ -9,6 +9,7 @@ import { default as ArtistType } from './../types/models/Artist.ts'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 import Album from "../types/models/Album.ts";
+import {SearchBase} from "../types/models/Search.ts";
 
 describe('Artist', () => {
   const artist: ArtistType = {
@@ -46,6 +47,13 @@ describe('Artist', () => {
       }
       return HttpResponse.json(response)
     }),
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SearchBase> = {
+        models: [],
+        totalCount: 0
+      }
+      return HttpResponse.json(response)
+    })
   ]
 
   const server = setupServer(...handlers)

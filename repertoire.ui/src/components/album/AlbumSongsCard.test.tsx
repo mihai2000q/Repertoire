@@ -10,6 +10,7 @@ import { setupServer } from 'msw/node'
 import { RemoveSongsFromAlbumRequest } from '../../types/requests/AlbumRequests.ts'
 import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
 import { expect } from 'vitest'
+import { SongSearch } from '../../types/models/Search.ts'
 
 describe('Album Songs Card', () => {
   const songs: Song[] = [
@@ -69,8 +70,8 @@ describe('Album Songs Card', () => {
   const order = albumSongsOrders[1]
 
   const handlers = [
-    http.get('/songs', async () => {
-      const response: WithTotalCountResponse<Song> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SongSearch> = {
         models: [],
         totalCount: 0
       }

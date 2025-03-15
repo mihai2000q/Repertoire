@@ -11,17 +11,18 @@ import {
   TextInputProps,
   useCombobox
 } from '@mantine/core'
-import Album from '../../../../types/models/Album.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import { useGetAlbumsQuery } from '../../../../state/api/albumsApi.ts'
 import albumPlaceholder from '../../../../assets/image-placeholder-1.jpg'
 import { useDebouncedValue } from '@mantine/hooks'
 import dayjs from 'dayjs'
+import { AlbumSearch } from '../../../../types/models/Search.ts'
+import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
 
 interface AlbumSelectProps extends TextInputProps {
-  album: Album | null
-  setAlbum: (album: Album | null) => void
+  album: AlbumSearch | null
+  setAlbum: (album: AlbumSearch | null) => void
 }
 
 function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
@@ -38,11 +39,12 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
     setValue(album?.title ?? '')
   }, [album])
 
-  const { data: albums, isFetching } = useGetAlbumsQuery({
+  const { data: albums, isFetching } = useGetSearchQuery({
+    query: searchQuery,
     currentPage: 1,
     pageSize: 10,
-    orderBy: ['title asc'],
-    searchBy: searchQuery.trim() !== '' ? [`title ~* '${searchQuery.trim()}'`] : []
+    type: SearchType.Album,
+    order: ['updatedAt:desc']
   })
 
   const AlbumHoverCard = () => (
@@ -83,7 +85,7 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
     </HoverCard>
   )
 
-  const AlbumOption = ({ localAlbum }: { localAlbum: Album }) => (
+  const AlbumOption = ({ localAlbum }: { localAlbum: AlbumSearch }) => (
     <Combobox.Option
       key={localAlbum.id}
       value={localAlbum.title}
@@ -161,7 +163,9 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
             ) : albums?.totalCount === 0 ? (
               <Combobox.Empty>No albums found</Combobox.Empty>
             ) : (
-              albums?.models.map((album) => <AlbumOption key={album.id} localAlbum={album} />)
+              albums?.models.map((album) => (
+                <AlbumOption key={album.id} localAlbum={album as AlbumSearch} />
+              ))
             )}
           </ScrollArea.Autosize>
         </Combobox.Options>

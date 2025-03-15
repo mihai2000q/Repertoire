@@ -1,4 +1,4 @@
-import { emptyAlbum, emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddNewSongModal from './AddNewSongModal.tsx'
 import { vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
@@ -6,49 +6,52 @@ import { setupServer } from 'msw/node'
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
-import Artist from '../../../types/models/Artist.ts'
-import Album from '../../../types/models/Album.ts'
 import { CreateSongRequest } from '../../../types/requests/SongRequests.ts'
 import { GuitarTuning, SongSectionType } from '../../../types/models/Song.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
+import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Add New Song Modal', () => {
-  const albums: Album[] = [
+  const albums: AlbumSearch[] = [
     {
-      ...emptyAlbum,
       id: '1',
       title: 'Album 1',
       imageUrl: 'something-album.png',
-      artist: emptyArtist,
-      releaseDate: '2024-10-12T10:30'
+      artist: {
+        id: '1',
+        name: 'Some Artist'
+      },
+      releaseDate: '2024-10-12T10:30',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '2',
-      title: 'Album 2'
+      title: 'Album 2',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '3',
-      title: 'Album 3'
+      title: 'Album 3',
+      type: SearchType.Album
     }
   ]
 
-  const artists: Artist[] = [
+  const artists: ArtistSearch[] = [
     {
-      ...emptyArtist,
       id: '1',
-      name: 'Artist 1'
+      name: 'Artist 1',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '2',
-      name: 'Artist 2'
+      name: 'Artist 2',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '3',
-      name: 'Artist 3'
+      name: 'Artist 3',
+      type: SearchType.Artist
     }
   ]
 
@@ -83,19 +86,17 @@ describe('Add New Song Modal', () => {
   const validYoutubeLink = 'https://www.youtube.com/watch?v=E0ozmU9cJDg'
 
   const handlers = [
-    http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
+    http.get('/search', async (req) => {
+      const type = new URL(req.request.url).searchParams.get('type')
+      const albumResponse: WithTotalCountResponse<AlbumSearch> = {
         models: albums,
         totalCount: albums.length
       }
-      return HttpResponse.json(response)
-    }),
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
+      const artistResponse: WithTotalCountResponse<ArtistSearch> = {
         models: artists,
         totalCount: artists.length
       }
-      return HttpResponse.json(response)
+      return HttpResponse.json(type === SearchType.Album ? albumResponse : artistResponse)
     }),
     http.get('/songs/guitar-tunings', async () => {
       return HttpResponse.json(guitarTunings)
@@ -408,7 +409,8 @@ describe('Add New Song Modal', () => {
       act(() => songsterrField.blur())
       expect(songsterrField).toBeInvalid()
 
-      await user.type(songsterrField, validSongsterrLink)
+      await user.click(songsterrField)
+      await user.paste(validSongsterrLink)
       expect(songsterrField).not.toBeInvalid()
 
       await user.clear(songsterrField)
@@ -419,7 +421,8 @@ describe('Add New Song Modal', () => {
       act(() => youtubeField.blur())
       expect(youtubeField).toBeInvalid()
 
-      await user.type(youtubeField, validYoutubeLink)
+      await user.click(youtubeField)
+      await user.paste(validYoutubeLink)
       expect(youtubeField).not.toBeInvalid()
 
       await user.clear(youtubeField)
@@ -439,7 +442,9 @@ describe('Add New Song Modal', () => {
       await user.click(screen.getByRole('button', { name: /first step/i }))
       expect(songsterrField).toBeInvalid()
 
-      await user.type(songsterrField, validSongsterrLink)
+      await user.clear(songsterrField)
+      await user.click(songsterrField)
+      await user.paste(validSongsterrLink)
       expect(songsterrField).not.toBeInvalid()
 
       await user.click(screen.getByRole('button', { name: /first step/i }))
@@ -468,7 +473,8 @@ describe('Add New Song Modal', () => {
       expect(songsterrField).toBeInvalid()
 
       // check previous button validation
-      await user.type(songsterrField, validSongsterrLink)
+      await user.click(songsterrField)
+      await user.paste(validSongsterrLink)
       expect(songsterrField).not.toBeInvalid()
 
       await user.click(screen.getByRole('button', { name: /previous/i }))
@@ -784,8 +790,11 @@ describe('Add New Song Modal', () => {
       // final step
       await user.click(screen.getByRole('button', { name: /next/i }))
 
-      await user.type(screen.getByRole('textbox', { name: /songsterr/i }), validSongsterrLink)
-      await user.type(screen.getByRole('textbox', { name: /youtube/i }), validYoutubeLink)
+      await user.click(screen.getByRole('textbox', { name: /songsterr/i }))
+      await user.paste(validSongsterrLink)
+
+      await user.click(screen.getByRole('textbox', { name: /youtube/i }))
+      await user.paste(validYoutubeLink)
 
       await user.click(screen.getByRole('button', { name: /submit/i }))
 

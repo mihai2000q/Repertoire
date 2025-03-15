@@ -5,37 +5,32 @@ import { expect } from 'vitest'
 import AlbumAutocomplete from './AlbumAutocomplete.tsx'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import Album from '../../../../types/models/Album.ts'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
+import { AlbumSearch } from '../../../../types/models/Search.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
 
 describe('Album Autocomplete', () => {
-  const albums: Album[] = [
+  const albums: AlbumSearch[] = [
     {
       id: '1',
       title: 'Album 1',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      type: SearchType.Album
     },
     {
       id: '2',
       title: 'Album 2',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      type: SearchType.Album
     },
     {
       id: '3',
       title: 'Album 3',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      type: SearchType.Album
     }
   ]
 
   const handlers = [
-    http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<AlbumSearch> = {
         models: albums,
         totalCount: albums.length
       }

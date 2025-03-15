@@ -8,9 +8,8 @@ import { FileWithPath } from '@mantine/dropzone'
 import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
 import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
 import AddNewSongModalFinalStep from './AddNewSongModalFinalStep.tsx'
-import {useDidUpdate, useListState} from '@mantine/hooks'
-import Album from '../../../types/models/Album.ts'
-import Artist from '../../../types/models/Artist.ts'
+import { useDidUpdate, useListState } from '@mantine/hooks'
+import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
 
 export interface AddNewSongModalSongSection {
   id: string
@@ -29,8 +28,8 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToSongMutation()
   const isLoading = isCreateSongLoading || isSaveImageLoading
 
-  const [artist, setArtist] = useState<Artist>(undefined)
-  const [album, setAlbum] = useState<Album>(null)
+  const [artist, setArtist] = useState<ArtistSearch>(null)
+  const [album, setAlbum] = useState<AlbumSearch>(null)
 
   const [guitarTuning, setGuitarTuning] = useState<ComboboxItem>(null)
   const [difficulty, setDifficulty] = useState<ComboboxItem>(null)
