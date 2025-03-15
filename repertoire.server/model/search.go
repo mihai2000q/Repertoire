@@ -27,7 +27,7 @@ type ArtistSearch struct {
 
 func (a *Artist) ToSearch() ArtistSearch {
 	return ArtistSearch{
-		ImageUrl: a.ImageURL,
+		ImageUrl: a.ImageURL.StripURL(),
 		Name:     a.Name,
 		SearchBase: SearchBase{
 			ID:        "artist-" + a.ID.String(),
