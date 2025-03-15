@@ -18,25 +18,27 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 	newEntities := []any{
 		model.SongSearch{
 			SearchBase: model.SearchBase{
-				ID:     searchData.SongSearches[0].(model.SongSearch).ID,
-				Type:   searchData.SongSearches[0].(model.SongSearch).Type,
-				UserID: searchData.SongSearches[0].(model.SongSearch).UserID,
+				ID:        searchData.SongSearches[0].(model.SongSearch).ID,
+				UpdatedAt: time.Now().UTC(),
+				CreatedAt: searchData.SongSearches[0].(model.SongSearch).CreatedAt,
+				Type:      searchData.SongSearches[0].(model.SongSearch).Type,
+				UserID:    searchData.SongSearches[0].(model.SongSearch).UserID,
 			},
-			Title:     "New Song Name",
-			UpdatedAt: time.Now(),
-			ImageUrl:  searchData.SongSearches[0].(model.SongSearch).ImageUrl,
-			Artist:    searchData.SongSearches[0].(model.SongSearch).Artist,
-			Album:     searchData.SongSearches[0].(model.SongSearch).Album,
+			Title:    "New Song Name",
+			ImageUrl: searchData.SongSearches[0].(model.SongSearch).ImageUrl,
+			Artist:   searchData.SongSearches[0].(model.SongSearch).Artist,
+			Album:    searchData.SongSearches[0].(model.SongSearch).Album,
 		},
 		model.ArtistSearch{
 			SearchBase: model.SearchBase{
-				ID:     searchData.ArtistSearches[0].(model.ArtistSearch).ID,
-				Type:   searchData.ArtistSearches[0].(model.ArtistSearch).Type,
-				UserID: searchData.ArtistSearches[0].(model.ArtistSearch).UserID,
+				ID:        searchData.ArtistSearches[0].(model.ArtistSearch).ID,
+				UpdatedAt: time.Now().UTC(),
+				CreatedAt: searchData.ArtistSearches[0].(model.ArtistSearch).CreatedAt,
+				Type:      searchData.ArtistSearches[0].(model.ArtistSearch).Type,
+				UserID:    searchData.ArtistSearches[0].(model.ArtistSearch).UserID,
 			},
-			Name:      "New Artist Name",
-			UpdatedAt: time.Now(),
-			ImageUrl:  searchData.ArtistSearches[0].(model.ArtistSearch).ImageUrl,
+			Name:     "New Artist Name",
+			ImageUrl: searchData.ArtistSearches[0].(model.ArtistSearch).ImageUrl,
 		},
 	}
 

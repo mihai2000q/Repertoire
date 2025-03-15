@@ -20,9 +20,8 @@ var ArtistSearchID = uuid.New()
 
 var AlbumSearches = []any{
 	model.AlbumSearch{
-		Title:     "Album 1",
-		ImageUrl:  &[]internal.FilePath{"song-image.png"}[0],
-		UpdatedAt: time.Now().UTC(),
+		Title:    "Album 1",
+		ImageUrl: &[]internal.FilePath{"song-image.png"}[0],
 		Artist: &model.AlbumArtistSearch{
 			ID:        ArtistSearchID,
 			Name:      "Artist 1",
@@ -30,9 +29,11 @@ var AlbumSearches = []any{
 			UpdatedAt: time.Now().UTC(),
 		},
 		SearchBase: model.SearchBase{
-			ID:     "album-" + uuid.New().String(),
-			Type:   enums.Album,
-			UserID: UserSearchID,
+			ID:        "album-" + uuid.New().String(),
+			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
+			Type:      enums.Album,
+			UserID:    UserSearchID,
 		},
 	},
 	model.AlbumSearch{
@@ -53,9 +54,8 @@ var AlbumSearches = []any{
 
 var SongSearches = []any{
 	model.SongSearch{
-		Title:     "Song 1",
-		ImageUrl:  &[]internal.FilePath{"song-image.png"}[0],
-		UpdatedAt: time.Now().UTC(),
+		Title:    "Song 1",
+		ImageUrl: &[]internal.FilePath{"song-image.png"}[0],
 		Artist: &model.SongArtistSearch{
 			ID:        ArtistSearchID,
 			Name:      "Artist 1",
@@ -69,9 +69,11 @@ var SongSearches = []any{
 			UpdatedAt: time.Now().UTC(),
 		},
 		SearchBase: model.SearchBase{
-			ID:     "song-" + uuid.New().String(),
-			Type:   enums.Song,
-			UserID: UserSearchID,
+			ID:        "song-" + uuid.New().String(),
+			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
+			Type:      enums.Song,
+			UserID:    UserSearchID,
 		},
 	},
 	model.SongSearch{

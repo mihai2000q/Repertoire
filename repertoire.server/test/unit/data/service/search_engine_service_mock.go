@@ -17,8 +17,10 @@ func (s *SearchEngineServiceMock) Search(
 	pageSize *int,
 	searchType *enums.SearchType,
 	userID uuid.UUID,
+	filter []string,
+	sort []string,
 ) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
-	args := s.Called(query, currentPage, pageSize, searchType, userID)
+	args := s.Called(query, currentPage, pageSize, searchType, userID, filter, sort)
 
 	var errCode *wrapper.ErrorCode
 	if a := args.Get(1); a != nil {
