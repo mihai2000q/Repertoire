@@ -48,7 +48,7 @@ func (g Get) Handle(
 		return wrapper.WithTotalCount[any]{}, errCode
 	}
 
-	var results []any
+	results := []any{}
 	for _, curr := range searchResult.Models {
 		switch curr.(map[string]interface{})["type"] {
 		case string(enums.Artist):
