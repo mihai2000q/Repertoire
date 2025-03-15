@@ -169,7 +169,7 @@ function ArtistSongCard({ song, handleRemove, isUnknownArtist, order }: ArtistSo
               )}
               {order.property === SongProperty.LastTimePlayed && (
                 <Tooltip
-                  label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('DD MMMM YYYY')}`}
+                  label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
                   openDelay={400}
                   disabled={!song.lastTimePlayed}
                 >

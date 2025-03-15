@@ -166,9 +166,15 @@ function AlbumSongCard({
               <SongProgressBar progress={song.progress} flex={1} />
             )}
             {order.property === SongProperty.LastTimePlayed && (
-              <Text fw={500} c={'dimmed'} inline>
-                {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('D MMM YYYY') : 'never'}
-              </Text>
+              <Tooltip
+                label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                openDelay={400}
+                disabled={!song.lastTimePlayed}
+              >
+                <Text fw={500} c={'dimmed'} inline>
+                  {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('D MMM YYYY') : 'never'}
+                </Text>
+              </Tooltip>
             )}
           </Box>
 
