@@ -7,9 +7,9 @@ import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
 import { http, HttpResponse } from 'msw'
 import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
-import Artist from '../../../types/models/Artist.ts'
-import Album from '../../../types/models/Album.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Edit Song Header Modal', () => {
   const song: Song = {
@@ -27,63 +27,63 @@ describe('Edit Song Header Modal', () => {
     updatedAt: ''
   }
 
-  const albums: Album[] = [
+  const albums: AlbumSearch[] = [
     {
-      ...emptyAlbum,
       id: '1',
       title: 'Album 1',
       imageUrl: 'something-album.png',
       artist: {
-        ...emptyArtist,
         id: '1',
         name: 'Album Artist'
       },
-      releaseDate: '2024-10-12T10:30'
+      releaseDate: '2024-10-12T10:30',
+      type: SearchType.Album
     },
     {
       ...emptyAlbum,
       id: '2',
-      title: 'Album 2'
+      title: 'Album 2',
+      type: SearchType.Album
     },
     {
       ...emptyAlbum,
       id: '3',
-      title: 'Album 3'
+      title: 'Album 3',
+      type: SearchType.Album
     }
   ]
 
-  const artists: Artist[] = [
+  const artists: ArtistSearch[] = [
     {
-      ...emptyArtist,
       id: '1',
-      name: 'Artist 1'
+      name: 'Artist 1',
+      type: SearchType.Artist
     },
     {
       ...emptyArtist,
       id: '2',
-      name: 'Artist 2'
+      name: 'Artist 2',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '3',
-      name: 'Artist 3'
+      name: 'Artist 3',
+      type: SearchType.Artist
     }
   ]
 
   const handlers = [
-    http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
+    http.get('/search', async (req) => {
+      const type = new URL(req.request.url).searchParams.get('type')
+      const albumResponse: WithTotalCountResponse<AlbumSearch> = {
         models: albums,
         totalCount: albums.length
       }
-      return HttpResponse.json(response)
-    }),
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
+      const artistResponse: WithTotalCountResponse<ArtistSearch> = {
         models: artists,
         totalCount: artists.length
       }
-      return HttpResponse.json(response)
+      return HttpResponse.json(type === SearchType.Album ? albumResponse : artistResponse)
     })
   ]
 
@@ -439,7 +439,7 @@ describe('Edit Song Header Modal', () => {
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
     // change album
-    await user.click(screen.getByRole('textbox', { name: /album/i })  )
+    await user.click(screen.getByRole('textbox', { name: /album/i }))
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
     expect(screen.getByRole('button', { name: /save/i })).not.toHaveAttribute('data-disabled')
   })

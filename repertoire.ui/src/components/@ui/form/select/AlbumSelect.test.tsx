@@ -1,35 +1,36 @@
-import { emptyAlbum, reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
-import Album from '../../../../types/models/Album.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import AlbumSelect from './AlbumSelect.tsx'
+import searchType from '../../../../utils/enums/SearchType.ts'
+import { AlbumSearch } from '../../../../types/models/Search.ts'
 
 describe('Band Member Select', () => {
-  const albums: Album[] = [
+  const albums: AlbumSearch[] = [
     {
-      ...emptyAlbum,
       id: '1',
-      title: 'Justice'
+      title: 'Justice',
+      type: searchType.Album
     },
     {
-      ...emptyAlbum,
       id: '2',
-      title: 'Vengeance'
+      title: 'Vengeance',
+      type: searchType.Album
     },
     {
-      ...emptyAlbum,
       id: '3',
-      title: 'Glory'
+      title: 'Glory',
+      type: searchType.Album
     }
   ]
 
   const handlers = [
-    http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<AlbumSearch> = {
         models: albums,
         totalCount: albums.length
       }
