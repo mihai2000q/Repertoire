@@ -63,6 +63,8 @@ func TestGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) {
 			request.PageSize,
 			request.Type,
 			userID,
+			request.Filter,
+			request.Order,
 		).
 		Return(wrapper.WithTotalCount[any]{}, errorCode).
 		Once()
@@ -175,6 +177,8 @@ func TestGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 			request.PageSize,
 			request.Type,
 			userID,
+			request.Filter,
+			request.Order,
 		).
 		Return(searchResult, nil).
 		Once()

@@ -5,6 +5,7 @@ import (
 	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
+	"strings"
 )
 
 type SearchEngineService interface {
@@ -14,6 +15,8 @@ type SearchEngineService interface {
 		pageSize *int,
 		searchType *enums.SearchType,
 		userID uuid.UUID,
+		filter []string,
+		sort []string,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
 	GetDocuments(filter string) ([]map[string]any, error)
 	Add(items []any) error
@@ -35,20 +38,35 @@ func (s searchEngineService) Search(
 	pageSize *int,
 	searchType *enums.SearchType,
 	userID uuid.UUID,
+	filter []string,
+	sort []string,
 ) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
 	request := &meilisearch.SearchRequest{}
 
+	// sorting
+	for i := range sort {
+		sort[i] = strings.Replace(sort[i], " ", ":", 1)
+	}
+	request.Sort = sort
+
+	// pagination
 	if currentPage != nil && pageSize != nil {
 		request.Offset = int64((*currentPage - 1) * *pageSize)
 		request.Limit = int64(*pageSize)
 	}
 
+	// filtering
+	filters := []string{"userId = " + userID.String()}
 	if searchType != nil {
-		request.Filter = "type = " + string(*searchType) + " AND userId = " + userID.String()
-	} else {
-		request.Filter = "userId = " + userID.String()
+		filters = append(filters, "type = "+string(*searchType))
 	}
+	if len(filter) > 0 {
+		userFilter := "(" + strings.Join(filter, " AND ") + ")" // brackets, in case there is an OR
+		filters = append(filters, userFilter)
+	}
+	request.Filter = strings.Join(filters, " AND ")
 
+	// send search request
 	searchResult, err := s.client.Index("search").Search(query, request)
 	if err != nil {
 		return wrapper.WithTotalCount[any]{}, wrapper.InternalServerError(err)

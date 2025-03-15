@@ -37,6 +37,14 @@ func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Type:  &[]enums.SearchType{enums.Song}[0],
 			},
 		},
+		{
+			"With Filtering and Sorting",
+			requests.SearchGetRequest{
+				Query:  validQuery,
+				Filter: []string{"release_date > 145023"},
+				Order:  []string{"release_date asc"},
+			},
+		},
 	}
 
 	for _, tt := range tests {

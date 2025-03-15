@@ -40,6 +40,8 @@ func (g Get) Handle(
 		request.PageSize,
 		request.Type,
 		userID,
+		request.Filter,
+		request.Order,
 	)
 
 	if errCode != nil {
