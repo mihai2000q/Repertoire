@@ -9,7 +9,8 @@ import {
   ScrollArea,
   Skeleton,
   Stack,
-  Text
+  Text,
+  Tooltip
 } from '@mantine/core'
 import { IconClock } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
@@ -118,9 +119,15 @@ function LocalSongCard({ song }: { song: Song }) {
           <SongProgressBar progress={song.progress} mx={'xs'} />
         </Grid.Col>
         <Grid.Col span={{ base: 3, md: 4, xxl: 3 }} px={'md'}>
-          <Text ta={'center'} fz={'sm'} fw={500} c={'dimmed'} truncate={'end'}>
-            {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('DD MMM') : 'never'}
-          </Text>
+          <Tooltip
+            label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+            openDelay={400}
+            disabled={!song.lastTimePlayed}
+          >
+            <Text ta={'center'} fz={'sm'} fw={500} c={'dimmed'} truncate={'end'}>
+              {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('DD MMM') : 'never'}
+            </Text>
+          </Tooltip>
         </Grid.Col>
       </Grid>
     </Group>
