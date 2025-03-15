@@ -31,7 +31,7 @@ func main() {
 	}
 
 	_, err = meiliClient.Index("search").UpdateSortableAttributes(&[]string{
-		"title", "name", "updatedAt", "album", "album.title", "artist", "artist.name",
+		"title", "name", "updatedAt", "createdAt", "album", "album.title", "artist", "artist.name",
 	})
 	if err != nil {
 		panic(err)
@@ -59,6 +59,7 @@ func addArtists(dbClient database.Client, meiliClient meilisearch.ServiceManager
 	var meiliArtists []model.ArtistSearch
 	for _, artist := range artists {
 		artist.UpdatedAt = artist.UpdatedAt.UTC()
+		artist.CreatedAt = artist.CreatedAt.UTC()
 		meiliArtists = append(meiliArtists, artist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliArtists)
@@ -84,6 +85,7 @@ func addAlbums(dbClient database.Client, meiliClient meilisearch.ServiceManager)
 			album.ReleaseDate = &[]time.Time{album.ReleaseDate.UTC()}[0]
 		}
 		album.UpdatedAt = album.UpdatedAt.UTC()
+		album.CreatedAt = album.CreatedAt.UTC()
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
@@ -109,6 +111,7 @@ func addSongs(dbClient database.Client, meiliClient meilisearch.ServiceManager) 
 			song.ReleaseDate = &[]time.Time{song.ReleaseDate.UTC()}[0]
 		}
 		song.UpdatedAt = song.UpdatedAt.UTC()
+		song.CreatedAt = song.CreatedAt.UTC()
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
@@ -131,6 +134,7 @@ func addPlaylists(dbClient database.Client, meiliClient meilisearch.ServiceManag
 	var meiliPlaylists []model.PlaylistSearch
 	for _, playlist := range playlists {
 		playlist.UpdatedAt = playlist.UpdatedAt.UTC()
+		playlist.CreatedAt = playlist.CreatedAt.UTC()
 		meiliPlaylists = append(meiliPlaylists, playlist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliPlaylists)

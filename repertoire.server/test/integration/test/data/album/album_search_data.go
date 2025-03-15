@@ -39,6 +39,7 @@ var SongSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "song-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Song,
 			UserID:    UserSearchID,
 		},
@@ -61,6 +62,7 @@ var SongSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "song-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Song,
 			UserID:    UserSearchID,
 		},

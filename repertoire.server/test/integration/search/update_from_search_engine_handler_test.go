@@ -20,6 +20,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 			SearchBase: model.SearchBase{
 				ID:        searchData.SongSearches[0].(model.SongSearch).ID,
 				UpdatedAt: time.Now().UTC(),
+				CreatedAt: searchData.SongSearches[0].(model.SongSearch).CreatedAt,
 				Type:      searchData.SongSearches[0].(model.SongSearch).Type,
 				UserID:    searchData.SongSearches[0].(model.SongSearch).UserID,
 			},
@@ -32,6 +33,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 			SearchBase: model.SearchBase{
 				ID:        searchData.ArtistSearches[0].(model.ArtistSearch).ID,
 				UpdatedAt: time.Now().UTC(),
+				CreatedAt: searchData.ArtistSearches[0].(model.ArtistSearch).CreatedAt,
 				Type:      searchData.ArtistSearches[0].(model.ArtistSearch).Type,
 				UserID:    searchData.ArtistSearches[0].(model.ArtistSearch).UserID,
 			},

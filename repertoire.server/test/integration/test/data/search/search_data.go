@@ -58,6 +58,7 @@ var ArtistSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "artist-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Artist,
 			UserID:    UserID,
 		},
@@ -73,6 +74,7 @@ var AlbumSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "album-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Album,
 			UserID:    UserID,
 		},
@@ -89,6 +91,7 @@ var SongSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "song-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Song,
 			UserID:    UserID,
 		},
@@ -99,6 +102,7 @@ var SongSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "song-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Song,
 			UserID:    UserID,
 		},
@@ -121,6 +125,7 @@ var PlaylistSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "playlist-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Playlist,
 			UserID:    UserID,
 		},
@@ -131,6 +136,7 @@ var PlaylistSearches = []any{
 		SearchBase: model.SearchBase{
 			ID:        "playlist-" + uuid.New().String(),
 			UpdatedAt: time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
 			Type:      enums.Playlist,
 			UserID:    UserID,
 		},
