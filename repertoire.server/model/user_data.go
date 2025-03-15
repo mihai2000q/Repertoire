@@ -12,7 +12,7 @@ type BandMemberRole struct {
 }
 
 var DefaultBandMemberRoles = []string{
-	"Vocalist", "Lead Guitarist", "Rhythm Guitarist", "Bassist", "Drummer", "Pianist",
+	"Vocalist", "Lead Guitarist", "Rhythm Guitarist", "Bassist", "Drummer", "Pianist", "Keyboardist", "Backing Vocalist",
 }
 
 type GuitarTuning struct {
