@@ -41,13 +41,7 @@ func (s searchEngineService) Search(
 	filter []string,
 	sort []string,
 ) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
-	request := &meilisearch.SearchRequest{}
-
-	// sorting
-	for i := range sort {
-		sort[i] = strings.Replace(sort[i], " ", ":", 1)
-	}
-	request.Sort = sort
+	request := &meilisearch.SearchRequest{Sort: sort}
 
 	// pagination
 	if currentPage != nil && pageSize != nil {
