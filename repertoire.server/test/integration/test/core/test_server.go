@@ -194,5 +194,12 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 		log.Println(err)
 	}
 
+	_, err = meiliClient.Index("search").UpdateSortableAttributes(&[]string{
+		"title", "name", "updatedAt", "album", "album.title", "artist", "artist.name",
+	})
+	if err != nil {
+		log.Println(err)
+	}
+
 	meiliClient.Close()
 }

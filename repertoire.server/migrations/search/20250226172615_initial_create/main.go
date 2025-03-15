@@ -30,6 +30,13 @@ func main() {
 		panic(err)
 	}
 
+	_, err = meiliClient.Index("search").UpdateSortableAttributes(&[]string{
+		"title", "name", "updatedAt", "album", "album.title", "artist", "artist.name",
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	addArtists(dbClient, meiliClient)
 	addAlbums(dbClient, meiliClient)
 	addSongs(dbClient, meiliClient)
