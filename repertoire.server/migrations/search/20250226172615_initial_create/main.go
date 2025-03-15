@@ -51,6 +51,7 @@ func addArtists(dbClient database.Client, meiliClient meilisearch.ServiceManager
 
 	var meiliArtists []model.ArtistSearch
 	for _, artist := range artists {
+		artist.UpdatedAt = artist.UpdatedAt.UTC()
 		meiliArtists = append(meiliArtists, artist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliArtists)
@@ -72,6 +73,7 @@ func addAlbums(dbClient database.Client, meiliClient meilisearch.ServiceManager)
 
 	var meiliAlbums []model.AlbumSearch
 	for _, album := range albums {
+		album.UpdatedAt = album.UpdatedAt.UTC()
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
@@ -93,6 +95,7 @@ func addSongs(dbClient database.Client, meiliClient meilisearch.ServiceManager) 
 
 	var meiliSongs []model.SongSearch
 	for _, song := range songs {
+		song.UpdatedAt = song.UpdatedAt.UTC()
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
@@ -114,6 +117,7 @@ func addPlaylists(dbClient database.Client, meiliClient meilisearch.ServiceManag
 
 	var meiliPlaylists []model.PlaylistSearch
 	for _, playlist := range playlists {
+		playlist.UpdatedAt = playlist.UpdatedAt.UTC()
 		meiliPlaylists = append(meiliPlaylists, playlist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliPlaylists)
