@@ -409,7 +409,8 @@ describe('Add New Song Modal', () => {
       act(() => songsterrField.blur())
       expect(songsterrField).toBeInvalid()
 
-      await user.type(songsterrField, validSongsterrLink)
+      await user.click(songsterrField)
+      await user.paste(validSongsterrLink)
       expect(songsterrField).not.toBeInvalid()
 
       await user.clear(songsterrField)
@@ -420,7 +421,8 @@ describe('Add New Song Modal', () => {
       act(() => youtubeField.blur())
       expect(youtubeField).toBeInvalid()
 
-      await user.type(youtubeField, validYoutubeLink)
+      await user.click(youtubeField)
+      await user.paste(validYoutubeLink)
       expect(youtubeField).not.toBeInvalid()
 
       await user.clear(youtubeField)
@@ -440,7 +442,9 @@ describe('Add New Song Modal', () => {
       await user.click(screen.getByRole('button', { name: /first step/i }))
       expect(songsterrField).toBeInvalid()
 
-      await user.type(songsterrField, validSongsterrLink)
+      await user.clear(songsterrField)
+      await user.click(songsterrField)
+      await user.paste(validSongsterrLink)
       expect(songsterrField).not.toBeInvalid()
 
       await user.click(screen.getByRole('button', { name: /first step/i }))
@@ -469,7 +473,8 @@ describe('Add New Song Modal', () => {
       expect(songsterrField).toBeInvalid()
 
       // check previous button validation
-      await user.type(songsterrField, validSongsterrLink)
+      await user.click(songsterrField)
+      await user.paste(validSongsterrLink)
       expect(songsterrField).not.toBeInvalid()
 
       await user.click(screen.getByRole('button', { name: /previous/i }))
@@ -785,8 +790,11 @@ describe('Add New Song Modal', () => {
       // final step
       await user.click(screen.getByRole('button', { name: /next/i }))
 
-      await user.type(screen.getByRole('textbox', { name: /songsterr/i }), validSongsterrLink)
-      await user.type(screen.getByRole('textbox', { name: /youtube/i }), validYoutubeLink)
+      await user.click(screen.getByRole('textbox', { name: /songsterr/i }))
+      await user.paste(validSongsterrLink)
+
+      await user.click(screen.getByRole('textbox', { name: /youtube/i }))
+      await user.paste(validYoutubeLink)
 
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
