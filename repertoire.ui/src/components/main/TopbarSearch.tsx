@@ -14,6 +14,7 @@ import {
   MantineTheme,
   ScrollArea,
   Stack,
+  Text,
   TextInput,
   TextInputProps,
   useCombobox
@@ -97,15 +98,13 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
   const [search] = useDebouncedValue(value, 200)
   const [type, setType] = useState<SearchType | null>(null)
 
-  const { data: searchResults, isFetching } = useGetSearchQuery(
-    {
-      query: search,
-      currentPage: 1,
-      pageSize: 20,
-      type: type === null ? undefined : type
-    },
-    { skip: search.trim() === '' }
-  )
+  const { data: searchResults, isFetching } = useGetSearchQuery({
+    query: search,
+    currentPage: 1,
+    pageSize: 20,
+    type: type === null ? undefined : type,
+    order: search.trim() !== '' ? [] : ['createdAt:desc']
+  })
 
   const ArtistOption = ({ artist }: { artist: ArtistSearch }) => (
     <Combobox.Option
@@ -296,6 +295,8 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
       </Combobox.Target>
 
       <Combobox.Dropdown p={0}>
+        <LoadingOverlay visible={isFetching} />
+
         <Stack gap={'xs'}>
           <Chip.Group multiple={false} value={type} onChange={(e) => setType(e as SearchType)}>
             <Group px={'xs'} pt={'xs'} gap={6} wrap={'nowrap'} style={{ alignSelf: 'center' }}>
@@ -314,35 +315,42 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
             </Group>
           </Chip.Group>
 
-          <LoadingOverlay visible={isFetching} />
+          <Stack gap={0}>
+            {(searchResults?.totalCount !== 0 ||
+              (searchResults?.totalCount !== 0 && search.trim() !== '')) && (
+              <Text fw={500} px={'lg'} c={'dimmed'} fz={'xs'} pt={'xxs'}>
+                {search.trim() === '' ? 'Recently added' : 'Search results'}
+              </Text>
+            )}
 
-          <Combobox.Options pt={'xs'}>
-            <ScrollArea.Autosize mah={dropdownMinHeight} scrollbarSize={5}>
-              {search?.trim() === '' ? (
-                <Combobox.Empty pb={'md'} fw={500}>
-                  Search through your library
-                </Combobox.Empty>
-              ) : searchResults?.totalCount === 0 ? (
-                <Combobox.Empty pb={'md'} fw={500}>
-                  No results found
-                </Combobox.Empty>
-              ) : (
-                searchResults?.models?.map((result) =>
-                  result.type === SearchType.Artist ? (
-                    <ArtistOption key={result.id} artist={result as ArtistSearch} />
-                  ) : result.type === SearchType.Album ? (
-                    <AlbumOption key={result.id} album={result as AlbumSearch} />
-                  ) : result.type === SearchType.Song ? (
-                    <SongOption key={result.id} song={result as SongSearch} />
-                  ) : result.type === SearchType.Playlist ? (
-                    <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
-                  ) : (
-                    <></>
+            <Combobox.Options pt={'xs'}>
+              <ScrollArea.Autosize mah={dropdownMinHeight} scrollbarSize={5}>
+                {searchResults?.totalCount === 0 && search.trim() === '' ? (
+                  <Combobox.Empty pb={'md'} fw={500}>
+                    There is nothing in your library
+                  </Combobox.Empty>
+                ) : searchResults?.totalCount === 0 ? (
+                  <Combobox.Empty pb={'md'} fw={500}>
+                    No results found
+                  </Combobox.Empty>
+                ) : (
+                  searchResults?.models?.map((result) =>
+                    result.type === SearchType.Artist ? (
+                      <ArtistOption key={result.id} artist={result as ArtistSearch} />
+                    ) : result.type === SearchType.Album ? (
+                      <AlbumOption key={result.id} album={result as AlbumSearch} />
+                    ) : result.type === SearchType.Song ? (
+                      <SongOption key={result.id} song={result as SongSearch} />
+                    ) : result.type === SearchType.Playlist ? (
+                      <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
+                    ) : (
+                      <></>
+                    )
                   )
-                )
-              )}
-            </ScrollArea.Autosize>
-          </Combobox.Options>
+                )}
+              </ScrollArea.Autosize>
+            </Combobox.Options>
+          </Stack>
         </Stack>
       </Combobox.Dropdown>
     </Combobox>

@@ -65,7 +65,7 @@ describe('Topbar Search', () => {
   const searchResults: SearchBase[] = [...artists, ...albums, ...songs, ...playlists]
 
   const handlers = [
-    http.get('/search', async () => {
+    http.get('/search', () => {
       const result: WithTotalCountResponse<SearchBase> = {
         models: searchResults,
         totalCount: searchResults.length
@@ -82,24 +82,22 @@ describe('Topbar Search', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display search results', async () => {
+  it('should render and display recently added', async () => {
     const user = userEvent.setup()
 
     reduxRouterRender(<TopbarSearch />)
 
-    const searchbox = screen.getByRole('searchbox', { name: /search/i })
-
-    expect(searchbox).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: /search/i })).toBeInTheDocument()
 
     // chips
+    await user.click(screen.getByRole('searchbox', { name: /search/i }))
+
     expect(screen.getByText(/artists/i)).toBeInTheDocument()
     expect(screen.getByText(/albums/i)).toBeInTheDocument()
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByText(/playlists/i)).toBeInTheDocument()
 
-    expect(screen.getByText(/search/i)).toBeInTheDocument()
-
-    await user.type(searchbox, 'random')
+    expect(screen.getByText(/recently added/i)).toBeInTheDocument()
 
     for (const artist of artists) {
       expect(await screen.findByRole('img', { name: artist.name })).toBeInTheDocument()
@@ -121,6 +119,31 @@ describe('Topbar Search', () => {
     }
   })
 
+  it('should send search request when typing in the search box', async () => {
+    const user = userEvent.setup()
+
+    const searchValue = 'random'
+
+    reduxRouterRender(<TopbarSearch />)
+
+    let capturedQuery: string
+    server.use(
+      http.get('/search', (req) => {
+        capturedQuery = new URL(req.request.url).searchParams.get('query')
+        const result: WithTotalCountResponse<SearchBase> = {
+          models: searchResults,
+          totalCount: searchResults.length
+        }
+        return HttpResponse.json(result)
+      })
+    )
+
+    await user.type(screen.getByRole('searchbox', { name: /search/i }), searchValue)
+    await waitFor(() => expect(capturedQuery).toBe(searchValue))
+
+    expect(screen.getByText(/search results/i)).toBeInTheDocument()
+  })
+
   it('should send search request with type from chips', async () => {
     const user = userEvent.setup()
 
@@ -138,7 +161,7 @@ describe('Topbar Search', () => {
       })
     )
 
-    await user.type(screen.getByRole('searchbox', { name: /search/i }), 'so')
+    await user.click(screen.getByRole('searchbox', { name: /search/i }))
 
     await user.click(screen.getByText(/artists/i))
     await waitFor(() => expect(capturedType).toBe(SearchType.Artist))
@@ -151,5 +174,31 @@ describe('Topbar Search', () => {
 
     await user.click(screen.getByText(/playlists/i))
     await waitFor(() => expect(capturedType).toBe(SearchType.Playlist))
+  })
+
+  it('should display empty messages when there are no results or nothing in the library', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<TopbarSearch />)
+
+    server.use(
+      http.get('/search', () => {
+        const result: WithTotalCountResponse<SearchBase> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(result)
+      })
+    )
+
+    await user.click(screen.getByRole('searchbox', { name: /search/i }))
+
+    expect(await screen.findByText(/nothing in .* library/i)).toBeInTheDocument()
+    expect(screen.queryByText(/recently added/i)).not.toBeInTheDocument()
+
+    await user.type(screen.getByRole('searchbox', { name: /search/i }), 'r')
+
+    await waitFor(() => expect(screen.getByText(/no results/i)).toBeInTheDocument())
+    expect(screen.queryByText(/search results/i)).not.toBeInTheDocument()
   })
 })
