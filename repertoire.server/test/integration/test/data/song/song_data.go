@@ -281,12 +281,13 @@ var Songs = []model.Song{
 		UserID: Users[0].ID,
 		Sections: []model.SongSection{
 			{
-				ID:                uuid.New(),
-				Name:              "Test Song Section 1",
-				Order:             0,
-				Rehearsals:        15,
-				Occurrences:       2,
-				SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
+				ID:                 uuid.New(),
+				Name:               "Test Song Section 1",
+				Order:              0,
+				Rehearsals:         15,
+				Occurrences:        2,
+				PartialOccurrences: 1,
+				SongSectionTypeID:  Users[0].SongSectionTypes[1].ID,
 				History: []model.SongSectionHistory{
 					{
 						ID:       uuid.New(),
@@ -303,11 +304,12 @@ var Songs = []model.Song{
 				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 			},
 			{
-				ID:                uuid.New(),
-				Name:              "Test Song Section 3",
-				Order:             2,
-				Occurrences:       10,
-				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+				ID:                 uuid.New(),
+				Name:               "Test Song Section 3",
+				Order:              2,
+				Occurrences:        10,
+				PartialOccurrences: 7,
+				SongSectionTypeID:  Users[0].SongSectionTypes[0].ID,
 			},
 		},
 	},

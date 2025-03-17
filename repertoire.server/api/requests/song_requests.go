@@ -79,6 +79,11 @@ type UpdateSongSectionsOccurrencesRequest struct {
 	Sections []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
 }
 
+type UpdateSongSectionsPartialOccurrencesRequest struct {
+	SongID   uuid.UUID                                `validate:"required"`
+	Sections []UpdateSectionPartialOccurrencesRequest `validate:"min=1,dive"`
+}
+
 type MoveSongSectionRequest struct {
 	ID     uuid.UUID `validate:"required"`
 	OverID uuid.UUID `validate:"required"`
@@ -88,4 +93,9 @@ type MoveSongSectionRequest struct {
 type UpdateSectionOccurrencesRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Occurrences uint
+}
+
+type UpdateSectionPartialOccurrencesRequest struct {
+	ID                 uuid.UUID `validate:"required"`
+	PartialOccurrences uint
 }

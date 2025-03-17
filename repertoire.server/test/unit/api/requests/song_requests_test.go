@@ -835,6 +835,81 @@ func TestValidateUpdateSongSectionsOccurrencesRequest_WhenSingleFieldIsInvalid_S
 	}
 }
 
+func TestValidateUpdateSongSectionsPartialOccurrencesRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.UpdateSongSectionsPartialOccurrencesRequest{
+		SongID: uuid.New(),
+		Sections: []requests.UpdateSectionPartialOccurrencesRequest{
+			{ID: uuid.New()},
+			{ID: uuid.New(), PartialOccurrences: 1},
+		},
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+
+}
+
+func TestValidateUpdateSongSectionsPartialOccurrencesRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.UpdateSongSectionsPartialOccurrencesRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Song ID Test Cases
+		{
+			"Song ID is invalid because it's required",
+			requests.UpdateSongSectionsPartialOccurrencesRequest{
+				SongID:   uuid.Nil,
+				Sections: []requests.UpdateSectionPartialOccurrencesRequest{{ID: uuid.New()}},
+			},
+			"SongID",
+			"required",
+		},
+		// Sections Test Cases
+		{
+			"Sections is invalid because it requires at least one element",
+			requests.UpdateSongSectionsPartialOccurrencesRequest{
+				SongID:   uuid.New(),
+				Sections: []requests.UpdateSectionPartialOccurrencesRequest{},
+			},
+			"Sections",
+			"min",
+		},
+		{
+			"Sections is invalid because it requires that all elements have an id",
+			requests.UpdateSongSectionsPartialOccurrencesRequest{
+				SongID:   uuid.New(),
+				Sections: []requests.UpdateSectionPartialOccurrencesRequest{{ID: uuid.Nil}},
+			},
+			"Sections[0].ID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "UpdateSongSectionsPartialOccurrencesRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 func TestValidateMoveSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)

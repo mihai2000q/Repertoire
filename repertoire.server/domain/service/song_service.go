@@ -30,6 +30,7 @@ type SongService interface {
 	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
 	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 	UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
+	UpdateSectionsPartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode
 }
 
 type songService struct {
@@ -46,11 +47,12 @@ type songService struct {
 	getInstruments      song.GetInstruments
 	getSongSectionTypes section.GetSongSectionTypes
 
-	createSongSection             section.CreateSongSection
-	deleteSongSection             section.DeleteSongSection
-	moveSongSection               section.MoveSongSection
-	updateSongSection             section.UpdateSongSection
-	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences
+	createSongSection                    section.CreateSongSection
+	deleteSongSection                    section.DeleteSongSection
+	moveSongSection                      section.MoveSongSection
+	updateSongSection                    section.UpdateSongSection
+	updateSongSectionsOccurrences        section.UpdateSongSectionsOccurrences
+	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences
 }
 
 func NewSongService(
@@ -72,6 +74,7 @@ func NewSongService(
 	moveSongSection section.MoveSongSection,
 	updateSongSection section.UpdateSongSection,
 	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
+	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences,
 ) SongService {
 	return &songService{
 		addPerfectSongRehearsal: addPerfectSongRehearsal,
@@ -87,11 +90,12 @@ func NewSongService(
 		getInstruments:      getInstruments,
 		getSongSectionTypes: getSongSectionTypes,
 
-		createSongSection:             createSongSection,
-		deleteSongSection:             deleteSongSection,
-		moveSongSection:               moveSongSection,
-		updateSongSection:             updateSongSection,
-		updateSongSectionsOccurrences: updateSongSectionsOccurrences,
+		createSongSection:                    createSongSection,
+		deleteSongSection:                    deleteSongSection,
+		moveSongSection:                      moveSongSection,
+		updateSongSection:                    updateSongSection,
+		updateSongSectionsOccurrences:        updateSongSectionsOccurrences,
+		updateSongSectionsPartialOccurrences: updateSongSectionsPartialOccurrences,
 	}
 }
 
@@ -159,4 +163,8 @@ func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *
 
 func (s *songService) UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode {
 	return s.updateSongSectionsOccurrences.Handle(request)
+}
+
+func (s *songService) UpdateSectionsPartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode {
+	return s.updateSongSectionsPartialOccurrences.Handle(request)
 }
