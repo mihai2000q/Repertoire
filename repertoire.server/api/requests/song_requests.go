@@ -34,6 +34,10 @@ type AddPerfectSongRehearsalRequest struct {
 	ID uuid.UUID `validate:"required"`
 }
 
+type AddPartialSongRehearsalRequest struct {
+	ID uuid.UUID `validate:"required"`
+}
+
 type UpdateSongRequest struct {
 	ID             uuid.UUID `validate:"required"`
 	Title          string    `validate:"required,max=100"`

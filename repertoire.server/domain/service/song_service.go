@@ -13,6 +13,7 @@ import (
 
 type SongService interface {
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
+	AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -35,6 +36,7 @@ type SongService interface {
 
 type songService struct {
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal
+	addPartialSongRehearsal song.AddPartialSongRehearsal
 	createSong              song.CreateSong
 	deleteImageFromSong     song.DeleteImageFromSong
 	deleteSong              song.DeleteSong
@@ -57,6 +59,7 @@ type songService struct {
 
 func NewSongService(
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
+	addPartialSongRehearsal song.AddPartialSongRehearsal,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
 	deleteSong song.DeleteSong,
@@ -78,6 +81,7 @@ func NewSongService(
 ) SongService {
 	return &songService{
 		addPerfectSongRehearsal: addPerfectSongRehearsal,
+		addPartialSongRehearsal: addPartialSongRehearsal,
 		createSong:              createSong,
 		deleteImageFromSong:     deleteImageFromSong,
 		deleteSong:              deleteSong,
@@ -101,6 +105,10 @@ func NewSongService(
 
 func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
 	return s.addPerfectSongRehearsal.Handle(request)
+}
+
+func (s *songService) AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {
+	return s.addPartialSongRehearsal.Handle(request)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
