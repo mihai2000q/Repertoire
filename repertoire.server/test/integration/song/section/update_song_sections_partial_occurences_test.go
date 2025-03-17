@@ -24,7 +24,7 @@ func TestUpdateSongSectionsPartialOccurrences_WhenSongIsNotFound_ShouldReturnNot
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/occurrences", request)
+	core.NewTestHandler().PUT(w, "/api/songs/sections/partial-occurrences", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -55,7 +55,7 @@ func TestUpdateSongSectionsPartialOccurrences_WhenSuccessful_ShouldUpdateSongSec
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/occurrences", request)
+	core.NewTestHandler().PUT(w, "/api/songs/sections/partial-occurrences", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

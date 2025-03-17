@@ -78,13 +78,13 @@ func TestAddPartialSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 	db.Preload("Sections").Preload("Sections.History").Find(&newSong, request.ID)
 
 	for i, section := range newSong.Sections {
-		if section.Occurrences == 0 { // nothing changed
+		if section.PartialOccurrences == 0 { // nothing changed
 			newSong.Sections[i].History = nil
 			assert.Equal(t, song.Sections[i], newSong.Sections[i])
 			continue
 		}
 
-		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].Occurrences)
+		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].PartialOccurrences)
 		assert.Greater(t, section.RehearsalsScore, song.Sections[i].RehearsalsScore)
 		assert.Greater(t, section.Progress, song.Sections[i].Progress)
 
