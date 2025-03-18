@@ -5,6 +5,7 @@ import {
   LoadingOverlay,
   Modal,
   NumberInput,
+  ScrollArea,
   Stack,
   TextInput,
   Tooltip
@@ -73,78 +74,81 @@ function EditSongSectionsOccurrencesModal({
     <Modal opened={opened} onClose={onClose} title={"Edit Sections' Occurrences"}>
       <Modal.Body p={0}>
         <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+        <Modal.Body px={0}>
+          <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <Stack>
-          <Stack gap={'xs'}>
-            {sections.map((section) => (
-              <Group key={section.id} aria-label={`section-${section.name}`} gap={'xxs'}>
-                <TextInput
-                  size={'xs'}
-                  w={75}
-                  aria-label={'type'}
-                  value={section.songSectionType.name}
-                  readOnly={true}
-                  mr={4}
-                />
-                <TextInput
-                  size={'xs'}
-                  flex={1}
-                  aria-label={'name'}
-                  value={section.name}
-                  readOnly={true}
-                />
-                <Group gap={'xxs'}>
-                  <ActionIcon
-                    aria-label={'decrease-occurrences'}
-                    size={'sm'}
-                    variant={'subtle'}
-                    disabled={occurrences.get(section.id) === 0}
-                    onClick={() => handleDecrease(section.id)}
-                  >
-                    <IconMinus size={16} />
-                  </ActionIcon>
-                  <NumberInput
-                    w={40}
-                    size={'xs'}
-                    aria-label={'occurrences'}
-                    value={occurrences.get(section.id)}
-                    onChange={(o) => occurrences.set(section.id, o)}
-                    allowDecimal={false}
-                    allowNegative={false}
-                    hideControls
-                    styles={{
-                      input: { textAlign: 'center' }
-                    }}
-                    onBlur={() =>
-                      occurrences.get(section.id).toString().trim() === '' &&
-                      occurrences.set(section.id, 0)
-                    }
-                  />
-                  <ActionIcon
-                    aria-label={'increase-occurrences'}
-                    size={'sm'}
-                    variant={'subtle'}
-                    onClick={() => handleIncrease(section.id)}
-                  >
-                    <IconPlus size={16} />
-                  </ActionIcon>
-                </Group>
-              </Group>
-            ))}
+          <Stack>
+            <ScrollArea scrollbars={'y'} scrollbarSize={7}>
+              <Stack px={'md'} gap={'xs'} style={{ maxHeight: '50vh' }}>
+                {sections.map((section) => (
+                  <Group key={section.id} aria-label={`section-${section.name}`} gap={'xxs'}>
+                    <TextInput
+                      size={'xs'}
+                      w={75}
+                      aria-label={'type'}
+                      value={section.songSectionType.name}
+                      readOnly={true}
+                      mr={4}
+                    />
+                    <TextInput
+                      size={'xs'}
+                      flex={1}
+                      aria-label={'name'}
+                      value={section.name}
+                      readOnly={true}
+                    />
+                    <Group gap={'xxs'}>
+                      <ActionIcon
+                        aria-label={'decrease-occurrences'}
+                        size={'sm'}
+                        variant={'subtle'}
+                        disabled={occurrences.get(section.id) === 0}
+                        onClick={() => handleDecrease(section.id)}
+                      >
+                        <IconMinus size={16} />
+                      </ActionIcon>
+                      <NumberInput
+                        w={40}
+                        size={'xs'}
+                        aria-label={'occurrences'}
+                        value={occurrences.get(section.id)}
+                        onChange={(o) => occurrences.set(section.id, o)}
+                        allowDecimal={false}
+                        allowNegative={false}
+                        hideControls
+                        styles={{
+                          input: { textAlign: 'center' }
+                        }}
+                        onBlur={() =>
+                          occurrences.get(section.id).toString().trim() === '' &&
+                          occurrences.set(section.id, 0)
+                        }
+                      />
+                      <ActionIcon
+                        aria-label={'increase-occurrences'}
+                        size={'sm'}
+                        variant={'subtle'}
+                        onClick={() => handleIncrease(section.id)}
+                      >
+                        <IconPlus size={16} />
+                      </ActionIcon>
+                    </Group>
+                  </Group>
+                ))}
+              </Stack>
+            </ScrollArea>
+
+            <Tooltip
+              disabled={hasChanged}
+              label={'You need to make a change before saving'}
+              position="bottom"
+            >
+              <Button mx={'md'} data-disabled={!hasChanged} onClick={handleUpdateOccurrences}>
+                Save Changes
+              </Button>
+            </Tooltip>
           </Stack>
-
-          <Tooltip
-            disabled={hasChanged}
-            label={'You need to make a change before saving'}
-            position="bottom"
-          >
-            <Button data-disabled={!hasChanged} onClick={handleUpdateOccurrences}>
-              Save Changes
-            </Button>
-          </Tooltip>
-        </Stack>
-      </Modal.Body>
-    </Modal>
+        </Modal.Body>
   )
 }
 
