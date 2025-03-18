@@ -1,4 +1,5 @@
 import {
+  useAddPartialSongRehearsalMutation,
   useAddPerfectSongRehearsalMutation,
   useMoveSongSectionMutation
 } from '../../state/api/songsApi.ts'
@@ -32,9 +33,12 @@ interface SongSectionsCardProps {
 
 function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
+  const [addPartialRehearsal, { isLoading: isPartialRehearsalLoading }] =
+    useAddPartialSongRehearsalMutation()
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
 
+  const [openedPartialRehearsalPopover, setOpenedPartialRehearsalPopover] = useState(false)
   const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
 
   const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
@@ -56,6 +60,12 @@ function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongS
 
   function handleShowDetails() {
     setShowDetails(!showDetails)
+  }
+
+  async function handleAddPartialRehearsal() {
+    await addPartialRehearsal({ id: songId }).unwrap()
+    toast.info('Partial rehearsal added!')
+    setOpenedPartialRehearsalPopover(false)
   }
 
   async function handleAddPerfectRehearsal() {
@@ -124,6 +134,82 @@ function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongS
                 <IconListNumbers size={16} />
               </ActionIcon>
             </Tooltip>
+
+            <Popover
+              opened={openedPartialRehearsalPopover}
+              onChange={setOpenedPartialRehearsalPopover}
+              transitionProps={{ transition: 'fade-up' }}
+              position={'top'}
+              withArrow
+              shadow={'sm'}
+              closeOnClickOutside={!isPartialRehearsalLoading}
+            >
+              <Popover.Target>
+                <Tooltip
+                  label={
+                    sections.length === 0
+                      ? 'To add a partial rehearsal you need sections'
+                      : 'Add Partial Rehearsal'
+                  }
+                  disabled={openedPartialRehearsalPopover}
+                >
+                  <ActionIcon
+                    aria-label={'add-partial-rehearsal'}
+                    variant={'grey'}
+                    size={'sm'}
+                    disabled={sections.length === 0}
+                    onClick={() =>
+                      setOpenedPartialRehearsalPopover(
+                        isPartialRehearsalLoading || !openedPartialRehearsalPopover
+                      )
+                    }
+                  >
+                    <IconCheck size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Popover.Target>
+
+              <Popover.Dropdown>
+                <Group gap={'xxs'}>
+                  <Text c={'dimmed'} fw={500} fz={'sm'}>
+                    Increase sections&#39; rehearsals based on partial occurrences
+                  </Text>
+                  <Group gap={'xxs'}>
+                    <ActionIcon
+                      variant={'subtle'}
+                      aria-label={'cancel-partial-rehearsal'}
+                      disabled={isPartialRehearsalLoading}
+                      onClick={() => setOpenedPartialRehearsalPopover(false)}
+                      sx={(theme) => ({
+                        color: theme.colors.red[4],
+                        '&:hover': {
+                          color: theme.colors.red[5],
+                          backgroundColor: alpha(theme.colors.red[2], 0.35)
+                        },
+                        '&[data-disabled]': {
+                          color: theme.colors.gray[4],
+                          backgroundColor: 'transparent'
+                        }
+                      })}
+                    >
+                      <IconX size={16} />
+                    </ActionIcon>
+                    <ActionIcon
+                      variant={'subtle'}
+                      c={'green'}
+                      aria-label={'confirm-partial-rehearsal'}
+                      loading={isPartialRehearsalLoading}
+                      onClick={handleAddPartialRehearsal}
+                      sx={(theme) => ({
+                        '&:hover': { backgroundColor: alpha(theme.colors.green[2], 0.35) }
+                      })}
+                    >
+                      <IconCheck size={16} />
+                    </ActionIcon>
+                  </Group>
+                </Group>
+              </Popover.Dropdown>
+            </Popover>
 
             <Popover
               opened={openedPerfectRehearsalPopover}
