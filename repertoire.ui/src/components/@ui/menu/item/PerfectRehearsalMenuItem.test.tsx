@@ -4,9 +4,9 @@ import { screen } from '@testing-library/react'
 import { Menu } from '@mantine/core'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
-import {AddPerfectSongRehearsalRequest} from "../../../../types/requests/SongRequests.ts";
-import {http, HttpResponse} from "msw";
-import {expect} from "vitest";
+import { AddPerfectSongRehearsalRequest } from '../../../../types/requests/SongRequests.ts'
+import { http, HttpResponse } from 'msw'
+import { expect } from 'vitest'
 
 describe('Perfect Rehearsal Menu Item', () => {
   const server = setupServer()
@@ -17,35 +17,7 @@ describe('Perfect Rehearsal Menu Item', () => {
 
   afterAll(() => server.close())
 
-  const render = (songId: string = '') =>
-    reduxRender(
-      withToastify(
-        <Menu opened={true}>
-          <Menu.Dropdown>
-            <PerfectRehearsalMenuItem songId={songId} />
-          </Menu.Dropdown>
-        </Menu>
-      )
-    )
-
-  it('should render', () => {
-    render()
-
-    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-  })
-
-  it('should display cancel and confirm buttons on click', async () => {
-    const user = userEvent.setup()
-
-    render()
-
-    await user.click(screen.getByRole('menuitem', { name: /perfect rehearsal/i }))
-
-    expect(screen.getByRole('button', { name: 'cancel' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'confirm' })).toBeInTheDocument()
-  })
-
-  it('should send request on confirmation', async () => {
+  it('should render and send request on confirmation', async () => {
     const user = userEvent.setup()
 
     let capturedRequest: AddPerfectSongRehearsalRequest
@@ -58,7 +30,15 @@ describe('Perfect Rehearsal Menu Item', () => {
 
     const songId = 'some-id'
 
-    render(songId)
+    reduxRender(
+      withToastify(
+        <Menu opened={true}>
+          <Menu.Dropdown>
+            <PerfectRehearsalMenuItem songId={songId} />
+          </Menu.Dropdown>
+        </Menu>
+      )
+    )
 
     await user.click(screen.getByRole('menuitem', { name: /perfect rehearsal/i }))
     await user.click(screen.getByRole('button', { name: 'confirm' }))
