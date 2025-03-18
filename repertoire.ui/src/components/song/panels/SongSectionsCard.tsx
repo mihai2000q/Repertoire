@@ -2,7 +2,7 @@ import {
   useAddPartialSongRehearsalMutation,
   useAddPerfectSongRehearsalMutation,
   useMoveSongSectionMutation
-} from '../../state/api/songsApi.ts'
+} from '../../../state/api/songsApi.ts'
 import { ActionIcon, alpha, Box, Card, Group, Popover, Stack, Text, Tooltip } from '@mantine/core'
 import {
   IconCheck,
@@ -14,15 +14,15 @@ import {
   IconX
 } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
-import AddNewSongSection from './AddNewSongSection.tsx'
+import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
+import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
-import { SongSection } from '../../types/models/Song.ts'
-import SongSectionCard from './SongSectionCard.tsx'
+import { SongSection } from '../../../types/models/Song.ts'
+import SongSectionCard from '../SongSectionCard.tsx'
 import { useState } from 'react'
-import EditSongSectionsOccurrencesModal from './modal/EditSongSectionsOccurrencesModal.tsx'
+import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
 import { toast } from 'react-toastify'
-import { BandMember } from '../../types/models/Artist.ts'
+import { BandMember } from '../../../types/models/Artist.ts'
 
 interface SongSectionsCardProps {
   sections: SongSection[]

@@ -1,6 +1,6 @@
-import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
+import { emptySongSection, reduxRender, withToastify } from '../../../test-utils.tsx'
 import SongSectionsCard from './SongSectionsCard.tsx'
-import { SongSection } from '../../types/models/Song.ts'
+import { SongSection } from '../../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
@@ -10,7 +10,7 @@ import {
   AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
   MoveSongSectionRequest
-} from '../../types/requests/SongRequests.ts'
+} from '../../../types/requests/SongRequests.ts'
 
 describe('Song Sections Card', () => {
   const sections: SongSection[] = [
