@@ -54,6 +54,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
 		Sections:       c.createSections(request.Sections, songID),
+		Settings:       model.SongSettings{ID: uuid.New()},
 		UserID:         userID,
 	}
 

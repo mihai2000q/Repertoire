@@ -247,7 +247,10 @@ var Songs = []model.Song{
 		AlbumTrackNo:   &[]uint{1}[0],
 
 		Sections: songSections,
-		UserID:   Users[0].ID,
+		Settings: model.SongSettings{
+			ID: uuid.New(),
+		},
+		UserID: Users[0].ID,
 	},
 	{
 		ID:           uuid.New(),

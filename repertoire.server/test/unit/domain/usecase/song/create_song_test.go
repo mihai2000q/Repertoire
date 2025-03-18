@@ -355,6 +355,9 @@ func assertCreatedSong(
 	assert.Equal(t, request.AlbumID, song.AlbumID)
 	assert.Equal(t, userID, song.UserID)
 	assert.Len(t, request.Sections, len(song.Sections))
+
+	assert.NotEmpty(t, song.Settings.ID)
+
 	for i, section := range request.Sections {
 		assert.NotEmpty(t, song.Sections[i].ID)
 		assert.Equal(t, section.Name, song.Sections[i].Name)
