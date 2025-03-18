@@ -125,16 +125,12 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 1',
           songSectionType: {
             id: '',
             name: 'Solo'
           },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0,
-          occurrences: 0
         }
       ]
     }

@@ -83,6 +83,11 @@ export interface UpdateSongSectionsOccurrencesRequest {
   sections: { id: string, occurrences: number }[]
 }
 
+export interface UpdateSongSectionsPartialOccurrencesRequest {
+  songId: string
+  sections: { id: string, partialOccurrences: number }[]
+}
+
 export interface MoveSongSectionRequest {
   id: string
   overId: string

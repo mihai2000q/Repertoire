@@ -40,6 +40,7 @@ export interface SongSection {
   confidence: number
   progress: number
   occurrences: number
+  partialOccurrences: number
   songSectionType: SongSectionType
   bandMember?: BandMember
   instrument?: Instrument
