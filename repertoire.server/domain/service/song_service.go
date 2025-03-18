@@ -30,6 +30,7 @@ type SongService interface {
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
+	UpdateAllSections(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode
 	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 	UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
 	UpdateSectionsPartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode
@@ -54,6 +55,7 @@ type songService struct {
 	createSongSection                    section.CreateSongSection
 	deleteSongSection                    section.DeleteSongSection
 	moveSongSection                      section.MoveSongSection
+	updateAllSongSections                section.UpdateAllSongSections
 	updateSongSection                    section.UpdateSongSection
 	updateSongSectionsOccurrences        section.UpdateSongSectionsOccurrences
 	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences
@@ -78,6 +80,7 @@ func NewSongService(
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
 	moveSongSection section.MoveSongSection,
+	updateAllSongSections section.UpdateAllSongSections,
 	updateSongSection section.UpdateSongSection,
 	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
 	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences,
@@ -101,6 +104,7 @@ func NewSongService(
 		createSongSection:                    createSongSection,
 		deleteSongSection:                    deleteSongSection,
 		moveSongSection:                      moveSongSection,
+		updateAllSongSections:                updateAllSongSections,
 		updateSongSection:                    updateSongSection,
 		updateSongSectionsOccurrences:        updateSongSectionsOccurrences,
 		updateSongSectionsPartialOccurrences: updateSongSectionsPartialOccurrences,
@@ -171,6 +175,10 @@ func (s *songService) DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.Err
 
 func (s *songService) MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode {
 	return s.moveSongSection.Handle(request)
+}
+
+func (s *songService) UpdateAllSections(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode {
+	return s.updateAllSongSections.Handle(request)
 }
 
 func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {

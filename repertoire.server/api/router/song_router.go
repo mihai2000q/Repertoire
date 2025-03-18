@@ -38,6 +38,7 @@ func (s SongRouter) RegisterRoutes() {
 		sectionsApi.PUT("", s.handler.UpdateSection)
 		sectionsApi.PUT("/occurrences", s.handler.UpdateSectionsOccurrences)
 		sectionsApi.PUT("/partial-occurrences", s.handler.UpdateSectionsPartialOccurrences)
+		sectionsApi.PUT("/all", s.handler.UpdateAllSections)
 		sectionsApi.PUT("/move", s.handler.MoveSection)
 		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
 	}

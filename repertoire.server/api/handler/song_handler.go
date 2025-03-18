@@ -312,6 +312,23 @@ func (s SongHandler) UpdateSectionsPartialOccurrences(c *gin.Context) {
 	s.SendMessage(c, "song sections' partial occurrences have been updated successfully!")
 }
 
+func (s SongHandler) UpdateAllSections(c *gin.Context) {
+	var request requests.UpdateAllSongSectionsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.UpdateAllSections(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song's sections have been updated successfully based on settings!")
+}
+
 func (s SongHandler) MoveSection(c *gin.Context) {
 	var request requests.MoveSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)
