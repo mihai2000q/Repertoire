@@ -122,6 +122,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			db := utils.GetDatabase(t)
 			var song model.Song
 			db.
+				Joins("Settings").
 				Joins("Artist").
 				Joins("Album").
 				Joins("GuitarTuning").

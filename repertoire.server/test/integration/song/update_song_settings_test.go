@@ -1,6 +1,7 @@
 package song
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +18,7 @@ func TestUpdateSongSettings_WhenSettingsIsNotFound_ShouldReturnNotFoundError(t *
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateSongSettingsRequest{
-		SettingsID: songData.Songs[0].Settings.ID,
+		SettingsID: uuid.New(),
 	}
 
 	// when
@@ -32,7 +33,7 @@ func TestUpdateSongSettings_WhenSuccessful_ShouldUpdateSongSettings(t *testing.T
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	song := songData.Songs[0]
+	song := songData.Songs[1]
 	request := requests.UpdateSongSettingsRequest{
 		SettingsID:          song.Settings.ID,
 		DefaultInstrumentID: &songData.Users[0].Instruments[0].ID,

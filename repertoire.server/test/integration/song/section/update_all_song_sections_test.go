@@ -1,6 +1,7 @@
 package section
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +18,7 @@ func TestUpdateAllSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *t
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateAllSongSectionsRequest{
-		SongID: songData.Songs[0].Settings.ID,
+		SongID: uuid.New(),
 	}
 
 	// when
