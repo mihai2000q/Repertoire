@@ -474,6 +474,73 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 	}
 }
 
+func TestValidateUpdateSongSettingsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.UpdateSongSettingsRequest
+	}{
+		{
+			"Non Optional",
+			requests.UpdateSongSettingsRequest{
+				SettingsID: uuid.New(),
+			},
+		},
+		{
+			"All Filled",
+			requests.UpdateSongSettingsRequest{
+				SettingsID:          uuid.New(),
+				DefaultInstrumentID: &[]uuid.UUID{uuid.New()}[0],
+				DefaultBandMemberID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateUpdateSongSettingsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.UpdateSongSettingsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Settings ID Test Cases
+		{
+			"Settings ID is invalid because it's required",
+			requests.UpdateSongSettingsRequest{SettingsID: uuid.Nil},
+			"SettingsID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "UpdateSongSettingsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 // Sections
 
 var validSectionName = "James Solo"
