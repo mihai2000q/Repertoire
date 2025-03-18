@@ -21,6 +21,7 @@ type SongService interface {
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
+	UpdateSettings(request requests.UpdateSongSettingsRequest) *wrapper.ErrorCode
 
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 	GetInstruments(token string) ([]model.Instrument, *wrapper.ErrorCode)
@@ -44,6 +45,7 @@ type songService struct {
 	getSong                 song.GetSong
 	saveImageToSong         song.SaveImageToSong
 	updateSong              song.UpdateSong
+	updateSongSettings      song.UpdateSongSettings
 
 	getGuitarTunings    song.GetGuitarTunings
 	getInstruments      song.GetInstruments
@@ -67,6 +69,7 @@ func NewSongService(
 	getSong song.GetSong,
 	saveImageToSong song.SaveImageToSong,
 	updateSong song.UpdateSong,
+	updateSongSettings song.UpdateSongSettings,
 
 	getGuitarTunings song.GetGuitarTunings,
 	getInstruments song.GetInstruments,
@@ -89,6 +92,7 @@ func NewSongService(
 		getSong:                 getSong,
 		saveImageToSong:         saveImageToSong,
 		updateSong:              updateSong,
+		updateSongSettings:      updateSongSettings,
 
 		getGuitarTunings:    getGuitarTunings,
 		getInstruments:      getInstruments,
@@ -137,6 +141,10 @@ func (s *songService) SaveImage(file *multipart.FileHeader, songID uuid.UUID) *w
 
 func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorCode {
 	return s.updateSong.Handle(request)
+}
+
+func (s *songService) UpdateSettings(request requests.UpdateSongSettingsRequest) *wrapper.ErrorCode {
+	return s.updateSongSettings.Handle(request)
 }
 
 func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {

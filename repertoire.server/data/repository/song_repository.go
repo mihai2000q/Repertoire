@@ -35,6 +35,9 @@ type SongRepository interface {
 	UpdateAllWithAssociations(songs *[]model.Song) error
 	Delete(id uuid.UUID) error
 
+	GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error
+	UpdateSettings(settings *model.SongSettings) error
+
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error
 	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
@@ -229,6 +232,16 @@ func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 
 func (s songRepository) Delete(id uuid.UUID) error {
 	return s.client.DB.Delete(&model.Song{}, id).Error
+}
+
+// Settings
+
+func (s songRepository) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
+	return s.client.DB.Find(&settings, settingsID).Error
+}
+
+func (s songRepository) UpdateSettings(settings *model.SongSettings) error {
+	return s.client.DB.Updates(&settings).Error
 }
 
 // Guitar Tunings
