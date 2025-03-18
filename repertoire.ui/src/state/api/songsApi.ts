@@ -2,6 +2,7 @@ import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/models/Song.ts'
 import {
+  AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
@@ -11,7 +12,8 @@ import {
   SaveImageToSongRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
-  UpdateSongSectionsOccurrencesRequest
+  UpdateSongSectionsOccurrencesRequest,
+  UpdateSongSectionsPartialOccurrencesRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
@@ -49,6 +51,14 @@ const songsApi = api.injectEndpoints({
     addPerfectSongRehearsal: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalRequest>({
       query: (body) => ({
         url: 'songs/perfect-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    addPartialSongRehearsal: build.mutation<HttpMessageResponse, AddPartialSongRehearsalRequest>({
+      query: (body) => ({
+        url: 'songs/partial-rehearsal',
         method: 'POST',
         body: body
       }),
@@ -114,6 +124,17 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    updateSongSectionsPartialOccurrences: build.mutation<
+      HttpMessageResponse,
+      UpdateSongSectionsPartialOccurrencesRequest
+    >({
+      query: (body) => ({
+        url: 'songs/sections/partial-occurrences',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections/move',
@@ -155,6 +176,7 @@ export const {
   useGetSongQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
+  useAddPartialSongRehearsalMutation,
   useUpdateSongMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,
@@ -165,6 +187,7 @@ export const {
   useCreateSongSectionMutation,
   useUpdateSongSectionMutation,
   useUpdateSongSectionsOccurrencesMutation,
+  useUpdateSongSectionsPartialOccurrencesMutation,
   useMoveSongSectionMutation,
   useDeleteSongSectionMutation
 } = songsApi

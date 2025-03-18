@@ -106,6 +106,7 @@ describe('Playlist Song Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })
@@ -118,6 +119,7 @@ describe('Playlist Song Card', () => {
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
   })

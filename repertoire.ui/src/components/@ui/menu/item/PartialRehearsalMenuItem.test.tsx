@@ -1,14 +1,14 @@
 import { reduxRender, withToastify } from '../../../../test-utils.tsx'
-import PerfectRehearsalMenuItem from './PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from './PartialRehearsalMenuItem.tsx'
 import { screen } from '@testing-library/react'
 import { Menu } from '@mantine/core'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
-import { AddPerfectSongRehearsalRequest } from '../../../../types/requests/SongRequests.ts'
+import { AddPartialSongRehearsalRequest } from '../../../../types/requests/SongRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { expect } from 'vitest'
 
-describe('Perfect Rehearsal Menu Item', () => {
+describe('Partial Rehearsal Menu Item', () => {
   const server = setupServer()
 
   beforeAll(() => server.listen())
@@ -20,10 +20,10 @@ describe('Perfect Rehearsal Menu Item', () => {
   it('should render and send request on confirmation', async () => {
     const user = userEvent.setup()
 
-    let capturedRequest: AddPerfectSongRehearsalRequest
+    let capturedRequest: AddPartialSongRehearsalRequest
     server.use(
-      http.post('/songs/perfect-rehearsal', async (req) => {
-        capturedRequest = (await req.request.json()) as AddPerfectSongRehearsalRequest
+      http.post('/songs/partial-rehearsal', async (req) => {
+        capturedRequest = (await req.request.json()) as AddPartialSongRehearsalRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
@@ -34,16 +34,16 @@ describe('Perfect Rehearsal Menu Item', () => {
       withToastify(
         <Menu opened={true}>
           <Menu.Dropdown>
-            <PerfectRehearsalMenuItem songId={songId} />
+            <PartialRehearsalMenuItem songId={songId} />
           </Menu.Dropdown>
         </Menu>
       )
     )
 
-    await user.click(screen.getByRole('menuitem', { name: /perfect rehearsal/i }))
+    await user.click(screen.getByRole('menuitem', { name: /partial rehearsal/i }))
     await user.click(screen.getByRole('button', { name: 'confirm' }))
 
-    expect(await screen.findByText(/perfect rehearsal added/i)).toBeInTheDocument()
+    expect(await screen.findByText(/partial rehearsal added/i)).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({ id: songId })
   })
 })

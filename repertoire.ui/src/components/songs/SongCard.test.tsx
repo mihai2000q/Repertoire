@@ -125,16 +125,12 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 1',
           songSectionType: {
             id: '',
             name: 'Solo'
           },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0,
-          occurrences: 0
         }
       ]
     }
@@ -223,6 +219,7 @@ describe('Song Card', () => {
       target: screen.getByRole('img', { name: song.title })
     })
 
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })

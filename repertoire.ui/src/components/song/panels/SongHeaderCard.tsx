@@ -28,7 +28,8 @@ import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import titleFontSize from "../../../utils/titleFontSize.ts";
+import titleFontSize from '../../../utils/titleFontSize.ts'
+import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -71,6 +72,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <PartialRehearsalMenuItem songId={song.id} />
           <PerfectRehearsalMenuItem songId={song.id} />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
@@ -97,12 +99,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Text fw={500} inline>
             Song
           </Text>
-          <Title
-            order={1}
-            fw={700}
-            lineClamp={2}
-            fz={titleFontSize(song.title)}
-          >
+          <Title order={1} fw={700} lineClamp={2} fz={titleFontSize(song.title)}>
             {song.title}
           </Title>
           <Group gap={'xxs'} wrap={'nowrap'}>

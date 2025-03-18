@@ -29,6 +29,10 @@ export interface AddPerfectSongRehearsalRequest {
   id: string
 }
 
+export interface AddPartialSongRehearsalRequest {
+  id: string
+}
+
 export interface CreateSectionRequest {
   name: string
   typeId: string
@@ -77,6 +81,11 @@ export interface UpdateSongSectionRequest {
 export interface UpdateSongSectionsOccurrencesRequest {
   songId: string
   sections: { id: string, occurrences: number }[]
+}
+
+export interface UpdateSongSectionsPartialOccurrencesRequest {
+  songId: string
+  sections: { id: string, partialOccurrences: number }[]
 }
 
 export interface MoveSongSectionRequest {
