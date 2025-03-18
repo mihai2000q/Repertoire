@@ -44,6 +44,7 @@ import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
 import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
 import PerfectRehearsalMenuItem from "../../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
+import PartialRehearsalMenuItem from "../../@ui/menu/item/PartialRehearsalMenuItem.tsx";
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -145,6 +146,7 @@ function SongDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <PartialRehearsalMenuItem songId={song.id} />
                 <PerfectRehearsalMenuItem songId={song.id} />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
