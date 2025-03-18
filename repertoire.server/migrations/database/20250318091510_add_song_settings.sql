@@ -6,10 +6,10 @@ ALTER TABLE public.band_member_roles
 
 CREATE TABLE public.song_settings
 (
-    id             uuid not null primary key,
-    instrument_id  uuid constraint fk_instruments_song_settings references public.instruments,
-    band_member_id uuid constraint fk_band_members_song_settings references public.band_members,
-    song_id        uuid not null constraint fk_songs_song_settings references public.songs
+    id                      uuid not null primary key,
+    default_instrument_id   uuid constraint fk_instruments_song_settings references public.instruments on delete set null,
+    default_band_member_id  uuid constraint fk_band_members_song_settings references public.band_members on delete set null,
+    song_id                 uuid not null constraint fk_songs_song_settings references public.songs on delete cascade
 );
 
 DO
