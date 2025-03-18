@@ -46,6 +46,7 @@ type BandMember struct {
 	Artist       Artist           `json:"-"`
 	Roles        []BandMemberRole `gorm:"many2many:band_member_has_roles" json:"roles"`
 	SongSections []SongSection    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
+	SongSettings []SongSettings   `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
