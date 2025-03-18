@@ -255,6 +255,7 @@ var Songs = []model.Song{
 		ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],
 		AlbumID:      &[]uuid.UUID{Albums[0].ID}[0],
 		AlbumTrackNo: &[]uint{2}[0],
+		Settings:     model.SongSettings{ID: uuid.New()},
 		UserID:       Users[0].ID,
 	},
 	{

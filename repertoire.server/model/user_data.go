@@ -30,10 +30,11 @@ var DefaultGuitarTunings = []string{
 }
 
 type Instrument struct {
-	ID           uuid.UUID     `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name         string        `gorm:"size:30" json:"name"`
-	Order        uint          `gorm:"not null" json:"-"`
-	SongSections []SongSection `gorm:"constraint:OnDelete:SET NULL" json:"-"`
+	ID           uuid.UUID      `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name         string         `gorm:"size:30" json:"name"`
+	Order        uint           `gorm:"not null" json:"-"`
+	SongSections []SongSection  `gorm:"constraint:OnDelete:SET NULL" json:"-"`
+	SongSettings []SongSettings `gorm:"foreignKey:DefaultInstrumentID; references:ID; constraint:OnDelete:SET NULL" json:"-"`
 
 	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
 }

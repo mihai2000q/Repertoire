@@ -122,6 +122,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			db := utils.GetDatabase(t)
 			var song model.Song
 			db.
+				Joins("Settings").
 				Joins("Artist").
 				Joins("Album").
 				Joins("GuitarTuning").
@@ -158,6 +159,8 @@ func assertCreatedSong(
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, userID, song.UserID)
+
+	assert.NotEmpty(t, song.Settings.ID)
 
 	assert.Len(t, request.Sections, len(song.Sections))
 	for i, sectionRequest := range request.Sections {

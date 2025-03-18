@@ -173,6 +173,21 @@ func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
+	args := s.Called(settings, settingsID)
+
+	if len(args) > 1 {
+		*settings = *args.Get(1).(*model.SongSettings)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) UpdateSettings(settings *model.SongSettings) error {
+	args := s.Called(settings)
+	return args.Error(0)
+}
+
 // Guitar Tunings
 
 func (s *SongRepositoryMock) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {

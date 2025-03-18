@@ -53,6 +53,12 @@ type UpdateSongRequest struct {
 	AlbumID        *uuid.UUID
 }
 
+type UpdateSongSettingsRequest struct {
+	SettingsID          uuid.UUID `validate:"required"`
+	DefaultInstrumentID *uuid.UUID
+	DefaultBandMemberID *uuid.UUID
+}
+
 type CreateSectionRequest struct {
 	Name   string    `validate:"required,max=30"`
 	TypeID uuid.UUID `validate:"required"`
@@ -86,6 +92,12 @@ type UpdateSongSectionsOccurrencesRequest struct {
 type UpdateSongSectionsPartialOccurrencesRequest struct {
 	SongID   uuid.UUID                                `validate:"required"`
 	Sections []UpdateSectionPartialOccurrencesRequest `validate:"min=1,dive"`
+}
+
+type UpdateAllSongSectionsRequest struct {
+	SongID       uuid.UUID `validate:"required"`
+	InstrumentID *uuid.UUID
+	BandMemberID *uuid.UUID
 }
 
 type MoveSongSectionRequest struct {

@@ -21,6 +21,7 @@ type SongService interface {
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
+	UpdateSettings(request requests.UpdateSongSettingsRequest) *wrapper.ErrorCode
 
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 	GetInstruments(token string) ([]model.Instrument, *wrapper.ErrorCode)
@@ -29,6 +30,7 @@ type SongService interface {
 	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
+	UpdateAllSections(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode
 	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 	UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
 	UpdateSectionsPartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode
@@ -44,6 +46,7 @@ type songService struct {
 	getSong                 song.GetSong
 	saveImageToSong         song.SaveImageToSong
 	updateSong              song.UpdateSong
+	updateSongSettings      song.UpdateSongSettings
 
 	getGuitarTunings    song.GetGuitarTunings
 	getInstruments      song.GetInstruments
@@ -52,6 +55,7 @@ type songService struct {
 	createSongSection                    section.CreateSongSection
 	deleteSongSection                    section.DeleteSongSection
 	moveSongSection                      section.MoveSongSection
+	updateAllSongSections                section.UpdateAllSongSections
 	updateSongSection                    section.UpdateSongSection
 	updateSongSectionsOccurrences        section.UpdateSongSectionsOccurrences
 	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences
@@ -67,6 +71,7 @@ func NewSongService(
 	getSong song.GetSong,
 	saveImageToSong song.SaveImageToSong,
 	updateSong song.UpdateSong,
+	updateSongSettings song.UpdateSongSettings,
 
 	getGuitarTunings song.GetGuitarTunings,
 	getInstruments song.GetInstruments,
@@ -75,6 +80,7 @@ func NewSongService(
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
 	moveSongSection section.MoveSongSection,
+	updateAllSongSections section.UpdateAllSongSections,
 	updateSongSection section.UpdateSongSection,
 	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
 	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences,
@@ -89,6 +95,7 @@ func NewSongService(
 		getSong:                 getSong,
 		saveImageToSong:         saveImageToSong,
 		updateSong:              updateSong,
+		updateSongSettings:      updateSongSettings,
 
 		getGuitarTunings:    getGuitarTunings,
 		getInstruments:      getInstruments,
@@ -97,6 +104,7 @@ func NewSongService(
 		createSongSection:                    createSongSection,
 		deleteSongSection:                    deleteSongSection,
 		moveSongSection:                      moveSongSection,
+		updateAllSongSections:                updateAllSongSections,
 		updateSongSection:                    updateSongSection,
 		updateSongSectionsOccurrences:        updateSongSectionsOccurrences,
 		updateSongSectionsPartialOccurrences: updateSongSectionsPartialOccurrences,
@@ -139,6 +147,10 @@ func (s *songService) Update(request requests.UpdateSongRequest) *wrapper.ErrorC
 	return s.updateSong.Handle(request)
 }
 
+func (s *songService) UpdateSettings(request requests.UpdateSongSettingsRequest) *wrapper.ErrorCode {
+	return s.updateSongSettings.Handle(request)
+}
+
 func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode) {
 	return s.getGuitarTunings.Handle(token)
 }
@@ -163,6 +175,10 @@ func (s *songService) DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.Err
 
 func (s *songService) MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode {
 	return s.moveSongSection.Handle(request)
+}
+
+func (s *songService) UpdateAllSections(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode {
+	return s.updateAllSongSections.Handle(request)
 }
 
 func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {

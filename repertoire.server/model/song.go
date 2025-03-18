@@ -27,6 +27,7 @@ type Song struct {
 	Confidence     float64            `gorm:"not null" json:"confidence"`
 	Progress       float64            `gorm:"not null" json:"progress"`
 
+	Settings       SongSettings   `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
 	AlbumID        *uuid.UUID     `json:"albumId"`
 	ArtistID       *uuid.UUID     `json:"artistId"`
 	GuitarTuningID *uuid.UUID     `json:"-"`
@@ -64,6 +65,18 @@ func (s *Song) AfterFind(*gorm.DB) error {
 	}
 
 	return nil
+}
+
+// Song Settings
+
+type SongSettings struct {
+	ID                  uuid.UUID   `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	DefaultInstrumentID *uuid.UUID  `json:"defaultInstrumentId"`
+	DefaultInstrument   *Instrument `json:"defaultInstrument"`
+	DefaultBandMemberID *uuid.UUID  `json:"defaultBandMemberId"`
+	DefaultBandMember   *BandMember `json:"bandMember"`
+
+	SongID uuid.UUID `gorm:"not null" json:"-"`
 }
 
 // Song Sections

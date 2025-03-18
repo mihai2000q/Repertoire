@@ -141,6 +141,23 @@ func (s SongHandler) Update(c *gin.Context) {
 	s.SendMessage(c, "song has been updated successfully")
 }
 
+func (s SongHandler) UpdateSettings(c *gin.Context) {
+	var request requests.UpdateSongSettingsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.UpdateSettings(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song's settings have been updated successfully")
+}
+
 func (s SongHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -293,6 +310,23 @@ func (s SongHandler) UpdateSectionsPartialOccurrences(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "song sections' partial occurrences have been updated successfully!")
+}
+
+func (s SongHandler) UpdateAllSections(c *gin.Context) {
+	var request requests.UpdateAllSongSectionsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.UpdateAllSections(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song's sections have been updated successfully based on settings!")
 }
 
 func (s SongHandler) MoveSection(c *gin.Context) {

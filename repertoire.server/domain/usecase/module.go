@@ -89,6 +89,7 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewSaveImageToSong),
 	fx.Provide(song.NewUpdateSong),
+	fx.Provide(song.NewUpdateSongSettings),
 
 	fx.Provide(song.NewGetGuitarTunings),
 	fx.Provide(song.NewGetInstruments),
@@ -97,6 +98,7 @@ var songUseCases = fx.Options(
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
 	fx.Provide(section.NewMoveSongSection),
+	fx.Provide(section.NewUpdateAllSongSections),
 	fx.Provide(section.NewUpdateSongSection),
 	fx.Provide(section.NewUpdateSongSectionsOccurrences),
 	fx.Provide(section.NewUpdateSongSectionsPartialOccurrences),
