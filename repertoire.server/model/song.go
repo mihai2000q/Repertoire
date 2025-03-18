@@ -75,7 +75,7 @@ type SongSettings struct {
 	DefaultInstrumentID *uuid.UUID  `json:"defaultInstrumentId"`
 	DefaultInstrument   *Instrument `json:"defaultInstrument"`
 	DefaultBandMemberID *uuid.UUID  `json:"defaultBandMemberId"`
-	BandMember          *BandMember `json:"bandMember"`
+	DefaultBandMember   *BandMember `json:"bandMember"`
 
 	SongID uuid.UUID `gorm:"not null" json:"-"`
 }
