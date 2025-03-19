@@ -241,7 +241,7 @@ func (s songRepository) GetSettings(settings *model.SongSettings, settingsID uui
 }
 
 func (s songRepository) UpdateSettings(settings *model.SongSettings) error {
-	return s.client.DB.Updates(&settings).Error
+	return s.client.DB.Save(&settings).Error
 }
 
 // Guitar Tunings
