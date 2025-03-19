@@ -151,11 +151,9 @@ describe('Song Sections Card', () => {
       await user.click(screen.getByRole('button', { name: 'add-partial-rehearsal' }))
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
-      expect(screen.getByText(/increase sections' rehearsals/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'cancel-partial-rehearsal' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'confirm-partial-rehearsal' })).toBeInTheDocument()
+      expect(screen.getByText(/increase sections' rehearsals .* partial occurrences/i)).toBeInTheDocument()
 
-      await user.click(screen.getByRole('button', { name: 'confirm-partial-rehearsal' }))
+      await user.click(screen.getByRole('button', { name: 'confirm' }))
 
       expect(await screen.findByText(/partial rehearsal added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ id: songId })
@@ -179,11 +177,9 @@ describe('Song Sections Card', () => {
       await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
-      expect(screen.getByText(/increase sections' rehearsals/i)).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'cancel-perfect-rehearsal' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'confirm-perfect-rehearsal' })).toBeInTheDocument()
+      expect(screen.getByText(/increase sections' rehearsals .* occurrences/i)).toBeInTheDocument()
 
-      await user.click(screen.getByRole('button', { name: 'confirm-perfect-rehearsal' }))
+      await user.click(screen.getByRole('button', { name: 'confirm' }))
 
       expect(await screen.findByText(/perfect rehearsal added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ id: songId })
