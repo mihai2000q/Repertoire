@@ -1,6 +1,5 @@
-import Song from '../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
-import { reduxRender } from '../../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 import SongInformationCard from './SongInformationCard.tsx'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
@@ -9,19 +8,6 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 
 describe('Song Information Card', () => {
-  const song: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: ''
-  }
-
   const handlers = [
     http.get(`/songs/guitar-tunings`, () => {
       return HttpResponse.json([])
@@ -37,7 +23,7 @@ describe('Song Information Card', () => {
   afterAll(() => server.close())
 
   it('should render when there is no information', () => {
-    reduxRender(<SongInformationCard song={song} />)
+    reduxRender(<SongInformationCard song={emptySong} />)
 
     expect(screen.getByRole('button', { name: 'edit-panel' })).toBeInTheDocument()
     expect(screen.getAllByText(/not set/i)).toHaveLength(3)
@@ -48,8 +34,8 @@ describe('Song Information Card', () => {
   it('should render when there is information', async () => {
     const user = userEvent.setup()
 
-    const localSong = {
-      ...song,
+    const song = {
+      ...emptySong,
       difficulty: Difficulty.Impossible,
       guitarTuning: {
         id: '',
@@ -60,29 +46,29 @@ describe('Song Information Card', () => {
       lastTimePlayed: '2024-10-30'
     }
 
-    reduxRender(<SongInformationCard song={localSong} />)
+    reduxRender(<SongInformationCard song={song} />)
 
     expect(screen.getByRole('button', { name: 'edit-panel' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
-    expect(screen.getByText(localSong.guitarTuning.name)).toBeInTheDocument()
-    expect(screen.getByText(localSong.bpm)).toBeInTheDocument()
+    expect(screen.getByText(song.guitarTuning.name)).toBeInTheDocument()
+    expect(screen.getByText(song.bpm)).toBeInTheDocument()
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
-    expect(
-      screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
-    ).toBeInTheDocument()
+    expect(screen.getByText(dayjs(song.lastTimePlayed).format('DD MMM YYYY'))).toBeInTheDocument()
 
     await user.hover(screen.getByRole('progressbar', { name: 'difficulty' }))
     expect(
-      await screen.findByRole('tooltip', { name: new RegExp(localSong.difficulty) })
+      await screen.findByRole('tooltip', { name: new RegExp(song.difficulty) })
     ).toBeInTheDocument()
   })
 
   it('should open edit song information modal on edit panel click', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongInformationCard song={song} />)
+    reduxRender(<SongInformationCard song={emptySong} />)
 
     await user.click(screen.getByRole('button', { name: 'edit-panel' }))
-    expect(await screen.findByRole('dialog', { name: /edit song information/i })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('dialog', { name: /edit song information/i })
+    ).toBeInTheDocument()
   })
 })

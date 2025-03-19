@@ -71,10 +71,10 @@ func (s *Song) AfterFind(*gorm.DB) error {
 
 type SongSettings struct {
 	ID                  uuid.UUID   `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	DefaultInstrumentID *uuid.UUID  `json:"defaultInstrumentId"`
+	DefaultInstrumentID *uuid.UUID  `json:"-"`
 	DefaultInstrument   *Instrument `json:"defaultInstrument"`
-	DefaultBandMemberID *uuid.UUID  `json:"defaultBandMemberId"`
-	DefaultBandMember   *BandMember `json:"bandMember"`
+	DefaultBandMemberID *uuid.UUID  `json:"-"`
+	DefaultBandMember   *BandMember `json:"defaultBandMember"`
 
 	SongID uuid.UUID `gorm:"not null" json:"-"`
 }

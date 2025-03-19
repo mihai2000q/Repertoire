@@ -175,6 +175,8 @@ func ResponseSong(
 	}
 
 	if withAssociations {
+		ResponseSongSettings(t, song.Settings, response.Settings)
+
 		if song.GuitarTuning != nil {
 			ResponseGuitarTuning(t, *song.GuitarTuning, *response.GuitarTuning)
 		} else {
@@ -188,6 +190,20 @@ func ResponseSong(
 		for i := range song.Playlists {
 			ResponsePlaylist(t, song.Playlists[i], response.Playlists[i], false)
 		}
+	}
+}
+
+func ResponseSongSettings(t *testing.T, settings model.SongSettings, response model.SongSettings) {
+	assert.Equal(t, settings.ID, response.ID)
+	if settings.DefaultInstrument != nil {
+		ResponseInstrument(t, *settings.DefaultInstrument, *response.DefaultInstrument)
+	} else {
+		assert.Nil(t, response.DefaultInstrument)
+	}
+	if settings.DefaultBandMember != nil {
+		ResponseBandMember(t, *settings.DefaultBandMember, *response.DefaultBandMember, false)
+	} else {
+		assert.Nil(t, response.DefaultBandMember)
 	}
 }
 

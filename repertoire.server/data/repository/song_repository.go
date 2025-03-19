@@ -89,6 +89,9 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 
 func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	return s.client.DB.
+		Joins("Settings").
+		Joins("Settings.DefaultBandMember").
+		Joins("Settings.DefaultInstrument").
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
@@ -241,7 +244,7 @@ func (s songRepository) GetSettings(settings *model.SongSettings, settingsID uui
 }
 
 func (s songRepository) UpdateSettings(settings *model.SongSettings) error {
-	return s.client.DB.Updates(&settings).Error
+	return s.client.DB.Save(&settings).Error
 }
 
 // Guitar Tunings

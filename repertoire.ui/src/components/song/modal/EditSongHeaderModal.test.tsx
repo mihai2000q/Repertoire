@@ -1,4 +1,10 @@
-import { emptyAlbum, emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import EditSongHeaderModal from './EditSongHeaderModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import { act, screen } from '@testing-library/react'
@@ -13,18 +19,11 @@ import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Edit Song Header Modal', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
     title: 'Song 1',
     releaseDate: '2024-12-12T00:00:00',
-    imageUrl: 'some-image.png',
-    confidence: 0,
-    isRecorded: false,
-    progress: 0,
-    rehearsals: 0,
-    sections: [],
-    description: '',
-    createdAt: '',
-    updatedAt: ''
+    imageUrl: 'some-image.png'
   }
 
   const albums: AlbumSearch[] = [
