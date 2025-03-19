@@ -106,11 +106,20 @@ function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongS
               </ActionIcon>
             </Tooltip>
 
-            <Tooltip label={showDetails ? 'Hide details' : 'Show Details'}>
+            <Tooltip
+              label={
+                sections.length > 0
+                  ? showDetails
+                    ? 'Hide details'
+                    : 'Show Details'
+                  : 'To show details you need sections'
+              }
+            >
               <ActionIcon
                 aria-label={showDetails ? 'hide-details' : 'show-details'}
                 variant={'grey'}
                 size={'sm'}
+                disabled={sections.length === 0}
                 onClick={handleShowDetails}
               >
                 {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}

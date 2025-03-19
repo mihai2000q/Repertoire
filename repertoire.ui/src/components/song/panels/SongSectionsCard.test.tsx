@@ -75,6 +75,7 @@ describe('Song Sections Card', () => {
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeInTheDocument()
@@ -87,6 +88,15 @@ describe('Song Sections Card', () => {
       expect(renderedSections[i]).toHaveAccessibleName(`song-section-${sections[i].name}`)
     }
     screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
+
+    rerender(
+      <SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />
+    )
+
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
   it('should disable a few options when there are no sections', () => {
