@@ -37,7 +37,7 @@ function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongS
   }, [opened])
 
   const [bandMember, setBandMember] = useState<BandMember>(null)
-  const [instrument, setInstrument] = useState<ComboboxItem>(null)
+  const [instrument, setInstrument] = useState<Instrument>(null)
 
   function handleOnTransitionEnd() {
     if (opened) scrollIntoView({ alignment: 'end' })
@@ -57,7 +57,7 @@ function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongS
       name: nameTrimmed,
       songId: songId,
       bandMemberId: bandMember?.id,
-      instrumentId: instrument?.value
+      instrumentId: instrument?.id
     }).unwrap()
 
     toast.success(nameTrimmed + ' added!')
@@ -88,8 +88,8 @@ function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongS
           />
 
           <InstrumentCompactSelect
-            option={instrument}
-            onOptionChange={setInstrument}
+            instrument={instrument}
+            setInstrument={setInstrument}
             position={'top'}
             transitionProps={{ duration: 160, transition: 'fade-up' }}
           />
