@@ -54,10 +54,10 @@ describe('Instrument Compact Select', () => {
     await user.click(selectButton)
 
     for (const instrument of instruments) {
-      expect(await screen.findByRole('instrument', { name: instrument.name })).toBeInTheDocument()
+      expect(await screen.findByRole('option', { name: instrument.name })).toBeInTheDocument()
     }
 
-    const selectedOption = screen.getByRole('instrument', { name: newInstrument.name })
+    const selectedOption = screen.getByRole('option', { name: newInstrument.name })
     await user.click(selectedOption)
 
     expect(onChange).toHaveBeenCalledOnce()
@@ -97,9 +97,9 @@ describe('Instrument Compact Select', () => {
     await user.type(screen.getByRole('textbox', { name: /search/i }), searchValue)
 
     const filteredInstruments = instruments.filter((i) => i.name.includes(searchValue))
-    expect(await screen.findAllByRole('instrument')).toHaveLength(filteredInstruments.length)
+    expect(await screen.findAllByRole('option')).toHaveLength(filteredInstruments.length)
     for (const instrument of filteredInstruments) {
-      expect(screen.getByRole('instrument', { name: instrument.name })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: instrument.name })).toBeInTheDocument()
     }
   })
 })

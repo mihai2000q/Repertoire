@@ -89,7 +89,7 @@ describe('Song Sections Settings Popover', () => {
     const user = userEvent.setup()
 
     const defaultInstrument = instruments[1]
-    const defaultBandMember = bandMembers[2]
+    const defaultBandMember = bandMembers[1]
 
     reduxRender(
       <SongSectionsSettingsPopover

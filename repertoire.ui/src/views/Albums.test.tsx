@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Albums from './Albums.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
@@ -37,16 +37,8 @@ describe('Albums', () => {
       const response: WithTotalCountResponse<Song> = {
         models: [
           {
-            id: '',
-            title: 'Some song',
-            description: '',
-            isRecorded: false,
-            sections: [],
-            rehearsals: 0,
-            confidence: 0,
-            progress: 0,
-            createdAt: '',
-            updatedAt: ''
+            ...emptySong,
+            title: 'Some song'
           }
         ],
         totalCount: 1

@@ -1,21 +1,15 @@
 import Song from '../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
-import { mantineRender } from '../../../test-utils.tsx'
+import { emptySong, mantineRender } from '../../../test-utils.tsx'
 import SongOverallCard from './SongOverallCard.tsx'
 import { userEvent } from '@testing-library/user-event'
 
 describe('Song Overall Card', () => {
   const song: Song = {
-    id: '',
-    title: '',
-    description: '',
-    isRecorded: false,
-    sections: [],
+    ...emptySong,
     rehearsals: 10,
     confidence: 78,
-    progress: 254,
-    createdAt: '',
-    updatedAt: ''
+    progress: 254
   }
 
   it('should render', async () => {
