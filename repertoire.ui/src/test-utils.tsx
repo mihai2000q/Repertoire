@@ -239,7 +239,10 @@ export const emptySong: Song = {
   sections: [],
   createdAt: '',
   updatedAt: '',
-  releaseDate: null
+  releaseDate: null,
+  settings: {
+    id: ''
+  }
 }
 
 export const emptyPlaylist: Playlist = {

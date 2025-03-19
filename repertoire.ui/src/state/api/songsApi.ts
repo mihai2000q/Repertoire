@@ -9,11 +9,12 @@ import {
   DeleteSongSectionRequest,
   GetSongsRequest,
   MoveSongSectionRequest,
-  SaveImageToSongRequest,
+  SaveImageToSongRequest, UpdateAllSongSectionsRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
   UpdateSongSectionsOccurrencesRequest,
-  UpdateSongSectionsPartialOccurrencesRequest
+  UpdateSongSectionsPartialOccurrencesRequest,
+  UpdateSongSettingsRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
@@ -71,6 +72,14 @@ const songsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Songs', 'Albums']
+    }),
+    updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
+      query: (body) => ({
+        url: 'songs/settings',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
     }),
     saveImageToSong: build.mutation<HttpMessageResponse, SaveImageToSongRequest>({
       query: (request) => ({
@@ -135,6 +144,14 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    updateAllSongSections: build.mutation<HttpMessageResponse, UpdateAllSongSectionsRequest>({
+      query: (body) => ({
+        url: 'songs/sections/all',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections/move',
@@ -178,6 +195,7 @@ export const {
   useAddPerfectSongRehearsalMutation,
   useAddPartialSongRehearsalMutation,
   useUpdateSongMutation,
+  useUpdateSongSettingsMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,
   useDeleteSongMutation,
@@ -188,6 +206,7 @@ export const {
   useUpdateSongSectionMutation,
   useUpdateSongSectionsOccurrencesMutation,
   useUpdateSongSectionsPartialOccurrencesMutation,
+  useUpdateAllSongSectionsMutation,
   useMoveSongSectionMutation,
   useDeleteSongSectionMutation
 } = songsApi

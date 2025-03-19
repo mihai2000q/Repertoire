@@ -53,6 +53,12 @@ export interface UpdateSongRequest {
   artistId?: string
 }
 
+export interface UpdateSongSettingsRequest {
+  settingsId: string
+  defaultBandMemberId?: string
+  defaultInstrumentId?: string
+}
+
 export interface SaveImageToSongRequest {
   image: FileWithPath
   id: string
@@ -86,6 +92,12 @@ export interface UpdateSongSectionsOccurrencesRequest {
 export interface UpdateSongSectionsPartialOccurrencesRequest {
   songId: string
   sections: { id: string, partialOccurrences: number }[]
+}
+
+export interface UpdateAllSongSectionsRequest {
+  songId: string
+  bandMemberId?: string
+  instrumentId?: string
 }
 
 export interface MoveSongSectionRequest {

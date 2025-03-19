@@ -24,6 +24,7 @@ export default interface Song {
   playlistTrackNo?: number
   playlistCreatedAt?: string
 
+  settings: SongSettings
   album?: Album
   artist?: Artist
   guitarTuning?: GuitarTuning
@@ -31,6 +32,12 @@ export default interface Song {
 
   createdAt: string
   updatedAt: string
+}
+
+export interface SongSettings {
+  id: string
+  defaultBandMember?: BandMember
+  defaultInstrument?: Instrument
 }
 
 export interface SongSection {
