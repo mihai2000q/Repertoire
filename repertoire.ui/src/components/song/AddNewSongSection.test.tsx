@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../test-utils.tsx'
+import { emptySongSettings, reduxRender, withToastify } from '../../test-utils.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
@@ -35,6 +35,19 @@ describe('Add New Song Section', () => {
     }
   ]
 
+  const bandMembers: BandMember[] = [
+    {
+      id: '1',
+      name: 'Chester',
+      roles: []
+    },
+    {
+      id: '2',
+      name: 'Michael',
+      roles: []
+    }
+  ]
+
   const handlers = [
     http.get('/songs/instruments', async () => {
       return HttpResponse.json(instruments)
@@ -53,8 +66,18 @@ describe('Add New Song Section', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<AddNewSongSection opened={true} onClose={() => {}} songId={''} />)
+    const [{ rerender }] = reduxRender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+      />
+    )
 
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /song-section-type/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(await screen.findByRole('textbox', { name: /name/i })).toHaveFocus()
@@ -62,6 +85,35 @@ describe('Add New Song Section', () => {
 
     expect(screen.getByRole('textbox', { name: /song-section-type/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
+
+    rerender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+        bandMembers={[]}
+      />
+    )
+    expect(screen.getByRole('button', { name: 'select-band-member' })).not.toBeDisabled()
+  })
+
+  it('should have default options based on settings', async () => {
+    const defaultInstrument = instruments[1]
+    const defaultBandMember = bandMembers[1]
+
+    reduxRender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={{ ...emptySongSettings, defaultBandMember, defaultInstrument }}
+        bandMembers={bandMembers}
+      />
+    )
+
+    expect(screen.getByRole('button', { name: defaultBandMember.name })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: defaultInstrument.name })).toBeInTheDocument()
   })
 
   it('should send create request when name is typed and type is selected', async () => {
@@ -81,7 +133,16 @@ describe('Add New Song Section', () => {
       })
     )
 
-    reduxRender(withToastify(<AddNewSongSection opened={true} onClose={onClose} songId={songId} />))
+    reduxRender(
+      withToastify(
+        <AddNewSongSection
+          opened={true}
+          onClose={onClose}
+          songId={songId}
+          settings={emptySongSettings}
+        />
+      )
+    )
 
     await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
     await user.click(await screen.findByText(newSectionType.name))
@@ -107,13 +168,6 @@ describe('Add New Song Section', () => {
 
     const onClose = vitest.fn()
     const songId = 'some id'
-    const bandMembers: BandMember[] = [
-      {
-        id: '1',
-        name: 'Michael',
-        roles: []
-      }
-    ]
 
     const newSectionType = sectionTypes[0]
     const newName = 'Section 1'
@@ -135,6 +189,7 @@ describe('Add New Song Section', () => {
           onClose={onClose}
           songId={songId}
           bandMembers={bandMembers}
+          settings={emptySongSettings}
         />
       )
     )
@@ -178,7 +233,14 @@ describe('Add New Song Section', () => {
 
     const newName = 'New Name'
 
-    reduxRender(<AddNewSongSection opened={true} onClose={() => {}} songId={''} />)
+    reduxRender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+      />
+    )
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
     await user.clear(screen.getByRole('textbox', { name: /name/i }))
@@ -197,7 +259,14 @@ describe('Add New Song Section', () => {
       })
     )
 
-    reduxRender(<AddNewSongSection opened={true} onClose={() => {}} songId={''} />)
+    reduxRender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+      />
+    )
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
@@ -220,7 +289,14 @@ describe('Add New Song Section', () => {
       })
     )
 
-    reduxRender(<AddNewSongSection opened={true} onClose={() => {}} songId={''} />)
+    reduxRender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+      />
+    )
 
     await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
     await user.click(await screen.findByText(newSectionType.name))
@@ -246,7 +322,14 @@ describe('Add New Song Section', () => {
       })
     )
 
-    reduxRender(<AddNewSongSection opened={true} onClose={() => {}} songId={''} />)
+    reduxRender(
+      <AddNewSongSection
+        opened={true}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+      />
+    )
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
 
@@ -262,7 +345,12 @@ describe('Add New Song Section', () => {
     const user = userEvent.setup()
 
     const uut = (opened = true) => (
-      <AddNewSongSection opened={opened} onClose={() => {}} songId={''} />
+      <AddNewSongSection
+        opened={opened}
+        onClose={() => {}}
+        songId={''}
+        settings={emptySongSettings}
+      />
     )
 
     const [{ rerender }] = reduxRender(uut())

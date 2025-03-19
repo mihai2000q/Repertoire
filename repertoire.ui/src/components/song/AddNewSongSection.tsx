@@ -7,15 +7,23 @@ import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
 import { BandMember } from '../../types/models/Artist.ts'
 import BandMemberCompactSelect from '../@ui/form/select/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../@ui/form/select/InstrumentCompactSelect.tsx'
+import { Instrument, SongSettings } from '../../types/models/Song.ts'
 
 interface AddNewSongSectionProps {
   opened: boolean
   onClose: () => void
   songId: string
+  settings: SongSettings
   bandMembers?: BandMember[] | undefined
 }
 
-function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongSectionProps) {
+function AddNewSongSection({
+  opened,
+  onClose,
+  songId,
+  settings,
+  bandMembers
+}: AddNewSongSectionProps) {
   const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
 
   const { scrollIntoView, targetRef: scrollIntoViewRef } = useScrollIntoView({
@@ -38,6 +46,10 @@ function AddNewSongSection({ opened, onClose, songId, bandMembers }: AddNewSongS
 
   const [bandMember, setBandMember] = useState<BandMember>(null)
   const [instrument, setInstrument] = useState<Instrument>(null)
+  useEffect(() => {
+    setBandMember(settings.defaultBandMember)
+    setInstrument(settings.defaultInstrument)
+  }, [settings])
 
   function handleOnTransitionEnd() {
     if (opened) scrollIntoView({ alignment: 'end' })
