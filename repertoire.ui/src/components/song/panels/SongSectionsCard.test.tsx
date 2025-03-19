@@ -1,4 +1,9 @@
-import { emptySongSection, reduxRender, withToastify } from '../../../test-utils.tsx'
+import {
+  emptySongSection,
+  emptySongSettings,
+  reduxRender,
+  withToastify
+} from '../../../test-utils.tsx'
 import SongSectionsCard from './SongSectionsCard.tsx'
 import { SongSection } from '../../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
@@ -70,7 +75,7 @@ describe('Song Sections Card', () => {
   afterAll(() => server.close())
 
   it('should render', () => {
-    reduxRender(<SongSectionsCard sections={sections} songId={''} />)
+    const [{ rerender }] = reduxRender(<SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />)
 
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
@@ -82,6 +87,7 @@ describe('Song Sections Card', () => {
     expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
 
     const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
     for (let i = 0; i < sections.length; i++) {
@@ -100,7 +106,7 @@ describe('Song Sections Card', () => {
   })
 
   it('should disable a few options when there are no sections', () => {
-    reduxRender(<SongSectionsCard sections={[]} songId={''} />)
+    reduxRender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
 
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
@@ -110,7 +116,7 @@ describe('Song Sections Card', () => {
     it('should open add new song section when clicking on add new section button', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionsCard sections={sections} songId={''} />)
+      reduxRender(<SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />)
 
       await user.click(screen.getByRole('button', { name: 'add-new-section' }))
       expect(screen.getByLabelText('add-new-song-section')).toBeInTheDocument()
@@ -119,7 +125,7 @@ describe('Song Sections Card', () => {
     it('should show details when clicking on show details', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionsCard sections={sections} songId={''} />)
+      reduxRender(<SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />)
 
       await user.click(screen.getByRole('button', { name: 'show-details' }))
       expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
@@ -135,7 +141,7 @@ describe('Song Sections Card', () => {
     it("should open edit song sections' occurrences when clicking on edit sections' occurrences button", async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionsCard sections={sections} songId={''} />)
+      reduxRender(<SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />)
 
       await user.click(screen.getByRole('button', { name: 'edit-occurrences' }))
       expect(
@@ -156,7 +162,11 @@ describe('Song Sections Card', () => {
 
       const songId = 'some-id'
 
-      reduxRender(withToastify(<SongSectionsCard sections={sections} songId={songId} />))
+      reduxRender(
+        withToastify(
+          <SongSectionsCard sections={sections} songId={songId} settings={emptySongSettings} />
+        )
+      )
 
       await user.click(screen.getByRole('button', { name: 'add-partial-rehearsal' }))
 
@@ -182,7 +192,11 @@ describe('Song Sections Card', () => {
 
       const songId = 'some-id'
 
-      reduxRender(withToastify(<SongSectionsCard sections={sections} songId={songId} />))
+      reduxRender(
+        withToastify(
+          <SongSectionsCard sections={sections} songId={songId} settings={emptySongSettings} />
+        )
+      )
 
       await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
 
@@ -209,7 +223,9 @@ describe('Song Sections Card', () => {
       })
     )
 
-    reduxRender(<SongSectionsCard sections={sections} songId={songId} />)
+    reduxRender(
+      <SongSectionsCard sections={sections} songId={songId} settings={emptySongSettings} />
+    )
 
     fireEvent.mouseDown(screen.getByLabelText(`song-section-${section.name}`))
     fireEvent.dragStart(screen.getByLabelText(`song-section-${section.name}`))
@@ -234,7 +250,7 @@ describe('Song Sections Card', () => {
   it('should show add new song section card and open add new song section, when there are no sections', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSectionsCard sections={[]} songId={''} />)
+    reduxRender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
 
     expect(screen.getByLabelText('add-new-song-section-card')).toBeInTheDocument()
     await user.click(screen.getByLabelText('add-new-song-section-card'))

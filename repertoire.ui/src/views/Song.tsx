@@ -47,6 +47,7 @@ function Song() {
 
             <SongSectionsCard
               songId={songId}
+              settings={song.settings}
               sections={song.sections}
               bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
               isArtistBand={song.artist?.isBand}

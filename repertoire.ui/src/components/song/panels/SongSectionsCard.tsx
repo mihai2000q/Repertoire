@@ -3,7 +3,7 @@ import {
   useAddPerfectSongRehearsalMutation,
   useMoveSongSectionMutation
 } from '../../../state/api/songsApi.ts'
-import { ActionIcon, alpha, Box, Card, Group, Popover, Stack, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Card, Group, Stack, Text, Tooltip } from '@mantine/core'
 import {
   IconCheck,
   IconChecks,
@@ -16,22 +16,30 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
-import { SongSection } from '../../../types/models/Song.ts'
+import { SongSection, SongSettings } from '../../../types/models/Song.ts'
 import SongSectionCard from '../SongSectionCard.tsx'
 import { useState } from 'react'
 import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
+import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
 
 interface SongSectionsCardProps {
   sections: SongSection[]
+  settings: SongSettings
   songId: string
   bandMembers?: BandMember[]
   isArtistBand?: boolean
 }
 
-function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongSectionsCardProps) {
+function SongSectionsCard({
+  sections,
+  settings,
+  songId,
+  bandMembers,
+  isArtistBand
+}: SongSectionsCardProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
   const [addPartialRehearsal, { isLoading: isPartialRehearsalLoading }] =
     useAddPartialSongRehearsalMutation()
@@ -214,6 +222,12 @@ function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongS
               </Tooltip>
             </PopoverConfirmation>
 
+            <SongSectionsSettingsPopover
+              settings={settings}
+              sections={sections}
+              songId={songId}
+              bandMembers={bandMembers}
+            />
           </Tooltip.Group>
         </Group>
 
@@ -262,6 +276,7 @@ function SongSectionsCard({ sections, songId, bandMembers, isArtistBand }: SongS
             songId={songId}
             opened={openedAdd}
             onClose={closeAdd}
+            settings={settings}
             bandMembers={bandMembers}
           />
         </Stack>
