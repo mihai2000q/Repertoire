@@ -97,12 +97,13 @@ function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
 
   const globalState = (api.getState() as RootState).global
 
+  // null propagation for unit tests
   const isArtistDrawerOpenWithDeletedArtist =
-    globalState.artistDrawer.artistId && args.url.includes(globalState.artistDrawer.artistId)
+    globalState.artistDrawer?.artistId && args.url.includes(globalState.artistDrawer.artistId)
   const isAlbumDrawerOpenWithDeletedAlbum =
-    globalState.albumDrawer.albumId && args.url.includes(globalState.albumDrawer.albumId)
+    globalState.albumDrawer?.albumId && args.url.includes(globalState.albumDrawer.albumId)
   const isSongDrawerOpenWithDeletedSong =
-    globalState.songDrawer.songId && args.url.includes(globalState.songDrawer.songId)
+    globalState.songDrawer?.songId && args.url.includes(globalState.songDrawer.songId)
 
   if (api.endpoint === 'deleteArtist') {
     if (isArtistDrawerOpenWithDeletedArtist) api.dispatch(deleteArtistDrawer())
