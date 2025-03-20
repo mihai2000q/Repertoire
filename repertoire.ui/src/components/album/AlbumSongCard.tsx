@@ -18,7 +18,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
-import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
 import SongProperty from '../../utils/enums/SongProperty.ts'
@@ -30,11 +30,13 @@ import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from "../@ui/menu/item/PartialRehearsalMenuItem.tsx";
+import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
+import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
 
 interface AlbumSongCardProps {
   song: Song
-  handleRemove: () => void
+  albumId: string
   isUnknownAlbum: boolean
   order: Order
   isDragging: boolean
@@ -44,7 +46,7 @@ interface AlbumSongCardProps {
 
 function AlbumSongCard({
   song,
-  handleRemove,
+  albumId,
   isUnknownAlbum,
   order,
   isDragging,
@@ -56,12 +58,17 @@ function AlbumSongCard({
   const { ref: hoverRef, hovered } = useHover()
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
 
+  const [removeSongsFromAlbum, { isLoading: isRemoveLoading }] = useRemoveSongsFromAlbumMutation()
+  const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
+
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
   const isSelected = hovered || isMenuOpened || isDragging || openedMenu
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
+    useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   function handleClick() {
@@ -78,6 +85,19 @@ function AlbumSongCard({
     openRemoveWarning()
   }
 
+  function handleOpenDeleteWarning(e: MouseEvent) {
+    e.stopPropagation()
+    openDeleteWarning()
+  }
+
+  function handleRemoveFromAlbum() {
+    removeSongsFromAlbum({ songIds: [song.id], id: albumId })
+  }
+
+  function handleDelete() {
+    deleteSong(song.id)
+  }
+
   const menuDropdown = (
     <>
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
@@ -86,14 +106,17 @@ function AlbumSongCard({
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownAlbum && (
-        <Menu.Item
-          leftSection={<IconTrash size={14} />}
-          c={'red.5'}
-          onClick={handleOpenRemoveWarning}
-        >
-          Remove
+        <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
+          Remove from album
         </Menu.Item>
       )}
+      <Menu.Item
+        leftSection={<IconTrash size={14} />}
+        c={'red.5'}
+        onClick={handleOpenDeleteWarning}
+      >
+        Delete
+      </Menu.Item>
     </>
   )
 
@@ -208,7 +231,7 @@ function AlbumSongCard({
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
-        title={`Remove Song`}
+        title={`Remove Song From Album`}
         description={
           <Stack gap={'xxs'}>
             <Group gap={'xxs'}>
@@ -218,7 +241,24 @@ function AlbumSongCard({
             </Group>
           </Stack>
         }
-        onYes={handleRemove}
+        isLoading={isRemoveLoading}
+        onYes={handleRemoveFromAlbum}
+      />
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={`Delete Song`}
+        description={
+          <Stack gap={'xxs'}>
+            <Group gap={'xxs'}>
+              <Text>Are you sure you want to delete</Text>
+              <Text fw={600}>{song.title}</Text>
+              <Text>?</Text>
+            </Group>
+          </Stack>
+        }
+        isLoading={isDeleteLoading}
+        onYes={handleDelete}
       />
     </Menu>
   )
