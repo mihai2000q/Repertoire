@@ -49,7 +49,7 @@ function AddExistingAlbumSongsModal({
     currentPage: 1,
     pageSize: 20,
     type: SearchType.Song,
-    filter: ['album IS NULL', `artist IS NULL${artistId && ` OR artist.id = ${artistId}`}`],
+    filter: ['album IS NULL', `artist IS NULL${artistId ? ` OR artist.id = ${artistId}` : ''}`],
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
