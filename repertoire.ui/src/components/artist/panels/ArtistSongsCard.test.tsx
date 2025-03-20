@@ -1,12 +1,11 @@
 import { emptyAlbum, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistSongsCard from './ArtistSongsCard.tsx'
 import Song from '../../../types/models/Song.ts'
-import { screen, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveSongsFromArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
@@ -285,39 +284,5 @@ describe('Artist Songs Card', () => {
     await user.click(screen.getByLabelText('new-songs-card'))
 
     expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
-  })
-
-  it("should send 'remove songs from artist request' when clicking on the more menu of a song card", async () => {
-    const user = userEvent.setup()
-
-    const song = songs.models[0]
-
-    let capturedRequest: RemoveSongsFromArtistRequest
-    server.use(
-      http.put('/artists/remove-songs', async (req) => {
-        capturedRequest = (await req.request.json()) as RemoveSongsFromArtistRequest
-        return HttpResponse.json()
-      })
-    )
-
-    reduxRouterRender(
-      <ArtistSongsCard
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
-
-    const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
-
-    await user.click(within(songCard1).getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /remove/i }))
-    await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
-
-    expect(capturedRequest.id).toBe(artistId)
-    expect(capturedRequest.songIds).toStrictEqual([song.id])
   })
 })

@@ -6,6 +6,9 @@ import ArtistAlbumCard from './ArtistAlbumCard.tsx'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
 import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
+import { RemoveAlbumsFromArtistRequest } from '../../types/requests/ArtistRequests.ts'
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
 
 describe('Artist Album Card', () => {
   const album: Album = {
@@ -16,14 +19,17 @@ describe('Artist Album Card', () => {
     songs: []
   }
 
+  const server = setupServer()
+
+  beforeAll(() => server.listen())
+
+  afterEach(() => server.resetHandlers())
+
+  afterAll(() => server.close())
+
   it('should render and display minimal information', async () => {
     reduxRouterRender(
-      <ArtistAlbumCard
-        album={album}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
@@ -40,7 +46,7 @@ describe('Artist Album Card', () => {
     reduxRouterRender(
       <ArtistAlbumCard
         album={localAlbum}
-        handleRemove={() => {}}
+        artistId={''}
         isUnknownArtist={false}
         order={emptyOrder}
       />
@@ -65,14 +71,15 @@ describe('Artist Album Card', () => {
       reduxRouterRender(
         <ArtistAlbumCard
           album={localAlbum}
-          handleRemove={() => {
-          }}
+          artistId={''}
           isUnknownArtist={false}
-          order={{...emptyOrder, property: AlbumProperty.ReleaseDate}}
+          order={{ ...emptyOrder, property: AlbumProperty.ReleaseDate }}
         />
       )
 
-      expect(screen.getByText(dayjs(localAlbum.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
+      expect(
+        screen.getByText(dayjs(localAlbum.releaseDate).format('D MMM YYYY'))
+      ).toBeInTheDocument()
     })
   })
 
@@ -80,12 +87,7 @@ describe('Artist Album Card', () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <ArtistAlbumCard
-        album={album}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     await user.pointer({
@@ -94,43 +96,35 @@ describe('Artist Album Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <ArtistAlbumCard
-        album={album}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should display less information on the menu when the artist is unknown', async () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <ArtistAlbumCard
-        album={album}
-        handleRemove={() => {}}
-        isUnknownArtist={true}
-        order={emptyOrder}
-      />
+      <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={true} order={emptyOrder} />
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /remove from artist/i })).not.toBeInTheDocument()
   })
 
   describe('on menu', () => {
@@ -138,12 +132,7 @@ describe('Artist Album Card', () => {
       const user = userEvent.setup()
 
       reduxRouterRender(
-        <ArtistAlbumCard
-          album={album}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={emptyOrder}
-        />
+        <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={false} order={emptyOrder} />
       )
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
@@ -155,22 +144,30 @@ describe('Artist Album Card', () => {
       window.location.pathname = '/'
     })
 
-    it('should display warning modal and remove album, when clicking on remove', async () => {
+    it('should display warning modal and remove album from artist, when clicking on remove from artist', async () => {
       const user = userEvent.setup()
 
-      const handleRemove = vitest.fn()
+      let capturedRequest: RemoveAlbumsFromArtistRequest
+      server.use(
+        http.put('/artists/remove-albums', async (req) => {
+          capturedRequest = (await req.request.json()) as RemoveAlbumsFromArtistRequest
+          return HttpResponse.json()
+        })
+      )
+
+      const artistId = 'some-artist-id'
 
       reduxRouterRender(
         <ArtistAlbumCard
           album={album}
-          handleRemove={handleRemove}
+          artistId={artistId}
           isUnknownArtist={false}
           order={emptyOrder}
         />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
-      await user.click(screen.getByRole('menuitem', { name: /remove/i }))
+      await user.click(screen.getByRole('menuitem', { name: /remove from artist/i }))
 
       expect(await screen.findByRole('dialog', { name: /remove album/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove album/i })).toBeInTheDocument()
@@ -178,7 +175,33 @@ describe('Artist Album Card', () => {
 
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
-      expect(handleRemove).toHaveBeenCalledOnce()
+      expect(capturedRequest).toStrictEqual({
+        id: artistId,
+        albumIds: [album.id]
+      })
+    })
+
+    it('should display warning modal and delete album, when clicking on delete', async () => {
+      const user = userEvent.setup()
+
+      server.use(
+        http.delete(`/albums/${album.id}`, () => {
+          return HttpResponse.json()
+        })
+      )
+
+      reduxRouterRender(
+        <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+      expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
+      expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: /yes/i }))
     })
   })
 })
