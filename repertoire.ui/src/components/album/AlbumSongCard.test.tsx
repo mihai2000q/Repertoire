@@ -298,7 +298,7 @@ describe('Album Song Card', () => {
       window.location.pathname = '/'
     })
 
-    it('should display warning modal and remove, when clicking on remove', async () => {
+    it('should display warning modal and remove song from album, when clicking on remove song', async () => {
       const user = userEvent.setup()
 
       let capturedRequest: RemoveSongsFromAlbumRequest
@@ -336,7 +336,7 @@ describe('Album Song Card', () => {
       })
     })
 
-    it('should display warning modal and remove, when clicking on remove', async () => {
+    it('should display warning modal and delete album, when clicking on delete', async () => {
       const user = userEvent.setup()
 
       server.use(
