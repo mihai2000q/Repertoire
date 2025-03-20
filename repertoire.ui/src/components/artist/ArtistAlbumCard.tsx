@@ -1,29 +1,36 @@
 import Album from '../../types/models/Album.ts'
-import { ActionIcon, alpha, Avatar, Group, Menu, Space, Stack, Text } from '@mantine/core'
+import {ActionIcon, alpha, Avatar, Checkbox, Group, Menu, Space, Stack, Text} from '@mantine/core'
 import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
-import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
+import {IconCircleMinus, IconDots, IconEye, IconTrash} from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import Order from '../../types/Order.ts'
 import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
+import {useRemoveAlbumsFromArtistMutation} from "../../state/api/artistsApi.ts";
+import {useDeleteAlbumMutation} from "../../state/api/albumsApi.ts";
 
 interface ArtistAlbumCardProps {
   album: Album
-  handleRemove: () => void
+  artistId: string
   isUnknownArtist: boolean
   order: Order
 }
 
-function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: ArtistAlbumCardProps) {
+function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
+
+  const [removeAlbumsFromArtist, { isLoading: isRemoveLoading }] = useRemoveAlbumsFromArtistMutation()
+  const [deleteAlbum, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
+
+  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -31,6 +38,8 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: Artist
   const isSelected = hovered || isMenuOpened || openedMenu
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
+    useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   function handleClick() {
@@ -47,20 +56,36 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: Artist
     openRemoveWarning()
   }
 
+  function handleOpenDeleteWarning(e: MouseEvent) {
+    e.stopPropagation()
+    openDeleteWarning()
+  }
+
+  function handleRemoveFromArtist() {
+    removeAlbumsFromArtist({ albumIds: [album.id], id: artistId })
+  }
+
+  function handleDelete() {
+    deleteAlbum({ id: album.id })
+  }
+
   const menuDropdown = (
     <>
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
       {!isUnknownArtist && (
-        <Menu.Item
-          leftSection={<IconTrash size={14} />}
-          c={'red.5'}
-          onClick={handleOpenRemoveWarning}
-        >
-          Remove
+        <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
+          Remove from artist
         </Menu.Item>
       )}
+      <Menu.Item
+        leftSection={<IconTrash size={14} />}
+        c={'red.5'}
+        onClick={handleOpenDeleteWarning}
+      >
+        Delete
+      </Menu.Item>
     </>
   )
 
@@ -126,20 +151,39 @@ function ArtistAlbumCard({ album, handleRemove, isUnknownArtist, order }: Artist
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
-        title={`Remove Album`}
+        title={`Remove Album From Artist`}
         description={
-          <Stack gap={'xxs'}>
+          <Stack gap={5}>
             <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
+              <Text>Are you sure you want to delete</Text>
               <Text fw={600}>{album.title}</Text>
-              <Text>from this artist?</Text>
+              <Text>?</Text>
             </Group>
-            <Text fz={'sm'} c={'dimmed'}>
-              This action will result in the removal of all related songs to this album.
-            </Text>
+            <Checkbox
+              checked={deleteWithSongs}
+              onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
+              label={'Delete all associated songs'}
+              c={'dimmed'}
+              styles={{ label: { paddingLeft: 8 } }}
+            />
           </Stack>
         }
-        onYes={handleRemove}
+        isLoading={isRemoveLoading}
+        onYes={handleRemoveFromArtist}
+      />
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={`Delete Album`}
+        description={
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{album.title}</Text>
+            <Text>?</Text>
+          </Group>
+        }
+        isLoading={isDeleteLoading}
+        onYes={handleDelete}
       />
     </Menu>
   )
