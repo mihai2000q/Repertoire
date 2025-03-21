@@ -1,19 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/database"
 	"repertoire/server/data/search"
 	"repertoire/server/internal"
+	"repertoire/server/internal/migration/utils"
 	"repertoire/server/model"
 	"time"
 )
+
+var uid = "20250226172615"
+var name = "initial_create"
 
 func main() {
 	env := internal.NewEnv()
 	dbClient := database.NewClient(env)
 	meiliClient := search.NewMeiliClient(env)
+
+	if utils.HasMigrationAlreadyBeenApplied(meiliClient, uid) {
+		return
+	}
 
 	_, err := meiliClient.CreateIndex(&meilisearch.IndexConfig{
 		Uid:        "search",
@@ -42,7 +49,7 @@ func main() {
 	addSongs(dbClient, meiliClient)
 	addPlaylists(dbClient, meiliClient)
 
-	fmt.Println(time.Now().Format("2006/01/02 15:01:05") + " OK 20250226172615_initial_create imported!")
+	utils.SaveMigrationStatus(meiliClient, uid, name)
 }
 
 func addArtists(dbClient database.Client, meiliClient meilisearch.ServiceManager) {
