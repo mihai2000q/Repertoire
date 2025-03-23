@@ -6,6 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/domain/message/handler/search"
+	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"testing"
 )
@@ -13,7 +14,7 @@ import (
 func TestAddToSearchEngineHandler_WhenAddFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewAddToSearchEngineHandler(searchEngineService)
+	_uut := search.NewAddToSearchEngineHandler(nil, searchEngineService)
 
 	data := []any{"something"}
 
@@ -37,7 +38,7 @@ func TestAddToSearchEngineHandler_WhenAddFails_ShouldReturnError(t *testing.T) {
 func TestAddToSearchEngineHandler_WhenSuccessful_ShouldAddDataToSearchEngine(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewAddToSearchEngineHandler(searchEngineService)
+	_uut := search.NewAddToSearchEngineHandler(logger.NewLoggerMock(), searchEngineService)
 
 	data := []any{"something"}
 

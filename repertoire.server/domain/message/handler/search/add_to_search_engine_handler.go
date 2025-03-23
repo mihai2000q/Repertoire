@@ -3,6 +3,7 @@ package search
 import (
 	"encoding/json"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
 )
@@ -10,26 +11,35 @@ import (
 type AddToSearchEngineHandler struct {
 	name                string
 	topic               topics.Topic
+	logger              *logger.Logger
 	searchEngineService service.SearchEngineService
 }
 
-func NewAddToSearchEngineHandler(searchEngineService service.SearchEngineService) AddToSearchEngineHandler {
+func NewAddToSearchEngineHandler(
+	logger *logger.Logger,
+	searchEngineService service.SearchEngineService,
+) AddToSearchEngineHandler {
 	return AddToSearchEngineHandler{
 		name:                "add_to_search_engine_handler",
 		topic:               topics.AddToSearchEngineTopic,
+		logger:              logger,
 		searchEngineService: searchEngineService,
 	}
 }
 
 func (a AddToSearchEngineHandler) Handle(msg *message.Message) error {
-	var searches []any
-	err := json.Unmarshal(msg.Payload, &searches)
+	var documents []any
+	err := json.Unmarshal(msg.Payload, &documents)
 	if err != nil {
 		return err
 	}
 
-	err = a.searchEngineService.Add(searches)
-	return err
+	err = a.searchEngineService.Add(documents)
+	if err != nil {
+		return err
+	}
+	a.logger.Debug("Search engine added " + string(rune(len(documents))) + " documents")
+	return nil
 }
 
 func (a AddToSearchEngineHandler) GetName() string {

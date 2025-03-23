@@ -6,6 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/domain/message/handler/search"
+	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"testing"
 )
@@ -13,7 +14,7 @@ import (
 func TestUpdateFromSearchEngineHandler_WhenUpdateFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewUpdateFromSearchEngineHandler(searchEngineService)
+	_uut := search.NewUpdateFromSearchEngineHandler(nil, searchEngineService)
 
 	documents := []any{"id1", "id2", "id3"}
 
@@ -37,7 +38,7 @@ func TestUpdateFromSearchEngineHandler_WhenUpdateFails_ShouldReturnError(t *test
 func TestUpdateFromSearchEngineHandler_WhenSuccessful_ShouldUpdateDataFromSearchEngine(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewUpdateFromSearchEngineHandler(searchEngineService)
+	_uut := search.NewUpdateFromSearchEngineHandler(logger.NewLoggerMock(), searchEngineService)
 
 	documents := []any{"id1", "id2", "id3"}
 
