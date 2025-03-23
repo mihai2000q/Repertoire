@@ -18,11 +18,18 @@ var loggers = fx.Options(
 	fx.Provide(logger.NewFxLogger),
 	fx.Provide(logger.NewGinLogger),
 	fx.Provide(logger.NewGormLogger),
+	fx.Provide(logger.NewRestyLogger),
 	fx.Provide(logger.NewWatermillLogger),
 	fx.WithLogger(func(logger *logger.FxLogger) fxevent.Logger {
 		return &fxevent.ZapLogger{Logger: logger.Logger.Logger}
 	}),
 )
+
+var httpClients = fx.Options(
+	fx.Provide(http.NewClient),
+	fx.Provide(http.NewStorageClient),
+)
+
 var repositories = fx.Options(
 	fx.Provide(repository.NewAlbumRepository),
 	fx.Provide(repository.NewArtistRepository),
@@ -44,7 +51,7 @@ var Module = fx.Options(
 	fx.Provide(cache.NewCache),
 	loggers,
 	fx.Provide(database.NewClient),
-	fx.Provide(http.NewRestyClient),
+	httpClients,
 	fx.Provide(message.NewPublisher),
 	repositories,
 	fx.Provide(search.NewMeiliClient),
