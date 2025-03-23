@@ -2,6 +2,7 @@ package data
 
 import (
 	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
 	"repertoire/server/data/http"
@@ -14,9 +15,13 @@ import (
 
 var loggers = fx.Options(
 	fx.Provide(logger.NewLogger),
+	fx.Provide(logger.NewFxLogger),
 	fx.Provide(logger.NewGinLogger),
 	fx.Provide(logger.NewGormLogger),
 	fx.Provide(logger.NewWatermillLogger),
+	fx.WithLogger(func(logger *logger.FxLogger) fxevent.Logger {
+		return &fxevent.ZapLogger{Logger: logger.Logger.Logger}
+	}),
 )
 var repositories = fx.Options(
 	fx.Provide(repository.NewAlbumRepository),
