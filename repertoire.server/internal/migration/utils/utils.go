@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"github.com/meilisearch/meilisearch-go"
+	"repertoire/server/data/search"
 	"time"
 )
 
@@ -12,7 +13,7 @@ type MigrationStatus struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func HasMigrationAlreadyBeenApplied(client meilisearch.ServiceManager, uid string) bool {
+func HasMigrationAlreadyBeenApplied(client search.Client, uid string) bool {
 	_, err := client.GetIndex("migration_version")
 	if err != nil {
 		_, err = client.CreateIndex(&meilisearch.IndexConfig{
@@ -40,7 +41,7 @@ func HasMigrationAlreadyBeenApplied(client meilisearch.ServiceManager, uid strin
 	return false
 }
 
-func SaveMigrationStatus(client meilisearch.ServiceManager, uid string, name string) {
+func SaveMigrationStatus(client search.Client, uid string, name string) {
 	status := &MigrationStatus{
 		Id:        uid,
 		IsApplied: true,

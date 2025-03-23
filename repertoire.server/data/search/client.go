@@ -5,7 +5,11 @@ import (
 	"repertoire/server/internal"
 )
 
-func NewMeiliClient(env internal.Env) meilisearch.ServiceManager {
+type Client struct {
+	meilisearch.ServiceManager
+}
+
+func NewMeiliClient(env internal.Env) Client {
 	url := "http://" + env.MeiliHost + ":" + env.MeiliPort
-	return meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	return Client{meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))}
 }
