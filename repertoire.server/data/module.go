@@ -14,6 +14,8 @@ import (
 
 var loggers = fx.Options(
 	fx.Provide(logger.NewLogger),
+	fx.Provide(logger.NewGinLogger),
+	fx.Provide(logger.NewGormLogger),
 	fx.Provide(logger.NewWatermillLogger),
 )
 var repositories = fx.Options(

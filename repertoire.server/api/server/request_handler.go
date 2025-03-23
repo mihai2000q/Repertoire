@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"repertoire/server/api/middleware"
+	"repertoire/server/data/logger"
 )
 
 type RequestHandler struct {
@@ -15,7 +16,10 @@ func NewRequestHandler(
 	jwtAuthMiddleware middleware.JWTAuthMiddleware,
 	corsMiddleware middleware.CorsMiddleware,
 	errorHandlerMiddleware middleware.ErrorHandlerMiddleware,
+	logger *logger.GinLogger,
 ) *RequestHandler {
+	gin.DefaultWriter = logger
+	gin.DefaultErrorWriter = logger
 	engine := gin.New()
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
