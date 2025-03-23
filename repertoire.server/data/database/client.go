@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
+	"repertoire/server/data/logger"
 	"repertoire/server/internal"
 	"time"
 
@@ -14,7 +15,7 @@ type Client struct {
 	*gorm.DB
 }
 
-func NewClient(env internal.Env) Client {
+func NewClient(logger *logger.GormLogger, env internal.Env) Client {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		env.DatabaseHost,
 		env.DatabaseUser,
@@ -28,6 +29,7 @@ func NewClient(env internal.Env) Client {
 		NowFunc: func() time.Time {
 			return time.Now().UTC()
 		},
+		Logger: logger,
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect database: %v", err)

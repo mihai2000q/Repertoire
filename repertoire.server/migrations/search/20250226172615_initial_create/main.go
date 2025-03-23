@@ -15,7 +15,7 @@ var name = "initial_create"
 
 func main() {
 	env := internal.NewEnv()
-	dbClient := database.NewClient(env)
+	dbClient := database.NewClient(nil, env)
 	meiliClient := search.NewMeiliClient(env)
 
 	if utils.HasMigrationAlreadyBeenApplied(meiliClient, uid) {
