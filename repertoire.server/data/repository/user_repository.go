@@ -27,21 +27,21 @@ func NewUserRepository(client database.Client) UserRepository {
 }
 
 func (u userRepository) Get(user *model.User, id uuid.UUID) error {
-	return u.client.DB.Find(&user, model.User{ID: id}).Error
+	return u.client.Find(&user, model.User{ID: id}).Error
 }
 
 func (u userRepository) GetByEmail(user *model.User, email string) error {
-	return u.client.DB.Find(&user, model.User{Email: email}).Error
+	return u.client.Find(&user, model.User{Email: email}).Error
 }
 
 func (u userRepository) Create(user *model.User) error {
-	return u.client.DB.Create(&user).Error
+	return u.client.Create(&user).Error
 }
 
 func (u userRepository) Update(user *model.User) error {
-	return u.client.DB.Save(&user).Error
+	return u.client.Save(&user).Error
 }
 
 func (u userRepository) Delete(id uuid.UUID) error {
-	return u.client.DB.Select(clause.Associations).Delete(&model.User{ID: id}).Error
+	return u.client.Select(clause.Associations).Delete(&model.User{ID: id}).Error
 }

@@ -46,22 +46,22 @@ func NewUserDataRepository(client database.Client) UserDataRepository {
 // Band Member - Roles
 
 func (u userDataRepository) GetBandMemberRoles(bandMemberRoles *[]model.BandMemberRole, userID uuid.UUID) error {
-	return u.client.DB.Find(&bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
+	return u.client.Find(&bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
 }
 
 func (u userDataRepository) CountBandMemberRoles(count *int64, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.BandMemberRole{}).
+	return u.client.Model(&model.BandMemberRole{}).
 		Where(model.BandMemberRole{UserID: userID}).
 		Count(count).
 		Error
 }
 
 func (u userDataRepository) CreateBandMemberRole(bandMemberRole *model.BandMemberRole) error {
-	return u.client.DB.Create(&bandMemberRole).Error
+	return u.client.Create(&bandMemberRole).Error
 }
 
 func (u userDataRepository) UpdateAllBandMemberRoles(bandMemberRoles *[]model.BandMemberRole) error {
-	return u.client.DB.Transaction(func(tx *gorm.DB) error {
+	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionType := range *bandMemberRoles {
 			if err := tx.Save(sectionType).Error; err != nil {
 				return err
@@ -72,13 +72,13 @@ func (u userDataRepository) UpdateAllBandMemberRoles(bandMemberRoles *[]model.Ba
 }
 
 func (u userDataRepository) DeleteBandMemberRole(id uuid.UUID) error {
-	return u.client.DB.Delete(&model.BandMemberRole{}, id).Error
+	return u.client.Delete(&model.BandMemberRole{}, id).Error
 }
 
 // Guitar Tunings
 
 func (u userDataRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.GuitarTuning{}).
+	return u.client.Model(&model.GuitarTuning{}).
 		Where(model.GuitarTuning{UserID: userID}).
 		Order("\"order\"").
 		Find(&tunings).
@@ -86,18 +86,18 @@ func (u userDataRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, user
 }
 
 func (u userDataRepository) GetGuitarTuningsCount(count *int64, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.GuitarTuning{}).
+	return u.client.Model(&model.GuitarTuning{}).
 		Where(model.GuitarTuning{UserID: userID}).
 		Count(count).
 		Error
 }
 
 func (u userDataRepository) CreateGuitarTuning(tuning *model.GuitarTuning) error {
-	return u.client.DB.Create(&tuning).Error
+	return u.client.Create(&tuning).Error
 }
 
 func (u userDataRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
-	return u.client.DB.Transaction(func(tx *gorm.DB) error {
+	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, tuning := range *tunings {
 			if err := tx.Save(tuning).Error; err != nil {
 				return err
@@ -108,13 +108,13 @@ func (u userDataRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning
 }
 
 func (u userDataRepository) DeleteGuitarTuning(id uuid.UUID) error {
-	return u.client.DB.Delete(&model.GuitarTuning{}, id).Error
+	return u.client.Delete(&model.GuitarTuning{}, id).Error
 }
 
 // Instruments
 
 func (u userDataRepository) GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.Instrument{}).
+	return u.client.Model(&model.Instrument{}).
 		Where(model.Instrument{UserID: userID}).
 		Order("\"order\"").
 		Find(&instruments).
@@ -122,18 +122,18 @@ func (u userDataRepository) GetInstruments(instruments *[]model.Instrument, user
 }
 
 func (u userDataRepository) GetInstrumentsCount(count *int64, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.Instrument{}).
+	return u.client.Model(&model.Instrument{}).
 		Where(model.Instrument{UserID: userID}).
 		Count(count).
 		Error
 }
 
 func (u userDataRepository) CreateInstrument(instrument *model.Instrument) error {
-	return u.client.DB.Create(&instrument).Error
+	return u.client.Create(&instrument).Error
 }
 
 func (u userDataRepository) UpdateAllInstruments(instruments *[]model.Instrument) error {
-	return u.client.DB.Transaction(func(tx *gorm.DB) error {
+	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, tuning := range *instruments {
 			if err := tx.Save(tuning).Error; err != nil {
 				return err
@@ -144,13 +144,13 @@ func (u userDataRepository) UpdateAllInstruments(instruments *[]model.Instrument
 }
 
 func (u userDataRepository) DeleteInstrument(id uuid.UUID) error {
-	return u.client.DB.Delete(&model.Instrument{}, id).Error
+	return u.client.Delete(&model.Instrument{}, id).Error
 }
 
 // Section Types
 
 func (u userDataRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.SongSectionType{}).
+	return u.client.Model(&model.SongSectionType{}).
 		Where(model.SongSectionType{UserID: userID}).
 		Order("\"order\"").
 		Find(&types).
@@ -158,18 +158,18 @@ func (u userDataRepository) GetSectionTypes(types *[]model.SongSectionType, user
 }
 
 func (u userDataRepository) CountSectionTypes(count *int64, userID uuid.UUID) error {
-	return u.client.DB.Model(&model.SongSectionType{}).
+	return u.client.Model(&model.SongSectionType{}).
 		Where(model.SongSectionType{UserID: userID}).
 		Count(count).
 		Error
 }
 
 func (u userDataRepository) CreateSectionType(sectionType *model.SongSectionType) error {
-	return u.client.DB.Create(&sectionType).Error
+	return u.client.Create(&sectionType).Error
 }
 
 func (u userDataRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {
-	return u.client.DB.Transaction(func(tx *gorm.DB) error {
+	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionType := range *sectionTypes {
 			if err := tx.Save(sectionType).Error; err != nil {
 				return err
@@ -180,7 +180,7 @@ func (u userDataRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSect
 }
 
 func (u userDataRepository) DeleteSectionType(id uuid.UUID) error {
-	return u.client.DB.Delete(&model.SongSectionType{}, id).Error
+	return u.client.Delete(&model.SongSectionType{}, id).Error
 }
 
 // Song Section History
@@ -190,12 +190,12 @@ func (u userDataRepository) GetSongSectionHistory(
 	sectionID uuid.UUID,
 	property model.SongSectionProperty,
 ) error {
-	return u.client.DB.
+	return u.client.
 		Order("created_at").
 		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
 		Error
 }
 
 func (u userDataRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
-	return u.client.DB.Create(&history).Error
+	return u.client.Create(&history).Error
 }

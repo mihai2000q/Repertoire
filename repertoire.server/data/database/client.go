@@ -11,7 +11,7 @@ import (
 )
 
 type Client struct {
-	DB *gorm.DB
+	*gorm.DB
 }
 
 func NewClient(env internal.Env) Client {
@@ -33,8 +33,6 @@ func NewClient(env internal.Env) Client {
 		log.Fatalf("Failed to connect database: %v", err)
 	}
 
-	client := Client{
-		DB: db,
-	}
+	client := Client{db}
 	return client
 }
