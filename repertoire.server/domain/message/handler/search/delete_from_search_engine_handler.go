@@ -6,6 +6,7 @@ import (
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
+	"strconv"
 )
 
 type DeleteFromSearchEngineHandler struct {
@@ -38,7 +39,7 @@ func (d DeleteFromSearchEngineHandler) Handle(msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-	d.logger.Debug("Search engine deleted " + string(rune(len(ids))) + " documents")
+	d.logger.Debug("Search engine deleted " + strconv.Itoa(len(ids)) + " documents")
 	return nil
 }
 

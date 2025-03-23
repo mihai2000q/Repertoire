@@ -6,6 +6,7 @@ import (
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
+	"strconv"
 )
 
 type AddToSearchEngineHandler struct {
@@ -38,7 +39,7 @@ func (a AddToSearchEngineHandler) Handle(msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-	a.logger.Debug("Search engine added " + string(rune(len(documents))) + " documents")
+	a.logger.Debug("Search engine added " + strconv.Itoa(len(documents)) + " documents")
 	return nil
 }
 

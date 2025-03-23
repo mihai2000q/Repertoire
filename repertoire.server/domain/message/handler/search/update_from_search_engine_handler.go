@@ -6,6 +6,7 @@ import (
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
+	"strconv"
 )
 
 type UpdateFromSearchEngineHandler struct {
@@ -38,7 +39,7 @@ func (u UpdateFromSearchEngineHandler) Handle(msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-	u.logger.Debug("Search engine updated " + string(rune(len(documents))) + " documents")
+	u.logger.Debug("Search engine updated " + strconv.Itoa(len(documents)) + " documents")
 	return nil
 }
 
