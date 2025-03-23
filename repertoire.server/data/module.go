@@ -11,6 +11,9 @@ import (
 	"repertoire/server/data/service"
 )
 
+var loggers = fx.Options(
+	fx.Provide(logger.NewLogger),
+)
 var repositories = fx.Options(
 	fx.Provide(repository.NewAlbumRepository),
 	fx.Provide(repository.NewArtistRepository),
@@ -30,6 +33,7 @@ var services = fx.Options(
 
 var Module = fx.Options(
 	fx.Provide(cache.NewCache),
+	loggers,
 	fx.Provide(database.NewClient),
 	fx.Provide(http.NewRestyClient),
 	fx.Provide(message.NewPublisher),
