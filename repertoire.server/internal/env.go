@@ -79,3 +79,4 @@ func NewEnv() Env {
 }
 
 var DevelopmentEnvironment = "development"
+var DebugLogLevel = "DEBUG"
