@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/domain/message/handler/storage"
 	"repertoire/server/internal/wrapper"
+	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"testing"
 )
@@ -14,7 +15,7 @@ import (
 func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoryFails_ShouldReturnError(t *testing.T) {
 	// given
 	storageService := new(service.StorageServiceMock)
-	_uut := storage.NewDeleteDirectoriesStorageHandler(storageService)
+	_uut := storage.NewDeleteDirectoriesStorageHandler(nil, storageService)
 
 	directories := []any{"some_directory", "some_other_directory"}
 
@@ -42,7 +43,7 @@ func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoryFails_ShouldReturnEr
 func TestDeleteDirectoriesStorageHandler_WhenSuccessful_ShouldDeleteDirectories(t *testing.T) {
 	// given
 	storageService := new(service.StorageServiceMock)
-	_uut := storage.NewDeleteDirectoriesStorageHandler(storageService)
+	_uut := storage.NewDeleteDirectoriesStorageHandler(logger.NewLoggerMock(), storageService)
 
 	directories := []any{"dir1/dir2/file.exe", "some_file.png", "an_image.jpeg"}
 
