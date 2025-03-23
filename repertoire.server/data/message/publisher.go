@@ -2,9 +2,9 @@ package message
 
 import (
 	"context"
-	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	"repertoire/server/data/logger"
 )
 
 type Publisher interface {
@@ -13,7 +13,6 @@ type Publisher interface {
 	Close() error
 }
 
-func NewPublisher() Publisher {
-	logger := watermill.NewStdLogger(false, false)
+func NewPublisher(logger *logger.WatermillLogger) Publisher {
 	return gochannel.NewGoChannel(gochannel.Config{}, logger)
 }

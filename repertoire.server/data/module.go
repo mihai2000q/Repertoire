@@ -5,6 +5,7 @@ import (
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
 	"repertoire/server/data/http"
+	"repertoire/server/data/logger"
 	"repertoire/server/data/message"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/search"
@@ -13,6 +14,7 @@ import (
 
 var loggers = fx.Options(
 	fx.Provide(logger.NewLogger),
+	fx.Provide(logger.NewWatermillLogger),
 )
 var repositories = fx.Options(
 	fx.Provide(repository.NewAlbumRepository),
