@@ -39,21 +39,15 @@ func (l *GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 }
 
 func (l *GormLogger) Info(ctx context.Context, str string, args ...interface{}) {
-	if l.LogLevel >= gormlogger.Info {
-		l.Logger.Sugar().Infof("[GORM] "+str, args...)
-	}
+	l.Logger.Sugar().Infof("[GORM] "+str, args...)
 }
 
 func (l *GormLogger) Warn(ctx context.Context, str string, args ...interface{}) {
-	if l.LogLevel >= gormlogger.Warn {
-		l.Logger.Sugar().Warnf("[GORM] "+str, args...)
-	}
+	l.Logger.Sugar().Warnf("[GORM] "+str, args...)
 }
 
 func (l *GormLogger) Error(ctx context.Context, str string, args ...interface{}) {
-	if l.LogLevel >= gormlogger.Error {
-		l.Logger.Sugar().Errorf("[GORM] "+str, args...)
-	}
+	l.Logger.Sugar().Errorf("[GORM] "+str, args...)
 }
 
 // Trace prints trace messages
