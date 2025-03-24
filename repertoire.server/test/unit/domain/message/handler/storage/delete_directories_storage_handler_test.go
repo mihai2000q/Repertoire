@@ -15,7 +15,7 @@ import (
 func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoryFails_ShouldReturnError(t *testing.T) {
 	// given
 	storageService := new(service.StorageServiceMock)
-	_uut := storage.NewDeleteDirectoriesStorageHandler(nil, storageService)
+	_uut := storage.NewDeleteDirectoriesStorageHandler(logger.NewLoggerMock(), storageService)
 
 	directories := []any{"some_directory", "some_other_directory"}
 
