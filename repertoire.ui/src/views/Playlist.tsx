@@ -18,7 +18,7 @@ function Playlist() {
     if (playlist) setDocumentTitle(playlist.title)
   }, [playlist])
 
-  if (isLoading) return <PlaylistLoader />
+  if (isLoading || !playlist) return <PlaylistLoader />
 
   return (
     <Stack px={'xl'}>

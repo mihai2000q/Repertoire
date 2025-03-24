@@ -22,7 +22,7 @@ function Song() {
     if (song) setDocumentTitle(song.title)
   }, [song])
 
-  if (isLoading) return <SongLoader />
+  if (isLoading || !song) return <SongLoader />
 
   return (
     <Stack px={'xl'}>

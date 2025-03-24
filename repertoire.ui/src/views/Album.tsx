@@ -54,7 +54,7 @@ function Album() {
     { skip: !isUnknownAlbum }
   )
 
-  if (isLoading || isSongsLoading) return <AlbumLoader />
+  if (isLoading || isSongsLoading || !album || (!songs && isUnknownAlbum)) return <AlbumLoader />
 
   return (
     <Stack px={'xl'}>

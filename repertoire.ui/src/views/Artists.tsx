@@ -80,7 +80,7 @@ function Artists() {
       {!isLoading && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
-          {artists?.totalCount + (showUnknownArtist ? 1 : 0)}
+          {artists?.totalCount ?? 0 + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 
@@ -92,7 +92,7 @@ function Artists() {
         verticalSpacing={{ base: 'lg', md: 'xl' }}
         spacing={{ base: 'lg', md: 'xl' }}
       >
-        {isLoading && <ArtistsLoader />}
+        {(isLoading || !artists) && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
         {((artists?.totalCount > 0 && currentPage == totalPages) ||

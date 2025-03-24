@@ -197,19 +197,19 @@ function HomeTop() {
           style={{ transition: 'padding-bottom 0.3s' }}
         >
           {topEntity === TopEntity.Songs &&
-            (isSongsLoading ? (
+            ((isSongsLoading || !songs) ? (
               <HomeSongsLoader />
             ) : (
               songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
             ))}
           {topEntity === TopEntity.Albums &&
-            (isAlbumsLoading ? (
+            ((isAlbumsLoading || !albums) ? (
               <HomeAlbumsLoader />
             ) : (
               albums.models.map((album) => <HomeAlbumCard key={album.id} album={album} />)
             ))}
           {topEntity === TopEntity.Artists &&
-            (isArtistsLoading ? (
+            ((isArtistsLoading || !artists) ? (
               <HomeArtistsLoader />
             ) : (
               artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
