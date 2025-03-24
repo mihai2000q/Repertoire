@@ -80,7 +80,7 @@ function Artists() {
       {!isLoading && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
-          {artists?.totalCount ?? 0 + (showUnknownArtist ? 1 : 0)}
+          {(artists?.totalCount ?? 0) + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 

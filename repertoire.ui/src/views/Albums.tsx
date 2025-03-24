@@ -80,7 +80,7 @@ function Albums() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} albums out of {albums?.totalCount ?? 0 + (showUnknownAlbum ? 1 : 0)}
+          {startCount} - {endCount} albums out of {(albums?.totalCount ?? 0) + (showUnknownAlbum ? 1 : 0)}
         </Text>
       )}
 
