@@ -88,7 +88,7 @@ function Playlists() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} playlists out of {playlists?.totalCount}
+          {startCount} - {endCount} playlists out of {playlists?.totalCount ?? 0}
         </Text>
       )}
 
@@ -100,7 +100,7 @@ function Playlists() {
         spacing={'lg'}
         verticalSpacing={'lg'}
       >
-        {isLoading && <PlaylistsLoader />}
+        {(isLoading || !playlists) && <PlaylistsLoader />}
         {playlists?.models.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}

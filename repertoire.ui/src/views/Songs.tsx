@@ -77,7 +77,7 @@ function Songs(): ReactElement {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} songs out of {songs?.totalCount}
+          {startCount} - {endCount} songs out of {songs?.totalCount ?? 0}
         </Text>
       )}
 
@@ -87,7 +87,7 @@ function Songs(): ReactElement {
         spacing={'lg'}
         verticalSpacing={'lg'}
       >
-        {isLoading && <SongsLoader />}
+        {(isLoading || !songs) && <SongsLoader />}
         {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
         {songs?.totalCount > 0 && currentPage == totalPages && (
           <Card

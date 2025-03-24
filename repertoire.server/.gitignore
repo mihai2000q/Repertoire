@@ -34,4 +34,4 @@ tmp/
 .container-data/
 
 # Logs Folder
-logs/
+.logs/

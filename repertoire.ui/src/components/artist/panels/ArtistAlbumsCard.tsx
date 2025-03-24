@@ -47,7 +47,7 @@ function ArtistAlbumsCard({
   const [openedAddExistingAlbums, { open: openAddExistingAlbums, close: closeAddExistingAlbums }] =
     useDisclosure(false)
 
-  if (isLoading) return <ArtistAlbumsLoader />
+  if (isLoading || !albums) return <ArtistAlbumsLoader />
 
   return (
     <Card variant={'panel'} aria-label={'albums-card'} p={0} h={'100%'} mb={'lg'}>

@@ -175,7 +175,7 @@ function HomeRecentlyPlayedSongs() {
 
         <ScrollArea scrollbars={'y'} scrollbarSize={7}>
           <Stack gap={'xxs'} h={'100%'}>
-            {isLoading ? (
+            {(isLoading || !songs) ? (
               <Loader />
             ) : (
               songs.models.map((song) => <LocalSongCard key={song.id} song={song} />)

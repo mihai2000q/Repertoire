@@ -18,6 +18,8 @@ services:
       - MEILI_PORT=7700
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ./${LOG_OUTPUT}:/${LOG_OUTPUT}
     depends_on:
       database:
         condition: service_healthy

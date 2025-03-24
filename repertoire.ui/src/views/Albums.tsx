@@ -80,7 +80,7 @@ function Albums() {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} albums out of {albums?.totalCount + (showUnknownAlbum ? 1 : 0)}
+          {startCount} - {endCount} albums out of {(albums?.totalCount ?? 0) + (showUnknownAlbum ? 1 : 0)}
         </Text>
       )}
 
@@ -92,7 +92,7 @@ function Albums() {
         verticalSpacing={{ base: 'lg', md: 'xl' }}
         spacing={{ base: 'lg', md: 'xl' }}
       >
-        {isLoading && <AlbumsLoader />}
+        {(isLoading || !albums) && <AlbumsLoader />}
         {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
         {showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
         {((albums?.totalCount > 0 && currentPage == totalPages) ||

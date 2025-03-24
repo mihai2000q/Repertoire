@@ -36,7 +36,7 @@ function ArtistSongsCard({
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
-  if (isLoading) return <ArtistSongsLoader />
+  if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
     <Card variant={'panel'} aria-label={'songs-card'} p={0} h={'100%'} mb={'lg'}>

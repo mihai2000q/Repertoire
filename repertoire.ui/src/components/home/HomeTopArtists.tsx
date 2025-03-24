@@ -15,8 +15,8 @@ import { useGetArtistsQuery } from '../../state/api/artistsApi.ts'
 import { useRef, useState } from 'react'
 import { useDidUpdate, useHover, useViewportSize } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
-import {useAppDispatch} from "../../state/store.ts";
-import {openArtistDrawer} from "../../state/slice/globalSlice.ts";
+import { useAppDispatch } from '../../state/store.ts'
+import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 
 function Loader() {
   return (
@@ -151,7 +151,7 @@ function HomeTopArtists({ ...others }: CardProps) {
           viewportProps={{ onScroll: handleOnScroll }}
         >
           <Group wrap={'nowrap'} h={'100%'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
-            {isLoading ? (
+            {(isLoading || !artists) ? (
               <Loader />
             ) : (
               artists.models.map((artist) => <LocalArtistCard key={artist.id} artist={artist} />)

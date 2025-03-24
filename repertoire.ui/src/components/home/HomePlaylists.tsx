@@ -88,7 +88,7 @@ function HomePlaylists({ ...others }: CardProps) {
           {/*DO NOT Change the Max Height, it helps with the responsive layout (somehow for some reason)*/}
           {/*Also the value 100 is randomly chosen, it has no effect whatsoever*/}
           <SimpleGrid cols={2} px={'md'} pt={'xs'} mah={100}>
-            {isLoading ? (
+            {(isLoading || !playlists) ? (
               <Loader />
             ) : (
               playlists.models.map((playlist) => (
