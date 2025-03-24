@@ -32,3 +32,6 @@ tmp/
 
 # Docker Containers Data
 .container-data/
+
+# Logs Folder
+logs/
