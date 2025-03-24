@@ -6,6 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"github.com/cenkalti/backoff/v4"
+	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/domain/message/handler/playlist"
@@ -30,6 +31,7 @@ type messageHandler interface {
 func NewRouter(
 	lc fx.Lifecycle,
 	messagePublisherService service.MessagePublisherService,
+	logger *logger.WatermillLogger,
 
 	albumCreatedHandler album.AlbumCreatedHandler,
 	albumDeletedHandler album.AlbumDeletedHandler,
@@ -81,7 +83,6 @@ func NewRouter(
 		deleteDirectoriesStorageHandler,
 	}
 
-	logger := watermill.NewStdLogger(false, false)
 	router, err := message.NewRouter(message.RouterConfig{}, logger)
 	if err != nil {
 		log.Fatal(err)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"net/http"
+	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
 )
@@ -12,13 +13,18 @@ import (
 type DeleteDirectoriesStorageHandler struct {
 	name           string
 	topic          topics.Topic
+	logger         *logger.Logger
 	storageService service.StorageService
 }
 
-func NewDeleteDirectoriesStorageHandler(storageService service.StorageService) DeleteDirectoriesStorageHandler {
+func NewDeleteDirectoriesStorageHandler(
+	logger *logger.Logger,
+	storageService service.StorageService,
+) DeleteDirectoriesStorageHandler {
 	return DeleteDirectoriesStorageHandler{
 		name:           "delete_directories_storage_handler",
 		topic:          topics.DeleteDirectoriesStorageTopic,
+		logger:         logger,
 		storageService: storageService,
 	}
 }
@@ -34,7 +40,7 @@ func (d DeleteDirectoriesStorageHandler) Handle(msg *watermillMessage.Message) e
 	for _, path := range directoryPaths {
 		errCode := d.storageService.DeleteDirectory(path)
 		if errCode != nil && errCode.Code == http.StatusNotFound {
-			// TODO: Log that it was not found?
+			d.logger.Debug("Directory not found: " + path)
 		} else if errCode != nil {
 			resultErrors = append(resultErrors, errCode.Error)
 		}

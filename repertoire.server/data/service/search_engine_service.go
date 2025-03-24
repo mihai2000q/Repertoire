@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/meilisearch/meilisearch-go"
+	"repertoire/server/data/search"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
 	"strings"
@@ -25,10 +26,10 @@ type SearchEngineService interface {
 }
 
 type searchEngineService struct {
-	client meilisearch.ServiceManager
+	client search.Client
 }
 
-func NewSearchEngineService(client meilisearch.ServiceManager) SearchEngineService {
+func NewSearchEngineService(client search.Client) SearchEngineService {
 	return searchEngineService{client: client}
 }
 

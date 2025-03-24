@@ -2,13 +2,32 @@ package data
 
 import (
 	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
 	"repertoire/server/data/http"
+	"repertoire/server/data/logger"
 	"repertoire/server/data/message"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/search"
 	"repertoire/server/data/service"
+)
+
+var loggers = fx.Options(
+	fx.Provide(logger.NewLogger),
+	fx.Provide(logger.NewFxLogger),
+	fx.Provide(logger.NewGinLogger),
+	fx.Provide(logger.NewGormLogger),
+	fx.Provide(logger.NewRestyLogger),
+	fx.Provide(logger.NewWatermillLogger),
+	fx.WithLogger(func(logger *logger.FxLogger) fxevent.Logger {
+		return &fxevent.ZapLogger{Logger: logger.Logger.Logger}
+	}),
+)
+
+var httpClients = fx.Options(
+	fx.Provide(http.NewClient),
+	fx.Provide(http.NewStorageClient),
 )
 
 var repositories = fx.Options(
@@ -30,8 +49,9 @@ var services = fx.Options(
 
 var Module = fx.Options(
 	fx.Provide(cache.NewCache),
+	loggers,
 	fx.Provide(database.NewClient),
-	fx.Provide(http.NewRestyClient),
+	httpClients,
 	fx.Provide(message.NewPublisher),
 	repositories,
 	fx.Provide(search.NewMeiliClient),
