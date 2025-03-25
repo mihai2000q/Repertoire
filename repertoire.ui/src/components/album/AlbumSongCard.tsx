@@ -3,12 +3,11 @@ import {
   ActionIcon,
   alpha,
   Avatar,
-  Box,
+  Grid,
   Group,
   Menu,
   MenuDropdown,
   NumberFormatter,
-  Space,
   Stack,
   Text,
   Tooltip
@@ -149,80 +148,102 @@ function AlbumSongCard({
           onClick={handleClick}
           onContextMenu={openMenu}
         >
-          {!isUnknownAlbum && (
-            <Text fw={500} w={35} ta={'center'}>
-              {song.albumTrackNo}
-            </Text>
-          )}
-          <Avatar
-            radius={'8px'}
-            src={song.imageUrl ?? albumImageUrl ?? songPlaceholder}
-            alt={song.title}
-          />
+          <Grid columns={12} align={'center'} w={'100%'}>
+            <Grid.Col
+              span={
+                order.property === SongProperty.AlbumTrackNo ||
+                order.property === SongProperty.Title
+                  ? 'auto'
+                  : 6
+              }
+            >
+              <Group wrap={'nowrap'}>
+                {!isUnknownAlbum && (
+                  <Text fw={500} miw={25} maw={25} ta={'center'}>
+                    {song.albumTrackNo}
+                  </Text>
+                )}
+                <Avatar
+                  radius={'8px'}
+                  src={song.imageUrl ?? albumImageUrl ?? songPlaceholder}
+                  alt={song.title}
+                />
 
-          <Stack miw={200} style={{ overflow: 'hidden' }}>
-            <Text fw={500} truncate={'end'}>
-              {song.title}
-            </Text>
-          </Stack>
-
-          <Box w={200}>
-            {order.property === SongProperty.Difficulty && (
-              <DifficultyBar difficulty={song.difficulty} />
-            )}
-            {order.property === SongProperty.Rehearsals && (
-              <Tooltip.Floating
-                role={'tooltip'}
-                label={
-                  <>
-                    Rehearsals: <NumberFormatter value={song.rehearsals} />
-                  </>
-                }
-              >
-                <Text fw={500} c={'dimmed'} inline>
-                  <NumberFormatter value={song.rehearsals} />
+                <Text fw={500} lineClamp={1}>
+                  {song.title}
                 </Text>
-              </Tooltip.Floating>
-            )}
-            {order.property === SongProperty.Confidence && (
-              <SongConfidenceBar confidence={song.confidence} flex={1} />
-            )}
-            {order.property === SongProperty.Progress && (
-              <SongProgressBar progress={song.progress} flex={1} />
-            )}
-            {order.property === SongProperty.LastTimePlayed && (
-              <Tooltip
-                label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
-                openDelay={400}
-                disabled={!song.lastTimePlayed}
-              >
-                <Text fw={500} c={'dimmed'} inline>
-                  {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('D MMM YYYY') : 'never'}
-                </Text>
-              </Tooltip>
-            )}
-          </Box>
+              </Group>
+            </Grid.Col>
 
-          <Space flex={1} />
+            <Grid.Col
+              span={
+                order.property === SongProperty.AlbumTrackNo ||
+                order.property === SongProperty.Title
+                  ? 0
+                  : 'auto'
+              }
+            >
+              <Group px={'10%'}>
+                {order.property === SongProperty.Difficulty && (
+                  <DifficultyBar difficulty={song.difficulty} miw={'max(15vw, 120px)'} />
+                )}
+                {order.property === SongProperty.Rehearsals && (
+                  <Tooltip.Floating
+                    role={'tooltip'}
+                    label={
+                      <>
+                        Rehearsals: <NumberFormatter value={song.rehearsals} />
+                      </>
+                    }
+                  >
+                    <Text fw={500} c={'dimmed'} inline>
+                      <NumberFormatter value={song.rehearsals} />
+                    </Text>
+                  </Tooltip.Floating>
+                )}
+                {order.property === SongProperty.Confidence && (
+                  <SongConfidenceBar confidence={song.confidence} flex={1} />
+                )}
+                {order.property === SongProperty.Progress && (
+                  <SongProgressBar progress={song.progress} flex={1} />
+                )}
+                {order.property === SongProperty.LastTimePlayed && (
+                  <Tooltip
+                    label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                    openDelay={400}
+                    disabled={!song.lastTimePlayed}
+                  >
+                    <Text fw={500} c={'dimmed'} inline>
+                      {song.lastTimePlayed
+                        ? dayjs(song.lastTimePlayed).format('D MMM YYYY')
+                        : 'never'}
+                    </Text>
+                  </Tooltip>
+                )}
+              </Group>
+            </Grid.Col>
 
-          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
-            <Menu.Target>
-              <ActionIcon
-                aria-label={'more-menu'}
-                size={'md'}
-                variant={'grey'}
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  transition: '0.3s',
-                  opacity: isSelected ? 1 : 0
-                }}
-              >
-                <IconDots size={15} />
-              </ActionIcon>
-            </Menu.Target>
+            <Grid.Col span={'content'}>
+              <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+                <Menu.Target>
+                  <ActionIcon
+                    aria-label={'more-menu'}
+                    size={'md'}
+                    variant={'grey'}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      transition: '0.3s',
+                      opacity: isSelected ? 1 : 0
+                    }}
+                  >
+                    <IconDots size={15} />
+                  </ActionIcon>
+                </Menu.Target>
 
-            <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
-          </Menu>
+                <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+              </Menu>
+            </Grid.Col>
+          </Grid>
         </Group>
       </Menu.Target>
 
