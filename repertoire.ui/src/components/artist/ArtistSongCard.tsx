@@ -170,7 +170,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                 </Tooltip>
               )}
               {order.property === SongProperty.Difficulty && (
-                <DifficultyBar difficulty={song.difficulty} w={25} mt={4} />
+                <DifficultyBar difficulty={song.difficulty} mt={4} miw={110} />
               )}
               {order.property === SongProperty.Rehearsals && (
                 <Tooltip.Floating

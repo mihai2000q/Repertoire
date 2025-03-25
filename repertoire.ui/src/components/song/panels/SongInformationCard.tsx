@@ -34,7 +34,11 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             </Text>
           </Grid.Col>
           <Grid.Col span={secondColSize}>
-            {song.difficulty ? <DifficultyBar difficulty={song.difficulty} maw={40} /> : <NotSet />}
+            {song.difficulty ? (
+              <DifficultyBar difficulty={song.difficulty} maw={160} />
+            ) : (
+              <NotSet />
+            )}
           </Grid.Col>
 
           <Grid.Col span={firstColSize}>
