@@ -48,7 +48,7 @@ func (g Get) Handle(
 		return wrapper.WithTotalCount[any]{}, errCode
 	}
 
-	results := []any{}
+	var results []any
 	for _, curr := range searchResult.Models {
 		switch curr.(map[string]interface{})["type"] {
 		case string(enums.Artist):
@@ -100,6 +100,13 @@ func (g Get) Handle(
 
 			results = append(results, playlist)
 		}
+	}
+
+	if len(results) == 0 {
+		return wrapper.WithTotalCount[any]{
+			Models:     []any{}, // otherwise it would be nil by default
+			TotalCount: searchResult.TotalCount,
+		}, nil
 	}
 
 	return wrapper.WithTotalCount[any]{

@@ -61,7 +61,7 @@ docker compose up -d
 This command will open up three containers:
 
 - one for the database
-- one for the search engine
+- one for the search engine (meilisearch)
 - and the other for the application, which is running by default in development mode.
 
 If you decide to use a local database instance instead of Docker, then you are free to do so,

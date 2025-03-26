@@ -12,9 +12,7 @@ type JWTAuthMiddleware struct {
 }
 
 func NewJWTAuthMiddleware(jwtService service.JwtService) JWTAuthMiddleware {
-	return JWTAuthMiddleware{
-		jwtService: jwtService,
-	}
+	return JWTAuthMiddleware{jwtService: jwtService}
 }
 
 func (m JWTAuthMiddleware) Handler() gin.HandlerFunc {
