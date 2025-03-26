@@ -26,7 +26,7 @@ var loggers = fx.Options(
 )
 
 var httpClients = fx.Options(
-	fx.Provide(http.NewClient),
+	fx.Provide(http.NewRestyClient),
 	fx.Provide(http.NewStorageClient),
 )
 

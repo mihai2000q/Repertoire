@@ -27,10 +27,10 @@ type SearchEngineService interface {
 }
 
 type searchEngineService struct {
-	client search.Client
+	client search.MeiliClient
 }
 
-func NewSearchEngineService(client search.Client) SearchEngineService {
+func NewSearchEngineService(client search.MeiliClient) SearchEngineService {
 	return searchEngineService{client: client}
 }
 
