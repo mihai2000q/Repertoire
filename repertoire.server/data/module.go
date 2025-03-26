@@ -42,6 +42,7 @@ var repositories = fx.Options(
 var services = fx.Options(
 	fx.Provide(service.NewBCryptService),
 	fx.Provide(service.NewJwtService),
+	fx.Provide(service.NewMeiliTaskTrackerService),
 	fx.Provide(service.NewMessagePublisherService),
 	fx.Provide(service.NewSearchEngineService),
 	fx.Provide(service.NewStorageService),

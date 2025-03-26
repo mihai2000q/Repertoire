@@ -10,35 +10,39 @@ import (
 )
 
 type AddToSearchEngineHandler struct {
-	name                string
-	topic               topics.Topic
-	logger              *logger.Logger
-	searchEngineService service.SearchEngineService
+	name                    string
+	topic                   topics.Topic
+	logger                  *logger.Logger
+	searchEngineService     service.SearchEngineService
+	meiliTaskTrackerService service.MeiliTaskTrackerService
 }
 
 func NewAddToSearchEngineHandler(
 	logger *logger.Logger,
 	searchEngineService service.SearchEngineService,
+	meiliTaskTrackerService service.MeiliTaskTrackerService,
 ) AddToSearchEngineHandler {
 	return AddToSearchEngineHandler{
-		name:                "add_to_search_engine_handler",
-		topic:               topics.AddToSearchEngineTopic,
-		logger:              logger,
-		searchEngineService: searchEngineService,
+		name:                    "add_to_search_engine_handler",
+		topic:                   topics.AddToSearchEngineTopic,
+		logger:                  logger,
+		searchEngineService:     searchEngineService,
+		meiliTaskTrackerService: meiliTaskTrackerService,
 	}
 }
 
 func (a AddToSearchEngineHandler) Handle(msg *message.Message) error {
-	var documents []any
+	var documents []map[string]any
 	err := json.Unmarshal(msg.Payload, &documents)
 	if err != nil {
 		return err
 	}
 
-	err = a.searchEngineService.Add(documents)
+	taskID, err := a.searchEngineService.Add(documents)
 	if err != nil {
 		return err
 	}
+	a.meiliTaskTrackerService.Track(strconv.FormatInt(taskID, 10), documents[0]["userId"].(string))
 	a.logger.Debug("Search engine added " + strconv.Itoa(len(documents)) + " documents")
 	return nil
 }

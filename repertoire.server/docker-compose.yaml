@@ -49,5 +49,8 @@ services:
       - "${MEILI_PORT}:7700"
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      # - MEILI_TASK_WEBHOOK_URL=http://Repertoire-Server:${SERVER_PORT}/api/search/webhook
+      - MEILI_TASK_WEBHOOK_URL=${MEILI_WEBHOOK_URL}
+      - MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER=${MEILI_WEBHOOK_AUTHORIZATION_KEY}
     volumes:
       - ./.container-data/meili_data:/meili_data

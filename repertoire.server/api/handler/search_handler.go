@@ -50,3 +50,13 @@ func (s SearchHandler) Get(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func (s SearchHandler) MeiliWebhook(c *gin.Context) {
+	errorCode := s.service.MeiliWebhook(c.Request.Body)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.Status(http.StatusOK)
+}

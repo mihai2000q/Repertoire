@@ -34,6 +34,7 @@ type Env struct {
 	MeiliHost      string
 	MeiliPort      string
 	MeiliMasterKey string
+	MeiliAuthKey   string
 }
 
 func NewEnv() Env {
@@ -74,6 +75,7 @@ func NewEnv() Env {
 		MeiliHost:      os.Getenv("MEILI_HOST"),
 		MeiliPort:      os.Getenv("MEILI_PORT"),
 		MeiliMasterKey: os.Getenv("MEILI_MASTER_KEY"),
+		MeiliAuthKey:   os.Getenv("MEILI_WEBHOOK_AUTHORIZATION_KEY"),
 	}
 	return env
 }

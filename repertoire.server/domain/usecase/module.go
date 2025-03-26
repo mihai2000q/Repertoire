@@ -77,6 +77,7 @@ var playlistUseCases = fx.Options(
 
 var searchUseCases = fx.Options(
 	fx.Provide(search.NewGet),
+	fx.Provide(search.NewMeiliWebhook),
 )
 
 var songUseCases = fx.Options(

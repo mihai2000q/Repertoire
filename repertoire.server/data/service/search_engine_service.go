@@ -20,9 +20,10 @@ type SearchEngineService interface {
 		sort []string,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
 	GetDocuments(filter string) ([]map[string]any, error)
-	Add(items []any) error
+	Add(items []map[string]any) (int64, error)
 	Update(items []any) error
 	Delete(ids []string) error
+	HasTaskSucceeded(status string) bool
 }
 
 type searchEngineService struct {
@@ -87,9 +88,12 @@ func (s searchEngineService) GetDocuments(filter string) ([]map[string]any, erro
 	return result.Results, nil
 }
 
-func (s searchEngineService) Add(items []any) error {
-	_, err := s.client.Index("search").AddDocuments(&items)
-	return err
+func (s searchEngineService) Add(items []map[string]any) (int64, error) {
+	task, err := s.client.Index("search").AddDocuments(&items)
+	if err != nil {
+		return 0, err
+	}
+	return task.TaskUID, nil
 }
 
 func (s searchEngineService) Update(items []any) error {
@@ -106,4 +110,8 @@ func (s searchEngineService) Delete(ids []string) error {
 		return err
 	}
 	return nil
+}
+
+func (s searchEngineService) HasTaskSucceeded(status string) bool {
+	return status == string(meilisearch.TaskStatusSucceeded)
 }
