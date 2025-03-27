@@ -3,7 +3,6 @@ package realtime
 import (
 	"context"
 	"github.com/centrifugal/centrifuge-go"
-	"net/http"
 	"repertoire/server/internal"
 )
 
@@ -15,9 +14,5 @@ type CentrifugoClient interface {
 }
 
 func NewCentrifugoClient(env internal.Env) CentrifugoClient {
-	return centrifuge.NewJsonClient(env.CentrifugoUrl, centrifuge.Config{
-		Header: http.Header{
-			"X-API-Key": []string{env.CentrifugoApiKey},
-		},
-	})
+	return centrifuge.NewJsonClient(env.CentrifugoUrl, centrifuge.Config{})
 }
