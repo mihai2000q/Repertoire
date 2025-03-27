@@ -20,7 +20,7 @@ func (u AuthRouter) RegisterRoutes() {
 
 	centrifugoApi := u.requestHandler.PrivateRouter.Group("/auth/centrifugo")
 	{
-		centrifugoApi.GET("/centrifugo", u.handler.GetCentrifugoToken)
+		centrifugoApi.GET("", u.handler.GetCentrifugoToken)
 	}
 }
 
