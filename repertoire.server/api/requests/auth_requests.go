@@ -14,3 +14,7 @@ type SignUpRequest struct {
 	Email    string `validate:"required,max=256,email"`
 	Password string `validate:"required,min=8,has_upper,has_lower,has_digit"`
 }
+
+type RefreshCentrifugoTokenRequest struct {
+	Token string
+}

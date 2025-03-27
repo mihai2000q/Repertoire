@@ -80,3 +80,22 @@ func (a AuthHandler) SignUp(c *gin.Context) {
 		"token": token,
 	})
 }
+
+func (a AuthHandler) GetCentrifugoToken(c *gin.Context) {
+	var request requests.RefreshRequest
+	errCode := a.BindAndValidate(c, &request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	token := a.GetTokenFromContext(c)
+
+	centrifugoToken, errCode := a.service.GetCentrifugoToken(token)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, centrifugoToken)
+}

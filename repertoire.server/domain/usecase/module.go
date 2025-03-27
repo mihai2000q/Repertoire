@@ -58,6 +58,7 @@ var authUseCases = fx.Options(
 	fx.Provide(auth.NewRefresh),
 	fx.Provide(auth.NewSignIn),
 	fx.Provide(auth.NewSignUp),
+	fx.Provide(auth.NewGetCentrifugoToken),
 )
 
 var playlistUseCases = fx.Options(

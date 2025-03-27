@@ -13,6 +13,7 @@ import (
 
 type RealTimeService interface {
 	Publish(channel string, payload any) error
+	CreateToken(userID string) string
 }
 
 type realTimeService struct {
@@ -60,17 +61,17 @@ func (r realTimeService) getToken() string {
 	}
 
 	// create token and set in cache
-	createdToken := r.createToken()
+	createdToken := r.CreateToken("")
 	r.cache.Set(tokenKey, createdToken, time.Hour)
 	return createdToken
 }
 
-func (r realTimeService) createToken() string {
+func (r realTimeService) CreateToken(userID string) string {
 	env := internal.NewEnv()
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
-		"sub": "", // has to be defined
+		"sub": userID,
 		"iss": env.CentrifugoJWTIssuer,
 		"aud": env.CentrifugoJWTAudience,
 		"iat": time.Now().UTC().Unix(),
