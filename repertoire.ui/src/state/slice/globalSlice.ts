@@ -16,6 +16,7 @@ interface SongDrawer {
 }
 
 export interface GlobalState {
+  userID?: string | undefined
   documentTitle?: string | undefined
   errorPath?: string | undefined
   artistDrawer: ArtistDrawer
@@ -24,6 +25,7 @@ export interface GlobalState {
 }
 
 const initialState: GlobalState = {
+  userID: undefined,
   songDrawer: {
     open: false
   },
@@ -39,6 +41,9 @@ export const globalSlice = createSlice({
   name: 'global',
   initialState,
   reducers: {
+    setUserID: (state, action: PayloadAction<string>) => {
+      state.userID = action.payload
+    },
     setDocumentTitle: (state, action: PayloadAction<string | undefined>) => {
       state.documentTitle = action.payload
     },
@@ -84,6 +89,7 @@ export const globalSlice = createSlice({
 })
 
 export const {
+  setUserID,
   setDocumentTitle,
   setErrorPath,
   openArtistDrawer,

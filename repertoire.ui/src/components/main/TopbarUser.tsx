@@ -18,6 +18,8 @@ import { signOut } from '../../state/slice/authSlice.ts'
 import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
 import { useAppDispatch } from '../../state/store.ts'
+import { useEffect } from 'react'
+import { setUserID } from '../../state/slice/globalSlice.ts'
 
 function TopbarUser({ ...others }: UnstyledButtonProps) {
   const dispatch = useAppDispatch()
@@ -25,6 +27,9 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
   })
+  useEffect(() => {
+    dispatch(setUserID(user?.id))
+  }, [dispatch, user])
 
   const [openedAccount, { open: openAccount, close: closeAccount }] = useDisclosure(false)
   const [openedSettings, { open: openSettings, close: closeSettings }] = useDisclosure(false)
