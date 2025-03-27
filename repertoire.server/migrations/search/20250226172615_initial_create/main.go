@@ -52,7 +52,7 @@ func main() {
 	utils.SaveMigrationStatus(meiliClient, uid, name)
 }
 
-func addArtists(dbClient database.Client, meiliClient search.Client) {
+func addArtists(dbClient database.Client, meiliClient search.MeiliClient) {
 	var artists []model.Artist
 	err := dbClient.Find(&artists).Error
 	if err != nil {
@@ -75,7 +75,7 @@ func addArtists(dbClient database.Client, meiliClient search.Client) {
 	}
 }
 
-func addAlbums(dbClient database.Client, meiliClient search.Client) {
+func addAlbums(dbClient database.Client, meiliClient search.MeiliClient) {
 	var albums []model.Album
 	err := dbClient.Joins("Artist").Find(&albums).Error
 	if err != nil {
@@ -101,7 +101,7 @@ func addAlbums(dbClient database.Client, meiliClient search.Client) {
 	}
 }
 
-func addSongs(dbClient database.Client, meiliClient search.Client) {
+func addSongs(dbClient database.Client, meiliClient search.MeiliClient) {
 	var songs []model.Song
 	err := dbClient.Joins("Album").Joins("Artist").Find(&songs).Error
 	if err != nil {
@@ -127,7 +127,7 @@ func addSongs(dbClient database.Client, meiliClient search.Client) {
 	}
 }
 
-func addPlaylists(dbClient database.Client, meiliClient search.Client) {
+func addPlaylists(dbClient database.Client, meiliClient search.MeiliClient) {
 	var playlists []model.Playlist
 	err := dbClient.Find(&playlists).Error
 	if err != nil {
