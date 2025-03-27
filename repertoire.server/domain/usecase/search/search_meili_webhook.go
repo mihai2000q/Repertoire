@@ -65,7 +65,7 @@ func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *wrapper.ErrorCode {
 		return nil
 	}
 
-	err = m.realTimeService.Publish("search:"+userID, map[string]any{"action": "SEARCH_CACHE_INVALIDATION"})
+	err = m.realTimeService.Publish("search", userID, map[string]any{"action": "SEARCH_CACHE_INVALIDATION"})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

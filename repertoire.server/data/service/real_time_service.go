@@ -12,7 +12,7 @@ import (
 )
 
 type RealTimeService interface {
-	Publish(channel string, payload any) error
+	Publish(channel string, userID string, payload any) error
 	CreateToken(userID string) string
 }
 
@@ -34,17 +34,17 @@ func NewRealTimeService(
 	}
 }
 
-func (r realTimeService) Publish(channel string, payload any) error {
+func (r realTimeService) Publish(channel string, userID string, payload any) error {
 	parsedPayload, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
-	r.client.SetToken(r.getToken())
+	r.client.SetToken(r.getToken(userID))
 	err = r.client.Connect()
 	if err != nil {
 		return err
 	}
-	_, err = r.client.Publish(context.Background(), channel, parsedPayload)
+	_, err = r.client.Publish(context.Background(), channel+":"+userID, parsedPayload)
 	if err != nil {
 		return err
 	}
@@ -52,16 +52,16 @@ func (r realTimeService) Publish(channel string, payload any) error {
 	return err
 }
 
-func (r realTimeService) getToken() string {
+func (r realTimeService) getToken(userID string) string {
 	// get from cache
-	tokenKey := "centrifugo_token"
+	tokenKey := "centrifugo_token#" + userID
 	token, found := r.cache.Get(tokenKey)
 	if found {
 		return token.(string)
 	}
 
 	// create token and set in cache
-	createdToken := r.CreateToken("")
+	createdToken := r.CreateToken(userID)
 	r.cache.Set(tokenKey, createdToken, time.Hour)
 	return createdToken
 }
