@@ -1,0 +1,81 @@
+package service
+
+import (
+	"context"
+	"encoding/json"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"repertoire/server/data/cache"
+	"repertoire/server/data/realtime"
+	"repertoire/server/internal"
+	"time"
+)
+
+type RealTimeService interface {
+	Publish(channel string, payload any) error
+}
+
+type realTimeService struct {
+	env    internal.Env
+	cache  cache.Cache
+	client realtime.CentrifugoClient
+}
+
+func NewRealTimeService(
+	env internal.Env,
+	cache cache.Cache,
+	client realtime.CentrifugoClient,
+) RealTimeService {
+	return realTimeService{
+		env:    env,
+		cache:  cache,
+		client: client,
+	}
+}
+
+func (r realTimeService) Publish(channel string, payload any) error {
+	parsedPayload, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	r.client.SetToken(r.getToken())
+	err = r.client.Connect()
+	if err != nil {
+		return err
+	}
+	_, err = r.client.Publish(context.Background(), channel, parsedPayload)
+	if err != nil {
+		return err
+	}
+	err = r.client.Disconnect()
+	return err
+}
+
+func (r realTimeService) getToken() string {
+	// get from cache
+	tokenKey := "centrifugo_token"
+	token, found := r.cache.Get(tokenKey)
+	if found {
+		return token.(string)
+	}
+
+	// create token and set in cache
+	createdToken := r.createToken()
+	r.cache.Set(tokenKey, createdToken, time.Hour)
+	return createdToken
+}
+
+func (r realTimeService) createToken() string {
+	env := internal.NewEnv()
+
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"jti": uuid.New().String(),
+		"sub": "", // has to be defined
+		"iss": env.CentrifugoJWTIssuer,
+		"aud": env.CentrifugoJWTAudience,
+		"iat": time.Now().UTC().Unix(),
+		"exp": time.Now().UTC().Add(time.Hour).Unix(),
+	})
+	token, _ := claims.SignedString([]byte(env.CentrifugoJWTSecretKey))
+	return token
+}

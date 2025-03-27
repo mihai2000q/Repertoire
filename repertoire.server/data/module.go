@@ -8,6 +8,7 @@ import (
 	"repertoire/server/data/http"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/message"
+	"repertoire/server/data/realtime"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/search"
 	"repertoire/server/data/service"
@@ -44,6 +45,7 @@ var services = fx.Options(
 	fx.Provide(service.NewJwtService),
 	fx.Provide(service.NewMeiliTaskTrackerService),
 	fx.Provide(service.NewMessagePublisherService),
+	fx.Provide(service.NewRealTimeService),
 	fx.Provide(service.NewSearchEngineService),
 	fx.Provide(service.NewStorageService),
 )
@@ -54,6 +56,7 @@ var Module = fx.Options(
 	fx.Provide(database.NewClient),
 	httpClients,
 	fx.Provide(message.NewPublisher),
+	fx.Provide(realtime.NewCentrifugoClient),
 	repositories,
 	fx.Provide(search.NewMeiliClient),
 	services,
