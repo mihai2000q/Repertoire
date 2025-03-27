@@ -19,11 +19,11 @@ func NewMeiliTaskTrackerService(cache cache.Cache) MeiliTaskTrackerService {
 }
 
 func (d meiliTaskTrackerService) Track(taskID string, userID string) {
-	d.cache.Set(taskID, userID, time.Minute)
+	d.cache.Set("meiliTask-"+taskID, userID, time.Minute)
 }
 
 func (d meiliTaskTrackerService) GetUserID(taskID string) (string, bool) {
-	userID, found := d.cache.Get(taskID)
+	userID, found := d.cache.Get("meiliTask-" + taskID)
 	if found {
 		return userID.(string), found
 	}
