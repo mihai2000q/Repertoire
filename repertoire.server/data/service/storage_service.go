@@ -115,7 +115,7 @@ func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode
 
 func (s storageService) getAccessToken() (string, error) {
 	// get from cache
-	accessTokenKey := "access_token"
+	accessTokenKey := "storage_access_token"
 	token, found := s.cache.Get(accessTokenKey)
 	if found {
 		return token.(string), nil
