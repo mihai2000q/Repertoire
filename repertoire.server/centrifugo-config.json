@@ -1,0 +1,23 @@
+{
+  "client": {
+    "token": {
+      "hmac_secret_key": "1e99423a4edf1c8b5f0e3a4c1e6c0d5a1e41a2d3d9f8b8f8a2e9c1b0f1e2b6c7",
+      "issuer": "http://localhost:8000/api",
+      "audience": "Centrifugo"
+    },
+    "allowed_origins": [
+      "*"
+    ]
+  },
+  "log" : {
+    "level": "info"
+  },
+  "admin": {
+    "enabled": true,
+    "password": "admin",
+    "secret": "admin-secret"
+  },
+  "engine": {
+    "type": "memory"
+  }
+}
