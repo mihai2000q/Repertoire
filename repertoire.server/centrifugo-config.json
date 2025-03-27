@@ -7,17 +7,28 @@
     },
     "allowed_origins": [
       "*"
-    ]
+    ],
+    "ping_interval": "120s",
+    "pong_timeout": "60s"
   },
-  "log" : {
-    "level": "info"
+  "engine": {
+    "type": "memory"
   },
   "admin": {
     "enabled": true,
     "password": "admin",
     "secret": "admin-secret"
   },
-  "engine": {
-    "type": "memory"
+  "log" : {
+    "level": "info"
+  },
+  "channel": {
+    "namespaces": [
+      {
+        "name": "search",
+        "allow_subscribe_for_client": true,
+        "allow_publish_for_client": true
+      }
+    ]
   }
 }
