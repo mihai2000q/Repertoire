@@ -32,7 +32,7 @@ func NewUpdateFromSearchEngineHandler(
 }
 
 func (u UpdateFromSearchEngineHandler) Handle(msg *message.Message) error {
-	var documents []map[string]any
+	var documents []map[string]any // the documents can also be of type []any, because they will be unmarshalled
 	err := json.Unmarshal(msg.Payload, &documents)
 	if err != nil {
 		return err
