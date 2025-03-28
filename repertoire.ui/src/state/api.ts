@@ -87,7 +87,6 @@ export const api = createApi({
 export const {
   useSignUpMutation,
   useSignInMutation,
-  useGetCentrifugeTokenQuery,
   useLazyGetCentrifugeTokenQuery,
   useGetCurrentUserQuery,
   useUpdateUserMutation,

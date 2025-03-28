@@ -32,7 +32,7 @@ import { MouseEvent, ReactNode, useRef, useState } from 'react'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../@ui/icons/CustomIconPlaylist2.tsx'
-import useSearchQueryCacheInvalidation from "../../hooks/useSearchQueryCacheInvalidation.ts";
+import useSearchQueryCacheInvalidation from '../../hooks/useSearchQueryCacheInvalidation.ts'
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
