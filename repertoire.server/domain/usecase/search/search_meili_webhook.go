@@ -12,20 +12,20 @@ import (
 )
 
 type MeiliWebhook struct {
-	searchEngineService     service.SearchEngineService
-	meiliTaskTrackerService service.MeiliTaskTrackerService
-	realTimeService         service.RealTimeService
+	searchEngineService      service.SearchEngineService
+	searchTaskTrackerService service.SearchTaskTrackerService
+	realTimeService          service.RealTimeService
 }
 
 func NewMeiliWebhook(
 	searchEngineService service.SearchEngineService,
-	meiliTaskTrackerService service.MeiliTaskTrackerService,
+	searchTaskTrackerService service.SearchTaskTrackerService,
 	realTimeService service.RealTimeService,
 ) MeiliWebhook {
 	return MeiliWebhook{
-		searchEngineService:     searchEngineService,
-		meiliTaskTrackerService: meiliTaskTrackerService,
-		realTimeService:         realTimeService,
+		searchEngineService:      searchEngineService,
+		searchTaskTrackerService: searchTaskTrackerService,
+		realTimeService:          realTimeService,
 	}
 }
 
@@ -60,7 +60,7 @@ func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *wrapper.ErrorCode {
 		)
 	}
 
-	userID, isUserTracked := m.meiliTaskTrackerService.GetUserID(taskID)
+	userID, isUserTracked := m.searchTaskTrackerService.GetUserID(taskID)
 	if !isUserTracked {
 		return nil
 	}

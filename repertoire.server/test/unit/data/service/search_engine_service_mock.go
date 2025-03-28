@@ -30,22 +30,32 @@ func (s *SearchEngineServiceMock) Search(
 	return args.Get(0).(wrapper.WithTotalCount[any]), errCode
 }
 
+func (s *SearchEngineServiceMock) GetDocument(id string) (map[string]any, error) {
+	args := s.Called(id)
+	return args.Get(0).(map[string]any), args.Error(1)
+}
+
 func (s *SearchEngineServiceMock) GetDocuments(filter string) ([]map[string]any, error) {
 	args := s.Called(filter)
 	return args.Get(0).([]map[string]any), args.Error(1)
 }
 
-func (s *SearchEngineServiceMock) Add(items []any) error {
+func (s *SearchEngineServiceMock) Add(items []map[string]any) (int64, error) {
 	args := s.Called(items)
-	return args.Error(0)
+	return args.Get(0).(int64), args.Error(1)
 }
 
-func (s *SearchEngineServiceMock) Update(items []any) error {
+func (s *SearchEngineServiceMock) Update(items []map[string]any) (int64, error) {
 	args := s.Called(items)
-	return args.Error(0)
+	return args.Get(0).(int64), args.Error(1)
 }
 
-func (s *SearchEngineServiceMock) Delete(ids []string) error {
+func (s *SearchEngineServiceMock) Delete(ids []string) (int64, error) {
 	args := s.Called(ids)
-	return args.Error(0)
+	return args.Get(0).(int64), args.Error(1)
+}
+
+func (s *SearchEngineServiceMock) HasTaskSucceeded(status string) bool {
+	args := s.Called(status)
+	return args.Bool(0)
 }

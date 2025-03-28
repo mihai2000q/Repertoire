@@ -8,19 +8,48 @@ import (
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
+	"strconv"
 	"testing"
 )
 
-func TestDeleteFromSearchEngineHandler_WhenDeleteFails_ShouldReturnError(t *testing.T) {
+func TestDeleteFromSearchEngineHandler_WhenGetDocumentFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewDeleteFromSearchEngineHandler(nil, searchEngineService)
+	_uut := search.NewDeleteFromSearchEngineHandler(nil, searchEngineService, nil)
 
 	ids := []string{"id1", "id2", "id3"}
 
 	internalError := errors.New("internal error")
+	searchEngineService.On("GetDocument", ids[0]).
+		Return(map[string]any{}, internalError).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(&ids)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.Error(t, err)
+	assert.Equal(t, err, internalError)
+
+	searchEngineService.AssertExpectations(t)
+}
+
+func TestDeleteFromSearchEngineHandler_WhenDeleteFails_ShouldReturnError(t *testing.T) {
+	// given
+	searchEngineService := new(service.SearchEngineServiceMock)
+	_uut := search.NewDeleteFromSearchEngineHandler(nil, searchEngineService, nil)
+
+	ids := []string{"id1", "id2", "id3"}
+
+	searchEngineService.On("GetDocument", ids[0]).
+		Return(map[string]any{}, nil).
+		Once()
+
+	internalError := errors.New("internal error")
 	searchEngineService.On("Delete", ids).
-		Return(internalError).
+		Return(int64(0), internalError).
 		Once()
 
 	// when
@@ -38,13 +67,22 @@ func TestDeleteFromSearchEngineHandler_WhenDeleteFails_ShouldReturnError(t *test
 func TestDeleteFromSearchEngineHandler_WhenSuccessful_ShouldDeleteDataFromSearchEngineById(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewDeleteFromSearchEngineHandler(logger.NewLoggerMock(), searchEngineService)
+	searchTaskTrackerService := new(service.SearchTaskTrackerServiceMock)
+	_uut := search.NewDeleteFromSearchEngineHandler(logger.NewLoggerMock(), searchEngineService, searchTaskTrackerService)
 
 	ids := []string{"id1", "id2", "id3"}
 
-	searchEngineService.On("Delete", ids).
-		Return(nil).
+	userID := "some_user_ID"
+	searchEngineService.On("GetDocument", ids[0]).
+		Return(map[string]any{"userId": userID}, nil).
 		Once()
+
+	var taskID int64 = 23
+	searchEngineService.On("Delete", ids).
+		Return(taskID, nil).
+		Once()
+
+	searchTaskTrackerService.On("Track", strconv.FormatInt(taskID, 10), userID).Once()
 
 	// when
 	payload, _ := json.Marshal(&ids)
@@ -55,4 +93,5 @@ func TestDeleteFromSearchEngineHandler_WhenSuccessful_ShouldDeleteDataFromSearch
 	assert.NoError(t, err)
 
 	searchEngineService.AssertExpectations(t)
+	searchTaskTrackerService.AssertExpectations(t)
 }

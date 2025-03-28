@@ -10,24 +10,24 @@ import (
 )
 
 type AddToSearchEngineHandler struct {
-	name                    string
-	topic                   topics.Topic
-	logger                  *logger.Logger
-	searchEngineService     service.SearchEngineService
-	meiliTaskTrackerService service.MeiliTaskTrackerService
+	name                     string
+	topic                    topics.Topic
+	logger                   *logger.Logger
+	searchEngineService      service.SearchEngineService
+	searchTaskTrackerService service.SearchTaskTrackerService
 }
 
 func NewAddToSearchEngineHandler(
 	logger *logger.Logger,
 	searchEngineService service.SearchEngineService,
-	meiliTaskTrackerService service.MeiliTaskTrackerService,
+	searchTaskTrackerService service.SearchTaskTrackerService,
 ) AddToSearchEngineHandler {
 	return AddToSearchEngineHandler{
-		name:                    "add_to_search_engine_handler",
-		topic:                   topics.AddToSearchEngineTopic,
-		logger:                  logger,
-		searchEngineService:     searchEngineService,
-		meiliTaskTrackerService: meiliTaskTrackerService,
+		name:                     "add_to_search_engine_handler",
+		topic:                    topics.AddToSearchEngineTopic,
+		logger:                   logger,
+		searchEngineService:      searchEngineService,
+		searchTaskTrackerService: searchTaskTrackerService,
 	}
 }
 
@@ -42,7 +42,7 @@ func (a AddToSearchEngineHandler) Handle(msg *message.Message) error {
 	if err != nil {
 		return err
 	}
-	a.meiliTaskTrackerService.Track(strconv.FormatInt(taskID, 10), documents[0]["userId"].(string))
+	a.searchTaskTrackerService.Track(strconv.FormatInt(taskID, 10), documents[0]["userId"].(string))
 	a.logger.Debug("Search engine added " + strconv.Itoa(len(documents)) + " documents")
 	return nil
 }
