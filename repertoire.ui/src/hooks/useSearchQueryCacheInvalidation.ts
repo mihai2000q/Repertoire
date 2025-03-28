@@ -5,15 +5,15 @@ import useCentrifuge from './useCentrifuge.ts'
 
 export default function useSearchQueryCacheInvalidation() {
   const dispatch = useAppDispatch()
+  const centrifuge = useCentrifuge()
 
   const userID = useAppSelector((state) => state.global.userID)
 
-  const [centrifuge, isLoading] = useCentrifuge()
-
   useEffect(() => {
-    if (!userID || isLoading) return
+    if (!userID) return () => {}
 
-    const sub = centrifuge.newSubscription(`search:${userID}`)
+    const channel = `search:${userID}`
+    const sub = centrifuge.getSubscription(channel) ?? centrifuge.newSubscription(channel)
 
     sub.on('publication', (data) => {
       if (data.data.action === 'SEARCH_CACHE_INVALIDATION') {
@@ -22,10 +22,6 @@ export default function useSearchQueryCacheInvalidation() {
     })
 
     sub.subscribe()
-    centrifuge.connect()
-    return () => {
-      centrifuge.disconnect()
-      sub.unsubscribe()
-    }
-  }, [dispatch, userID, isLoading])
+    return () => sub.unsubscribe()
+  }, [dispatch, userID])
 }

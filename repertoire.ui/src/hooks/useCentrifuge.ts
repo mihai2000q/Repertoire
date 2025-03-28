@@ -1,23 +1,21 @@
-import { useGetCentrifugeTokenQuery, useLazyGetCentrifugeTokenQuery } from '../state/api.ts'
+import { useLazyGetCentrifugeTokenQuery } from '../state/api.ts'
 import { Centrifuge } from 'centrifuge'
+import { useEffect } from 'react'
 
-export default function useCentrifuge(): [Centrifuge, boolean] {
-  const { data: token, isLoading } = useGetCentrifugeTokenQuery()
+let centrifuge: Centrifuge | undefined
 
-  async function refreshToken(): Promise<string> {
-    const [trigger, { data: newToken }] = useLazyGetCentrifugeTokenQuery()
-    await trigger().unwrap()
-    return newToken
-  }
+export default function useCentrifuge(): Centrifuge {
+  const [getNewToken] = useLazyGetCentrifugeTokenQuery()
 
-  if (isLoading)
-    return [undefined, isLoading]
+  useEffect(() => {
+    if (!centrifuge) {
+      centrifuge = new Centrifuge(import.meta.env.VITE_CENTRIFUGO_URL, {
+        getToken: async () => await getNewToken().unwrap()
+      })
+    }
+    centrifuge.connect()
+    return () => centrifuge.disconnect()
+  }, [])
 
-  return [
-    new Centrifuge(import.meta.env.VITE_CENTRIFUGO_URL, {
-      token: token,
-      getToken: refreshToken // refreshes token when it expires
-    }),
-    isLoading
-  ]
+  return centrifuge! // Non-null assertion (we ensure it exists)
 }
