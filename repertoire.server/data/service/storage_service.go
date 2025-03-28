@@ -22,10 +22,10 @@ type StorageService interface {
 type storageService struct {
 	httpClient dataHttp.StorageClient
 	env        internal.Env
-	cache      cache.Cache
+	cache      cache.StorageCache
 }
 
-func NewStorageService(httpClient dataHttp.StorageClient, env internal.Env, cache cache.Cache) StorageService {
+func NewStorageService(httpClient dataHttp.StorageClient, env internal.Env, cache cache.StorageCache) StorageService {
 	return &storageService{
 		httpClient: httpClient,
 		env:        env,
@@ -115,7 +115,7 @@ func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode
 
 func (s storageService) getAccessToken() (string, error) {
 	// get from cache
-	accessTokenKey := "storage_access_token"
+	accessTokenKey := "access_token"
 	token, found := s.cache.Get(accessTokenKey)
 	if found {
 		return token.(string), nil

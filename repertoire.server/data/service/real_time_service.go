@@ -18,13 +18,13 @@ type RealTimeService interface {
 
 type realTimeService struct {
 	env    internal.Env
-	cache  cache.Cache
+	cache  cache.CentrifugoCache
 	client realtime.CentrifugoClient
 }
 
 func NewRealTimeService(
 	env internal.Env,
-	cache cache.Cache,
+	cache cache.CentrifugoCache,
 	client realtime.CentrifugoClient,
 ) RealTimeService {
 	return realTimeService{
@@ -54,7 +54,7 @@ func (r realTimeService) Publish(channel string, userID string, payload any) err
 
 func (r realTimeService) getToken(userID string) string {
 	// get from cache
-	tokenKey := "centrifugo_token#" + userID
+	tokenKey := "token#" + userID
 	token, found := r.cache.Get(tokenKey)
 	if found {
 		return token.(string)

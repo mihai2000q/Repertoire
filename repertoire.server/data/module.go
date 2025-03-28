@@ -14,6 +14,12 @@ import (
 	"repertoire/server/data/service"
 )
 
+var caches = fx.Options(
+	fx.Provide(cache.NewMeiliCache),
+	fx.Provide(cache.NewStorageCache),
+	fx.Provide(cache.NewCentrifugoCache),
+)
+
 var loggers = fx.Options(
 	fx.Provide(logger.NewLogger),
 	fx.Provide(logger.NewFxLogger),
@@ -51,7 +57,7 @@ var services = fx.Options(
 )
 
 var Module = fx.Options(
-	fx.Provide(cache.NewCache),
+	caches,
 	loggers,
 	fx.Provide(database.NewClient),
 	httpClients,
