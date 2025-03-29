@@ -60,8 +60,8 @@ func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *wrapper.ErrorCode {
 		)
 	}
 
-	userID, isUserTracked := m.searchTaskTrackerService.GetUserID(taskID)
-	if !isUserTracked {
+	userID, isTaskTracked := m.searchTaskTrackerService.GetUserID(taskID)
+	if !isTaskTracked {
 		return nil
 	}
 

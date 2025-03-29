@@ -8,7 +8,8 @@ import (
 
 func TestMain(m *testing.M) {
 	ts := &core.TestServer{
-		WithMeili: true,
+		WithMeili:      true,
+		WithCentrifugo: true,
 	}
 	ts.Start()
 
