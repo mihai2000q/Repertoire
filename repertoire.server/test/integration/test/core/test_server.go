@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"repertoire/server/api"
 	"repertoire/server/data"
+	"repertoire/server/data/cache"
 	"repertoire/server/data/message"
 	"repertoire/server/domain"
 	"repertoire/server/internal"
@@ -30,6 +31,7 @@ import (
 
 var Dsn string
 var MessageBroker message.Publisher
+var MeiliCache cache.MeiliCache
 var httpServer *http.Server
 
 type TestServer struct {
@@ -75,6 +77,7 @@ func (ts *TestServer) Start() {
 		api.Module,
 		fx.Populate(&httpServer),
 		fx.Populate(&MessageBroker),
+		fx.Populate(&MeiliCache),
 	)
 
 	// Start application
