@@ -5,22 +5,25 @@ import (
 	"github.com/meilisearch/meilisearch-go"
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
+	"repertoire/server/test/integration/test/core"
 	"repertoire/server/test/integration/test/utils"
+	"strconv"
 	"testing"
 )
 
 func TestAddToSearchEngine_WhenSuccessful_ShouldAddDataToMeilisearch(t *testing.T) {
 	// given
+	userID := "some-user-id"
 	data := []map[string]any{
 		{
 			"id":     uuid.New().String(),
 			"name":   "some name",
-			"userId": "some-user-id",
+			"userId": userID,
 		},
 		{
 			"id":     uuid.New().String(),
 			"name":   "some-name-2",
-			"userId": "some-user-id",
+			"userId": userID,
 		},
 	}
 
@@ -45,4 +48,9 @@ func TestAddToSearchEngine_WhenSuccessful_ShouldAddDataToMeilisearch(t *testing.
 		assert.Equal(t, expected["name"], actual["name"])
 		assert.Equal(t, expected["userId"], actual["userId"])
 	}
+
+	tasks, _ = searchClient.GetTasks(&meilisearch.TasksQuery{})
+	latestTaskID := strconv.FormatInt((*tasks).Results[0].UID, 10)
+	cachedUserID, _ := core.MeiliCache.Get("task-" + latestTaskID)
+	assert.Equal(t, userID, cachedUserID)
 }
