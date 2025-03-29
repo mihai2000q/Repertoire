@@ -7,12 +7,12 @@ export default function useSearchQueryCacheInvalidation() {
   const dispatch = useAppDispatch()
   const centrifuge = useCentrifuge()
 
-  const userID = useAppSelector((state) => state.global.userID)
+  const userId = useAppSelector((state) => state.global.userId)
 
   useEffect(() => {
     if (!userID) return () => {}
 
-    const channel = `search:${userID}`
+    const channel = `search:${userId}`
     const sub = centrifuge.getSubscription(channel) ?? centrifuge.newSubscription(channel)
 
     sub.on('publication', (data) => {

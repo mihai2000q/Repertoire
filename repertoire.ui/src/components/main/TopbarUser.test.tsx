@@ -44,7 +44,7 @@ describe('Topbar User', () => {
     expect(screen.getByRole('menuitem', { name: /settings/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /account/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /sign out/i })).toBeInTheDocument()
-    expect((store.getState() as RootState).global.userID).toBe(user.id)
+    expect((store.getState() as RootState).global.userId).toBe(user.id)
   })
 
   describe('on menu', () => {
