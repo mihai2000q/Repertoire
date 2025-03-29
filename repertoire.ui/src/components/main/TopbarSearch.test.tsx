@@ -2,7 +2,7 @@ import { reduxRouterRender } from '../../test-utils.tsx'
 import TopbarSearch from './TopbarSearch.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { setupServer } from 'msw/node'
-import { http, HttpResponse } from 'msw'
+import { http, HttpResponse, ws } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import {
   AlbumSearch,
@@ -13,6 +13,7 @@ import {
 } from '../../types/models/Search.ts'
 import SearchType from '../../utils/enums/SearchType.ts'
 import { userEvent } from '@testing-library/user-event'
+import { beforeEach } from 'vitest'
 
 describe('Topbar Search', () => {
   const artists: ArtistSearch[] = [
@@ -65,6 +66,9 @@ describe('Topbar Search', () => {
   const searchResults: SearchBase[] = [...artists, ...albums, ...songs, ...playlists]
 
   const handlers = [
+    http.get('/auth/centrifugo', async () => {
+      return HttpResponse.json('')
+    }),
     http.get('/search', () => {
       const result: WithTotalCountResponse<SearchBase> = {
         models: searchResults,
@@ -78,9 +82,18 @@ describe('Topbar Search', () => {
 
   beforeAll(() => server.listen())
 
+  beforeEach(() => {
+    const centrifugoUrl = 'wss://chat.example.com'
+    vi.stubEnv('VITE_CENTRIFUGO_URL', centrifugoUrl)
+    ws.link(centrifugoUrl)
+  })
+
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    vi.unstubAllEnvs()
+    server.close()
+  })
 
   it('should render and display recently added', async () => {
     const user = userEvent.setup()

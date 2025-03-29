@@ -3,12 +3,16 @@ import Main from './Main.tsx'
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 import { setupServer } from 'msw/node'
-import { http, HttpResponse } from 'msw'
+import {http, HttpResponse, ws} from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import {beforeEach} from "vitest";
 
 describe('Main', () => {
   const handlers = [
+    http.get('/auth/centrifugo', async () => {
+      return HttpResponse.json('')
+    }),
     http.get('/users/current', async () => {
       return HttpResponse.json(emptyUser)
     }),
@@ -25,9 +29,18 @@ describe('Main', () => {
 
   beforeAll(() => server.listen())
 
+  beforeEach(() => {
+    const centrifugoUrl = 'wss://chat.example.com'
+    vi.stubEnv('VITE_CENTRIFUGO_URL', centrifugoUrl)
+    ws.link(centrifugoUrl)
+  })
+
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    vi.unstubAllEnvs()
+    server.close()
+  })
 
   const render = (token?: string) =>
     reduxRouterRender(
