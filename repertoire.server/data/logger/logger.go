@@ -32,21 +32,27 @@ func NewLogger(env internal.Env) *Logger {
 		levelsMap[env.LogLevel],
 	)
 
-	// file encoder
-	lumberjackLogger := &lumberjack.Logger{
-		Filename: getLogFile(env.LogOutput),
-		MaxSize:  100,
-		MaxAge:   31,
-		Compress: true,
-	}
-	fileEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-	fileCore := zapcore.NewCore(fileEncoder, zapcore.AddSync(lumberjackLogger), levelsMap[env.LogLevel])
+	finalCore := consoleCore
 
-	// rotate daily logs
-	go rotateAtMidnight(lumberjackLogger, env)
+	// if the app is running normally, not in integration testing env
+	// then create and append the file encoder
+	if os.Getenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH") == "" {
+		lumberjackLogger := &lumberjack.Logger{
+			Filename: getLogFile(env.LogOutput),
+			MaxSize:  100,
+			MaxAge:   31,
+			Compress: true,
+		}
+		fileEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+		fileCore := zapcore.NewCore(fileEncoder, zapcore.AddSync(lumberjackLogger), levelsMap[env.LogLevel])
+
+		go dailyRotation(lumberjackLogger, env)
+
+		finalCore = zapcore.NewTee(finalCore, fileCore)
+	}
 
 	return &Logger{zap.New(
-		zapcore.NewTee(consoleCore, fileCore),
+		finalCore,
 		zap.AddCaller(),
 		zap.AddStacktrace(zapcore.ErrorLevel),
 	)}
@@ -61,7 +67,7 @@ func getLogFile(logOutput string) string {
 
 var mu sync.Mutex
 
-func rotateAtMidnight(lj *lumberjack.Logger, env internal.Env) {
+func dailyRotation(lj *lumberjack.Logger, env internal.Env) {
 	for {
 		now := time.Now()
 		nextMidnight := now.Truncate(24 * time.Hour).Add(24 * time.Hour)
