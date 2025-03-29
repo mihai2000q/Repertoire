@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -15,10 +16,12 @@ import (
 
 type TestHandler interface {
 	WithoutAuthentication() TestHandler
+	WithMeiliAuthentication() TestHandler
 	WithInvalidToken() TestHandler
 	WithUser(user model.User) TestHandler
 	GET(w http.ResponseWriter, url string)
 	POST(w http.ResponseWriter, url string, body any)
+	POSTZipped(w http.ResponseWriter, url string, payload any)
 	PUT(w http.ResponseWriter, url string, body any)
 	PUTForm(w http.ResponseWriter, url string, bodyForm *bytes.Buffer, contentType string)
 	DELETE(w http.ResponseWriter, url string)
@@ -26,6 +29,7 @@ type TestHandler interface {
 
 type settings struct {
 	authentication bool
+	withMeiliAuth  bool
 	invalidToken   bool
 	user           *model.User
 }
@@ -40,12 +44,18 @@ func NewTestHandler() TestHandler {
 		httpServer,
 		&settings{
 			authentication: true,
+			withMeiliAuth:  false,
 		},
 	}
 }
 
 func (t *testHandler) WithoutAuthentication() TestHandler {
 	t.settings.authentication = false
+	return t
+}
+
+func (t *testHandler) WithMeiliAuthentication() TestHandler {
+	t.settings.withMeiliAuth = true
 	return t
 }
 
@@ -75,6 +85,20 @@ func (t *testHandler) POST(w http.ResponseWriter, url string, body any) {
 	t.httpServer.Handler.ServeHTTP(w, req)
 }
 
+func (t *testHandler) POSTZipped(w http.ResponseWriter, url string, payload any) {
+	jsonBody, _ := json.Marshal(payload)
+	var reqBody bytes.Buffer
+	gw := gzip.NewWriter(&reqBody)
+	_, _ = gw.Write(jsonBody)
+	_ = gw.Close()
+	req, _ := http.NewRequest("POST", url, &reqBody)
+
+	req.Header.Set("Content-Type", "application/javascript")
+	req.Header.Set("Content-Encoding", "gzip")
+	t.requestWithAuthentication(req)
+	t.httpServer.Handler.ServeHTTP(w, req)
+}
+
 func (t *testHandler) PUT(w http.ResponseWriter, url string, body any) {
 	jsonBody, _ := json.Marshal(body)
 	reqBody := bytes.NewBuffer(jsonBody)
@@ -100,7 +124,12 @@ func (t *testHandler) DELETE(w http.ResponseWriter, url string) {
 }
 
 func (t *testHandler) requestWithAuthentication(req *http.Request) {
-	if !t.settings.authentication {
+	if !t.settings.authentication && !t.settings.withMeiliAuth {
+		return
+	}
+
+	if t.settings.withMeiliAuth {
+		req.Header.Set("Authorization", internal.NewEnv().MeiliAuthKey)
 		return
 	}
 
