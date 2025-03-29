@@ -72,11 +72,11 @@ func (r realTimeService) CreateToken(userID string) string {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": userID,
-		"iss": env.CentrifugoJWTIssuer,
-		"aud": env.CentrifugoJWTAudience,
+		"iss": env.CentrifugoJwtIssuer,
+		"aud": env.CentrifugoJwtAudience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte(env.CentrifugoJWTSecretKey))
+	token, _ := claims.SignedString([]byte(env.CentrifugoJwtSecretKey))
 	return token
 }

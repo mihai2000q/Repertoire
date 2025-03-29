@@ -37,7 +37,7 @@ type testHandler struct {
 
 func NewTestHandler() TestHandler {
 	return &testHandler{
-		getHttpServer(),
+		httpServer,
 		&settings{
 			authentication: true,
 		},

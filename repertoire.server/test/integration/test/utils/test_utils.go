@@ -22,6 +22,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+// Clients
+
 func GetDatabase(t *testing.T) *gorm.DB {
 	db, _ := gorm.Open(postgres.Open(core.Dsn))
 	t.Cleanup(func() {
@@ -40,6 +42,9 @@ func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
 	})
 	return client
 }
+
+
+// Meilisearch
 
 func WaitForSearchTasksToStart(client meilisearch.ServiceManager, totalTasks int64) {
 	for {
@@ -67,25 +72,7 @@ func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 	}
 }
 
-func GetEnv() internal.Env {
-	return internal.NewEnv()
-}
-
-func AttachFileToMultipartBody(fileName string, formName string, multiWriter *multipart.Writer) {
-	tempFile, _ := os.CreateTemp("", fileName)
-	defer func(name string) {
-		_ = os.Remove(name)
-	}(tempFile.Name())
-
-	fileWriter, _ := multiWriter.CreateFormFile(formName, tempFile.Name())
-
-	file, _ := os.Open(tempFile.Name())
-	defer func(file *os.File) {
-		_ = file.Close()
-	}(file)
-
-	_, _ = file.WriteTo(fileWriter)
-}
+// Auth
 
 func CreateValidToken(user model.User) string {
 	env := GetEnv()
@@ -119,6 +106,9 @@ func CreateCustomToken(sub string, jti string) string {
 	return token
 }
 
+
+// Message Handling
+
 func PublishToTopic(topic topics.Topic, data any) error {
 	bytes, err := json.Marshal(data)
 	if err != nil {
@@ -143,6 +133,8 @@ func SubscribeToTopic(topic topics.Topic) SubscribedToTopic {
 	}
 }
 
+// Seeding
+
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
 	db := GetDatabase(t)
 	seed(db)
@@ -162,6 +154,24 @@ func SeedAndCleanupSearchData(t *testing.T, items []any) {
 	t.Cleanup(func() {
 		_, _ = searchClient.Index("search").DeleteAllDocuments()
 	})
+}
+
+// Misc Utils
+
+func AttachFileToMultipartBody(fileName string, formName string, multiWriter *multipart.Writer) {
+	tempFile, _ := os.CreateTemp("", fileName)
+	defer func(name string) {
+		_ = os.Remove(name)
+	}(tempFile.Name())
+
+	fileWriter, _ := multiWriter.CreateFormFile(formName, tempFile.Name())
+
+	file, _ := os.Open(tempFile.Name())
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
+
+	_, _ = file.WriteTo(fileWriter)
 }
 
 func UnmarshallDocument[T any](document any) T {

@@ -82,20 +82,16 @@ func (ts *TestServer) Stop() {
 		log.Fatal(err)
 	}
 	if err := testcontainers.TerminateContainer(ts.dbContainer); err != nil {
-		log.Printf("failed to terminate postgres dbContainer: %s", err)
+		log.Printf("failed to terminate postgres db container: %s", err)
 	}
 	if ts.WithMeili {
 		if err := testcontainers.TerminateContainer(ts.meiliContainer); err != nil {
-			log.Printf("failed to terminate meiliearch dbContainer: %s", err)
+			log.Printf("failed to terminate meiliearch container: %s", err)
 		}
 	}
 	if ts.WithStorage {
 		ts.storageServer.Close()
 	}
-}
-
-func getHttpServer() *http.Server {
-	return httpServer
 }
 
 func (ts *TestServer) setupPostgresContainer(env internal.Env, relativePath string) {
@@ -144,11 +140,9 @@ func (ts *TestServer) setupStorageServer() {
 		if r.Method == http.MethodPost {
 			response := struct {
 				Token     string
-				TokenType string
 				ExpiresIn string
 			}{
 				"some token",
-				"Bearer",
 				"1h",
 			}
 			bytes, _ := json.Marshal(response)
