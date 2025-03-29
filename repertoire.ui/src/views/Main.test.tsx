@@ -3,10 +3,10 @@ import Main from './Main.tsx'
 import { screen } from '@testing-library/react'
 import { Route, Routes } from 'react-router-dom'
 import { setupServer } from 'msw/node'
-import {http, HttpResponse, ws} from 'msw'
+import { http, HttpResponse, ws } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import {beforeEach} from "vitest";
+import { beforeEach } from 'vitest'
 
 describe('Main', () => {
   const handlers = [
@@ -32,7 +32,8 @@ describe('Main', () => {
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'
     vi.stubEnv('VITE_CENTRIFUGO_URL', centrifugoUrl)
-    ws.link(centrifugoUrl)
+    const search = ws.link(centrifugoUrl)
+    server.use(search.addEventListener('connection', () => {}))
   })
 
   afterEach(() => server.resetHandlers())

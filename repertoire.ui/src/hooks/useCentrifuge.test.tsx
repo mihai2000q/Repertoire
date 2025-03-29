@@ -1,11 +1,11 @@
 import { waitFor } from '@testing-library/react'
-import useCentrifuge from './useCentrifuge.ts'
 
 // Verify connect was called
 import { Centrifuge } from 'centrifuge'
 import { reduxRenderHook } from '../test-utils.tsx'
 import { http, HttpResponse, ws } from 'msw'
 import { setupServer } from 'msw/node'
+import useCentrifuge from './useCentrifuge.ts'
 
 describe('use Centrifuge', () => {
   const centrifugoUrl = 'wss://chat.example.com'
@@ -31,34 +31,42 @@ describe('use Centrifuge', () => {
   })
 
   it('should connect to Centrifugo and reuse existing connection', async () => {
-    let numberOfConnections = 0
     const connection = ws.link(centrifugoUrl)
+    let numberOfConnections = 0
+    server.use(
+      connection.addEventListener('connection', () => {
+        numberOfConnections++
+        expect(numberOfConnections).toBe(1)
+      })
+    )
 
     const [{ result: firstResult }] = reduxRenderHook(() => useCentrifuge())
 
     expect(firstResult.current).toBeInstanceOf(Centrifuge)
     expect(firstResult.current.state).toBe(Centrifuge.State.Connecting)
-    connection.addEventListener('connection', () => {
-      expect(firstResult.current.state).toBe(Centrifuge.State.Connected)
-      numberOfConnections++
-      expect(numberOfConnections).toBe(1)
-    })
 
     const [{ result: secondResult }] = reduxRenderHook(() => useCentrifuge())
     expect(secondResult.current).toBe(firstResult.current)
+    await waitFor(() => expect(numberOfConnections).toBeGreaterThan(0))
   })
 
   it('should disconnect from Centrifugo when component unmounts', async () => {
     const connection = ws.link(centrifugoUrl)
+    let connected = false
+    server.use(
+      connection.addEventListener('connection', () => {
+        connected = true
+      })
+    )
 
     const [{ unmount, result }] = reduxRenderHook(() => useCentrifuge())
 
-    connection.addEventListener('connection', () => {
-      expect(result.current.state).toBe(Centrifuge.State.Connected)
-    })
+    await waitFor(() => expect(connected).toBeTruthy())
 
     unmount()
 
-    await waitFor(() => expect(result.current.state).toBe(Centrifuge.State.Disconnected))
+    await waitFor(() => {
+      expect(result.current.state).toBe(Centrifuge.State.Disconnected)
+    })
   })
 })

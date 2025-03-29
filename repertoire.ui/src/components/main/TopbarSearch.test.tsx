@@ -85,7 +85,8 @@ describe('Topbar Search', () => {
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'
     vi.stubEnv('VITE_CENTRIFUGO_URL', centrifugoUrl)
-    ws.link(centrifugoUrl)
+    const search = ws.link(centrifugoUrl)
+    server.use(search.addEventListener('connection', () => {}))
   })
 
   afterEach(() => server.resetHandlers())
