@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/centrifugal/centrifuge-go"
 	"github.com/meilisearch/meilisearch-go"
 	"mime/multipart"
 	"os"
@@ -43,6 +44,19 @@ func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
 	return client
 }
 
+func GetCentrifugoClient(t *testing.T) *centrifuge.Client {
+	env := GetEnv()
+	client := centrifuge.NewJsonClient(env.CentrifugoUrl, centrifuge.Config{})
+	client.SetToken(createCentrifugoToken())
+	t.Cleanup(func() {
+		client.Close()
+	})
+	return client
+}
+
+func GetEnv() internal.Env {
+	return internal.NewEnv()
+}
 
 // Meilisearch
 
@@ -106,6 +120,21 @@ func CreateCustomToken(sub string, jti string) string {
 	return token
 }
 
+func createCentrifugoToken() string {
+	env := GetEnv()
+
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"jti": uuid.New().String(),
+		"sub": "testing-env",
+		"iss": env.CentrifugoJwtIssuer,
+		"aud": env.CentrifugoJwtAudience,
+		"iat": time.Now().UTC().Unix(),
+		"exp": time.Now().UTC().Add(time.Hour).Unix(),
+	})
+	token, _ := claims.SignedString([]byte(env.CentrifugoJwtSecretKey))
+
+	return token
+}
 
 // Message Handling
 
