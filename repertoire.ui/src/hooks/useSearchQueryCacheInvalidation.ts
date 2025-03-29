@@ -10,7 +10,7 @@ export default function useSearchQueryCacheInvalidation() {
   const userId = useAppSelector((state) => state.global.userId)
 
   useEffect(() => {
-    if (!userID) return () => {}
+    if (!userId || !centrifuge) return () => {}
 
     const channel = `search:${userId}`
     const sub = centrifuge.getSubscription(channel) ?? centrifuge.newSubscription(channel)
@@ -23,5 +23,5 @@ export default function useSearchQueryCacheInvalidation() {
 
     sub.subscribe()
     return () => sub.unsubscribe()
-  }, [dispatch, userID])
+  }, [dispatch, userId, centrifuge])
 }
