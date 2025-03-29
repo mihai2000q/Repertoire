@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 
 let centrifuge: Centrifuge | undefined
 
-export default function useCentrifuge(): Centrifuge {
+export default function useCentrifuge(): Centrifuge | undefined {
   const [getNewToken] = useLazyGetCentrifugeTokenQuery()
 
   useEffect(() => {
@@ -17,5 +17,5 @@ export default function useCentrifuge(): Centrifuge {
     return () => centrifuge.disconnect()
   }, [])
 
-  return centrifuge! // Non-null assertion (we ensure it exists)
+  return centrifuge
 }
