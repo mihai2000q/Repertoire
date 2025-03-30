@@ -59,10 +59,9 @@ func validateToken(t *testing.T, tokenString string, env internal.Env) {
 
 func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T) {
 	env := internal.Env{
-		JwtSecretKey:      "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
-		JwtIssuer:         "JWTIssuer",
-		JwtAudience:       "JWTAudience",
-		JwtExpirationTime: "1h",
+		JwtSecretKey: "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
+		JwtIssuer:    "JWTIssuer",
+		JwtAudience:  "JWTAudience",
 	}
 
 	tests := []struct {
@@ -73,7 +72,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 			"When Secret key is wrong",
 			createToken(
 				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
+				"1h",
 				env.JwtIssuer,
 				env.JwtAudience,
 				"secret is wrong",
@@ -95,7 +94,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 			"When Signing Method is wrong",
 			createToken(
 				jwt.SigningMethodEdDSA,
-				env.JwtExpirationTime,
+				"1h",
 				env.JwtIssuer,
 				env.JwtAudience,
 				env.JwtSecretKey,
@@ -106,7 +105,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 			"When Issuer is wrong",
 			createToken(
 				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
+				"1h",
 				"Random issuer",
 				env.JwtAudience,
 				env.JwtSecretKey,
@@ -117,7 +116,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 			"When Audience is wrong",
 			createToken(
 				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
+				"1h",
 				env.JwtIssuer,
 				"audience",
 				env.JwtSecretKey,
@@ -128,7 +127,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 			"When jti is wrong",
 			createToken(
 				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
+				"1h",
 				env.JwtIssuer,
 				env.JwtAudience,
 				env.JwtSecretKey,
@@ -156,10 +155,9 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 func TestJwtService_Authorize_WhenSuccessful_ShouldNotReturnError(t *testing.T) {
 	// given
 	env := internal.Env{
-		JwtSecretKey:      "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
-		JwtIssuer:         "JWTIssuer",
-		JwtAudience:       "JWTAudience",
-		JwtExpirationTime: "1h",
+		JwtSecretKey: "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
+		JwtIssuer:    "JWTIssuer",
+		JwtAudience:  "JWTAudience",
 	}
 	_uut := jwtService{
 		env: env,
@@ -167,7 +165,7 @@ func TestJwtService_Authorize_WhenSuccessful_ShouldNotReturnError(t *testing.T) 
 
 	token := createToken(
 		jwt.SigningMethodHS256,
-		env.JwtExpirationTime,
+		"1h",
 		env.JwtIssuer,
 		env.JwtAudience,
 		env.JwtSecretKey,
@@ -179,24 +177,4 @@ func TestJwtService_Authorize_WhenSuccessful_ShouldNotReturnError(t *testing.T) 
 
 	// then
 	assert.NoError(t, err)
-}
-
-func TestJwtService_CreateToken_WhenSuccessful_ShouldReturnToken(t *testing.T) {
-	// given
-	env := internal.Env{
-		JwtSecretKey:      "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
-		JwtIssuer:         "JWTIssuer",
-		JwtAudience:       "JWTAudience",
-		JwtExpirationTime: "1h",
-	}
-	_uut := jwtService{
-		env: env,
-	}
-
-	// when
-	token, err := _uut.CreateToken()
-
-	// then
-	assert.NoError(t, err)
-	validateToken(t, token, env)
 }

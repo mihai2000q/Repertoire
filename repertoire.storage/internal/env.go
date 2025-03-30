@@ -12,12 +12,9 @@ type Env struct {
 	ApplicationPort string
 	Environment     string
 
-	JwtSecretKey      string
-	JwtIssuer         string
-	JwtAudience       string
-	JwtExpirationTime string
-	ClientID          string
-	ClientSecret      string
+	JwtSecretKey string
+	JwtIssuer    string
+	JwtAudience  string
 
 	UploadDirectory string
 }
@@ -35,12 +32,9 @@ func NewEnv() Env {
 		ApplicationPort: os.Getenv("SERVER_PORT"),
 		Environment:     os.Getenv("ENV"),
 
-		JwtSecretKey:      os.Getenv("JWT_SECRET_KEY"),
-		JwtIssuer:         os.Getenv("JWT_ISSUER"),
-		JwtAudience:       os.Getenv("JWT_AUDIENCE"),
-		JwtExpirationTime: os.Getenv("JWT_EXPIRATION_TIME"),
-		ClientID:          os.Getenv("CLIENT_ID"),
-		ClientSecret:      os.Getenv("CLIENT_SECRET"),
+		JwtSecretKey: os.Getenv("JWT_SECRET_KEY"),
+		JwtIssuer:    os.Getenv("JWT_ISSUER"),
+		JwtAudience:  os.Getenv("JWT_AUDIENCE"),
 
 		UploadDirectory: os.Getenv("UPLOAD_DIRECTORY"),
 	}

@@ -5,12 +5,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"repertoire/storage/internal"
-	"time"
 )
 
 type JwtService interface {
 	Authorize(authToken string) error
-	CreateToken() (string, error)
 }
 
 type jwtService struct {
@@ -33,22 +31,6 @@ func (j jwtService) Authorize(authToken string) error {
 		return nil
 	}
 	return errors.New("invalid token")
-}
-
-func (j jwtService) CreateToken() (string, error) {
-	expiresIn, err := time.ParseDuration(j.env.JwtExpirationTime)
-	if err != nil {
-		return "", err
-	}
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti": uuid.New().String(),
-		"iss": j.env.JwtIssuer,
-		"aud": j.env.JwtAudience,
-		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(expiresIn).Unix(),
-	})
-	return claims.SignedString([]byte(j.env.JwtSecretKey))
 }
 
 func (j jwtService) validateToken(token *jwt.Token) error {
