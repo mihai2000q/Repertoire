@@ -44,7 +44,12 @@ Songs can be measured how rehearsed they have been, whether they have been recor
 
 ## Get Started
 
-To get started on the application, you need the server, the storage, the UI and one of the platforms up and running.
+To get started on the application, you need:
+- the main server
+- the authentication server
+- the storage server
+- the UI 
+- and one of the platforms up and running
 
 IF you have Go and Node installed, you can take the shortest route. 
 Fire the following shell script: `startup-web.sh` or `startup-desktop.sh`.
@@ -54,6 +59,12 @@ Otherwise, a full setup on each project has to be made
 
 Additionally, if you prefer to run everything in containers and not install GO or Node, 
 you can run the `run-container.sh` script to run all the docker containers and apply the database migrations.
+
+### Auth
+
+This is the Server that takes care of the authentication of the application with components and platforms.
+<br>
+For a detailed setup on the auth of the application, check out the [documentation](repertoire.auth/README.md).
 
 ### Server
 
@@ -106,6 +117,7 @@ The title should also include the **project** that it's being worked on and the 
 The expected labels to use are:
 
 - **project** that is being updated:
+  - **auth** if the auth is the topic of the issue
   - **desktop** if the desktop is the topic of the issue
   - **server** if the server is the topic of the issue
   - **storage** if the storage is the topic of the issue
@@ -127,6 +139,7 @@ The expected labels to use are:
 
 Based on the above label, the branch will have similar prefixes:
 
+- **auth** for an _auth_ issue
 - **desktop** for a _desktop_ issue
 - **server** for a _server_ issue
 - **storage** for a _storage_ issue
@@ -173,7 +186,7 @@ This Github Action will build and push the server docker image to **Docker Hub**
 
 Afterwards, the cloud server detects the latest docker images and pulls them.
 
-The _storage_ service is not udnergoing changes so often, 
+The _storage_ or the authentication services are not udnergoing changes so often, 
 so there is not benefit for automating the deploying process.
 
 ### Desktop
