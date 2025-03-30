@@ -187,7 +187,7 @@ function SongSectionCard({
                 <ActionIcon
                   variant={'subtle'}
                   size={'md'}
-                  disabled={isUpdateLoading}
+                  loading={isUpdateLoading}
                   aria-label={'add-rehearsal'}
                   onClick={handleAddRehearsal}
                 >

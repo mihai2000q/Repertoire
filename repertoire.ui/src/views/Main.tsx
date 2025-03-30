@@ -40,7 +40,7 @@ function Main(): ReactElement {
         disabled={!useAuth()}
       >
         <Topbar toggleSidebar={toggleSidebarMobile} />
-        <Sidebar toggleSidebar={toggleSidebarMobile} />
+        <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
         <AppShell.Main h={'100%'} mih={0}>
           <Outlet />
         </AppShell.Main>
