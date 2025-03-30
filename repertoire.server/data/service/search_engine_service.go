@@ -19,17 +19,19 @@ type SearchEngineService interface {
 		filter []string,
 		sort []string,
 	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
+	GetDocument(id string) (map[string]any, error)
 	GetDocuments(filter string) ([]map[string]any, error)
-	Add(items []any) error
-	Update(items []any) error
-	Delete(ids []string) error
+	Add(items []map[string]any) (int64, error)
+	Update(items []map[string]any) (int64, error)
+	Delete(ids []string) (int64, error)
+	HasTaskSucceeded(status string) bool
 }
 
 type searchEngineService struct {
-	client search.Client
+	client search.MeiliClient
 }
 
-func NewSearchEngineService(client search.Client) SearchEngineService {
+func NewSearchEngineService(client search.MeiliClient) SearchEngineService {
 	return searchEngineService{client: client}
 }
 
@@ -75,6 +77,16 @@ func (s searchEngineService) Search(
 	return result, nil
 }
 
+func (s searchEngineService) GetDocument(id string) (map[string]any, error) {
+	var result map[string]any
+	err := s.client.Index("search").GetDocument(id, &meilisearch.DocumentQuery{}, &result)
+	if err != nil {
+		return map[string]any{}, err
+	}
+
+	return result, nil
+}
+
 func (s searchEngineService) GetDocuments(filter string) ([]map[string]any, error) {
 	var result meilisearch.DocumentsResult
 	err := s.client.Index("search").GetDocuments(&meilisearch.DocumentsQuery{
@@ -87,23 +99,30 @@ func (s searchEngineService) GetDocuments(filter string) ([]map[string]any, erro
 	return result.Results, nil
 }
 
-func (s searchEngineService) Add(items []any) error {
-	_, err := s.client.Index("search").AddDocuments(&items)
-	return err
+func (s searchEngineService) Add(items []map[string]any) (int64, error) {
+	task, err := s.client.Index("search").AddDocuments(&items)
+	if err != nil {
+		return 0, err
+	}
+	return task.TaskUID, nil
 }
 
-func (s searchEngineService) Update(items []any) error {
-	_, err := s.client.Index("search").UpdateDocuments(&items)
+func (s searchEngineService) Update(items []map[string]any) (int64, error) {
+	task, err := s.client.Index("search").UpdateDocuments(&items)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return task.TaskUID, nil
 }
 
-func (s searchEngineService) Delete(ids []string) error {
-	_, err := s.client.Index("search").DeleteDocuments(ids)
+func (s searchEngineService) Delete(ids []string) (int64, error) {
+	task, err := s.client.Index("search").DeleteDocuments(ids)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return task.TaskUID, nil
+}
+
+func (s searchEngineService) HasTaskSucceeded(status string) bool {
+	return status == string(meilisearch.TaskStatusSucceeded)
 }

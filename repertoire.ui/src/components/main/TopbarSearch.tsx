@@ -32,6 +32,7 @@ import { MouseEvent, ReactNode, useRef, useState } from 'react'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../@ui/icons/CustomIconPlaylist2.tsx'
+import useSearchQueryCacheInvalidation from '../../hooks/useSearchQueryCacheInvalidation.ts'
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
@@ -89,6 +90,8 @@ interface TopbarSearchProps extends TextInputProps {
 }
 
 function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: TopbarSearchProps) {
+  useSearchQueryCacheInvalidation()
+
   const textInputRef = useRef(null)
 
   const navigate = useNavigate()
@@ -323,7 +326,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
               </Text>
             )}
 
-            <Combobox.Options pt={'xs'}>
+            <Combobox.Options pt={'xxs'}>
               <ScrollArea.Autosize mah={dropdownMinHeight} scrollbarSize={5}>
                 {searchResults?.totalCount === 0 && search.trim() === '' ? (
                   <Combobox.Empty pb={'md'} fw={500}>
@@ -334,19 +337,21 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
                     No results found
                   </Combobox.Empty>
                 ) : (
-                  searchResults?.models?.map((result) =>
-                    result.type === SearchType.Artist ? (
-                      <ArtistOption key={result.id} artist={result as ArtistSearch} />
-                    ) : result.type === SearchType.Album ? (
-                      <AlbumOption key={result.id} album={result as AlbumSearch} />
-                    ) : result.type === SearchType.Song ? (
-                      <SongOption key={result.id} song={result as SongSearch} />
-                    ) : result.type === SearchType.Playlist ? (
-                      <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
-                    ) : (
-                      <></>
-                    )
-                  )
+                  <Stack gap={0} py={'xxs'}>
+                    {searchResults?.models?.map((result) =>
+                      result.type === SearchType.Artist ? (
+                        <ArtistOption key={result.id} artist={result as ArtistSearch} />
+                      ) : result.type === SearchType.Album ? (
+                        <AlbumOption key={result.id} album={result as AlbumSearch} />
+                      ) : result.type === SearchType.Song ? (
+                        <SongOption key={result.id} song={result as SongSearch} />
+                      ) : result.type === SearchType.Playlist ? (
+                        <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
+                      ) : (
+                        <></>
+                      )
+                    )}
+                  </Stack>
                 )}
               </ScrollArea.Autosize>
             </Combobox.Options>

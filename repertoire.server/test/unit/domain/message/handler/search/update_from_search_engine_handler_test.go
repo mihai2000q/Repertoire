@@ -8,19 +8,20 @@ import (
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
+	"strconv"
 	"testing"
 )
 
 func TestUpdateFromSearchEngineHandler_WhenUpdateFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewUpdateFromSearchEngineHandler(nil, searchEngineService)
+	_uut := search.NewUpdateFromSearchEngineHandler(nil, searchEngineService, nil)
 
-	documents := []any{"id1", "id2", "id3"}
+	documents := []map[string]any{{"property1": "value2"}}
 
 	internalError := errors.New("internal error")
 	searchEngineService.On("Update", documents).
-		Return(internalError).
+		Return(int64(0), internalError).
 		Once()
 
 	// when
@@ -35,16 +36,21 @@ func TestUpdateFromSearchEngineHandler_WhenUpdateFails_ShouldReturnError(t *test
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestUpdateFromSearchEngineHandler_WhenSuccessful_ShouldUpdateDataFromSearchEngine(t *testing.T) {
+func TestUpdateFromSearchEngineHandler_WhenSuccessful_ShouldUpdateDocumentsFromSearchEngine(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewUpdateFromSearchEngineHandler(logger.NewLoggerMock(), searchEngineService)
+	searchTaskTrackerService := new(service.SearchTaskTrackerServiceMock)
+	_uut := search.NewUpdateFromSearchEngineHandler(logger.NewLoggerMock(), searchEngineService, searchTaskTrackerService)
 
-	documents := []any{"id1", "id2", "id3"}
+	userID := "some-user-id"
+	documents := []map[string]any{{"property1": "value2", "userId": userID}}
 
+	var taskID int64 = 0
 	searchEngineService.On("Update", documents).
-		Return(nil).
+		Return(taskID, nil).
 		Once()
+
+	searchTaskTrackerService.On("Track", strconv.FormatInt(taskID, 10), userID).Once()
 
 	// when
 	payload, _ := json.Marshal(&documents)
@@ -55,4 +61,5 @@ func TestUpdateFromSearchEngineHandler_WhenSuccessful_ShouldUpdateDataFromSearch
 	assert.NoError(t, err)
 
 	searchEngineService.AssertExpectations(t)
+	searchTaskTrackerService.AssertExpectations(t)
 }

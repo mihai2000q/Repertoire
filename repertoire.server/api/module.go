@@ -16,6 +16,7 @@ var middlewares = fx.Options(
 	fx.Provide(middleware.NewCorsMiddleware),
 	fx.Provide(middleware.NewErrorHandlerMiddleware),
 	fx.Provide(middleware.NewJWTAuthMiddleware),
+	fx.Provide(middleware.NewMeiliAuthMiddleware),
 )
 
 var handlers = fx.Options(

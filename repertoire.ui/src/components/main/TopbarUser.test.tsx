@@ -34,7 +34,7 @@ describe('Topbar User', () => {
   it('should display menu when clicking on the user button', async () => {
     const userEventDispatcher = userEvent.setup()
 
-    render()
+    const [_, store] = render()
 
     const userButton = await screen.findByRole('button', { name: 'user' })
     await userEventDispatcher.click(userButton)
@@ -44,6 +44,7 @@ describe('Topbar User', () => {
     expect(screen.getByRole('menuitem', { name: /settings/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /account/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /sign out/i })).toBeInTheDocument()
+    expect((store.getState() as RootState).global.userId).toBe(user.id)
   })
 
   describe('on menu', () => {

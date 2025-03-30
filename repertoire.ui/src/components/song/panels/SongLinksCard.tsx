@@ -24,22 +24,6 @@ function SongLinksCard({ song }: SongLinksCardProps) {
               No links to display
             </Text>
           )}
-          {song.youtubeLink && (
-            <Button
-              fullWidth
-              maw={400}
-              variant={'gradient'}
-              size={'md'}
-              radius={'lg'}
-              leftSection={<IconBrandYoutube size={30} />}
-              fz={'h6'}
-              fw={700}
-              gradient={{ from: 'red.7', to: 'red.1', deg: 90 }}
-              onClick={openYoutube}
-            >
-              Youtube
-            </Button>
-          )}
           {song.songsterrLink && (
             <Anchor
               w={'100%'}
@@ -63,6 +47,22 @@ function SongLinksCard({ song }: SongLinksCardProps) {
                 Songsterr
               </Button>
             </Anchor>
+          )}
+          {song.youtubeLink && (
+            <Button
+              fullWidth
+              maw={400}
+              variant={'gradient'}
+              size={'md'}
+              radius={'lg'}
+              leftSection={<IconBrandYoutube size={30} />}
+              fz={'h6'}
+              fw={700}
+              gradient={{ from: 'red.7', to: 'red.1', deg: 90 }}
+              onClick={openYoutube}
+            >
+              Youtube
+            </Button>
           )}
         </Stack>
       </Stack>

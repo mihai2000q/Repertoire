@@ -8,23 +8,24 @@ import (
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
+	"strconv"
 	"testing"
 )
 
 func TestAddToSearchEngineHandler_WhenAddFails_ShouldReturnError(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewAddToSearchEngineHandler(nil, searchEngineService)
+	_uut := search.NewAddToSearchEngineHandler(nil, searchEngineService, nil)
 
-	data := []any{"something"}
+	documents := []map[string]any{{"property1": "value2"}}
 
 	internalError := errors.New("internal error")
-	searchEngineService.On("Add", data).
-		Return(internalError).
+	searchEngineService.On("Add", documents).
+		Return(int64(0), internalError).
 		Once()
 
 	// when
-	payload, _ := json.Marshal(&data)
+	payload, _ := json.Marshal(&documents)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -35,19 +36,24 @@ func TestAddToSearchEngineHandler_WhenAddFails_ShouldReturnError(t *testing.T) {
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestAddToSearchEngineHandler_WhenSuccessful_ShouldAddDataToSearchEngine(t *testing.T) {
+func TestAddToSearchEngineHandler_WhenSuccessful_ShouldAddDocumentsToSearchEngine(t *testing.T) {
 	// given
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := search.NewAddToSearchEngineHandler(logger.NewLoggerMock(), searchEngineService)
+	searchTaskTrackerService := new(service.SearchTaskTrackerServiceMock)
+	_uut := search.NewAddToSearchEngineHandler(logger.NewLoggerMock(), searchEngineService, searchTaskTrackerService)
 
-	data := []any{"something"}
+	userID := "some-user-id"
+	documents := []map[string]any{{"property1": "value2", "userId": userID}}
 
-	searchEngineService.On("Add", data).
-		Return(nil).
+	var taskID int64 = 12
+	searchEngineService.On("Add", documents).
+		Return(taskID, nil).
 		Once()
 
+	searchTaskTrackerService.On("Track", strconv.FormatInt(taskID, 10), userID).Once()
+
 	// when
-	payload, _ := json.Marshal(&data)
+	payload, _ := json.Marshal(&documents)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -55,4 +61,5 @@ func TestAddToSearchEngineHandler_WhenSuccessful_ShouldAddDataToSearchEngine(t *
 	assert.NoError(t, err)
 
 	searchEngineService.AssertExpectations(t)
+	searchTaskTrackerService.AssertExpectations(t)
 }

@@ -11,7 +11,8 @@ type MessagePublisherServiceMock struct {
 }
 
 func (m *MessagePublisherServiceMock) GetClient() message.Publisher {
-	panic("not mocked")
+	args := m.Called()
+	return args.Get(0).(message.Publisher)
 }
 
 func (m *MessagePublisherServiceMock) Publish(topic topics.Topic, messagePayload any) error {

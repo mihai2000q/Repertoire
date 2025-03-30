@@ -17,6 +17,11 @@ func (u AuthRouter) RegisterRoutes() {
 		api.PUT("/sign-in", u.handler.SignIn)
 		api.POST("/sign-up", u.handler.SignUp)
 	}
+
+	centrifugoApi := u.requestHandler.PrivateRouter.Group("/auth/centrifugo")
+	{
+		centrifugoApi.GET("", u.handler.GetCentrifugoToken)
+	}
 }
 
 func NewAuthRouter(

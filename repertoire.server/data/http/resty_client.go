@@ -6,12 +6,12 @@ import (
 	"repertoire/server/internal"
 )
 
-type Client struct {
+type RestyClient struct {
 	*resty.Client
 }
 
-func NewClient(logger *logger.RestyLogger, env internal.Env) Client {
-	return Client{
+func NewRestyClient(logger *logger.RestyLogger, env internal.Env) RestyClient {
+	return RestyClient{
 		resty.New().
 			SetLogger(logger).
 			SetDebug(env.LogLevel == internal.DebugLogLevel),

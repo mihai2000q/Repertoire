@@ -13,7 +13,7 @@ type MigrationStatus struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func HasMigrationAlreadyBeenApplied(client search.Client, uid string) bool {
+func HasMigrationAlreadyBeenApplied(client search.MeiliClient, uid string) bool {
 	_, err := client.GetIndex("migration_version")
 	if err != nil {
 		_, err = client.CreateIndex(&meilisearch.IndexConfig{
@@ -41,7 +41,7 @@ func HasMigrationAlreadyBeenApplied(client search.Client, uid string) bool {
 	return false
 }
 
-func SaveMigrationStatus(client search.Client, uid string, name string) {
+func SaveMigrationStatus(client search.MeiliClient, uid string, name string) {
 	status := &MigrationStatus{
 		Id:        uid,
 		IsApplied: true,

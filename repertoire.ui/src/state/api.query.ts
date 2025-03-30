@@ -38,7 +38,7 @@ const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
 ) => {
   await mutex.waitForUnlock()
   let result = await queryWithAuthorization(args, api, extraOptions)
-  if (result?.error?.status === 401 && !isAuthRequest(args)) {
+  if (result?.error?.status === 401 && (!isAuthRequest(args) || isCentrifugoAuthRequest(args))) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire()
       try {
@@ -121,5 +121,12 @@ function isAuthRequest(args: string | FetchArgs): boolean {
   return (
     (typeof args === 'string' && args.includes('auth')) ||
     (typeof args === 'object' && args.url.includes('auth'))
+  )
+}
+
+function isCentrifugoAuthRequest(args: string | FetchArgs): boolean {
+  return (
+    (typeof args === 'string' && args.includes('centrifugo')) ||
+    (typeof args === 'object' && args.url.includes('centrifugo'))
   )
 }

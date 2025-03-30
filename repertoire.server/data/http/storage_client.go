@@ -9,7 +9,7 @@ type StorageClient struct {
 	*resty.Client
 }
 
-func NewStorageClient(client Client, env internal.Env) StorageClient {
+func NewStorageClient(client RestyClient, env internal.Env) StorageClient {
 	return StorageClient{
 		client.SetBaseURL(env.StorageUrl),
 	}

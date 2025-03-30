@@ -10,23 +10,27 @@ type AuthService interface {
 	Refresh(request requests.RefreshRequest) (string, *wrapper.ErrorCode)
 	SignIn(request requests.SignInRequest) (string, *wrapper.ErrorCode)
 	SignUp(request requests.SignUpRequest) (string, *wrapper.ErrorCode)
+	GetCentrifugoToken(token string) (string, *wrapper.ErrorCode)
 }
 
 type authService struct {
-	refresh auth.Refresh
-	signIn  auth.SignIn
-	signUp  auth.SignUp
+	refresh            auth.Refresh
+	signIn             auth.SignIn
+	signUp             auth.SignUp
+	getCentrifugoToken auth.GetCentrifugoToken
 }
 
 func NewAuthService(
 	refresh auth.Refresh,
 	signIn auth.SignIn,
 	signUp auth.SignUp,
+	getCentrifugoToken auth.GetCentrifugoToken,
 ) AuthService {
 	return &authService{
-		refresh: refresh,
-		signIn:  signIn,
-		signUp:  signUp,
+		refresh:            refresh,
+		signIn:             signIn,
+		signUp:             signUp,
+		getCentrifugoToken: getCentrifugoToken,
 	}
 }
 
@@ -40,4 +44,8 @@ func (a *authService) SignIn(request requests.SignInRequest) (string, *wrapper.E
 
 func (a *authService) SignUp(request requests.SignUpRequest) (string, *wrapper.ErrorCode) {
 	return a.signUp.Handle(request)
+}
+
+func (a *authService) GetCentrifugoToken(token string) (string, *wrapper.ErrorCode) {
+	return a.getCentrifugoToken.Handle(token)
 }

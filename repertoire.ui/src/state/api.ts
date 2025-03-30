@@ -19,7 +19,8 @@ export const api = createApi({
     'Instruments',
     'BandMemberRoles',
     'SongSectionTypes',
-    'User'
+    'User',
+    'Search'
   ],
   endpoints: (build) => {
     return {
@@ -37,6 +38,9 @@ export const api = createApi({
           method: 'PUT',
           body: body
         })
+      }),
+      getCentrifugeToken: build.query<string, void>({
+        query: () => 'auth/centrifugo',
       }),
 
       // Users
@@ -83,6 +87,7 @@ export const api = createApi({
 export const {
   useSignUpMutation,
   useSignInMutation,
+  useLazyGetCentrifugeTokenQuery,
   useGetCurrentUserQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,

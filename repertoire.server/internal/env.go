@@ -34,6 +34,12 @@ type Env struct {
 	MeiliHost      string
 	MeiliPort      string
 	MeiliMasterKey string
+	MeiliAuthKey   string
+
+	CentrifugoUrl          string
+	CentrifugoJwtSecretKey string
+	CentrifugoJwtIssuer    string
+	CentrifugoJwtAudience  string
 }
 
 func NewEnv() Env {
@@ -74,6 +80,12 @@ func NewEnv() Env {
 		MeiliHost:      os.Getenv("MEILI_HOST"),
 		MeiliPort:      os.Getenv("MEILI_PORT"),
 		MeiliMasterKey: os.Getenv("MEILI_MASTER_KEY"),
+		MeiliAuthKey:   os.Getenv("MEILI_WEBHOOK_AUTHORIZATION_KEY"),
+
+		CentrifugoUrl:          os.Getenv("CENTRIFUGO_URL"),
+		CentrifugoJwtSecretKey: os.Getenv("CENTRIFUGO_JWT_SECRET_KEY"),
+		CentrifugoJwtIssuer:    os.Getenv("CENTRIFUGO_JWT_ISSUER"),
+		CentrifugoJwtAudience:  os.Getenv("CENTRIFUGO_JWT_AUDIENCE"),
 	}
 	return env
 }

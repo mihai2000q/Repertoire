@@ -22,10 +22,10 @@ type StorageService interface {
 type storageService struct {
 	httpClient dataHttp.StorageClient
 	env        internal.Env
-	cache      cache.Cache
+	cache      cache.StorageCache
 }
 
-func NewStorageService(httpClient dataHttp.StorageClient, env internal.Env, cache cache.Cache) StorageService {
+func NewStorageService(httpClient dataHttp.StorageClient, env internal.Env, cache cache.StorageCache) StorageService {
 	return &storageService{
 		httpClient: httpClient,
 		env:        env,

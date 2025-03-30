@@ -11,8 +11,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
 	"repertoire/server/api"
 	"repertoire/server/data"
+	"repertoire/server/data/cache"
 	"repertoire/server/data/message"
 	"repertoire/server/domain"
 	"repertoire/server/internal"
@@ -29,16 +31,19 @@ import (
 
 var Dsn string
 var MessageBroker message.Publisher
+var MeiliCache cache.MeiliCache
 var httpServer *http.Server
 
 type TestServer struct {
-	WithMeili      bool
-	WithStorage    bool
-	EnvPath        string
-	app            *fx.App
-	dbContainer    *postgresTest.PostgresContainer
-	storageServer  *httptest.Server
-	meiliContainer *meilisearchTest.MeilisearchContainer
+	WithMeili           bool
+	WithStorage         bool
+	WithCentrifugo      bool
+	EnvPath             string
+	app                 *fx.App
+	dbContainer         *postgresTest.PostgresContainer
+	storageServer       *httptest.Server
+	centrifugoContainer testcontainers.Container
+	meiliContainer      *meilisearchTest.MeilisearchContainer
 }
 
 func (ts *TestServer) Start() {
@@ -58,6 +63,9 @@ func (ts *TestServer) Start() {
 	if ts.WithStorage {
 		ts.setupStorageServer()
 	}
+	if ts.WithCentrifugo {
+		ts.setupCentrifugoContainer()
+	}
 
 	// Setup application modules and populate the router
 	// Implicitly, the application will connect to the database
@@ -69,6 +77,7 @@ func (ts *TestServer) Start() {
 		api.Module,
 		fx.Populate(&httpServer),
 		fx.Populate(&MessageBroker),
+		fx.Populate(&MeiliCache),
 	)
 
 	// Start application
@@ -82,20 +91,21 @@ func (ts *TestServer) Stop() {
 		log.Fatal(err)
 	}
 	if err := testcontainers.TerminateContainer(ts.dbContainer); err != nil {
-		log.Printf("failed to terminate postgres dbContainer: %s", err)
+		log.Printf("failed to terminate postgres db container: %s", err)
 	}
 	if ts.WithMeili {
 		if err := testcontainers.TerminateContainer(ts.meiliContainer); err != nil {
-			log.Printf("failed to terminate meiliearch dbContainer: %s", err)
+			log.Printf("failed to terminate meiliearch container: %s", err)
 		}
 	}
 	if ts.WithStorage {
 		ts.storageServer.Close()
 	}
-}
-
-func getHttpServer() *http.Server {
-	return httpServer
+	if ts.WithCentrifugo {
+		if err := testcontainers.TerminateContainer(ts.centrifugoContainer); err != nil {
+			log.Printf("failed to terminate centrifugo container: %s", err)
+		}
+	}
 }
 
 func (ts *TestServer) setupPostgresContainer(env internal.Env, relativePath string) {
@@ -144,11 +154,9 @@ func (ts *TestServer) setupStorageServer() {
 		if r.Method == http.MethodPost {
 			response := struct {
 				Token     string
-				TokenType string
 				ExpiresIn string
 			}{
 				"some token",
-				"Bearer",
 				"1h",
 			}
 			bytes, _ := json.Marshal(response)
@@ -157,6 +165,33 @@ func (ts *TestServer) setupStorageServer() {
 	}))
 	_ = os.Setenv("AUTH_STORAGE_URL", ts.storageServer.URL)
 	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
+}
+
+func (ts *TestServer) setupCentrifugoContainer() {
+	containerRequest := testcontainers.ContainerRequest{
+		Image:        "centrifugo/centrifugo:v6",
+		ExposedPorts: []string{"8000/tcp"},
+		Cmd:          []string{"centrifugo", "-c", "/centrifugo/config.json"},
+		Files: []testcontainers.ContainerFile{
+			{
+				HostFilePath:      "../../../centrifugo-config.json",
+				ContainerFilePath: "/centrifugo/config.json",
+				FileMode:          0644,
+			},
+		},
+		WaitingFor: wait.ForLog("serving websocket"),
+	}
+	ts.centrifugoContainer, _ = testcontainers.GenericContainer(
+		context.Background(),
+		testcontainers.GenericContainerRequest{
+			ContainerRequest: containerRequest,
+			Started:          true,
+		})
+	// Get Random Port and set it to the environment variable
+	port, _ := ts.centrifugoContainer.MappedPort(context.Background(), "8000/tcp")
+	regex := regexp.MustCompile(`localhost:\d{4}`)
+	newUrl := regex.ReplaceAllString(os.Getenv("CENTRIFUGO_URL"), "localhost:"+port.Port())
+	_ = os.Setenv("CENTRIFUGO_URL", newUrl)
 }
 
 func (ts *TestServer) setupMeiliContainer(env internal.Env) {

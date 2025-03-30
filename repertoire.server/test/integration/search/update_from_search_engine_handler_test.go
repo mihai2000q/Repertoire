@@ -5,8 +5,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/core"
 	searchData "repertoire/server/test/integration/test/data/search"
 	"repertoire/server/test/integration/test/utils"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -15,6 +17,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 	// given
 	utils.SeedAndCleanupSearchData(t, searchData.GetSearchDocuments())
 
+	userID := searchData.SongSearches[0].(model.SongSearch).UserID
 	newEntities := []any{
 		model.SongSearch{
 			SearchBase: model.SearchBase{
@@ -22,7 +25,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 				UpdatedAt: time.Now().UTC(),
 				CreatedAt: searchData.SongSearches[0].(model.SongSearch).CreatedAt,
 				Type:      searchData.SongSearches[0].(model.SongSearch).Type,
-				UserID:    searchData.SongSearches[0].(model.SongSearch).UserID,
+				UserID:    userID,
 			},
 			Title:    "New Song Name",
 			ImageUrl: searchData.SongSearches[0].(model.SongSearch).ImageUrl,
@@ -35,7 +38,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 				UpdatedAt: time.Now().UTC(),
 				CreatedAt: searchData.ArtistSearches[0].(model.ArtistSearch).CreatedAt,
 				Type:      searchData.ArtistSearches[0].(model.ArtistSearch).Type,
-				UserID:    searchData.ArtistSearches[0].(model.ArtistSearch).UserID,
+				UserID:    userID,
 			},
 			Name:     "New Artist Name",
 			ImageUrl: searchData.ArtistSearches[0].(model.ArtistSearch).ImageUrl,
@@ -65,4 +68,9 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 		assert.NotNil(t, actualEntity)
 		assert.Equal(t, unmarshalledExpectedEntity, *actualEntity)
 	}
+
+	tasks, _ = searchClient.GetTasks(&meilisearch.TasksQuery{})
+	latestTaskID := strconv.FormatInt((*tasks).Results[0].UID, 10)
+	cachedUserID, _ := core.MeiliCache.Get("task-" + latestTaskID)
+	assert.Equal(t, userID.String(), cachedUserID)
 }
