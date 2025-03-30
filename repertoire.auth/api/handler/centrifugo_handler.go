@@ -27,11 +27,11 @@ func NewCentrifugoHandler(
 func (c CentrifugoHandler) Token(ctx *gin.Context) {
 	token := c.GetTokenFromContext(ctx)
 
-	centrifugoToken, expiresIn, errCode := c.service.Token(token)
+	centrifugoToken, _, errCode := c.service.Token(token)
 	if errCode != nil {
 		_ = ctx.AbortWithError(errCode.Code, errCode.Error)
 		return
 	}
 
-	c.SendToken(ctx, centrifugoToken, expiresIn)
+	ctx.JSON(http.StatusOK, centrifugoToken)
 }

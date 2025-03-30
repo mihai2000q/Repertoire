@@ -2,41 +2,33 @@ package service
 
 import (
 	"repertoire/auth/data/service"
-	"repertoire/auth/internal"
 	"repertoire/auth/internal/wrapper"
+	"repertoire/auth/model"
 )
 
 type StorageService interface {
-	Token(grantType string, clientID string, clientSecret string, token string) (string, string, *wrapper.ErrorCode)
+	Token(clientCredentials model.ClientCredentials, token string) (string, string, *wrapper.ErrorCode)
 }
 
 type storageService struct {
-	env        internal.Env
 	jwtService service.JwtService
 }
 
-func NewStorageService(
-	env internal.Env,
-	jwtService service.JwtService,
-) StorageService {
-	return &storageService{
-		env:        env,
-		jwtService: jwtService,
-	}
+func NewStorageService(jwtService service.JwtService) StorageService {
+	return &storageService{jwtService: jwtService}
 }
 
-func (c *storageService) Token(grantType string, clientID string, clientSecret string, token string) (string, string, *wrapper.ErrorCode) {
-	errCode := c.jwtService.ValidateCredentials(grantType, clientID, clientSecret)
+func (c *storageService) Token(
+	clientCredentials model.ClientCredentials,
+	token string,
+) (string, string, *wrapper.ErrorCode) {
+	errCode := c.jwtService.ValidateCredentials(clientCredentials)
 	if errCode != nil {
 		return "", "", errCode
 	}
-	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := c.jwtService.GetUserIDFromJwt(token)
 	if errCode != nil {
 		return "", "", errCode
 	}
-	storageToken, errCode := c.jwtService.CreateStorageToken(userID.String())
-	if errCode != nil {
-		return "", "", errCode
-	}
-	return storageToken, c.env.StorageJwtExpirationTime, nil
+	return c.jwtService.CreateStorageToken(userID)
 }

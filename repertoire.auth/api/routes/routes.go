@@ -15,12 +15,14 @@ type Route interface {
 
 func NewRoutes(
 	lc fx.Lifecycle,
-	mainRouter router.MainRouter,
 	centrifugoRouter router.CentrifugoRouter,
+	mainRouter router.MainRouter,
+	storageRouter router.StorageRouter,
 ) *Routes {
 	routes := &Routes{
-		mainRouter,
 		centrifugoRouter,
+		mainRouter,
+		storageRouter,
 	}
 
 	lc.Append(fx.Hook{

@@ -1,8 +1,8 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"repertoire/auth/data/service"
-	"repertoire/auth/internal"
 	"repertoire/auth/internal/wrapper"
 )
 
@@ -11,26 +11,20 @@ type CentrifugoService interface {
 }
 
 type centrifugoService struct {
-	env        internal.Env
 	jwtService service.JwtService
 }
 
-func NewCentrifugoService(
-	env internal.Env,
-	jwtService service.JwtService,
-) CentrifugoService {
-	return &centrifugoService{
-		env:        env,
-		jwtService: jwtService,
-	}
+func NewCentrifugoService(jwtService service.JwtService) CentrifugoService {
+	return &centrifugoService{jwtService: jwtService}
 }
 
 func (c *centrifugoService) Token(token string) (string, string, *wrapper.ErrorCode) {
-	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
+	userID, errCode := c.jwtService.GetUserIDFromJwt(token)
 	if errCode != nil {
 		return "", "", errCode
 	}
-	centrifugoToken, errCode := c.jwtService.CreateCentrifugoToken(userID.String())
+	return c.jwtService.CreateCentrifugoToken(userID)
+}
 	if errCode != nil {
 		return "", "", errCode
 	}

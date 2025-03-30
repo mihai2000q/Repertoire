@@ -12,13 +12,14 @@ import (
 
 type JwtService interface {
 	Authorize(authToken string) error
-	GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
+	GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
+
 	Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
-	ValidateCredentials(grantType string, clientID string, clientSecret string) *wrapper.ErrorCode
+	ValidateCredentials(clientCredentials model.ClientCredentials) *wrapper.ErrorCode
 
 	CreateToken(user model.User) (string, *wrapper.ErrorCode)
-	CreateCentrifugoToken(userID string) (string, *wrapper.ErrorCode)
-	CreateStorageToken(userID string) (string, *wrapper.ErrorCode)
+	CreateCentrifugoToken(userID uuid.UUID) (string, string, *wrapper.ErrorCode)
+	CreateStorageToken(userID uuid.UUID) (string, string, *wrapper.ErrorCode)
 }
 
 type jwtService struct {
@@ -43,7 +44,7 @@ func (j jwtService) Authorize(authToken string) error {
 	return errors.New("invalid token")
 }
 
-func (j jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
+func (j jwtService) GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(j.env.JwtPublicKey), nil
 	})
@@ -63,6 +64,8 @@ func (j jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.Er
 
 	return userID, nil
 }
+
+// Validation
 
 func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
@@ -108,8 +111,10 @@ func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 	return userID, nil
 }
 
-func (j jwtService) ValidateCredentials(grantType string, clientID string, clientSecret string) *wrapper.ErrorCode {
-	if grantType != "client_credentials" || clientID != j.env.ClientID || clientSecret != j.env.ClientSecret {
+func (j jwtService) ValidateCredentials(clientCredentials model.ClientCredentials) *wrapper.ErrorCode {
+	if clientCredentials.GrantType != "client_credentials" ||
+		clientCredentials.ClientID != j.env.ClientID ||
+		clientCredentials.ClientSecret != j.env.ClientSecret {
 		return wrapper.UnauthorizedError(errors.New("you are not authorized"))
 	}
 	return nil
@@ -142,10 +147,10 @@ func (j jwtService) CreateToken(user model.User) (string, *wrapper.ErrorCode) {
 	return token, nil
 }
 
-func (j jwtService) CreateCentrifugoToken(userID string) (string, *wrapper.ErrorCode) {
+func (j jwtService) CreateCentrifugoToken(userID uuid.UUID) (string, string, *wrapper.ErrorCode) {
 	expiresIn, err := time.ParseDuration(j.env.CentrifugoJwtExpirationTime)
 	if err != nil {
-		return "", wrapper.InternalServerError(err)
+		return "", "", wrapper.InternalServerError(err)
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -158,15 +163,15 @@ func (j jwtService) CreateCentrifugoToken(userID string) (string, *wrapper.Error
 	})
 	token, err := claims.SignedString([]byte(j.env.CentrifugoJwtSecretKey))
 	if err != nil {
-		return "", wrapper.InternalServerError(err)
+		return "", "", wrapper.InternalServerError(err)
 	}
-	return token, nil
+	return token, j.env.CentrifugoJwtExpirationTime, nil
 }
 
-func (j jwtService) CreateStorageToken(userID string) (string, *wrapper.ErrorCode) {
+func (j jwtService) CreateStorageToken(userID uuid.UUID) (string, string, *wrapper.ErrorCode) {
 	expiresIn, err := time.ParseDuration(j.env.StorageJwtExpirationTime)
 	if err != nil {
-		return "", wrapper.InternalServerError(err)
+		return "", "", wrapper.InternalServerError(err)
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -179,9 +184,9 @@ func (j jwtService) CreateStorageToken(userID string) (string, *wrapper.ErrorCod
 	})
 	token, err := claims.SignedString([]byte(j.env.StorageJwtSecretKey))
 	if err != nil {
-		return "", wrapper.InternalServerError(err)
+		return "", "", wrapper.InternalServerError(err)
 	}
-	return token, nil
+	return token, j.env.StorageJwtExpirationTime, nil
 }
 
 func (j jwtService) validateToken(token *jwt.Token) error {
@@ -200,8 +205,9 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 		return err
 	}
 
-	if token.Method != jwt.SigningMethodHS256 ||
+	if token.Method != jwt.SigningMethodRS256 ||
 		iss != j.env.JwtIssuer ||
+		len(aud) != 1 ||
 		aud[0] != j.env.JwtAudience ||
 		jti == uuid.Nil {
 		return errors.New("invalid token")
