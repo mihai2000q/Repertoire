@@ -36,8 +36,7 @@ func GetDatabase(t *testing.T) *gorm.DB {
 
 func GetSearchClient(t *testing.T) meilisearch.ServiceManager {
 	env := GetEnv()
-	url := "http://" + env.MeiliHost + ":" + env.MeiliPort
-	client := meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	client := meilisearch.New(env.MeiliUrl, meilisearch.WithAPIKey(env.MeiliMasterKey))
 	t.Cleanup(func() {
 		client.Close()
 	})

@@ -13,18 +13,18 @@ import (
 )
 
 type SignUp struct {
-	jwtService     service.JwtService
+	authService    service.AuthService
 	bCryptService  service.BCryptService
 	userRepository repository.UserRepository
 }
 
 func NewSignUp(
-	jwtService service.JwtService,
+	authService service.AuthService,
 	bCryptService service.BCryptService,
 	userRepository repository.UserRepository,
 ) SignUp {
 	return SignUp{
-		jwtService:     jwtService,
+		authService:    authService,
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
 	}
@@ -62,7 +62,7 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 		return "", wrapper.InternalServerError(err)
 	}
 
-	return s.jwtService.CreateToken(user)
+	return s.authService.SignIn(user.Email, user.Password)
 }
 
 func (s *SignUp) createAndAttachDefaultData(user *model.User) {

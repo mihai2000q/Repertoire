@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -57,15 +56,12 @@ func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	user := assertCreatedUser(t, request)
+	assertCreatedUser(t, request)
 
-	var response struct{ Token string }
-	_ = json.Unmarshal(w.Body.Bytes(), &response)
-
-	assertion.Token(t, response.Token, user)
+	assertion.Token(t, w.Body.String(), user)
 }
 
-func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User {
+func assertCreatedUser(t *testing.T, request requests.SignUpRequest) {
 	db := utils.GetDatabase(t)
 
 	var user model.User
@@ -108,6 +104,4 @@ func assertCreatedUser(t *testing.T, request requests.SignUpRequest) model.User 
 		assert.Equal(t, model.DefaultInstruments[i], instrument.Name)
 		assert.Equal(t, uint(i), instrument.Order)
 	}
-
-	return user
 }
