@@ -41,29 +41,50 @@ func (j jwtService) Authorize(authToken string) error {
 }
 
 func (j jwtService) validateToken(token *jwt.Token) error {
+	// signing method
+	if token.Method != jwt.SigningMethodHS256 {
+		return errors.New("invalid signing method")
+	}
+
+	// audience
 	aud, err := token.Claims.GetAudience()
 	if err != nil {
 		return err
 	}
+	if len(aud) != 1 || aud[0] != j.env.JwtAudience {
+		return errors.New("wrong audience")
+	}
+
+	// issuer
 	iss, err := token.Claims.GetIssuer()
 	if err != nil {
 		return err
 	}
+	if iss != j.env.JwtIssuer {
+		return errors.New("wrong issuer")
+	}
+
+	// expiration time
 	_, err = token.Claims.GetExpirationTime()
 	if err != nil {
 		return err
 	}
 
+	// jti
 	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
 	if !jtiFound {
-		return errors.New("no jti found")
+		return errors.New("missing jti")
 	}
 
 	jti, err := uuid.Parse(jtiClaim.(string))
 	if err != nil {
 		return err
 	}
+	if jti == uuid.Nil {
+		return errors.New("invalid jti")
+	}
 
+	// sub
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
 		return err
@@ -72,14 +93,8 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 	if err != nil {
 		return err
 	}
-
-	if token.Method != jwt.SigningMethodHS256 ||
-		iss != j.env.JwtIssuer ||
-		aud[0] != j.env.JwtAudience ||
-		len(aud) != 1 ||
-		jti == uuid.Nil ||
-		userID == uuid.Nil {
-		return errors.New("invalid token")
+	if userID == uuid.Nil {
+		return errors.New("invalid sub")
 	}
 
 	return nil
