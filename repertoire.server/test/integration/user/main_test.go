@@ -10,7 +10,6 @@ func TestMain(m *testing.M) {
 	ts := &core.TestServer{
 		WithMeili:   true,
 		WithStorage: true,
-		WithAuth:    true,
 	}
 	ts.Start()
 

@@ -87,13 +87,13 @@ func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 func createCentrifugoToken() string {
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
-		"sub": "testing-env",
-		"iss": "http://localhost:8030/auth",
-		"aud": "Centrifugo",
+		"sub": "Integration Testing",
+		"iss": core.CentrifugoJwtInfo.Issuer,
+		"aud": core.CentrifugoJwtInfo.Audience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte("This-is-a-very-super-duper-secret-key-and-it-shall-stay-like-this"))
+	token, _ := claims.SignedString([]byte(core.CentrifugoJwtInfo.SecretKey))
 
 	return token
 }
