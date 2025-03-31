@@ -12,12 +12,12 @@ import (
 	"testing"
 )
 
-func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoryFails_ShouldReturnError(t *testing.T) {
+func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturnError(t *testing.T) {
 	// given
 	storageService := new(service.StorageServiceMock)
 	_uut := storage.NewDeleteDirectoriesStorageHandler(logger.NewLoggerMock(), storageService)
 
-	directories := []any{"some_directory", "some_other_directory"}
+	directories := []string{"some_directory", "some_other_directory"}
 
 	internalError := errors.New("internal error")
 	storageService.On("DeleteDirectories", directories).
@@ -41,7 +41,7 @@ func TestDeleteDirectoriesStorageHandler_WhenSuccessful_ShouldDeleteDirectories(
 	storageService := new(service.StorageServiceMock)
 	_uut := storage.NewDeleteDirectoriesStorageHandler(logger.NewLoggerMock(), storageService)
 
-	directories := []any{"dir1/dir2/file.exe", "some_file.png", "an_image.jpeg"}
+	directories := []string{"dir1/dir2/file.exe", "some_file.png", "an_image.jpeg"}
 
 	storageService.On("DeleteDirectories", directories).
 		Return(nil).
