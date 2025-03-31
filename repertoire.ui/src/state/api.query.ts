@@ -30,6 +30,10 @@ const queryWithAuthorization = fetchBaseQuery({
   }
 })
 
+const refreshQuery = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_AUTH_URL
+})
+
 const mutex = new Mutex()
 const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
@@ -38,23 +42,23 @@ const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
 ) => {
   await mutex.waitForUnlock()
   let result = await queryWithAuthorization(args, api, extraOptions)
-  if (result?.error?.status === 401 && (!isAuthRequest(args) || isCentrifugoAuthRequest(args))) {
+  if (result?.error?.status === 401 && !(typeof args === 'object' && !args.url.includes('users/sign-up'))) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire()
       try {
         const authState = (api.getState() as RootState).auth
-        const refreshResult = await queryWithAuthorization(
+        const refreshResult = await refreshQuery(
           {
-            url: `auth/refresh`,
+            url: `refresh`,
             method: 'PUT',
             body: { token: authState.token }
           },
           api,
           extraOptions
         )
-        const data = refreshResult?.data as { token: string } | undefined
-        if (data) {
-          api.dispatch(setToken(data.token))
+        const newToken = refreshResult?.data as string | undefined
+        if (newToken) {
+          api.dispatch(setToken(newToken))
           result = await queryWithAuthorization(args, api, extraOptions)
         } else {
           api.dispatch(signOut())
@@ -115,18 +119,4 @@ function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
   } else if (api.endpoint === 'deleteSong' && isSongDrawerOpenWithDeletedSong) {
     api.dispatch(deleteSongDrawer())
   }
-}
-
-function isAuthRequest(args: string | FetchArgs): boolean {
-  return (
-    (typeof args === 'string' && args.includes('auth')) ||
-    (typeof args === 'object' && args.url.includes('auth'))
-  )
-}
-
-function isCentrifugoAuthRequest(args: string | FetchArgs): boolean {
-  return (
-    (typeof args === 'string' && args.includes('centrifugo')) ||
-    (typeof args === 'object' && args.url.includes('centrifugo'))
-  )
 }

@@ -1,10 +1,12 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { queryWithRedirection } from './api.query'
-import TokenResponse from '../types/responses/TokenResponse'
 import HttpMessageResponse from '../types/responses/HttpMessageResponse.ts'
 import User from '../types/models/User'
-import { SignInRequest, SignUpRequest } from '../types/requests/AuthRequests.ts'
-import { SaveProfilePictureRequest, UpdateUserRequest } from '../types/requests/UserRequests.ts'
+import {
+  SaveProfilePictureRequest,
+  SignUpRequest,
+  UpdateUserRequest
+} from '../types/requests/UserRequests.ts'
 import createFormData from '../utils/createFormData.ts'
 
 export const api = createApi({
@@ -24,29 +26,16 @@ export const api = createApi({
   ],
   endpoints: (build) => {
     return {
-      // Auth
-      signUp: build.mutation<TokenResponse, SignUpRequest>({
-        query: (body) => ({
-          url: `auth/sign-up`,
-          method: 'POST',
-          body: body
-        })
-      }),
-      signIn: build.mutation<TokenResponse, SignInRequest>({
-        query: (body) => ({
-          url: `auth/sign-in`,
-          method: 'PUT',
-          body: body
-        })
-      }),
-      getCentrifugeToken: build.query<string, void>({
-        query: () => 'auth/centrifugo',
-      }),
-
-      // Users
       getCurrentUser: build.query<User, void>({
         query: () => `users/current`,
         providesTags: ['User']
+      }),
+      signUp: build.mutation<string, SignUpRequest>({
+        query: (body) => ({
+          url: `sign-up`,
+          method: 'POST',
+          body: body
+        })
       }),
       updateUser: build.mutation<HttpMessageResponse, UpdateUserRequest>({
         query: (body) => ({
@@ -61,7 +50,7 @@ export const api = createApi({
           url: 'users',
           method: 'DELETE',
           body: body
-        }),
+        })
       }),
 
       saveProfilePicture: build.mutation<HttpMessageResponse, SaveProfilePictureRequest>({
@@ -86,8 +75,6 @@ export const api = createApi({
 
 export const {
   useSignUpMutation,
-  useSignInMutation,
-  useLazyGetCentrifugeTokenQuery,
   useGetCurrentUserQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,

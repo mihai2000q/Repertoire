@@ -5,7 +5,6 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { SignInRequest } from '../types/requests/AuthRequests.ts'
-import TokenResponse from '../types/responses/TokenResponse.ts'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 
@@ -94,8 +93,7 @@ describe('Sign In', () => {
     server.use(
       http.put('/auth/sign-in', async (req) => {
         capturedSignInRequest = (await req.request.json()) as SignInRequest
-        const response: TokenResponse = { token: expectedToken }
-        return HttpResponse.json(response)
+        return HttpResponse.json(expectedToken)
       })
     )
 

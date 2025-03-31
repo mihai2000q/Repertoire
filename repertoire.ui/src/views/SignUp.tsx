@@ -45,8 +45,8 @@ function SignUp(): ReactElement {
 
   async function signUp({ name, email, password }: SignUpForm): Promise<void> {
     try {
-      const res = await signUpMutation({ name, email, password }).unwrap()
-      dispatch(setToken(res.token))
+      const token = await signUpMutation({ name, email, password }).unwrap()
+      dispatch(setToken(token))
       dispatch(api.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
