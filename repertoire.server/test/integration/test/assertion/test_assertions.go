@@ -2,16 +2,29 @@ package assertion
 
 import (
 	"encoding/json"
+	"github.com/golang-jwt/jwt/v5"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
+
+func Token(t *testing.T, actual string) {
+	env := utils.GetEnv()
+	
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(env.JwtPublicKey))
+	assert.NoError(t, err)
+	token, err := jwt.Parse(actual, func(t *jwt.Token) (interface{}, error) {
+		return publicKey, nil
+	})
+	assert.NoError(t, err)
+	assert.NotEmpty(t, token)
+	assert.True(t, token.Valid)
+}
 
 func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	if expected != nil {
@@ -19,41 +32,6 @@ func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	} else {
 		assert.Nil(t, actual)
 	}
-}
-
-func Token(t *testing.T, actual string, user model.User) {
-	env := utils.GetEnv()
-
-	expiresIn, _ := time.ParseDuration(env.JwtExpirationTime)
-
-	// get token
-	token, err := jwt.Parse(actual, func(t *jwt.Token) (interface{}, error) {
-		return []byte(env.JwtSecretKey), nil
-	})
-	assert.NoError(t, err)
-
-	jtiClaim := token.Claims.(jwt.MapClaims)["jti"].(string)
-	jti, err := uuid.Parse(jtiClaim)
-	assert.NoError(t, err)
-	sub, err := token.Claims.GetSubject()
-	assert.NoError(t, err)
-	aud, err := token.Claims.GetAudience()
-	assert.NoError(t, err)
-	iss, err := token.Claims.GetIssuer()
-	assert.NoError(t, err)
-	iat, err := token.Claims.GetIssuedAt()
-	assert.NoError(t, err)
-	exp, err := token.Claims.GetExpirationTime()
-	assert.NoError(t, err)
-
-	assert.Equal(t, jwt.SigningMethodHS256, token.Method)
-	assert.NotEmpty(t, jti)
-	assert.Equal(t, user.ID.String(), sub)
-	assert.Len(t, aud, 1)
-	assert.Equal(t, env.JwtAudience, aud[0])
-	assert.Equal(t, env.JwtIssuer, iss)
-	assert.WithinDuration(t, time.Now().UTC(), iat.Time, 10*time.Second)
-	assert.WithinDuration(t, time.Now().Add(expiresIn).UTC(), exp.Time, 10*time.Second)
 }
 
 func AssertMessage[T any](

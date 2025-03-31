@@ -7,8 +7,8 @@ import (
 	"mime/multipart"
 	"net/http"
 	"repertoire/server/data/cache"
-	dataHttp "repertoire/server/data/http"
 	"repertoire/server/data/http/auth"
+	"repertoire/server/data/http/client"
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"strings"
@@ -22,15 +22,15 @@ type StorageService interface {
 }
 
 type storageService struct {
-	storageClient dataHttp.StorageClient
-	authClient    dataHttp.AuthClient
+	storageClient client.StorageClient
+	authClient    client.AuthClient
 	env           internal.Env
 	cache         cache.StorageCache
 }
 
 func NewStorageService(
-	httpClient dataHttp.StorageClient,
-	authClient dataHttp.AuthClient,
+	httpClient client.StorageClient,
+	authClient client.AuthClient,
 	cache cache.StorageCache,
 ) StorageService {
 	return &storageService{

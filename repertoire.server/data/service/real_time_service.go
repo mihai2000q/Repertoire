@@ -6,8 +6,8 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/data/cache"
-	dataHttp "repertoire/server/data/http"
 	"repertoire/server/data/http/auth"
+	"repertoire/server/data/http/client"
 	"repertoire/server/data/realtime"
 	"time"
 )
@@ -19,13 +19,13 @@ type RealTimeService interface {
 type realTimeService struct {
 	cache      cache.CentrifugoCache
 	client     realtime.CentrifugoClient
-	authClient dataHttp.AuthClient
+	authClient client.AuthClient
 }
 
 func NewRealTimeService(
 	cache cache.CentrifugoCache,
 	client realtime.CentrifugoClient,
-	authClient dataHttp.AuthClient,
+	authClient client.AuthClient,
 ) RealTimeService {
 	return realTimeService{
 		cache:      cache,

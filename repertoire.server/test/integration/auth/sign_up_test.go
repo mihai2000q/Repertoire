@@ -58,7 +58,7 @@ func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 
 	assertCreatedUser(t, request)
 
-	assertion.Token(t, w.Body.String(), user)
+	assertion.Token(t, w.Body.String())
 }
 
 func assertCreatedUser(t *testing.T, request requests.SignUpRequest) {

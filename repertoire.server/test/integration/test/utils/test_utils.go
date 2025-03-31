@@ -6,7 +6,12 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/centrifugal/centrifuge-go"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/meilisearch/meilisearch-go"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"mime/multipart"
 	"os"
 	"repertoire/server/internal"
@@ -15,12 +20,6 @@ import (
 	"repertoire/server/test/integration/test/core"
 	"testing"
 	"time"
-
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 // Clients
@@ -85,52 +84,16 @@ func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 	}
 }
 
-// Auth
-
-func CreateValidToken(user model.User) string {
-	env := GetEnv()
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti": uuid.New().String(),
-		"sub": user.ID.String(),
-		"iss": env.JwtIssuer,
-		"aud": env.JwtAudience,
-		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(time.Hour).Unix(),
-	})
-	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
-
-	return token
-}
-
-func CreateCustomToken(sub string, jti string) string {
-	env := GetEnv()
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti": jti,
-		"sub": sub,
-		"iss": env.JwtIssuer,
-		"aud": env.JwtAudience,
-		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(time.Hour).Unix(),
-	})
-	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
-
-	return token
-}
-
 func createCentrifugoToken() string {
-	env := GetEnv()
-
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": "testing-env",
-		"iss": env.CentrifugoJwtIssuer,
-		"aud": env.CentrifugoJwtAudience,
+		"iss": "http://localhost:8030/auth",
+		"aud": "Centrifugo",
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte(env.CentrifugoJwtSecretKey))
+	token, _ := claims.SignedString([]byte("This-is-a-very-super-duper-secret-key-and-it-shall-stay-like-this"))
 
 	return token
 }
