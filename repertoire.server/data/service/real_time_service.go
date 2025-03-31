@@ -3,44 +3,50 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
+	"errors"
+	"net/http"
 	"repertoire/server/data/cache"
+	dataHttp "repertoire/server/data/http"
+	"repertoire/server/data/http/auth"
 	"repertoire/server/data/realtime"
-	"repertoire/server/internal"
 	"time"
 )
 
 type RealTimeService interface {
 	Publish(channel string, userID string, payload any) error
-	CreateToken(userID string) string
 }
 
 type realTimeService struct {
-	env    internal.Env
-	cache  cache.CentrifugoCache
-	client realtime.CentrifugoClient
+	cache      cache.CentrifugoCache
+	client     realtime.CentrifugoClient
+	authClient dataHttp.AuthClient
 }
 
 func NewRealTimeService(
-	env internal.Env,
 	cache cache.CentrifugoCache,
 	client realtime.CentrifugoClient,
+	authClient dataHttp.AuthClient,
 ) RealTimeService {
 	return realTimeService{
-		env:    env,
-		cache:  cache,
-		client: client,
+		cache:      cache,
+		client:     client,
+		authClient: authClient,
 	}
 }
 
 func (r realTimeService) Publish(channel string, userID string, payload any) error {
-	parsedPayload, err := json.Marshal(payload)
+	accessToken, err := r.getToken(userID)
 	if err != nil {
 		return err
 	}
-	r.client.SetToken(r.getToken(userID))
+	r.client.SetToken(accessToken)
+
 	err = r.client.Connect()
+	if err != nil {
+		return err
+	}
+
+	parsedPayload, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}
@@ -48,35 +54,39 @@ func (r realTimeService) Publish(channel string, userID string, payload any) err
 	if err != nil {
 		return err
 	}
+
 	err = r.client.Disconnect()
 	return err
 }
 
-func (r realTimeService) getToken(userID string) string {
+func (r realTimeService) getToken(userID string) (string, error) {
 	// get from cache
 	tokenKey := "token#" + userID
 	token, found := r.cache.Get(tokenKey)
 	if found {
-		return token.(string)
+		return token.(string), nil
 	}
 
-	// create token and set in cache
-	createdToken := r.CreateToken(userID)
-	r.cache.Set(tokenKey, createdToken, time.Hour)
-	return createdToken
+	// fetch token and set in cache
+	tokenResult, err := r.fetchToken(userID)
+	if err != nil {
+		return "", err
+	}
+	expiresIn, _ := time.ParseDuration(tokenResult.ExpiresIn)
+	r.cache.Set(tokenKey, tokenResult, expiresIn)
+	return tokenResult.Token, nil
 }
 
-func (r realTimeService) CreateToken(userID string) string {
-	env := internal.NewEnv()
+func (r realTimeService) fetchToken(userID string) (auth.TokenResponse, error) {
+	var result auth.TokenResponse
+	response, err := r.authClient.CentrifugoToken(userID, &result)
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"jti": uuid.New().String(),
-		"sub": userID,
-		"iss": env.CentrifugoJwtIssuer,
-		"aud": env.CentrifugoJwtAudience,
-		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(time.Hour).Unix(),
-	})
-	token, _ := claims.SignedString([]byte(env.CentrifugoJwtSecretKey))
-	return token
+	if err != nil {
+		return auth.TokenResponse{}, err
+	}
+	if response.StatusCode() != http.StatusOK {
+		return auth.TokenResponse{}, errors.New("failed to fetch token: " + response.String())
+	}
+
+	return result, nil
 }

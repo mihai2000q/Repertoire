@@ -37,6 +37,6 @@ func (client AuthClient) CentrifugoToken(userID string, result any) (*resty.Resp
 			"client_secret": client.env.AuthClientSecret,
 			"user_id":       userID,
 		}).
-		SetResult(&result).
+		SetResult(result).
 		Post("/centrifugo/token")
 }
