@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/database"
+	"repertoire/server/data/logger"
 	"repertoire/server/data/search"
 	"repertoire/server/internal"
 	"repertoire/server/internal/migration/utils"
@@ -15,7 +16,7 @@ var name = "initial_create"
 
 func main() {
 	env := internal.NewEnv()
-	dbClient := database.NewClient(nil, env)
+	dbClient := database.NewClient(logger.NewGormLogger(logger.NewLogger(env)), env)
 	meiliClient := search.NewMeiliClient(env)
 
 	if utils.HasMigrationAlreadyBeenApplied(meiliClient, uid) {
@@ -65,8 +66,6 @@ func addArtists(dbClient database.Client, meiliClient search.MeiliClient) {
 
 	var meiliArtists []model.ArtistSearch
 	for _, artist := range artists {
-		artist.UpdatedAt = artist.UpdatedAt.UTC()
-		artist.CreatedAt = artist.CreatedAt.UTC()
 		meiliArtists = append(meiliArtists, artist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliArtists)
@@ -91,8 +90,6 @@ func addAlbums(dbClient database.Client, meiliClient search.MeiliClient) {
 		if album.ReleaseDate != nil {
 			album.ReleaseDate = &[]time.Time{album.ReleaseDate.UTC()}[0]
 		}
-		album.UpdatedAt = album.UpdatedAt.UTC()
-		album.CreatedAt = album.CreatedAt.UTC()
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
@@ -117,8 +114,6 @@ func addSongs(dbClient database.Client, meiliClient search.MeiliClient) {
 		if song.ReleaseDate != nil {
 			song.ReleaseDate = &[]time.Time{song.ReleaseDate.UTC()}[0]
 		}
-		song.UpdatedAt = song.UpdatedAt.UTC()
-		song.CreatedAt = song.CreatedAt.UTC()
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
@@ -140,8 +135,6 @@ func addPlaylists(dbClient database.Client, meiliClient search.MeiliClient) {
 
 	var meiliPlaylists []model.PlaylistSearch
 	for _, playlist := range playlists {
-		playlist.UpdatedAt = playlist.UpdatedAt.UTC()
-		playlist.CreatedAt = playlist.CreatedAt.UTC()
 		meiliPlaylists = append(meiliPlaylists, playlist.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliPlaylists)
