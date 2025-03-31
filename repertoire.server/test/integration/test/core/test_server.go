@@ -302,7 +302,7 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 	_ = os.Setenv("MEILI_URL", newUrl)
 
 	// Initialize Indexes and Filterable Attributes
-	meiliClient := meilisearch.New(env.MeiliUrl, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	meiliClient := meilisearch.New(newUrl, meilisearch.WithAPIKey(env.MeiliMasterKey))
 
 	_, err = meiliClient.CreateIndex(&meilisearch.IndexConfig{
 		Uid:        "search",
@@ -320,7 +320,7 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 	}
 
 	_, err = meiliClient.Index("search").UpdateSortableAttributes(&[]string{
-		"title", "name", "updatedAt", "album", "album.title", "artist", "artist.name",
+		"title", "name", "updatedAt", "createdAt", "album", "album.title", "artist", "artist.name",
 	})
 	if err != nil {
 		log.Println(err)

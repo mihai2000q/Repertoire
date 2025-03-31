@@ -73,7 +73,7 @@ func (r realTimeService) getToken(userID string) (string, error) {
 		return "", err
 	}
 	expiresIn, _ := time.ParseDuration(tokenResult.ExpiresIn)
-	r.cache.Set(tokenKey, tokenResult, expiresIn)
+	r.cache.Set(tokenKey, tokenResult.Token, expiresIn)
 	return tokenResult.Token, nil
 }
 

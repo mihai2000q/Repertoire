@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -58,7 +59,9 @@ func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 
 	assertCreatedUser(t, request)
 
-	assertion.Token(t, w.Body.String())
+	var token string
+	_ = json.Unmarshal(w.Body.Bytes(), &token)
+	assertion.Token(t, token)
 }
 
 func assertCreatedUser(t *testing.T, request requests.SignUpRequest) {

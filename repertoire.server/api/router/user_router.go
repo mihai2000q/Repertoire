@@ -11,7 +11,7 @@ type UserRouter struct {
 }
 
 func (u UserRouter) RegisterRoutes() {
-	publicApi := u.requestHandler.PublicRouter.Group("/user")
+	publicApi := u.requestHandler.PublicRouter.Group("/users")
 	{
 		publicApi.POST("/sign-up", u.handler.SignUp)
 	}
