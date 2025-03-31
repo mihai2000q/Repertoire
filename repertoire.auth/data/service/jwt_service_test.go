@@ -2,6 +2,7 @@ package service
 
 import (
 	"net/http"
+	"repertoire/auth/data/logger"
 	"repertoire/auth/internal"
 	"repertoire/auth/model"
 	"testing"
@@ -149,7 +150,7 @@ DcfoMwR1oEps66XlYRXd/z8CAwEAAQ==
 func TestJwtService_Authorize_WhenPublicKeyIsNotAKey_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	env := internal.Env{JwtPublicKey: "not a key"}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{})
 	key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
@@ -342,7 +343,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			env.JwtPublicKey = tt.publicKey
-			_uut := NewJwtService(env)
+			_uut := NewJwtService(env, logger.NewLoggerMock())
 
 			key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(tt.privateKey))
 			token, _ := tt.claims.SignedString(key)
@@ -366,7 +367,7 @@ func TestJwtService_Authorize_WhenTokenIsValid_ShouldNotReturnAnyError(t *testin
 		JwtIssuer:     "Issuer",
 		JwtAudience:   "Audience",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"aud": env.JwtAudience,
@@ -392,7 +393,7 @@ func TestJwtService_GetUserIDFromJwt_WhenPublicKeyIsNotAKey_ShouldReturnInternal
 		JwtPublicKey:  "this is not a public key",
 		JwtPrivateKey: privateKey,
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{})
 	key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(env.JwtPrivateKey))
@@ -432,7 +433,7 @@ func TestJwtService_GetUserIDFromJwt_WhenPublicKeyIsNotMatchingWithPrivateKey_Sh
 			env := internal.Env{
 				JwtPublicKey: tt.publicKey,
 			}
-			_uut := NewJwtService(env)
+			_uut := NewJwtService(env, nil)
 
 			claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{})
 			key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(tt.privateKey))
@@ -456,7 +457,7 @@ func TestJwtService_GetUserIDFromJwt_WhenSubIsMissing_ShouldReturnForbiddenError
 		JwtPrivateKey: privateKey,
 		JwtPublicKey:  publicKey,
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{})
 	key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(env.JwtPrivateKey))
@@ -478,7 +479,7 @@ func TestJwtService_GetUserIDFromJwt_WhenSubIsNotUUID_ShouldReturnForbiddenError
 		JwtPrivateKey: privateKey,
 		JwtPublicKey:  publicKey,
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"sub": "something-else",
@@ -502,7 +503,7 @@ func TestJwtService_GetUserIDFromJwt_WhenSuccessful_ShouldReturnUserId(t *testin
 		JwtPrivateKey: privateKey,
 		JwtPublicKey:  publicKey,
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	user := model.User{
 		ID: uuid.New(),
@@ -527,7 +528,7 @@ func TestJwtService_GetUserIDFromJwt_WhenSuccessful_ShouldReturnUserId(t *testin
 func TestJwtService_Validate_WhenPublicKeyIsNotAKey_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	env := internal.Env{JwtPublicKey: "not a key"}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{})
 	key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKey))
@@ -701,7 +702,7 @@ func TestJwtService_Validate_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t 
 			// given
 			env.JwtPublicKey = tt.publicKey
 			env.JwtPrivateKey = tt.privateKey
-			_uut := NewJwtService(env)
+			_uut := NewJwtService(env, nil)
 
 			key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(tt.privateKey))
 			token, _ := tt.claims.SignedString(key)
@@ -723,7 +724,7 @@ func TestJwtService_Validate_WhenSuccessful_ShouldReturnUserID(t *testing.T) {
 	env := internal.Env{
 		JwtPublicKey: publicKey,
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	user := model.User{
 		ID: uuid.New(),
@@ -785,7 +786,7 @@ func TestJwtService_ValidateCredentials_WhenInvalid_ShouldReturnError(t *testing
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			_uut := NewJwtService(env)
+			_uut := NewJwtService(env, nil)
 
 			// when
 			errCode := _uut.ValidateCredentials(tt.clientCredentials)
@@ -804,7 +805,7 @@ func TestJwtService_ValidateCredentials_WhenSuccessful_ShouldNotReturnAnyError(t
 		ClientID:     "Some-id",
 		ClientSecret: "Some-secret",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	credentials := model.ClientCredentials{
 		GrantType:    "client_credentials",
@@ -826,7 +827,7 @@ func TestJwtService_CreateToken_WhenExpirationTimeIsInvalid_ShouldReturnInternal
 	env := internal.Env{
 		JwtExpirationTime: "something",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	user := model.User{}
 
@@ -846,7 +847,7 @@ func TestJwtService_CreateToken_WhenPrivateKeyIsInvalid_ShouldReturnInternalErro
 		JwtPrivateKey:     "Invalid key",
 		JwtExpirationTime: "1h",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	user := model.User{}
 
@@ -869,7 +870,7 @@ func TestJwtService_CreateToken_WhenSuccessful_ShouldReturnNewToken(t *testing.T
 		JwtAudience:       "Repertoire",
 		JwtExpirationTime: "1h",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	user := model.User{
 		ID: uuid.New(),
@@ -918,7 +919,7 @@ func TestJwtService_CreateCentrifugoToken_WhenExpirationTimeIsInvalid_ShouldRetu
 	env := internal.Env{
 		CentrifugoJwtExpirationTime: "something",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	userID := uuid.New()
 
@@ -941,7 +942,7 @@ func TestJwtService_CreateCentrifugoToken_WhenSuccessful_ShouldReturnNewToken(t 
 		CentrifugoJwtAudience:       "Repertoire",
 		CentrifugoJwtExpirationTime: "1h",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	userID := uuid.New()
 
@@ -988,7 +989,7 @@ func TestJwtService_CreateStorageToken_WhenExpirationTimeIsInvalid_ShouldReturnI
 	env := internal.Env{
 		StorageJwtExpirationTime: "something",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	userID := uuid.New()
 
@@ -1011,7 +1012,7 @@ func TestJwtService_CreateStorageToken_WhenSuccessful_ShouldReturnNewToken(t *te
 		StorageJwtAudience:       "Repertoire",
 		StorageJwtExpirationTime: "1h",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	userID := uuid.New()
 

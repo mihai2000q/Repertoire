@@ -4,9 +4,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
-	"path/filepath"
 	"repertoire/auth/internal"
-	"time"
 )
 
 var levelsMap = map[string]zapcore.Level{
@@ -36,9 +34,6 @@ func NewLogger(env internal.Env) *Logger {
 	)}
 }
 
-func getLogFile(logOutput string) string {
-	if err := os.MkdirAll(logOutput, os.ModePerm); err != nil {
-		panic(err)
-	}
-	return filepath.Join(logOutput, time.Now().Format("2006-01-02")+".log")
+func NewLoggerMock() *Logger {
+	return &Logger{Logger: zap.Must(zap.NewDevelopment())}
 }

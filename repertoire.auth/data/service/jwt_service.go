@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
+	"repertoire/auth/data/logger"
 	"repertoire/auth/internal"
 	"repertoire/auth/internal/wrapper"
 	"repertoire/auth/model"
@@ -23,11 +25,15 @@ type JwtService interface {
 }
 
 type jwtService struct {
-	env internal.Env
+	env    internal.Env
+	logger *logger.Logger
 }
 
-func NewJwtService(env internal.Env) JwtService {
-	return jwtService{env: env}
+func NewJwtService(env internal.Env, logger *logger.Logger) JwtService {
+	return jwtService{
+		env:    env,
+		logger: logger,
+	}
 }
 
 func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
@@ -45,6 +51,7 @@ func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
 
 	if token != nil && token.Valid {
 		if err = j.validateToken(token); err != nil {
+			j.logger.Warn("Invalid Token", zap.String("token", authToken), zap.Error(err))
 			return wrapper.UnauthorizedError(err)
 		}
 		return nil
