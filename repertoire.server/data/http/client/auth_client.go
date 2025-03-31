@@ -1,7 +1,8 @@
-package http
+package client
 
 import (
 	"github.com/go-resty/resty/v2"
+	"repertoire/server/data/http"
 	"repertoire/server/internal"
 )
 
@@ -10,7 +11,7 @@ type AuthClient struct {
 	*resty.Client
 }
 
-func NewAuthClient(client RestyClient, env internal.Env) AuthClient {
+func NewAuthClient(client http.RestyClient, env internal.Env) AuthClient {
 	return AuthClient{
 		env:    env,
 		Client: client.SetBaseURL(env.AuthUrl),
@@ -39,4 +40,11 @@ func (client AuthClient) CentrifugoToken(userID string, result any) (*resty.Resp
 		}).
 		SetResult(result).
 		Post("/centrifugo/token")
+}
+
+func (client AuthClient) SignIn(email string, password string, result any) (*resty.Response, error) {
+	return client.R().
+		SetBody(struct{ Email, Password string }{email, password}).
+		SetResult(result).
+		Put("/centrifugo/token")
 }

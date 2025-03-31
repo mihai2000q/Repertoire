@@ -1,8 +1,9 @@
-package http
+package client
 
 import (
 	"github.com/go-resty/resty/v2"
 	"io"
+	"repertoire/server/data/http"
 	"repertoire/server/internal"
 )
 
@@ -10,7 +11,7 @@ type StorageClient struct {
 	*resty.Client
 }
 
-func NewStorageClient(client RestyClient, env internal.Env) StorageClient {
+func NewStorageClient(client http.RestyClient, env internal.Env) StorageClient {
 	return StorageClient{
 		client.SetBaseURL(env.StorageUrl),
 	}
