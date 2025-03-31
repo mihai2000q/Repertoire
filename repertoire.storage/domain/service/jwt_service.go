@@ -32,7 +32,7 @@ func (j jwtService) Authorize(authToken string) error {
 
 	if token != nil && token.Valid {
 		if err := j.validateToken(token); err != nil {
-			j.logger.Warn("Invalid Token", zap.String("token", authToken), zap.Error(err))
+			j.logger.Warn("Invalid Token", zap.Error(err), zap.String("token", authToken))
 			return err
 		}
 		return nil
