@@ -219,6 +219,10 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 	if err != nil {
 		return err
 	}
+	_, err = token.Claims.GetExpirationTime()
+	if err != nil {
+		return err
+	}
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
 		return err
