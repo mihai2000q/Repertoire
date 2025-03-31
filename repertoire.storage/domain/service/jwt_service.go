@@ -65,9 +65,12 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 	}
 
 	// expiration time
-	_, err = token.Claims.GetExpirationTime()
+	exp, err := token.Claims.GetExpirationTime()
 	if err != nil {
 		return err
+	}
+	if exp == nil {
+		return errors.New("no expiration time found")
 	}
 
 	// jti
