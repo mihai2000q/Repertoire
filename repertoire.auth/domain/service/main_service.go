@@ -2,8 +2,11 @@ package service
 
 import (
 	"errors"
+	"go.uber.org/zap"
+	"net/http"
 	"reflect"
 	"repertoire/auth/api/requests"
+	"repertoire/auth/data/logger"
 	"repertoire/auth/data/repository"
 	"repertoire/auth/data/service"
 	"repertoire/auth/internal/wrapper"
@@ -20,17 +23,20 @@ type mainService struct {
 	jwtService     service.JwtService
 	bCryptService  service.BCryptService
 	userRepository repository.UserRepository
+	logger         *logger.Logger
 }
 
 func NewMainService(
 	jwtService service.JwtService,
 	bCryptService service.BCryptService,
 	userRepository repository.UserRepository,
+	logger *logger.Logger,
 ) MainService {
 	return &mainService{
 		jwtService:     jwtService,
 		bCryptService:  bCryptService,
 		userRepository: userRepository,
+		logger:         logger,
 	}
 }
 
@@ -38,6 +44,10 @@ func (m *mainService) Refresh(request requests.RefreshRequest) (string, *wrapper
 	// validate token
 	userID, errCode := m.jwtService.Validate(request.Token)
 	if errCode != nil {
+		if errCode.Code == http.StatusUnauthorized {
+			m.logger.Warn("Invalid token", zap.String("token", request.Token), zap.Error(errCode.Error))
+			return "", wrapper.UnauthorizedError(errors.New("invalid token"))
+		}
 		return "", errCode
 	}
 

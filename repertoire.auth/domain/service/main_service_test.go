@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/auth/api/requests"
+	"repertoire/auth/data/logger"
 	"repertoire/auth/data/repository"
 	"repertoire/auth/data/service"
 	"repertoire/auth/internal/wrapper"
@@ -14,10 +15,10 @@ import (
 	"testing"
 )
 
-func TestRefresh_WhenValidateJwtFails_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestRefresh_WhenValidateJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := NewMainService(jwtService, nil, nil)
+	_uut := NewMainService(jwtService, nil, nil, logger.NewLoggerMock())
 
 	request := requests.RefreshRequest{
 		Token: "This is a token",
@@ -41,7 +42,7 @@ func TestRefresh_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.T) 
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(jwtService, nil, userRepository)
+	_uut := NewMainService(jwtService, nil, userRepository, nil)
 
 	request := requests.RefreshRequest{
 		Token: "This is a token",
@@ -70,7 +71,7 @@ func TestRefresh_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(jwtService, nil, userRepository)
+	_uut := NewMainService(jwtService, nil, userRepository, nil)
 
 	request := requests.RefreshRequest{
 		Token: "This is a token",
@@ -97,7 +98,7 @@ func TestRefresh_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(jwtService, nil, userRepository)
+	_uut := NewMainService(jwtService, nil, userRepository, nil)
 
 	request := requests.RefreshRequest{
 		Token: "This is a token",
@@ -128,7 +129,7 @@ func TestRefresh_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(jwtService, nil, userRepository)
+	_uut := NewMainService(jwtService, nil, userRepository, nil)
 
 	// given - mocking
 	request := requests.RefreshRequest{
@@ -158,7 +159,7 @@ func TestRefresh_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 func TestMainService_SignIn_WhenGetUserByEmailFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(nil, nil, userRepository)
+	_uut := NewMainService(nil, nil, userRepository, nil)
 
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
@@ -185,7 +186,7 @@ func TestMainService_SignIn_WhenGetUserByEmailFails_ShouldReturnInternalServerEr
 func TestMainService_SignIn_WhenUserIsEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(nil, nil, userRepository)
+	_uut := NewMainService(nil, nil, userRepository, nil)
 
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
@@ -212,7 +213,7 @@ func TestMainService_SignIn_WhenPasswordsAreNotTheSame_ShouldReturnUnauthorizedE
 	// given
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(nil, bCryptService, userRepository)
+	_uut := NewMainService(nil, bCryptService, userRepository, nil)
 
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
@@ -248,7 +249,7 @@ func TestMainService_SignIn_WhenCreateTokenFails_ShouldReturnInternalServerError
 	jwtService := new(service.JwtServiceMock)
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(jwtService, bCryptService, userRepository)
+	_uut := NewMainService(jwtService, bCryptService, userRepository, nil)
 
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",
@@ -287,7 +288,7 @@ func TestMainService_SignIn_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	jwtService := new(service.JwtServiceMock)
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := NewMainService(jwtService, bCryptService, userRepository)
+	_uut := NewMainService(jwtService, bCryptService, userRepository, nil)
 
 	request := requests.SignInRequest{
 		Email:    "Samuel@yahoo.com",

@@ -393,7 +393,7 @@ func TestJwtService_GetUserIDFromJwt_WhenSuccessful_ShouldReturnUserId(t *testin
 
 // Validations
 
-func TestJwtService_Validate_WhenPublicKeyIsNotAKey_ShouldReturnUnauthorizedError(t *testing.T) {
+func TestJwtService_Validate_WhenPublicKeyIsNotAKey_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	env := internal.Env{JwtPublicKey: "not a key"}
 	_uut := NewJwtService(env, nil)
@@ -448,12 +448,37 @@ func TestJwtService_Validate_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t 
 			env.JwtPublicKey,
 			otherPrivateKey,
 		},
+		// signing method
+		{
+			"when Signing Method is not the same",
+			jwt.NewWithClaims(jwt.SigningMethodRS384, jwt.MapClaims{}),
+			env.JwtPublicKey,
+			env.JwtPrivateKey,
+		},
+		// audience
 		{
 			"when audience is missing",
 			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{}),
 			env.JwtPublicKey,
 			env.JwtPrivateKey,
 		},
+		{
+			"when audience is not matching",
+			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+				"aud": "some audience",
+			}),
+			env.JwtPublicKey,
+			env.JwtPrivateKey,
+		},
+		{
+			"when audience has too many elements",
+			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+				"aud": []string{env.JwtAudience, "some other audience"},
+			}),
+			env.JwtPublicKey,
+			env.JwtPrivateKey,
+		},
+		// issuer
 		{
 			"when issuer is missing",
 			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
@@ -463,6 +488,16 @@ func TestJwtService_Validate_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t 
 			env.JwtPrivateKey,
 		},
 		{
+			"when issuer is not matching",
+			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"jti": uuid.New().String(),
+			}),
+			env.JwtPublicKey,
+			env.JwtPrivateKey,
+		},
+		// expiration time
+		{
 			"when expiration time is missing",
 			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 				"aud": env.JwtAudience,
@@ -471,55 +506,12 @@ func TestJwtService_Validate_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t 
 			env.JwtPublicKey,
 			env.JwtPrivateKey,
 		},
+		// jti
 		{
 			"when jti is missing",
 			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 				"iss": env.JwtIssuer,
 				"aud": env.JwtAudience,
-				"exp": time.Now().UTC().Add(-time.Hour).Unix(),
-			}),
-			env.JwtPublicKey,
-			env.JwtPrivateKey,
-		},
-		{
-			"when Signing Method is not the same",
-			jwt.NewWithClaims(jwt.SigningMethodRS384, jwt.MapClaims{
-				"jti": uuid.New().String(),
-				"iss": env.JwtIssuer,
-				"aud": env.JwtAudience,
-				"exp": time.Now().UTC().Add(-time.Hour).Unix(),
-			}),
-			env.JwtPublicKey,
-			env.JwtPrivateKey,
-		},
-		{
-			"when issuer is not matching",
-			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-				"jti": uuid.New().String(),
-				"iss": "some issuer",
-				"aud": env.JwtAudience,
-				"exp": time.Now().UTC().Add(-time.Hour).Unix(),
-			}),
-			env.JwtPublicKey,
-			env.JwtPrivateKey,
-		},
-		{
-			"when audience is not matching",
-			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-				"jti": uuid.New().String(),
-				"iss": env.JwtIssuer,
-				"aud": "some audience",
-				"exp": time.Now().UTC().Add(-time.Hour).Unix(),
-			}),
-			env.JwtPublicKey,
-			env.JwtPrivateKey,
-		},
-		{
-			"when audience has too many elements",
-			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-				"jti": uuid.New().String(),
-				"iss": env.JwtIssuer,
-				"aud": []string{env.JwtAudience, "some other audience"},
 				"exp": time.Now().UTC().Add(-time.Hour).Unix(),
 			}),
 			env.JwtPublicKey,
@@ -547,6 +539,7 @@ func TestJwtService_Validate_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t 
 			env.JwtPublicKey,
 			env.JwtPrivateKey,
 		},
+		// subject
 		{
 			"when sub is missing",
 			jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{

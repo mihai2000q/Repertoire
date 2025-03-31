@@ -92,47 +92,64 @@ func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
+	// signing method
+	if token.Method != jwt.SigningMethodRS256 {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid signing method"))
+	}
+
+	// audience
 	aud, err := token.Claims.GetAudience()
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
+	if len(aud) != 1 || aud[0] != j.env.JwtAudience {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("wrong audience"))
+	}
 
+	// issuer
 	iss, err := token.Claims.GetIssuer()
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
+	if iss != j.env.JwtIssuer {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("wrong issuer"))
+	}
 
-	_, err = token.Claims.GetExpirationTime()
+	// expiration time
+	exp, err := token.Claims.GetExpirationTime()
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
+	if exp == nil {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("missing expiration time"))
+	}
 
+	// jti
 	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
 	if !jtiFound {
-		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("missing jti"))
 	}
 
 	jti, err := uuid.Parse(jtiClaim.(string))
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
-
-	if token.Method != jwt.SigningMethodRS256 ||
-		iss != j.env.JwtIssuer ||
-		len(aud) != 1 ||
-		aud[0] != j.env.JwtAudience ||
-		jti == uuid.Nil {
-		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
+	if jti == uuid.Nil {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid jti"))
 	}
 
+	// sub
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	userID, err := uuid.Parse(sub)
-	if err != nil || userID == uuid.Nil {
-		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
+	if err != nil {
+		return uuid.Nil, wrapper.UnauthorizedError(err)
+	}
+	if userID == uuid.Nil {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid sub"))
 	}
 
 	return userID, nil
