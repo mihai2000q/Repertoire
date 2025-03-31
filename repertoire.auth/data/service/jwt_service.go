@@ -108,6 +108,11 @@ func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
+	_, err = token.Claims.GetExpirationTime()
+	if err != nil {
+		return uuid.Nil, wrapper.UnauthorizedError(err)
+	}
+
 	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
 	if !jtiFound {
 		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
