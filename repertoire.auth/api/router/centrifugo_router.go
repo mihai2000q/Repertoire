@@ -11,9 +11,14 @@ type CentrifugoRouter struct {
 }
 
 func (c CentrifugoRouter) RegisterRoutes() {
-	api := c.requestHandler.PrivateRouter.Group("/centrifugo")
+	publicApi := c.requestHandler.PublicRouter.Group("/centrifugo")
 	{
-		api.GET("/token", c.handler.Token)
+		publicApi.POST("/public-token", c.handler.PublicToken)
+	}
+
+	privateApi := c.requestHandler.PrivateRouter.Group("/centrifugo")
+	{
+		privateApi.GET("/token", c.handler.Token)
 	}
 }
 
