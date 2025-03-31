@@ -16,8 +16,8 @@ func TestArtistSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T
 		ID:        uuid.New(),
 		Name:      "Steve",
 		ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		UserID:    uuid.New(),
 	}
 
@@ -45,8 +45,8 @@ func TestAlbumSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T)
 			model.Album{
 				ID:        uuid.New(),
 				Title:     "Some Album",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: time.Now().UTC(),
+				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
 			},
 		},
@@ -56,15 +56,15 @@ func TestAlbumSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T)
 				ID:          uuid.New(),
 				Title:       "Some Album",
 				ImageURL:    &[]internal.FilePath{"some_file_path"}[0],
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Some Artist",
 					ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-					UpdatedAt: time.Now(),
+					UpdatedAt: time.Now().UTC(),
 				},
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: time.Now().UTC(),
+				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
 			},
 		},
@@ -105,7 +105,7 @@ func TestAlbumSearch_ToAlbumSearch_WhenValid_ShouldReturnCorrectMappingForArtist
 		ID:        uuid.New(),
 		Name:      "Steve",
 		ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-		UpdatedAt: time.Now(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	// when
@@ -128,8 +128,8 @@ func TestSongSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T) 
 			model.Song{
 				ID:        uuid.New(),
 				Title:     "Some Album",
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: time.Now().UTC(),
+				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
 			},
 		},
@@ -139,21 +139,21 @@ func TestSongSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T) 
 				ID:          uuid.New(),
 				Title:       "Some Song",
 				ImageURL:    &[]internal.FilePath{"some_file_path"}[0],
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Some Artist",
 					ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-					UpdatedAt: time.Now(),
+					UpdatedAt: time.Now().UTC(),
 				},
 				Album: &model.Album{
 					ID:        uuid.New(),
 					Title:     "Some Album",
 					ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-					UpdatedAt: time.Now(),
+					UpdatedAt: time.Now().UTC(),
 				},
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				CreatedAt: time.Now().UTC(),
+				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
 			},
 		},
@@ -203,7 +203,7 @@ func TestSongSearch_ToSongSearch_WhenValid_ShouldReturnCorrectMappingForArtist(t
 		ID:        uuid.New(),
 		Name:      "Steve",
 		ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-		UpdatedAt: time.Now(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	// when
@@ -222,7 +222,7 @@ func TestSongSearch_ToSongSearch_WhenValid_ShouldReturnCorrectMappingForAlbum(t 
 		ID:        uuid.New(),
 		Title:     "Some Title",
 		ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-		UpdatedAt: time.Now(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	// when
@@ -241,8 +241,8 @@ func TestPlaylistSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing
 		ID:        uuid.New(),
 		Title:     "Best Songs",
 		ImageURL:  &[]internal.FilePath{"some_file_path"}[0],
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		UserID:    uuid.New(),
 	}
 
