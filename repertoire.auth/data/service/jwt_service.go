@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 	"repertoire/auth/data/logger"
 	"repertoire/auth/internal"
 	"repertoire/auth/internal/wrapper"
@@ -49,10 +48,6 @@ func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
 	}
 
 	if token != nil && token.Valid {
-		if err = j.validateToken(token); err != nil {
-			j.logger.Warn("Invalid Token", zap.String("token", authToken), zap.Error(err))
-			return wrapper.UnauthorizedError(err)
-		}
 		return nil
 	}
 	return wrapper.UnauthorizedError(errors.New("invalid token"))
@@ -219,48 +214,4 @@ func (j jwtService) CreateStorageToken(userID uuid.UUID) (string, string, *wrapp
 		return "", "", wrapper.InternalServerError(err)
 	}
 	return token, j.env.StorageJwtExpirationTime, nil
-}
-
-func (j jwtService) validateToken(token *jwt.Token) error {
-	aud, err := token.Claims.GetAudience()
-	if err != nil {
-		return err
-	}
-	iss, err := token.Claims.GetIssuer()
-	if err != nil {
-		return err
-	}
-	_, err = token.Claims.GetExpirationTime()
-	if err != nil {
-		return err
-	}
-	sub, err := token.Claims.GetSubject()
-	if err != nil {
-		return err
-	}
-	userID, err := uuid.Parse(sub)
-	if err != nil {
-		return err
-	}
-
-	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
-	if !jtiFound {
-		return errors.New("invalid token")
-	}
-
-	jti, err := uuid.Parse(jtiClaim.(string))
-	if err != nil {
-		return err
-	}
-
-	if token.Method != jwt.SigningMethodRS256 ||
-		iss != j.env.JwtIssuer ||
-		len(aud) != 1 ||
-		aud[0] != j.env.JwtAudience ||
-		jti == uuid.Nil ||
-		userID == uuid.Nil {
-		return errors.New("invalid token")
-	}
-
-	return nil
 }
