@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"mime/multipart"
@@ -26,8 +27,9 @@ func getGinStorageHandler() (*gin.Engine, internal.Env) {
 		env: env,
 	}
 
-	engine.PUT("/upload", storageHandler.Upload)
 	engine.GET("/files/*filePath", storageHandler.Get)
+	engine.PUT("/upload", storageHandler.Upload)
+	engine.PUT("/directories", storageHandler.DeleteDirectories)
 	engine.DELETE("/files/*filePath", storageHandler.DeleteFile)
 	engine.DELETE("/directories/*directoryPath", storageHandler.DeleteDirectory)
 
@@ -181,6 +183,55 @@ func TestStorageHandler_Upload_WhenSuccessful_ShouldSaveFile(t *testing.T) {
 	uploadedFilePath := filepath.Join(env.UploadDirectory, filePath)
 	_, err := os.Stat(uploadedFilePath)
 	assert.NoError(t, err)
+}
+
+func TestStorageHandler_DeleteDirectories_WhenDirectoryIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	directoryPaths := []string{"somewhere/else", "somewhere/else/two"}
+
+	handler, _ := getGinStorageHandler()
+
+	// when
+	var body = struct{ DirectoryPaths []string }{directoryPaths}
+	jsonBody, _ := json.Marshal(body)
+	req := httptest.NewRequest(http.MethodPut, "/directories", bytes.NewBuffer(jsonBody))
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestStorageHandler_DeleteDirectories_WhenSuccessful_ShouldDeleteDirectory(t *testing.T) {
+	// given
+	handler, env := getGinStorageHandler()
+
+	t.Cleanup(func() {
+		_ = os.RemoveAll(env.UploadDirectory)
+	})
+
+	directoryPaths := []string{"somewhere/else", "somewhere/else/two", "somebody/like", "helloThere"}
+
+	for _, directoryPath := range directoryPaths {
+		filePath := directoryPath + "/test-file.txt"
+		createFile(filePath, "asd", env.UploadDirectory)
+	}
+
+	// when
+	var body = struct{ DirectoryPaths []string }{directoryPaths}
+	jsonBody, _ := json.Marshal(body)
+	req := httptest.NewRequest(http.MethodPut, "/directories", bytes.NewBuffer(jsonBody))
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	// then
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	// assert directory deleted
+	for _, directoryPath := range directoryPaths {
+		_, err := os.Stat(filepath.Join(env.UploadDirectory, directoryPath))
+		assert.Error(t, err)
+	}
 }
 
 func TestStorageHandler_DeleteFile_WhenFileIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
