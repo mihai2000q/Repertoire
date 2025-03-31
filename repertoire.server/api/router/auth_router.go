@@ -13,14 +13,7 @@ type AuthRouter struct {
 func (u AuthRouter) RegisterRoutes() {
 	api := u.requestHandler.PublicRouter.Group("/auth")
 	{
-		api.PUT("/refresh", u.handler.Refresh)
-		api.PUT("/sign-in", u.handler.SignIn)
 		api.POST("/sign-up", u.handler.SignUp)
-	}
-
-	centrifugoApi := u.requestHandler.PrivateRouter.Group("/auth/centrifugo")
-	{
-		centrifugoApi.GET("", u.handler.GetCentrifugoToken)
 	}
 }
 
