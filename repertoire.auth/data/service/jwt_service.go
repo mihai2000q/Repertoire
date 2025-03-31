@@ -180,7 +180,7 @@ func (j jwtService) CreateToken(user model.User) (string, *wrapper.ErrorCode) {
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
 		"iss": j.env.JwtIssuer,
-		"aud": "Repertoire",
+		"aud": j.env.JwtAudience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(expiresIn).Unix(),
 	})

@@ -65,6 +65,7 @@ func NewEnv() Env {
 
 		JwtPrivateKey:     os.Getenv("JWT_PRIVATE_KEY"),
 		JwtPublicKey:      os.Getenv("JWT_PUBLIC_KEY"),
+		JwtAudience:       os.Getenv("JWT_AUDIENCE"),
 		JwtIssuer:         os.Getenv("JWT_ISSUER"),
 		JwtExpirationTime: os.Getenv("JWT_EXPIRATION_TIME"),
 

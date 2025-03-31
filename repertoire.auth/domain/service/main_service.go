@@ -45,7 +45,7 @@ func (m *mainService) Refresh(request requests.RefreshRequest) (string, *wrapper
 	userID, errCode := m.jwtService.Validate(request.Token)
 	if errCode != nil {
 		if errCode.Code == http.StatusUnauthorized {
-			m.logger.Warn("Invalid token", zap.String("token", request.Token), zap.Error(errCode.Error))
+			m.logger.Warn("Invalid token", zap.Error(errCode.Error), zap.String("token", request.Token))
 			return "", wrapper.UnauthorizedError(errors.New("invalid token"))
 		}
 		return "", errCode
