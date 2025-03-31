@@ -11,6 +11,8 @@ import (
 )
 
 var validName = "Samuel"
+var validEmail = "Samuel@yahoo.com"
+var validPassword = "Password123"
 
 func TestValidateSignUpRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given

@@ -22,7 +22,7 @@ func TestToFullURL_WhenIsNil_ShouldReturnNil(t *testing.T) {
 func TestToFullURL_WhenURLIsAlreadyFull_ShouldReturnTheFilePathAsItIs(t *testing.T) {
 	// given
 	storageUrl := "the_storage_url"
-	_ = os.Setenv("FETCH_STORAGE_URL", storageUrl)
+	_ = os.Setenv("STORAGE_FETCH_URL", storageUrl)
 	_uut := internal.FilePath(storageUrl + "some_file_path")
 
 	// when
@@ -36,7 +36,7 @@ func TestToFullURL_WhenURLIsAlreadyFull_ShouldReturnTheFilePathAsItIs(t *testing
 func TestToFullURL_WhenSuccessful_ShouldReturnFilePathPrefixedByStorageUrlAndSuffixedByLastModifiedDate(t *testing.T) {
 	// given
 	storageUrl := "the_storage_url"
-	_ = os.Setenv("FETCH_STORAGE_URL", storageUrl)
+	_ = os.Setenv("STORAGE_FETCH_URL", storageUrl)
 	_uut := internal.FilePath("some_file_path")
 
 	// when
@@ -61,7 +61,7 @@ func TestStripURL_WhenIsNil_ShouldReturnNil(t *testing.T) {
 func TestStripURL_WhenSuccessful_ShouldReturnTheFilePathWithoutTheStorageUrlOrTrailingLastModifiedAt(t *testing.T) {
 	// given
 	storageUrl := "the_storage_url"
-	_ = os.Setenv("FETCH_STORAGE_URL", storageUrl)
+	_ = os.Setenv("STORAGE_FETCH_URL", storageUrl)
 	filePath := "some_file_path"
 	_uut := internal.FilePath(storageUrl + filePath + "?lastModifiedAt=" + time.Now().String())
 
