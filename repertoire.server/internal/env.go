@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"strings"
 )
 
 type Env struct {
@@ -21,25 +22,19 @@ type Env struct {
 	LogOutput string
 	LogLevel  string
 
-	JwtIssuer         string
-	JwtAudience       string
-	JwtSecretKey      string
-	JwtExpirationTime string
+	JwtPublicKey string
 
-	AuthStorageUrl      string
-	StorageUrl          string
-	StorageClientID     string
-	StorageClientSecret string
+	AuthUrl          string
+	AuthClientID     string
+	AuthClientSecret string
 
-	MeiliHost      string
-	MeiliPort      string
+	StorageUrl string
+
+	MeiliUrl       string
 	MeiliMasterKey string
 	MeiliAuthKey   string
 
-	CentrifugoUrl          string
-	CentrifugoJwtSecretKey string
-	CentrifugoJwtIssuer    string
-	CentrifugoJwtAudience  string
+	CentrifugoUrl string
 }
 
 func NewEnv() Env {
@@ -67,26 +62,21 @@ func NewEnv() Env {
 		LogOutput: os.Getenv("LOG_OUTPUT"),
 		LogLevel:  os.Getenv("LOG_LEVEL"),
 
-		JwtIssuer:         os.Getenv("JWT_ISSUER"),
-		JwtAudience:       os.Getenv("JWT_AUDIENCE"),
-		JwtSecretKey:      os.Getenv("JWT_SECRET_KEY"),
-		JwtExpirationTime: os.Getenv("JWT_EXPIRATION_TIME"),
+		JwtPublicKey: os.Getenv("JWT_PUBLIC_KEY"),
 
-		AuthStorageUrl:      os.Getenv("AUTH_STORAGE_URL"),
-		StorageUrl:          os.Getenv("UPLOAD_STORAGE_URL"),
-		StorageClientID:     os.Getenv("STORAGE_CLIENT_ID"),
-		StorageClientSecret: os.Getenv("STORAGE_CLIENT_SECRET"),
+		AuthUrl:          os.Getenv("AUTH_URL"),
+		AuthClientID:     os.Getenv("AUTH_CLIENT_ID"),
+		AuthClientSecret: os.Getenv("AUTH_CLIENT_SECRET"),
 
-		MeiliHost:      os.Getenv("MEILI_HOST"),
-		MeiliPort:      os.Getenv("MEILI_PORT"),
+		StorageUrl: os.Getenv("STORAGE_UPLOAD_URL"),
+
+		MeiliUrl:       os.Getenv("MEILI_URL"),
 		MeiliMasterKey: os.Getenv("MEILI_MASTER_KEY"),
 		MeiliAuthKey:   os.Getenv("MEILI_WEBHOOK_AUTHORIZATION_KEY"),
 
-		CentrifugoUrl:          os.Getenv("CENTRIFUGO_URL"),
-		CentrifugoJwtSecretKey: os.Getenv("CENTRIFUGO_JWT_SECRET_KEY"),
-		CentrifugoJwtIssuer:    os.Getenv("CENTRIFUGO_JWT_ISSUER"),
-		CentrifugoJwtAudience:  os.Getenv("CENTRIFUGO_JWT_AUDIENCE"),
+		CentrifugoUrl: os.Getenv("CENTRIFUGO_URL"),
 	}
+	env.JwtPublicKey = strings.Replace(env.JwtPublicKey, "\\n", "\n", -1)
 	return env
 }
 

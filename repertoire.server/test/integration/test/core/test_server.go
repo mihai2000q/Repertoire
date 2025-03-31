@@ -164,7 +164,7 @@ func (ts *TestServer) setupStorageServer() {
 		}
 	}))
 	_ = os.Setenv("AUTH_STORAGE_URL", ts.storageServer.URL)
-	_ = os.Setenv("UPLOAD_STORAGE_URL", ts.storageServer.URL)
+	_ = os.Setenv("STORAGE_UPLOAD_URL", ts.storageServer.URL)
 }
 
 func (ts *TestServer) setupCentrifugoContainer() {
@@ -208,11 +208,12 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 
 	// Get Random Port and set the environment variable
 	port, _ := ts.meiliContainer.MappedPort(context.Background(), "7700/tcp")
-	_ = os.Setenv("MEILI_PORT", port.Port())
+	regex := regexp.MustCompile(`localhost:\d{4}`)
+	newUrl := regex.ReplaceAllString(os.Getenv("MEILI_URL"), "localhost:"+port.Port())
+	_ = os.Setenv("MEILI_URL", newUrl)
 
 	// Initialize Indexes and Filterable Attributes
-	url := "http://" + env.MeiliHost + ":" + port.Port()
-	meiliClient := meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))
+	meiliClient := meilisearch.New(env.MeiliUrl, meilisearch.WithAPIKey(env.MeiliMasterKey))
 
 	_, err = meiliClient.CreateIndex(&meilisearch.IndexConfig{
 		Uid:        "search",

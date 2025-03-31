@@ -31,5 +31,5 @@ func (f *FilePath) StripURL() *FilePath {
 }
 
 func (f *FilePath) getFullURL() string {
-	return os.Getenv("FETCH_STORAGE_URL")
+	return os.Getenv("STORAGE_FETCH_URL")
 }

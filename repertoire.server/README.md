@@ -33,7 +33,7 @@ Before you can get started, there are some things you need to have installed on 
 
 ### Go
 
-First, the application is written in Golan, so you need the Go SDK.
+First, the application is written in Golang, so you need the Go SDK.
 If you don't have it already installed, please download it from here: `https://go.dev/dl/`.
 
 ### Docker
