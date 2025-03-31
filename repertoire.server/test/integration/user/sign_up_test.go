@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"net/http"
@@ -31,7 +31,7 @@ func TestSignUp_WhenUserAlreadyExists_ShouldReturnBadRequestError(t *testing.T) 
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithoutAuthentication().
-		POST(w, "/api/auth/sign-up", request)
+		POST(w, "/api/users/sign-up", request)
 
 	// then
 	assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -51,7 +51,7 @@ func TestSignUp_WhenSuccessful_ShouldCreateUserAndReturnToken(t *testing.T) {
 	w := httptest.NewRecorder()
 	core.NewTestHandler().
 		WithoutAuthentication().
-		POST(w, "/api/auth/sign-up", request)
+		POST(w, "/api/users/sign-up", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

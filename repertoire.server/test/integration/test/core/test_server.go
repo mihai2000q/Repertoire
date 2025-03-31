@@ -37,11 +37,13 @@ var httpServer *http.Server
 type TestServer struct {
 	WithMeili           bool
 	WithStorage         bool
+	WithAuth            bool
 	WithCentrifugo      bool
 	EnvPath             string
 	app                 *fx.App
 	dbContainer         *postgresTest.PostgresContainer
 	storageServer       *httptest.Server
+	authServer          *httptest.Server
 	centrifugoContainer testcontainers.Container
 	meiliContainer      *meilisearchTest.MeilisearchContainer
 }
@@ -62,6 +64,9 @@ func (ts *TestServer) Start() {
 	}
 	if ts.WithStorage {
 		ts.setupStorageServer()
+	}
+	if ts.WithAuth {
+		ts.setupAuthServer()
 	}
 	if ts.WithCentrifugo {
 		ts.setupCentrifugoContainer()
@@ -100,6 +105,9 @@ func (ts *TestServer) Stop() {
 	}
 	if ts.WithStorage {
 		ts.storageServer.Close()
+	}
+	if ts.WithAuth {
+		ts.authServer.Close()
 	}
 	if ts.WithCentrifugo {
 		if err := testcontainers.TerminateContainer(ts.centrifugoContainer); err != nil {
@@ -149,6 +157,13 @@ func (ts *TestServer) setupPostgresContainer(env internal.Env, relativePath stri
 func (ts *TestServer) setupStorageServer() {
 	ts.storageServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+	}))
+	_ = os.Setenv("STORAGE_UPLOAD_URL", ts.storageServer.URL)
+}
+
+func (ts *TestServer) setupAuthServer() {
+	ts.authServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
 
 		// when asking for another auth token, just return something
 		if r.Method == http.MethodPost {
@@ -163,8 +178,7 @@ func (ts *TestServer) setupStorageServer() {
 			_, _ = w.Write(bytes)
 		}
 	}))
-	_ = os.Setenv("AUTH_STORAGE_URL", ts.storageServer.URL)
-	_ = os.Setenv("STORAGE_UPLOAD_URL", ts.storageServer.URL)
+	_ = os.Setenv("AUTH_URL", ts.storageServer.URL)
 }
 
 func (ts *TestServer) setupCentrifugoContainer() {

@@ -60,6 +60,23 @@ func (u UserHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func (u UserHandler) SignUp(c *gin.Context) {
+	var request requests.SignUpRequest
+	errCode := u.BindAndValidate(c, &request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	token, errCode := u.service.SignUp(request)
+	if errCode != nil {
+		_ = c.AbortWithError(errCode.Code, errCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, token)
+}
+
 func (u UserHandler) Update(c *gin.Context) {
 	var request requests.UpdateUserRequest
 	errCode := u.BindAndValidate(c, &request)

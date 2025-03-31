@@ -11,14 +11,23 @@ type UserRouter struct {
 }
 
 func (u UserRouter) RegisterRoutes() {
+	publicApi := u.requestHandler.PublicRouter.Group("/user")
+	{
+		publicApi.POST("/sign-up", u.handler.SignUp)
+	}
+
 	api := u.requestHandler.PrivateRouter.Group("/users")
 	{
 		api.GET("/current", u.handler.GetCurrentUser)
 		api.GET("/:id", u.handler.Get)
 		api.PUT("", u.handler.Update)
 		api.DELETE("", u.handler.Delete)
-		api.PUT("/pictures", u.handler.SaveProfilePicture)
-		api.DELETE("/pictures", u.handler.DeleteProfilePicture)
+	}
+
+	picturesApi := api.Group("/pictures")
+	{
+		picturesApi.PUT("", u.handler.SaveProfilePicture)
+		picturesApi.DELETE("", u.handler.DeleteProfilePicture)
 	}
 }
 

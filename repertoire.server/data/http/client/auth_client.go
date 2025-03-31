@@ -46,5 +46,5 @@ func (client AuthClient) SignIn(email string, password string, result any) (*res
 	return client.R().
 		SetBody(struct{ Email, Password string }{email, password}).
 		SetResult(result).
-		Put("/centrifugo/token")
+		Put("/sign-in")
 }
