@@ -13,18 +13,16 @@ type AuthMiddleware struct {
 }
 
 func NewAuthMiddleware(jwtService service.JwtService) AuthMiddleware {
-	return AuthMiddleware{
-		jwtService: jwtService,
-	}
+	return AuthMiddleware{jwtService: jwtService}
 }
 
-func (m AuthMiddleware) Handler() gin.HandlerFunc {
+func (a AuthMiddleware) Handler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 		t := strings.Split(authHeader, " ")
 		if len(t) == 2 {
 			authToken := t[1]
-			err := m.jwtService.Authorize(authToken)
+			err := a.jwtService.Authorize(authToken)
 			if err != nil {
 				_ = c.AbortWithError(http.StatusUnauthorized, errors.New("invalid token"))
 				return

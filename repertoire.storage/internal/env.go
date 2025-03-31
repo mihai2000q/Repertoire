@@ -11,6 +11,7 @@ type Env struct {
 	ApplicationHost string
 	ApplicationPort string
 	Environment     string
+	LogLevel        string
 
 	JwtSecretKey string
 	JwtIssuer    string
@@ -31,6 +32,7 @@ func NewEnv() Env {
 		ApplicationHost: os.Getenv("SERVER_HOST"),
 		ApplicationPort: os.Getenv("SERVER_PORT"),
 		Environment:     os.Getenv("ENV"),
+		LogLevel:        os.Getenv("LOG_LEVEL"),
 
 		JwtSecretKey: os.Getenv("JWT_SECRET_KEY"),
 		JwtIssuer:    os.Getenv("JWT_ISSUER"),

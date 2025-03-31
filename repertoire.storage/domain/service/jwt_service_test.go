@@ -4,38 +4,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"repertoire/storage/data/logger"
 	"repertoire/storage/internal"
 	"testing"
 	"time"
 )
-
-// Utils
-
-func createToken(
-	signingMethod jwt.SigningMethod,
-	jwtExpirationTime string,
-	jwtIssuer string,
-	jwtAudience string,
-	jwtSecretKey string,
-	jti string,
-) string {
-	expiresIn, _ := time.ParseDuration(jwtExpirationTime)
-
-	mapClaims := jwt.MapClaims{
-		"jti": jti,
-		"iss": jwtIssuer,
-		"aud": jwtAudience,
-		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(expiresIn).Unix(),
-	}
-	if jti != "" {
-		mapClaims["jti"] = jti
-	}
-
-	claims := jwt.NewWithClaims(signingMethod, mapClaims)
-	token, _ := claims.SignedString([]byte(jwtSecretKey))
-	return token
-}
 
 // Tests
 
@@ -202,7 +175,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			_uut := NewJwtService(env)
+			_uut := NewJwtService(env, logger.NewLoggerMock())
 
 			token, _ := tt.claims.SignedString([]byte(tt.secretKey))
 
@@ -222,7 +195,7 @@ func TestJwtService_Authorize_WhenSuccessful_ShouldNotReturnError(t *testing.T) 
 		JwtIssuer:    "JWTIssuer",
 		JwtAudience:  "JWTAudience",
 	}
-	_uut := NewJwtService(env)
+	_uut := NewJwtService(env, nil)
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
