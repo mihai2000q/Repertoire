@@ -11,7 +11,7 @@ type StorageRouter struct {
 }
 
 func (c StorageRouter) RegisterRoutes() {
-	api := c.requestHandler.PrivateRouter.Group("/storage")
+	api := c.requestHandler.PublicRouter.Group("/storage")
 	{
 		api.POST("/token", c.handler.Token)
 	}

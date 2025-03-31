@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"net/http"
 	"repertoire/auth/api/server"
 	"repertoire/auth/api/validation"
 	"repertoire/auth/domain/service"
@@ -31,9 +34,13 @@ func (s StorageHandler) Token(c *gin.Context) {
 		ClientID:     c.PostForm("client_id"),
 		ClientSecret: c.PostForm("client_secret"),
 	}
-	token := s.GetTokenFromContext(c)
+	userID, err := uuid.Parse(c.PostForm("user_id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, errors.New("invalid user id"))
+		return
+	}
 
-	storageToken, expiresIn, errCode := s.service.Token(clientCredentials, token)
+	storageToken, expiresIn, errCode := s.service.Token(clientCredentials, userID)
 	if errCode != nil {
 		_ = c.AbortWithError(errCode.Code, errCode.Error)
 		return

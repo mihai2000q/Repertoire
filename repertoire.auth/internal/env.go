@@ -24,10 +24,9 @@ type Env struct {
 	ClientID     string
 	ClientSecret string
 
-	JwtIssuer string
-
 	JwtPrivateKey     string
 	JwtPublicKey      string
+	JwtIssuer         string
 	JwtAudience       string
 	JwtExpirationTime string
 

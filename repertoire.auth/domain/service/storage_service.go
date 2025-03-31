@@ -1,13 +1,14 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"repertoire/auth/data/service"
 	"repertoire/auth/internal/wrapper"
 	"repertoire/auth/model"
 )
 
 type StorageService interface {
-	Token(clientCredentials model.ClientCredentials, token string) (string, string, *wrapper.ErrorCode)
+	Token(clientCredentials model.ClientCredentials, userID uuid.UUID) (string, string, *wrapper.ErrorCode)
 }
 
 type storageService struct {
@@ -20,13 +21,9 @@ func NewStorageService(jwtService service.JwtService) StorageService {
 
 func (c *storageService) Token(
 	clientCredentials model.ClientCredentials,
-	token string,
+	userID uuid.UUID,
 ) (string, string, *wrapper.ErrorCode) {
 	errCode := c.jwtService.ValidateCredentials(clientCredentials)
-	if errCode != nil {
-		return "", "", errCode
-	}
-	userID, errCode := c.jwtService.GetUserIDFromJwt(token)
 	if errCode != nil {
 		return "", "", errCode
 	}

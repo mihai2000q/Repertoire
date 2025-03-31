@@ -37,7 +37,6 @@ func NewJwtService(env internal.Env, logger *logger.Logger) JwtService {
 }
 
 func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
-	invalidError := errors.New("invalid token")
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(j.env.JwtPublicKey))
 	if err != nil {
 		return wrapper.InternalServerError(err)
@@ -46,7 +45,7 @@ func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
 		return publicKey, nil
 	})
 	if err != nil {
-		return wrapper.UnauthorizedError(invalidError)
+		return wrapper.UnauthorizedError(err)
 	}
 
 	if token != nil && token.Valid {
@@ -56,7 +55,7 @@ func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
 		}
 		return nil
 	}
-	return wrapper.UnauthorizedError(invalidError)
+	return wrapper.UnauthorizedError(errors.New("invalid token"))
 }
 
 func (j jwtService) GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
