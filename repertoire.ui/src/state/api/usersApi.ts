@@ -12,7 +12,7 @@ const usersApi = api.injectEndpoints({
     }),
     signUp: build.mutation<string, SignUpRequest>({
       query: (body) => ({
-        url: `sign-up`,
+        url: `users/sign-up`,
         method: 'POST',
         body: body
       })

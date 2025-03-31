@@ -42,7 +42,7 @@ const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
 ) => {
   await mutex.waitForUnlock()
   let result = await queryWithAuthorization(args, api, extraOptions)
-  if (result?.error?.status === 401 && !(typeof args === 'object' && !args.url.includes('users/sign-up'))) {
+  if (result?.error?.status === 401 && !(typeof args === 'object' && args.url.includes('users/sign-up'))) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire()
       try {

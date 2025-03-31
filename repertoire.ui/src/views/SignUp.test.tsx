@@ -108,7 +108,7 @@ describe('Sign Up', () => {
     const error = 'Email already in use'
 
     server.use(
-      http.post('/auth/sign-up', async () => HttpResponse.json({ error }, { status: 401 }))
+      http.post('/users/sign-up', async () => HttpResponse.json({ error }, { status: 401 }))
     )
 
     await sendSignUpRequest(name, email, password)
@@ -132,7 +132,7 @@ describe('Sign Up', () => {
     const expectedToken = 'token'
 
     server.use(
-      http.post('/auth/sign-up', async (req) => {
+      http.post('/users/sign-up', async (req) => {
         capturedSignUpRequest = (await req.request.json()) as SignUpRequest
         return HttpResponse.json(expectedToken)
       })
