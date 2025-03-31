@@ -20,12 +20,8 @@ func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoryFails_ShouldReturnEr
 	directories := []any{"some_directory", "some_other_directory"}
 
 	internalError := errors.New("internal error")
-	storageService.On("DeleteDirectory", directories[0]).
+	storageService.On("DeleteDirectories", directories).
 		Return(wrapper.InternalServerError(internalError)).
-		Once()
-
-	storageService.On("DeleteDirectory", directories[1]).
-		Return(wrapper.NotFoundError(errors.New("not found"))).
 		Once()
 
 	// when
@@ -47,11 +43,9 @@ func TestDeleteDirectoriesStorageHandler_WhenSuccessful_ShouldDeleteDirectories(
 
 	directories := []any{"dir1/dir2/file.exe", "some_file.png", "an_image.jpeg"}
 
-	for _, directory := range directories {
-		storageService.On("DeleteDirectory", directory).
-			Return(nil).
-			Once()
-	}
+	storageService.On("DeleteDirectories", directories).
+		Return(nil).
+		Once()
 
 	// when
 	payload, _ := json.Marshal(&directories)

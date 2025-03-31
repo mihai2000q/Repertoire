@@ -18,7 +18,7 @@ import (
 type StorageService interface {
 	Upload(fileHeader *multipart.FileHeader, filePath string) error
 	DeleteFile(filePath internal.FilePath) *wrapper.ErrorCode
-	DeleteDirectory(directoryPath string) *wrapper.ErrorCode
+	DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode
 }
 
 type storageService struct {
@@ -93,21 +93,21 @@ func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCod
 	return nil
 }
 
-func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode {
-	storageToken, err := s.getAccessToken(directoryPath)
+func (s storageService) DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode {
+	storageToken, err := s.getAccessToken(directoryPaths[0])
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
 
-	res, err := s.storageClient.DeleteDirectories(storageToken, directoryPath)
+	res, err := s.storageClient.DeleteDirectories(storageToken, directoryPaths)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 	if res.StatusCode() == http.StatusNotFound {
-		return wrapper.NotFoundError(errors.New("Storage Service - DeleteDirectory Not Found: " + res.String()))
+		return wrapper.NotFoundError(errors.New("Storage Service - DeleteDirectories Not Found: " + res.String()))
 	}
 	if res.StatusCode() != http.StatusOK {
-		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectory failed: " + res.String()))
+		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectories failed: " + res.String()))
 	}
 
 	return nil

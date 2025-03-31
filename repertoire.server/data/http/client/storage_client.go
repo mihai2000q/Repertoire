@@ -33,8 +33,10 @@ func (client StorageClient) DeleteFile(token string, filePath string) (*resty.Re
 		Delete("files/" + filePath)
 }
 
-func (client StorageClient) DeleteDirectories(token string, directoryPath string) (*resty.Response, error) {
+func (client StorageClient) DeleteDirectories(token string, directoryPaths []string) (*resty.Response, error) {
+	var body = struct{ DirectoryPaths []string }{directoryPaths}
 	return client.R().
 		SetAuthToken(token).
-		Delete("directories/" + directoryPath)
+		SetBody(body).
+		Put("directories")
 }
