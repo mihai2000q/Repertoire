@@ -23,9 +23,9 @@ func (m AuthMiddleware) Handler() gin.HandlerFunc {
 		t := strings.Split(authHeader, " ")
 		if len(t) == 2 {
 			authToken := t[1]
-			err := m.jwtService.Authorize(authToken)
-			if err != nil {
-				_ = c.AbortWithError(http.StatusUnauthorized, err)
+			errCode := m.jwtService.Authorize(authToken)
+			if errCode != nil {
+				_ = c.AbortWithError(errCode.Code, errCode.Error)
 				return
 			} else {
 				c.Next()

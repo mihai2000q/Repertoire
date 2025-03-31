@@ -11,7 +11,7 @@ import (
 )
 
 type JwtService interface {
-	Authorize(authToken string) error
+	Authorize(authToken string) *wrapper.ErrorCode
 	GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 
 	Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
@@ -30,23 +30,35 @@ func NewJwtService(env internal.Env) JwtService {
 	return jwtService{env: env}
 }
 
-func (j jwtService) Authorize(authToken string) error {
-	token, _ := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
-		return []byte(j.env.JwtPublicKey), nil
+func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
+	invalidError := errors.New("invalid token")
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(j.env.JwtPublicKey))
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+	token, err := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
+		return publicKey, nil
 	})
+	if err != nil {
+		return wrapper.UnauthorizedError(invalidError)
+	}
 
 	if token != nil && token.Valid {
-		if err := j.validateToken(token); err != nil {
-			return err
+		if err = j.validateToken(token); err != nil {
+			return wrapper.UnauthorizedError(err)
 		}
 		return nil
 	}
-	return errors.New("invalid token")
+	return wrapper.UnauthorizedError(invalidError)
 }
 
 func (j jwtService) GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(j.env.JwtPublicKey))
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
+	}
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		return []byte(j.env.JwtPublicKey), nil
+		return publicKey, nil
 	})
 	if err != nil {
 		return uuid.Nil, wrapper.ForbiddenError(err)
@@ -68,8 +80,12 @@ func (j jwtService) GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.Er
 // Validation
 
 func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(j.env.JwtPublicKey))
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
+	}
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		return []byte(j.env.JwtPublicKey), nil
+		return publicKey, nil
 	})
 	if err != nil && !errors.Is(err, jwt.ErrTokenExpired) {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
@@ -85,14 +101,19 @@ func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
-	jtiClaim := token.Claims.(jwt.MapClaims)["jti"].(string)
-	jti, err := uuid.Parse(jtiClaim)
+	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
+	if !jtiFound {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
+	}
+
+	jti, err := uuid.Parse(jtiClaim.(string))
 	if err != nil {
 		return uuid.Nil, wrapper.UnauthorizedError(err)
 	}
 
 	if token.Method != jwt.SigningMethodRS256 ||
 		iss != j.env.JwtIssuer ||
+		len(aud) != 1 ||
 		aud[0] != j.env.JwtAudience ||
 		jti == uuid.Nil {
 		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
@@ -104,8 +125,8 @@ func (j jwtService) Validate(tokenString string) (uuid.UUID, *wrapper.ErrorCode)
 	}
 
 	userID, err := uuid.Parse(sub)
-	if err != nil {
-		return uuid.Nil, wrapper.UnauthorizedError(err)
+	if err != nil || userID == uuid.Nil {
+		return uuid.Nil, wrapper.UnauthorizedError(errors.New("invalid token"))
 	}
 
 	return userID, nil
@@ -198,9 +219,21 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 	if err != nil {
 		return err
 	}
+	sub, err := token.Claims.GetSubject()
+	if err != nil {
+		return err
+	}
+	userID, err := uuid.Parse(sub)
+	if err != nil {
+		return err
+	}
 
-	jtiClaim := token.Claims.(jwt.MapClaims)["jti"].(string)
-	jti, err := uuid.Parse(jtiClaim)
+	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
+	if !jtiFound {
+		return errors.New("invalid token")
+	}
+
+	jti, err := uuid.Parse(jtiClaim.(string))
 	if err != nil {
 		return err
 	}
@@ -209,7 +242,8 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 		iss != j.env.JwtIssuer ||
 		len(aud) != 1 ||
 		aud[0] != j.env.JwtAudience ||
-		jti == uuid.Nil {
+		jti == uuid.Nil ||
+		userID == uuid.Nil {
 		return errors.New("invalid token")
 	}
 
