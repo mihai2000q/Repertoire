@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"repertoire/server/data/cache"
 	dataHttp "repertoire/server/data/http"
+	"repertoire/server/data/http/auth"
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
+	"strings"
 	"time"
 )
 
@@ -20,16 +22,21 @@ type StorageService interface {
 }
 
 type storageService struct {
-	httpClient dataHttp.StorageClient
-	env        internal.Env
-	cache      cache.StorageCache
+	storageClient dataHttp.StorageClient
+	authClient    dataHttp.AuthClient
+	env           internal.Env
+	cache         cache.StorageCache
 }
 
-func NewStorageService(httpClient dataHttp.StorageClient, env internal.Env, cache cache.StorageCache) StorageService {
+func NewStorageService(
+	httpClient dataHttp.StorageClient,
+	authClient dataHttp.AuthClient,
+	cache cache.StorageCache,
+) StorageService {
 	return &storageService{
-		httpClient: httpClient,
-		env:        env,
-		cache:      cache,
+		storageClient: httpClient,
+		authClient:    authClient,
+		cache:         cache,
 	}
 }
 
@@ -47,18 +54,13 @@ func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string
 		return err
 	}
 
-	token, err := s.getAccessToken()
+	userID := s.getUserIDFromPath(filePath)
+	storageToken, err := s.getAccessToken(userID)
 	if err != nil {
 		return err
 	}
 
-	res, err := s.httpClient.R().
-		SetAuthToken(token).
-		SetFileReader("file", fileHeader.Filename, bytes.NewReader(buf.Bytes())).
-		SetFormData(map[string]string{
-			"filePath": filePath,
-		}).
-		Put("upload")
+	res, err := s.storageClient.Upload(storageToken, fileHeader.Filename, bytes.NewReader(buf.Bytes()), filePath)
 	if err != nil {
 		return err
 	}
@@ -70,14 +72,14 @@ func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string
 }
 
 func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCode {
-	token, err := s.getAccessToken()
+	stringFilePath := string(*filePath.StripURL())
+	userID := s.getUserIDFromPath(stringFilePath)
+	storageToken, err := s.getAccessToken(userID)
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
 
-	res, err := s.httpClient.R().
-		SetAuthToken(token).
-		Delete("files/" + string(*filePath.StripURL()))
+	res, err := s.storageClient.DeleteFile(storageToken, stringFilePath)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -92,14 +94,12 @@ func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCod
 }
 
 func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode {
-	token, err := s.getAccessToken()
+	storageToken, err := s.getAccessToken(directoryPath)
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
 
-	res, err := s.httpClient.R().
-		SetAuthToken(token).
-		Delete("directories/" + directoryPath)
+	res, err := s.storageClient.DeleteDirectories(storageToken, directoryPath)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -113,46 +113,38 @@ func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode
 	return nil
 }
 
-func (s storageService) getAccessToken() (string, error) {
+func (s storageService) getAccessToken(userID string) (string, error) {
 	// get from cache
-	accessTokenKey := "access_token"
-	token, found := s.cache.Get(accessTokenKey)
+	accessTokenKey := "access_token#"
+	accessToken, found := s.cache.Get(accessTokenKey)
 	if found {
-		return token.(string), nil
+		return accessToken.(string), nil
 	}
 
 	// fetch from server
-	tokenResult, err := s.fetchToken()
+	tokenResult, err := s.fetchToken(userID)
 	if err != nil {
 		return "", err
 	}
-	expiresIn, _ := time.ParseDuration(tokenResult.expiresIn)
-	s.cache.Set(accessTokenKey, tokenResult.accessToken, expiresIn)
-	return tokenResult.accessToken, nil
+	expiresIn, _ := time.ParseDuration(tokenResult.ExpiresIn)
+	s.cache.Set(accessTokenKey, tokenResult.Token, expiresIn)
+	return tokenResult.Token, nil
 }
 
-type tokenResponse struct {
-	accessToken string
-	expiresIn   string
-}
-
-func (s storageService) fetchToken() (tokenResponse, error) {
-	var result tokenResponse
-	response, err := s.httpClient.R().
-		SetFormData(map[string]string{
-			"grant_type":    "client_credentials",
-			"client_id":     s.env.StorageClientID,
-			"client_secret": s.env.StorageClientSecret,
-		}).
-		SetResult(&result).
-		Post(s.env.AuthStorageUrl)
+func (s storageService) fetchToken(userID string) (auth.TokenResponse, error) {
+	var result auth.TokenResponse
+	response, err := s.authClient.StorageToken(userID, &result)
 
 	if err != nil {
-		return tokenResponse{}, err
+		return auth.TokenResponse{}, err
 	}
 	if response.StatusCode() != http.StatusOK {
-		return tokenResponse{}, errors.New("Storage Service - oauth token failed: " + response.String())
+		return auth.TokenResponse{}, errors.New("failed to fetch token: " + response.String())
 	}
 
 	return result, nil
+}
+
+func (s storageService) getUserIDFromPath(path string) string {
+	return strings.Split(path, "/")[0]
 }

@@ -17,15 +17,15 @@ func NewAuthClient(client RestyClient, env internal.Env) AuthClient {
 	}
 }
 
-func (client AuthClient) StorageToken(token string, result any) (*resty.Response, error) {
+func (client AuthClient) StorageToken(userID string, result any) (*resty.Response, error) {
 	return client.R().
 		SetFormData(map[string]string{
 			"grant_type":    "client_credentials",
 			"client_id":     client.env.AuthClientID,
 			"client_secret": client.env.AuthClientSecret,
+			"user_id":       userID,
 		}).
-		SetAuthToken(token).
-		SetResult(&result).
+		SetResult(result).
 		Post("/storage/token")
 }
 
