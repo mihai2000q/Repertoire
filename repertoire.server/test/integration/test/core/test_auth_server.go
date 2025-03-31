@@ -1,9 +1,11 @@
 package core
 
 import (
+	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"net/http"
+	"repertoire/server/data/http/auth"
 	"time"
 )
 
@@ -12,13 +14,24 @@ type testAuthServer struct {
 
 func (t *testAuthServer) handle() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
 		if r.RequestURI == "/storage/token" {
-			_, _ = w.Write([]byte(t.createToken()))
+			authResp := auth.TokenResponse{
+				Token:     t.createToken(),
+				ExpiresIn: "1h",
+			}
+			res, _ := json.Marshal(authResp)
+			_, _ = w.Write(res)
 		}
-		if r.RequestURI == "/centrifugo/token" {
-			_, _ = w.Write([]byte(t.createCentrifugoToken()))
+		if r.RequestURI == "/centrifugo/public-token" {
+			authResp := auth.TokenResponse{
+				Token:     t.createCentrifugoToken(),
+				ExpiresIn: "1h",
+			}
+			res, _ := json.Marshal(authResp)
+			_, _ = w.Write(res)
 		}
 		if r.RequestURI == "/sign-in" {
 			_, _ = w.Write([]byte(t.createToken()))

@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/go-resty/resty/v2"
 	"repertoire/server/data/http"
+	"repertoire/server/data/http/auth"
 	"repertoire/server/internal"
 )
 
@@ -18,7 +19,7 @@ func NewAuthClient(client http.RestyClient, env internal.Env) AuthClient {
 	}
 }
 
-func (client AuthClient) StorageToken(userID string, result any) (*resty.Response, error) {
+func (client AuthClient) StorageToken(userID string, result *auth.TokenResponse) (*resty.Response, error) {
 	return client.R().
 		SetFormData(map[string]string{
 			"grant_type":    "client_credentials",
@@ -26,11 +27,11 @@ func (client AuthClient) StorageToken(userID string, result any) (*resty.Respons
 			"client_secret": client.env.AuthClientSecret,
 			"user_id":       userID,
 		}).
-		SetResult(result).
+		SetResult(&result).
 		Post("/storage/token")
 }
 
-func (client AuthClient) CentrifugoToken(userID string, result any) (*resty.Response, error) {
+func (client AuthClient) CentrifugoToken(userID string, result *auth.TokenResponse) (*resty.Response, error) {
 	return client.R().
 		SetFormData(map[string]string{
 			"grant_type":    "client_credentials",
@@ -38,7 +39,7 @@ func (client AuthClient) CentrifugoToken(userID string, result any) (*resty.Resp
 			"client_secret": client.env.AuthClientSecret,
 			"user_id":       userID,
 		}).
-		SetResult(result).
+		SetResult(&result).
 		Post("/centrifugo/public-token")
 }
 
