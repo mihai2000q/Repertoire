@@ -13,12 +13,13 @@ import {
 } from '@mantine/core'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../state/store.ts'
-import { api, useSignUpMutation } from '../state/api.ts'
+import { api } from '../state/api.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 import { useForm, zodResolver } from '@mantine/form'
 import { setToken } from '../state/slice/authSlice.ts'
 import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
+import { useSignUpMutation } from '../state/api/usersApi.ts'
 
 function SignUp(): ReactElement {
   const dispatch = useAppDispatch()

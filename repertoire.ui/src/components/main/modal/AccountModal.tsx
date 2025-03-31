@@ -13,15 +13,15 @@ import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import User from '../../../types/models/User.ts'
 import { AccountForm, accountValidation } from '../../../validation/mainForm.ts'
-import {
-  useDeleteProfilePictureMutation,
-  useSaveProfilePictureMutation,
-  useUpdateUserMutation
-} from '../../../state/api.ts'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 import dayjs from 'dayjs'
+import {
+  useDeleteProfilePictureMutation,
+  useSaveProfilePictureMutation,
+  useUpdateUserMutation
+} from '../../../state/api/usersApi.ts'
 
 interface AccountModalProps {
   opened: boolean

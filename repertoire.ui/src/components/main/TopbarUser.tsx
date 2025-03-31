@@ -15,11 +15,11 @@ import AccountModal from './modal/AccountModal.tsx'
 import SettingsModal from './modal/SettingsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { signOut } from '../../state/slice/authSlice.ts'
-import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import { useEffect } from 'react'
 import { setUserId } from '../../state/slice/globalSlice.ts'
+import { useGetCurrentUserQuery } from '../../state/api/usersApi.ts'
 
 function TopbarUser({ ...others }: UnstyledButtonProps) {
   const dispatch = useAppDispatch()
