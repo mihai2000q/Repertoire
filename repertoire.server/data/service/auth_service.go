@@ -20,13 +20,12 @@ func NewAuthService(authClient client.AuthClient) AuthService {
 }
 
 func (a authService) SignIn(email string, password string) (string, *wrapper.ErrorCode) {
-	var token string
-	response, err := a.authClient.SignIn(email, password, &token)
+	response, err := a.authClient.SignIn(email, password)
 	if err != nil {
 		return "", wrapper.InternalServerError(err)
 	}
 	if response.StatusCode() != http.StatusOK {
 		return "", wrapper.InternalServerError(errors.New("failed to sign in" + response.String()))
 	}
-	return token, nil
+	return response.String(), nil
 }

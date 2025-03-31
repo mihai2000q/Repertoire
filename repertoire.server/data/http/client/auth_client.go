@@ -39,12 +39,11 @@ func (client AuthClient) CentrifugoToken(userID string, result any) (*resty.Resp
 			"user_id":       userID,
 		}).
 		SetResult(result).
-		Post("/centrifugo/token")
+		Post("/centrifugo/public-token")
 }
 
-func (client AuthClient) SignIn(email string, password string, result any) (*resty.Response, error) {
+func (client AuthClient) SignIn(email string, password string) (*resty.Response, error) {
 	return client.R().
 		SetBody(struct{ Email, Password string }{email, password}).
-		SetResult(result).
 		Put("/sign-in")
 }
