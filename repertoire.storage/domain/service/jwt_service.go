@@ -42,9 +42,26 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 	if err != nil {
 		return err
 	}
+	_, err = token.Claims.GetExpirationTime()
+	if err != nil {
+		return err
+	}
 
-	jtiClaim := token.Claims.(jwt.MapClaims)["jti"].(string)
-	jti, err := uuid.Parse(jtiClaim)
+	jtiClaim, jtiFound := token.Claims.(jwt.MapClaims)["jti"]
+	if !jtiFound {
+		return errors.New("no jti found")
+	}
+
+	jti, err := uuid.Parse(jtiClaim.(string))
+	if err != nil {
+		return err
+	}
+
+	sub, err := token.Claims.GetSubject()
+	if err != nil {
+		return err
+	}
+	userID, err := uuid.Parse(sub)
 	if err != nil {
 		return err
 	}
@@ -52,7 +69,9 @@ func (j jwtService) validateToken(token *jwt.Token) error {
 	if token.Method != jwt.SigningMethodHS256 ||
 		iss != j.env.JwtIssuer ||
 		aud[0] != j.env.JwtAudience ||
-		jti == uuid.Nil {
+		len(aud) != 1 ||
+		jti == uuid.Nil ||
+		userID == uuid.Nil {
 		return errors.New("invalid token")
 	}
 

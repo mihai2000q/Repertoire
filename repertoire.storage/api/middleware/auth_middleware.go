@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/storage/domain/service"
@@ -25,7 +26,7 @@ func (m AuthMiddleware) Handler() gin.HandlerFunc {
 			authToken := t[1]
 			err := m.jwtService.Authorize(authToken)
 			if err != nil {
-				_ = c.AbortWithError(http.StatusUnauthorized, err)
+				_ = c.AbortWithError(http.StatusUnauthorized, errors.New("invalid token"))
 				return
 			} else {
 				c.Next()
