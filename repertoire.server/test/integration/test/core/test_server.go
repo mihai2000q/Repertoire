@@ -259,7 +259,7 @@ func (ts *TestServer) setupAuthServer() {
 func (ts *TestServer) setupCentrifugoContainer() {
 	containerRequest := testcontainers.ContainerRequest{
 		Image:        "centrifugo/centrifugo:v6",
-		ExposedPorts: []string{"8000/tcp"},
+		ExposedPorts: []string{"8003/tcp"},
 		Cmd:          []string{"centrifugo", "-c", "/centrifugo/config.json"},
 		Files: []testcontainers.ContainerFile{
 			{
@@ -277,7 +277,7 @@ func (ts *TestServer) setupCentrifugoContainer() {
 			Started:          true,
 		})
 	// Get Random Port and set it to the environment variable
-	port, _ := ts.centrifugoContainer.MappedPort(context.Background(), "8000/tcp")
+	port, _ := ts.centrifugoContainer.MappedPort(context.Background(), "8003/tcp")
 	regex := regexp.MustCompile(`localhost:\d{4}`)
 	newUrl := regex.ReplaceAllString(os.Getenv("CENTRIFUGO_URL"), "localhost:"+port.Port())
 	_ = os.Setenv("CENTRIFUGO_URL", newUrl)
