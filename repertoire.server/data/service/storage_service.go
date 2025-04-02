@@ -104,9 +104,6 @@ func (s storageService) DeleteDirectories(directoryPaths []string) *wrapper.Erro
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if res.StatusCode() == http.StatusNotFound {
-		return wrapper.NotFoundError(errors.New("Storage Service - DeleteDirectories Not Found: " + res.String()))
-	}
 	if res.StatusCode() != http.StatusOK {
 		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectories failed: " + res.String()))
 	}

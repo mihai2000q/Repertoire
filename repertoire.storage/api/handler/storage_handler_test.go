@@ -185,23 +185,6 @@ func TestStorageHandler_Upload_WhenSuccessful_ShouldSaveFile(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestStorageHandler_DeleteDirectories_WhenDirectoryIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
-	// given
-	directoryPaths := []string{"somewhere/else", "somewhere/else/two"}
-
-	handler, _ := getGinStorageHandler()
-
-	// when
-	var body = struct{ DirectoryPaths []string }{directoryPaths}
-	jsonBody, _ := json.Marshal(body)
-	req := httptest.NewRequest(http.MethodPut, "/directories", bytes.NewBuffer(jsonBody))
-	w := httptest.NewRecorder()
-	handler.ServeHTTP(w, req)
-
-	// then
-	assert.Equal(t, http.StatusNotFound, w.Code)
-}
-
 func TestStorageHandler_DeleteDirectories_WhenSuccessful_ShouldDeleteDirectory(t *testing.T) {
 	// given
 	handler, env := getGinStorageHandler()
@@ -216,6 +199,8 @@ func TestStorageHandler_DeleteDirectories_WhenSuccessful_ShouldDeleteDirectory(t
 		filePath := directoryPath + "/test-file.txt"
 		createFile(filePath, "asd", env.UploadDirectory)
 	}
+	
+	directoryPaths = append(directoryPaths, "one/more/directory-that-is-not-to-be-found")
 
 	// when
 	var body = struct{ DirectoryPaths []string }{directoryPaths}
