@@ -31,6 +31,6 @@ func NewRequestHandler(
 	return &RequestHandler{
 		Gin:           engine,
 		PublicRouter:  publicRouter,
-		PrivateRouter: publicRouter,
+		PrivateRouter: privateRouter,
 	}
 }
