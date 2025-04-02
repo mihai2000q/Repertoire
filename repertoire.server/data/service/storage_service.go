@@ -94,7 +94,8 @@ func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCod
 }
 
 func (s storageService) DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode {
-	storageToken, err := s.getAccessToken(directoryPaths[0])
+	userID := s.getUserIDFromPath(directoryPaths[0])
+	storageToken, err := s.getAccessToken(userID)
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
