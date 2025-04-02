@@ -19,7 +19,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
-import { authApi, useSignInMutation } from '../state/api/authApi.ts'
+import { authApi, useSignInMutation } from '../state/authApi.ts'
 
 function SignIn(): ReactElement {
   const dispatch = useAppDispatch()

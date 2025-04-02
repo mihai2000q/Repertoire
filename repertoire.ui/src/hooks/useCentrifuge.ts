@@ -1,6 +1,6 @@
 import { Centrifuge } from 'centrifuge'
 import { useEffect } from 'react'
-import { useLazyGetCentrifugeTokenQuery } from '../state/api/authApi.ts'
+import { useLazyGetCentrifugeTokenQuery } from '../state/authApi.ts'
 
 let centrifuge: Centrifuge | undefined
 

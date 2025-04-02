@@ -3,7 +3,7 @@ import authReducer from './slice/authSlice.ts'
 import globalReducer from './slice/globalSlice.ts'
 import { api } from './api'
 import { useDispatch, useSelector } from 'react-redux'
-import { authApi } from './api/authApi.ts'
+import { authApi } from './authApi.ts'
 
 const reducer = combineReducers({
   auth: authReducer,
