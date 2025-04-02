@@ -12,7 +12,7 @@ describe('use Centrifuge', () => {
 
   const token = 'some-token'
   const handlers = [
-    http.get('/auth/centrifugo', async () => {
+    http.get('/centrifugo/token', async () => {
       return HttpResponse.json(token)
     })
   ]

@@ -22,7 +22,7 @@ describe('Topbar', () => {
     http.get('/users/current', async () => {
       return HttpResponse.json(emptyUser)
     }),
-    http.get('/auth/centrifugo', async () => {
+    http.get('/centrifugo/token', async () => {
       return HttpResponse.json('')
     }),
     http.get('/search', () => {

@@ -10,7 +10,7 @@ import { beforeEach } from 'vitest'
 
 describe('Main', () => {
   const handlers = [
-    http.get('/auth/centrifugo', async () => {
+    http.get('/centrifugo/token', async () => {
       return HttpResponse.json('')
     }),
     http.get('/users/current', async () => {
