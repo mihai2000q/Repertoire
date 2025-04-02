@@ -14,6 +14,7 @@ func NewRestyClient(logger *logger.RestyLogger, env internal.Env) RestyClient {
 	return RestyClient{
 		resty.New().
 			SetLogger(logger).
+			SetDebugBodyLimit(1024).
 			SetDebug(env.LogLevel == internal.DebugLogLevel),
 	}
 }
