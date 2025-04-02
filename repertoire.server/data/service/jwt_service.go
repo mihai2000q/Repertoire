@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"repertoire/server/internal"
@@ -28,15 +27,14 @@ func (j *jwtService) Authorize(tokenString string) *wrapper.ErrorCode {
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	token, _ := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+	_, err = jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	})
-
-	if token != nil && token.Valid {
-		return nil
+	if err != nil {
+		return wrapper.UnauthorizedError(err)
 	}
 
-	return wrapper.UnauthorizedError(errors.New("invalid token"))
+	return nil
 }
 
 func (j *jwtService) GetUserIdFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
