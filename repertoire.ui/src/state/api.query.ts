@@ -34,17 +34,17 @@ const refreshQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_AUTH_URL
 })
 
-const mutex = new Mutex()
+export const apiMutex = new Mutex()
 const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
   extraOptions
 ) => {
-  await mutex.waitForUnlock()
+  await apiMutex.waitForUnlock()
   let result = await queryWithAuthorization(args, api, extraOptions)
   if (result?.error?.status === 401 && !(typeof args === 'object' && args.url.includes('users/sign-up'))) {
-    if (!mutex.isLocked()) {
-      const release = await mutex.acquire()
+    if (!apiMutex.isLocked()) {
+      const release = await apiMutex.acquire()
       try {
         const authState = (api.getState() as RootState).auth
         const refreshResult = await refreshQuery(
@@ -67,7 +67,7 @@ const queryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
         release()
       }
     } else {
-      await mutex.waitForUnlock()
+      await apiMutex.waitForUnlock()
       result = await queryWithAuthorization(args, api, extraOptions)
     }
   }
