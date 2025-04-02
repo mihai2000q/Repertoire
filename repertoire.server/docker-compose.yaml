@@ -65,7 +65,7 @@ services:
     container_name: Repertoire-Centrifugo
     command: centrifugo -c /centrifugo/config.json
     ports:
-      - "8003:8000"
+      - "8003:8003"
     volumes:
       - ./centrifugo-config.json:/centrifugo/config.json
     networks:
