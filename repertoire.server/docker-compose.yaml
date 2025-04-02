@@ -15,6 +15,7 @@ services:
       - AUTH_URL=http://Repertoire-Auth:8030/auth
       - STORAGE_UPLOAD_URL=http://Repertoire-Storage:8020/storage
       - MEILI_URL=http://Repertoire-Meilisearch:7700
+      - CENTRIFUGO_URL=ws://Repertoire-Centrifugo:8003/connection/websocket
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:
