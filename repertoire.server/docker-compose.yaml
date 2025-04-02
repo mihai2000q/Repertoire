@@ -19,6 +19,8 @@ services:
       - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - ./${LOG_OUTPUT}:/${LOG_OUTPUT}
+    networks:
+      - repertoire_network
     depends_on:
       database:
         condition: service_healthy
@@ -35,6 +37,8 @@ services:
     volumes:
       - ./.sample-data:/.sample-data
       - ./.container-data/postgres-data:/var/lib/postgresql/data
+    networks:
+      - repertoire_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
@@ -53,6 +57,8 @@ services:
       - MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER=${MEILI_WEBHOOK_AUTHORIZATION_KEY}
     volumes:
       - ./.container-data/meili_data:/meili_data
+    networks:
+      - repertoire_network
 
   centrifugo:
     image: centrifugo/centrifugo:v6
@@ -62,7 +68,13 @@ services:
       - "8003:8000"
     volumes:
       - ./centrifugo-config.json:/centrifugo/config.json
+    networks:
+      - repertoire_network
     ulimits:
       nofile:
         soft: 65535
         hard: 65535
+
+networks:
+  repertoire_network:
+    driver: bridge

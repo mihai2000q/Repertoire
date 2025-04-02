@@ -12,3 +12,9 @@ services:
       - VITE_BACKEND_URL=http://Repertoire-Server:8000/api
     ports:
       - "${VITE_APPLICATION_PORT}:${VITE_APPLICATION_PORT}"
+    networks:
+      - repertoire_repertoire_network
+
+networks:
+  repertoire_repertoire_network:
+    external: true
