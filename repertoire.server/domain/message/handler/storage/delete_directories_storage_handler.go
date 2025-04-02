@@ -2,8 +2,8 @@ package storage
 
 import (
 	"encoding/json"
-	"errors"
 	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
+	"go.uber.org/zap"
 	"net/http"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
@@ -36,21 +36,14 @@ func (d DeleteDirectoriesStorageHandler) Handle(msg *watermillMessage.Message) e
 		return err
 	}
 
-	var resultErrors []error
-	for _, path := range directoryPaths {
-		errCode := d.storageService.DeleteDirectory(path)
-		if errCode != nil && errCode.Code == http.StatusNotFound {
-			d.logger.Debug("Directory not found: " + path)
-		} else if errCode != nil {
-			resultErrors = append(resultErrors, errCode.Error)
-		}
+	errCode := d.storageService.DeleteDirectories(directoryPaths)
+	if errCode != nil && errCode.Code == http.StatusNotFound {
+		d.logger.Debug("Directory not found", zap.Error(errCode.Error))
+	} else if errCode != nil {
+		return errCode.Error
 	}
 
-	if len(resultErrors) > 0 {
-		return errors.Join(resultErrors...)
-	} else {
-		return nil
-	}
+	return nil
 }
 
 func (d DeleteDirectoriesStorageHandler) GetName() string {

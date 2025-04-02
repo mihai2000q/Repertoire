@@ -3,17 +3,20 @@ import authReducer from './slice/authSlice.ts'
 import globalReducer from './slice/globalSlice.ts'
 import { api } from './api'
 import { useDispatch, useSelector } from 'react-redux'
+import { authApi } from './authApi.ts'
 
 const reducer = combineReducers({
   auth: authReducer,
   global: globalReducer,
-  [api.reducerPath]: api.reducer
+  [api.reducerPath]: api.reducer,
+  [authApi.reducerPath]: authApi.reducer
 })
 
 export const setupStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(api.middleware).concat(authApi.middleware),
     preloadedState
   })
 }

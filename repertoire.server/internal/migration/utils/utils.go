@@ -16,14 +16,19 @@ type MigrationStatus struct {
 func HasMigrationAlreadyBeenApplied(client search.MeiliClient, uid string) bool {
 	_, err := client.GetIndex("migration_version")
 	if err != nil {
-		_, err = client.CreateIndex(&meilisearch.IndexConfig{
+		taskInfo, err := client.CreateIndex(&meilisearch.IndexConfig{
 			Uid:        "migration_version",
 			PrimaryKey: "id",
 		})
 		if err != nil {
 			panic(err)
 		}
-		return true
+		for {
+			task, _ := client.GetTask(taskInfo.TaskUID)
+			if task.Status != meilisearch.TaskStatusEnqueued && task.Status != meilisearch.TaskStatusProcessing {
+				break
+			}
+		}
 	}
 
 	var documentResults meilisearch.DocumentsResult

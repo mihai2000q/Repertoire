@@ -10,6 +10,5 @@ type MeiliClient struct {
 }
 
 func NewMeiliClient(env internal.Env) MeiliClient {
-	url := "http://" + env.MeiliHost + ":" + env.MeiliPort
-	return MeiliClient{meilisearch.New(url, meilisearch.WithAPIKey(env.MeiliMasterKey))}
+	return MeiliClient{meilisearch.New(env.MeiliUrl, meilisearch.WithAPIKey(env.MeiliMasterKey))}
 }

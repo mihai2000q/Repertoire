@@ -1,5 +1,7 @@
 package logger
 
+import "go.uber.org/zap"
+
 type RestyLogger struct {
 	*Logger
 }
@@ -17,5 +19,6 @@ func (r RestyLogger) Debugf(format string, v ...interface{}) {
 }
 
 func NewRestyLogger(logger *Logger) *RestyLogger {
+	logger = &Logger{logger.WithOptions(zap.WithCaller(false))}
 	return &RestyLogger{logger}
 }

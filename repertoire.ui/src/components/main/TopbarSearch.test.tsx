@@ -66,7 +66,7 @@ describe('Topbar Search', () => {
   const searchResults: SearchBase[] = [...artists, ...albums, ...songs, ...playlists]
 
   const handlers = [
-    http.get('/auth/centrifugo', async () => {
+    http.get('/centrifugo/token', async () => {
       return HttpResponse.json('')
     }),
     http.get('/search', () => {

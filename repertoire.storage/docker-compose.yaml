@@ -14,3 +14,9 @@ services:
       - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - ${UPLOAD_DIRECTORY}:/${UPLOAD_DIRECTORY}
+    networks:
+      - repertoire_repertoire_network
+
+networks:
+  repertoire_repertoire_network:
+    external: true

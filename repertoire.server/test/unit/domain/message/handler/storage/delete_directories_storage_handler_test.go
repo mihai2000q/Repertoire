@@ -12,20 +12,16 @@ import (
 	"testing"
 )
 
-func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoryFails_ShouldReturnError(t *testing.T) {
+func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturnError(t *testing.T) {
 	// given
 	storageService := new(service.StorageServiceMock)
 	_uut := storage.NewDeleteDirectoriesStorageHandler(logger.NewLoggerMock(), storageService)
 
-	directories := []any{"some_directory", "some_other_directory"}
+	directories := []string{"some_directory", "some_other_directory"}
 
 	internalError := errors.New("internal error")
-	storageService.On("DeleteDirectory", directories[0]).
+	storageService.On("DeleteDirectories", directories).
 		Return(wrapper.InternalServerError(internalError)).
-		Once()
-
-	storageService.On("DeleteDirectory", directories[1]).
-		Return(wrapper.NotFoundError(errors.New("not found"))).
 		Once()
 
 	// when
@@ -45,13 +41,11 @@ func TestDeleteDirectoriesStorageHandler_WhenSuccessful_ShouldDeleteDirectories(
 	storageService := new(service.StorageServiceMock)
 	_uut := storage.NewDeleteDirectoriesStorageHandler(logger.NewLoggerMock(), storageService)
 
-	directories := []any{"dir1/dir2/file.exe", "some_file.png", "an_image.jpeg"}
+	directories := []string{"dir1/dir2/file.exe", "some_file.png", "an_image.jpeg"}
 
-	for _, directory := range directories {
-		storageService.On("DeleteDirectory", directory).
-			Return(nil).
-			Once()
-	}
+	storageService.On("DeleteDirectories", directories).
+		Return(nil).
+		Once()
 
 	// when
 	payload, _ := json.Marshal(&directories)

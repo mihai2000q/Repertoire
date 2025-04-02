@@ -4,148 +4,163 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"repertoire/storage/data/logger"
 	"repertoire/storage/internal"
 	"testing"
 	"time"
 )
 
-// Utils
-
-func createToken(
-	signingMethod jwt.SigningMethod,
-	jwtExpirationTime string,
-	jwtIssuer string,
-	jwtAudience string,
-	jwtSecretKey string,
-	jti string,
-) string {
-	expiresIn, _ := time.ParseDuration(jwtExpirationTime)
-
-	claims := jwt.NewWithClaims(signingMethod, jwt.MapClaims{
-		"jti": jti,
-		"iss": jwtIssuer,
-		"aud": jwtAudience,
-		"iat": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(expiresIn).Unix(),
-	})
-	token, _ := claims.SignedString([]byte(jwtSecretKey))
-	return token
-}
-
-func validateToken(t *testing.T, tokenString string, env internal.Env) {
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		return []byte(env.JwtSecretKey), nil
-	})
-	assert.NoError(t, err)
-
-	aud, err := token.Claims.GetAudience()
-	assert.NoError(t, err)
-
-	iss, err := token.Claims.GetIssuer()
-	assert.NoError(t, err)
-
-	jtiClaim := token.Claims.(jwt.MapClaims)["jti"].(string)
-	jti, err := uuid.Parse(jtiClaim)
-	assert.NoError(t, err)
-
-	assert.Equal(t, jwt.SigningMethodHS256, token.Method)
-	assert.Equal(t, env.JwtIssuer, iss)
-	assert.Len(t, aud, 1)
-	assert.Equal(t, env.JwtAudience, aud[0])
-	assert.NotEmpty(t, jti)
-}
-
 // Tests
 
 func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T) {
 	env := internal.Env{
-		JwtSecretKey:      "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
-		JwtIssuer:         "JWTIssuer",
-		JwtAudience:       "JWTAudience",
-		JwtExpirationTime: "1h",
+		JwtSecretKey: "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
+		JwtIssuer:    "JWTIssuer",
+		JwtAudience:  "JWTAudience",
 	}
 
 	tests := []struct {
-		name  string
-		token string
+		name      string
+		claims    *jwt.Token
+		secretKey string
 	}{
 		{
 			"When Secret key is wrong",
-			createToken(
-				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
-				env.JwtIssuer,
-				env.JwtAudience,
-				"secret is wrong",
-				uuid.New().String(),
-			),
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{}),
+			"wrong secret key",
 		},
 		{
 			"When Token has expired",
-			createToken(
-				jwt.SigningMethodHS256,
-				"-1s",
-				env.JwtIssuer,
-				env.JwtAudience,
-				env.JwtSecretKey,
-				uuid.New().String(),
-			),
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"exp": time.Now().UTC().Add(-1 * time.Second).Unix(),
+			}),
+			env.JwtSecretKey,
+		},
+		// signing method
+		{
+			"When signing method is wrong",
+			jwt.NewWithClaims(jwt.SigningMethodHS384, jwt.MapClaims{}),
+			env.JwtSecretKey,
+		},
+		// audience
+		{
+			"When Audience is missing",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{}),
+			env.JwtSecretKey,
 		},
 		{
-			"When Signing Method is wrong",
-			createToken(
-				jwt.SigningMethodEdDSA,
-				env.JwtExpirationTime,
-				env.JwtIssuer,
-				env.JwtAudience,
-				env.JwtSecretKey,
-				uuid.New().String(),
-			),
+			"When audience has too many elements",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": []string{env.JwtAudience, "some audience"},
+			}),
+			env.JwtSecretKey,
 		},
 		{
-			"When Issuer is wrong",
-			createToken(
-				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
-				"Random issuer",
-				env.JwtAudience,
-				env.JwtSecretKey,
-				uuid.New().String(),
-			),
+			"When audience is wrong",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": "some audience",
+			}),
+			env.JwtSecretKey,
+		},
+		// issuer
+		{
+			"When Issuer is missing",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+			}),
+			env.JwtSecretKey,
 		},
 		{
-			"When Audience is wrong",
-			createToken(
-				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
-				env.JwtIssuer,
-				"audience",
-				env.JwtSecretKey,
-				uuid.New().String(),
-			),
+			"When issuer is wrong",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": "some issuer",
+			}),
+			env.JwtSecretKey,
+		},
+		// expiration time
+		{
+			"When Expiration Time is missing",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+			}),
+			env.JwtSecretKey,
+		},
+		// jti
+		{
+			"When Jti is missing",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+			}),
+			env.JwtSecretKey,
 		},
 		{
-			"When jti is wrong",
-			createToken(
-				jwt.SigningMethodHS256,
-				env.JwtExpirationTime,
-				env.JwtIssuer,
-				env.JwtAudience,
-				env.JwtSecretKey,
-				"Random jti",
-			),
+			"When Jti is not uuid",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+				"jti": "something",
+			}),
+			env.JwtSecretKey,
+		},
+		{
+			"When jti is uuid nil",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+				"jti": uuid.Nil.String(),
+			}),
+			env.JwtSecretKey,
+		},
+		// sub
+		{
+			"When sub is missing",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+				"jti": uuid.New().String(),
+			}),
+			env.JwtSecretKey,
+		},
+		{
+			"When sub is not uuid",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+				"jti": uuid.New().String(),
+				"sub": "something",
+			}),
+			env.JwtSecretKey,
+		},
+		{
+			"When sub is uuid nil",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"aud": env.JwtAudience,
+				"iss": env.JwtIssuer,
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+				"jti": uuid.New().String(),
+				"sub": uuid.Nil.String(),
+			}),
+			env.JwtSecretKey,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			_uut := jwtService{
-				env: env,
-			}
+			_uut := NewJwtService(env, logger.NewLoggerMock())
+
+			token, _ := tt.claims.SignedString([]byte(tt.secretKey))
 
 			// when
-			err := _uut.Authorize(tt.token)
+			err := _uut.Authorize(token)
 
 			// then
 			assert.Error(t, err)
@@ -154,49 +169,41 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnError(t *testing.T)
 }
 
 func TestJwtService_Authorize_WhenSuccessful_ShouldNotReturnError(t *testing.T) {
-	// given
 	env := internal.Env{
-		JwtSecretKey:      "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
-		JwtIssuer:         "JWTIssuer",
-		JwtAudience:       "JWTAudience",
-		JwtExpirationTime: "1h",
-	}
-	_uut := jwtService{
-		env: env,
+		JwtSecretKey: "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
+		JwtIssuer:    "JWTIssuer",
+		JwtAudience:  "JWTAudience",
 	}
 
-	token := createToken(
-		jwt.SigningMethodHS256,
-		env.JwtExpirationTime,
-		env.JwtIssuer,
-		env.JwtAudience,
-		env.JwtSecretKey,
-		uuid.New().String(),
-	)
-
-	// when
-	err := _uut.Authorize(token)
-
-	// then
-	assert.NoError(t, err)
-}
-
-func TestJwtService_CreateToken_WhenSuccessful_ShouldReturnToken(t *testing.T) {
-	// given
-	env := internal.Env{
-		JwtSecretKey:      "This-is-a-very-long-secret-key-that-is-used-to-encrypt-the-token",
-		JwtIssuer:         "JWTIssuer",
-		JwtAudience:       "JWTAudience",
-		JwtExpirationTime: "1h",
-	}
-	_uut := jwtService{
-		env: env,
+	tests := []struct {
+		name   string
+		claims *jwt.Token
+	}{
+		{
+			"Normal Token",
+			jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"jti": uuid.New().String(),
+				"sub": uuid.New().String(),
+				"iss": env.JwtIssuer,
+				"aud": env.JwtAudience,
+				"iat": time.Now().UTC().Unix(),
+				"exp": time.Now().UTC().Add(time.Minute).Unix(),
+			}),
+		},
 	}
 
-	// when
-	token, err := _uut.CreateToken()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := NewJwtService(env, nil)
 
-	// then
-	assert.NoError(t, err)
-	validateToken(t, token, env)
+			token, _ := tt.claims.SignedString([]byte(env.JwtSecretKey))
+
+			// when
+			err := _uut.Authorize(token)
+
+			// then
+			assert.NoError(t, err)
+		})
+	}
 }

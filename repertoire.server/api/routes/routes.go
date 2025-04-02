@@ -17,7 +17,6 @@ func NewRoutes(
 	lc fx.Lifecycle,
 	albumRouter router.AlbumRouter,
 	artistRouter router.ArtistRouter,
-	authRouter router.AuthRouter,
 	playlistRouter router.PlaylistRouter,
 	searchRouter router.SearchRouter,
 	songRouter router.SongRouter,
@@ -27,7 +26,6 @@ func NewRoutes(
 	routes := &Routes{
 		albumRouter,
 		artistRouter,
-		authRouter,
 		playlistRouter,
 		searchRouter,
 		songRouter,

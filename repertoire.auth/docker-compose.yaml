@@ -1,0 +1,22 @@
+name: repertoire
+services:
+  auth:
+    build: 
+      context: .
+      args:
+        SERVER_PORT: ${SERVER_PORT}
+    container_name: Repertoire-Auth
+    env_file: ".env"
+    environment:
+      - IS_RUNNING_IN_CONTAINER=true
+      - SERVER_HOST=0.0.0.0
+      - DB_HOST=Repertoire-Database
+      - DB_PORT=5432
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    networks:
+      - repertoire_repertoire_network
+
+networks:
+  repertoire_repertoire_network:
+    external: true

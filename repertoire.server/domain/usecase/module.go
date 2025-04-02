@@ -4,7 +4,6 @@ import (
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/domain/usecase/artist/band/member"
-	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/domain/usecase/song"
@@ -52,13 +51,6 @@ var artistUseCases = fx.Options(
 	fx.Provide(member.NewUpdateBandMember),
 
 	fx.Provide(member.NewGetBandMemberRoles),
-)
-
-var authUseCases = fx.Options(
-	fx.Provide(auth.NewRefresh),
-	fx.Provide(auth.NewSignIn),
-	fx.Provide(auth.NewSignUp),
-	fx.Provide(auth.NewGetCentrifugoToken),
 )
 
 var playlistUseCases = fx.Options(
@@ -129,13 +121,13 @@ var userUseCases = fx.Options(
 	fx.Provide(user.NewDeleteProfilePictureFromUser),
 	fx.Provide(user.NewGetUser),
 	fx.Provide(user.NewSaveProfilePictureToUser),
+	fx.Provide(user.NewSignUp),
 	fx.Provide(user.NewUpdateUser),
 )
 
 var Module = fx.Options(
 	albumUseCases,
 	artistUseCases,
-	authUseCases,
 	playlistUseCases,
 	searchUseCases,
 	songUseCases,

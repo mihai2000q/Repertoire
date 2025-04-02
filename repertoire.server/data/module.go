@@ -6,6 +6,7 @@ import (
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
 	"repertoire/server/data/http"
+	"repertoire/server/data/http/client"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/message"
 	"repertoire/server/data/realtime"
@@ -34,7 +35,8 @@ var loggers = fx.Options(
 
 var httpClients = fx.Options(
 	fx.Provide(http.NewRestyClient),
-	fx.Provide(http.NewStorageClient),
+	fx.Provide(client.NewAuthClient),
+	fx.Provide(client.NewStorageClient),
 )
 
 var repositories = fx.Options(
@@ -47,6 +49,7 @@ var repositories = fx.Options(
 )
 
 var services = fx.Options(
+	fx.Provide(service.NewAuthService),
 	fx.Provide(service.NewBCryptService),
 	fx.Provide(service.NewJwtService),
 	fx.Provide(service.NewSearchTaskTrackerService),

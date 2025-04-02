@@ -31,8 +31,8 @@ func (a *Artist) ToSearch() ArtistSearch {
 		Name:     a.Name,
 		SearchBase: SearchBase{
 			ID:        "artist-" + a.ID.String(),
-			UpdatedAt: a.UpdatedAt,
-			CreatedAt: a.CreatedAt,
+			UpdatedAt: a.UpdatedAt.UTC(),
+			CreatedAt: a.CreatedAt.UTC(),
 			Type:      enums.Artist,
 			UserID:    a.UserID,
 		},
@@ -57,14 +57,19 @@ type AlbumArtistSearch struct {
 }
 
 func (a *Album) ToSearch() AlbumSearch {
+	var releaseDate *time.Time
+	if a.ReleaseDate != nil {
+		rd := (*a.ReleaseDate).UTC()
+		releaseDate = &rd
+	}
 	search := AlbumSearch{
 		ImageUrl:    a.ImageURL.StripURL(),
 		Title:       a.Title,
-		ReleaseDate: a.ReleaseDate,
+		ReleaseDate: releaseDate,
 		SearchBase: SearchBase{
 			ID:        "album-" + a.ID.String(),
-			UpdatedAt: a.UpdatedAt,
-			CreatedAt: a.CreatedAt,
+			UpdatedAt: a.UpdatedAt.UTC(),
+			CreatedAt: a.CreatedAt.UTC(),
 			Type:      enums.Album,
 			UserID:    a.UserID,
 		},
@@ -84,7 +89,7 @@ func (a *Artist) ToAlbumSearch() *AlbumArtistSearch {
 	return &AlbumArtistSearch{
 		ID:        a.ID,
 		Name:      a.Name,
-		UpdatedAt: a.UpdatedAt,
+		UpdatedAt: a.UpdatedAt.UTC(),
 		ImageUrl:  a.ImageURL.StripURL(),
 	}
 }
@@ -116,14 +121,19 @@ type SongArtistSearch struct {
 }
 
 func (s *Song) ToSearch() SongSearch {
+	var releaseDate *time.Time
+	if s.ReleaseDate != nil {
+		rd := (*s.ReleaseDate).UTC()
+		releaseDate = &rd
+	}
 	search := SongSearch{
 		ImageUrl:    s.ImageURL.StripURL(),
 		Title:       s.Title,
-		ReleaseDate: s.ReleaseDate,
+		ReleaseDate: releaseDate,
 		SearchBase: SearchBase{
 			ID:        "song-" + s.ID.String(),
-			UpdatedAt: s.UpdatedAt,
-			CreatedAt: s.CreatedAt,
+			UpdatedAt: s.UpdatedAt.UTC(),
+			CreatedAt: s.CreatedAt.UTC(),
 			Type:      enums.Song,
 			UserID:    s.UserID,
 		},
@@ -147,7 +157,7 @@ func (a *Artist) ToSongSearch() *SongArtistSearch {
 	return &SongArtistSearch{
 		ID:        a.ID,
 		Name:      a.Name,
-		UpdatedAt: a.UpdatedAt,
+		UpdatedAt: a.UpdatedAt.UTC(),
 		ImageUrl:  a.ImageURL.StripURL(),
 	}
 }
@@ -156,11 +166,16 @@ func (a *Album) ToSongSearch() *SongAlbumSearch {
 	if a == nil {
 		return nil
 	}
+	var releaseDate *time.Time
+	if a.ReleaseDate != nil {
+		rd := (*a.ReleaseDate).UTC()
+		releaseDate = &rd
+	}
 	return &SongAlbumSearch{
 		ID:          a.ID,
 		Title:       a.Title,
-		ReleaseDate: a.ReleaseDate,
-		UpdatedAt:   a.UpdatedAt,
+		ReleaseDate: releaseDate,
+		UpdatedAt:   a.UpdatedAt.UTC(),
 		ImageUrl:    a.ImageURL.StripURL(),
 	}
 }
@@ -179,8 +194,8 @@ func (p *Playlist) ToSearch() PlaylistSearch {
 		Title:    p.Title,
 		SearchBase: SearchBase{
 			ID:        "playlist-" + p.ID.String(),
-			UpdatedAt: p.UpdatedAt,
-			CreatedAt: p.CreatedAt,
+			UpdatedAt: p.UpdatedAt.UTC(),
+			CreatedAt: p.CreatedAt.UTC(),
 			Type:      enums.Playlist,
 			UserID:    p.UserID,
 		},

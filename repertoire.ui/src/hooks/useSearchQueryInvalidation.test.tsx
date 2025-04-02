@@ -11,7 +11,7 @@ describe('use Search Query Invalidation', () => {
 
   const token = 'some-token'
   const handlers = [
-    http.get('/auth/centrifugo', async () => {
+    http.get('/centrifugo/token', async () => {
       return HttpResponse.json(token)
     })
   ]

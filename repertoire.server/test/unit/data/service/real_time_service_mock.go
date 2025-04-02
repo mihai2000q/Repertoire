@@ -10,8 +10,3 @@ func (r *RealTimeServiceMock) Publish(channel string, userID string, payload any
 	args := r.Called(channel, userID, payload)
 	return args.Error(0)
 }
-
-func (r *RealTimeServiceMock) CreateToken(userID string) string {
-	args := r.Called(userID)
-	return args.String(0)
-}

@@ -11,7 +11,7 @@ Before you can get started, there are some things you need to have installed on 
 
 ### Go
 
-First, the application is written in Golan, so you need the Go SDK.
+First, the application is written in Golang, so you need the Go SDK.
 If you don't have it already installed, please download it from here: `https://go.dev/dl/`.
 
 ## Get Started
@@ -38,27 +38,6 @@ To run the application from the CLI, type the following command:
 go run main.go
 ```
 
-### Quick Test
-
-Now to be sure that everything works accordingly, try sending an HTTP Request (e.g., via Postman) to
-`http://localhost:1123/api`.
-
-```js
-PUT {{host}}/auth/sign-in
-```
-
-And the body of the request shall be:
-
-```json
-{
-    "email": "Some@Example.com",
-    "password": "Password123"
-}
-```
-
-It will return an Invalid Credentials Error, however,
-now you know that you have a working connection to the API and to the database.
-
 
 ## Build Executable
 
@@ -69,12 +48,6 @@ go build
 ```
 
 Usually, it will detect the system you are on and build an accustomed executable.
-
-## Api
-
-### Signed URLs
-
-...
 
 ## Testing
 

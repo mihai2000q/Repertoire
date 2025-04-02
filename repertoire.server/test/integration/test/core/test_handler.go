@@ -151,31 +151,29 @@ func (t *testHandler) requestWithAuthentication(req *http.Request) {
 }
 
 func (t *testHandler) createInvalidToken() string {
-	env := internal.NewEnv()
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": uuid.New().String(),
-		"iss": env.JwtIssuer,
-		"aud": env.JwtAudience,
+		"iss": jwtInfo.Issuer,
+		"aud": jwtInfo.Audience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
+	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(jwtInfo.PrivateKey))
+	token, _ := claims.SignedString(privateKey)
 	return token
 }
 
 func (t *testHandler) createToken(user model.User) string {
-	env := internal.NewEnv()
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
-		"iss": env.JwtIssuer,
-		"aud": env.JwtAudience,
+		"iss": jwtInfo.Issuer,
+		"aud": jwtInfo.Audience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
+	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(jwtInfo.PrivateKey))
+	token, _ := claims.SignedString(privateKey)
 	return token
 }

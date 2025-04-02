@@ -11,6 +11,7 @@ import { GuitarTuning, SongSectionType } from '../../../types/models/Song.ts'
 import Difficulty from '../../../utils/enums/Difficulty.ts'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
 import SearchType from '../../../utils/enums/SearchType.ts'
+import dayjs from 'dayjs'
 
 describe('Add New Song Modal', () => {
   const albums: AlbumSearch[] = [
@@ -740,7 +741,6 @@ describe('Add New Song Modal', () => {
       const newBpm = 123
       const now = new Date()
       const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
-      const whichDayIsCurrentDay = newReleaseDate.getDate() > 15 ? 1 : 0
 
       // sections
       const newSectionType = songSectionTypes[0]
@@ -776,8 +776,9 @@ describe('Add New Song Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /bpm/i }), newBpm.toString())
 
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      const dates = screen.getAllByText(newReleaseDate.getDate().toString())
-      await user.click(dates.length > 1 ? dates[whichDayIsCurrentDay] : dates[0])
+      await user.click(
+        screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
+      )
 
       // sections
       await user.click(screen.getByRole('button', { name: /add section/i }))

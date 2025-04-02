@@ -19,6 +19,7 @@ func (s StorageRouter) RegisterRoutes() {
 	privateApi := s.requestHandler.PrivateRouter.Group("/storage")
 	{
 		privateApi.PUT("/upload", s.handler.Upload)
+		privateApi.PUT("/directories", s.handler.DeleteDirectories)
 		privateApi.DELETE("/files/*filePath", s.handler.DeleteFile)
 		privateApi.DELETE("/directories/*directoryPath", s.handler.DeleteDirectory)
 	}

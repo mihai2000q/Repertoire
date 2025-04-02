@@ -28,8 +28,8 @@ func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) *wrapper.Err
 	return errCode
 }
 
-func (s *StorageServiceMock) DeleteDirectory(directoryPath string) *wrapper.ErrorCode {
-	args := s.Called(directoryPath)
+func (s *StorageServiceMock) DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode {
+	args := s.Called(directoryPaths)
 
 	var errCode *wrapper.ErrorCode
 	if a := args.Get(0); a != nil {
