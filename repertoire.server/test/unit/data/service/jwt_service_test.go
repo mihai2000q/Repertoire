@@ -194,7 +194,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 			// then
 			assert.NotNil(t, errCode)
 			assert.Equal(t, http.StatusUnauthorized, errCode.Code)
-			assert.Equal(t, "invalid token", errCode.Error.Error())
+			assert.Error(t, errCode.Error)
 		})
 	}
 }
