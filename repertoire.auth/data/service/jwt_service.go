@@ -40,17 +40,14 @@ func (j jwtService) Authorize(authToken string) *wrapper.ErrorCode {
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	token, err := jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
+	_, err = jwt.Parse(authToken, func(t *jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	})
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
 
-	if token != nil && token.Valid {
-		return nil
-	}
-	return wrapper.UnauthorizedError(errors.New("invalid token"))
+	return nil
 }
 
 func (j jwtService) GetUserIDFromJwt(tokenString string) (uuid.UUID, *wrapper.ErrorCode) {
