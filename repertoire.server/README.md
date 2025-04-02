@@ -102,20 +102,11 @@ go run main.go
 Now to be sure that everything works accordingly, try sending an HTTP Request (e.g., via Postman) to
 `http://localhost:8000/api`.
 
-```js
-PUT {{host}}/auth/sign-in
+```
+GET {{host}}/users/current
 ```
 
-And the body of the request shall be:
-
-```json
-{
-  "email": "Some@Example.com",
-  "password": "Password123"
-}
-```
-
-It will return an Invalid Credentials Error, however,
+It will return an Unauthorized Error, however,
 now you know that you have a working connection to the API and to the database.
 
 ## Sample Data
@@ -166,7 +157,8 @@ To put it in simple terms, the workflow of the application would be the followin
 The developer shall provide a token for endpoints that do not allow anonymous requests.
 One way to add one inside Postman is to go to the *Authorization* tab and under the type *JWT Bearer* add the following:
 
-- **Secret Key**, which can be found in `.env`
+- **Algorithm** is RS256
+- **Private Key**, which can be found in the authentication server in `.env`
 - **Payload** which should include the following:
     - **sub**, the user id of an existing user (coincide with db data)
     - **jti**, the id of the token (any uuid)
