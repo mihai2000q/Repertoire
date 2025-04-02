@@ -29,12 +29,12 @@ type storageService struct {
 }
 
 func NewStorageService(
-	httpClient client.StorageClient,
+	storageClient client.StorageClient,
 	authClient client.AuthClient,
 	cache cache.StorageCache,
 ) StorageService {
 	return &storageService{
-		storageClient: httpClient,
+		storageClient: storageClient,
 		authClient:    authClient,
 		cache:         cache,
 	}
