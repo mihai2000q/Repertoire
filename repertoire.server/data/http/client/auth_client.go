@@ -9,13 +9,13 @@ import (
 
 type AuthClient struct {
 	env internal.Env
-	*resty.Client
+	resty.Client
 }
 
 func NewAuthClient(client http.RestyClient, env internal.Env) AuthClient {
 	return AuthClient{
 		env:    env,
-		Client: client.SetBaseURL(env.AuthUrl),
+		Client: *client.SetBaseURL(env.AuthUrl),
 	}
 }
 

@@ -8,12 +8,12 @@ import (
 )
 
 type StorageClient struct {
-	*resty.Client
+	resty.Client
 }
 
 func NewStorageClient(client http.RestyClient, env internal.Env) StorageClient {
 	return StorageClient{
-		client.SetBaseURL(env.StorageUrl),
+		*client.SetBaseURL(env.StorageUrl),
 	}
 }
 
