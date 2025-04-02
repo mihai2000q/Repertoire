@@ -1,7 +1,7 @@
 {
   "name": "repertoire",
   "description": "A Music Application developed entirely in React and TypeScript",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
