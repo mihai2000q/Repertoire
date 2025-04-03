@@ -1,18 +1,5 @@
 import Song from '../../types/models/Song'
-import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
-import {
-  Anchor,
-  AspectRatio,
-  Box,
-  Card,
-  Center,
-  Group,
-  Image,
-  Menu,
-  Stack,
-  Text,
-  Tooltip
-} from '@mantine/core'
+import { Anchor, Avatar, Box, Card, Center, Group, Menu, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
@@ -37,6 +24,7 @@ import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -117,17 +105,22 @@ function SongCard({ song }: SongCardProps) {
           })}
         >
           <Stack gap={0}>
-            <AspectRatio ratio={8 / 7}>
-              <Image
-                radius={'16px'}
-                src={song.imageUrl ?? song.album?.imageUrl}
-                fallbackSrc={imagePlaceholder}
-                alt={song.title}
-                style={(theme) => ({
-                  boxShadow: theme.shadows.sm
-                })}
-              />
-            </AspectRatio>
+            <Avatar
+              radius={'10%'}
+              src={song.imageUrl ?? song.album?.imageUrl}
+              alt={song.title}
+              w={'100%'}
+              h={'unset'}
+              bg={'gray.5'}
+              style={(theme) => ({
+                aspectRatio: 8 / 7,
+                boxShadow: theme.shadows.sm
+              })}
+            >
+              <Center c={'white'}>
+                <CustomIconMusicNoteEighth size={'100%'} style={{ padding: '30%' }} />
+              </Center>
+            </Avatar>
 
             <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
               <Text fw={600} lineClamp={2} inline mb={1}>
