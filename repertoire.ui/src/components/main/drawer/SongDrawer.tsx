@@ -1,14 +1,13 @@
 import {
   ActionIcon,
   Anchor,
-  AspectRatio,
   Avatar,
   Box,
+  Center,
   Divider,
   Grid,
   Group,
   HoverCard,
-  Image,
   Menu,
   NumberFormatter,
   Stack,
@@ -19,8 +18,6 @@ import {
 import { useDeleteSongMutation, useGetSongQuery } from '../../../state/api/songsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -43,8 +40,10 @@ import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
 import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
-import PerfectRehearsalMenuItem from "../../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
-import PartialRehearsalMenuItem from "../../@ui/menu/item/PartialRehearsalMenuItem.tsx";
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -122,13 +121,19 @@ function SongDrawer() {
           onMouseLeave={() => setIsHovered(false)}
           pos={'relative'}
         >
-          <AspectRatio ratio={4 / 3}>
-            <Image
-              src={song.imageUrl ?? song.album?.imageUrl}
-              fallbackSrc={songPlaceholder}
-              alt={song.title}
-            />
-          </AspectRatio>
+          <Avatar
+            radius={0}
+            w={'100%'}
+            h={'unset'}
+            src={song.imageUrl ?? song.album?.imageUrl}
+            alt={song.title}
+            bg={'gray.5'}
+            style={{ aspectRatio: 4 / 3 }}
+          >
+            <Center c={'white'}>
+              <CustomIconMusicNote size={'100%'} style={{ padding: '35%' }} />
+            </Center>
+          </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
             <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
@@ -213,11 +218,16 @@ function SongDrawer() {
                   <HoverCard.Dropdown maw={300}>
                     <Group gap={'xs'} wrap={'nowrap'}>
                       <Avatar
-                        size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? albumPlaceholder}
+                        size={45}
+                        src={song.album.imageUrl}
                         alt={song.album.title}
-                      />
+                        bg={'gray.5'}
+                      >
+                        <Center c={'white'}>
+                          <CustomIconAlbumVinyl size={18} />
+                        </Center>
+                      </Avatar>
                       <Stack gap={2}>
                         <Text fw={500} fz={'xs'} inline>
                           Album

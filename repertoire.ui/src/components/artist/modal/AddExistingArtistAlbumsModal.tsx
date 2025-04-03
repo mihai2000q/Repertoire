@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  Center,
   Checkbox,
   Group,
   LoadingOverlay,
@@ -18,11 +19,11 @@ import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
-import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
 import SearchType from '../../../utils/enums/SearchType.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 
 interface AddExistingArtistAlbumsModalProps {
   opened: boolean
@@ -180,11 +181,11 @@ function AddExistingArtistAlbumsModal({
                       onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
                       pr={'sm'}
                     />
-                    <Avatar
-                      radius={'md'}
-                      src={album.imageUrl ?? albumPlaceholder}
-                      alt={album.title}
-                    />
+                    <Avatar radius={'md'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+                      <Center c={'white'}>
+                        <CustomIconAlbumVinyl size={14} />
+                      </Center>
+                    </Avatar>
                     <Text fw={500} lineClamp={2}>
                       {album.title}
                     </Text>

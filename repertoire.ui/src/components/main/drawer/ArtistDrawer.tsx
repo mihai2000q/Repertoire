@@ -3,6 +3,7 @@ import {
   AspectRatio,
   Avatar,
   Box,
+  Center,
   Divider,
   Group,
   Image,
@@ -15,9 +16,7 @@ import {
 import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
-import imagePlaceholder from '../../../assets/user-placeholder.jpg'
-import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
@@ -31,6 +30,8 @@ import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
 import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -109,7 +110,7 @@ function ArtistDrawer() {
           pos={'relative'}
         >
           <AspectRatio ratio={4 / 3}>
-            <Image src={artist.imageUrl} fallbackSrc={imagePlaceholder} alt={artist.name} />
+            <Image src={artist.imageUrl} fallbackSrc={userPlaceholder} alt={artist.name} />
           </AspectRatio>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
@@ -165,24 +166,25 @@ function ArtistDrawer() {
           )}
 
           <Group align={'start'} px={6} gap={'sm'}>
-            {artist.isBand && artist.bandMembers.map((bandMember) => (
-              <Stack key={bandMember.id} align={'center'} gap={'xxs'} w={53}>
-                <Avatar
-                  variant={'light'}
-                  size={42}
-                  color={bandMember.color}
-                  src={bandMember.imageUrl}
-                  alt={bandMember.name}
-                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                >
-                  <IconUser size={19} />
-                </Avatar>
+            {artist.isBand &&
+              artist.bandMembers.map((bandMember) => (
+                <Stack key={bandMember.id} align={'center'} gap={'xxs'} w={53}>
+                  <Avatar
+                    variant={'light'}
+                    size={42}
+                    color={bandMember.color}
+                    src={bandMember.imageUrl}
+                    alt={bandMember.name}
+                    style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                  >
+                    <IconUser size={19} />
+                  </Avatar>
 
-                <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
-                  {bandMember.name}
-                </Text>
-              </Stack>
-            ))}
+                  <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
+                    {bandMember.name}
+                  </Text>
+                </Stack>
+              ))}
           </Group>
 
           {albums.totalCount > 0 && (
@@ -198,13 +200,19 @@ function ArtistDrawer() {
             {albums.models.map((album) => (
               <Group key={album.id} wrap={'nowrap'} gap={'xs'}>
                 <Avatar
-                  radius={'8px'}
+                  radius={'md'}
                   size={28}
-                  src={album.imageUrl ?? albumPlaceholder}
+                  src={album.imageUrl}
                   alt={album.title}
-                />
+                  bg={'gray.5'}
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                >
+                  <Center c={'white'}>
+                    <CustomIconAlbumVinyl size={13} />
+                  </Center>
+                </Avatar>
                 <Stack gap={1} style={{ overflow: 'hidden' }}>
-                  <Text fw={500} truncate={'end'} inline>
+                  <Text fw={500} truncate={'end'} lh={'xxs'}>
                     {album.title}
                   </Text>
                   {album.releaseDate && (
@@ -230,13 +238,19 @@ function ArtistDrawer() {
             {songs.models.map((song) => (
               <Group key={song.id} gap={'xs'} wrap={'nowrap'}>
                 <Avatar
-                  radius={'8px'}
+                  radius={'md'}
                   size={28}
-                  src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+                  src={song.imageUrl ?? song.album?.imageUrl}
                   alt={song.title}
-                />
+                  bg={'gray.5'}
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                >
+                  <Center c={'white'}>
+                    <CustomIconMusicNoteEighth size={16} />
+                  </Center>
+                </Avatar>
                 <Stack gap={1} style={{ overflow: 'hidden' }}>
-                  <Text fw={500} truncate={'end'} inline>
+                  <Text fw={500} truncate={'end'} lh={'xxs'}>
                     {song.title}
                   </Text>
                   {song.album && (

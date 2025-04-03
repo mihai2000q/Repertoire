@@ -3,6 +3,7 @@ import {
   ActionIcon,
   alpha,
   Avatar,
+  Center,
   Group,
   Menu,
   NumberFormatter,
@@ -10,7 +11,6 @@ import {
   Text,
   Tooltip
 } from '@mantine/core'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
@@ -29,6 +29,7 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.
 import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import { useRemoveSongsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
+import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -130,10 +131,15 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
           onContextMenu={openMenu}
         >
           <Avatar
-            radius={'8px'}
-            src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+            radius={'md'}
+            src={song.imageUrl ?? song.album?.imageUrl}
             alt={song.title}
-          />
+            bg={'gray.5'}
+          >
+            <Center c={'white'}>
+              <CustomIconMusicNoteEighth size={20} />
+            </Center>
+          </Avatar>
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
             <Group gap={'0px 4px'}>

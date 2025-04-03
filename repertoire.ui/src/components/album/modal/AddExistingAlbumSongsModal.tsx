@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  Center,
   Checkbox,
   Group,
   LoadingOverlay,
@@ -17,12 +18,12 @@ import {
 import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/api/albumsApi.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
 import SearchType from '../../../utils/enums/SearchType.ts'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface AddExistingAlbumSongsModalProps {
   opened: boolean
@@ -179,9 +180,14 @@ function AddExistingAlbumSongsModal({
                     />
                     <Avatar
                       radius={'md'}
-                      src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+                      src={song.imageUrl ?? song.album?.imageUrl}
                       alt={song.title}
-                    />
+                      bg={'gray.5'}
+                    >
+                      <Center c={'white'}>
+                        <CustomIconMusicNoteEighth size={18} />
+                      </Center>
+                    </Avatar>
                     <Stack gap={0}>
                       <Text fw={500} lineClamp={2}>
                         {song.title}

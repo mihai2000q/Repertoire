@@ -72,7 +72,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             })}
           >
             <Center c={'white'}>
-              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '38%' }} />
+              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '37%' }} />
             </Center>
           </Avatar>
         </Menu.Target>

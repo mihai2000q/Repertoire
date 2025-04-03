@@ -105,7 +105,7 @@ function Albums() {
             style={{ aspectRatio: 1 }}
           >
             <Center h={'100%'}>
-              <IconDisc size={'100%'} style={{ padding: '38%' }} />
+              <IconDisc size={'100%'} style={{ padding: '37%' }} />
             </Center>
           </Card>
         )}

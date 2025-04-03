@@ -86,7 +86,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             {isUnknownAlbum ? (
               <IconQuestionMark strokeWidth={3} size={'100%'} style={{ padding: '12%' }} />
             ) : (
-              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '35%' }} />
+              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '33%' }} />
             )}
           </Center>
         </Avatar>
