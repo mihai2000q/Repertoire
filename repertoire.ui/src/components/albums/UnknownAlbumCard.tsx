@@ -1,12 +1,12 @@
-import { AspectRatio, Image, Stack, Text } from '@mantine/core'
-import unknownPlaceholder from '../../assets/unknown-placeholder.png'
+import {Avatar, Center, Stack, Text} from '@mantine/core'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { IconQuestionMark } from '@tabler/icons-react'
 
 function UnknownArtistCard() {
   const navigate = useNavigate()
 
-  const [isImageHovered, setIsImageHovered] = useState(false)
+  const [isAvatarHovered, setIsAvatarHovered] = useState(false)
 
   function handleClick() {
     navigate(`/album/unknown`)
@@ -20,25 +20,32 @@ function UnknownArtistCard() {
       style={{
         alignSelf: 'start',
         transition: '0.3s',
-        ...(isImageHovered && { transform: 'scale(1.1)' })
+        ...(isAvatarHovered && { transform: 'scale(1.1)' })
       }}
     >
-      <AspectRatio>
-        <Image
-          onMouseEnter={() => setIsImageHovered(true)}
-          onMouseLeave={() => setIsImageHovered(false)}
-          radius={'lg'}
-          src={unknownPlaceholder}
-          onClick={handleClick}
-          alt={'unknown-album'}
-          sx={(theme) => ({
-            cursor: 'pointer',
-            transition: '0.3s',
-            boxShadow: theme.shadows.xxl,
-            '&:hover': { boxShadow: theme.shadows.xxl_hover }
-          })}
-        />
-      </AspectRatio>
+      <Avatar
+        onMouseEnter={() => setIsAvatarHovered(true)}
+        onMouseLeave={() => setIsAvatarHovered(false)}
+        radius={'10%'}
+        w={'100%'}
+        h={'unset'}
+        style={(theme) => ({
+          aspectRatio: 1,
+          cursor: 'pointer',
+          transition: '0.3s',
+          boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
+        })}
+        onClick={handleClick}
+      >
+        <Center c={'gray.6'}>
+          <IconQuestionMark
+            aria-label={'unknown-album'}
+            size={'100%'}
+            strokeWidth={3}
+            style={{ padding: '15%' }}
+          />
+        </Center>
+      </Avatar>
 
       <Stack pt={'xs'}>
         <Text fw={300} ta={'center'} fs={'italic'}>
