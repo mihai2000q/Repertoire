@@ -1,9 +1,9 @@
 import {
-  AspectRatio,
+  Avatar,
   Card,
   CardProps,
+  Center,
   Group,
-  Image,
   ScrollArea,
   SimpleGrid,
   Skeleton,
@@ -11,8 +11,8 @@ import {
   Text
 } from '@mantine/core'
 import { useGetPlaylistsQuery } from '../../state/api/playlistsApi.ts'
-import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
 import Playlist from '../../types/models/Playlist.ts'
+import { IconPlaylist } from '@tabler/icons-react'
 
 function Loader() {
   return (
@@ -38,24 +38,28 @@ function Loader() {
 function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
   return (
     <Group wrap={'nowrap'}>
-      <AspectRatio>
-        <Image
-          w={60}
-          src={playlist.imageUrl}
-          alt={playlist.title}
-          fallbackSrc={playlistPlaceholder}
-          radius={'lg'}
-          sx={(theme) => ({
-            cursor: 'pointer',
-            transition: '0.2s',
-            boxShadow: theme.shadows.sm,
-            '&:hover': {
-              boxShadow: theme.shadows.xl,
-              transform: 'scale(1.1)'
-            }
-          })}
-        />
-      </AspectRatio>
+      <Avatar
+        radius={'28%'}
+        w={60}
+        h={'unset'}
+        src={playlist.imageUrl}
+        alt={playlist.title}
+        bg={'gray.5'}
+        sx={(theme) => ({
+          aspectRatio: 1,
+          cursor: 'pointer',
+          transition: '0.2s',
+          boxShadow: theme.shadows.sm,
+          '&:hover': {
+            boxShadow: theme.shadows.xl,
+            transform: 'scale(1.1)'
+          }
+        })}
+      >
+        <Center c={'white'}>
+          <IconPlaylist size={'100%'} style={{ padding: '27%' }} />
+        </Center>
+      </Avatar>
 
       <Text fw={500} lineClamp={2}>
         {playlist.title}
@@ -88,7 +92,7 @@ function HomePlaylists({ ...others }: CardProps) {
           {/*DO NOT Change the Max Height, it helps with the responsive layout (somehow for some reason)*/}
           {/*Also the value 100 is randomly chosen, it has no effect whatsoever*/}
           <SimpleGrid cols={2} px={'md'} pt={'xs'} mah={100}>
-            {(isLoading || !playlists) ? (
+            {isLoading || !playlists ? (
               <Loader />
             ) : (
               playlists.models.map((playlist) => (
