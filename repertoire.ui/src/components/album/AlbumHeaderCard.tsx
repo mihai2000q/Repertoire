@@ -1,19 +1,6 @@
 import Album from '../../types/models/Album.ts'
-import {
-  AspectRatio,
-  Avatar,
-  Checkbox,
-  Group,
-  Image,
-  Menu,
-  Stack,
-  Text,
-  Title,
-  Tooltip
-} from '@mantine/core'
-import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
-import unknownPlaceholder from '../../assets/unknown-placeholder.png'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
+import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
 import userPlaceholder from '../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../utils/plural.ts'
@@ -29,7 +16,8 @@ import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
-import titleFontSize from "../../utils/titleFontSize.ts";
+import titleFontSize from '../../utils/titleFontSize.ts'
+import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -80,20 +68,28 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
       hideIcons={isUnknownAlbum}
     >
       <Group wrap={'nowrap'}>
-        <AspectRatio>
-          <Image
-            w={'max(12vw, 150px)'}
-            src={isUnknownAlbum ? unknownPlaceholder : album.imageUrl}
-            fallbackSrc={albumPlaceholder}
-            radius={'10%'}
-            alt={isUnknownAlbum ? 'unknown-album' : album.title}
-            sx={(theme) => ({
-              boxShadow: theme.shadows.lg,
-              ...(!isUnknownAlbum && album.imageUrl && { cursor: 'pointer' })
-            })}
-            onClick={!isUnknownAlbum && album.imageUrl ? openImage : undefined}
-          />
-        </AspectRatio>
+        <Avatar
+          src={isUnknownAlbum ? null : album.imageUrl}
+          alt={isUnknownAlbum ? 'unknown-album' : album.title}
+          radius={'10%'}
+          w={'max(12vw, 150px)'}
+          h={'unset'}
+          bg={isUnknownAlbum ? 'white' : 'gray.5'}
+          style={(theme) => ({
+            aspectRatio: 1,
+            boxShadow: theme.shadows.lg,
+            ...(!isUnknownAlbum && album.imageUrl && { cursor: 'pointer' })
+          })}
+          onClick={!isUnknownAlbum && album.imageUrl ? openImage : undefined}
+        >
+          <Center c={isUnknownAlbum ? 'gray.6' : 'white'}>
+            {isUnknownAlbum ? (
+              <IconQuestionMark strokeWidth={3} size={'100%'} style={{ padding: '12%' }} />
+            ) : (
+              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '35%' }} />
+            )}
+          </Center>
+        </Avatar>
         <Stack gap={'xxs'}>
           {!isUnknownAlbum && (
             <Text fw={500} inline>

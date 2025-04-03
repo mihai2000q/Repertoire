@@ -1,7 +1,6 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Avatar, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
-import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
-import unknownPlaceholder from '../../../assets/unknown-placeholder.png'
+import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
 import artistPlaceholder from '../../../assets/user-placeholder.jpg'
 import plural from '../../../utils/plural.ts'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
@@ -71,15 +70,22 @@ function ArtistHeaderCard({
     >
       <Group wrap={'nowrap'}>
         <Avatar
-          src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
-          size={'max(11vw, 125px)'}
+          src={isUnknownArtist ? null : (artist?.imageUrl ?? artistPlaceholder)}
           alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
-          sx={(theme) => ({
+          size={'max(11vw, 125px)'}
+          bg={isUnknownArtist ? 'white' : 'transparent'}
+          style={(theme) => ({
             boxShadow: theme.shadows.lg,
             ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
           })}
           onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
-        />
+        >
+          <Center c={isUnknownArtist ? 'gray.6' : 'white'}>
+            {isUnknownArtist && (
+              <IconQuestionMark strokeWidth={3} size={'100%'} style={{ padding: '12%' }} />
+            )}
+          </Center>
+        </Avatar>
         <Stack gap={'xxs'}>
           {!isUnknownArtist && (
             <Text fw={500} inline>
