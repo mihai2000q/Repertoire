@@ -32,7 +32,6 @@ import { useEffect, useState } from 'react'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
@@ -44,6 +43,7 @@ import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuIt
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from "../../@ui/icons/CustomIconUserAlt.tsx";
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -175,9 +175,15 @@ function SongDrawer() {
               <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   size={28}
-                  src={song.artist.imageUrl ?? userPlaceholder}
+                  src={song.artist.imageUrl}
                   alt={song.artist.name}
-                />
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                  bg={'gray.0'}
+                >
+                  <Center c={'gray.7'}>
+                    <CustomIconUserAlt size={13} />
+                  </Center>
+                </Avatar>
                 <Text
                   fw={700}
                   fz={'lg'}

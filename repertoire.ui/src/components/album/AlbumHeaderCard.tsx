@@ -1,7 +1,6 @@
 import Album from '../../types/models/Album.ts'
 import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../utils/plural.ts'
 import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
@@ -18,6 +17,7 @@ import ImageModal from '../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
 import titleFontSize from '../../utils/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -111,9 +111,15 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                 <Group gap={'xs'} wrap={'nowrap'}>
                   <Avatar
                     size={35}
-                    src={album.artist.imageUrl ?? userPlaceholder}
+                    src={album.artist.imageUrl}
                     alt={album.artist.name}
-                  />
+                    style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                    bg={'gray.0'}
+                  >
+                    <Center c={'gray.7'}>
+                      <CustomIconUserAlt size={15} />
+                    </Center>
+                  </Avatar>
                   <Text
                     fw={600}
                     fz={'lg'}

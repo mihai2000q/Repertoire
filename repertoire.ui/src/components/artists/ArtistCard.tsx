@@ -1,6 +1,5 @@
 import Artist from '../../types/models/Artist.ts'
-import { Avatar, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
+import { Avatar, Center, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
@@ -9,6 +8,7 @@ import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDeleteArtistMutation } from '../../state/api/artistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 
 interface ArtistCardProps {
   artist: Artist
@@ -58,10 +58,11 @@ function ArtistCard({ artist }: ArtistCardProps) {
           <Avatar
             onMouseEnter={() => setIsAvatarHovered(true)}
             onMouseLeave={() => setIsAvatarHovered(false)}
-            src={artist.imageUrl ?? artistPlaceholder}
+            src={artist.imageUrl}
             alt={artist.name}
             w={'100%'}
             h={'unset'}
+            bg={'gray.0'}
             style={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',
@@ -70,7 +71,11 @@ function ArtistCard({ artist }: ArtistCardProps) {
             })}
             onClick={handleClick}
             onContextMenu={openMenu}
-          />
+          >
+            <Center c={'gray.7'}>
+              <CustomIconUserAlt size={'100%'} style={{ padding: '27%' }} />
+            </Center>
+          </Avatar>
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>

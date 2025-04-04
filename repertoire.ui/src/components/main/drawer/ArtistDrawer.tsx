@@ -1,12 +1,10 @@
 import {
   ActionIcon,
-  AspectRatio,
   Avatar,
   Box,
   Center,
   Divider,
   Group,
-  Image,
   Menu,
   SimpleGrid,
   Stack,
@@ -16,7 +14,6 @@ import {
 import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
-import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
@@ -32,6 +29,7 @@ import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/slice/glob
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -109,9 +107,19 @@ function ArtistDrawer() {
           onMouseLeave={() => setIsHovered(false)}
           pos={'relative'}
         >
-          <AspectRatio ratio={4 / 3}>
-            <Image src={artist.imageUrl} fallbackSrc={userPlaceholder} alt={artist.name} />
-          </AspectRatio>
+          <Avatar
+            w={'100%'}
+            h={'unset'}
+            radius={0}
+            src={artist.imageUrl}
+            alt={artist.name}
+            bg={'gray.0'}
+            style={{ aspectRatio: 4 / 3 }}
+          >
+            <Center c={'gray.7'}>
+              <CustomIconUserAlt size={'100%'} style={{ padding: '26%' }} />
+            </Center>
+          </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
             <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>

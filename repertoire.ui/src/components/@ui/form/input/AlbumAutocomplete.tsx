@@ -146,13 +146,13 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                   <Group gap={'xs'} wrap={'nowrap'}>
                     <Avatar
                       radius={'md'}
-                      size={'md'}
+                      size={'sm'}
                       src={album.imageUrl}
                       alt={album.title}
                       bg={'gray.5'}
                     >
                       <Center c={'white'}>
-                        <CustomIconAlbumVinyl size={17} />
+                        <CustomIconAlbumVinyl size={12} />
                       </Center>
                     </Avatar>
                     <Stack gap={0}>

@@ -1,7 +1,6 @@
 import Artist from '../../../types/models/Artist.ts'
 import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
-import artistPlaceholder from '../../../assets/user-placeholder.jpg'
 import plural from '../../../utils/plural.ts'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import ArtistInfoModal from '../modal/ArtistInfoModal.tsx'
@@ -14,6 +13,7 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
 import lowerTitleFontSize from '../../../utils/lowerTitleFontSize.ts'
+import CustomIconUserAlt from "../../@ui/icons/CustomIconUserAlt.tsx";
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -70,19 +70,21 @@ function ArtistHeaderCard({
     >
       <Group wrap={'nowrap'}>
         <Avatar
-          src={isUnknownArtist ? null : (artist?.imageUrl ?? artistPlaceholder)}
+          src={isUnknownArtist ? null : artist?.imageUrl}
           alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
           size={'max(11vw, 125px)'}
-          bg={isUnknownArtist ? 'white' : 'transparent'}
+          bg={'white'}
           style={(theme) => ({
             boxShadow: theme.shadows.lg,
             ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
           })}
           onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
         >
-          <Center c={isUnknownArtist ? 'gray.6' : 'white'}>
-            {isUnknownArtist && (
+          <Center c={isUnknownArtist ? 'gray.6' : 'gray.7'}>
+            {isUnknownArtist ? (
               <IconQuestionMark strokeWidth={3} size={'100%'} style={{ padding: '12%' }} />
+            ) : (
+              <CustomIconUserAlt size={'100%'} style={{ padding: '28%' }} />
             )}
           </Center>
         </Avatar>

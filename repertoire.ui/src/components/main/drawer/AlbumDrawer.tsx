@@ -22,13 +22,13 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
-import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
 import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from "../../@ui/icons/CustomIconAlbumVinyl.tsx";
+import CustomIconUserAlt from "../../@ui/icons/CustomIconUserAlt.tsx";
 
 function AlbumDrawer() {
   const navigate = useNavigate()
@@ -145,9 +145,15 @@ function AlbumDrawer() {
                 <Group gap={6} wrap={'nowrap'}>
                   <Avatar
                     size={28}
-                    src={album.artist.imageUrl ?? userPlaceholder}
+                    src={album.artist.imageUrl}
                     alt={album.artist.name}
-                  />
+                    style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                    bg={'gray.0'}
+                  >
+                    <Center c={'gray.7'}>
+                      <CustomIconUserAlt size={13} />
+                    </Center>
+                  </Avatar>
                   <Text fw={600} fz={'lg'} lineClamp={1}>
                     {album.artist.name}
                   </Text>

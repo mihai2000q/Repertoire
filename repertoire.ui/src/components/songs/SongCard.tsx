@@ -123,7 +123,7 @@ function SongCard({ song }: SongCardProps) {
             </Avatar>
 
             <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
-              <Text fw={600} lineClamp={2} inline mb={1}>
+              <Text fw={600} lineClamp={2} lh={'xxs'} mb={1}>
                 {song.title}
               </Text>
               <Box pb={1}>

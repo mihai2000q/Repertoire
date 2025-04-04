@@ -21,7 +21,6 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../state/api/searchApi.ts'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { AlbumSearch, ArtistSearch, PlaylistSearch, SongSearch } from '../../types/models/Search.ts'
 import { useNavigate } from 'react-router-dom'
 import SearchType from '../../utils/enums/SearchType.ts'
@@ -30,6 +29,7 @@ import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../@ui/icons/CustomIconPlaylist2.tsx'
 import useSearchQueryCacheInvalidation from '../../hooks/useSearchQueryCacheInvalidation.ts'
+import CustomIconUserAlt from "../@ui/icons/CustomIconUserAlt.tsx";
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
@@ -129,10 +129,15 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar
-          src={artist.imageUrl ?? artistPlaceholder}
+          src={artist.imageUrl}
           alt={artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-        />
+          bg={'gray.0'}
+        >
+          <Center c={'gray.7'}>
+            <CustomIconUserAlt size={17} />
+          </Center>
+        </Avatar>
         <Highlight
           highlight={search}
           highlightStyles={{ fontWeight: 800 }}

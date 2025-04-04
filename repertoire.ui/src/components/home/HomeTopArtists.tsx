@@ -3,6 +3,7 @@ import {
   Avatar,
   Card,
   CardProps,
+  Center,
   Group,
   ScrollArea,
   Skeleton,
@@ -10,13 +11,13 @@ import {
   Text
 } from '@mantine/core'
 import Artist from '../../types/models/Artist.ts'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
 import { useGetArtistsQuery } from '../../state/api/artistsApi.ts'
 import { useRef, useState } from 'react'
 import { useDidUpdate, useHover, useViewportSize } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
+import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 
 function Loader() {
   return (
@@ -57,18 +58,21 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
       <Avatar
         ref={ref}
         size={'lg'}
-        src={artist.imageUrl ?? artistPlaceholder}
+        src={artist.imageUrl}
         alt={artist.name}
+        bg={'gray.0'}
         sx={(theme) => ({
           cursor: 'pointer',
           transition: '0.2s',
           boxShadow: theme.shadows.sm,
-          '&:hover': {
-            boxShadow: theme.shadows.xl
-          }
+          '&:hover': { boxShadow: theme.shadows.xl }
         })}
         onClick={handleClick}
-      />
+      >
+        <Center c={'gray.7'}>
+          <CustomIconUserAlt size={25} />
+        </Center>
+      </Avatar>
 
       <Text ta={'center'} fw={500} lineClamp={2}>
         {artist.name}
@@ -151,7 +155,7 @@ function HomeTopArtists({ ...others }: CardProps) {
           viewportProps={{ onScroll: handleOnScroll }}
         >
           <Group wrap={'nowrap'} h={'100%'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
-            {(isLoading || !artists) ? (
+            {isLoading || !artists ? (
               <Loader />
             ) : (
               artists.models.map((artist) => <LocalArtistCard key={artist.id} artist={artist} />)

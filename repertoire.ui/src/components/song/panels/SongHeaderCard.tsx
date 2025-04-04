@@ -1,7 +1,6 @@
 import Song from '../../../types/models/Song.ts'
 import { Avatar, Center, Group, HoverCard, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
-import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import EditSongHeaderModal from '../modal/EditSongHeaderModal.tsx'
@@ -19,6 +18,7 @@ import titleFontSize from '../../../utils/titleFontSize.ts'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -100,9 +100,15 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
               <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   size={35}
-                  src={song.artist.imageUrl ?? userPlaceholder}
+                  src={song.artist.imageUrl}
                   alt={song.artist.name}
-                />
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                  bg={'gray.0'}
+                >
+                  <Center c={'gray.7'}>
+                    <CustomIconUserAlt size={15} />
+                  </Center>
+                </Avatar>
                 <Text
                   fw={700}
                   fz={'lg'}

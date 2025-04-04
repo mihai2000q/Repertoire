@@ -1,6 +1,7 @@
 import {
   alpha,
   Avatar,
+  Center,
   Group,
   Menu,
   Skeleton,
@@ -9,8 +10,13 @@ import {
   UnstyledButton,
   UnstyledButtonProps
 } from '@mantine/core'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
-import { IconCaretDownFilled, IconLogout2, IconSettings, IconUser } from '@tabler/icons-react'
+import {
+  IconCaretDownFilled,
+  IconLogout2,
+  IconSettings,
+  IconUser,
+  IconUserFilled
+} from '@tabler/icons-react'
 import AccountModal from './modal/AccountModal.tsx'
 import SettingsModal from './modal/SettingsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -63,7 +69,11 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
           {...others}
         >
           <Group gap={'xxs'}>
-            <Avatar src={user.profilePictureUrl ?? userPlaceholder} />
+            <Avatar src={user.profilePictureUrl} bg={'gray.0'}>
+              <Center c={'gray.7'}>
+                <IconUserFilled size={20} />
+              </Center>
+            </Avatar>
             <IconCaretDownFilled size={12} />
           </Group>
         </UnstyledButton>
