@@ -1,12 +1,15 @@
 import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditAlbumHeaderModal from './EditAlbumHeaderModal.tsx'
 import Album from '../../../types/models/Album.ts'
-import { act, screen } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
 import { http, HttpResponse } from 'msw'
 import { UpdateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import { ArtistSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Edit Album Header Modal', () => {
   const album: Album = {
@@ -19,7 +22,35 @@ describe('Edit Album Header Modal', () => {
     imageUrl: 'some-image.png'
   }
 
-  const server = setupServer()
+  const artists: ArtistSearch[] = [
+    {
+      id: '1',
+      name: 'Chester',
+      type: SearchType.Artist
+    },
+    {
+      id: '2',
+      name: 'Michael',
+      type: SearchType.Artist
+    },
+    {
+      id: '3',
+      name: 'Luther',
+      type: SearchType.Artist
+    }
+  ]
+
+  const handlers = [
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<ArtistSearch> = {
+        models: artists,
+        totalCount: artists.length
+      }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -36,11 +67,17 @@ describe('Edit Album Header Modal', () => {
     expect(screen.getByRole('heading', { name: /edit album header/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', album.imageUrl)
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute(
+      'src',
+      album.imageUrl
+    )
 
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue(album.title)
+
+    expect(screen.getByRole('textbox', { name: /artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue(album.artist?.name ?? '')
 
     expect(screen.getByRole('button', { name: /release date/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(
@@ -58,6 +95,7 @@ describe('Edit Album Header Modal', () => {
 
     const newTitle = 'New Album'
     const newReleaseDate = dayjs('2024-12-24')
+    const newArtist = artists[1]
     const onClose = vitest.fn()
 
     let capturedRequest: UpdateAlbumRequest
@@ -77,8 +115,13 @@ describe('Edit Album Header Modal', () => {
 
     await user.clear(titleField)
     await user.type(titleField, newTitle)
+
     await user.click(screen.getByRole('button', { name: /release date/i }))
     await user.click(screen.getByText(newReleaseDate.date().toString()))
+
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('option', { name: newArtist.name }))
+
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
@@ -88,7 +131,8 @@ describe('Edit Album Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       id: album.id,
       title: newTitle,
-      releaseDate: newReleaseDate.toISOString()
+      releaseDate: newReleaseDate.toISOString(),
+      artistId: newArtist.id
     })
   })
 
@@ -221,11 +265,14 @@ describe('Edit Album Header Modal', () => {
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const day = new Date(album.releaseDate).getDate()
+    const newDay = dayjs(album.releaseDate).add(1, 'day').date()
+    const newArtist = artists[0]
 
     reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
 
     const titleField = screen.getByRole('textbox', { name: /title/i })
     const releaseDateField = screen.getByRole('button', { name: /release date/i })
+    const artistField = screen.getByRole('textbox', { name: /artist/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     // change image
@@ -246,9 +293,19 @@ describe('Edit Album Header Modal', () => {
     await user.type(titleField, album.title)
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
+    // change artist
+    await user.click(artistField)
+    await user.click(await screen.findByRole('option', { name: newArtist.name }))
+    expect(saveButton).not.toHaveAttribute('data-disabled')
+
+    // reset artist
+    await user.click(artistField)
+    await user.click(await screen.findByRole('option', { name: newArtist.name }))
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
     // change release date
     await user.click(releaseDateField)
-    await user.click(screen.getByText((day + 1).toString()))
+    await user.click(screen.getByText(newDay.toString()))
     expect(saveButton).not.toHaveAttribute('data-disabled')
 
     // reset release date
@@ -259,6 +316,42 @@ describe('Edit Album Header Modal', () => {
     // remove image
     await user.click(screen.getByRole('button', { name: 'remove-image' }))
     expect(saveButton).not.toHaveAttribute('data-disabled')
+  })
+
+  it('should display info message when image changes', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+
+    reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
+
+    // change image
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
+
+    // reset image
+    await user.click(screen.getByRole('button', { name: 'reset-image' }))
+    expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
+  })
+
+  it('should display info message when artist changes', async () => {
+    const user = userEvent.setup()
+
+    const newArtist = artists[0]
+
+    reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
+
+    // change artist
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('option', { name: newArtist.name }))
+    expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
+
+    // reset artist
+    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('option', { name: newArtist.name }))
+    await waitFor(() =>
+      expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
+    )
   })
 
   it('should validate the title textbox', async () => {

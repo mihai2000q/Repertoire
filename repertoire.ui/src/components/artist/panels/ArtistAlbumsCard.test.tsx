@@ -1,14 +1,14 @@
 import { emptyAlbum, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistAlbumsCard from './ArtistAlbumsCard.tsx'
 import Album from '../../../types/models/Album.ts'
-import { screen, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveAlbumsFromArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import Order from 'src/types/Order.ts'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
+import { AlbumSearch } from '../../../types/models/Search.ts'
 
 describe('Artist Albums Card', () => {
   const albumModels: Album[] = [
@@ -37,8 +37,8 @@ describe('Artist Albums Card', () => {
   }
 
   const handlers = [
-    http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<AlbumSearch> = {
         models: [],
         totalCount: 0
       }
@@ -249,39 +249,5 @@ describe('Artist Albums Card', () => {
     await user.click(screen.getByLabelText('new-albums-card'))
 
     expect(await screen.findByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
-  })
-
-  it("should send 'remove album from artist request' when clicking on the more menu of a album card", async () => {
-    const user = userEvent.setup()
-
-    const album = albums.models[0]
-
-    let capturedRequest: RemoveAlbumsFromArtistRequest
-    server.use(
-      http.put('/artists/remove-albums', async (req) => {
-        capturedRequest = (await req.request.json()) as RemoveAlbumsFromArtistRequest
-        return HttpResponse.json()
-      })
-    )
-
-    reduxRouterRender(
-      <ArtistAlbumsCard
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
-
-    const albumCard1 = screen.getByLabelText(`album-card-${album.title}`)
-
-    await user.click(within(albumCard1).getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /remove/i }))
-    await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
-
-    expect(capturedRequest.id).toBe(artistId)
-    expect(capturedRequest.albumIds).toStrictEqual([album.id])
   })
 })

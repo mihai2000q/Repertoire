@@ -1,23 +1,31 @@
 import {
   alpha,
   Avatar,
+  Center,
   Group,
-  Loader,
   Menu,
+  Skeleton,
   Stack,
   Text,
   UnstyledButton,
   UnstyledButtonProps
 } from '@mantine/core'
-import userPlaceholder from '../../assets/user-placeholder.jpg'
-import { IconCaretDownFilled, IconLogout2, IconSettings, IconUser } from '@tabler/icons-react'
+import {
+  IconCaretDownFilled,
+  IconLogout2,
+  IconSettings,
+  IconUser,
+  IconUserFilled
+} from '@tabler/icons-react'
 import AccountModal from './modal/AccountModal.tsx'
 import SettingsModal from './modal/SettingsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { signOut } from '../../state/slice/authSlice.ts'
-import { useGetCurrentUserQuery } from '../../state/api.ts'
 import useAuth from '../../hooks/useAuth.ts'
 import { useAppDispatch } from '../../state/store.ts'
+import { useEffect } from 'react'
+import { setUserId } from '../../state/slice/globalSlice.ts'
+import { useGetCurrentUserQuery } from '../../state/api/usersApi.ts'
 
 function TopbarUser({ ...others }: UnstyledButtonProps) {
   const dispatch = useAppDispatch()
@@ -25,6 +33,9 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
   const { data: user } = useGetCurrentUserQuery(undefined, {
     skip: !useAuth()
   })
+  useEffect(() => {
+    dispatch(setUserId(user?.id))
+  }, [dispatch, user])
 
   const [openedAccount, { open: openAccount, close: closeAccount }] = useDisclosure(false)
   const [openedSettings, { open: openSettings, close: closeSettings }] = useDisclosure(false)
@@ -33,7 +44,7 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
     dispatch(signOut())
   }
 
-  if (!user) return <Loader size={'sm'} />
+  if (!user) return <Skeleton w={36} h={36} mx={'xs'} radius={'50%'} style={{ order: 6 }} />
 
   return (
     <Menu shadow={'lg'} width={200}>
@@ -58,7 +69,11 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
           {...others}
         >
           <Group gap={'xxs'}>
-            <Avatar src={user.profilePictureUrl ?? userPlaceholder} />
+            <Avatar src={user.profilePictureUrl} bg={'gray.0'}>
+              <Center c={'gray.7'}>
+                <IconUserFilled size={20} />
+              </Center>
+            </Avatar>
             <IconCaretDownFilled size={12} />
           </Group>
         </UnstyledButton>

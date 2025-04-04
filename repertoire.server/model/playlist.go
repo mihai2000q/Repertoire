@@ -18,7 +18,7 @@ type Playlist struct {
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"userId"`
 }
 
 type PlaylistSong struct {
@@ -37,7 +37,7 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 }
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
-	p.ImageURL = p.ImageURL.ToFullURL(&p.UpdatedAt)
+	p.ImageURL = p.ImageURL.ToFullURL(p.UpdatedAt)
 
 	p.Songs = []Song{} // in case there are no playlist songs
 	for _, playlistSong := range p.PlaylistSongs {

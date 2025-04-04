@@ -34,13 +34,15 @@ describe('Song Drawer', () => {
     ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    releaseDate: '2023-09-10'
+    releaseDate: '2023-09-10',
+    imageUrl: 'something2.png'
   }
 
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1'
+    name: 'Artist 1',
+    imageUrl: 'something3.png'
   }
 
   const getSong = (song: Song) =>
@@ -78,7 +80,7 @@ describe('Song Drawer', () => {
 
     expect(screen.getByTestId('song-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: song.title })).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
       prevDocumentTitle + ' - ' + song.title
@@ -278,6 +280,7 @@ describe('Song Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })

@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
-import { ActionIcon, AppShell, Group, Space } from '@mantine/core'
+import { ActionIcon, AppShell, Group, Space, useMantineTheme } from '@mantine/core'
 import { IconBellFilled, IconChevronLeft, IconChevronRight, IconMenu2 } from '@tabler/icons-react'
-import { useWindowScroll } from '@mantine/hooks'
+import { useMediaQuery, useWindowScroll } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import TopbarSearch from './TopbarSearch.tsx'
@@ -15,6 +15,9 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const navigate = useNavigate()
   const isDesktop = useIsDesktop()
   const [scrollPosition] = useWindowScroll()
+
+  const theme = useMantineTheme()
+  const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
   function handleGoBack() {
     navigate(-1)
@@ -48,26 +51,18 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
 
         <TopbarSearch
           w={'max(15vw, 200px)'}
-          sx={(theme) => ({
-            order: 1,
-            [`@media(max-width: ${theme.breakpoints.sm})`]: {
-              order: 3,
-              justifySelf: 'center'
-            }
-          })}
+          comboboxProps={{
+            width: 'max(20vw, 325px)',
+            position: isSmallScreen ? 'bottom' : 'bottom-start'
+          }}
+          dropdownMinHeight={'max(26vh, 200px)'}
+          style={{ order: isSmallScreen ? 3 : 1 }}
         />
 
         <Space hiddenFrom={'sm'} flex={1} style={{ order: 2 }} />
 
         {isDesktop && (
-          <Group
-            gap={0}
-            ml={'xs'}
-            sx={(theme) => ({
-              order: 3,
-              [`@media(max-width: ${theme.breakpoints.sm})`]: { order: 1 }
-            })}
-          >
+          <Group gap={0} ml={'xs'} style={{ order: isSmallScreen ? 1 : 3 }}>
             <ActionIcon
               aria-label={'back'}
               size={'lg'}

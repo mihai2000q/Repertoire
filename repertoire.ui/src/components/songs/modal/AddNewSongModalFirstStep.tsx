@@ -1,19 +1,18 @@
 import { Box, Group, Stack, Textarea, TextInput, Tooltip } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
-import Artist from '../../../types/models/Artist.ts'
 import AlbumAutocomplete from '../../@ui/form/input/AlbumAutocomplete.tsx'
-import Album from '../../../types/models/Album.ts'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import { IconInfoCircleFilled } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
+import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
 
 interface AddNewSongModalFirstStepProps {
   form: UseFormReturnType<AddNewSongForm>
-  artist: Artist
-  setArtist: (artist: Artist) => void
-  album: Album
-  setAlbum: (album: Album) => void
+  artist: ArtistSearch
+  setArtist: (artist: ArtistSearch) => void
+  album: AlbumSearch
+  setAlbum: (album: AlbumSearch) => void
 }
 
 function AddNewSongModalFirstStep({
@@ -24,7 +23,7 @@ function AddNewSongModalFirstStep({
   setAlbum
 }: AddNewSongModalFirstStepProps) {
   useDidUpdate(() => {
-    setArtist(album?.artist)
+    setArtist(album?.artist as ArtistSearch)
     form.setFieldValue('artistName', album?.artist?.name)
   }, [album])
 

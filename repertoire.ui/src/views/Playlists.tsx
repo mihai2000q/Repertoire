@@ -9,13 +9,14 @@ import {
   Group,
   Loader,
   Pagination,
+  SimpleGrid,
   Space,
   Stack,
   Text,
   Title
 } from '@mantine/core'
 import AddNewPlaylistModal from '../components/playlists/modal/AddNewPlaylistModal.tsx'
-import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
+import { IconArrowsSort, IconFilterFilled, IconPlaylistAdd, IconPlus } from '@tabler/icons-react'
 import PlaylistsLoader from '../components/playlists/PlaylistsLoader.tsx'
 import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
@@ -68,24 +69,38 @@ function Playlists() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-playlists'} variant={'grey'} size={'lg'} disabled={isLoading}>
+        <ActionIcon
+          aria-label={'order-playlists'}
+          variant={'grey'}
+          size={'lg'}
+          disabled={isLoading}
+        >
           <IconArrowsSort size={17} />
         </ActionIcon>
-        <ActionIcon aria-label={'filter-playlists'} variant={'grey'} size={'lg'} disabled={isLoading}>
+        <ActionIcon
+          aria-label={'filter-playlists'}
+          variant={'grey'}
+          size={'lg'}
+          disabled={isLoading}
+        >
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} playlists out of {playlists?.totalCount}
+          {startCount} - {endCount} playlists out of {playlists?.totalCount ?? 0}
         </Text>
       )}
 
       {playlists?.totalCount === 0 && (
         <Text mt={'sm'}>There are no playlists yet. Try to add one</Text>
       )}
-      <Group gap={'lg'} align={'stretch'}>
-        {isLoading && <PlaylistsLoader />}
+      <SimpleGrid
+        cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
+        spacing={'lg'}
+        verticalSpacing={'lg'}
+      >
+        {(isLoading || !playlists) && <PlaylistsLoader />}
         {playlists?.models.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
@@ -94,16 +109,15 @@ function Playlists() {
             aria-label={'new-playlist-card'}
             variant={'add-new'}
             radius={'lg'}
-            w={150}
-            h={150}
             onClick={openAddNewPlaylistModal}
+            style={{ aspectRatio: 1 }}
           >
             <Center h={'100%'}>
-              <IconMusicPlus size={40} />
+              <IconPlaylistAdd size={'100%'} style={{ padding: '33%' }} />
             </Center>
           </Card>
         )}
-      </Group>
+      </SimpleGrid>
 
       <Space flex={1} />
 

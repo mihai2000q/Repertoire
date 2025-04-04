@@ -5,7 +5,10 @@ import { screen, within } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import { UpdateSongSectionsOccurrencesRequest } from '../../../types/requests/SongRequests.ts'
+import {
+  UpdateSongSectionsOccurrencesRequest,
+  UpdateSongSectionsPartialOccurrencesRequest
+} from '../../../types/requests/SongRequests.ts'
 
 describe('Edit Song Sections Occurrences Modal', () => {
   const server = setupServer()
@@ -22,6 +25,7 @@ describe('Edit Song Sections Occurrences Modal', () => {
       id: '1',
       name: 'Sec 1',
       occurrences: 0,
+      partialOccurrences: 0,
       songSectionType: {
         id: '',
         name: 'Chorus'
@@ -32,6 +36,7 @@ describe('Edit Song Sections Occurrences Modal', () => {
       id: '2',
       name: 'Sec 2',
       occurrences: 5,
+      partialOccurrences: 2,
       songSectionType: {
         id: '',
         name: 'Typ'
@@ -39,7 +44,7 @@ describe('Edit Song Sections Occurrences Modal', () => {
     }
   ]
 
-  it('should render', async () => {
+  it('should render and display perfect rehearsal by default', async () => {
     const user = userEvent.setup()
 
     reduxRender(
@@ -53,6 +58,11 @@ describe('Edit Song Sections Occurrences Modal', () => {
 
     expect(screen.getByRole('dialog', { name: /edit sections' occurrences/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /edit sections' occurrences/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /perfect rehearsal/i }))
+    expect(await screen.findByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
+    expect(await screen.findByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
 
     sections.forEach((section) => {
       const sectionItem = screen.getByLabelText(`section-${section.name}`)
@@ -97,16 +107,57 @@ describe('Edit Song Sections Occurrences Modal', () => {
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
 
+  it('should render and change to partial rehearsal', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(
+      <EditSongSectionsOccurrencesModal
+        opened={true}
+        onClose={() => {}}
+        sections={sections}
+        songId={''}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /perfect rehearsal/i }))
+    await user.click(screen.getByRole('menuitem', { name: /partial rehearsal/i }))
+
+    sections.forEach((section) => {
+      const sectionItem = screen.getByLabelText(`section-${section.name}`)
+      expect(within(sectionItem).getByRole('textbox', { name: 'occurrences' })).toBeInTheDocument()
+      expect(within(sectionItem).getByRole('textbox', { name: 'occurrences' })).toHaveValue(
+        section.partialOccurrences.toString()
+      )
+
+      expect(
+        within(sectionItem).getByRole('button', { name: 'decrease-occurrences' })
+      ).toBeInTheDocument()
+      if (section.partialOccurrences === 0) {
+        expect(
+          within(sectionItem).getByRole('button', { name: 'decrease-occurrences' })
+        ).toBeDisabled()
+      }
+      expect(
+        within(sectionItem).getByRole('button', { name: 'increase-occurrences' })
+      ).toBeInTheDocument()
+    })
+  })
+
   it('should send request to update the occurrences', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
     const songId = 'some-song-id'
 
-    let capturedRequest: UpdateSongSectionsOccurrencesRequest
+    let capturedPerfectRequest: UpdateSongSectionsOccurrencesRequest
+    let capturedPartialRequest: UpdateSongSectionsPartialOccurrencesRequest
     server.use(
       http.put('/songs/sections/occurrences', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongSectionsOccurrencesRequest
+        capturedPerfectRequest = (await req.request.json()) as UpdateSongSectionsOccurrencesRequest
+        return HttpResponse.json({ message: 'OK' })
+      }),
+      http.put('/songs/sections/partial-occurrences', async (req) => {
+        capturedPartialRequest = (await req.request.json()) as UpdateSongSectionsPartialOccurrencesRequest
         return HttpResponse.json({ message: 'OK' })
       })
     )
@@ -122,15 +173,27 @@ describe('Edit Song Sections Occurrences Modal', () => {
       )
     )
 
+    // update perfect rehearsal occurrences
     await user.click(
       within(screen.getByLabelText(`section-${sections[0].name}`)).getByRole('button', {
         name: 'increase-occurrences'
       })
     )
-    await user.click(screen.getByRole('button', { name: /save/i }))
 
+    // update partial rehearsal occurrences
+    await user.click(screen.getByRole('button', { name: /perfect rehearsal/i }))
+    await user.click(screen.getByRole('menuitem', { name: /partial rehearsal/i }))
+
+    await user.click(
+      within(screen.getByLabelText(`section-${sections[1].name}`)).getByRole('button', {
+        name: 'increase-occurrences'
+      })
+    )
+
+    // save
+    await user.click(screen.getByRole('button', { name: /save/i }))
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
+    expect(capturedPerfectRequest).toStrictEqual({
       songId: songId,
       sections: [
         {
@@ -140,6 +203,19 @@ describe('Edit Song Sections Occurrences Modal', () => {
         {
           id: sections[1].id,
           occurrences: sections[1].occurrences
+        }
+      ]
+    })
+    expect(capturedPartialRequest).toStrictEqual({
+      songId: songId,
+      sections: [
+        {
+          id: sections[0].id,
+          partialOccurrences: sections[0].partialOccurrences
+        },
+        {
+          id: sections[1].id,
+          partialOccurrences: sections[1].partialOccurrences + 1 // the other change
         }
       ]
     })
@@ -174,5 +250,15 @@ describe('Edit Song Sections Occurrences Modal', () => {
 
     await user.click(within(section2).getByRole('button', { name: 'decrease-occurrences' }))
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    await user.click(screen.getByRole('button', { name: /perfect rehearsal/i }))
+    await user.click(screen.getByRole('menuitem', { name: /partial rehearsal/i }))
+
+    await user.click(within(section1).getByRole('button', { name: 'increase-occurrences' }))
+    expect(saveButton).not.toHaveAttribute('data-disabled')
+
+    await user.click(screen.getByRole('button', { name: /partial rehearsal/i }))
+    await user.click(screen.getByRole('menuitem', { name: /perfect rehearsal/i }))
+    expect(saveButton).not.toHaveAttribute('data-disabled')
   })
 })

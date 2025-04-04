@@ -9,13 +9,13 @@ import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
-import Album from '../../../types/models/Album.ts'
+import { AlbumSearch } from '../../../types/models/Search.ts'
 
 interface AddNewSongModalFinalStepProps {
   form: UseFormReturnType<AddNewSongForm>
   image: FileWithPath | null
   setImage: Dispatch<SetStateAction<FileWithPath | null>>
-  album: Album | null
+  album: AlbumSearch | null
 }
 
 function AddNewSongModalFinalStep({ form, image, setImage, album }: AddNewSongModalFinalStepProps) {

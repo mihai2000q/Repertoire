@@ -5,7 +5,6 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { SignInRequest } from '../types/requests/AuthRequests.ts'
-import TokenResponse from '../types/responses/TokenResponse.ts'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 
@@ -71,7 +70,7 @@ describe('Sign In', () => {
     const password = 'ThisIsAGoodPassword123'
     const error = 'Invalid credentials'
 
-    server.use(http.put('/auth/sign-in', async () => HttpResponse.json({ error }, { status: 401 })))
+    server.use(http.put('/sign-in', async () => HttpResponse.json({ error }, { status: 401 })))
 
     await sendSignInRequest(email, password)
 
@@ -92,10 +91,9 @@ describe('Sign In', () => {
     const expectedToken = 'token'
 
     server.use(
-      http.put('/auth/sign-in', async (req) => {
+      http.put('/sign-in', async (req) => {
         capturedSignInRequest = (await req.request.json()) as SignInRequest
-        const response: TokenResponse = { token: expectedToken }
-        return HttpResponse.json(response)
+        return HttpResponse.json(expectedToken)
       })
     )
 

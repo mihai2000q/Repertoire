@@ -29,3 +29,9 @@ go.work.sum
 
 # Temp
 tmp/
+
+# Docker Containers Data
+.container-data/
+
+# Logs Folder
+.logs/

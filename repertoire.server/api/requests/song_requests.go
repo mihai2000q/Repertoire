@@ -19,9 +19,9 @@ type CreateSongRequest struct {
 	Description    string
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
-	YoutubeLink    *string `validate:"omitempty,isYoutubeLink"`
+	YoutubeLink    *string `validate:"omitempty,youtube_link"`
 	ReleaseDate    *time.Time
-	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
 	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle ArtistID ArtistName"`
@@ -34,6 +34,10 @@ type AddPerfectSongRehearsalRequest struct {
 	ID uuid.UUID `validate:"required"`
 }
 
+type AddPartialSongRehearsalRequest struct {
+	ID uuid.UUID `validate:"required"`
+}
+
 type UpdateSongRequest struct {
 	ID             uuid.UUID `validate:"required"`
 	Title          string    `validate:"required,max=100"`
@@ -41,10 +45,18 @@ type UpdateSongRequest struct {
 	IsRecorded     bool
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
-	YoutubeLink    *string `validate:"omitempty,isYoutubeLink"`
+	YoutubeLink    *string `validate:"omitempty,youtube_link"`
 	ReleaseDate    *time.Time
-	Difficulty     *enums.Difficulty `validate:"omitempty,isDifficultyEnum"`
+	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
+	ArtistID       *uuid.UUID
+	AlbumID        *uuid.UUID
+}
+
+type UpdateSongSettingsRequest struct {
+	SettingsID          uuid.UUID `validate:"required"`
+	DefaultInstrumentID *uuid.UUID
+	DefaultBandMemberID *uuid.UUID
 }
 
 type CreateSectionRequest struct {
@@ -77,6 +89,17 @@ type UpdateSongSectionsOccurrencesRequest struct {
 	Sections []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
 }
 
+type UpdateSongSectionsPartialOccurrencesRequest struct {
+	SongID   uuid.UUID                                `validate:"required"`
+	Sections []UpdateSectionPartialOccurrencesRequest `validate:"min=1,dive"`
+}
+
+type UpdateAllSongSectionsRequest struct {
+	SongID       uuid.UUID `validate:"required"`
+	InstrumentID *uuid.UUID
+	BandMemberID *uuid.UUID
+}
+
 type MoveSongSectionRequest struct {
 	ID     uuid.UUID `validate:"required"`
 	OverID uuid.UUID `validate:"required"`
@@ -86,4 +109,9 @@ type MoveSongSectionRequest struct {
 type UpdateSectionOccurrencesRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Occurrences uint
+}
+
+type UpdateSectionPartialOccurrencesRequest struct {
+	ID                 uuid.UUID `validate:"required"`
+	PartialOccurrences uint
 }

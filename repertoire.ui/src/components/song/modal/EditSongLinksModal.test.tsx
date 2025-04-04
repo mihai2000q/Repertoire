@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptySong, reduxRender, withToastify } from '../../../test-utils.tsx'
 import Song from '../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { act, screen } from '@testing-library/react'
@@ -9,16 +9,8 @@ import EditSongLinksModal from './EditSongLinksModal.tsx'
 
 describe('Edit Song Links Modal', () => {
   const song: Song = {
+    ...emptySong,
     id: 'some-id',
-    title: '',
-    description: '',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: '',
     youtubeLink: 'https://www.youtube.com/watch?v=VUNPqDXxG3U',
     songsterrLink: 'https://www.songsterr.com/a/wsa/metallica-nothing-else-matters-tab-s439171'
   }

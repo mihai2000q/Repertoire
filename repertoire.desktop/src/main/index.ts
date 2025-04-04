@@ -7,13 +7,15 @@ function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 1120,
     height: 800,
+    minWidth: 460,
+    minHeight: 460,
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     },
-    titleBarStyle: 'hidden',
+    titleBarStyle: 'hidden'
   })
   mainWindow.removeMenu()
 
@@ -25,6 +27,20 @@ function createWindow(): void {
     shell.openExternal(details.url).then()
     return { action: 'deny' }
   })
+
+  const gotTheLock = app.requestSingleInstanceLock()
+
+  if (!gotTheLock) {
+    app.quit()
+  } else {
+    app.on('second-instance', () => {
+      // Someone tried to run a second instance, we should focus our window.
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+      }
+    })
+  }
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.

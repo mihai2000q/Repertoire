@@ -1,4 +1,4 @@
-import { emptyOrder, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import ArtistSongCard from './ArtistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -9,19 +9,15 @@ import dayjs from 'dayjs'
 import SongProperty from '../../utils/enums/SongProperty.ts'
 import Difficulty from '../../utils/enums/Difficulty.ts'
 import { expect } from 'vitest'
+import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw'
+import { RemoveSongsFromArtistRequest } from '../../types/requests/ArtistRequests.ts'
 
 describe('Artist Song Card', () => {
   const song: Song = {
+    ...emptySong,
     id: '1',
-    title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: ''
+    title: 'Song 1'
   }
 
   const album: Album = {
@@ -32,17 +28,20 @@ describe('Artist Song Card', () => {
     songs: []
   }
 
+  const server = setupServer()
+
+  beforeAll(() => server.listen())
+
+  afterEach(() => server.resetHandlers())
+
+  afterAll(() => server.close())
+
   it('should render and display minimal information', async () => {
     reduxRouterRender(
-      <ArtistSongCard
-        song={song}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
@@ -55,12 +54,7 @@ describe('Artist Song Card', () => {
     }
 
     reduxRouterRender(
-      <ArtistSongCard
-        song={localSong}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     expect(screen.getByRole('img', { name: localSong.title })).toBeInTheDocument()
@@ -80,12 +74,7 @@ describe('Artist Song Card', () => {
     }
 
     const [{ rerender }] = reduxRouterRender(
-      <ArtistSongCard
-        song={localSong}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
@@ -105,7 +94,7 @@ describe('Artist Song Card', () => {
     rerender(
       <ArtistSongCard
         song={localSongWithAlbum}
-        handleRemove={() => {}}
+        artistId={''}
         isUnknownArtist={false}
         order={emptyOrder}
       />
@@ -130,12 +119,7 @@ describe('Artist Song Card', () => {
       }
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={localSong}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={order}
-        />
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={order} />
       )
 
       expect(
@@ -155,19 +139,12 @@ describe('Artist Song Card', () => {
       }
 
       const [{ rerender }] = reduxRouterRender(
-        <ArtistSongCard
-          song={localSong}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={order}
-        />
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={order} />
       )
 
       expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
 
-      rerender(
-        <ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} order={order} />
-      )
+      rerender(<ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={order} />)
 
       expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
     })
@@ -184,12 +161,7 @@ describe('Artist Song Card', () => {
       }
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={localSong}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={order}
-        />
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={order} />
       )
 
       expect(screen.getAllByText(localSong.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
@@ -209,12 +181,7 @@ describe('Artist Song Card', () => {
       }
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={localSong}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={order}
-        />
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={order} />
       )
 
       expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
@@ -232,12 +199,7 @@ describe('Artist Song Card', () => {
       }
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={localSong}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={order}
-        />
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={order} />
       )
 
       expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
@@ -255,21 +217,14 @@ describe('Artist Song Card', () => {
       }
 
       const [{ rerender }] = reduxRouterRender(
-        <ArtistSongCard
-          song={localSong}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={order}
-        />
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={order} />
       )
 
       expect(
         screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
       ).toBeInTheDocument()
 
-      rerender(
-        <ArtistSongCard song={song} handleRemove={() => {}} isUnknownArtist={false} order={order} />
-      )
+      rerender(<ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={order} />)
 
       expect(screen.getByText(/never/i)).toBeInTheDocument()
     })
@@ -279,12 +234,7 @@ describe('Artist Song Card', () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <ArtistSongCard
-        song={song}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     await user.pointer({
@@ -293,45 +243,39 @@ describe('Artist Song Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <ArtistSongCard
-        song={song}
-        handleRemove={() => {}}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should display less information on the menu when the artist is unknown', async () => {
     const user = userEvent.setup()
 
     reduxRouterRender(
-      <ArtistSongCard
-        song={song}
-        handleRemove={() => {}}
-        isUnknownArtist={true}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={song} artistId={''} isUnknownArtist={true} order={emptyOrder} />
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /remove from artist/i })).not.toBeInTheDocument()
   })
 
   describe('on menu', () => {
@@ -339,12 +283,7 @@ describe('Artist Song Card', () => {
       const user = userEvent.setup()
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={song}
-          handleRemove={() => {}}
-          isUnknownArtist={false}
-          order={emptyOrder}
-        />
+        <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
       )
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
@@ -356,22 +295,30 @@ describe('Artist Song Card', () => {
       window.location.pathname = '/'
     })
 
-    it('should display warning modal and remove song, when clicking on remove', async () => {
+    it('should display warning modal and remove song from artist, when clicking on remove from artist', async () => {
       const user = userEvent.setup()
 
-      const handleRemove = vitest.fn()
+      let capturedRequest: RemoveSongsFromArtistRequest
+      server.use(
+        http.put('/artists/remove-songs', async (req) => {
+          capturedRequest = (await req.request.json()) as RemoveSongsFromArtistRequest
+          return HttpResponse.json()
+        })
+      )
+
+      const artistId = 'some-artist-id'
 
       reduxRouterRender(
         <ArtistSongCard
           song={song}
-          handleRemove={handleRemove}
+          artistId={artistId}
           isUnknownArtist={false}
           order={emptyOrder}
         />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
-      await user.click(screen.getByRole('menuitem', { name: /remove/i }))
+      await user.click(screen.getByRole('menuitem', { name: /remove from artist/i }))
 
       expect(await screen.findByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove song/i })).toBeInTheDocument()
@@ -379,7 +326,38 @@ describe('Artist Song Card', () => {
 
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
-      expect(handleRemove).toHaveBeenCalledOnce()
+      expect(capturedRequest).toStrictEqual({
+        id: artistId,
+        songIds: [song.id]
+      })
+    })
+
+    it('should display warning modal and delete song, when clicking on delete', async () => {
+      const user = userEvent.setup()
+
+      server.use(
+        http.delete(`/songs/${song.id}`, () => {
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      reduxRouterRender(
+        <ArtistSongCard
+          song={song}
+          artistId={''}
+          isUnknownArtist={false}
+          order={emptyOrder}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+      expect(await screen.findByRole('dialog', { name: /delete song/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete song/i })).toBeInTheDocument()
+      expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: /yes/i }))
     })
   })
 
@@ -394,7 +372,7 @@ describe('Artist Song Card', () => {
     const [_, store] = reduxRouterRender(
       <ArtistSongCard
         song={localSong}
-        handleRemove={() => {}}
+        artistId={''}
         isUnknownArtist={false}
         order={emptyOrder}
       />

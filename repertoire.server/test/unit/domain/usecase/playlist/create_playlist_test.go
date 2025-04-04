@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +20,7 @@ import (
 func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := playlist.NewCreatePlaylist(jwtService, nil)
+	_uut := playlist.NewCreatePlaylist(jwtService, nil, nil)
 
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
@@ -40,11 +41,11 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *
 	jwtService.AssertExpectations(t)
 }
 
-func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreatePlaylist_WhenCreateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository)
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, nil)
 
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
@@ -71,11 +72,12 @@ func TestCreatePlaylist_WhenGetPlaylistFails_ShouldReturnInternalServerError(t *
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+func TestCreatePlaylist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, messagePublisherService)
 
 	request := requests.CreatePlaylistRequest{
 		Title: "Some Playlist",
@@ -85,12 +87,57 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	var playlistID uuid.UUID
+	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.PlaylistCreatedTopic, mock.IsType(model.Playlist{})).
+		Return(internalError).
+		Once()
+
+	// when
+	id, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.Empty(t, id)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := playlist.NewCreatePlaylist(jwtService, playlistRepository, messagePublisherService)
+
+	request := requests.CreatePlaylistRequest{
+		Title: "Some Playlist",
+	}
+	token := "this is a token"
+	userID := uuid.New()
+
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	var createdPlaylist model.Playlist
 	playlistRepository.On("Create", mock.IsType(new(model.Playlist))).
 		Run(func(args mock.Arguments) {
 			newPlaylist := args.Get(0).(*model.Playlist)
 			assertCreatedPlaylist(t, *newPlaylist, request, userID)
-			playlistID = newPlaylist.ID
+			createdPlaylist = *newPlaylist
+		}).
+		Return(nil).
+		Once()
+
+	messagePublisherService.On("Publish", topics.PlaylistCreatedTopic, mock.IsType(model.Playlist{})).
+		Run(func(args mock.Arguments) {
+			assert.Equal(t, createdPlaylist, args.Get(1).(model.Playlist))
 		}).
 		Return(nil).
 		Once()
@@ -99,11 +146,12 @@ func TestCreatePlaylist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	id, errCode := _uut.Handle(request, token)
 
 	// then
-	assert.Equal(t, playlistID, id)
+	assert.Equal(t, createdPlaylist.ID, id)
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
 	playlistRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }
 
 func assertCreatedPlaylist(

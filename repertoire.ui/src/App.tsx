@@ -27,12 +27,10 @@ import Song from './views/Song.tsx'
 import Playlists from './views/Playlists.tsx'
 import Playlist from './views/Playlist.tsx'
 import useIsDesktop from './hooks/useIsDesktop.ts'
-import useIsProduction from './hooks/useIsProduction.ts'
 
 function App(): ReactElement {
   const isDesktop = useIsDesktop()
-  const isProduction = useIsProduction()
-  const Router = isDesktop && isProduction ? HashRouter : BrowserRouter
+  const Router = isDesktop ? HashRouter : BrowserRouter
 
   return (
     <div className={'app'}>

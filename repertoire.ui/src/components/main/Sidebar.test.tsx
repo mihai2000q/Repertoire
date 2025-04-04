@@ -10,7 +10,7 @@ describe('Sidebar', () => {
       <AppShell
         navbar={{ width: 200, breakpoint: 'sm', collapsed: { mobile: false, desktop: false } }}
       >
-        <Sidebar toggleSidebar={toggleSidebar} />
+        <Sidebar toggleSidebarOnMobile={toggleSidebar} />
       </AppShell>
     )
   }

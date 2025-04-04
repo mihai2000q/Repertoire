@@ -1,6 +1,5 @@
 import Song from '../../types/models/Song.ts'
-import { ActionIcon, alpha, Avatar, Group, Menu, Stack, Text } from '@mantine/core'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
+import { ActionIcon, alpha, Avatar, Center, Group, Menu, Stack, Text } from '@mantine/core'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
@@ -10,7 +9,9 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import PerfectRehearsalMenuItem from "../@ui/menu/item/PerfectRehearsalMenuItem.tsx";
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -67,6 +68,7 @@ function PlaylistSongCard({
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       <Menu.Item
         leftSection={<IconTrash size={14} />}
@@ -112,10 +114,15 @@ function PlaylistSongCard({
           </Text>
 
           <Avatar
-            radius={'8px'}
-            src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
-            alt={song.title}
-          />
+            radius={'md'}
+            src={song.imageUrl ?? song.album?.imageUrl}
+            alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+            bg={'gray.5'}
+          >
+            <Center c={'white'}>
+              <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+            </Center>
+          </Avatar>
 
           <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
             <Group gap={'xxs'} wrap={'nowrap'}>

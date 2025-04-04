@@ -1,6 +1,5 @@
-import { AspectRatio, Group, Image, Menu, Stack, Text, Title } from '@mantine/core'
-import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
-import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
+import { Avatar, Center, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { IconEdit, IconInfoSquareRounded, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import plural from '../../utils/plural.ts'
 import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
 import Playlist from '../../types/models/Playlist.ts'
@@ -12,6 +11,7 @@ import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
+import titleFontSize from '../../utils/titleFontSize.ts'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -52,26 +52,34 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
       }
     >
       <Group wrap={'nowrap'}>
-        <AspectRatio>
-          <Image
-            w={150}
-            src={playlist.imageUrl}
-            alt={playlist.title}
-            fallbackSrc={playlistPlaceholder}
-            radius={'lg'}
-            sx={(theme) => ({
-              boxShadow: theme.shadows.lg,
-              ...(playlist.imageUrl && { cursor: 'pointer' })
-            })}
-            onClick={playlist.imageUrl && openImage}
-          />
-        </AspectRatio>
-        <Stack gap={'xxs'} pt={'md'} style={{ alignSelf: 'start' }}>
+        <Avatar
+          src={playlist.imageUrl}
+          alt={playlist.imageUrl && playlist.title}
+          w={'max(12vw, 150px)'}
+          h={'unset'}
+          radius={'10%'}
+          bg={'gray.5'}
+          style={(theme) => ({
+            boxShadow: theme.shadows.lg,
+            ...(playlist.imageUrl && { cursor: 'pointer' })
+          })}
+          onClick={playlist.imageUrl && openImage}
+        >
+          <Center c={'white'}>
+            <IconPlaylist
+              aria-label={`default-icon-${playlist.title}`}
+              size={'100%'}
+              style={{ padding: '28%' }}
+            />
+          </Center>
+        </Avatar>
+
+        <Stack gap={'xxs'} pt={'md'}>
           <Text fw={500} inline>
             Playlist
           </Text>
 
-          <Title order={1} fw={700} lineClamp={2}>
+          <Title order={1} fw={700} lineClamp={2} fz={titleFontSize(playlist.title)}>
             {playlist.title}
           </Title>
 

@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import Artists from './Artists.tsx'
-import { emptyArtist, reduxRouterRender } from '../test-utils.tsx'
+import { emptyArtist, emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
@@ -33,16 +33,8 @@ describe('Artists', () => {
       const response: WithTotalCountResponse<Song> = {
         models: [
           {
-            id: '',
-            title: 'Some song',
-            description: '',
-            isRecorded: false,
-            sections: [],
-            rehearsals: 0,
-            confidence: 0,
-            progress: 0,
-            createdAt: '',
-            updatedAt: ''
+            ...emptySong,
+            title: 'Some song'
           }
         ],
         totalCount: 1
@@ -138,7 +130,6 @@ describe('Artists', () => {
     expect(screen.getByRole('button', { name: /order-artists/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-artists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-artists/i })).toBeDisabled()
-    expect(screen.getByTestId('artists-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-artist-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/artist-card-/)).toHaveLength(artists.length)

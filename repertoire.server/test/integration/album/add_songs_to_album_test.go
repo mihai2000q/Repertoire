@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
@@ -128,6 +130,8 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
+			messages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().POST(w, "/api/albums/add-songs", test.request)
@@ -135,6 +139,10 @@ func TestAddSongsToAlbum_WhenSuccessful_ShouldHaveSongsOnAlbum(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 			assertSongsAddedToAlbum(t, test.request)
+
+			assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+				assert.Equal(t, ids, test.request.SongIDs)
+			})
 		})
 	}
 }
@@ -144,14 +152,14 @@ func assertSongsAddedToAlbum(t *testing.T, request requests.AddSongsToAlbumReque
 
 	var album model.Album
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
-		return db.Order("songs.album_track_no")
+		return db.Order("album_track_no")
 	}).Find(&album, request.ID)
 
 	assert.GreaterOrEqual(t, len(album.Songs), len(request.SongIDs))
 
 	sizeDiff := len(album.Songs) - len(request.SongIDs)
-	for i := 0; i < len(album.Songs)-sizeDiff; i++ {
-		assert.Equal(t, request.SongIDs[i], album.Songs[i+sizeDiff].ID)
+	for i := sizeDiff; i < len(album.Songs); i++ {
+		assert.Contains(t, request.SongIDs, album.Songs[i].ID)
 	}
 
 	for i, song := range album.Songs {

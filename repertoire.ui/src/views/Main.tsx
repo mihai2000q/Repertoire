@@ -12,9 +12,11 @@ import SongDrawer from '../components/main/drawer/SongDrawer.tsx'
 import AlbumDrawer from '../components/main/drawer/AlbumDrawer.tsx'
 import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
 
 function Main(): ReactElement {
   useErrorRedirection()
+  useNetworkDisconnected()
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
@@ -38,7 +40,7 @@ function Main(): ReactElement {
         disabled={!useAuth()}
       >
         <Topbar toggleSidebar={toggleSidebarMobile} />
-        <Sidebar toggleSidebar={toggleSidebarMobile} />
+        <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
         <AppShell.Main h={'100%'} mih={0}>
           <Outlet />
         </AppShell.Main>

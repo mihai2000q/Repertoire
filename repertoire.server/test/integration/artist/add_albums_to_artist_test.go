@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
@@ -51,6 +53,8 @@ func TestAddAlbumsToArtist_WhenSuccessful_ShouldAddAlbumsToArtist(t *testing.T) 
 		},
 	}
 
+	messages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().POST(w, "/api/artists/add-albums", request)
@@ -61,6 +65,10 @@ func TestAddAlbumsToArtist_WhenSuccessful_ShouldAddAlbumsToArtist(t *testing.T) 
 	db := utils.GetDatabase(t)
 	db.Preload("Albums").Preload("Albums.Songs").Find(&artist, artist.ID)
 	assertAddedAlbumsToArtist(t, request, artist, oldAlbumsLength)
+
+	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
+		assert.Equal(t, request.AlbumIDs, ids)
+	})
 }
 
 func assertAddedAlbumsToArtist(

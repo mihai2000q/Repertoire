@@ -2,6 +2,7 @@ package core
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -15,17 +16,20 @@ import (
 
 type TestHandler interface {
 	WithoutAuthentication() TestHandler
+	WithMeiliAuthentication() TestHandler
 	WithInvalidToken() TestHandler
 	WithUser(user model.User) TestHandler
 	GET(w http.ResponseWriter, url string)
-	POST(w http.ResponseWriter, url string, body interface{})
-	PUT(w http.ResponseWriter, url string, body interface{})
+	POST(w http.ResponseWriter, url string, body any)
+	POSTZipped(w http.ResponseWriter, url string, payload any)
+	PUT(w http.ResponseWriter, url string, body any)
 	PUTForm(w http.ResponseWriter, url string, bodyForm *bytes.Buffer, contentType string)
 	DELETE(w http.ResponseWriter, url string)
 }
 
 type settings struct {
 	authentication bool
+	withMeiliAuth  bool
 	invalidToken   bool
 	user           *model.User
 }
@@ -37,15 +41,21 @@ type testHandler struct {
 
 func NewTestHandler() TestHandler {
 	return &testHandler{
-		getHttpServer(),
+		httpServer,
 		&settings{
 			authentication: true,
+			withMeiliAuth:  false,
 		},
 	}
 }
 
 func (t *testHandler) WithoutAuthentication() TestHandler {
 	t.settings.authentication = false
+	return t
+}
+
+func (t *testHandler) WithMeiliAuthentication() TestHandler {
+	t.settings.withMeiliAuth = true
 	return t
 }
 
@@ -65,7 +75,7 @@ func (t *testHandler) GET(w http.ResponseWriter, url string) {
 	t.httpServer.Handler.ServeHTTP(w, req)
 }
 
-func (t *testHandler) POST(w http.ResponseWriter, url string, body interface{}) {
+func (t *testHandler) POST(w http.ResponseWriter, url string, body any) {
 	jsonBody, _ := json.Marshal(body)
 	reqBody := bytes.NewBuffer(jsonBody)
 	req, _ := http.NewRequest("POST", url, reqBody)
@@ -75,7 +85,21 @@ func (t *testHandler) POST(w http.ResponseWriter, url string, body interface{}) 
 	t.httpServer.Handler.ServeHTTP(w, req)
 }
 
-func (t *testHandler) PUT(w http.ResponseWriter, url string, body interface{}) {
+func (t *testHandler) POSTZipped(w http.ResponseWriter, url string, payload any) {
+	jsonBody, _ := json.Marshal(payload)
+	var reqBody bytes.Buffer
+	gw := gzip.NewWriter(&reqBody)
+	_, _ = gw.Write(jsonBody)
+	_ = gw.Close()
+	req, _ := http.NewRequest("POST", url, &reqBody)
+
+	req.Header.Set("Content-Type", "application/javascript")
+	req.Header.Set("Content-Encoding", "gzip")
+	t.requestWithAuthentication(req)
+	t.httpServer.Handler.ServeHTTP(w, req)
+}
+
+func (t *testHandler) PUT(w http.ResponseWriter, url string, body any) {
 	jsonBody, _ := json.Marshal(body)
 	reqBody := bytes.NewBuffer(jsonBody)
 	req, _ := http.NewRequest("PUT", url, reqBody)
@@ -100,7 +124,12 @@ func (t *testHandler) DELETE(w http.ResponseWriter, url string) {
 }
 
 func (t *testHandler) requestWithAuthentication(req *http.Request) {
-	if !t.settings.authentication {
+	if !t.settings.authentication && !t.settings.withMeiliAuth {
+		return
+	}
+
+	if t.settings.withMeiliAuth {
+		req.Header.Set("Authorization", internal.NewEnv().MeiliAuthKey)
 		return
 	}
 
@@ -122,31 +151,29 @@ func (t *testHandler) requestWithAuthentication(req *http.Request) {
 }
 
 func (t *testHandler) createInvalidToken() string {
-	env := internal.NewEnv()
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": uuid.New().String(),
-		"iss": env.JwtIssuer,
-		"aud": env.JwtAudience,
+		"iss": jwtInfo.Issuer,
+		"aud": jwtInfo.Audience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
+	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(jwtInfo.PrivateKey))
+	token, _ := claims.SignedString(privateKey)
 	return token
 }
 
 func (t *testHandler) createToken(user model.User) string {
-	env := internal.NewEnv()
-
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	claims := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"jti": uuid.New().String(),
 		"sub": user.ID.String(),
-		"iss": env.JwtIssuer,
-		"aud": env.JwtAudience,
+		"iss": jwtInfo.Issuer,
+		"aud": jwtInfo.Audience,
 		"iat": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(time.Hour).Unix(),
 	})
-	token, _ := claims.SignedString([]byte(env.JwtSecretKey))
+	privateKey, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(jwtInfo.PrivateKey))
+	token, _ := claims.SignedString(privateKey)
 	return token
 }

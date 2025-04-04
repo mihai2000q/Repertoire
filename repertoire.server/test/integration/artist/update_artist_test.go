@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
@@ -43,6 +45,8 @@ func TestUpdateArtist_WhenSuccessful_ShouldUpdateArtist(t *testing.T) {
 		IsBand: true,
 	}
 
+	messages := utils.SubscribeToTopic(topics.ArtistUpdatedTopic)
+
 	// when
 	w := httptest.NewRecorder()
 	core.NewTestHandler().PUT(w, "/api/artists", request)
@@ -54,6 +58,10 @@ func TestUpdateArtist_WhenSuccessful_ShouldUpdateArtist(t *testing.T) {
 	db.Find(&artist, artist.ID)
 
 	assertUpdatedArtist(t, request, artist)
+
+	assertion.AssertMessage(t, messages, func(id uuid.UUID) {
+		assert.Equal(t, artist.ID, id)
+	})
 }
 
 func assertUpdatedArtist(t *testing.T, request requests.UpdateArtistRequest, artist model.Artist) {

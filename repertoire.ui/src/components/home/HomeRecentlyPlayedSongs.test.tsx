@@ -82,11 +82,9 @@ describe('Home Recently Played Songs', () => {
     expect(screen.getByText(/progress/i)).toBeInTheDocument()
     expect(screen.getByLabelText('last-time-played-icon')).toBeInTheDocument()
 
-    expect(screen.getByTestId('recently-played-songs-loader')).toBeInTheDocument()
     for (const song of songs) {
       expect(await screen.findByText(song.title)).toBeInTheDocument()
       if (song.artist) expect(screen.getByText(song.artist.name)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl)
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       else if (song.album?.imageUrl)
@@ -94,6 +92,8 @@ describe('Home Recently Played Songs', () => {
           'src',
           song.album.imageUrl
         )
+      else
+        expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
       if (song.lastTimePlayed)
         expect(screen.getByText(dayjs(song.lastTimePlayed).format('DD MMM'))).toBeInTheDocument()
     }

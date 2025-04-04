@@ -51,6 +51,16 @@ func (s *SongRepositoryMock) GetWithAssociations(song *model.Song, id uuid.UUID)
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
+	args := s.Called(songs, albumID)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error {
 	args := s.Called(songs, albumID, trackNo)
 
@@ -72,6 +82,16 @@ func (s *SongRepositoryMock) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) e
 }
 
 func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
 	if len(args) > 1 {
@@ -108,7 +128,7 @@ func (s *SongRepositoryMock) GetAllByUserCount(count *int64, userID uuid.UUID, s
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) CountByAlbum(count *int64, albumID *uuid.UUID) error {
+func (s *SongRepositoryMock) CountByAlbum(count *int64, albumID uuid.UUID) error {
 	args := s.Called(count, albumID)
 
 	if len(args) > 1 {
@@ -150,6 +170,21 @@ func (s *SongRepositoryMock) UpdateAllWithAssociations(songs *[]model.Song) erro
 
 func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
 	args := s.Called(id)
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
+	args := s.Called(settings, settingsID)
+
+	if len(args) > 1 {
+		*settings = *args.Get(1).(*model.SongSettings)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) UpdateSettings(settings *model.SongSettings) error {
+	args := s.Called(settings)
 	return args.Error(0)
 }
 

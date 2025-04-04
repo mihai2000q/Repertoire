@@ -50,7 +50,7 @@ type DeleteArtistRequest struct {
 
 type CreateBandMemberRequest struct {
 	Name     string      `validate:"required,max=100"`
-	Color    *string     `validate:"omitempty,isColor"`
+	Color    *string     `validate:"omitempty,color"`
 	RoleIDs  []uuid.UUID `validate:"min=1"`
 	ArtistID uuid.UUID   `validate:"required"`
 }
@@ -58,7 +58,7 @@ type CreateBandMemberRequest struct {
 type UpdateBandMemberRequest struct {
 	ID      uuid.UUID   `validate:"required"`
 	Name    string      `validate:"required,max=100"`
-	Color   *string     `validate:"omitempty,isColor"`
+	Color   *string     `validate:"omitempty,color"`
 	RoleIDs []uuid.UUID `validate:"min=1"`
 }
 

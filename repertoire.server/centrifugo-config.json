@@ -1,0 +1,37 @@
+{
+  "client": {
+    "token": {
+      "hmac_secret_key": "This-is-a-very-super-duper-secret-key-and-it-shall-stay-like-this",
+      "issuer": "http://localhost:8030/auth",
+      "audience": "Centrifugo"
+    },
+    "allowed_origins": [
+      "*"
+    ],
+    "ping_interval": "120s",
+    "pong_timeout": "60s"
+  },
+  "engine": {
+    "type": "memory"
+  },
+  "http_server" : {
+    "port": "8003"
+  },
+  "admin": {
+    "enabled": true,
+    "password": "admin",
+    "secret": "admin-secret"
+  },
+  "log" : {
+    "level": "info"
+  },
+  "channel": {
+    "namespaces": [
+      {
+        "name": "search",
+        "allow_subscribe_for_client": true,
+        "allow_publish_for_client": true
+      }
+    ]
+  }
+}

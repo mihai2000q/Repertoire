@@ -125,7 +125,7 @@ describe('Delete Account Modal', () => {
 
     let capturedRequest: SignInRequest
     server.use(
-      http.put('/auth/sign-in', async (req) => {
+      http.put('/sign-in', async (req) => {
         capturedRequest = (await req.request.json()) as SignInRequest
         return HttpResponse.json({ error }, { status: 401 })
       })
@@ -162,7 +162,7 @@ describe('Delete Account Modal', () => {
 
     let capturedRequest: SignInRequest
     server.use(
-      http.put('/auth/sign-in', async (req) => {
+      http.put('/sign-in', async (req) => {
         capturedRequest = (await req.request.json()) as SignInRequest
         return HttpResponse.json()
       }),

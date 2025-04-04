@@ -11,8 +11,10 @@ import (
 type AlbumRepository interface {
 	Get(album *model.Album, id uuid.UUID) error
 	GetWithSongs(album *model.Album, id uuid.UUID) error
+	GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
+	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.Album,
 		userID uuid.UUID,
@@ -42,11 +44,11 @@ func NewAlbumRepository(client database.Client) AlbumRepository {
 }
 
 func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
-	return a.client.DB.Find(&album, model.Album{ID: id}).Error
+	return a.client.Find(&album, model.Album{ID: id}).Error
 }
 
 func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
-	return a.client.DB.
+	return a.client.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
@@ -54,8 +56,17 @@ func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
 		Error
 }
 
+func (a albumRepository) GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error {
+	return a.client.
+		Joins("Artist").
+		Preload("Songs").
+		Preload("Songs.Artist").
+		Find(&album, model.Album{ID: id}).
+		Error
+}
+
 func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error {
-	return a.client.DB.
+	return a.client.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return database.OrderBy(db, songsOrderBy)
 		}).
@@ -65,10 +76,19 @@ func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID, s
 }
 
 func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {
-	return a.client.DB.Model(&model.Album{}).
+	return a.client.Model(&model.Album{}).
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
+		Find(&albums, ids).
+		Error
+}
+
+func (a albumRepository) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error {
+	return a.client.Model(&model.Album{}).
+		Joins("Artist").
+		Preload("Songs").
+		Preload("Songs.Artist").
 		Find(&albums, ids).
 		Error
 }
@@ -81,7 +101,7 @@ func (a albumRepository) GetAllByUser(
 	orderBy []string,
 	searchBy []string,
 ) error {
-	tx := a.client.DB.Model(&model.Album{}).
+	tx := a.client.Model(&model.Album{}).
 		Joins("Artist").
 		Where(model.Album{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
@@ -91,29 +111,29 @@ func (a albumRepository) GetAllByUser(
 }
 
 func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
-	tx := a.client.DB.Model(&model.Album{}).
+	tx := a.client.Model(&model.Album{}).
 		Where(model.Album{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
 
 func (a albumRepository) Create(album *model.Album) error {
-	return a.client.DB.Create(&album).Error
+	return a.client.Create(&album).Error
 }
 
 func (a albumRepository) Update(album *model.Album) error {
-	return a.client.DB.Save(&album).Error
+	return a.client.Save(&album).Error
 }
 
 func (a albumRepository) UpdateWithAssociations(album *model.Album) error {
-	return a.client.DB.
+	return a.client.
 		Session(&gorm.Session{FullSaveAssociations: true}).
 		Updates(&album).
 		Error
 }
 
 func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
-	return a.client.DB.Transaction(func(tx *gorm.DB) error {
+	return a.client.Transaction(func(tx *gorm.DB) error {
 		for _, album := range *albums {
 			if err := tx.Save(&album).Error; err != nil {
 				return err
@@ -129,11 +149,11 @@ func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
 }
 
 func (a albumRepository) Delete(id uuid.UUID) error {
-	return a.client.DB.Delete(&model.Album{}, id).Error
+	return a.client.Delete(&model.Album{}, id).Error
 }
 
 func (a albumRepository) DeleteWithSongs(id uuid.UUID) error {
-	return a.client.DB.Transaction(func(tx *gorm.DB) error {
+	return a.client.Transaction(func(tx *gorm.DB) error {
 		err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
 		if err != nil {
 			return err
@@ -148,5 +168,5 @@ func (a albumRepository) DeleteWithSongs(id uuid.UUID) error {
 }
 
 func (a albumRepository) RemoveSongs(album *model.Album, songs *[]model.Song) error {
-	return a.client.DB.Model(&album).Association("Songs").Delete(&songs)
+	return a.client.Model(&album).Association("Songs").Delete(&songs)
 }

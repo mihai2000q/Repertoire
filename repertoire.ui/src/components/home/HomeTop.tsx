@@ -174,7 +174,7 @@ function HomeTop() {
       )}
       {topEntity === TopEntity.Artists && artists?.models.length === 0 && (
         <Center h={158}>
-          <Text c={'gray.6'} fw={500}>
+          <Text c={'gray.6'} fw={500} pt={12}>
             There are no artists yet to display
           </Text>
         </Center>
@@ -192,23 +192,24 @@ function HomeTop() {
           align={'start'}
           px={'xl'}
           pt={'lg'}
-          pb={topEntity === TopEntity.Artists && 'sm'}
-          gap={'lg'}
+          pb={topEntity === TopEntity.Artists && 'md'}
+          gap={topEntity === TopEntity.Artists ? 'sm' : 'lg'}
+          style={{ transition: 'padding-bottom 0.3s' }}
         >
           {topEntity === TopEntity.Songs &&
-            (isSongsLoading ? (
+            ((isSongsLoading || !songs) ? (
               <HomeSongsLoader />
             ) : (
               songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
             ))}
           {topEntity === TopEntity.Albums &&
-            (isAlbumsLoading ? (
+            ((isAlbumsLoading || !albums) ? (
               <HomeAlbumsLoader />
             ) : (
               albums.models.map((album) => <HomeAlbumCard key={album.id} album={album} />)
             ))}
           {topEntity === TopEntity.Artists &&
-            (isArtistsLoading ? (
+            ((isArtistsLoading || !artists) ? (
               <HomeArtistsLoader />
             ) : (
               artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)

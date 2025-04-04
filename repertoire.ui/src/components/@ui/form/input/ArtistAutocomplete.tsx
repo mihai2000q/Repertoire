@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Center,
   Combobox,
   Group,
   HoverCard,
@@ -9,16 +10,17 @@ import {
   TextInput,
   useCombobox
 } from '@mantine/core'
-import artistPlaceholder from '../../../../assets/user-placeholder.jpg'
-import { useGetArtistsQuery } from '../../../../state/api/artistsApi.ts'
-import Artist from '../../../../types/models/Artist.ts'
 import { ChangeEvent, FocusEvent } from 'react'
 import { IconUserFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
+import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
+import SearchType from '../../../../utils/enums/SearchType.ts'
+import { ArtistSearch } from '../../../../types/models/Search.ts'
+import CustomIconUserAlt from '../../icons/CustomIconUserAlt.tsx'
 
 interface ArtistsAutocompleteProps {
-  artist: Artist | null
-  setArtist: (artist: Artist | null) => void
+  artist: ArtistSearch | null
+  setArtist: (artist: ArtistSearch | null) => void
   setValue: (value: string) => void
   value?: string
   defaultValue?: string
@@ -26,6 +28,7 @@ interface ArtistsAutocompleteProps {
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void
   onFocus?: (event: FocusEvent<HTMLInputElement>) => void
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void
+  disabled?: boolean
 }
 
 function ArtistAutocomplete({
@@ -38,17 +41,15 @@ function ArtistAutocomplete({
 
   const [searchValue, setSearchValue] = useDebouncedState('', 200)
 
-  const { data: artists, isFetching } = useGetArtistsQuery({
+  const { data, isFetching } = useGetSearchQuery({
+    query: searchValue,
     currentPage: 1,
     pageSize: 10,
-    orderBy: ['name asc'],
-    searchBy:
-      searchValue.trim() !== ''
-        ? [`name ~* '${searchValue}'`]
-        : artist
-          ? [`name ~* '${artist.name}'`]
-          : []
+    type: SearchType.Artist,
+    order: ['updatedAt:desc']
   })
+  const totalCount = data?.totalCount
+  const artists = data?.models as ArtistSearch[]
 
   function handleClear() {
     if (setValue) setValue('')
@@ -59,11 +60,31 @@ function ArtistAutocomplete({
   const ArtistHoverCard = () => (
     <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
       <HoverCard.Target>
-        <Avatar size={23} src={artist.imageUrl ?? artistPlaceholder} alt={artist.name} />
+        <Avatar
+          size={23}
+          src={artist.imageUrl}
+          alt={artist.name}
+          style={(theme) => ({ boxShadow: theme.shadows.sm })}
+          bg={'gray.0'}
+        >
+          <Center c={'gray.7'}>
+            <CustomIconUserAlt size={12} />
+          </Center>
+        </Avatar>
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar size={'md'} src={artist.imageUrl ?? artistPlaceholder} alt={artist.name} />
+          <Avatar
+            size={'md'}
+            src={artist.imageUrl}
+            alt={artist.name}
+            style={(theme) => ({ boxShadow: theme.shadows.sm })}
+            bg={'gray.0'}
+          >
+            <Center c={'gray.7'}>
+              <CustomIconUserAlt size={18} />
+            </Center>
+          </Avatar>
           <Text inline fw={500} lineClamp={2}>
             {artist.name}
           </Text>
@@ -87,9 +108,11 @@ function ArtistAutocomplete({
           flex={1}
           maxLength={100}
           label={'Artist'}
-          placeholder={`${artists?.models?.length > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
+          placeholder={`${totalCount > 0 ? 'Choose or Create Artist' : 'Enter New Artist Name'}`}
           leftSection={artist ? <ArtistHoverCard /> : <IconUserFilled size={20} />}
-          rightSection={artist && <Combobox.ClearButton onClear={handleClear} />}
+          rightSection={
+            artist && inputProps.disabled !== true && <Combobox.ClearButton onClear={handleClear} />
+          }
           onClick={() => combobox.openDropdown()}
           {...inputProps}
           onChange={(event) => {
@@ -117,10 +140,10 @@ function ArtistAutocomplete({
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {artists?.totalCount === 0 ? (
+            {totalCount === 0 ? (
               <Combobox.Empty>No artist found</Combobox.Empty>
             ) : (
-              artists?.models?.map((artist) => (
+              artists?.map((artist) => (
                 <Combobox.Option
                   key={artist.id}
                   value={artist.name}
@@ -130,9 +153,15 @@ function ArtistAutocomplete({
                   <Group gap={'xs'} wrap={'nowrap'}>
                     <Avatar
                       size={'sm'}
-                      src={artist.imageUrl ?? artistPlaceholder}
+                      src={artist.imageUrl}
                       alt={artist.name}
-                    />
+                      style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                      bg={'gray.0'}
+                    >
+                      <Center c={'gray.7'}>
+                        <CustomIconUserAlt size={13} />
+                      </Center>
+                    </Avatar>
                     <Text inline fw={500} lineClamp={2}>
                       {artist.name}
                     </Text>

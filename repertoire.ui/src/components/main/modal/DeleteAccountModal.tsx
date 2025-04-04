@@ -15,11 +15,12 @@ import { useState } from 'react'
 import { signOut } from '../../../state/slice/authSlice.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
-import { useDeleteUserMutation, useSignInMutation } from '../../../state/api.ts'
 import HttpErrorResponse from '../../../types/responses/HttpErrorResponse.ts'
 import User from '../../../types/models/User.ts'
 import { useForm, zodResolver } from '@mantine/form'
 import { DeleteAccountForm, deleteAccountValidation } from '../../../validation/mainForm.ts'
+import { useSignInMutation } from '../../../state/authApi.ts'
+import { useDeleteUserMutation } from '../../../state/api/usersApi.ts'
 
 interface DeleteAccountModalProps {
   opened: boolean

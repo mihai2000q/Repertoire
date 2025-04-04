@@ -4,8 +4,8 @@ import (
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/domain/usecase/artist/band/member"
-	"repertoire/server/domain/usecase/auth"
 	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/search"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/domain/usecase/udata/band/member/role"
@@ -53,12 +53,6 @@ var artistUseCases = fx.Options(
 	fx.Provide(member.NewGetBandMemberRoles),
 )
 
-var authUseCases = fx.Options(
-	fx.Provide(auth.NewRefresh),
-	fx.Provide(auth.NewSignIn),
-	fx.Provide(auth.NewSignUp),
-)
-
 var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewAddAlbumsToPlaylist),
 	fx.Provide(playlist.NewAddArtistsToPlaylist),
@@ -74,8 +68,14 @@ var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewUpdatePlaylist),
 )
 
+var searchUseCases = fx.Options(
+	fx.Provide(search.NewGet),
+	fx.Provide(search.NewMeiliWebhook),
+)
+
 var songUseCases = fx.Options(
 	fx.Provide(song.NewAddPerfectSongRehearsal),
+	fx.Provide(song.NewAddPartialSongRehearsal),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
 	fx.Provide(song.NewDeleteImageFromSong),
@@ -83,6 +83,7 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewGetSong),
 	fx.Provide(song.NewSaveImageToSong),
 	fx.Provide(song.NewUpdateSong),
+	fx.Provide(song.NewUpdateSongSettings),
 
 	fx.Provide(song.NewGetGuitarTunings),
 	fx.Provide(song.NewGetInstruments),
@@ -91,8 +92,10 @@ var songUseCases = fx.Options(
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
 	fx.Provide(section.NewMoveSongSection),
+	fx.Provide(section.NewUpdateAllSongSections),
 	fx.Provide(section.NewUpdateSongSection),
 	fx.Provide(section.NewUpdateSongSectionsOccurrences),
+	fx.Provide(section.NewUpdateSongSectionsPartialOccurrences),
 )
 
 var userDataUseCases = fx.Options(
@@ -118,14 +121,15 @@ var userUseCases = fx.Options(
 	fx.Provide(user.NewDeleteProfilePictureFromUser),
 	fx.Provide(user.NewGetUser),
 	fx.Provide(user.NewSaveProfilePictureToUser),
+	fx.Provide(user.NewSignUp),
 	fx.Provide(user.NewUpdateUser),
 )
 
 var Module = fx.Options(
 	albumUseCases,
 	artistUseCases,
-	authUseCases,
 	playlistUseCases,
+	searchUseCases,
 	songUseCases,
 	userDataUseCases,
 	userUseCases,

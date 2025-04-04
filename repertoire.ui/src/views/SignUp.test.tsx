@@ -4,10 +4,9 @@ import { act, screen } from '@testing-library/react'
 import { expect } from 'vitest'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { SignUpRequest } from '../types/requests/AuthRequests.ts'
-import TokenResponse from '../types/responses/TokenResponse.ts'
 import { RootState } from '../state/store.ts'
 import { setupServer } from 'msw/node'
+import { SignUpRequest } from '../types/requests/UserRequests.ts'
 
 describe('Sign Up', () => {
   const server = setupServer()
@@ -109,7 +108,7 @@ describe('Sign Up', () => {
     const error = 'Email already in use'
 
     server.use(
-      http.post('/auth/sign-up', async () => HttpResponse.json({ error }, { status: 401 }))
+      http.post('/users/sign-up', async () => HttpResponse.json({ error }, { status: 401 }))
     )
 
     await sendSignUpRequest(name, email, password)
@@ -133,10 +132,9 @@ describe('Sign Up', () => {
     const expectedToken = 'token'
 
     server.use(
-      http.post('/auth/sign-up', async (req) => {
+      http.post('/users/sign-up', async (req) => {
         capturedSignUpRequest = (await req.request.json()) as SignUpRequest
-        const response: TokenResponse = { token: expectedToken }
-        return HttpResponse.json(response)
+        return HttpResponse.json(expectedToken)
       })
     )
 

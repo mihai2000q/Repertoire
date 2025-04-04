@@ -16,7 +16,6 @@ import { IconDisc, IconDots, IconPlus } from '@tabler/icons-react'
 import ArtistAlbumCard from '../ArtistAlbumCard.tsx'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { useRemoveAlbumsFromArtistMutation } from '../../../state/api/artistsApi.ts'
 import Order from '../../../types/Order.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Album from '../../../types/models/Album.ts'
@@ -43,18 +42,12 @@ function ArtistAlbumsCard({
   artistId,
   isFetching
 }: ArtistAlbumsCardProps) {
-  const [removeAlbumsFromArtist] = useRemoveAlbumsFromArtistMutation()
-
   const [openedAddNewAlbum, { open: openAddNewAlbum, close: closeAddNewAlbum }] =
     useDisclosure(false)
   const [openedAddExistingAlbums, { open: openAddExistingAlbums, close: closeAddExistingAlbums }] =
     useDisclosure(false)
 
-  function handleRemoveAlbumsFromArtist(albumIds: string[]) {
-    removeAlbumsFromArtist({ albumIds: albumIds, id: artistId })
-  }
-
-  if (isLoading) return <ArtistAlbumsLoader />
+  if (isLoading || !albums) return <ArtistAlbumsLoader />
 
   return (
     <Card variant={'panel'} aria-label={'albums-card'} p={0} h={'100%'} mb={'lg'}>
@@ -97,7 +90,7 @@ function ArtistAlbumsCard({
             <ArtistAlbumCard
               key={album.id}
               album={album}
-              handleRemove={() => handleRemoveAlbumsFromArtist([album.id])}
+              artistId={artistId}
               isUnknownArtist={isUnknownArtist}
               order={order}
             />

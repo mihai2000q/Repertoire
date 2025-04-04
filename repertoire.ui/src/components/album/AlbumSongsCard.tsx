@@ -14,10 +14,7 @@ import AlbumSongCard from './AlbumSongCard.tsx'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import AddNewAlbumSongModal from './modal/AddNewAlbumSongModal.tsx'
 import AddExistingAlbumSongsModal from './modal/AddExistingAlbumSongsModal.tsx'
-import {
-  useMoveSongFromAlbumMutation,
-  useRemoveSongsFromAlbumMutation
-} from '../../state/api/albumsApi.ts'
+import { useMoveSongFromAlbumMutation } from '../../state/api/albumsApi.ts'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import Album from '../../types/models/Album.ts'
 import Song from '../../types/models/Song.ts'
@@ -46,7 +43,6 @@ function AlbumSongsCard({
   isFetching
 }: AlbumSongsCardProps) {
   const [moveSongFromAlbum, { isLoading: isMoveLoading }] = useMoveSongFromAlbumMutation()
-  const [removeSongsFromAlbum] = useRemoveSongsFromAlbumMutation()
 
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
@@ -56,10 +52,6 @@ function AlbumSongsCard({
     isUnknownAlbum ? [] : album.songs
   )
   useDidUpdate(() => setState(album.songs), [album])
-
-  function handleRemoveSongsFromAlbum(songIds: string[]) {
-    removeSongsFromAlbum({ id: album?.id, songIds })
-  }
 
   function onSongsDragEnd({ source, destination }) {
     reorder({ from: source.index, to: destination?.index || 0 })
@@ -129,7 +121,7 @@ function AlbumSongsCard({
                         <AlbumSongCard
                           key={song.id}
                           song={song}
-                          handleRemove={() => handleRemoveSongsFromAlbum([song.id])}
+                          albumId={album?.id}
                           isUnknownAlbum={isUnknownAlbum}
                           order={order}
                           isDragging={snapshot.isDragging}

@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"repertoire/server/domain/message"
 	"repertoire/server/domain/processor"
 	"repertoire/server/domain/provider"
 	"repertoire/server/domain/service"
@@ -21,8 +22,8 @@ var providers = fx.Options(
 var services = fx.Options(
 	fx.Provide(service.NewAlbumService),
 	fx.Provide(service.NewArtistService),
-	fx.Provide(service.NewAuthService),
 	fx.Provide(service.NewPlaylistService),
+	fx.Provide(service.NewSearchService),
 	fx.Provide(service.NewSongService),
 	fx.Provide(service.NewUserDataService),
 	fx.Provide(service.NewUserService),
@@ -31,6 +32,7 @@ var services = fx.Options(
 var Module = fx.Options(
 	processors,
 	providers,
+	message.Module,
 	usecase.Module,
 	services,
 )

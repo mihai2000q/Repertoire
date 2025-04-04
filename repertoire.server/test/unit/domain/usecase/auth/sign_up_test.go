@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/auth"
+	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -20,7 +20,7 @@ import (
 func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := auth.NewSignUp(nil, nil, userRepository)
+	_uut := user.NewSignUp(nil, nil, userRepository)
 
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
@@ -48,7 +48,7 @@ func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalS
 func TestAuthService_SignUp_WhenUserIsNotEmpty_ShouldReturnUnauthorizedError(t *testing.T) {
 	// given
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := auth.NewSignUp(nil, nil, userRepository)
+	_uut := user.NewSignUp(nil, nil, userRepository)
 
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
@@ -76,7 +76,7 @@ func TestAuthService_SignUp_WhenHashPasswordFails_ShouldReturnInternalServerErro
 	// given
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := auth.NewSignUp(nil, bCryptService, userRepository)
+	_uut := user.NewSignUp(nil, bCryptService, userRepository)
 
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
@@ -108,7 +108,7 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 	// given
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := auth.NewSignUp(nil, bCryptService, userRepository)
+	_uut := user.NewSignUp(nil, bCryptService, userRepository)
 
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
@@ -141,12 +141,12 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 	bCryptService.AssertExpectations(t)
 }
 
-func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAuthService_SignUp_WhenSignInFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	jwtService := new(service.JwtServiceMock)
+	authService := new(service.AuthServiceMock)
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := auth.NewSignUp(jwtService, bCryptService, userRepository)
+	_uut := user.NewSignUp(authService, bCryptService, userRepository)
 
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
@@ -161,19 +161,12 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 	hashedPassword := "hashed password"
 	bCryptService.On("Hash", request.Password).Return(hashedPassword, nil).Once()
 
-	var user *model.User
 	userRepository.On("Create", mock.IsType(&model.User{})).
-		Run(func(args mock.Arguments) {
-			user = args.Get(0).(*model.User)
-		}).
 		Return(nil).
 		Once()
 
 	internalError := wrapper.InternalServerError(errors.New("internal error"))
-	jwtService.On("CreateToken", mock.IsType(model.User{})).
-		Run(func(args mock.Arguments) {
-			assert.Equal(t, *user, args.Get(0).(model.User))
-		}).
+	authService.On("SignIn", strings.ToLower(request.Email), hashedPassword).
 		Return("", internalError).
 		Once()
 
@@ -185,17 +178,17 @@ func TestAuthService_SignUp_WhenCreateTokenFails_ShouldReturnInternalServerError
 	assert.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
+	authService.AssertExpectations(t)
 	userRepository.AssertExpectations(t)
 	bCryptService.AssertExpectations(t)
-	jwtService.AssertExpectations(t)
 }
 
 func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	// given
-	jwtService := new(service.JwtServiceMock)
+	authService := new(service.AuthServiceMock)
 	bCryptService := new(service.BCryptServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
-	_uut := auth.NewSignUp(jwtService, bCryptService, userRepository)
+	_uut := user.NewSignUp(authService, bCryptService, userRepository)
 
 	request := requests.SignUpRequest{
 		Name:     "Samuel",
@@ -221,10 +214,7 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 		Once()
 
 	expectedToken := "This is the generated token"
-	jwtService.On("CreateToken", mock.IsType(model.User{})).
-		Run(func(args mock.Arguments) {
-			assert.Equal(t, *user, args.Get(0).(model.User))
-		}).
+	authService.On("SignIn", strings.ToLower(request.Email), hashedPassword).
 		Return(expectedToken, nil).
 		Once()
 
@@ -235,9 +225,9 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	assert.Nil(t, errCode)
 	assert.Equal(t, expectedToken, token)
 
+	authService.AssertExpectations(t)
 	userRepository.AssertExpectations(t)
 	bCryptService.AssertExpectations(t)
-	jwtService.AssertExpectations(t)
 }
 
 func assertCreatedUser(

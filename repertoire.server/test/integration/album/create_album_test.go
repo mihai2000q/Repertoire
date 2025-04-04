@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -51,6 +52,8 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 
 			user := albumData.Users[0]
 
+			messages := utils.SubscribeToTopic(topics.AlbumCreatedTopic)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().
@@ -63,17 +66,20 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 
 			assert.Equal(t, http.StatusOK, w.Code)
 			assert.NotEmpty(t, response)
-			assertCreatedAlbum(t, test.request, response.ID, user.ID)
+
+			db := utils.GetDatabase(t)
+			var album model.Album
+			db.Joins("Artist").Find(&album, response.ID)
+			assertCreatedAlbum(t, test.request, album, user.ID)
+
+			assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
+				assert.Equal(t, album.ID, payloadAlbum.ID)
+			})
 		})
 	}
 }
 
-func assertCreatedAlbum(t *testing.T, request requests.CreateAlbumRequest, albumID uuid.UUID, userID uuid.UUID) {
-	db := utils.GetDatabase(t)
-
-	var album model.Album
-	db.Preload("Artist").Find(&album, albumID)
-
+func assertCreatedAlbum(t *testing.T, request requests.CreateAlbumRequest, album model.Album, userID uuid.UUID) {
 	assert.Equal(t, request.Title, album.Title)
 	assertion.Time(t, request.ReleaseDate, album.ReleaseDate)
 	assert.Nil(t, album.ImageURL)

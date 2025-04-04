@@ -2,16 +2,19 @@ import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/models/Song.ts'
 import {
+  AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
   GetSongsRequest,
   MoveSongSectionRequest,
-  SaveImageToSongRequest,
+  SaveImageToSongRequest, UpdateAllSongSectionsRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
-  UpdateSongSectionsOccurrencesRequest
+  UpdateSongSectionsOccurrencesRequest,
+  UpdateSongSectionsPartialOccurrencesRequest,
+  UpdateSongSettingsRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
@@ -27,7 +30,16 @@ const songsApi = api.injectEndpoints({
     }),
     getSong: build.query<Song, string>({
       query: (arg) => `songs/${arg}`,
-      providesTags: ['Songs']
+      providesTags: ['Songs'],
+      transformResponse: (response: Song) => ({
+        ...response,
+        artist: response.artist
+          ? {
+              ...response.artist,
+              bandMembers: response.artist.bandMembers === null ? [] : response.artist.bandMembers
+            }
+          : response.artist
+      })
     }),
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
       query: (body) => ({
@@ -45,6 +57,14 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    addPartialSongRehearsal: build.mutation<HttpMessageResponse, AddPartialSongRehearsalRequest>({
+      query: (body) => ({
+        url: 'songs/partial-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
       query: (body) => ({
         url: 'songs',
@@ -52,6 +72,14 @@ const songsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Songs', 'Albums']
+    }),
+    updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
+      query: (body) => ({
+        url: 'songs/settings',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
     }),
     saveImageToSong: build.mutation<HttpMessageResponse, SaveImageToSongRequest>({
       query: (request) => ({
@@ -105,6 +133,25 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    updateSongSectionsPartialOccurrences: build.mutation<
+      HttpMessageResponse,
+      UpdateSongSectionsPartialOccurrencesRequest
+    >({
+      query: (body) => ({
+        url: 'songs/sections/partial-occurrences',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    updateAllSongSections: build.mutation<HttpMessageResponse, UpdateAllSongSectionsRequest>({
+      query: (body) => ({
+        url: 'songs/sections/all',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections/move',
@@ -146,7 +193,9 @@ export const {
   useGetSongQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
+  useAddPartialSongRehearsalMutation,
   useUpdateSongMutation,
+  useUpdateSongSettingsMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,
   useDeleteSongMutation,
@@ -156,6 +205,8 @@ export const {
   useCreateSongSectionMutation,
   useUpdateSongSectionMutation,
   useUpdateSongSectionsOccurrencesMutation,
+  useUpdateSongSectionsPartialOccurrencesMutation,
+  useUpdateAllSongSectionsMutation,
   useMoveSongSectionMutation,
   useDeleteSongSectionMutation
 } = songsApi

@@ -51,7 +51,8 @@ describe('Album Drawer', () => {
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1'
+    name: 'Artist 1',
+    imageUrl: 'something.png',
   }
 
   const getAlbum = (album: Album) =>
@@ -89,7 +90,7 @@ describe('Album Drawer', () => {
 
     expect(screen.getByTestId('album-drawer-loader')).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText(`${album.songs.length} songs`)).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
@@ -99,9 +100,10 @@ describe('Album Drawer', () => {
     album.songs.forEach((song) => {
       expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
+      } else {
+        expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
       }
     })
   })

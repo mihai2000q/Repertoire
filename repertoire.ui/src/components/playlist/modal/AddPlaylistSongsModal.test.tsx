@@ -15,6 +15,7 @@ import { userEvent } from '@testing-library/user-event'
 import { AddSongsToPlaylistRequest } from '../../../types/requests/PlaylistRequests.ts'
 import Artist from '../../../types/models/Artist.ts'
 import Album from '../../../types/models/Album.ts'
+import {expect} from "vitest";
 
 describe('Add Playlist Songs Modal', () => {
   const album: Album = {
@@ -130,7 +131,6 @@ describe('Add Playlist Songs Modal', () => {
 
       expect(screen.getByRole('checkbox', { name: song.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: song.title })).not.toBeChecked()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (song.album?.imageUrl) {
@@ -138,6 +138,8 @@ describe('Add Playlist Songs Modal', () => {
           'src',
           song.album.imageUrl
         )
+      } else {
+        expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
       }
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.album) expect(within(renderedSong).getByText(song.album.title)).toBeInTheDocument()
@@ -185,7 +187,7 @@ describe('Add Playlist Songs Modal', () => {
 
     expect(capturedSearchBy.get('currentPage')).toBe('1')
     expect(capturedSearchBy.get('pageSize')).toBe('20')
-    expect(capturedSearchBy.get('orderBy')).match(/title ASC/i)
+    expect(capturedSearchBy.get('orderBy')).match(/updated_at desc/i)
     expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
     expect(capturedSearchBy.getAll('searchBy')[0]).match(
       new RegExp(

@@ -1,6 +1,5 @@
 import Artist from '../../types/models/Artist.ts'
-import {Avatar, Checkbox, Group, Menu, Stack, Text} from '@mantine/core'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
+import { Avatar, Center, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconTrash } from '@tabler/icons-react'
@@ -9,6 +8,7 @@ import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDeleteArtistMutation } from '../../state/api/artistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 
 interface ArtistCardProps {
   artist: Artist
@@ -58,17 +58,28 @@ function ArtistCard({ artist }: ArtistCardProps) {
           <Avatar
             onMouseEnter={() => setIsAvatarHovered(true)}
             onMouseLeave={() => setIsAvatarHovered(false)}
-            src={artist.imageUrl ?? artistPlaceholder}
-            alt={artist.name}
-            size={125}
+            src={artist.imageUrl}
+            alt={artist.imageUrl && artist.name}
+            w={'100%'}
+            h={'unset'}
+            bg={'gray.0'}
             style={(theme) => ({
+              aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
               boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
             })}
             onClick={handleClick}
             onContextMenu={openMenu}
-          />
+          >
+            <Center c={'gray.7'}>
+              <CustomIconUserAlt
+                aria-label={`default-icon-${artist.name}`}
+                size={'100%'}
+                style={{ padding: '27%' }}
+              />
+            </Center>
+          </Avatar>
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>
@@ -77,7 +88,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
-      <Text maw={120} fw={600} ta={'center'} lineClamp={2}>
+      <Text px={'xs'} fw={600} ta={'center'} lineClamp={2}>
         {artist.name}
       </Text>
 

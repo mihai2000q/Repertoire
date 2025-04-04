@@ -1,24 +1,18 @@
-import { reduxMemoryRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxMemoryRouterRender } from '../test-utils.tsx'
 import Song from './Song.tsx'
 import { default as SongType } from './../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
 import { RootState } from '../state/store.ts'
+import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
+import { SearchBase } from '../types/models/Search.ts'
 
 describe('Song', () => {
   const song: SongType = {
+    ...emptySong,
     id: '1',
-    title: 'Song 1',
-    description: '',
-    isRecorded: false,
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    sections: [],
-    createdAt: '',
-    updatedAt: '',
-    releaseDate: null
+    title: 'Song 1'
   }
 
   const handlers = [
@@ -30,6 +24,13 @@ describe('Song', () => {
     }),
     http.get(`/songs/guitar-tunings`, () => {
       return HttpResponse.json([])
+    }),
+    http.get(`/songs/instruments`, () => {
+      return HttpResponse.json([])
+    }),
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
     })
   ]
 

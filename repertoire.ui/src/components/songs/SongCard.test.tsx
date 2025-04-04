@@ -39,6 +39,7 @@ describe('Song Card', () => {
   it('should render and display minimal info', () => {
     reduxRouterRender(<SongCard song={song} />)
 
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
   })
@@ -125,16 +126,12 @@ describe('Song Card', () => {
       ...song,
       sections: [
         {
-          id: '',
+          ...emptySongSection,
           name: 'Solo 1',
           songSectionType: {
             id: '',
             name: 'Solo'
           },
-          rehearsals: 0,
-          confidence: 0,
-          progress: 0,
-          occurrences: 0
         }
       ]
     }
@@ -220,9 +217,10 @@ describe('Song Card', () => {
 
     await user.pointer({
       keys: '[MouseRight>]',
-      target: screen.getByRole('img', { name: song.title })
+      target: screen.getByLabelText(`default-icon-${song.title}`)
     })
 
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
@@ -241,7 +239,7 @@ describe('Song Card', () => {
 
       await user.pointer({
         keys: '[MouseRight>]',
-        target: screen.getByRole('img', { name: song.title })
+        target: screen.getByLabelText(`default-icon-${song.title}`)
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
@@ -258,7 +256,7 @@ describe('Song Card', () => {
 
     reduxRouterRender(<SongCard song={song} />)
 
-    await user.click(screen.getByRole('img', { name: song.title }))
+    await user.click(screen.getByLabelText(`default-icon-${song.title}`))
     expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 

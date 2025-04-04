@@ -79,7 +79,6 @@ describe('Playlists', () => {
     expect(screen.getByRole('button', { name: /order-playlists/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-playlists/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-playlists/i })).toBeDisabled()
-    expect(screen.getByTestId('playlists-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-playlist-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/playlist-card-/)).toHaveLength(playlists.length)

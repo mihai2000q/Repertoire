@@ -13,13 +13,13 @@ type Album struct {
 	Title       string             `gorm:"size:100; not null" json:"title"`
 	ReleaseDate *time.Time         `json:"releaseDate"`
 	ImageURL    *internal.FilePath `json:"imageUrl"`
-	ArtistID    *uuid.UUID         `json:"-"`
+	ArtistID    *uuid.UUID         `json:"artistId"`
 	Artist      *Artist            `json:"artist"`
 	Songs       []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"userId"`
 }
 
 func (a *Album) BeforeSave(*gorm.DB) error {
@@ -28,10 +28,10 @@ func (a *Album) BeforeSave(*gorm.DB) error {
 }
 
 func (a *Album) AfterFind(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.ToFullURL(&a.UpdatedAt)
+	a.ImageURL = a.ImageURL.ToFullURL(a.UpdatedAt)
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if a.Artist != nil {
-		a.Artist.ImageURL = a.Artist.ImageURL.ToFullURL(&a.Artist.UpdatedAt)
+		a.Artist.ImageURL = a.Artist.ImageURL.ToFullURL(a.Artist.UpdatedAt)
 	}
 	return nil
 }

@@ -21,8 +21,9 @@ export const addNewAlbumSongValidation = z.object({
 
 export interface EditAlbumHeaderForm {
   title: string
-  releaseDate: Date
+  releaseDate: Date | null
   image: string | FileWithPath | null
+  artistId?: string
 }
 
 export const editAlbumHeaderValidation = z.object({

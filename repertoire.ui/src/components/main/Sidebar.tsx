@@ -1,10 +1,20 @@
 import { ReactElement } from 'react'
-import { ActionIcon, AppShell, Box, Group, NavLink, Stack, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  AppShell,
+  Box,
+  Group,
+  NavLink,
+  Stack,
+  Title,
+  useMantineTheme
+} from '@mantine/core'
 import { sidebarLinks } from '../../data/main/sidebarLinks.tsx'
 import wallpaper from '../../assets/wallpapers/sidebar.jpg'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { createStyles } from '@mantine/emotion'
 import { IconLayoutSidebarLeftCollapseFilled } from '@tabler/icons-react'
+import { useMediaQuery } from '@mantine/hooks'
 
 const useStyles = createStyles(() => ({
   backdrop: {
@@ -32,12 +42,15 @@ const useStyles = createStyles(() => ({
 }))
 
 interface SidebarProps {
-  toggleSidebar: () => void
+  toggleSidebarOnMobile: () => void
 }
 
-function Sidebar({ toggleSidebar }: SidebarProps): ReactElement {
+function Sidebar({ toggleSidebarOnMobile }: SidebarProps): ReactElement {
   const location = useLocation()
   const navigate = useNavigate()
+
+  const theme = useMantineTheme()
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
   const { classes } = useStyles()
 
@@ -61,7 +74,7 @@ function Sidebar({ toggleSidebar }: SidebarProps): ReactElement {
             pos={'absolute'}
             top={-7.5}
             left={20}
-            onClick={toggleSidebar}
+            onClick={toggleSidebarOnMobile}
           >
             <IconLayoutSidebarLeftCollapseFilled />
           </ActionIcon>
@@ -82,7 +95,10 @@ function Sidebar({ toggleSidebar }: SidebarProps): ReactElement {
                 location.pathname === sidebarLink.link ||
                 sidebarLink.subLinks.some((link) => location.pathname.startsWith(link))
               }
-              onClick={() => navigate(sidebarLink.link)}
+              onClick={() => {
+                navigate(sidebarLink.link)
+                if (isMobile) toggleSidebarOnMobile()
+              }}
             />
           ))}
         </Stack>

@@ -32,7 +32,7 @@ describe('Album Card', () => {
   it('should render minimal info', () => {
     reduxRouterRender(<AlbumCard album={album} />)
 
-    expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
     expect(screen.getByText(album.title)).toBeInTheDocument()
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
   })
@@ -59,7 +59,7 @@ describe('Album Card', () => {
 
     await user.pointer({
       keys: '[MouseRight>]',
-      target: screen.getByRole('img', { name: album.title })
+      target: screen.getByLabelText(`default-icon-${album.title}`)
     })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
@@ -78,7 +78,7 @@ describe('Album Card', () => {
 
       await user.pointer({
         keys: '[MouseRight>]',
-        target: screen.getByRole('img', { name: album.title })
+        target: screen.getByLabelText(`default-icon-${album.title}`)
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
@@ -95,7 +95,7 @@ describe('Album Card', () => {
 
     reduxRouterRender(<AlbumCard album={album} />)
 
-    await user.click(screen.getByRole('img', { name: album.title }))
+    await user.click(screen.getByLabelText(`default-icon-${album.title}`))
     expect(window.location.pathname).toBe(`/album/${album.id}`)
   })
 

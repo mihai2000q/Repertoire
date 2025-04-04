@@ -3,6 +3,7 @@ package section
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -60,7 +61,9 @@ func TestUpdateSongSectionsOccurrences_WhenSuccessful_ShouldUpdateSongSectionsOc
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	db := utils.GetDatabase(t)
-	db.Preload("Sections").Find(&song, request.SongID)
+	db.Preload("Sections", func(db *gorm.DB) *gorm.DB {
+		return db.Order("\"order\"")
+	}).Find(&song, request.SongID)
 
 	for i, section := range song.Sections {
 		assert.Equal(t, request.Sections[i].ID, section.ID)

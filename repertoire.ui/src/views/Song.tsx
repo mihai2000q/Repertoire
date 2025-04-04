@@ -2,7 +2,7 @@ import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from '../components/song/SongLoader.tsx'
 import { useGetSongQuery } from '../state/api/songsApi.ts'
-import SongSectionsCard from '../components/song/SongSectionsCard.tsx'
+import SongSectionsCard from '../components/song/panels/SongSectionsCard.tsx'
 import SongInformationCard from '../components/song/panels/SongInformationCard.tsx'
 import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'
 import SongOverallCard from '../components/song/panels/SongOverallCard.tsx'
@@ -22,7 +22,7 @@ function Song() {
     if (song) setDocumentTitle(song.title)
   }, [song])
 
-  if (isLoading) return <SongLoader />
+  if (isLoading || !song) return <SongLoader />
 
   return (
     <Stack px={'xl'}>
@@ -47,8 +47,10 @@ function Song() {
 
             <SongSectionsCard
               songId={songId}
+              settings={song.settings}
               sections={song.sections}
               bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
+              isArtistBand={song.artist?.isBand}
             />
           </Stack>
         </Grid.Col>

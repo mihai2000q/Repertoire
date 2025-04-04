@@ -3,34 +3,40 @@ package service
 import (
 	"bytes"
 	"errors"
-	"github.com/patrickmn/go-cache"
 	"io"
 	"mime/multipart"
 	"net/http"
+	"repertoire/server/data/cache"
+	"repertoire/server/data/http/auth"
+	"repertoire/server/data/http/client"
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
+	"strings"
 	"time"
-
-	"github.com/go-resty/resty/v2"
 )
 
 type StorageService interface {
 	Upload(fileHeader *multipart.FileHeader, filePath string) error
 	DeleteFile(filePath internal.FilePath) *wrapper.ErrorCode
-	DeleteDirectory(directoryPath string) *wrapper.ErrorCode
+	DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode
 }
 
 type storageService struct {
-	httpClient *resty.Client
-	env        internal.Env
-	cache      *cache.Cache
+	storageClient client.StorageClient
+	authClient    client.AuthClient
+	env           internal.Env
+	cache         cache.StorageCache
 }
 
-func NewStorageService(httpClient *resty.Client, env internal.Env, cache *cache.Cache) StorageService {
+func NewStorageService(
+	storageClient client.StorageClient,
+	authClient client.AuthClient,
+	cache cache.StorageCache,
+) StorageService {
 	return &storageService{
-		httpClient: httpClient,
-		env:        env,
-		cache:      cache,
+		storageClient: storageClient,
+		authClient:    authClient,
+		cache:         cache,
 	}
 }
 
@@ -48,18 +54,13 @@ func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string
 		return err
 	}
 
-	token, err := s.getAccessToken()
+	userID := s.getUserIDFromPath(filePath)
+	storageToken, err := s.getAccessToken(userID)
 	if err != nil {
 		return err
 	}
 
-	res, err := s.httpClient.R().
-		SetAuthToken(token).
-		SetFileReader("file", fileHeader.Filename, bytes.NewReader(buf.Bytes())).
-		SetFormData(map[string]string{
-			"filePath": filePath,
-		}).
-		Put("upload")
+	res, err := s.storageClient.Upload(storageToken, fileHeader.Filename, bytes.NewReader(buf.Bytes()), filePath)
 	if err != nil {
 		return err
 	}
@@ -71,14 +72,14 @@ func (s storageService) Upload(fileHeader *multipart.FileHeader, filePath string
 }
 
 func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCode {
-	token, err := s.getAccessToken()
+	stringFilePath := string(*filePath.StripURL())
+	userID := s.getUserIDFromPath(stringFilePath)
+	storageToken, err := s.getAccessToken(userID)
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
 
-	res, err := s.httpClient.R().
-		SetAuthToken(token).
-		Delete("files/" + string(*filePath.StripURL()))
+	res, err := s.storageClient.DeleteFile(storageToken, stringFilePath)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -92,68 +93,56 @@ func (s storageService) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCod
 	return nil
 }
 
-func (s storageService) DeleteDirectory(directoryPath string) *wrapper.ErrorCode {
-	token, err := s.getAccessToken()
+func (s storageService) DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode {
+	userID := s.getUserIDFromPath(directoryPaths[0])
+	storageToken, err := s.getAccessToken(userID)
 	if err != nil {
 		return wrapper.UnauthorizedError(err)
 	}
 
-	res, err := s.httpClient.R().
-		SetAuthToken(token).
-		Delete("directories/" + directoryPath)
+	res, err := s.storageClient.DeleteDirectories(storageToken, directoryPaths)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if res.StatusCode() == http.StatusNotFound {
-		return wrapper.NotFoundError(errors.New("Storage Service - DeleteDirectory Not Found: " + res.String()))
-	}
 	if res.StatusCode() != http.StatusOK {
-		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectory failed: " + res.String()))
+		return wrapper.InternalServerError(errors.New("Storage Service - DeleteDirectories failed: " + res.String()))
 	}
 
 	return nil
 }
 
-func (s storageService) getAccessToken() (string, error) {
+func (s storageService) getAccessToken(userID string) (string, error) {
 	// get from cache
-	accessTokenKey := "access_token"
-	token, found := s.cache.Get(accessTokenKey)
+	accessTokenKey := "access_token#" + userID
+	accessToken, found := s.cache.Get(accessTokenKey)
 	if found {
-		return token.(string), nil
+		return accessToken.(string), nil
 	}
 
 	// fetch from server
-	tokenResult, err := s.fetchToken()
+	tokenResult, err := s.fetchToken(userID)
 	if err != nil {
 		return "", err
 	}
-	expiresIn, _ := time.ParseDuration(tokenResult.expiresIn)
-	s.cache.Set(accessTokenKey, tokenResult.accessToken, expiresIn)
-	return tokenResult.accessToken, nil
+	expiresIn, _ := time.ParseDuration(tokenResult.ExpiresIn)
+	s.cache.Set(accessTokenKey, tokenResult.Token, expiresIn)
+	return tokenResult.Token, nil
 }
 
-type tokenResponse struct {
-	accessToken string
-	expiresIn   string
-}
-
-func (s storageService) fetchToken() (tokenResponse, error) {
-	var result tokenResponse
-	response, err := s.httpClient.R().
-		SetFormData(map[string]string{
-			"grant_type":    "client_credentials",
-			"client_id":     s.env.StorageClientID,
-			"client_secret": s.env.StorageClientSecret,
-		}).
-		SetResult(&result).
-		Post(s.env.AuthStorageUrl)
+func (s storageService) fetchToken(userID string) (auth.TokenResponse, error) {
+	var result auth.TokenResponse
+	response, err := s.authClient.StorageToken(userID, &result)
 
 	if err != nil {
-		return tokenResponse{}, err
+		return auth.TokenResponse{}, err
 	}
 	if response.StatusCode() != http.StatusOK {
-		return tokenResponse{}, errors.New("Storage Service - oauth token failed: " + response.String())
+		return auth.TokenResponse{}, errors.New("failed to fetch token: " + response.String())
 	}
 
 	return result, nil
+}
+
+func (s storageService) getUserIDFromPath(path string) string {
+	return strings.Split(path, "/")[0]
 }

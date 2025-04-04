@@ -3,10 +3,12 @@ import {
   Avatar,
   Box,
   Button,
+  Center,
   Checkbox,
   Group,
   LoadingOverlay,
   Modal,
+  ScrollArea,
   Skeleton,
   Stack,
   Text,
@@ -18,8 +20,8 @@ import { toast } from 'react-toastify'
 import { useAddSongsToPlaylistMutation } from '../../../state/api/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -38,7 +40,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   } = useGetSongsQuery({
     currentPage: 1,
     pageSize: 20,
-    orderBy: ['title asc'],
+    orderBy: ['updated_at desc'],
     searchBy: [
       `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
       ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
@@ -120,76 +122,86 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
             </Group>
           )}
 
-          <Stack w={'100%'} gap={0} style={{ overflow: 'auto', maxHeight: '50vh' }}>
-            <LoadingOverlay
-              data-testid={'loading-overlay-fetching'}
-              visible={!songsIsLoading && songsIsFetching}
-            />
-            {songsIsLoading ? (
-              <Box data-testid={'songs-loader'}>
-                {Array.from(Array(5)).map((_, i) => (
-                  <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                    <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                    <Skeleton width={37} height={37} radius={'md'} />
-                    <Skeleton width={160} height={18} />
-                  </Group>
-                ))}
-              </Box>
-            ) : (
-              songs.models.map((song) => (
-                <Group
-                  key={song.id}
-                  aria-label={`song-${song.title}`}
-                  aria-selected={songIds.some((id) => id === song.id)}
-                  sx={(theme) => ({
-                    transition: '0.3s',
-                    '&:hover': {
-                      boxShadow: theme.shadows.xl,
-                      backgroundColor: alpha(theme.colors.primary[0], 0.15)
-                    }
-                  })}
-                  w={'100%'}
-                  wrap={'nowrap'}
-                  px={'xl'}
-                  py={'xs'}
-                >
-                  <Checkbox
-                    aria-label={song.title}
-                    checked={songIds.includes(song.id)}
-                    onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
-                    pr={'sm'}
-                  />
-                  <Avatar
-                    radius={'md'}
-                    src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
-                    alt={song.title}
-                  />
-                  <Stack gap={0} style={{ overflow: 'hidden' }}>
-                    <Group gap={'xxs'} wrap={'nowrap'}>
-                      <Text fw={500} truncate={'end'}>
-                        {song.title}
-                      </Text>
-                      {song.album && (
-                        <Group gap={'xxs'} wrap={'nowrap'}>
-                          <Text fz={'sm'} c={'dimmed'}>
-                            -
-                          </Text>
-                          <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
-                            {song.album.title}
-                          </Text>
-                        </Group>
-                      )}
+          <ScrollArea w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+            <Stack gap={0} style={{ maxHeight: '50vh' }}>
+              <LoadingOverlay
+                data-testid={'loading-overlay-fetching'}
+                visible={!songsIsLoading && songsIsFetching}
+              />
+              {songsIsLoading ? (
+                <Box data-testid={'songs-loader'}>
+                  {Array.from(Array(5)).map((_, i) => (
+                    <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+                      <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+                      <Skeleton width={37} height={37} radius={'md'} />
+                      <Skeleton width={160} height={18} />
                     </Group>
-                    {song.artist && (
-                      <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
-                        {song.artist.name}
-                      </Text>
-                    )}
-                  </Stack>
-                </Group>
-              ))
-            )}
-          </Stack>
+                  ))}
+                </Box>
+              ) : (
+                songs.models.map((song) => (
+                  <Group
+                    key={song.id}
+                    aria-label={`song-${song.title}`}
+                    aria-selected={songIds.some((id) => id === song.id)}
+                    sx={(theme) => ({
+                      transition: '0.3s',
+                      '&:hover': {
+                        boxShadow: theme.shadows.xl,
+                        backgroundColor: alpha(theme.colors.primary[0], 0.15)
+                      }
+                    })}
+                    w={'100%'}
+                    wrap={'nowrap'}
+                    px={'xl'}
+                    py={'xs'}
+                  >
+                    <Checkbox
+                      aria-label={song.title}
+                      checked={songIds.includes(song.id)}
+                      onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
+                      pr={'sm'}
+                    />
+                    <Avatar
+                      radius={'md'}
+                      src={song.imageUrl ?? song.album?.imageUrl}
+                      alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+                      bg={'gray.5'}
+                    >
+                      <Center c={'white'}>
+                        <CustomIconMusicNoteEighth
+                          aria-label={`default-icon-${song.title}`}
+                          size={18}
+                        />
+                      </Center>
+                    </Avatar>
+                    <Stack gap={0} style={{ overflow: 'hidden' }}>
+                      <Group gap={'xxs'} wrap={'nowrap'}>
+                        <Text fw={500} truncate={'end'}>
+                          {song.title}
+                        </Text>
+                        {song.album && (
+                          <Group gap={'xxs'} wrap={'nowrap'}>
+                            <Text fz={'sm'} c={'dimmed'}>
+                              -
+                            </Text>
+                            <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
+                              {song.album.title}
+                            </Text>
+                          </Group>
+                        )}
+                      </Group>
+                      {song.artist && (
+                        <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                          {song.artist.name}
+                        </Text>
+                      )}
+                    </Stack>
+                  </Group>
+                ))
+              )}
+            </Stack>
+          </ScrollArea>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={songIds.length > 0} label="Select songs">

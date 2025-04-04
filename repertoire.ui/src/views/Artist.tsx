@@ -54,7 +54,7 @@ function Artist() {
     searchBy: [isUnknownArtist ? 'songs.artist_id IS NULL' : `songs.artist_id = '${artistId}'`]
   })
 
-  if (isLoading) return <ArtistLoader />
+  if (isLoading || (!artist && !isUnknownArtist)) return <ArtistLoader />
 
   return (
     <Stack px={'xl'}>

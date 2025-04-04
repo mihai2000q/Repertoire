@@ -21,9 +21,12 @@ type SongRepository interface {
 		searchBy []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
+	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
+	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
 	Update(song *model.Song) error
@@ -31,6 +34,9 @@ type SongRepository interface {
 	UpdateWithAssociations(song *model.Song) error
 	UpdateAllWithAssociations(songs *[]model.Song) error
 	Delete(id uuid.UUID) error
+
+	GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error
+	UpdateSettings(settings *model.SongSettings) error
 
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error
@@ -61,18 +67,19 @@ func NewSongRepository(client database.Client) SongRepository {
 }
 
 func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
-	return s.client.DB.Find(&song, model.Song{ID: id}).Error
+	return s.client.Find(&song, model.Song{ID: id}).Error
 }
 
 func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error {
-	return s.client.DB.
+	return s.client.
 		Preload("Playlists").
 		Preload("Playlists.PlaylistSongs").
-		Find(&song, model.Song{ID: id}).Error
+		Find(&song, model.Song{ID: id}).
+		Error
 }
 
 func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
-	return s.client.DB.
+	return s.client.
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_sections.order")
 		}).
@@ -81,7 +88,10 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 }
 
 func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) error {
-	return s.client.DB.
+	return s.client.
+		Joins("Settings").
+		Joins("Settings.DefaultBandMember").
+		Joins("Settings.DefaultInstrument").
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
@@ -106,7 +116,7 @@ func (s songRepository) GetAllByUser(
 	orderBy []string,
 	searchBy []string,
 ) error {
-	tx := s.client.DB.Model(&model.Song{}).
+	tx := s.client.Model(&model.Song{}).
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Preload("Sections.Instrument").
@@ -122,7 +132,7 @@ func (s songRepository) GetAllByUser(
 }
 
 func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
-	tx := s.client.DB.Model(&model.Song{}).
+	tx := s.client.Model(&model.Song{}).
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id").
 		Where(model.Song{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
@@ -130,11 +140,17 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 }
 
 func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error {
-	return s.client.DB.Model(&model.Song{}).Find(&songs, ids).Error
+	return s.client.Model(&model.Song{}).Find(&songs, ids).Error
+}
+
+func (s songRepository) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
+	return s.client.Model(&model.Song{}).
+		Find(&songs, model.Song{AlbumID: &albumID}).
+		Error
 }
 
 func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error {
-	return s.client.DB.Model(&model.Song{}).
+	return s.client.Model(&model.Song{}).
 		Where("album_id = ? AND album_track_no > ?", albumID, trackNo).
 		Order("album_track_no").
 		Find(&songs).
@@ -142,10 +158,25 @@ func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uui
 }
 
 func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
-	return s.client.DB.Model(&model.Song{}).
+	return s.client.Model(&model.Song{}).
 		Preload("Album").
 		Preload("Album.Songs").
 		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Joins("Artist").
+		Joins("Album").
+		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) CountByAlbum(count *int64, albumID uuid.UUID) error {
+	return s.client.Model(&model.Song{}).
+		Where("album_id = ?", albumID).
+		Count(count).
 		Error
 }
 
@@ -153,7 +184,7 @@ func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUI
 
 func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error) {
 	var count int64
-	err := s.client.DB.
+	err := s.client.
 		Model(&model.Song{}).
 		Joins("JOIN artists ON artists.id = songs.artist_id").
 		Joins("JOIN band_members ON artists.id = band_members.artist_id").
@@ -165,15 +196,15 @@ func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMem
 }
 
 func (s songRepository) Create(song *model.Song) error {
-	return s.client.DB.Create(&song).Error
+	return s.client.Create(&song).Error
 }
 
 func (s songRepository) Update(song *model.Song) error {
-	return s.client.DB.Save(&song).Error
+	return s.client.Save(&song).Error
 }
 
 func (s songRepository) UpdateAll(songs *[]model.Song) error {
-	return s.client.DB.Transaction(func(tx *gorm.DB) error {
+	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *songs {
 			if err := tx.Save(&song).Error; err != nil {
 				return err
@@ -184,14 +215,14 @@ func (s songRepository) UpdateAll(songs *[]model.Song) error {
 }
 
 func (s songRepository) UpdateWithAssociations(song *model.Song) error {
-	return s.client.DB.
+	return s.client.
 		Session(&gorm.Session{FullSaveAssociations: true}).
 		Updates(&song).
 		Error
 }
 
 func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
-	return s.client.DB.Transaction(func(tx *gorm.DB) error {
+	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *songs {
 			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&song).Error
 			if err != nil {
@@ -203,13 +234,23 @@ func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 }
 
 func (s songRepository) Delete(id uuid.UUID) error {
-	return s.client.DB.Delete(&model.Song{}, id).Error
+	return s.client.Delete(&model.Song{}, id).Error
+}
+
+// Settings
+
+func (s songRepository) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
+	return s.client.Find(&settings, settingsID).Error
+}
+
+func (s songRepository) UpdateSettings(settings *model.SongSettings) error {
+	return s.client.Save(&settings).Error
 }
 
 // Guitar Tunings
 
 func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.GuitarTuning{}).
+	return s.client.Model(&model.GuitarTuning{}).
 		Where(model.GuitarTuning{UserID: userID}).
 		Order("\"order\"").
 		Find(&tunings).
@@ -219,7 +260,7 @@ func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID u
 // Instruments
 
 func (s songRepository) GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.Instrument{}).
+	return s.client.Model(&model.Instrument{}).
 		Where(model.Instrument{UserID: userID}).
 		Order("\"order\"").
 		Find(&instruments).
@@ -229,7 +270,7 @@ func (s songRepository) GetInstruments(instruments *[]model.Instrument, userID u
 // Section Types
 
 func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
-	return s.client.DB.Model(&model.SongSectionType{}).
+	return s.client.Model(&model.SongSectionType{}).
 		Where(model.SongSectionType{UserID: userID}).
 		Order("\"order\"").
 		Find(&types).
@@ -239,26 +280,26 @@ func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID u
 // Sections
 
 func (s songRepository) GetSection(section *model.SongSection, id uuid.UUID) error {
-	return s.client.DB.Find(&section, model.SongSection{ID: id}).Error
+	return s.client.Find(&section, model.SongSection{ID: id}).Error
 }
 
 func (s songRepository) CountSectionsBySong(count *int64, songID uuid.UUID) error {
-	return s.client.DB.Model(&model.SongSection{}).
+	return s.client.Model(&model.SongSection{}).
 		Where(model.SongSection{SongID: songID}).
 		Count(count).
 		Error
 }
 
 func (s songRepository) CreateSection(section *model.SongSection) error {
-	return s.client.DB.Create(&section).Error
+	return s.client.Create(&section).Error
 }
 
 func (s songRepository) UpdateSection(section *model.SongSection) error {
-	return s.client.DB.Save(&section).Error
+	return s.client.Save(&section).Error
 }
 
 func (s songRepository) DeleteSection(id uuid.UUID) error {
-	return s.client.DB.Delete(&model.SongSection{}, id).Error
+	return s.client.Delete(&model.SongSection{}, id).Error
 }
 
 // Song Section History
@@ -268,12 +309,12 @@ func (s songRepository) GetSongSectionHistory(
 	sectionID uuid.UUID,
 	property model.SongSectionProperty,
 ) error {
-	return s.client.DB.
+	return s.client.
 		Order("created_at").
 		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
 		Error
 }
 
 func (s songRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
-	return s.client.DB.Create(&history).Error
+	return s.client.Create(&history).Error
 }

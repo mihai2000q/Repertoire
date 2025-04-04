@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/data/service"
 	"testing"
 
 	"github.com/google/uuid"
@@ -17,7 +19,7 @@ import (
 func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewUpdateArtist(artistRepository)
+	_uut := artist.NewUpdateArtist(artistRepository, nil)
 
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
@@ -41,7 +43,7 @@ func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 func TestUpdateArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewUpdateArtist(artistRepository)
+	_uut := artist.NewUpdateArtist(artistRepository, nil)
 
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
@@ -64,7 +66,7 @@ func TestUpdateArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 func TestUpdateArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewUpdateArtist(artistRepository)
+	_uut := artist.NewUpdateArtist(artistRepository, nil)
 
 	request := requests.UpdateArtistRequest{
 		ID:   uuid.New(),
@@ -92,10 +94,49 @@ func TestUpdateArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *t
 	artistRepository.AssertExpectations(t)
 }
 
+func TestUpdateArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewUpdateArtist(artistRepository, messagePublisherService)
+
+	request := requests.UpdateArtistRequest{
+		ID:   uuid.New(),
+		Name: "New Artist",
+	}
+
+	mockArtist := &model.Artist{
+		ID:   request.ID,
+		Name: "Some Artist",
+	}
+
+	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
+
+	artistRepository.On("Update", mock.IsType(mockArtist)).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	artistRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := artist.NewUpdateArtist(artistRepository)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewUpdateArtist(artistRepository, messagePublisherService)
 
 	request := requests.UpdateArtistRequest{
 		ID:     uuid.New(),
@@ -119,6 +160,10 @@ func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(nil).
+		Once()
+
 	// when
 	errCode := _uut.Handle(request)
 
@@ -126,4 +171,5 @@ func TestUpdateArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	artistRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }

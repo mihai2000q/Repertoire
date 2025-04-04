@@ -29,6 +29,10 @@ export interface AddPerfectSongRehearsalRequest {
   id: string
 }
 
+export interface AddPartialSongRehearsalRequest {
+  id: string
+}
+
 export interface CreateSectionRequest {
   name: string
   typeId: string
@@ -45,6 +49,14 @@ export interface UpdateSongRequest {
   releaseDate?: Date | string
   difficulty?: Difficulty
   guitarTuningId?: string
+  albumId?: string
+  artistId?: string
+}
+
+export interface UpdateSongSettingsRequest {
+  settingsId: string
+  defaultBandMemberId?: string
+  defaultInstrumentId?: string
 }
 
 export interface SaveImageToSongRequest {
@@ -75,6 +87,17 @@ export interface UpdateSongSectionRequest {
 export interface UpdateSongSectionsOccurrencesRequest {
   songId: string
   sections: { id: string, occurrences: number }[]
+}
+
+export interface UpdateSongSectionsPartialOccurrencesRequest {
+  songId: string
+  sections: { id: string, partialOccurrences: number }[]
+}
+
+export interface UpdateAllSongSectionsRequest {
+  songId: string
+  bandMemberId?: string
+  instrumentId?: string
 }
 
 export interface MoveSongSectionRequest {

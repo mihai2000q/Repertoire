@@ -1,47 +1,47 @@
-import { emptyAlbum, reduxRender, withToastify } from '../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import AddExistingArtistAlbumsModal from './AddExistingArtistAlbumsModal.tsx'
-import Album from '../../../types/models/Album.ts'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddAlbumsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
+import { AlbumSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
 
 describe('Add Existing Artist Albums Modal', () => {
-  const albums: Album[] = [
+  const albums: AlbumSearch[] = [
     {
-      ...emptyAlbum,
       id: '1',
       title: 'Album 1',
-      imageUrl: 'something.png'
+      imageUrl: 'something.png',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '2',
-      title: 'Album 2'
+      title: 'Album 2',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '3',
-      title: 'Album 11'
+      title: 'Album 11',
+      type: SearchType.Album
     },
     {
-      ...emptyAlbum,
       id: '4',
-      title: 'Album 12'
+      title: 'Album 12',
+      type: SearchType.Album
     }
   ]
 
   const handlers = [
-    http.get('/albums', (req) => {
-      const searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+    http.get('/search', (req) => {
+      const query = new URL(req.request.url).searchParams.get('query')
       let localAlbums = albums
-      if (searchBy.length === 2) {
-        const searchValue = searchBy[1].replace('title ~* ', '').replaceAll("'", '')
-        localAlbums = localAlbums.filter((album) => album.title.startsWith(searchValue))
+      if (query !== '') {
+        localAlbums = localAlbums.filter((album) => album.title.startsWith(query))
       }
-      const response: WithTotalCountResponse<Album> = {
+      const response: WithTotalCountResponse<AlbumSearch> = {
         models: localAlbums,
         totalCount: localAlbums.length
       }
@@ -88,12 +88,13 @@ describe('Add Existing Artist Albums Modal', () => {
 
       expect(screen.getByRole('checkbox', { name: album.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: album.title })).not.toBeChecked()
-      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
       if (album.imageUrl) {
         expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
           'src',
           album.imageUrl
         )
+      } else {
+        expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
       }
       expect(screen.getByText(album.title)).toBeInTheDocument()
     }
@@ -101,8 +102,8 @@ describe('Add Existing Artist Albums Modal', () => {
 
   it('should show text when there are no albums and hide select all checkbox', async () => {
     server.use(
-      http.get('/albums', () => {
-        const response: WithTotalCountResponse<Album> = {
+      http.get('/search', () => {
+        const response: WithTotalCountResponse<AlbumSearch> = {
           models: [],
           totalCount: 0
         }
@@ -119,11 +120,11 @@ describe('Add Existing Artist Albums Modal', () => {
   it('should send updated query when the search box is filled', async () => {
     const user = userEvent.setup()
 
-    let capturedSearchBy: URLSearchParams
+    let capturedSearchParams: URLSearchParams
     server.use(
-      http.get('/albums', (req) => {
-        capturedSearchBy = new URL(req.request.url).searchParams
-        const response: WithTotalCountResponse<Album> = {
+      http.get('/search', (req) => {
+        capturedSearchParams = new URL(req.request.url).searchParams
+        const response: WithTotalCountResponse<AlbumSearch> = {
           models: [],
           totalCount: 0
         }
@@ -135,19 +136,19 @@ describe('Add Existing Artist Albums Modal', () => {
 
     expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
 
-    expect(capturedSearchBy.get('currentPage')).toBe('1')
-    expect(capturedSearchBy.get('pageSize')).toBe('20')
-    expect(capturedSearchBy.get('orderBy')).match(/title ASC/i)
-    expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
-    expect(capturedSearchBy.getAll('searchBy')[0]).match(/artist_id IS NULL/i)
+    expect(capturedSearchParams.get('query')).toBe('')
+    expect(capturedSearchParams.get('currentPage')).toBe('1')
+    expect(capturedSearchParams.get('pageSize')).toBe('20')
+    expect(capturedSearchParams.get('order')).match(/updatedAt:desc/i)
+    expect(capturedSearchParams.getAll('filter')).toHaveLength(1)
+    expect(capturedSearchParams.getAll('filter')[0]).match(/artist IS NULL/i)
 
     // search
     const searchValue = 'Album 1'
     await user.type(screen.getByRole('searchbox', { name: /search/i }), searchValue)
 
     await waitFor(() => {
-      expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`title ~* '${searchValue}'`)
+      expect(capturedSearchParams.get('query')).toBe(searchValue)
     })
   })
 

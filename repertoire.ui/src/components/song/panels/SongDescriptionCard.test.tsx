@@ -1,21 +1,13 @@
 import SongDescriptionCard from './SongDescriptionCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
-import { reduxRender } from '../../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 
 describe('Song Description Card', () => {
   const song: Song = {
-    id: '',
-    title: '',
-    description: 'This is a description of the song',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: ''
+    ...emptySong,
+    description: 'This is a description of the song'
   }
 
   it('should render when there is a description', () => {
@@ -38,6 +30,8 @@ describe('Song Description Card', () => {
     reduxRender(<SongDescriptionCard song={song} />)
 
     await user.click(screen.getByRole('button', { name: 'edit-panel' }))
-    expect(await screen.findByRole('dialog', { name: /edit song description/i })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('dialog', { name: /edit song description/i })
+    ).toBeInTheDocument()
   })
 })

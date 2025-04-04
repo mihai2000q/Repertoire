@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -19,7 +20,7 @@ import (
 func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewSaveImageToSong(songRepository, nil, nil)
+	_uut := song.NewSaveImageToSong(songRepository, nil, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -42,7 +43,7 @@ func TestSaveImageToSong_WhenGetSongFails_ShouldReturnNotFoundError(t *testing.T
 func TestSaveImageToSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewSaveImageToSong(songRepository, nil, nil)
+	_uut := song.NewSaveImageToSong(songRepository, nil, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -70,6 +71,7 @@ func TestSaveImageToSong_WhenStorageUploadFails_ShouldReturnInternalServerError(
 		songRepository,
 		storageFilePathProvider,
 		storageService,
+		nil,
 	)
 
 	file := new(multipart.FileHeader)
@@ -107,6 +109,7 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 		songRepository,
 		storageFilePathProvider,
 		storageService,
+		nil,
 	)
 
 	file := new(multipart.FileHeader)
@@ -139,15 +142,65 @@ func TestSaveImageToSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *
 	storageService.AssertExpectations(t)
 }
 
+func TestSaveImageToSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	storageService := new(service.StorageServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewSaveImageToSong(
+		songRepository,
+		storageFilePathProvider,
+		storageService,
+		messagePublisherService,
+	)
+
+	file := new(multipart.FileHeader)
+	id := uuid.New()
+
+	// given - mocking
+	mockSong := &model.Song{ID: id, ImageURL: nil}
+	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
+
+	imagePath := "songs file path"
+	storageFilePathProvider.On("GetSongImagePath", file, *mockSong).Return(imagePath).Once()
+
+	storageService.On("Upload", file, imagePath).Return(nil).Once()
+
+	songRepository.On("Update", mock.IsType(new(model.Song))).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, []uuid.UUID{mockSong.ID}).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(file, id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
 func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
 	_uut := song.NewSaveImageToSong(
 		songRepository,
 		storageFilePathProvider,
 		storageService,
+		messagePublisherService,
 	)
 
 	file := new(multipart.FileHeader)
@@ -170,6 +223,10 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil).
 		Once()
 
+	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, []uuid.UUID{mockSong.ID}).
+		Return(nil).
+		Once()
+
 	// when
 	errCode := _uut.Handle(file, id)
 
@@ -179,4 +236,5 @@ func TestSaveImageToSong_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	songRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
 	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }

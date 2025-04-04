@@ -44,7 +44,10 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &responseSong)
 
 	db := utils.GetDatabase(t)
-	db.Joins("Album").
+	db.Joins("Settings").
+		Joins("Settings.DefaultInstrument").
+		Joins("Settings.DefaultBandMember").
+		Joins("Album").
 		Joins("Artist").
 		Joins("GuitarTuning").
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {

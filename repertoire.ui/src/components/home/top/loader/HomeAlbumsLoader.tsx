@@ -1,8 +1,8 @@
-import { Group, Skeleton, Stack } from '@mantine/core'
+import { Skeleton, Stack } from '@mantine/core'
 
 function HomeAlbumsLoader() {
   return (
-    <Group wrap={'nowrap'} gap={'lg'} data-testid={'home-albums-loader'}>
+    <>
       {Array.from(Array(20)).map((_, i) => (
         <Stack key={i} gap={'xs'} align={'center'}>
           <Skeleton
@@ -17,7 +17,7 @@ function HomeAlbumsLoader() {
           </Stack>
         </Stack>
       ))}
-    </Group>
+    </>
   )
 }
 

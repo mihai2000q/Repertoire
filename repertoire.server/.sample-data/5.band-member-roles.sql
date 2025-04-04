@@ -4,3 +4,5 @@ INSERT INTO public.band_member_roles (id, name, "order", user_id) VALUES ('0e0ee
 INSERT INTO public.band_member_roles (id, name, "order", user_id) VALUES ('dc8e8127-eb91-43aa-8497-614e179c0f2f', 'Bassist', 3, '10000000-0000-0000-0000-000000000000');
 INSERT INTO public.band_member_roles (id, name, "order", user_id) VALUES ('ae340ee1-15f0-4d39-8bbd-255fcc90d22f', 'Drummer', 4, '10000000-0000-0000-0000-000000000000');
 INSERT INTO public.band_member_roles (id, name, "order", user_id) VALUES ('26738eff-2be9-42c0-917e-69df2bada9b3', 'Pianist', 5, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.band_member_roles (id, name, "order", user_id) VALUES ('db04f1e7-b87d-4d24-9d7e-1069080adcb3', 'Keyboardist', 6, '10000000-0000-0000-0000-000000000000');
+INSERT INTO public.band_member_roles (id, name, "order", user_id) VALUES ('5eadfc31-95fc-40c8-a4a7-a4dc1fd93e80', 'Backing Vocalist', 7, '10000000-0000-0000-0000-000000000000');

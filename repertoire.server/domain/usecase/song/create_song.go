@@ -6,6 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -13,20 +14,23 @@ import (
 )
 
 type CreateSong struct {
-	jwtService      service.JwtService
-	repository      repository.SongRepository
-	albumRepository repository.AlbumRepository
+	jwtService              service.JwtService
+	repository              repository.SongRepository
+	albumRepository         repository.AlbumRepository
+	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateSong(
 	jwtService service.JwtService,
 	repository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
+	messagePublisherService service.MessagePublisherService,
 ) CreateSong {
 	return CreateSong{
-		jwtService:      jwtService,
-		repository:      repository,
-		albumRepository: albumRepository,
+		jwtService:              jwtService,
+		repository:              repository,
+		albumRepository:         albumRepository,
+		messagePublisherService: messagePublisherService,
 	}
 }
 
@@ -50,6 +54,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
 		Sections:       c.createSections(request.Sections, songID),
+		Settings:       model.SongSettings{ID: uuid.New()},
 		UserID:         userID,
 	}
 
@@ -65,6 +70,12 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
+
+	err = c.messagePublisherService.Publish(topics.SongCreatedTopic, song)
+	if err != nil {
+		return uuid.Nil, wrapper.InternalServerError(err)
+	}
+
 	return song.ID, nil
 }
 

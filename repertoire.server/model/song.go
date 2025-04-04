@@ -27,8 +27,9 @@ type Song struct {
 	Confidence     float64            `gorm:"not null" json:"confidence"`
 	Progress       float64            `gorm:"not null" json:"progress"`
 
-	AlbumID        *uuid.UUID     `json:"-"`
-	ArtistID       *uuid.UUID     `json:"-"`
+	Settings       SongSettings   `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
+	AlbumID        *uuid.UUID     `json:"albumId"`
+	ArtistID       *uuid.UUID     `json:"artistId"`
 	GuitarTuningID *uuid.UUID     `json:"-"`
 	Artist         *Artist        `json:"artist"`
 	Album          *Album         `json:"album"`
@@ -39,7 +40,7 @@ type Song struct {
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"userId"`
 	playlistSongMetadata
 }
 
@@ -54,25 +55,38 @@ func (s *Song) BeforeSave(*gorm.DB) error {
 }
 
 func (s *Song) AfterFind(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.ToFullURL(&s.UpdatedAt)
+	s.ImageURL = s.ImageURL.ToFullURL(s.UpdatedAt)
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if s.Artist != nil {
-		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(&s.Artist.UpdatedAt)
+		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(s.Artist.UpdatedAt)
 	}
 	if s.Album != nil {
-		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(&s.Album.UpdatedAt)
+		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(s.Album.UpdatedAt)
 	}
 
 	return nil
 }
 
+// Song Settings
+
+type SongSettings struct {
+	ID                  uuid.UUID   `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	DefaultInstrumentID *uuid.UUID  `json:"-"`
+	DefaultInstrument   *Instrument `json:"defaultInstrument"`
+	DefaultBandMemberID *uuid.UUID  `json:"-"`
+	DefaultBandMember   *BandMember `json:"defaultBandMember"`
+
+	SongID uuid.UUID `gorm:"not null" json:"-"`
+}
+
 // Song Sections
 
 type SongSection struct {
-	ID          uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name        string    `gorm:"size:30" json:"name"`
-	Order       uint      `gorm:"not null" json:"-"`
-	Occurrences uint      `gorm:"not null" json:"occurrences"`
+	ID                 uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name               string    `gorm:"size:30" json:"name"`
+	Order              uint      `gorm:"not null" json:"-"`
+	Occurrences        uint      `gorm:"not null" json:"occurrences"`
+	PartialOccurrences uint      `gorm:"not null" json:"partialOccurrences"`
 
 	Rehearsals      uint   `gorm:"not null" json:"rehearsals"`
 	Confidence      uint   `gorm:"not null; size:100" json:"confidence"`

@@ -16,13 +16,14 @@ var middlewares = fx.Options(
 	fx.Provide(middleware.NewCorsMiddleware),
 	fx.Provide(middleware.NewErrorHandlerMiddleware),
 	fx.Provide(middleware.NewJWTAuthMiddleware),
+	fx.Provide(middleware.NewMeiliAuthMiddleware),
 )
 
 var handlers = fx.Options(
 	fx.Provide(handler.NewAlbumHandler),
 	fx.Provide(handler.NewArtistHandler),
-	fx.Provide(handler.NewAuthHandler),
 	fx.Provide(handler.NewPlaylistHandler),
+	fx.Provide(handler.NewSearchHandler),
 	fx.Provide(handler.NewSongHandler),
 	fx.Provide(handler.NewUserDataHandler),
 	fx.Provide(handler.NewUserHandler),
@@ -31,8 +32,8 @@ var handlers = fx.Options(
 var routers = fx.Options(
 	fx.Provide(router.NewAlbumRouter),
 	fx.Provide(router.NewArtistRouter),
-	fx.Provide(router.NewAuthRouter),
 	fx.Provide(router.NewPlaylistRouter),
+	fx.Provide(router.NewSearchRouter),
 	fx.Provide(router.NewSongRouter),
 	fx.Provide(router.NewUserDataRouter),
 	fx.Provide(router.NewUserRouter),

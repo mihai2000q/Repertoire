@@ -1,18 +1,5 @@
 import Song from '../../types/models/Song'
-import imagePlaceholder from '../../assets/image-placeholder-1.jpg'
-import {
-  Anchor,
-  AspectRatio,
-  Box,
-  Card,
-  Center,
-  Group,
-  Image,
-  Menu,
-  Stack,
-  Text,
-  Tooltip
-} from '@mantine/core'
+import { Anchor, Avatar, Box, Card, Center, Group, Menu, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
@@ -36,6 +23,8 @@ import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -102,8 +91,7 @@ function SongCard({ song }: SongCardProps) {
         <Card
           aria-label={`song-card-${song.title}`}
           p={0}
-          radius={'lg'}
-          w={175}
+          radius={'10%'}
           onClick={handleClick}
           onContextMenu={openMenu}
           sx={(theme) => ({
@@ -117,20 +105,29 @@ function SongCard({ song }: SongCardProps) {
           })}
         >
           <Stack gap={0}>
-            <AspectRatio ratio={8 / 7}>
-              <Image
-                radius={'16px'}
-                src={song.imageUrl ?? song.album?.imageUrl}
-                fallbackSrc={imagePlaceholder}
-                alt={song.title}
-                style={(theme) => ({
-                  boxShadow: theme.shadows.sm
-                })}
-              />
-            </AspectRatio>
+            <Avatar
+              radius={'10%'}
+              src={song.imageUrl ?? song.album?.imageUrl}
+              alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+              w={'100%'}
+              h={'unset'}
+              bg={'gray.5'}
+              style={(theme) => ({
+                aspectRatio: 8 / 7,
+                boxShadow: theme.shadows.sm
+              })}
+            >
+              <Center c={'white'}>
+                <CustomIconMusicNoteEighth
+                  aria-label={`default-icon-${song.title}`}
+                  size={'100%'}
+                  style={{ padding: '30%' }}
+                />
+              </Center>
+            </Avatar>
 
             <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
-              <Text fw={600} lineClamp={2} inline mb={1}>
+              <Text fw={600} lineClamp={2} lh={'xxs'} mb={1}>
                 {song.title}
               </Text>
               <Box pb={1}>
@@ -150,7 +147,7 @@ function SongCard({ song }: SongCardProps) {
                   </Text>
                 )}
               </Box>
-              <Group c={'primary.9'} gap={'xxs'} align={'end'} pb={1}>
+              <Group wrap={'nowrap'} c={'primary.9'} gap={'xxs'} align={'end'} pb={1}>
                 <Tooltip.Group openDelay={200}>
                   {song.isRecorded && (
                     <LocalTooltip label={'This song is recorded'}>
@@ -189,7 +186,7 @@ function SongCard({ song }: SongCardProps) {
                   )}
                   {song.songsterrLink && (
                     <LocalAnchor link={song.songsterrLink}>
-                      <LocalTooltip label={'This song has a songsterr link'}>
+                      <LocalTooltip label={'Open Songsterr'}>
                         <Center c={'blue.7'}>
                           <IconGuitarPickFilled size={iconSize} aria-label={'songsterr-icon'} />
                         </Center>
@@ -197,7 +194,7 @@ function SongCard({ song }: SongCardProps) {
                     </LocalAnchor>
                   )}
                   {song.youtubeLink && (
-                    <LocalTooltip label={'This song has a youtube link'}>
+                    <LocalTooltip label={'Open Youtube'}>
                       <Center c={'red.7'} onClick={handleOpenYoutube}>
                         <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
                       </Center>
@@ -211,6 +208,7 @@ function SongCard({ song }: SongCardProps) {
       </Menu.Target>
 
       <Menu.Dropdown {...menuDropdownProps}>
+        <PartialRehearsalMenuItem songId={song.id} />
         <PerfectRehearsalMenuItem songId={song.id} />
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
           Delete

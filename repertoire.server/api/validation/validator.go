@@ -35,7 +35,7 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 	}
 }
 
-func (v *Validator) Validate(request interface{}) *wrapper.ErrorCode {
+func (v *Validator) Validate(request any) *wrapper.ErrorCode {
 	err := v.validate.Struct(request)
 	if err != nil {
 		return wrapper.BadRequestError(err)
@@ -44,32 +44,37 @@ func (v *Validator) Validate(request interface{}) *wrapper.ErrorCode {
 }
 
 func registerCustomValidators(validate *validator.Validate) error {
-	err := validate.RegisterValidation("hasUpper", HasUpper)
+	err := validate.RegisterValidation("has_upper", HasUpper)
 	if err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("hasLower", HasLower)
+	err = validate.RegisterValidation("has_lower", HasLower)
 	if err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("hasDigit", HasDigit)
+	err = validate.RegisterValidation("has_digit", HasDigit)
 	if err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("isDifficultyEnum", IsDifficultyEnum)
+	err = validate.RegisterValidation("difficulty_enum", DifficultyEnum)
 	if err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("isYoutubeLink", IsYoutubeLink)
+	err = validate.RegisterValidation("search_type_enum", SearchTypeEnum)
 	if err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("isColor", IsColor)
+	err = validate.RegisterValidation("youtube_link", YoutubeLink)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("color", Color)
 	if err != nil {
 		return err
 	}

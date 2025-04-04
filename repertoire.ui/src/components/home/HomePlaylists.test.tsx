@@ -43,15 +43,15 @@ describe('Home Playlists', () => {
     reduxRender(<HomePlaylists />)
 
     expect(screen.getByText(/playlists/i)).toBeInTheDocument()
-    expect(screen.getByTestId('playlists-loader')).toBeInTheDocument()
     for (const playlist of playlists) {
       expect(await screen.findByText(playlist.title)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
       if (playlist.imageUrl)
         expect(screen.getByRole('img', { name: playlist.title })).toHaveAttribute(
           'src',
           playlist.imageUrl
         )
+      else
+        expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     }
   })
 

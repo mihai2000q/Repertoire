@@ -41,17 +41,17 @@ func NewPlaylistRepository(client database.Client) PlaylistRepository {
 }
 
 func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
-	return p.client.DB.Find(&playlist, model.Playlist{ID: id}).Error
+	return p.client.Find(&playlist, model.Playlist{ID: id}).Error
 }
 
 func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error {
-	return p.client.DB.
+	return p.client.
 		Order("song_track_no").
 		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
 }
 
 func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
-	return p.client.DB.
+	return p.client.
 		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 			return db.
 				Preload("Song").
@@ -70,7 +70,7 @@ func (p playlistRepository) GetAllByUser(
 	orderBy []string,
 	searchBy []string,
 ) error {
-	tx := p.client.DB.Model(&model.Playlist{}).
+	tx := p.client.Model(&model.Playlist{}).
 		Preload("Songs").
 		Where(model.Playlist{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
@@ -80,33 +80,33 @@ func (p playlistRepository) GetAllByUser(
 }
 
 func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
-	tx := p.client.DB.Model(&model.Playlist{}).
+	tx := p.client.Model(&model.Playlist{}).
 		Where(model.Playlist{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
 
 func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {
-	return p.client.DB.Model(&model.PlaylistSong{}).
+	return p.client.Model(&model.PlaylistSong{}).
 		Where("playlist_id = ?", id).
 		Count(count).
 		Error
 }
 
 func (p playlistRepository) Create(playlist *model.Playlist) error {
-	return p.client.DB.Create(&playlist).Error
+	return p.client.Create(&playlist).Error
 }
 
 func (p playlistRepository) AddSongs(playlistSongs *[]model.PlaylistSong) error {
-	return p.client.DB.Create(&playlistSongs).Error
+	return p.client.Create(&playlistSongs).Error
 }
 
 func (p playlistRepository) Update(playlist *model.Playlist) error {
-	return p.client.DB.Save(&playlist).Error
+	return p.client.Save(&playlist).Error
 }
 
 func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error {
-	return p.client.DB.Transaction(func(tx *gorm.DB) error {
+	return p.client.Transaction(func(tx *gorm.DB) error {
 		for _, playlistSong := range *playlistSongs {
 			if err := tx.Save(&playlistSong).Error; err != nil {
 				return err
@@ -117,9 +117,9 @@ func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.Playli
 }
 
 func (p playlistRepository) Delete(id uuid.UUID) error {
-	return p.client.DB.Delete(&model.Playlist{}, id).Error
+	return p.client.Delete(&model.Playlist{}, id).Error
 }
 
 func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {
-	return p.client.DB.Delete(&playlistSongs).Error
+	return p.client.Delete(&playlistSongs).Error
 }

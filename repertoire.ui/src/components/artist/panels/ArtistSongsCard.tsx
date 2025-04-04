@@ -11,7 +11,6 @@ import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewArtistSongModal from '../modal/AddNewArtistSongModal.tsx'
 import AddExistingArtistSongsModal from '../modal/AddExistingArtistSongsModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { useRemoveSongsFromArtistMutation } from '../../../state/api/artistsApi.ts'
 import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 
 interface ArtistSongsCardProps {
@@ -33,17 +32,11 @@ function ArtistSongsCard({
   artistId,
   isFetching
 }: ArtistSongsCardProps) {
-  const [removeSongsFromArtist] = useRemoveSongsFromArtistMutation()
-
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
-  function handleRemoveSongsFromArtist(songIds: string[]) {
-    removeSongsFromArtist({ songIds: songIds, id: artistId })
-  }
-
-  if (isLoading) return <ArtistSongsLoader />
+  if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
     <Card variant={'panel'} aria-label={'songs-card'} p={0} h={'100%'} mb={'lg'}>
@@ -84,7 +77,7 @@ function ArtistSongsCard({
             <ArtistSongCard
               key={song.id}
               song={song}
-              handleRemove={() => handleRemoveSongsFromArtist([song.id])}
+              artistId={artistId}
               isUnknownArtist={isUnknownArtist}
               order={order}
             />

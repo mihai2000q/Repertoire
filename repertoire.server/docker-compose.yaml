@@ -12,10 +12,16 @@ services:
       - SERVER_HOST=0.0.0.0
       - DB_HOST=Repertoire-Database
       - DB_PORT=5432
-      - AUTH_STORAGE_URL=http://Repertoire-Storage:8020/oauth/token
-      - UPLOAD_STORAGE_URL=http://Repertoire-Storage:8020/storage
+      - AUTH_URL=http://Repertoire-Auth:8030/auth
+      - STORAGE_UPLOAD_URL=http://Repertoire-Storage:8020/storage
+      - MEILI_URL=http://Repertoire-Meilisearch:7700
+      - CENTRIFUGO_URL=ws://Repertoire-Centrifugo:8003/connection/websocket
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ./${LOG_OUTPUT}:/${LOG_OUTPUT}
+    networks:
+      - repertoire_network
     depends_on:
       database:
         condition: service_healthy
@@ -31,8 +37,45 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./.sample-data:/.sample-data
+      - ./.container-data/postgres-data:/var/lib/postgresql/data
+    networks:
+      - repertoire_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  meilisearch:
+    image: "getmeili/meilisearch:v1.13.0"
+    container_name: Repertoire-Meilisearch
+    ports:
+      - "8002:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      # - MEILI_TASK_WEBHOOK_URL=http://Repertoire-Server:${SERVER_PORT}/api/search/meili-webhook # use me when running server in docker
+      - MEILI_TASK_WEBHOOK_URL=${MEILI_WEBHOOK_URL}
+      - MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER=${MEILI_WEBHOOK_AUTHORIZATION_KEY}
+    volumes:
+      - ./.container-data/meili_data:/meili_data
+    networks:
+      - repertoire_network
+
+  centrifugo:
+    image: centrifugo/centrifugo:v6
+    container_name: Repertoire-Centrifugo
+    command: centrifugo -c /centrifugo/config.json
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./centrifugo-config.json:/centrifugo/config.json
+    networks:
+      - repertoire_network
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+networks:
+  repertoire_network:
+    driver: bridge

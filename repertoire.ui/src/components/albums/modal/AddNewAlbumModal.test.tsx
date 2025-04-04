@@ -1,35 +1,37 @@
-import {emptyArtist, reduxRender, withToastify} from '../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import AddNewAlbumModal from './AddNewAlbumModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { CreateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
-import Artist from '../../../types/models/Artist.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import { ArtistSearch } from '../../../types/models/Search.ts'
+import SearchType from '../../../utils/enums/SearchType.ts'
+import dayjs from "dayjs";
 
 describe('Add New Album Modal', () => {
-  const artists: Artist[] = [
+  const artists: ArtistSearch[] = [
     {
-      ...emptyArtist,
       id: '1',
       name: 'Artist 1',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '2',
       name: 'Artist 2',
+      type: SearchType.Artist
     },
     {
-      ...emptyArtist,
       id: '3',
       name: 'Artist 3',
+      type: SearchType.Artist
     }
   ]
 
   const handlers = [
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<ArtistSearch> = {
         models: artists,
         totalCount: artists.length
       }
@@ -96,7 +98,6 @@ describe('Add New Album Modal', () => {
       const newArtistName = 'New Artist Name'
       const now = new Date()
       const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
-      const whichDayIsCurrentDay = newReleaseDate.getDate() > 15 ? 1 : 0
 
       const onClose = vitest.fn()
 
@@ -113,8 +114,7 @@ describe('Add New Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      const dates = screen.getAllByText(newReleaseDate.getDate().toString())
-      await user.click(dates.length > 1 ? dates[whichDayIsCurrentDay] : dates[0])
+      await user.click(screen.getByRole('button', { name : dayjs(newReleaseDate).format('D MMMM YYYY') }))
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
       await waitFor(() =>

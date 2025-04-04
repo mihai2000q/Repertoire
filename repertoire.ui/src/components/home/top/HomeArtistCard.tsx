@@ -1,9 +1,9 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Avatar, Stack, Text } from '@mantine/core'
-import artistPlaceholder from '../../../assets/user-placeholder.jpg'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { openArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../state/store.ts'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface HomeArtistCardProps {
   artist: Artist
@@ -30,8 +30,9 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
         onMouseEnter={() => setIsImageHovered(true)}
         onMouseLeave={() => setIsImageHovered(false)}
         size={125}
-        src={artist.imageUrl ?? artistPlaceholder}
+        src={artist.imageUrl}
         alt={artist.name}
+        bg={'gray.0'}
         onClick={handleClick}
         sx={(theme) => ({
           cursor: 'pointer',
@@ -39,7 +40,11 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
           boxShadow: theme.shadows.xl,
           '&:hover': { boxShadow: theme.shadows.xxl }
         })}
-      />
+      >
+        <Center c={'gray.7'}>
+          <CustomIconUserAlt size={58} />
+        </Center>
+      </Avatar>
 
       <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>

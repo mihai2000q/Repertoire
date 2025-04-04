@@ -4,12 +4,15 @@ import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewAlbumForm, addNewAlbumValidation } from '../../../validation/albumsForm.ts'
-import { useCreateAlbumMutation, useSaveImageToAlbumMutation } from '../../../state/api/albumsApi.ts'
+import {
+  useCreateAlbumMutation,
+  useSaveImageToAlbumMutation
+} from '../../../state/api/albumsApi.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
-import Artist from '../../../types/models/Artist.ts'
 import { IconCalendarFilled } from '@tabler/icons-react'
+import { ArtistSearch } from '../../../types/models/Search.ts'
 
 interface AddNewAlbumModalProps {
   opened: boolean
@@ -21,7 +24,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
   const [saveImageMutation, { isLoading: isSaveImageLoading }] = useSaveImageToAlbumMutation()
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
-  const [artist, setArtist] = useState<Artist>(null)
+  const [artist, setArtist] = useState<ArtistSearch>(null)
 
   const [image, setImage] = useState<FileWithPath>(null)
 

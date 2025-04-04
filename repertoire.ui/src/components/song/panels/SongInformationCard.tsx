@@ -34,7 +34,11 @@ function SongInformationCard({ song }: SongInformationCardProps) {
             </Text>
           </Grid.Col>
           <Grid.Col span={secondColSize}>
-            {song.difficulty ? <DifficultyBar difficulty={song.difficulty} maw={40} /> : <NotSet />}
+            {song.difficulty ? (
+              <DifficultyBar difficulty={song.difficulty} maw={160} />
+            ) : (
+              <NotSet />
+            )}
           </Grid.Col>
 
           <Grid.Col span={firstColSize}>
@@ -96,7 +100,13 @@ function SongInformationCard({ song }: SongInformationCardProps) {
 
           <Grid.Col span={secondColSize}>
             {song.lastTimePlayed ? (
-              <Text fw={600}>{dayjs(song.lastTimePlayed).format('DD MMM YYYY')}</Text>
+              <Tooltip
+                label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                openDelay={400}
+                disabled={!song.lastTimePlayed}
+              >
+                <Text fw={600}>{dayjs(song.lastTimePlayed).format('DD MMM YYYY')}</Text>
+              </Tooltip>
             ) : (
               <NotSet label={'never'} />
             )}

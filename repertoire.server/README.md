@@ -1,30 +1,30 @@
 # Repertoire Server
 
 * [Repertoire Server](#repertoire-server)
-  * [Abstract](#abstract)
-  * [Prerequisites](#prerequisites)
-    * [Go](#go)
-    * [Docker](#docker)
-  * [Get Started](#get-started)
-    * [Docker Containers](#docker-containers)
-    * [Restore dependencies](#restore-dependencies)
-    * [Run](#run)
-    * [Quick Test](#quick-test)
-  * [Sample Data](#sample-data)
-  * [Build Executable](#build-executable)
-  * [Architecture](#architecture)
-  * [Api](#api)
-    * [Authentication](#authentication)
-  * [Database](#database)
-    * [Migration](#migration)
-  * [Testing](#testing)
-    * [Unit Testing](#unit-testing)
-    * [Integration Testing](#integration-testing)
-  * [Live Reload](#live-reload)
+    * [Abstract](#abstract)
+    * [Prerequisites](#prerequisites)
+        * [Go](#go)
+        * [Docker](#docker)
+    * [Get Started](#get-started)
+        * [Docker Containers](#docker-containers)
+        * [Restore dependencies](#restore-dependencies)
+        * [Run](#run)
+        * [Quick Test](#quick-test)
+    * [Sample Data](#sample-data)
+    * [Build Executable](#build-executable)
+    * [Architecture](#architecture)
+    * [Api](#api)
+        * [Authentication](#authentication)
+    * [Database](#database)
+        * [Migration](#migration)
+    * [Testing](#testing)
+        * [Unit Testing](#unit-testing)
+        * [Integration Testing](#integration-testing)
+    * [Live Reload](#live-reload)
 
 ## Abstract
 
-This is the HTTP Server (or backend) of the **Repertoire** application, 
+This is the HTTP Server (or backend) of the **Repertoire** application,
 which is written completely in Go using the Gin Gonic Framework.
 
 ## Prerequisites
@@ -33,7 +33,7 @@ Before you can get started, there are some things you need to have installed on 
 
 ### Go
 
-First, the application is written in Golan, so you need the Go SDK.
+First, the application is written in Golang, so you need the Go SDK.
 If you don't have it already installed, please download it from here: `https://go.dev/dl/`.
 
 ### Docker
@@ -58,10 +58,13 @@ Once you have the environment files setup, type in the following command:
 docker compose up -d
 ```
 
-This command will open up two containers: one for the database and the other for the application,
-which is running by default in development mode.
+This command will open up three containers:
 
-If you decide to use a local database instance instead of Docker, then you are free to do so, 
+- one for the database
+- one for the search engine (meilisearch)
+- and the other for the application, which is running by default in development mode.
+
+If you decide to use a local database instance instead of Docker, then you are free to do so,
 but that's not included in the documentation.
 
 If you decide that you only want the database from the docker compose file, you can run the following command:
@@ -71,7 +74,10 @@ docker compose up -d database
 ```
 
 No matter where the database instance runs, please be aware that it is empty and you need to run the migrations.
-A helper shell script, `apply-migrations.sh`, is provided.
+A helper shell script, `apply-database-migrations.sh`, is provided.
+
+Also, you need to run the search engine migrations as well, `apply-search-migrations.sh`
+(if you decide you want sample data on your database, run the search migrations after that).
 
 If you decide to run the backend application locally, follow the next steps.
 
@@ -94,22 +100,13 @@ go run main.go
 ### Quick Test
 
 Now to be sure that everything works accordingly, try sending an HTTP Request (e.g., via Postman) to
-`http://localhost:1123/api`.
+`http://localhost:8000/api`.
 
-```js
-PUT {{host}}/auth/sign-in
+```
+GET {{host}}/users/current
 ```
 
-And the body of the request shall be:
-
-```json
-{
-    "email": "Some@Example.com",
-    "password": "Password123"
-}
-```
-
-It will return an Invalid Credentials Error, however,
+It will return an Unauthorized Error, however,
 now you know that you have a working connection to the API and to the database.
 
 ## Sample Data
@@ -117,6 +114,10 @@ now you know that you have a working connection to the API and to the database.
 A Sample Data has been provided for testing purposes of the application.
 
 To populate the database, simply use the following script: `add-sample-data.sh`.
+
+Also, if you add data outside the application, 
+you also have to re-run the search migrations(`apply-search-migrations.sh`) 
+(it is recommended to remove the docker container if it has already run).
 
 ## Build Executable
 
@@ -134,13 +135,15 @@ The architecture implemented in this application is following the principles of 
 A few principles of the Domain-Driven-Design are also applied (i.e., each model has its own service or handler).
 
 The four layers of this type of architecture feature the:
+
 - **Domain** Layer—the place where the domain models are defined (defined in the _models_ package)
 - **Infrastructure** Layer—the data access layer for the database (defined in the _data_ package)
-- **Application** Layer—the layer that makes abstract calls to the infrastructure and makes business logic decisions 
-(defined in the _domain_ package)
+- **Application** Layer—the layer that makes abstract calls to the infrastructure and makes business logic decisions
+  (defined in the _domain_ package)
 - **Presentation** Layer—the endpoint where the application becomes exposed (defined in the _api_ package)
 
 To put it in simple terms, the workflow of the application would be the following:
+
 - the http request comes through an _Api_ handler, where it is also validated
 - then the Api sends it to a _Domain_ Service
 - then it is being sent to a specific Use Case (still on the _domain_)
@@ -153,21 +156,23 @@ To put it in simple terms, the workflow of the application would be the followin
 
 The developer shall provide a token for endpoints that do not allow anonymous requests.
 One way to add one inside Postman is to go to the *Authorization* tab and under the type *JWT Bearer* add the following:
-- **Secret Key**, which can be found in `.env`
+
+- **Algorithm** is RS256
+- **Private Key**, which can be found in the authentication server in `.env`
 - **Payload** which should include the following:
-  - **sub**, the user id of an existing user (coincide with db data)
-  - **jti**, the id of the token (any uuid)
-  - **exp**, the expiration date in ms
-  - **iss**, issuer of the application, which can be found in `.env`
-  - **aud**, audience of the application, which can be found in `.env`
+    - **sub**, the user id of an existing user (coincide with db data)
+    - **jti**, the id of the token (any uuid)
+    - **exp**, the expiration date in ms
+    - **iss**, issuer of the application, which can be found in `.env`
+    - **aud**, audience of the application, which can be found in `.env`
 
 ## Database
 
 ### Migration
 
-`Goose` is the database migration tool that is in use for this purpose. 
+`Goose` is the database migration tool that is in use for this purpose.
 
-To update the database schema, please use the provided `apply-migrations.sh` shell script.
+To update the database schema, please use the provided `apply-database-migrations.sh` shell script.
 It sets environment variables for the `goose up` command to run accordingly.
 
 ## Testing
@@ -223,5 +228,5 @@ Next, use the following command to build and run the application and start the l
 air
 ```
 
-The above command will look in the directory for a `.air.toml` file for configuration, 
+The above command will look in the directory for a `.air.toml` file for configuration,
 but that's already included in the application.

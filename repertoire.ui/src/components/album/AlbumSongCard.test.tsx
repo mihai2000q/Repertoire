@@ -7,6 +7,9 @@ import SongProperty from '../../utils/enums/SongProperty.ts'
 import dayjs from 'dayjs'
 import Difficulty from '../../utils/enums/Difficulty.ts'
 import { expect } from 'vitest'
+import { setupServer } from 'msw/node'
+import { http, HttpResponse } from 'msw'
+import { RemoveSongsFromAlbumRequest } from '../../types/requests/AlbumRequests.ts'
 
 describe('Album Song Card', () => {
   const song: Song = {
@@ -16,11 +19,19 @@ describe('Album Song Card', () => {
     albumTrackNo: 1
   }
 
+  const server = setupServer()
+
+  beforeAll(() => server.listen())
+
+  afterEach(() => server.resetHandlers())
+
+  afterAll(() => server.close())
+
   it('should render and display information, when the album is not unknown', () => {
     reduxRouterRender(
       <AlbumSongCard
         song={song}
-        handleRemove={() => {}}
+        albumId={''}
         isUnknownAlbum={false}
         order={emptyOrder}
         isDragging={false}
@@ -28,7 +39,7 @@ describe('Album Song Card', () => {
     )
 
     expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
@@ -42,7 +53,7 @@ describe('Album Song Card', () => {
     const [{ rerender }] = reduxRouterRender(
       <AlbumSongCard
         song={localSong}
-        handleRemove={() => {}}
+        albumId={''}
         isUnknownAlbum={false}
         order={emptyOrder}
         isDragging={false}
@@ -56,7 +67,7 @@ describe('Album Song Card', () => {
     rerender(
       <AlbumSongCard
         song={song}
-        handleRemove={() => {}}
+        albumId={''}
         isUnknownAlbum={false}
         order={emptyOrder}
         isDragging={false}
@@ -82,7 +93,7 @@ describe('Album Song Card', () => {
       const [{ rerender }] = reduxRouterRender(
         <AlbumSongCard
           song={localSong}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -94,7 +105,7 @@ describe('Album Song Card', () => {
       rerender(
         <AlbumSongCard
           song={song}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -118,7 +129,7 @@ describe('Album Song Card', () => {
       reduxRouterRender(
         <AlbumSongCard
           song={localSong}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -144,7 +155,7 @@ describe('Album Song Card', () => {
       reduxRouterRender(
         <AlbumSongCard
           song={localSong}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -168,7 +179,7 @@ describe('Album Song Card', () => {
       reduxRouterRender(
         <AlbumSongCard
           song={localSong}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -192,7 +203,7 @@ describe('Album Song Card', () => {
       const [{ rerender }] = reduxRouterRender(
         <AlbumSongCard
           song={localSong}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -206,7 +217,7 @@ describe('Album Song Card', () => {
       rerender(
         <AlbumSongCard
           song={song}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={order}
           isDragging={false}
@@ -223,7 +234,7 @@ describe('Album Song Card', () => {
     reduxRouterRender(
       <AlbumSongCard
         song={song}
-        handleRemove={() => {}}
+        albumId={''}
         isUnknownAlbum={false}
         order={emptyOrder}
         isDragging={false}
@@ -236,8 +247,10 @@ describe('Album Song Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from album/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should display menu by clicking on the dots button', async () => {
@@ -246,7 +259,7 @@ describe('Album Song Card', () => {
     reduxRouterRender(
       <AlbumSongCard
         song={song}
-        handleRemove={() => {}}
+        albumId={''}
         isUnknownAlbum={false}
         order={emptyOrder}
         isDragging={false}
@@ -256,8 +269,10 @@ describe('Album Song Card', () => {
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from album/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
@@ -267,7 +282,7 @@ describe('Album Song Card', () => {
       reduxRouterRender(
         <AlbumSongCard
           song={song}
-          handleRemove={() => {}}
+          albumId={''}
           isUnknownAlbum={false}
           order={emptyOrder}
           isDragging={false}
@@ -283,15 +298,23 @@ describe('Album Song Card', () => {
       window.location.pathname = '/'
     })
 
-    it('should display warning modal and remove, when clicking on remove', async () => {
+    it('should display warning modal and remove song from album, when clicking on remove song', async () => {
       const user = userEvent.setup()
 
-      const handleRemove = vitest.fn()
+      let capturedRequest: RemoveSongsFromAlbumRequest
+      server.use(
+        http.put('/albums/remove-songs', async (req) => {
+          capturedRequest = (await req.request.json()) as RemoveSongsFromAlbumRequest
+          return HttpResponse.json()
+        })
+      )
+
+      const albumId = 'some-album-id'
 
       reduxRouterRender(
         <AlbumSongCard
           song={song}
-          handleRemove={handleRemove}
+          albumId={albumId}
           isUnknownAlbum={false}
           order={emptyOrder}
           isDragging={false}
@@ -299,7 +322,7 @@ describe('Album Song Card', () => {
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
-      await user.click(screen.getByRole('menuitem', { name: /remove/i }))
+      await user.click(screen.getByRole('menuitem', { name: /remove from album/i }))
 
       expect(await screen.findByRole('dialog', { name: /remove song/i })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: /remove song/i })).toBeInTheDocument()
@@ -307,7 +330,39 @@ describe('Album Song Card', () => {
 
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
-      expect(handleRemove).toHaveBeenCalledOnce()
+      expect(capturedRequest).toStrictEqual({
+        id: albumId,
+        songIds: [song.id]
+      })
+    })
+
+    it('should display warning modal and delete album, when clicking on delete', async () => {
+      const user = userEvent.setup()
+
+      server.use(
+        http.delete(`/songs/${song.id}`, () => {
+          return HttpResponse.json()
+        })
+      )
+
+      reduxRouterRender(
+        <AlbumSongCard
+          song={song}
+          albumId={''}
+          isUnknownAlbum={false}
+          order={emptyOrder}
+          isDragging={false}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+      expect(await screen.findByRole('dialog', { name: /delete song/i })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: /delete song/i })).toBeInTheDocument()
+      expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: /yes/i }))
     })
   })
 
@@ -317,7 +372,7 @@ describe('Album Song Card', () => {
     reduxRouterRender(
       <AlbumSongCard
         song={song}
-        handleRemove={() => {}}
+        albumId={''}
         isUnknownAlbum={true}
         order={emptyOrder}
         isDragging={false}
@@ -328,6 +383,6 @@ describe('Album Song Card', () => {
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
-    expect(screen.queryByRole('menuitem', { name: /remove/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /remove from album/i })).not.toBeInTheDocument()
   })
 })

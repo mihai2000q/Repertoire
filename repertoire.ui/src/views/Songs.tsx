@@ -7,6 +7,7 @@ import {
   Group,
   Loader,
   Pagination,
+  SimpleGrid,
   Space,
   Stack,
   Text,
@@ -76,29 +77,31 @@ function Songs(): ReactElement {
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} songs out of {songs?.totalCount}
+          {startCount} - {endCount} songs out of {songs?.totalCount ?? 0}
         </Text>
       )}
 
       {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
-      <Group gap={'lg'} align={'stretch'}>
-        {isLoading && <SongsLoader />}
+      <SimpleGrid
+        cols={{ base: 2, xs: 3, sm: 2, betweenSmMd: 3, betweenMdLg: 4, lg: 5, xl: 6, xxl: 7 }}
+        spacing={'lg'}
+        verticalSpacing={'lg'}
+      >
+        {(isLoading || !songs) && <SongsLoader />}
         {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
         {songs?.totalCount > 0 && currentPage == totalPages && (
           <Card
-            aria-label={'new-song-card'}
             variant={'add-new'}
+            aria-label={'new-song-card'}
             radius={'lg'}
-            mih={175}
-            w={175}
             onClick={openAddNewSongModal}
           >
             <Center h={'100%'}>
-              <IconMusicPlus size={40} />
+              <IconMusicPlus size={'100%'} style={{ padding: '35%' }} />
             </Center>
           </Card>
         )}
-      </Group>
+      </SimpleGrid>
 
       <Space flex={1} />
 

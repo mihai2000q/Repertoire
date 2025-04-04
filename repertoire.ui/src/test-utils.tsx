@@ -9,11 +9,11 @@ import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { ToastContainer } from 'react-toastify'
 import Album from './types/models/Album.ts'
-import Song, { SongSection } from './types/models/Song.ts'
+import Song, { SongSection, SongSettings } from './types/models/Song.ts'
 import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
 import User from './types/models/User.ts'
-import Playlist from "./types/models/Playlist.ts";
+import Playlist from './types/models/Playlist.ts'
 
 // Custom Matchers
 
@@ -239,7 +239,10 @@ export const emptySong: Song = {
   sections: [],
   createdAt: '',
   updatedAt: '',
-  releaseDate: null
+  releaseDate: null,
+  settings: {
+    id: ''
+  }
 }
 
 export const emptyPlaylist: Playlist = {
@@ -248,7 +251,11 @@ export const emptyPlaylist: Playlist = {
   description: '',
   songs: [],
   createdAt: '',
-  updatedAt: '',
+  updatedAt: ''
+}
+
+export const emptySongSettings: SongSettings = {
+  id: ''
 }
 
 export const emptySongSection: SongSection = {
@@ -258,6 +265,7 @@ export const emptySongSection: SongSection = {
   progress: 0,
   rehearsals: 0,
   occurrences: 0,
+  partialOccurrences: 0,
   songSectionType: {
     id: '',
     name: ''

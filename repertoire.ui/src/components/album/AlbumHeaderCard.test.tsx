@@ -14,6 +14,7 @@ import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
 import dayjs from 'dayjs'
+import WithTotalCountResponse from "../../types/responses/WithTotalCountResponse.ts";
 
 describe('Album Header Card', () => {
   const album: Album = {
@@ -26,10 +27,21 @@ describe('Album Header Card', () => {
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1'
+    name: 'Artist 1',
+    imageUrl: 'something.png'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<Artist> = {
+        models: [],
+        totalCount: 0
+      }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -44,8 +56,7 @@ describe('Album Header Card', () => {
       <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
     )
 
-    expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: album.title })).toHaveAttribute('src', album.imageUrl)
+    expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText('0 songs')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
@@ -84,10 +95,7 @@ describe('Album Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
-      'src',
-      localAlbum.imageUrl
-    )
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute('src', localAlbum.imageUrl)
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toHaveAttribute(
@@ -118,7 +126,7 @@ describe('Album Header Card', () => {
       <AlbumHeaderCard album={undefined} isUnknownAlbum={true} songsTotalCount={songsTotalCount} />
     )
 
-    expect(screen.getByRole('img', { name: 'unknown-album' })).toBeInTheDocument()
+    expect(screen.getByLabelText('icon-unknown-album')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
     expect(screen.getByText(`${songsTotalCount} songs`)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()

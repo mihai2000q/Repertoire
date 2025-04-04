@@ -24,6 +24,9 @@ import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWit
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import { useDidUpdate } from '@mantine/hooks'
+import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
+import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
+import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -45,7 +48,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     initialValues: {
       title: song.title,
       releaseDate: song.releaseDate && new Date(song.releaseDate),
-      image: song.imageUrl
+      image: song.imageUrl,
+      artistId: song.artist?.id,
+      albumId: song.album?.id
     } as EditSongHeaderForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
@@ -54,8 +59,11 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     onValuesChange: (values) => {
       setHasChanged(
         values.title !== song.title ||
-          values.releaseDate?.toISOString() !== new Date(song.releaseDate).toISOString() ||
-          values.image !== song.imageUrl
+          values.releaseDate?.getTime() !==
+            (song.releaseDate ? new Date(song.releaseDate).getTime() : undefined) ||
+          values.image !== song.imageUrl ||
+          values.artistId !== song.artist?.id ||
+          values.albumId !== song.album?.id
       )
     }
   })
@@ -64,7 +72,16 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(song.imageUrl), [song])
 
-  async function updateSong({ title, releaseDate, image }: EditSongHeaderForm) {
+  const [artist, setArtist] = useState(song.artist as unknown as ArtistSearch)
+  useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
+
+  const [album, setAlbum] = useState(song.album as unknown as AlbumSearch)
+  useDidUpdate(() => {
+    setArtist(album?.artist as unknown as ArtistSearch)
+    form.setFieldValue('albumId', album?.id)
+  }, [album])
+
+  async function updateSong({ title, releaseDate, image, albumId, artistId }: EditSongHeaderForm) {
     title = title.trim()
 
     await updateSongMutation({
@@ -72,7 +89,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
       guitarTuningId: song.guitarTuning?.id,
       id: song.id,
       title: title,
-      releaseDate: releaseDate
+      releaseDate: releaseDate,
+      albumId: albumId,
+      artistId: artistId
     }).unwrap()
 
     if (image !== null && typeof image !== 'string') {
@@ -130,6 +149,25 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
               key={form.key('releaseDate')}
               {...form.getInputProps('releaseDate')}
             />
+
+            <Group gap={'sm'}>
+              <AlbumSelect flex={1} album={album} setAlbum={setAlbum} />
+              <Group gap={'xxs'} flex={1}>
+                <ArtistSelect artist={artist} setArtist={setArtist} disabled={!!album} />
+                {album && (
+                  <Box c={'primary.8'} mt={'lg'} ml={4}>
+                    <Tooltip
+                      multiline
+                      w={210}
+                      ta={'center'}
+                      label={'Song will inherit artist from album (even if it has one or not)'}
+                    >
+                      <IconInfoCircleFilled aria-label={'artist-info'} size={18} />
+                    </Tooltip>
+                  </Box>
+                )}
+              </Group>
+            </Group>
 
             <Tooltip
               disabled={hasChanged}

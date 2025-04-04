@@ -2,14 +2,14 @@ import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import AlbumSongsCard from './AlbumSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Album from '../../types/models/Album.ts'
-import { screen, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveSongsFromAlbumRequest } from '../../types/requests/AlbumRequests.ts'
 import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
 import { expect } from 'vitest'
+import { SongSearch } from '../../types/models/Search.ts'
 
 describe('Album Songs Card', () => {
   const songs: Song[] = [
@@ -69,8 +69,8 @@ describe('Album Songs Card', () => {
   const order = albumSongsOrders[1]
 
   const handlers = [
-    http.get('/songs', async () => {
-      const response: WithTotalCountResponse<Song> = {
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SongSearch> = {
         models: [],
         totalCount: 0
       }
@@ -236,39 +236,6 @@ describe('Album Songs Card', () => {
     await user.click(screen.getByLabelText('new-song-card'))
 
     expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
-  })
-
-  it("should send 'remove songs from album request' when clicking on the more menu of a song card", async () => {
-    const user = userEvent.setup()
-
-    const song = album.songs[0]
-
-    let capturedRequest: RemoveSongsFromAlbumRequest
-    server.use(
-      http.put('/albums/remove-songs', async (req) => {
-        capturedRequest = (await req.request.json()) as RemoveSongsFromAlbumRequest
-        return HttpResponse.json()
-      })
-    )
-
-    reduxRouterRender(
-      <AlbumSongsCard
-        album={album}
-        songs={songs}
-        isUnknownAlbum={false}
-        order={order}
-        setOrder={() => {}}
-      />
-    )
-
-    const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
-
-    await user.click(within(songCard1).getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /remove/i }))
-    await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
-
-    expect(capturedRequest.id).toBe(album.id)
-    expect(capturedRequest.songIds).toStrictEqual([song.id])
   })
 
   it.skip('should be able to reorder songs', () => {})

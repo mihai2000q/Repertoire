@@ -1,14 +1,14 @@
 import { screen } from '@testing-library/react'
 import Albums from './Albums.tsx'
-import { reduxRouterRender } from '../test-utils.tsx'
+import { emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
-import Artist from '../types/models/Artist.ts'
 import Album from '../types/models/Album.ts'
 import Song from '../types/models/Song.ts'
 import { RootState } from '../state/store.ts'
+import { SearchBase } from '../types/models/Search.ts'
 
 describe('Albums', () => {
   const albums: Album[] = [
@@ -37,16 +37,8 @@ describe('Albums', () => {
       const response: WithTotalCountResponse<Song> = {
         models: [
           {
-            id: '',
-            title: 'Some song',
-            description: '',
-            isRecorded: false,
-            sections: [],
-            rehearsals: 0,
-            confidence: 0,
-            progress: 0,
-            createdAt: '',
-            updatedAt: ''
+            ...emptySong,
+            title: 'Some song'
           }
         ],
         totalCount: 1
@@ -90,8 +82,8 @@ describe('Albums', () => {
       }
       return HttpResponse.json(response)
     }),
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/songs', async () => {
@@ -121,7 +113,6 @@ describe('Albums', () => {
     expect(screen.getByRole('button', { name: /order-albums/i })).toBeDisabled()
     expect(screen.getByRole('button', { name: /filter-albums/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /filter-albums/i })).toBeDisabled()
-    expect(screen.getByTestId('albums-loader')).toBeInTheDocument()
 
     expect(await screen.findByLabelText('new-album-card')).toBeInTheDocument()
     expect(screen.getAllByLabelText(/album-card-/)).toHaveLength(albums.length)

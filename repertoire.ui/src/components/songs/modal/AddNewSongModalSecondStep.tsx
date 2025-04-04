@@ -27,9 +27,9 @@ import { UseListStateHandlers } from '@mantine/hooks'
 import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
-import Album from '../../../types/models/Album.ts'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
 import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
+import { AlbumSearch } from '../../../types/models/Search.ts'
 
 interface AddNewSongModalSecondStepProps {
   form: UseFormReturnType<AddNewSongForm>
@@ -39,7 +39,7 @@ interface AddNewSongModalSecondStepProps {
   setGuitarTuning: Dispatch<SetStateAction<ComboboxItem | null>>
   difficulty: ComboboxItem | null
   setDifficulty: Dispatch<SetStateAction<ComboboxItem | null>>
-  album: Album | null
+  album: AlbumSearch | null
 }
 
 function AddNewSongModalSecondStep({

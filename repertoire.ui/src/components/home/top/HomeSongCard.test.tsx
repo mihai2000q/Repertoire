@@ -14,7 +14,7 @@ describe('Home Song Card', () => {
   it('should render with minimal info', () => {
     reduxRender(<HomeSongCard song={song} />)
 
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
   })
 
@@ -44,7 +44,7 @@ describe('Home Song Card', () => {
 
     const [_, store] = reduxRender(<HomeSongCard song={song} />)
 
-    await user.click(screen.getByRole('img', { name: song.title }))
+    await user.click(screen.getByLabelText(`default-icon-${song.title}`))
     expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
   })

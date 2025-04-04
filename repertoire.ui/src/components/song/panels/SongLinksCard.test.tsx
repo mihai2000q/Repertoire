@@ -1,21 +1,13 @@
 import Song from '../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
-import { reduxRender } from '../../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 import SongLinksCard from './SongLinksCard.tsx'
 
 describe('Song Links Card', () => {
   const song: Song = {
-    id: '',
+    ...emptySong,
     title: 'Some title',
-    description: '',
-    isRecorded: false,
-    sections: [],
-    rehearsals: 0,
-    confidence: 0,
-    progress: 0,
-    createdAt: '',
-    updatedAt: '',
     youtubeLink: 'https://www.youtube.com/watch?v=tAGnKpE4NCI',
     songsterrLink: 'https://www.songsterr.com/song'
   }

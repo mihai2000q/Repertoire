@@ -50,12 +50,13 @@ describe('Home Top Artists', () => {
     expect(screen.getByTestId('artists-loader')).toBeInTheDocument()
     for (const artist of artists) {
       expect(await screen.findByText(artist.name)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
       if (artist.imageUrl)
         expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute(
           'src',
           artist.imageUrl
         )
+      else
+        expect(screen.getByLabelText(`default-icon-${artist.name}`)).toBeInTheDocument()
     }
   })
 

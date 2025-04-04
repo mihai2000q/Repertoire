@@ -1,8 +1,7 @@
 import Playlist from '../../types/models/Playlist'
-import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
-import { AspectRatio, Group, Image, Menu, Stack, Text } from '@mantine/core'
+import { Avatar, Center, Group, Menu, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
-import { IconTrash } from '@tabler/icons-react'
+import { IconPlaylist, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/api/playlistsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
@@ -40,30 +39,36 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
       align={'center'}
       gap={0}
       style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
-      w={150}
     >
       <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
-          <AspectRatio>
-            <Image
-              onMouseEnter={() => setIsImageHovered(true)}
-              onMouseLeave={() => setIsImageHovered(false)}
-              radius={'lg'}
-              src={playlist.imageUrl}
-              alt={playlist.title}
-              fallbackSrc={playlistPlaceholder}
-              onClick={handleClick}
-              onContextMenu={openMenu}
-              sx={(theme) => ({
-                cursor: 'pointer',
-                transition: '0.3s',
-                boxShadow: theme.shadows.xxl,
-                '&:hover': {
-                  boxShadow: theme.shadows.xxl_hover
-                }
-              })}
-            />
-          </AspectRatio>
+          <Avatar
+            onMouseEnter={() => setIsImageHovered(true)}
+            onMouseLeave={() => setIsImageHovered(false)}
+            radius={'10%'}
+            w={'100%'}
+            h={'unset'}
+            src={playlist.imageUrl}
+            alt={playlist.imageUrl && playlist.title}
+            bg={'gray.5'}
+            onClick={handleClick}
+            onContextMenu={openMenu}
+            sx={(theme) => ({
+              aspectRatio: 1,
+              cursor: 'pointer',
+              transition: '0.3s',
+              boxShadow: theme.shadows.xxl,
+              '&:hover': { boxShadow: theme.shadows.xxl_hover }
+            })}
+          >
+            <Center c={'white'}>
+              <IconPlaylist
+                aria-label={`default-icon-${playlist.title}`}
+                size={'100%'}
+                style={{ padding: '33%' }}
+              />
+            </Center>
+          </Avatar>
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>

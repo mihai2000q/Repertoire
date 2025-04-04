@@ -5,7 +5,9 @@ import {
   Button,
   Card,
   CardFactory,
+  Chip,
   Combobox,
+  Highlight,
   LoadingOverlay,
   Menu,
   Modal,
@@ -66,7 +68,7 @@ export const components = {
       },
       styles: () => ({
         root: {
-          transition: '0.18s',
+          transition: '0.18s'
         }
       })
     }
@@ -84,6 +86,7 @@ export const components = {
         '&[data-variant="add-new"]': {
           cursor: 'pointer',
           transition: '0.3s',
+          padding: 0,
           boxShadow: theme.shadows.xxl,
           color: theme.colors.primary[7],
           '&:hover': {
@@ -93,6 +96,14 @@ export const components = {
             transform: 'scale(1.1)'
           }
         }
+      }
+    })
+  }),
+  Chip: Chip.extend({
+    styles: () => ({
+      label: {
+        transition: '0.15s',
+        fontWeight: 500
       }
     })
   }),
@@ -107,6 +118,7 @@ export const components = {
   }),
   DatePickerInput: DatePickerInput.extend({
     defaultProps: {
+      clearable: true,
       valueFormat: 'D MMMM YYYY',
       dropdownType: 'popover',
       popoverProps: {
@@ -116,6 +128,12 @@ export const components = {
           duration: 160
         }
       }
+    }
+  }),
+  Highlight: Highlight.extend({
+    defaultProps: {
+      color: 'transparent',
+      highlightStyles: { fontWeight: 700 }
     }
   }),
   LoadingOverlay: LoadingOverlay.extend({

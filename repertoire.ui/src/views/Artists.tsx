@@ -6,7 +6,7 @@ import {
   Center,
   Group,
   Loader,
-  Pagination,
+  Pagination, SimpleGrid,
   Space,
   Stack,
   Text,
@@ -80,33 +80,36 @@ function Artists() {
       {!isLoading && (
         <Text inline mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
-          {artists?.totalCount + (showUnknownArtist ? 1 : 0)}
+          {(artists?.totalCount ?? 0) + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 
       {artists?.totalCount === 0 && !showUnknownArtist && (
         <Text mt={'sm'}>There are no artists yet. Try to add one</Text>
       )}
-      <Group gap={'xl'} align={'start'}>
-        {isLoading && <ArtistsLoader />}
+      <SimpleGrid
+        cols={{ base: 3, xs: 4, sm: 3, betweenSmMd: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}
+        verticalSpacing={{ base: 'lg', md: 'xl' }}
+        spacing={{ base: 'lg', md: 'xl' }}
+      >
+        {(isLoading || !artists) && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
         {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
         {((artists?.totalCount > 0 && currentPage == totalPages) ||
           (artists?.totalCount === 0 && showUnknownArtist)) && (
           <Card
+            variant={'add-new'}
             aria-label={'new-artist-card'}
-            w={125}
-            h={125}
             radius={'50%'}
             onClick={openAddNewArtistModal}
-            variant={'add-new'}
+            style={{ aspectRatio: 1 }}
           >
             <Center h={'100%'}>
-              <IconUserPlus size={40} />
+              <IconUserPlus size={'100%'} style={{ padding: '29%' }} />
             </Center>
           </Card>
         )}
-      </Group>
+      </SimpleGrid>
 
       <Space flex={1} />
 
