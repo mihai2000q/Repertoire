@@ -1,7 +1,7 @@
-import { Avatar, Stack, Text } from '@mantine/core'
-import unknownPlaceholder from '../../assets/unknown-placeholder.png'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { IconQuestionMark } from '@tabler/icons-react'
 
 function UnknownArtistCard() {
   const navigate = useNavigate()
@@ -27,8 +27,6 @@ function UnknownArtistCard() {
       <Avatar
         onMouseEnter={() => setIsAvatarHovered(true)}
         onMouseLeave={() => setIsAvatarHovered(false)}
-        src={unknownPlaceholder}
-        alt={'unknown-artist'}
         w={'100%'}
         h={'unset'}
         style={(theme) => ({
@@ -38,7 +36,16 @@ function UnknownArtistCard() {
           boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
         })}
         onClick={handleClick}
-      />
+      >
+        <Center c={'gray.6'}>
+          <IconQuestionMark
+            aria-label={'icon-unknown-artist'}
+            size={'100%'}
+            strokeWidth={3}
+            style={{ padding: '12%' }}
+          />
+        </Center>
+      </Avatar>
       <Text fw={300} ta={'center'} fs={'italic'}>
         Unknown
       </Text>

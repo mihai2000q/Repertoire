@@ -1,6 +1,5 @@
 import Album from '../../types/models/Album.ts'
-import { AspectRatio, Checkbox, Group, Image, Menu, Stack, Text } from '@mantine/core'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import { Avatar, Center, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
@@ -11,6 +10,7 @@ import { toast } from 'react-toastify'
 import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 
 interface AlbumCardProps {
   album: Album
@@ -52,24 +52,33 @@ function AlbumCard({ album }: AlbumCardProps) {
     >
       <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
-          <AspectRatio>
-            <Image
-              onMouseEnter={() => setIsImageHovered(true)}
-              onMouseLeave={() => setIsImageHovered(false)}
-              radius={'10%'}
-              src={album.imageUrl}
-              fallbackSrc={albumPlaceholder}
-              alt={album.title}
-              onClick={handleClick}
-              onContextMenu={openMenu}
-              sx={(theme) => ({
-                cursor: 'pointer',
-                transition: '0.3s',
-                boxShadow: theme.shadows.xxl,
-                '&:hover': { boxShadow: theme.shadows.xxl_hover },
-              })}
-            />
-          </AspectRatio>
+          <Avatar
+            onMouseEnter={() => setIsImageHovered(true)}
+            onMouseLeave={() => setIsImageHovered(false)}
+            radius={'10%'}
+            w={'100%'}
+            h={'unset'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+            onClick={handleClick}
+            onContextMenu={openMenu}
+            sx={(theme) => ({
+              aspectRatio: 1,
+              cursor: 'pointer',
+              transition: '0.3s',
+              boxShadow: theme.shadows.xxl,
+              '&:hover': { boxShadow: theme.shadows.xxl_hover }
+            })}
+          >
+            <Center c={'white'}>
+              <CustomIconAlbumVinyl
+                aria-label={`default-icon-${album.title}`}
+                size={'100%'}
+                style={{ padding: '37%' }}
+              />
+            </Center>
+          </Avatar>
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>

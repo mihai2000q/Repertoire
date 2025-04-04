@@ -26,6 +26,7 @@ import CustomIconPlaylist2 from './CustomIconPlaylist2.tsx'
 import CustomIconQuestionMark from './CustomIconQuestionMark.tsx'
 import CustomIconDrums from './CustomIconDrums.tsx'
 import CustomIconBass from './CustomIconBass.tsx'
+import CustomIconUserAlt from './CustomIconUserAlt.tsx'
 
 describe.concurrent('Custom Icons', () => {
   it('should render Custom Icon Acoustic Guitar', () => {
@@ -126,6 +127,10 @@ describe.concurrent('Custom Icons', () => {
 
   it('should render Custom Icon Ukulele', () => {
     render(<CustomIconUkulele />)
+  })
+
+  it('should render Custom Icon User Alt', () => {
+    render(<CustomIconUserAlt />)
   })
 
   it('should render Custom Icon Violin', () => {

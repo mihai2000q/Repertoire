@@ -1,9 +1,9 @@
 import Song from '../../../types/models/Song.ts'
-import { AspectRatio, Image, Stack, Text } from '@mantine/core'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { openArtistDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../state/store.ts'
+import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 
 interface HomeSongCardProps {
   song: Song
@@ -30,23 +30,28 @@ function HomeSongCard({ song }: HomeSongCardProps) {
       style={{ transition: '0.25s', ...(isImageHovered && { transform: 'scale(1.05)' }) }}
       w={150}
     >
-      <AspectRatio>
-        <Image
-          onMouseEnter={() => setIsImageHovered(true)}
-          onMouseLeave={() => setIsImageHovered(false)}
-          radius={'lg'}
-          src={song.imageUrl ?? song.album?.imageUrl}
-          fallbackSrc={songPlaceholder}
-          alt={song.title}
-          onClick={handleClick}
-          sx={(theme) => ({
-            cursor: 'pointer',
-            transition: '0.25s',
-            boxShadow: theme.shadows.xl,
-            '&:hover': { boxShadow: theme.shadows.xxl }
-          })}
-        />
-      </AspectRatio>
+      <Avatar
+        onMouseEnter={() => setIsImageHovered(true)}
+        onMouseLeave={() => setIsImageHovered(false)}
+        radius={'lg'}
+        w={'100%'}
+        h={'unset'}
+        src={song.imageUrl ?? song.album?.imageUrl}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+        bg={'gray.5'}
+        onClick={handleClick}
+        sx={(theme) => ({
+          aspectRatio: 1,
+          cursor: 'pointer',
+          transition: '0.25s',
+          boxShadow: theme.shadows.xl,
+          '&:hover': { boxShadow: theme.shadows.xxl }
+        })}
+      >
+        <Center c={'white'}>
+          <CustomIconMusicNote aria-label={`default-icon-${song.title}`} size={50} />
+        </Center>
+      </Avatar>
 
       <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>

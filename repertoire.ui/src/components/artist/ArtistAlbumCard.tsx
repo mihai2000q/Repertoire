@@ -1,19 +1,30 @@
 import Album from '../../types/models/Album.ts'
-import {ActionIcon, alpha, Avatar, Checkbox, Group, Menu, Space, Stack, Text} from '@mantine/core'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
+import {
+  ActionIcon,
+  alpha,
+  Avatar,
+  Center,
+  Checkbox,
+  Group,
+  Menu,
+  Space,
+  Stack,
+  Text
+} from '@mantine/core'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
-import {IconCircleMinus, IconDots, IconEye, IconTrash} from '@tabler/icons-react'
+import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import Order from '../../types/Order.ts'
 import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
-import {useRemoveAlbumsFromArtistMutation} from "../../state/api/artistsApi.ts";
-import {useDeleteAlbumMutation} from "../../state/api/albumsApi.ts";
+import { useRemoveAlbumsFromArtistMutation } from '../../state/api/artistsApi.ts'
+import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
+import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -27,7 +38,8 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
 
-  const [removeAlbumsFromArtist, { isLoading: isRemoveLoading }] = useRemoveAlbumsFromArtistMutation()
+  const [removeAlbumsFromArtist, { isLoading: isRemoveLoading }] =
+    useRemoveAlbumsFromArtistMutation()
   const [deleteAlbum, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
 
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
@@ -111,7 +123,16 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
           onClick={handleClick}
           onContextMenu={openMenu}
         >
-          <Avatar radius={'8px'} src={album.imageUrl ?? albumPlaceholder} alt={album.title} />
+          <Avatar
+            radius={'md'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+          >
+            <Center c={'white'}>
+              <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={15} />
+            </Center>
+          </Avatar>
 
           <Space ml={'md'} />
 

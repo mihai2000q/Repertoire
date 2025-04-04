@@ -3,6 +3,7 @@ import {
   ActionIcon,
   alpha,
   Avatar,
+  Center,
   Grid,
   Group,
   Menu,
@@ -12,7 +13,6 @@ import {
   Text,
   Tooltip
 } from '@mantine/core'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
@@ -32,6 +32,7 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.
 import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
+import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface AlbumSongCardProps {
   song: Song
@@ -164,10 +165,15 @@ function AlbumSongCard({
                   </Text>
                 )}
                 <Avatar
-                  radius={'8px'}
-                  src={song.imageUrl ?? albumImageUrl ?? songPlaceholder}
-                  alt={song.title}
-                />
+                  radius={'md'}
+                  src={song.imageUrl ?? albumImageUrl}
+                  alt={(song.imageUrl ?? albumImageUrl) && song.title}
+                  bg={'gray.5'}
+                >
+                  <Center c={'white'}>
+                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+                  </Center>
+                </Avatar>
 
                 <Text fw={500} lineClamp={1}>
                   {song.title}

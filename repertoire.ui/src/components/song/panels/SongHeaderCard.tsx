@@ -1,20 +1,6 @@
 import Song from '../../../types/models/Song.ts'
-import {
-  AspectRatio,
-  Avatar,
-  Group,
-  HoverCard,
-  Image,
-  Menu,
-  Stack,
-  Text,
-  Title,
-  Tooltip
-} from '@mantine/core'
+import { Avatar, Center, Group, HoverCard, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import albumPlaceholder from '../../../assets/image-placeholder-1.jpg'
-import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import EditSongHeaderModal from '../modal/EditSongHeaderModal.tsx'
@@ -30,6 +16,9 @@ import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import titleFontSize from '../../../utils/titleFontSize.ts'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -81,20 +70,28 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
       }
     >
       <Group wrap={'nowrap'}>
-        <AspectRatio>
-          <Image
-            w={'max(12vw, 150px)'}
-            src={song.imageUrl ?? song.album?.imageUrl}
-            fallbackSrc={songPlaceholder}
-            alt={song.title}
-            radius={'10%'}
-            sx={(theme) => ({
-              boxShadow: theme.shadows.lg,
-              ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })
-            })}
-            onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
-          />
-        </AspectRatio>
+        <Avatar
+          radius={'10%'}
+          src={song.imageUrl ?? song.album?.imageUrl}
+          alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+          w={'max(12vw, 150px)'}
+          h={'unset'}
+          bg={'gray.5'}
+          style={(theme) => ({
+            boxShadow: theme.shadows.lg,
+            ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })
+          })}
+          onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
+        >
+          <Center c={'white'}>
+            <CustomIconMusicNoteEighth
+              aria-label={`default-icon-${song.title}`}
+              size={'100%'}
+              style={{ padding: '26%' }}
+            />
+          </Center>
+        </Avatar>
+
         <Stack gap={'xxs'}>
           <Text fw={500} inline>
             Song
@@ -107,9 +104,15 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
               <Group gap={'xs'} wrap={'nowrap'}>
                 <Avatar
                   size={35}
-                  src={song.artist.imageUrl ?? userPlaceholder}
-                  alt={song.artist.name}
-                />
+                  src={song.artist.imageUrl}
+                  alt={song.artist.imageUrl && song.artist.name}
+                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                  bg={'gray.0'}
+                >
+                  <Center c={'gray.7'}>
+                    <CustomIconUserAlt aria-label={`default-icon-${song.artist.name}`} size={15} />
+                  </Center>
+                </Avatar>
                 <Text
                   fw={700}
                   fz={'lg'}
@@ -117,7 +120,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                     cursor: 'pointer',
                     '&:hover': { textDecoration: 'underline' }
                   }}
-                  inline
+                  lh={'xxs'}
                   onClick={handleArtistClick}
                   lineClamp={1}
                 >
@@ -152,11 +155,19 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                   <HoverCard.Dropdown maw={300}>
                     <Group gap={'xs'} wrap={'nowrap'}>
                       <Avatar
-                        size={45}
                         radius={'md'}
-                        src={song.album.imageUrl ?? albumPlaceholder}
-                        alt={song.album.title}
-                      />
+                        size={45}
+                        src={song.album.imageUrl}
+                        alt={song.album.imageUrl && song.album.title}
+                        bg={'gray.5'}
+                      >
+                        <Center c={'white'}>
+                          <CustomIconAlbumVinyl
+                            aria-label={`default-icon-${song.album.imageUrl}`}
+                            size={18}
+                          />
+                        </Center>
+                      </Avatar>
                       <Stack gap={2}>
                         <Text fw={500} fz={'xs'} inline>
                           Album

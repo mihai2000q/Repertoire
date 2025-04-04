@@ -41,7 +41,7 @@ describe('Artist Song Card', () => {
       <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })

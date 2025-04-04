@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
+import {expect} from "vitest";
 
 describe('Playlist Header Card', () => {
   const playlist: Playlist = {
@@ -40,11 +41,7 @@ describe('Playlist Header Card', () => {
 
     reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
 
-    expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: playlist.title })).toHaveAttribute(
-      'src',
-      playlist.imageUrl
-    )
+    expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByText(playlist.description)).toBeInTheDocument()
     expect(screen.getByText(`${playlist.songs.length} songs`)).toBeInTheDocument()

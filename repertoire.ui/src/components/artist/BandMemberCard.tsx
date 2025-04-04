@@ -67,7 +67,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
             size={'lg'}
             color={bandMember.color}
             src={bandMember.imageUrl}
-            alt={bandMember.name}
+            alt={bandMember.imageUrl && bandMember.name}
             sx={(theme) => ({
               transition: '0.3s',
               cursor: 'pointer',
@@ -78,7 +78,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
             onContextMenu={openMenu}
             {...draggableProvided?.dragHandleProps}
           >
-            <IconUser size={25} />
+            <IconUser aria-label={`icon-${bandMember.name}`} size={25} />
           </Avatar>
         </Menu.Target>
 

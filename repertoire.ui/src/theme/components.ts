@@ -86,6 +86,7 @@ export const components = {
         '&[data-variant="add-new"]': {
           cursor: 'pointer',
           transition: '0.3s',
+          padding: 0,
           boxShadow: theme.shadows.xxl,
           color: theme.colors.primary[7],
           '&:hover': {

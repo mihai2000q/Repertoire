@@ -27,7 +27,8 @@ describe('Album Header Card', () => {
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1'
+    name: 'Artist 1',
+    imageUrl: 'something.png'
   }
 
   const handlers = [
@@ -55,8 +56,7 @@ describe('Album Header Card', () => {
       <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
     )
 
-    expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: album.title })).toHaveAttribute('src', album.imageUrl)
+    expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: album.title })).toBeInTheDocument()
     expect(screen.getByText('0 songs')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
@@ -95,10 +95,7 @@ describe('Album Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
-      'src',
-      localAlbum.imageUrl
-    )
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute('src', localAlbum.imageUrl)
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toHaveAttribute(
@@ -129,7 +126,7 @@ describe('Album Header Card', () => {
       <AlbumHeaderCard album={undefined} isUnknownAlbum={true} songsTotalCount={songsTotalCount} />
     )
 
-    expect(screen.getByRole('img', { name: 'unknown-album' })).toBeInTheDocument()
+    expect(screen.getByLabelText('icon-unknown-album')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
     expect(screen.getByText(`${songsTotalCount} songs`)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'more-menu' })).not.toBeInTheDocument()

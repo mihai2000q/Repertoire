@@ -14,7 +14,7 @@ describe('Home Album Card', () => {
   it('should render with minimal info', () => {
     reduxRender(<HomeAlbumCard album={album} />)
 
-    expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
     expect(screen.getByText(album.title)).toBeInTheDocument()
   })
 
@@ -44,7 +44,7 @@ describe('Home Album Card', () => {
 
     const [_, store] = reduxRender(<HomeAlbumCard album={album} />)
 
-    await user.click(screen.getByRole('img', { name: album.title }))
+    await user.click(screen.getByLabelText(`default-icon-${album.title}`))
     expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(album.id)
   })
