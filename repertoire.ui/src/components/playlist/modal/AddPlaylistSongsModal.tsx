@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   Button,
+  Center,
   Checkbox,
   Group,
   LoadingOverlay,
@@ -19,8 +20,8 @@ import { toast } from 'react-toastify'
 import { useAddSongsToPlaylistMutation } from '../../../state/api/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import { MouseEvent, useEffect } from 'react'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -163,9 +164,17 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     />
                     <Avatar
                       radius={'md'}
-                      src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
-                      alt={song.title}
-                    />
+                      src={song.imageUrl ?? song.album?.imageUrl}
+                      alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+                      bg={'gray.5'}
+                    >
+                      <Center c={'white'}>
+                        <CustomIconMusicNoteEighth
+                          aria-label={`default-icon-${song.title}`}
+                          size={18}
+                        />
+                      </Center>
+                    </Avatar>
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={'xxs'} wrap={'nowrap'}>
                         <Text fw={500} truncate={'end'}>

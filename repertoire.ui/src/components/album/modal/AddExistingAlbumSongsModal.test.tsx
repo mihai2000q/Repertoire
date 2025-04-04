@@ -106,7 +106,6 @@ describe('Add Existing Album Songs Modal', () => {
 
       expect(screen.getByRole('checkbox', { name: song.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: song.title })).not.toBeChecked()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (song.album?.imageUrl) {
@@ -114,6 +113,8 @@ describe('Add Existing Album Songs Modal', () => {
           'src',
           song.album.imageUrl
         )
+      } else {
+        expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
       }
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.artist) expect(within(renderedSong).getByText(song.artist.name)).toBeInTheDocument()

@@ -113,7 +113,7 @@ function Playlists() {
             style={{ aspectRatio: 1 }}
           >
             <Center h={'100%'}>
-              <IconPlaylistAdd size={40} />
+              <IconPlaylistAdd size={'100%'} style={{ padding: '33%' }} />
             </Center>
           </Card>
         )}

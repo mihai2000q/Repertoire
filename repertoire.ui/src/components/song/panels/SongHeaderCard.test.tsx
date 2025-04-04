@@ -15,8 +15,8 @@ import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
 import Album from '../../../types/models/Album.ts'
 import dayjs from 'dayjs'
-import WithTotalCountResponse from "../../../types/responses/WithTotalCountResponse.ts";
-import {SearchBase} from "../../../types/models/Search.ts";
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import { SearchBase } from '../../../types/models/Search.ts'
 
 describe('Song Header Card', () => {
   const song: Song = {
@@ -29,13 +29,15 @@ describe('Song Header Card', () => {
     ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    releaseDate: '2022-10-15'
+    releaseDate: '2022-10-15',
+    imageUrl: 'something2.png'
   }
 
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1'
+    name: 'Artist 1',
+    imageUrl: 'something3.png'
   }
 
   const handlers = [
@@ -51,7 +53,7 @@ describe('Song Header Card', () => {
         totalCount: 0
       }
       return HttpResponse.json(response)
-    }),
+    })
   ]
 
   const server = setupServer(...handlers)
@@ -65,7 +67,7 @@ describe('Song Header Card', () => {
   it('should render and display minimal info', async () => {
     reduxRouterRender(<SongHeaderCard song={song} />)
 
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: song.title })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()

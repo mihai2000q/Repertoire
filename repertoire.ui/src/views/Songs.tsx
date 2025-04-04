@@ -97,8 +97,7 @@ function Songs(): ReactElement {
             onClick={openAddNewSongModal}
           >
             <Center h={'100%'}>
-              <IconMusicPlus size={40} />
-              <Box pb={'100%'} />
+              <IconMusicPlus size={'100%'} style={{ padding: '35%' }} />
             </Center>
           </Card>
         )}

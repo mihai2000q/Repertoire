@@ -105,7 +105,7 @@ function Artists() {
             style={{ aspectRatio: 1 }}
           >
             <Center h={'100%'}>
-              <IconUserPlus size={40} />
+              <IconUserPlus size={'100%'} style={{ padding: '29%' }} />
             </Center>
           </Card>
         )}

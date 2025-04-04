@@ -48,8 +48,7 @@ describe('Artist Header Card', () => {
       />
     )
 
-    expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
+    expect(screen.getByLabelText(`default-icon-${artist.name}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
     expect(
       screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)
@@ -69,6 +68,7 @@ describe('Artist Header Card', () => {
     const localArtist: Artist = {
       ...artist,
       isBand: true,
+      imageUrl: 'something.png',
       songs: [
         {
           ...emptySong,
@@ -122,7 +122,7 @@ describe('Artist Header Card', () => {
       />
     )
 
-    expect(screen.getByRole('img', { name: 'unknown-artist' })).toBeInTheDocument()
+    expect(screen.getByLabelText('icon-unknown-artist')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /unknown/i })).toBeInTheDocument()
     expect(
       screen.getByText(`${albumsTotalCount} albums • ${songsTotalCount} songs`)

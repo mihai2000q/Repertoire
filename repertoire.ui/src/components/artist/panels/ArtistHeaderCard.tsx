@@ -1,8 +1,6 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Avatar, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
-import { IconEdit, IconInfoSquareRounded, IconTrash } from '@tabler/icons-react'
-import unknownPlaceholder from '../../../assets/unknown-placeholder.png'
-import artistPlaceholder from '../../../assets/user-placeholder.jpg'
+import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import ArtistInfoModal from '../modal/ArtistInfoModal.tsx'
@@ -15,6 +13,7 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
 import lowerTitleFontSize from '../../../utils/lowerTitleFontSize.ts'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -71,15 +70,33 @@ function ArtistHeaderCard({
     >
       <Group wrap={'nowrap'}>
         <Avatar
-          src={isUnknownArtist ? unknownPlaceholder : (artist?.imageUrl ?? artistPlaceholder)}
+          src={isUnknownArtist ? null : artist.imageUrl}
+          alt={!isUnknownArtist && artist.imageUrl ? artist.name : null}
           size={'max(11vw, 125px)'}
-          alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
-          sx={(theme) => ({
+          bg={'white'}
+          style={(theme) => ({
             boxShadow: theme.shadows.lg,
             ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })
           })}
           onClick={!isUnknownArtist && artist.imageUrl ? openImage : undefined}
-        />
+        >
+          <Center c={isUnknownArtist ? 'gray.6' : 'gray.7'}>
+            {isUnknownArtist ? (
+              <IconQuestionMark
+                aria-label={'icon-unknown-artist'}
+                strokeWidth={3}
+                size={'100%'}
+                style={{ padding: '12%' }}
+              />
+            ) : (
+              <CustomIconUserAlt
+                aria-label={`default-icon-${artist.name}`}
+                size={'100%'}
+                style={{ padding: '28%' }}
+              />
+            )}
+          </Center>
+        </Avatar>
         <Stack gap={'xxs'}>
           {!isUnknownArtist && (
             <Text fw={500} inline>
@@ -91,12 +108,12 @@ function ArtistHeaderCard({
               Unknown
             </Title>
           ) : (
-            <Title order={1} fw={700} lineClamp={2} fz={lowerTitleFontSize(artist?.name)}>
-              {artist?.name}
+            <Title order={1} fw={700} lineClamp={2} fz={lowerTitleFontSize(artist.name)}>
+              {artist.name}
             </Title>
           )}
           <Text fw={500} fz={'sm'} c={'dimmed'}>
-            {!isUnknownArtist && artist?.isBand
+            {!isUnknownArtist && artist.isBand
               ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
               : ''}
             {albumsTotalCount} album{plural(albumsTotalCount)} • {songsTotalCount} song

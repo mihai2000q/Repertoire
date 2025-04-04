@@ -1,12 +1,11 @@
 import {
   ActionIcon,
-  AspectRatio,
   Avatar,
   Box,
+  Center,
   Divider,
   Grid,
   Group,
-  Image,
   Menu,
   Stack,
   Text,
@@ -16,8 +15,6 @@ import {
 import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/api/albumsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
-import imagePlaceholder from '../../../assets/image-placeholder-1.jpg'
-import songPlaceholder from '../../../assets/image-placeholder-1.jpg'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
@@ -25,11 +22,13 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
-import userPlaceholder from '../../../assets/user-placeholder.jpg'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
 import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 function AlbumDrawer() {
   const navigate = useNavigate()
@@ -93,9 +92,23 @@ function AlbumDrawer() {
           onMouseLeave={() => setIsHovered(false)}
           pos={'relative'}
         >
-          <AspectRatio ratio={4 / 3}>
-            <Image src={album.imageUrl} fallbackSrc={imagePlaceholder} alt={album.title} />
-          </AspectRatio>
+          <Avatar
+            radius={0}
+            w={'100%'}
+            h={'unset'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+            style={{ aspectRatio: 4 / 3 }}
+          >
+            <Center c={'white'}>
+              <CustomIconAlbumVinyl
+                aria-label={`default-icon-${album.title}`}
+                size={'100%'}
+                style={{ padding: '35%' }}
+              />
+            </Center>
+          </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
             <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
@@ -136,9 +149,18 @@ function AlbumDrawer() {
                 <Group gap={6} wrap={'nowrap'}>
                   <Avatar
                     size={28}
-                    src={album.artist.imageUrl ?? userPlaceholder}
-                    alt={album.artist.name}
-                  />
+                    src={album.artist.imageUrl}
+                    alt={album.artist.imageUrl && album.artist.name}
+                    style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                    bg={'gray.0'}
+                  >
+                    <Center c={'gray.7'}>
+                      <CustomIconUserAlt
+                        aria-label={`default-icon-${album.artist.name}`}
+                        size={13}
+                      />
+                    </Center>
+                  </Avatar>
                   <Text fw={600} fz={'lg'} lineClamp={1}>
                     {album.artist.name}
                   </Text>
@@ -175,11 +197,19 @@ function AlbumDrawer() {
                 </Grid.Col>
                 <Grid.Col span={1.4}>
                   <Avatar
-                    radius={'8px'}
+                    radius={'md'}
                     size={28}
-                    src={song.imageUrl ?? album.imageUrl ?? songPlaceholder}
-                    alt={song.title}
-                  />
+                    src={song.imageUrl ?? album.imageUrl}
+                    alt={(song.imageUrl ?? album.imageUrl) && song.title}
+                    bg={'gray.5'}
+                  >
+                    <Center c={'white'}>
+                      <CustomIconMusicNoteEighth
+                        aria-label={`default-icon-${song.title}`}
+                        size={16}
+                      />
+                    </Center>
+                  </Avatar>
                 </Grid.Col>
                 <Grid.Col span={9.6}>
                   <Text fw={500} truncate={'end'}>

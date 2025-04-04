@@ -24,7 +24,7 @@ describe('Artist Card', () => {
   it('should render with minimal info', () => {
     reduxRouterRender(<ArtistCard artist={artist} />)
 
-    expect(screen.getByRole('img', { name: artist.name })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${artist.name}`)).toBeInTheDocument()
     expect(screen.getByText(artist.name)).toBeInTheDocument()
   })
 
@@ -51,7 +51,7 @@ describe('Artist Card', () => {
 
     await user.pointer({
       keys: '[MouseRight>]',
-      target: screen.getByRole('img', { name: artist.name })
+      target: screen.getByLabelText(`default-icon-${artist.name}`)
     })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
@@ -70,7 +70,7 @@ describe('Artist Card', () => {
 
       await user.pointer({
         keys: '[MouseRight>]',
-        target: screen.getByRole('img', { name: artist.name })
+        target: screen.getByLabelText(`default-icon-${artist.name}`)
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
@@ -87,7 +87,7 @@ describe('Artist Card', () => {
 
     reduxRouterRender(<ArtistCard artist={artist} />)
 
-    await user.click(screen.getByRole('img', { name: artist.name }))
+    await user.click(screen.getByLabelText(`default-icon-${artist.name}`))
     expect(window.location.pathname).toBe(`/artist/${artist.id}`)
   })
 })

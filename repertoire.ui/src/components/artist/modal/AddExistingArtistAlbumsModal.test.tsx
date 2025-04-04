@@ -88,12 +88,13 @@ describe('Add Existing Artist Albums Modal', () => {
 
       expect(screen.getByRole('checkbox', { name: album.title })).toBeInTheDocument()
       expect(screen.getByRole('checkbox', { name: album.title })).not.toBeChecked()
-      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
       if (album.imageUrl) {
         expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
           'src',
           album.imageUrl
         )
+      } else {
+        expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
       }
       expect(screen.getByText(album.title)).toBeInTheDocument()
     }

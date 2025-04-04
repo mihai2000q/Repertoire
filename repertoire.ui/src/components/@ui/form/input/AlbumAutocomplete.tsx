@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Center,
   Combobox,
   Group,
   HoverCard,
@@ -10,7 +11,6 @@ import {
   TextInput,
   useCombobox
 } from '@mantine/core'
-import albumPlaceholder from '../../../../assets/image-placeholder-1.jpg'
 import { ChangeEvent, FocusEvent } from 'react'
 import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'
@@ -18,6 +18,7 @@ import { useDebouncedState } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
 import SearchType from '../../../../utils/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
+import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 
 interface AlbumsAutocompleteProps {
   album: AlbumSearch | null
@@ -55,21 +56,19 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
   const AlbumHoverCard = () => (
     <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
       <HoverCard.Target>
-        <Avatar
-          radius={'md'}
-          size={23}
-          src={album.imageUrl ?? albumPlaceholder}
-          alt={album.title}
-        />
+        <Avatar radius={'md'} size={23} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+          <Center c={'white'}>
+            <CustomIconAlbumVinyl size={11} />
+          </Center>
+        </Avatar>
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar
-            size={'lg'}
-            radius={'md'}
-            src={album.imageUrl ?? albumPlaceholder}
-            alt={album.title}
-          />
+          <Avatar radius={'md'} size={'lg'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+            <Center c={'white'}>
+              <CustomIconAlbumVinyl size={25} />
+            </Center>
+          </Avatar>
           <Stack gap={'xxs'}>
             <Text inline fw={500} lineClamp={2}>
               {album.title}
@@ -146,11 +145,16 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                 >
                   <Group gap={'xs'} wrap={'nowrap'}>
                     <Avatar
-                      size={'sm'}
                       radius={'md'}
-                      src={album.imageUrl ?? albumPlaceholder}
+                      size={'sm'}
+                      src={album.imageUrl}
                       alt={album.title}
-                    />
+                      bg={'gray.5'}
+                    >
+                      <Center c={'white'}>
+                        <CustomIconAlbumVinyl size={12} />
+                      </Center>
+                    </Avatar>
                     <Stack gap={0}>
                       <Text inline fw={500} lineClamp={2}>
                         {album.title}

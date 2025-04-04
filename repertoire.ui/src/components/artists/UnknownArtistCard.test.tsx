@@ -7,7 +7,7 @@ describe('Unknown Artist Card', () => {
   it('should render', () => {
     routerRender(<UnknownArtistCard />)
 
-    expect(screen.getByRole('img', { name: 'unknown-artist' })).toBeInTheDocument()
+    expect(screen.getByLabelText('icon-unknown-artist')).toBeInTheDocument()
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
   })
 
@@ -16,7 +16,7 @@ describe('Unknown Artist Card', () => {
 
     routerRender(<UnknownArtistCard />)
 
-    await user.click(screen.getByRole('img', { name: 'unknown-artist' }))
+    await user.click(screen.getByLabelText('icon-unknown-artist'))
 
     expect(window.location.pathname).toBe('/artist/unknown')
   })

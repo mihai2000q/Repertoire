@@ -1,4 +1,4 @@
-import { IconSearch } from '@tabler/icons-react'
+import { IconPlaylist, IconSearch } from '@tabler/icons-react'
 import {
   alpha,
   Avatar,
@@ -21,10 +21,6 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../state/api/searchApi.ts'
-import artistPlaceholder from '../../assets/user-placeholder.jpg'
-import albumPlaceholder from '../../assets/image-placeholder-1.jpg'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
-import playlistPlaceholder from '../../assets/image-placeholder-1.jpg'
 import { AlbumSearch, ArtistSearch, PlaylistSearch, SongSearch } from '../../types/models/Search.ts'
 import { useNavigate } from 'react-router-dom'
 import SearchType from '../../utils/enums/SearchType.ts'
@@ -33,6 +29,7 @@ import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../@ui/icons/CustomIconPlaylist2.tsx'
 import useSearchQueryCacheInvalidation from '../../hooks/useSearchQueryCacheInvalidation.ts'
+import CustomIconUserAlt from "../@ui/icons/CustomIconUserAlt.tsx";
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
@@ -46,7 +43,17 @@ const optionProps: MantineStyleProps = {
   mx: 'xs'
 }
 
-const AvatarIndicator = ({ src, alt, icon }: { src: string; alt: string; icon: ReactNode }) => (
+const AvatarIndicator = ({
+  src,
+  alt,
+  indicatorIcon,
+  defaultIcon
+}: {
+  src: string
+  alt: string
+  indicatorIcon: ReactNode
+  defaultIcon: ReactNode
+}) => (
   <Indicator
     position={'bottom-end'}
     color={'transparent'}
@@ -57,7 +64,7 @@ const AvatarIndicator = ({ src, alt, icon }: { src: string; alt: string; icon: R
         style={(theme) => ({ borderRadius: '50%', boxShadow: theme.shadows.md })}
         p={3}
       >
-        {icon}
+        {indicatorIcon}
       </Center>
     }
   >
@@ -65,8 +72,11 @@ const AvatarIndicator = ({ src, alt, icon }: { src: string; alt: string; icon: R
       radius={'md'}
       src={src}
       alt={alt}
+      bg={'gray.5'}
       style={(theme) => ({ boxShadow: theme.shadows.sm })}
-    />
+    >
+      <Center c={'white'}>{defaultIcon}</Center>
+    </Avatar>
   </Indicator>
 )
 
@@ -119,10 +129,15 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar
-          src={artist.imageUrl ?? artistPlaceholder}
+          src={artist.imageUrl}
           alt={artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-        />
+          bg={'gray.0'}
+        >
+          <Center c={'gray.7'}>
+            <CustomIconUserAlt size={17} />
+          </Center>
+        </Avatar>
         <Highlight
           highlight={search}
           highlightStyles={{ fontWeight: 800 }}
@@ -146,9 +161,10 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
-          src={album.imageUrl ?? albumPlaceholder}
+          src={album.imageUrl}
           alt={album.title}
-          icon={<CustomIconAlbumVinyl size={12} />}
+          indicatorIcon={<CustomIconAlbumVinyl size={12} />}
+          defaultIcon={<CustomIconAlbumVinyl size={16} />}
         />
         <Stack gap={0}>
           <Highlight
@@ -188,9 +204,10 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
-          src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
+          src={song.imageUrl ?? song.album?.imageUrl}
           alt={song.title}
-          icon={<CustomIconMusicNoteEighth size={12} />}
+          indicatorIcon={<CustomIconMusicNoteEighth size={12} />}
+          defaultIcon={<CustomIconMusicNoteEighth size={20} />}
         />
         <Stack gap={0}>
           <Highlight
@@ -230,9 +247,10 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
-          src={playlist.imageUrl ?? playlistPlaceholder}
+          src={playlist.imageUrl}
           alt={playlist.title}
-          icon={<CustomIconPlaylist2 size={12} />}
+          indicatorIcon={<CustomIconPlaylist2 size={12} />}
+          defaultIcon={<IconPlaylist size={18} />}
         />
         <Highlight
           highlight={search}

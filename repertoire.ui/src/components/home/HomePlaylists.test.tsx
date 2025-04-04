@@ -45,12 +45,13 @@ describe('Home Playlists', () => {
     expect(screen.getByText(/playlists/i)).toBeInTheDocument()
     for (const playlist of playlists) {
       expect(await screen.findByText(playlist.title)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
       if (playlist.imageUrl)
         expect(screen.getByRole('img', { name: playlist.title })).toHaveAttribute(
           'src',
           playlist.imageUrl
         )
+      else
+        expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     }
   })
 

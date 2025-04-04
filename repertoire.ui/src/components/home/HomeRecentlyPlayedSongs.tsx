@@ -17,10 +17,10 @@ import { useAppDispatch } from '../../state/store.ts'
 import { useHover } from '@mantine/hooks'
 import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent } from 'react'
-import songPlaceholder from '../../assets/image-placeholder-1.jpg'
 import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
 import dayjs from 'dayjs'
 import Song from '../../types/models/Song.ts'
+import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 function Loader() {
   return (
@@ -88,10 +88,19 @@ function LocalSongCard({ song }: { song: Song }) {
     >
       <Avatar
         radius={'md'}
-        src={song.imageUrl ?? song.album?.imageUrl ?? songPlaceholder}
-        alt={song.title}
-        style={(theme) => ({ boxShadow: theme.shadows.sm })}
-      />
+        src={song.imageUrl ?? song.album?.imageUrl}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+        bg={'gray.5'}
+        onClick={handleClick}
+        sx={(theme) => ({
+          aspectRatio: 1,
+          boxShadow: theme.shadows.sm
+        })}
+      >
+        <Center c={'white'}>
+          <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
+        </Center>
+      </Avatar>
 
       <Grid flex={1} columns={12} align={'center'}>
         <Grid.Col span={{ base: 5, md: 8, xxl: 5 }}>
@@ -175,7 +184,7 @@ function HomeRecentlyPlayedSongs() {
 
         <ScrollArea scrollbars={'y'} scrollbarSize={7}>
           <Stack gap={'xxs'} h={'100%'}>
-            {(isLoading || !songs) ? (
+            {isLoading || !songs ? (
               <Loader />
             ) : (
               songs.models.map((song) => <LocalSongCard key={song.id} song={song} />)
