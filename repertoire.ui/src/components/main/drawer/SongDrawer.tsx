@@ -43,7 +43,7 @@ import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuIt
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconUserAlt from "../../@ui/icons/CustomIconUserAlt.tsx";
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -126,12 +126,16 @@ function SongDrawer() {
             w={'100%'}
             h={'unset'}
             src={song.imageUrl ?? song.album?.imageUrl}
-            alt={song.title}
+            alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
             bg={'gray.5'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'white'}>
-              <CustomIconMusicNote size={'100%'} style={{ padding: '35%' }} />
+              <CustomIconMusicNote
+                aria-label={`default-icon-${song.title}`}
+                size={'100%'}
+                style={{ padding: '35%' }}
+              />
             </Center>
           </Avatar>
 
@@ -176,12 +180,12 @@ function SongDrawer() {
                 <Avatar
                   size={28}
                   src={song.artist.imageUrl}
-                  alt={song.artist.name}
+                  alt={song.artist.imageUrl && song.artist.name}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
                   bg={'gray.0'}
                 >
                   <Center c={'gray.7'}>
-                    <CustomIconUserAlt size={13} />
+                    <CustomIconUserAlt aria-label={`default-icon-${song.artist.name}`} size={13} />
                   </Center>
                 </Avatar>
                 <Text
@@ -227,11 +231,14 @@ function SongDrawer() {
                         radius={'md'}
                         size={45}
                         src={song.album.imageUrl}
-                        alt={song.album.title}
+                        alt={song.album.imageUrl && song.album.title}
                         bg={'gray.5'}
                       >
                         <Center c={'white'}>
-                          <CustomIconAlbumVinyl size={18} />
+                          <CustomIconAlbumVinyl
+                            aria-label={`default-icon-${song.album.title}`}
+                            size={18}
+                          />
                         </Center>
                       </Avatar>
                       <Stack gap={2}>

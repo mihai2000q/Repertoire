@@ -133,11 +133,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
           <Avatar
             radius={'md'}
             src={song.imageUrl ?? song.album?.imageUrl}
-            alt={song.title}
+            alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
             bg={'gray.5'}
           >
             <Center c={'white'}>
-              <CustomIconMusicNoteEighth size={20} />
+              <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
             </Center>
           </Avatar>
 

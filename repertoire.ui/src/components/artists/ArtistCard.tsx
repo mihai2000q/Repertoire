@@ -59,7 +59,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
             onMouseEnter={() => setIsAvatarHovered(true)}
             onMouseLeave={() => setIsAvatarHovered(false)}
             src={artist.imageUrl}
-            alt={artist.name}
+            alt={artist.imageUrl && artist.name}
             w={'100%'}
             h={'unset'}
             bg={'gray.0'}
@@ -73,7 +73,11 @@ function ArtistCard({ artist }: ArtistCardProps) {
             onContextMenu={openMenu}
           >
             <Center c={'gray.7'}>
-              <CustomIconUserAlt size={'100%'} style={{ padding: '27%' }} />
+              <CustomIconUserAlt
+                aria-label={`default-icon-${artist.name}`}
+                size={'100%'}
+                style={{ padding: '27%' }}
+              />
             </Center>
           </Avatar>
         </Menu.Target>

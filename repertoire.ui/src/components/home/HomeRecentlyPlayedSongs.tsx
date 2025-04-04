@@ -89,7 +89,7 @@ function LocalSongCard({ song }: { song: Song }) {
       <Avatar
         radius={'md'}
         src={song.imageUrl ?? song.album?.imageUrl}
-        alt={song.title}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
         bg={'gray.5'}
         onClick={handleClick}
         sx={(theme) => ({
@@ -98,7 +98,7 @@ function LocalSongCard({ song }: { song: Song }) {
         })}
       >
         <Center c={'white'}>
-          <CustomIconMusicNoteEighth size={18} />
+          <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
         </Center>
       </Avatar>
 

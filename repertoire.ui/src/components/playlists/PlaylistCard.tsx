@@ -49,7 +49,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
             w={'100%'}
             h={'unset'}
             src={playlist.imageUrl}
-            alt={playlist.title}
+            alt={playlist.imageUrl && playlist.title}
             bg={'gray.5'}
             onClick={handleClick}
             onContextMenu={openMenu}
@@ -62,7 +62,11 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
             })}
           >
             <Center c={'white'}>
-              <IconPlaylist size={'100%'} style={{ padding: '33%' }} />
+              <IconPlaylist
+                aria-label={`default-icon-${playlist.title}`}
+                size={'100%'}
+                style={{ padding: '33%' }}
+              />
             </Center>
           </Avatar>
         </Menu.Target>

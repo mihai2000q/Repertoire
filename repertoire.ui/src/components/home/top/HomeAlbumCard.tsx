@@ -37,7 +37,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
         w={'100%'}
         h={'unset'}
         src={album.imageUrl}
-        alt={album.title}
+        alt={album.imageUrl && album.title}
         bg={'gray.5'}
         onClick={handleClick}
         sx={(theme) => ({
@@ -49,7 +49,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
         })}
       >
         <Center c={'white'}>
-          <CustomIconAlbumVinyl size={40} />
+          <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={40} />
         </Center>
       </Avatar>
 

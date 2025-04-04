@@ -181,9 +181,17 @@ function AddExistingArtistAlbumsModal({
                       onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
                       pr={'sm'}
                     />
-                    <Avatar radius={'md'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+                    <Avatar
+                      radius={'md'}
+                      src={album.imageUrl}
+                      alt={album.imageUrl && album.title}
+                      bg={'gray.5'}
+                    >
                       <Center c={'white'}>
-                        <CustomIconAlbumVinyl size={14} />
+                        <CustomIconAlbumVinyl
+                          aria-label={`default-icon-${album.title}`}
+                          size={14}
+                        />
                       </Center>
                     </Avatar>
                     <Text fw={500} lineClamp={2}>

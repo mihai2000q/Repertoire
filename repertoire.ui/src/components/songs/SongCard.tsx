@@ -108,7 +108,7 @@ function SongCard({ song }: SongCardProps) {
             <Avatar
               radius={'10%'}
               src={song.imageUrl ?? song.album?.imageUrl}
-              alt={song.title}
+              alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
               w={'100%'}
               h={'unset'}
               bg={'gray.5'}
@@ -118,7 +118,11 @@ function SongCard({ song }: SongCardProps) {
               })}
             >
               <Center c={'white'}>
-                <CustomIconMusicNoteEighth size={'100%'} style={{ padding: '30%' }} />
+                <CustomIconMusicNoteEighth
+                  aria-label={`default-icon-${song.title}`}
+                  size={'100%'}
+                  style={{ padding: '30%' }}
+                />
               </Center>
             </Avatar>
 

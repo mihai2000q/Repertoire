@@ -39,7 +39,7 @@ function UnknownArtistCard() {
       >
         <Center c={'gray.6'}>
           <IconQuestionMark
-            aria-label={'unknown-album'}
+            aria-label={'icon-unknown-album'}
             size={'100%'}
             strokeWidth={3}
             style={{ padding: '15%' }}

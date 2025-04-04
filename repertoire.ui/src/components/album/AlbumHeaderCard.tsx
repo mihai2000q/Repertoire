@@ -70,7 +70,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
       <Group wrap={'nowrap'}>
         <Avatar
           src={isUnknownAlbum ? null : album.imageUrl}
-          alt={isUnknownAlbum ? 'unknown-album' : album.title}
+          alt={!isUnknownAlbum && album.imageUrl ? album.title : null}
           radius={'10%'}
           w={'max(12vw, 150px)'}
           h={'unset'}
@@ -84,9 +84,18 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
         >
           <Center c={isUnknownAlbum ? 'gray.6' : 'white'}>
             {isUnknownAlbum ? (
-              <IconQuestionMark strokeWidth={3} size={'100%'} style={{ padding: '12%' }} />
+              <IconQuestionMark
+                aria-label={'icon-unknown-album'}
+                strokeWidth={3}
+                size={'100%'}
+                style={{ padding: '12%' }}
+              />
             ) : (
-              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '33%' }} />
+              <CustomIconAlbumVinyl
+                aria-label={`default-icon-${album.title}`}
+                size={'100%'}
+                style={{ padding: '33%' }}
+              />
             )}
           </Center>
         </Avatar>
@@ -112,12 +121,12 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                   <Avatar
                     size={35}
                     src={album.artist.imageUrl}
-                    alt={album.artist.name}
+                    alt={album.artist.imageUrl && album.artist.name}
                     style={(theme) => ({ boxShadow: theme.shadows.sm })}
                     bg={'gray.0'}
                   >
                     <Center c={'gray.7'}>
-                      <CustomIconUserAlt size={15} />
+                      <CustomIconUserAlt size={15} aria-label={`default-icon-${album.artist.name}`} />
                     </Center>
                   </Avatar>
                   <Text

@@ -167,11 +167,11 @@ function AlbumSongCard({
                 <Avatar
                   radius={'md'}
                   src={song.imageUrl ?? albumImageUrl}
-                  alt={song.title}
+                  alt={(song.imageUrl ?? albumImageUrl) && song.title}
                   bg={'gray.5'}
                 >
                   <Center c={'white'}>
-                    <CustomIconMusicNoteEighth size={20} />
+                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
                   </Center>
                 </Avatar>
 

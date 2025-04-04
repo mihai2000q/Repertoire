@@ -5,6 +5,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
+import {expect} from "vitest";
 
 describe('Playlist Card', () => {
   const playlist: Playlist = {
@@ -27,7 +28,7 @@ describe('Playlist Card', () => {
   it('should render minimal info', () => {
     reduxRouterRender(<PlaylistCard playlist={playlist} />)
 
-    expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     expect(screen.getByText(playlist.title)).toBeInTheDocument()
   })
 
@@ -51,7 +52,7 @@ describe('Playlist Card', () => {
 
     await user.pointer({
       keys: '[MouseRight>]',
-      target: screen.getByRole('img', { name: playlist.title })
+      target: screen.getByLabelText(`default-icon-${playlist.title}`)
     })
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
@@ -70,7 +71,7 @@ describe('Playlist Card', () => {
 
       await user.pointer({
         keys: '[MouseRight>]',
-        target: screen.getByRole('img', { name: playlist.title })
+        target: screen.getByLabelText(`default-icon-${playlist.title}`)
       })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
@@ -87,7 +88,7 @@ describe('Playlist Card', () => {
 
     reduxRouterRender(<PlaylistCard playlist={playlist} />)
 
-    await user.click(screen.getByRole('img', { name: playlist.title }))
+    await user.click(screen.getByLabelText(`default-icon-${playlist.title}`))
     expect(window.location.pathname).toBe(`/playlist/${playlist.id}`)
   })
 })

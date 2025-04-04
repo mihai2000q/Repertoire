@@ -181,11 +181,11 @@ function AddExistingAlbumSongsModal({
                     <Avatar
                       radius={'md'}
                       src={song.imageUrl ?? song.album?.imageUrl}
-                      alt={song.title}
+                      alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
                       bg={'gray.5'}
                     >
                       <Center c={'white'}>
-                        <CustomIconMusicNoteEighth size={18} />
+                        <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
                       </Center>
                     </Avatar>
                     <Stack gap={0}>

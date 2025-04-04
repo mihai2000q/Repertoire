@@ -73,7 +73,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
         <Avatar
           radius={'10%'}
           src={song.imageUrl ?? song.album?.imageUrl}
-          alt={song.title}
+          alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
           w={'max(12vw, 150px)'}
           h={'unset'}
           bg={'gray.5'}
@@ -84,7 +84,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           onClick={(song.imageUrl || song.album?.imageUrl) && openImage}
         >
           <Center c={'white'}>
-            <CustomIconMusicNoteEighth size={'100%'} style={{ padding: '26%' }} />
+            <CustomIconMusicNoteEighth
+              aria-label={`default-icon-${song.title}`}
+              size={'100%'}
+              style={{ padding: '26%' }}
+            />
           </Center>
         </Avatar>
 
@@ -101,12 +105,12 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                 <Avatar
                   size={35}
                   src={song.artist.imageUrl}
-                  alt={song.artist.name}
+                  alt={song.artist.imageUrl && song.artist.name}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
                   bg={'gray.0'}
                 >
                   <Center c={'gray.7'}>
-                    <CustomIconUserAlt size={15} />
+                    <CustomIconUserAlt aria-label={`default-icon-${song.artist.name}`} size={15} />
                   </Center>
                 </Avatar>
                 <Text
@@ -154,11 +158,14 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         radius={'md'}
                         size={45}
                         src={song.album.imageUrl}
-                        alt={song.album.title}
+                        alt={song.album.imageUrl && song.album.title}
                         bg={'gray.5'}
                       >
                         <Center c={'white'}>
-                          <CustomIconAlbumVinyl size={18} />
+                          <CustomIconAlbumVinyl
+                            aria-label={`default-icon-${song.album.imageUrl}`}
+                            size={18}
+                          />
                         </Center>
                       </Avatar>
                       <Stack gap={2}>

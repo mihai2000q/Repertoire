@@ -59,7 +59,7 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
         ref={ref}
         size={'lg'}
         src={artist.imageUrl}
-        alt={artist.name}
+        alt={artist.imageUrl && artist.name}
         bg={'gray.0'}
         sx={(theme) => ({
           cursor: 'pointer',
@@ -70,7 +70,7 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
         onClick={handleClick}
       >
         <Center c={'gray.7'}>
-          <CustomIconUserAlt size={25} />
+          <CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={25} />
         </Center>
       </Avatar>
 

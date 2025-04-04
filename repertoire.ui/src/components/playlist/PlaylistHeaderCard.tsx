@@ -54,7 +54,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
       <Group wrap={'nowrap'}>
         <Avatar
           src={playlist.imageUrl}
-          alt={playlist.title}
+          alt={playlist.imageUrl && playlist.title}
           w={'max(12vw, 150px)'}
           h={'unset'}
           radius={'10%'}
@@ -66,7 +66,11 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
           onClick={playlist.imageUrl && openImage}
         >
           <Center c={'white'}>
-            <IconPlaylist size={'100%'} style={{ padding: '28%' }} />
+            <IconPlaylist
+              aria-label={`default-icon-${playlist.title}`}
+              size={'100%'}
+              style={{ padding: '28%' }}
+            />
           </Center>
         </Avatar>
 

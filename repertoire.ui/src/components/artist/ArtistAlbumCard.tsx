@@ -123,9 +123,14 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
           onClick={handleClick}
           onContextMenu={openMenu}
         >
-          <Avatar radius={'md'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+          <Avatar
+            radius={'md'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+          >
             <Center c={'white'}>
-              <CustomIconAlbumVinyl size={15} />
+              <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={15} />
             </Center>
           </Avatar>
 

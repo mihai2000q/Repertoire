@@ -27,8 +27,8 @@ import plural from '../../../utils/plural.ts'
 import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import CustomIconAlbumVinyl from "../../@ui/icons/CustomIconAlbumVinyl.tsx";
-import CustomIconUserAlt from "../../@ui/icons/CustomIconUserAlt.tsx";
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 function AlbumDrawer() {
   const navigate = useNavigate()
@@ -97,12 +97,16 @@ function AlbumDrawer() {
             w={'100%'}
             h={'unset'}
             src={album.imageUrl}
-            alt={album.title}
+            alt={album.imageUrl && album.title}
             bg={'gray.5'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'white'}>
-              <CustomIconAlbumVinyl size={'100%'} style={{ padding: '35%' }} />
+              <CustomIconAlbumVinyl
+                aria-label={`default-icon-${album.title}`}
+                size={'100%'}
+                style={{ padding: '35%' }}
+              />
             </Center>
           </Avatar>
 
@@ -146,12 +150,15 @@ function AlbumDrawer() {
                   <Avatar
                     size={28}
                     src={album.artist.imageUrl}
-                    alt={album.artist.name}
+                    alt={album.artist.imageUrl && album.artist.name}
                     style={(theme) => ({ boxShadow: theme.shadows.sm })}
                     bg={'gray.0'}
                   >
                     <Center c={'gray.7'}>
-                      <CustomIconUserAlt size={13} />
+                      <CustomIconUserAlt
+                        aria-label={`default-icon-${album.artist.name}`}
+                        size={13}
+                      />
                     </Center>
                   </Avatar>
                   <Text fw={600} fz={'lg'} lineClamp={1}>
@@ -193,11 +200,14 @@ function AlbumDrawer() {
                     radius={'md'}
                     size={28}
                     src={song.imageUrl ?? album.imageUrl}
-                    alt={song.title}
+                    alt={(song.imageUrl ?? album.imageUrl) && song.title}
                     bg={'gray.5'}
                   >
                     <Center c={'white'}>
-                      <CustomIconMusicNoteEighth size={16} />
+                      <CustomIconMusicNoteEighth
+                        aria-label={`default-icon-${song.title}`}
+                        size={16}
+                      />
                     </Center>
                   </Avatar>
                 </Grid.Col>

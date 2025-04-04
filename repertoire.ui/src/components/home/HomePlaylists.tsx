@@ -43,7 +43,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
         w={60}
         h={'unset'}
         src={playlist.imageUrl}
-        alt={playlist.title}
+        alt={playlist.imageUrl && playlist.title}
         bg={'gray.5'}
         sx={(theme) => ({
           aspectRatio: 1,
@@ -57,7 +57,11 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
         })}
       >
         <Center c={'white'}>
-          <IconPlaylist size={'100%'} style={{ padding: '27%' }} />
+          <IconPlaylist
+            aria-label={`default-icon-${playlist.title}`}
+            size={'100%'}
+            style={{ padding: '27%' }}
+          />
         </Center>
       </Avatar>
 

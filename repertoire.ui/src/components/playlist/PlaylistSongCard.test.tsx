@@ -32,7 +32,7 @@ describe('Playlist Song Card', () => {
     reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
 
     expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })

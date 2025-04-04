@@ -112,12 +112,16 @@ function ArtistDrawer() {
             h={'unset'}
             radius={0}
             src={artist.imageUrl}
-            alt={artist.name}
+            alt={artist.imageUrl && artist.name}
             bg={'gray.0'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'gray.7'}>
-              <CustomIconUserAlt size={'100%'} style={{ padding: '26%' }} />
+              <CustomIconUserAlt
+                aria-label={`default-icon-${artist.name}`}
+                size={'100%'}
+                style={{ padding: '26%' }}
+              />
             </Center>
           </Avatar>
 
@@ -182,10 +186,10 @@ function ArtistDrawer() {
                     size={42}
                     color={bandMember.color}
                     src={bandMember.imageUrl}
-                    alt={bandMember.name}
+                    alt={bandMember.imageUrl && bandMember.name}
                     style={(theme) => ({ boxShadow: theme.shadows.sm })}
                   >
-                    <IconUser size={19} />
+                    <IconUser aria-label={`icon-${bandMember.name}`} size={19} />
                   </Avatar>
 
                   <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
@@ -211,12 +215,12 @@ function ArtistDrawer() {
                   radius={'md'}
                   size={28}
                   src={album.imageUrl}
-                  alt={album.title}
+                  alt={album.imageUrl && album.title}
                   bg={'gray.5'}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
                 >
                   <Center c={'white'}>
-                    <CustomIconAlbumVinyl size={13} />
+                    <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={13} />
                   </Center>
                 </Avatar>
                 <Stack gap={1} style={{ overflow: 'hidden' }}>
@@ -249,12 +253,15 @@ function ArtistDrawer() {
                   radius={'md'}
                   size={28}
                   src={song.imageUrl ?? song.album?.imageUrl}
-                  alt={song.title}
+                  alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
                   bg={'gray.5'}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
                 >
                   <Center c={'white'}>
-                    <CustomIconMusicNoteEighth size={16} />
+                    <CustomIconMusicNoteEighth
+                      aria-label={`default-icon-${song.title}`}
+                      size={16}
+                    />
                   </Center>
                 </Avatar>
                 <Stack gap={1} style={{ overflow: 'hidden' }}>

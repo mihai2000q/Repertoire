@@ -37,7 +37,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
         w={'100%'}
         h={'unset'}
         src={song.imageUrl ?? song.album?.imageUrl}
-        alt={song.title}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
         bg={'gray.5'}
         onClick={handleClick}
         sx={(theme) => ({
@@ -49,7 +49,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
         })}
       >
         <Center c={'white'}>
-          <CustomIconMusicNote size={50} />
+          <CustomIconMusicNote aria-label={`default-icon-${song.title}`} size={50} />
         </Center>
       </Avatar>
 

@@ -39,7 +39,7 @@ describe('Album Song Card', () => {
     )
 
     expect(screen.getByText(song.albumTrackNo)).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
+    expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
     expect(screen.getByText(song.title)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })

@@ -105,6 +105,11 @@ describe('Artist Drawer', () => {
         name: 'Member 1',
         roles: [],
         imageUrl: 'something.png'
+      },
+      {
+        id: '2',
+        name: 'Member 2',
+        roles: []
       }
     ]
   }
@@ -165,7 +170,7 @@ describe('Artist Drawer', () => {
     expect(screen.getByRole('heading', { name: artist.name })).toBeInTheDocument()
     expect(
       screen.getByText(
-        `${artist.bandMembers.length} member • ${albums.length} albums • ${songs.length} songs`
+        `${artist.bandMembers.length} members • ${albums.length} albums • ${songs.length} songs`
       )
     ).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
@@ -174,17 +179,22 @@ describe('Artist Drawer', () => {
 
     artist.bandMembers.forEach((bandMember) => {
       expect(screen.getByText(bandMember.name)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+      if (bandMember.imageUrl) {
+        expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+      } else {
+        expect(screen.getByLabelText(`icon-${bandMember.name}`)).toBeInTheDocument()
+      }
     })
 
     albums.forEach((album) => {
       expect(screen.getByText(album.title)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: album.title })).toBeInTheDocument()
       if (album.imageUrl) {
         expect(screen.getByRole('img', { name: album.title })).toHaveAttribute(
           'src',
           album.imageUrl
         )
+      } else {
+        expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
       }
       if (album.releaseDate) {
         expect(screen.getByText(dayjs(album.releaseDate).format('D MMM YYYY'))).toBeInTheDocument()
@@ -192,7 +202,6 @@ describe('Artist Drawer', () => {
     })
     songs.forEach((song) => {
       expect(screen.getByText(song.title)).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (song.album?.imageUrl) {
@@ -200,6 +209,8 @@ describe('Artist Drawer', () => {
           'src',
           song.album.imageUrl
         )
+      } else {
+        expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
       }
       if (song.album) {
         expect(screen.getByText(song.album.title)).toBeInTheDocument()

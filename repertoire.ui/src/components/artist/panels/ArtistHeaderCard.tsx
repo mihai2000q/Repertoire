@@ -13,7 +13,7 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
 import lowerTitleFontSize from '../../../utils/lowerTitleFontSize.ts'
-import CustomIconUserAlt from "../../@ui/icons/CustomIconUserAlt.tsx";
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -70,8 +70,8 @@ function ArtistHeaderCard({
     >
       <Group wrap={'nowrap'}>
         <Avatar
-          src={isUnknownArtist ? null : artist?.imageUrl}
-          alt={isUnknownArtist ? 'unknown-artist' : artist?.name}
+          src={isUnknownArtist ? null : artist.imageUrl}
+          alt={!isUnknownArtist && artist.imageUrl ? artist.name : null}
           size={'max(11vw, 125px)'}
           bg={'white'}
           style={(theme) => ({
@@ -82,9 +82,18 @@ function ArtistHeaderCard({
         >
           <Center c={isUnknownArtist ? 'gray.6' : 'gray.7'}>
             {isUnknownArtist ? (
-              <IconQuestionMark strokeWidth={3} size={'100%'} style={{ padding: '12%' }} />
+              <IconQuestionMark
+                aria-label={'icon-unknown-artist'}
+                strokeWidth={3}
+                size={'100%'}
+                style={{ padding: '12%' }}
+              />
             ) : (
-              <CustomIconUserAlt size={'100%'} style={{ padding: '28%' }} />
+              <CustomIconUserAlt
+                aria-label={`default-icon-${artist.name}`}
+                size={'100%'}
+                style={{ padding: '28%' }}
+              />
             )}
           </Center>
         </Avatar>
@@ -99,12 +108,12 @@ function ArtistHeaderCard({
               Unknown
             </Title>
           ) : (
-            <Title order={1} fw={700} lineClamp={2} fz={lowerTitleFontSize(artist?.name)}>
-              {artist?.name}
+            <Title order={1} fw={700} lineClamp={2} fz={lowerTitleFontSize(artist.name)}>
+              {artist.name}
             </Title>
           )}
           <Text fw={500} fz={'sm'} c={'dimmed'}>
-            {!isUnknownArtist && artist?.isBand
+            {!isUnknownArtist && artist.isBand
               ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
               : ''}
             {albumsTotalCount} album{plural(albumsTotalCount)} • {songsTotalCount} song
