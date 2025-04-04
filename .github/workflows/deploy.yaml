@@ -52,6 +52,8 @@ jobs:
         run: | 
           Copy-Item .env.prod .env
           (Get-Content .env) -replace '^VITE_BACKEND_URL=.*', "VITE_BACKEND_URL=${{ secrets.BACKEND_URL }}" | Set-Content .env
+          (Get-Content .env) -replace '^VITE_AUTH_URL=.*', "VITE_AUTH_URL=${{ secrets.AUTH_URL }}" | Set-Content .env
+          (Get-Content .env) -replace '^VITE_CENTRIFUGO_URL=.*', "VITE_CENTRIFUGO_URL=${{ secrets.CENTRIFUGO_URL }}" | Set-Content .env
 
       - name: Install UI Dependencies
         working-directory: repertoire.ui/
