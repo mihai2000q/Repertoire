@@ -37,7 +37,6 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
 
     const [value, setValue] = useState<string>(bandMember?.name ?? '')
     const [search, setSearch] = useState(bandMember?.name ?? '')
-
     useEffect(() => {
       setValue(bandMember?.name ?? '')
       setSearch(bandMember?.name ?? '')
