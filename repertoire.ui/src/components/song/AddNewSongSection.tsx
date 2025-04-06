@@ -75,8 +75,8 @@ function AddNewSongSection({
     toast.success(nameTrimmed + ' added!')
 
     onClose()
-    setBandMember(null)
-    setInstrument(null)
+    setBandMember(settings.defaultBandMember)
+    setInstrument(settings.defaultInstrument)
     setType(null)
     setName('')
   }
