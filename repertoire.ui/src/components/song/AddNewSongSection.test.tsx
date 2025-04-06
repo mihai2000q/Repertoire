@@ -157,10 +157,11 @@ describe('Add New Song Section', () => {
       songId: songId
     })
     expect(onClose).toHaveBeenCalledOnce()
-    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(await screen.findByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
 
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
+
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
+    expect(await screen.findByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   it('should send create request when all fields are filled', async () => {
@@ -217,13 +218,77 @@ describe('Add New Song Section', () => {
     })
     expect(onClose).toHaveBeenCalledOnce()
 
+    expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
+
     // reset fields
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
     expect(screen.getByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
+  })
+
+  it('should send create request when there are default settings', async () => {
+    const user = userEvent.setup()
+
+    const onClose = vitest.fn()
+    const songId = 'some id'
+    const settings = {
+      ...emptySongSettings,
+      defaultBandMember: bandMembers[0],
+      defaultInstrument: instruments[0]
+    }
+
+    const newSectionType = sectionTypes[0]
+    const newName = 'Section 1'
+    const newInstrument = instruments[1]
+
+    let capturedRequest: CreateSongSectionRequest
+    server.use(
+      http.post('/songs/sections', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
+        return HttpResponse.json({ message: 'section added!' })
+      })
+    )
+
+    reduxRender(
+      withToastify(
+        <AddNewSongSection
+          opened={true}
+          onClose={onClose}
+          songId={songId}
+          bandMembers={bandMembers}
+          settings={settings}
+        />
+      )
+    )
+
+    await user.click(screen.getByRole('button', { name: settings.defaultInstrument.name }))
+    await user.clear(screen.getByRole('textbox', { name: /search/i }))
+    await user.click(await screen.findByRole('option', { name: newInstrument.name }))
+
+    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
+    await user.click(await screen.findByText(newSectionType.name))
+
+    await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
+
+    await user.click(screen.getByRole('button', { name: /add/i }))
+
+    expect(capturedRequest).toStrictEqual({
+      bandMemberId: settings.defaultBandMember.id,
+      instrumentId: newInstrument.id,
+      typeId: newSectionType.id,
+      name: newName,
+      songId: songId
+    })
+    expect(onClose).toHaveBeenCalledOnce()
 
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
+
+    // reset fields
+    expect(screen.getByRole('button', { name: settings.defaultBandMember.name })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: settings.defaultInstrument.name })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
+    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   // Validation
