@@ -73,7 +73,7 @@ function EditSongSectionModal({
     }
   })
   useDidUpdate(() => {
-    form.setFieldValue('rehearsals', section.rehearsals) // only rehearsals can be updated from outside
+    form.setFieldValue('rehearsals', section.rehearsals)
   }, [section])
 
   const [type, setType] = useState<ComboboxItem>({
@@ -84,6 +84,7 @@ function EditSongSectionModal({
 
   const [bandMember, setBandMember] = useState<BandMember>(section.bandMember)
   useEffect(() => form.setFieldValue('bandMemberId', bandMember?.id), [bandMember])
+  useDidUpdate(() => setBandMember(section.bandMember), [section.bandMember])
 
   const [instrument, setInstrument] = useState<ComboboxItem>(
     section.instrument
@@ -94,8 +95,26 @@ function EditSongSectionModal({
       : undefined
   )
   useEffect(() => form.setFieldValue('instrumentId', instrument?.value), [instrument])
+  useDidUpdate(
+    () =>
+      setInstrument(
+        section.instrument
+          ? {
+              value: section.instrument.id,
+              label: section.instrument.name
+            }
+          : undefined
+      ),
+    [section.instrument]
+  )
 
-  async function updateSongSection({ name, rehearsals, confidence, bandMemberId, instrumentId }: EditSongSectionForm) {
+  async function updateSongSection({
+    name,
+    rehearsals,
+    confidence,
+    bandMemberId,
+    instrumentId
+  }: EditSongSectionForm) {
     name = name.trim()
 
     if (rehearsalsError) return

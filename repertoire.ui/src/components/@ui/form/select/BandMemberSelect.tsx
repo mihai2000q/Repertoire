@@ -12,7 +12,7 @@ import {
 } from '@mantine/core'
 import { BandMember } from '../../../../types/models/Artist.ts'
 import { IconUser } from '@tabler/icons-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface BandMemberSelectProps {
   bandMember: BandMember | null
@@ -29,6 +29,10 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
 
   const [value, setValue] = useState<string>(bandMember?.name ?? '')
   const [search, setSearch] = useState(bandMember?.name ?? '')
+  useEffect(() => {
+    setValue(bandMember?.name ?? '')
+    setSearch(bandMember?.name ?? '')
+  }, [bandMember])
 
   const filteredMembers =
     search.trim() !== ''
@@ -40,12 +44,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
   const BandMemberHoverCard = () => (
     <HoverCard withArrow={true} openDelay={200} shadow={'md'}>
       <HoverCard.Target>
-        <Avatar
-          size={24}
-          color={bandMember.color}
-          src={bandMember.imageUrl}
-          alt={bandMember.name}
-        >
+        <Avatar size={24} color={bandMember.color} src={bandMember.imageUrl} alt={bandMember.name}>
           <IconUser size={15} />
         </Avatar>
       </HoverCard.Target>
@@ -122,7 +121,6 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         >
           <TextInput
             flex={1}
-            maxLength={100}
             label={'Band Member'}
             placeholder={'Choose a member'}
             disabled={bandMembers === undefined}
