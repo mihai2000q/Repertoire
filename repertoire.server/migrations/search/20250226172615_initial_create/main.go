@@ -16,7 +16,8 @@ var name = "initial_create"
 
 func main() {
 	env := internal.NewEnv()
-	dbClient := database.NewClient(logger.NewGormLogger(logger.NewLogger(env)), env)
+	log := logger.NewLogger(env)
+	dbClient := database.NewClient(logger.NewGormLogger(log), env)
 	meiliClient := search.NewMeiliClient(env)
 
 	if utils.HasMigrationAlreadyBeenApplied(meiliClient, uid) {
@@ -45,10 +46,21 @@ func main() {
 		panic(err)
 	}
 
+	log.Info("Importing artists...")
 	addArtists(dbClient, meiliClient)
+	log.Info("Artists added!")
+
+	log.Info("Importing albums...")
 	addAlbums(dbClient, meiliClient)
+	log.Info("Albums imported!")
+
+	log.Info("Importing songs...")
 	addSongs(dbClient, meiliClient)
+	log.Info("Songs imported!")
+
+	log.Info("Importing playlists...")
 	addPlaylists(dbClient, meiliClient)
+	log.Info("Playlists imported!")
 
 	utils.SaveMigrationStatus(meiliClient, uid, name)
 }
