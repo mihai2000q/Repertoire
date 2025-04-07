@@ -117,6 +117,7 @@ func (s songRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := s.client.Model(&model.Song{}).
+		Distinct("songs.*").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Preload("Sections.Instrument").
@@ -133,6 +134,7 @@ func (s songRepository) GetAllByUser(
 
 func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
 	tx := s.client.Model(&model.Song{}).
+		Distinct("songs.id").
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id").
 		Where(model.Song{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
