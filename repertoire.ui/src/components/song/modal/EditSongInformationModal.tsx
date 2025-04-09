@@ -64,6 +64,8 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
 
     await updateSongMutation({
       ...song,
+      albumId: song.album?.id,
+      artistId: song.artist?.id,
       id: song.id,
       difficulty: difficulty ? (difficulty.value as Difficulty) : null,
       guitarTuningId: guitarTuning?.value,

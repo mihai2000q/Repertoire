@@ -28,7 +28,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
       ...song,
       guitarTuningId: song.guitarTuning?.id,
       albumId: song.album?.id,
-      artistId: song.album?.id,
+      artistId: song.artist?.id,
       id: song.id,
       description: description
     }).unwrap()
