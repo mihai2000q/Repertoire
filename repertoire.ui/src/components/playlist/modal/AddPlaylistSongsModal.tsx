@@ -6,6 +6,7 @@ import {
   Center,
   Checkbox,
   Group,
+  Highlight,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -177,24 +178,29 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     </Avatar>
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={'xxs'} wrap={'nowrap'}>
-                        <Text fw={500} truncate={'end'}>
+                        <Highlight
+                          highlight={search}
+                          highlightStyles={{ fontWeight: 800 }}
+                          fw={500}
+                          truncate={'end'}
+                        >
                           {song.title}
-                        </Text>
+                        </Highlight>
                         {song.album && (
                           <Group gap={'xxs'} wrap={'nowrap'}>
                             <Text fz={'sm'} c={'dimmed'}>
                               -
                             </Text>
-                            <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
+                            <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
                               {song.album.title}
-                            </Text>
+                            </Highlight>
                           </Group>
                         )}
                       </Group>
                       {song.artist && (
-                        <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} truncate={'end'}>
                           {song.artist.name}
-                        </Text>
+                        </Highlight>
                       )}
                     </Stack>
                   </Group>

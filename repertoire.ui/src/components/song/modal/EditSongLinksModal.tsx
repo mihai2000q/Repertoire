@@ -43,7 +43,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
       ...song,
       guitarTuningId: song.guitarTuning?.id,
       albumId: song.album?.id,
-      artistId: song.album?.id,
+      artistId: song.artist?.id,
       id: song.id,
       songsterrLink: songsterrLink,
       youtubeLink: youtubeLink

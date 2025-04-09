@@ -78,6 +78,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           h={'unset'}
           bg={'gray.5'}
           style={(theme) => ({
+            aspectRatio: 1,
             boxShadow: theme.shadows.lg,
             ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })
           })}
