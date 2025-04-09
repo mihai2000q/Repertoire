@@ -16,7 +16,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
           openDelay={300}
           position={'top-start'}
         >
-          <Text fw={600}>Overall</Text>
+          <Text fw={600} style={{ alignSelf: 'start' }}>Overall</Text>
         </Tooltip>
 
         <Grid align={'center'} gutter={'sm'}>
