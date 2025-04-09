@@ -6,6 +6,7 @@ import {
   Center,
   Checkbox,
   Group,
+  Highlight,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -185,17 +186,25 @@ function AddExistingAlbumSongsModal({
                       bg={'gray.5'}
                     >
                       <Center c={'white'}>
-                        <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
+                        <CustomIconMusicNoteEighth
+                          aria-label={`default-icon-${song.title}`}
+                          size={18}
+                        />
                       </Center>
                     </Avatar>
                     <Stack gap={0}>
-                      <Text fw={500} lineClamp={2}>
+                      <Highlight
+                        highlight={search}
+                        highlightStyles={{ fontWeight: 800 }}
+                        fw={500}
+                        lineClamp={2}
+                      >
                         {song.title}
-                      </Text>
+                      </Highlight>
                       {song.artist && (
-                        <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
+                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
                           {song.artist.name}
-                        </Text>
+                        </Highlight>
                       )}
                     </Stack>
                   </Group>

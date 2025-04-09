@@ -6,6 +6,7 @@ import {
   Center,
   Checkbox,
   Group,
+  Highlight,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -194,9 +195,14 @@ function AddExistingArtistAlbumsModal({
                         />
                       </Center>
                     </Avatar>
-                    <Text fw={500} lineClamp={2}>
+                    <Highlight
+                      highlight={search}
+                      highlightStyles={{ fontWeight: 800 }}
+                      fw={500}
+                      lineClamp={2}
+                    >
                       {album.title}
-                    </Text>
+                    </Highlight>
                   </Group>
                 ))
               )}
