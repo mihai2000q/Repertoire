@@ -60,5 +60,6 @@ export const api = createApi({
     'User'
   ],
   keepUnusedDataFor: 5 * 60,
+  refetchOnReconnect: true,
   endpoints: () => ({})
 })
