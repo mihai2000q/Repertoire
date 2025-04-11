@@ -47,7 +47,7 @@ const artistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Artists', 'Songs', 'Albums']
+      invalidatesTags: ['Artists']
     }),
     saveImageToArtist: build.mutation<HttpMessageResponse, SaveImageToArtistRequest>({
       query: (request) => ({
@@ -56,14 +56,14 @@ const artistsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Artists', 'Songs', 'Albums']
+      invalidatesTags: ['Artists']
     }),
     deleteImageFromArtist: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `artists/images/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Artists', 'Songs', 'Albums']
+      invalidatesTags: ['Artists']
     }),
     deleteArtist: build.mutation<HttpMessageResponse, DeleteArtistRequest>({
       query: (arg) => ({
@@ -71,7 +71,7 @@ const artistsApi = api.injectEndpoints({
         method: 'DELETE',
         params: { ...arg, id: undefined }
       }),
-      invalidatesTags: ['Artists', 'Songs', 'Albums']
+      invalidatesTags: ['Artists']
     }),
 
     addAlbumsToArtist: build.mutation<HttpMessageResponse, AddAlbumsToArtistRequest>({
@@ -80,7 +80,7 @@ const artistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Artists', 'Albums', 'Songs']
+      invalidatesTags: ['Artists', 'Albums']
     }),
     removeAlbumsFromArtist: build.mutation<HttpMessageResponse, RemoveAlbumsFromArtistRequest>({
       query: (body) => ({
@@ -88,7 +88,7 @@ const artistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Artists', 'Albums', 'Songs']
+      invalidatesTags: ['Artists', 'Albums']
     }),
 
     addSongsToArtist: build.mutation<HttpMessageResponse, AddSongsToArtistRequest>({
@@ -115,7 +115,7 @@ const artistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Artists', 'Songs']
+      invalidatesTags: ['Artists']
     }),
     updateBandMember: build.mutation<HttpMessageResponse, UpdateBandMemberRequest>({
       query: (body) => ({
@@ -123,7 +123,7 @@ const artistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Artists', 'Songs']
+      invalidatesTags: ['Artists']
     }),
     moveBandMember: build.mutation<HttpMessageResponse, MoveBandMemberRequest>({
       query: (body) => ({
@@ -140,21 +140,21 @@ const artistsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Artists', 'Songs']
+      invalidatesTags: ['Artists']
     }),
     deleteImageFromBandMember: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `artists/band-members/images/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Artists', 'Songs']
+      invalidatesTags: ['Artists']
     }),
     deleteBandMember: build.mutation<HttpMessageResponse, DeleteBandMemberRequest>({
       query: (arg) => ({
         url: `artists/band-members/${arg.id}/from/${arg.artistId}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Artists', 'Songs']
+      invalidatesTags: ['Artists']
     }),
 
     // band member - roles

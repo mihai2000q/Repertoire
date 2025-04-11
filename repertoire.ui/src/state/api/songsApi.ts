@@ -26,11 +26,11 @@ const songsApi = api.injectEndpoints({
       query: (arg) => ({
         url: `songs${createQueryParams(arg)}`
       }),
-      providesTags: ['Songs']
+      providesTags: ['Songs', 'Artists', 'Albums']
     }),
     getSong: build.query<Song, string>({
       query: (arg) => `songs/${arg}`,
-      providesTags: ['Songs'],
+      providesTags: ['Songs', 'Artists', 'Albums'],
       transformResponse: (response: Song) => ({
         ...response,
         artist: response.artist
@@ -71,7 +71,7 @@ const songsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
     updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
       query: (body) => ({
@@ -88,21 +88,21 @@ const songsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
     deleteImageFromSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/images/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
     deleteSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
 
     // sections

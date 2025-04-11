@@ -19,7 +19,7 @@ export default function useNetworkDisconnected() {
       )
     } else if (toastId.current !== null) {
       toast.dismiss(toastId.current)
-      toast.success('The internet is back! If the page is not loading, please refresh!')
+      toast.success('The internet is back!')
       toastId.current = null
     }
   }, [online])
