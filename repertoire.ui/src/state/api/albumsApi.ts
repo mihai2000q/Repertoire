@@ -22,11 +22,11 @@ const albumsApi = api.injectEndpoints({
       query: (arg) => ({
         url: `albums${createQueryParams(arg)}`
       }),
-      providesTags: ['Albums']
+      providesTags: ['Albums', 'Artists']
     }),
     getAlbum: build.query<Album, GetAlbumRequest>({
       query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
-      providesTags: ['Albums']
+      providesTags: ['Albums', 'Artists', 'Songs']
     }),
     createAlbum: build.mutation<{ id: string }, CreateAlbumRequest>({
       query: (body) => ({
@@ -42,7 +42,7 @@ const albumsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Albums', 'Songs']
+      invalidatesTags: ['Albums', 'Artists']
     }),
     saveImageToAlbum: build.mutation<HttpMessageResponse, SaveImageToAlbumRequest>({
       query: (request) => ({
@@ -51,14 +51,14 @@ const albumsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Albums', 'Songs']
+      invalidatesTags: ['Albums']
     }),
     deleteImageFromAlbum: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `albums/images/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Albums']
     }),
     deleteAlbum: build.mutation<HttpMessageResponse, DeleteAlbumRequest>({
       query: (arg) => ({
@@ -66,7 +66,7 @@ const albumsApi = api.injectEndpoints({
         method: 'DELETE',
         params: { ...arg, id: undefined }
       }),
-      invalidatesTags: ['Albums', 'Songs']
+      invalidatesTags: ['Albums']
     }),
 
     addSongsToAlbum: build.mutation<HttpMessageResponse, AddSongsToAlbumRequest>({
@@ -83,7 +83,7 @@ const albumsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Albums', 'Songs']
+      invalidatesTags: ['Albums']
     }),
     removeSongsFromAlbum: build.mutation<HttpMessageResponse, RemoveSongsFromAlbumRequest>({
       query: (body) => ({

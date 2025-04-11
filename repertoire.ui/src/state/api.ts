@@ -43,16 +43,22 @@ export const api = createApi({
   baseQuery: query,
   reducerPath: 'api',
   tagTypes: [
-    'Songs',
     'Albums',
+
     'Artists',
+    'BandMemberRoles',
+
     'Playlists',
+
+    'Search',
+
+    'Songs',
+    'SongSectionTypes',
     'GuitarTunings',
     'Instruments',
-    'BandMemberRoles',
-    'SongSectionTypes',
-    'User',
-    'Search'
+
+    'User'
   ],
+  keepUnusedDataFor: 5 * 60,
   endpoints: () => ({})
 })
