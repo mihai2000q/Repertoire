@@ -8,8 +8,8 @@ import AlbumSongsCard from '../components/album/AlbumSongsCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
-import { useLocalStorage } from '@mantine/hooks'
 import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
 
 function Album() {
   const params = useParams()
