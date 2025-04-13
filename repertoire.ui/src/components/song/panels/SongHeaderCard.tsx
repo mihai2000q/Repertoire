@@ -74,8 +74,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           radius={'10%'}
           src={song.imageUrl ?? song.album?.imageUrl}
           alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           bg={'gray.5'}
           style={(theme) => ({
             aspectRatio: 1,

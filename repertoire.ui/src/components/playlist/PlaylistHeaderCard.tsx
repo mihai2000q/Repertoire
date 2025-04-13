@@ -55,8 +55,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
         <Avatar
           src={playlist.imageUrl}
           alt={playlist.imageUrl && playlist.title}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           radius={'10%'}
           bg={'gray.5'}
           style={(theme) => ({

@@ -72,8 +72,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
           src={isUnknownAlbum ? null : album.imageUrl}
           alt={!isUnknownAlbum && album.imageUrl ? album.title : null}
           radius={'10%'}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           bg={isUnknownAlbum ? 'white' : 'gray.5'}
           style={(theme) => ({
             aspectRatio: 1,
