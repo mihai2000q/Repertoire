@@ -1,8 +1,16 @@
-import { ReactElement } from 'react'
+import OrderType from '../utils/enums/OrderType.ts'
 
 export default interface Order {
-  label: string
-  value: string
-  icon?: ReactElement
-  property?: string
+  label?: string
+  property: string
+  type?: OrderType
+  nullable?: boolean
+  thenBy?: ThenByOrder[]
+  checked?: boolean
+}
+
+interface ThenByOrder {
+  property: string
+  type?: OrderType
+  nullable?: boolean
 }
