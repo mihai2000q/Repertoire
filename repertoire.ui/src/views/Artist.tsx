@@ -13,6 +13,7 @@ import ArtistHeaderCard from '../components/artist/panels/ArtistHeaderCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import BandMembersCard from '../components/artist/panels/BandMembersCard.tsx'
 import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/useOrderBy.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 
 function Artist() {
@@ -32,17 +33,19 @@ function Artist() {
     key: LocalStorageKeys.ArtistAlbumsOrder,
     defaultValue: artistAlbumsOrders[0]
   })
+  const albumsOrderBy = useOrderBy([albumsOrder])
   const [songsOrder, setSongsOrder] = useLocalStorage({
     key: LocalStorageKeys.ArtistSongsOrder,
     defaultValue: artistSongsOrders[0]
   })
+  const songsOrderBy = useOrderBy([songsOrder])
 
   const {
     data: albums,
     isLoading: isAlbumsLoading,
     isFetching: isAlbumsFetching
   } = useGetAlbumsQuery({
-    orderBy: [albumsOrder.value],
+    orderBy: albumsOrderBy,
     searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = '${artistId}'`]
   })
   const {
@@ -50,7 +53,7 @@ function Artist() {
     isLoading: isSongsLoading,
     isFetching: isSongsFetching
   } = useGetSongsQuery({
-    orderBy: [songsOrder.value],
+    orderBy: songsOrderBy,
     searchBy: [isUnknownArtist ? 'songs.artist_id IS NULL' : `songs.artist_id = '${artistId}'`]
   })
 

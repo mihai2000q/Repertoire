@@ -9,6 +9,7 @@ import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/useOrderBy.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 
 function Album() {
@@ -24,6 +25,7 @@ function Album() {
       : LocalStorageKeys.AlbumSongsOrder,
     defaultValue: isUnknownAlbum ? albumSongsOrders[1] : albumSongsOrders[0]
   })
+  const orderBy = useOrderBy([order])
 
   const {
     data: album,
@@ -32,7 +34,7 @@ function Album() {
   } = useGetAlbumQuery(
     {
       id: albumId,
-      songsOrderBy: [order.value]
+      songsOrderBy: orderBy
     },
     { skip: isUnknownAlbum }
   )
@@ -48,13 +50,14 @@ function Album() {
     isFetching: isSongsFetching
   } = useGetSongsQuery(
     {
-      orderBy: [order.value],
+      orderBy: orderBy,
       searchBy: ['album_id IS NULL']
     },
     { skip: !isUnknownAlbum }
   )
 
-  if (isLoading || isSongsLoading || (!album && !isUnknownAlbum) || (!songs && isUnknownAlbum)) return <AlbumLoader />
+  if (isLoading || isSongsLoading || (!album && !isUnknownAlbum) || (!songs && isUnknownAlbum))
+    return <AlbumLoader />
 
   return (
     <Stack px={'xl'}>
