@@ -26,8 +26,8 @@ const playlistSongsOrders: Order[] = [
     thenBy: [{ property: SongProperty.PlaylistTrackNo }]
   },
   {
-    label: 'Last Time Played',
-    property: SongProperty.Difficulty,
+    label: 'Last Played',
+    property: SongProperty.LastTimePlayed,
     type: OrderType.Descending,
     nullable: true,
     thenBy: [{ property: SongProperty.PlaylistTrackNo }]
