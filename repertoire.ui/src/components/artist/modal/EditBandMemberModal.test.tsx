@@ -119,19 +119,14 @@ describe('Edit Band Member Header Modal', () => {
     })
   })
 
-  it('should send edit request and save image request when the image is replaced', async () => {
+  it('should send only save image request when the image is replaced', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateBandMemberRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/artists/band-members', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateBandMemberRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/artists/band-members/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -152,29 +147,18 @@ describe('Edit Band Member Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      id: bandMember.id,
-      name: bandMember.name,
-      color: bandMember.color,
-      roleIds: bandMember.roles.map((role) => role.id)
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(bandMember.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and save image request when the image is first added', async () => {
+  it('should send only save image request when the image is first added', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateBandMemberRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/artists/band-members', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateBandMemberRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/artists/band-members/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -200,27 +184,16 @@ describe('Edit Band Member Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      id: bandMember.id,
-      name: bandMember.name,
-      color: bandMember.color,
-      roleIds: bandMember.roles.map((role) => role.id)
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(bandMember.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete image request', async () => {
+  it('should send only delete image request when the image is removed', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateBandMemberRequest
     server.use(
-      http.put('/artists/band-members', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateBandMemberRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.delete(`/artists/band-members/images/${bandMember.id}`, () => {
         return HttpResponse.json({ message: 'it worked' })
       })
@@ -240,12 +213,53 @@ describe('Edit Band Member Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('should send edit request and save image request when both have changed', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+    const newName = 'New Member'
+    const onClose = vitest.fn()
+
+    let capturedRequest: UpdateBandMemberRequest
+    let capturedSaveImageFormData: FormData
+    server.use(
+      http.put('/artists/band-members', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateBandMemberRequest
+        return HttpResponse.json({ message: 'it worked' })
+      }),
+      http.put('/artists/band-members/images', async (req) => {
+        capturedSaveImageFormData = await req.request.formData()
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(
+      withToastify(<EditBandMemberModal opened={true} onClose={onClose} bandMember={bandMember} />)
+    )
+
+    const nameField = screen.getByRole('textbox', { name: /name/i })
+    const saveButton = screen.getByRole('button', { name: /save/i })
+
+    await user.clear(nameField)
+    await user.type(nameField, newName)
+    await user.click(screen.getByRole('button', { name: 'image-options' }))
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    await user.click(saveButton)
+
+    expect(await screen.findByText(`${newName} updated!`)).toBeInTheDocument()
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: bandMember.id,
-      name: bandMember.name,
+      name: newName,
       color: bandMember.color,
-      roleIds: bandMember.roles.map((role) => role.id)
+      roleIds: bandMember.roles.map(r => r.id)
     })
+    expect(capturedSaveImageFormData.get('id')).toBe(bandMember.id)
+    expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
   it('should disable the save button when no changes are made', async () => {

@@ -30,7 +30,9 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
     useDeleteImageFromBandMemberMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [memberHasChanged, setMemberHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = memberHasChanged || imageHasChanged
 
   function areRolesEqual() {
     if (roleIds.length !== bandMember.roles.length) return false
@@ -48,19 +50,17 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
       name: bandMember.name,
       color: bandMember.color,
       image: bandMember.imageUrl,
-      roleIds: bandMember.roles.map(role => role.id)
+      roleIds: bandMember.roles.map((role) => role.id)
     } as EditBandMemberForm,
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
     validate: zodResolver(editBandMemberValidation),
     onValuesChange: (values) => {
-      setHasChanged(
-        values.name !== bandMember.name ||
-          values.image !== bandMember.imageUrl ||
-          values.color !== bandMember.color ||
-          !areRolesEqual()
+      setMemberHasChanged(
+        values.name !== bandMember.name || values.color !== bandMember.color || !areRolesEqual()
       )
+      setImageHasChanged(values.image !== bandMember.imageUrl)
     }
   })
 
@@ -84,28 +84,26 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
       return
     }
 
-    name = name.trim()
+    if (memberHasChanged)
+      await updateBandMemberMutation({
+        id: bandMember.id,
+        name: name.trim(),
+        color: color,
+        roleIds: roleIds
+      }).unwrap()
 
-    await updateBandMemberMutation({
-      id: bandMember.id,
-      name: name,
-      color: color,
-      roleIds: roleIds
-    }).unwrap()
-
-    if (image && typeof image !== 'string') {
+    if (image && typeof image !== 'string')
       await saveImageMutation({
         id: bandMember.id,
         image: image
       })
-    } else if (!image && bandMember.imageUrl) {
-      await deleteImageMutation(bandMember.id)
-    }
+    else if (!image && bandMember.imageUrl) await deleteImageMutation(bandMember.id)
 
     toast.info(`${name} updated!`)
     onClose()
-    setHasChanged(false)
     setRolesError(false)
+    setMemberHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (

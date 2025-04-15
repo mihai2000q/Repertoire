@@ -136,19 +136,14 @@ describe('Edit Album Header Modal', () => {
     })
   })
 
-  it('should send edit request and save image request when the image is replaced', async () => {
+  it('should send only save image request when the image is replaced', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateAlbumRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/albums', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateAlbumRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/albums/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -168,28 +163,18 @@ describe('Edit Album Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      id: album.id,
-      title: album.title,
-      releaseDate: dayjs(album.releaseDate).toISOString()
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(album.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and save image request when the image is first added', async () => {
+  it('should send only save image request when the image is first added', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateAlbumRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/albums', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateAlbumRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/albums/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -215,26 +200,16 @@ describe('Edit Album Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      id: album.id,
-      title: album.title,
-      releaseDate: dayjs(album.releaseDate).toISOString()
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(album.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete image request', async () => {
+  it('should send only delete image request when the image is removed', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateAlbumRequest
     server.use(
-      http.put('/albums', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateAlbumRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.delete(`/albums/images/${album.id}`, () => {
         return HttpResponse.json({ message: 'it worked' })
       })
@@ -253,11 +228,51 @@ describe('Edit Album Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('should send edit request and save image request when both change', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+    const newTitle = 'New'
+    const onClose = vitest.fn()
+
+    let capturedRequest: UpdateAlbumRequest
+    let capturedSaveImageFormData: FormData
+    server.use(
+      http.put('/albums', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateAlbumRequest
+        return HttpResponse.json({ message: 'it worked' })
+      }),
+      http.put('/albums/images', async (req) => {
+        capturedSaveImageFormData = await req.request.formData()
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(
+      withToastify(<EditAlbumHeaderModal opened={true} onClose={onClose} album={album} />)
+    )
+
+    const titleField = screen.getByRole('textbox', { name: /title/i })
+    const saveButton = screen.getByRole('button', { name: /save/i })
+
+    await user.clear(titleField)
+    await user.type(titleField, newTitle)
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    await user.click(saveButton)
+
+    expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: album.id,
-      title: album.title,
+      title: newTitle,
       releaseDate: dayjs(album.releaseDate).toISOString()
     })
+    expect(capturedSaveImageFormData.get('id')).toBe(album.id)
+    expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
   it('should disable the save button when no changes are made', async () => {

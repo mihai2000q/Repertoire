@@ -29,7 +29,9 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     useDeleteImageFromPlaylistMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [playlistHasChanged, setPlaylistHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = playlistHasChanged || imageHasChanged
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -43,11 +45,10 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     clearInputErrorOnChange: true,
     validate: zodResolver(editPlaylistHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(
-        values.title !== playlist.title ||
-          values.description !== playlist.description ||
-          values.image !== playlist.imageUrl
+      setPlaylistHasChanged(
+        values.title !== playlist.title || values.description !== playlist.description
       )
+      setImageHasChanged(values.image !== playlist.imageUrl)
     }
   })
 
@@ -56,26 +57,24 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
   useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
-    title = title.trim()
+    if (playlistHasChanged)
+      await updatePlaylistMutation({
+        id: playlist.id,
+        title: title.trim(),
+        description: description
+      }).unwrap()
 
-    await updatePlaylistMutation({
-      id: playlist.id,
-      title: title,
-      description: description
-    }).unwrap()
-
-    if (image !== null && typeof image !== 'string') {
+    if (image !== null && typeof image !== 'string')
       await saveImageMutation({
         id: playlist.id,
         image: image
       })
-    } else if (image === null && playlist.imageUrl) {
-      await deleteImageMutation(playlist.id)
-    }
+    else if (image === null && playlist.imageUrl) await deleteImageMutation(playlist.id)
 
     toast.info('Playlist updated!')
     onClose()
-    setHasChanged(false)
+    setPlaylistHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (

@@ -37,7 +37,9 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     useDeleteProfilePictureMutation()
   const isLoading = isUpdateLoading || isSaveProfilePictureLoading || isDeleteProfilePictureLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [userHasChanged, setUserHasChanged] = useState(false)
+  const [pictureHasChanged, setPictureHasChanged] = useState(false)
+  const hasChanged = userHasChanged || pictureHasChanged
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -50,7 +52,8 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     clearInputErrorOnChange: true,
     validate: zodResolver(accountValidation),
     onValuesChange: (values) => {
-      setHasChanged(values.name !== user.name || values.profilePicture !== user.profilePictureUrl)
+      setUserHasChanged(values.name !== user.name)
+      setPictureHasChanged(values.profilePicture !== user.profilePictureUrl)
     }
   })
 
@@ -61,23 +64,21 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
   useDidUpdate(() => setProfilePicture(user.profilePictureUrl), [user])
 
   async function updateUser({ name, profilePicture }: AccountForm) {
-    name = name.trim()
+    if (userHasChanged)
+      await updateUserMutation({
+        name: name.trim()
+      }).unwrap()
 
-    await updateUserMutation({
-      name: name
-    }).unwrap()
-
-    if (profilePicture !== null && typeof profilePicture !== 'string') {
+    if (profilePicture !== null && typeof profilePicture !== 'string')
       await saveProfilePictureMutation({
         profile_pic: profilePicture
       })
-    } else if (profilePicture === null && user.profilePictureUrl) {
-      await deleteProfilePictureMutation()
-    }
+    else if (profilePicture === null && user.profilePictureUrl) await deleteProfilePictureMutation()
 
     toast.info('Account updated!')
     onClose()
-    setHasChanged(false)
+    setUserHasChanged(false)
+    setPictureHasChanged(false)
   }
 
   return (
