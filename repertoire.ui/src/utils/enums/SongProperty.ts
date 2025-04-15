@@ -1,5 +1,6 @@
 enum SongProperty {
   AlbumTrackNo = 'album_track_no',
+  Album = '"Album".title',
   Artist = '"Artist".name',
   CreationDate = 'created_at',
   Confidence = 'confidence',
@@ -11,6 +12,8 @@ enum SongProperty {
   Progress = 'progress',
   Rehearsals = 'rehearsals',
   ReleaseDate = 'release_date',
+  Riffs = 'riffs',
+  Solos = 'solos',
   Title = 'title'
 }
 
