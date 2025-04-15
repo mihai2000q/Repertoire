@@ -10,6 +10,7 @@ const albumsOrders: Order[] = [
   { label: 'Rehearsals', property: AlbumProperty.Rehearsals, checked: false },
   { label: 'Confidence', property: AlbumProperty.Confidence, checked: false },
   { label: 'Progress', property: AlbumProperty.Progress, checked: false },
+  { label: 'Last Played', property: AlbumProperty.LastPlayed, nullable: true, checked: false },
   {
     label: 'Creation Date',
     property: AlbumProperty.CreationDate,

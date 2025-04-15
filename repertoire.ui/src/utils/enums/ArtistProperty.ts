@@ -5,6 +5,7 @@ enum ArtistProperty {
   Confidence = 'confidence',
   CreationDate = 'created_at',
   LastModified = 'updated_at',
+  LastPlayed = 'last_time_played',
   Name = 'name',
   Progress = 'progress',
   Rehearsals = 'rehearsals',

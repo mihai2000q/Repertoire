@@ -3,6 +3,7 @@ enum AlbumProperty {
   Confidence = 'confidence',
   CreationDate = 'created_at',
   LastModified = 'updated_at',
+  LastPlayed = 'last_time_played',
   Progress = 'progress',
   Rehearsals = 'rehearsals',
   ReleaseDate = 'release_date',
