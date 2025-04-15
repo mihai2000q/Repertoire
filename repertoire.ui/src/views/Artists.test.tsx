@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Artists from './Artists.tsx'
 import { emptyArtist, emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
@@ -9,6 +9,8 @@ import Artist from '../types/models/Artist.ts'
 import Song from '../types/models/Song.ts'
 import Album from '../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
+import createOrder from '../utils/createOrder.ts'
+import artistsOrders from '../data/artists/artistsOrders.ts'
 
 describe('Artists', () => {
   const artists: Artist[] = [
@@ -300,4 +302,32 @@ describe('Artists', () => {
       ).toBeInTheDocument()
     }
   )
+
+  it('should order the artists', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = artistsOrders[7]
+    const newOrder = artistsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/artists', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Artist> = {
+          models: artists,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Artists />)
+
+    await waitFor(() => expect(orderBy).toEqual([createOrder(initialOrder)]))
+
+    await user.click(screen.getByRole('button', { name: 'order-artists' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() => expect(orderBy).toEqual([createOrder(newOrder), createOrder(initialOrder)]))
+  })
 })
