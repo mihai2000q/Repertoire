@@ -4,9 +4,10 @@ import OrderType from '../../utils/enums/OrderType.ts'
 
 const artistsOrders: Order[] = [
   { label: 'Name', property: ArtistProperty.Name, checked: false },
+  { label: 'Band', property: ArtistProperty.Band, checked: false },
+  { label: 'Band Members', property: ArtistProperty.BandMembers, checked: false },
   { label: 'Albums', property: ArtistProperty.Albums, checked: false },
   { label: 'Songs', property: ArtistProperty.Songs, checked: false },
-  { label: 'Band Members', property: ArtistProperty.BandMembers, checked: false },
   { label: 'Rehearsals', property: ArtistProperty.Rehearsals, checked: false },
   { label: 'Confidence', property: ArtistProperty.Confidence, checked: false },
   { label: 'Progress', property: ArtistProperty.Progress, checked: false },

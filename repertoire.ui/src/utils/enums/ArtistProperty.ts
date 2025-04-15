@@ -1,5 +1,6 @@
 enum ArtistProperty {
   Albums = 'albums_count',
+  Band = 'is_band',
   BandMembers = 'band_members_count',
   Confidence = 'confidence',
   CreationDate = 'created_at',
