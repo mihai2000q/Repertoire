@@ -18,6 +18,9 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
+import createOrder from '../../utils/createOrder.ts'
+import ArtistProperty from '../../utils/enums/ArtistProperty.ts'
+import OrderType from '../../utils/enums/OrderType.ts'
 
 function Loader() {
   return (
@@ -85,7 +88,10 @@ function HomeTopArtists({ ...others }: CardProps) {
   const { data: artists, isLoading } = useGetArtistsQuery({
     pageSize: 15,
     currentPage: 1,
-    orderBy: ['updated_at desc', 'name asc']
+    orderBy: [
+      createOrder({ property: ArtistProperty.Progress, type: OrderType.Descending }),
+      createOrder({ property: ArtistProperty.Name })
+    ]
   })
 
   const viewportRef = useRef<HTMLDivElement>(null)
