@@ -11,6 +11,8 @@ enum LocalStorageKeys {
   AlbumSongsOrder = 'album_songs_order_2',
   UnknownAlbumSongsOrder = 'unknown_album_songs_order_2',
 
+  PlaylistsOrders = 'playlists_orders_1',
+
   PlaylistSongsOrder = 'playlist_songs_order_2'
 }
 

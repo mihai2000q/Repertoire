@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Playlists from './Playlists.tsx'
 import { emptyPlaylist, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
@@ -7,6 +7,8 @@ import Playlist from '../types/models/Playlist.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
+import createOrder from '../utils/createOrder.ts'
+import playlistsOrders from '../data/playlists/playlistsOrders.ts'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -174,5 +176,33 @@ describe('Playlists', () => {
 
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-playlist-card')).toBeInTheDocument()
+  })
+
+  it('should order the playlists', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = playlistsOrders[2]
+    const newOrder = playlistsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/playlists', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Playlist> = {
+          models: playlists,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Playlists />)
+
+    await waitFor(() => expect(orderBy).toEqual([createOrder(initialOrder)]))
+
+    await user.click(screen.getByRole('button', { name: 'order-playlists' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() => expect(orderBy).toEqual([createOrder(newOrder), createOrder(initialOrder)]))
   })
 })

@@ -22,11 +22,23 @@ import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
 import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
+import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
+import { playlistPropertyIcons } from '../data/icons/playlistPropertyIcons.tsx'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/useOrderBy.ts'
+import playlistsOrders from '../data/playlists/playlistsOrders.ts'
 
 function Playlists() {
   useFixedDocumentTitle('Playlists')
   const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
   const { currentPage } = searchParams
+
+  const [orders, setOrders] = useLocalStorage({
+    key: LocalStorageKeys.PlaylistsOrders,
+    defaultValue: playlistsOrders
+  })
+  const orderBy = useOrderBy(orders)
 
   const pageSize = 40
   const {
@@ -36,7 +48,7 @@ function Playlists() {
   } = useGetPlaylistsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: ['created_at DESC']
+    orderBy: orderBy
   })
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
@@ -69,14 +81,20 @@ function Playlists() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon
-          aria-label={'order-playlists'}
-          variant={'grey'}
-          size={'lg'}
-          disabled={isLoading}
+        <AdvancedOrderMenu
+          orders={orders}
+          setOrders={setOrders}
+          propertyIcons={playlistPropertyIcons}
         >
-          <IconArrowsSort size={17} />
-        </ActionIcon>
+          <ActionIcon
+            aria-label={'order-playlists'}
+            variant={'grey'}
+            size={'lg'}
+            disabled={isLoading}
+          >
+            <IconArrowsSort size={17} />
+          </ActionIcon>
+        </AdvancedOrderMenu>
         <ActionIcon
           aria-label={'filter-playlists'}
           variant={'grey'}
