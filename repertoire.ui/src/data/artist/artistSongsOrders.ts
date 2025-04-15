@@ -45,7 +45,7 @@ const artistSongsOrders: Order[] = [
   },
   {
     label: 'Last Played',
-    property: SongProperty.LastTimePlayed,
+    property: SongProperty.LastPlayed,
     type: OrderType.Descending,
     nullable: true,
     thenBy: [{ property: SongProperty.Title }]

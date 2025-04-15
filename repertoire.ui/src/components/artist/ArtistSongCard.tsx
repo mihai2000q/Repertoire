@@ -198,7 +198,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
               {order.property === SongProperty.Progress && (
                 <SongProgressBar progress={song.progress} w={100} mt={4} />
               )}
-              {order.property === SongProperty.LastTimePlayed && (
+              {order.property === SongProperty.LastPlayed && (
                 <Tooltip
                   label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
                   openDelay={400}

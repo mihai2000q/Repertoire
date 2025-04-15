@@ -1,13 +1,17 @@
 enum SongProperty {
-  PlaylistTrackNo = 'playlist_track_no',
   AlbumTrackNo = 'album_track_no',
-  ReleaseDate = 'release_date',
-  Title = 'title',
-  Difficulty = 'difficulty',
-  Rehearsals = 'rehearsals',
+  Artist = '"Artist".name',
+  CreationDate = 'created_at',
   Confidence = 'confidence',
+  Difficulty = 'difficulty',
+  GuitarTuning = '"GuitarTuning".name',
+  LastModified = 'updated_at',
+  LastPlayed = 'last_time_played',
+  PlaylistTrackNo = 'playlist_track_no',
   Progress = 'progress',
-  LastTimePlayed = 'last_time_played',
+  Rehearsals = 'rehearsals',
+  ReleaseDate = 'release_date',
+  Title = 'title'
 }
 
 export default SongProperty
