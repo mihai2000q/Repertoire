@@ -15,7 +15,7 @@ import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
-import titleFontSize from '../../utils/titleFontSize.ts'
+import titleFontSize from '../../utils/style/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 

@@ -11,7 +11,7 @@ import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
-import titleFontSize from '../../utils/titleFontSize.ts'
+import titleFontSize from '../../utils/style/titleFontSize.ts'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
