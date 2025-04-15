@@ -264,7 +264,7 @@ describe('Albums', () => {
   it('should order the albums', async () => {
     const user = userEvent.setup()
 
-    const initialOrder = albumsOrders[7]
+    const initialOrder = albumsOrders[8]
     const newOrder = albumsOrders[0]
 
     let orderBy: string[]
