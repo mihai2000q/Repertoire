@@ -11,10 +11,10 @@ const songsOrders: Order[] = [
   { label: 'Difficulty', property: SongProperty.Difficulty, nullable: true, checked: false },
   { label: 'Solos', property: SongProperty.Solos, checked: false },
   { label: 'Riffs', property: SongProperty.Riffs, checked: false },
-  { label: 'Last Played', property: SongProperty.LastPlayed, nullable: true, checked: false },
   { label: 'Rehearsals', property: SongProperty.Rehearsals, checked: false },
   { label: 'Confidence', property: SongProperty.Confidence, checked: false },
   { label: 'Progress', property: SongProperty.Progress, checked: false },
+  { label: 'Last Played', property: SongProperty.LastPlayed, nullable: true, checked: false },
   {
     label: 'Creation Date',
     property: SongProperty.CreationDate,

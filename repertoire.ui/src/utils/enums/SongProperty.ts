@@ -5,7 +5,7 @@ enum SongProperty {
   CreationDate = 'created_at',
   Confidence = 'confidence',
   Difficulty = 'difficulty',
-  GuitarTuning = '"GuitarTuning".name',
+  GuitarTuning = '"GuitarTuning"."order"',
   LastModified = 'updated_at',
   LastPlayed = 'last_time_played',
   PlaylistTrackNo = 'playlist_track_no',
