@@ -14,14 +14,14 @@ import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusi
 import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
 
 export const artistPropertyIcons = new Map<string, ReactElement>([
-  [ArtistProperty.Name, <IconAbc size={'100%'} key={'name'} />],
   [ArtistProperty.Albums, <CustomIconAlbumVinyl size={'100%'} key={'albums'} />],
-  [ArtistProperty.Songs, <CustomIconMusicNoteEighth size={'100%'} key={'songs'} />],
   [ArtistProperty.Band, <IconUsers size={'100%'} key={'band'} />],
   [ArtistProperty.BandMembers, <IconUsersGroup size={'100%'} key={'band-members'} />],
-  [ArtistProperty.Rehearsals, <IconRepeat size={'100%'} key={'rehearsals'} />],
   [ArtistProperty.Confidence, <IconTimeline size={'100%'} key={'confidence'} />],
-  [ArtistProperty.Progress, <IconTrendingUp size={'100%'} key={'progress'} />],
   [ArtistProperty.CreationDate, <IconCalendarWeek size={'100%'} key={'creation-date'} />],
-  [ArtistProperty.LastModified, <IconCalendarMonth size={'100%'} key={'last-modified'} />]
+  [ArtistProperty.LastModified, <IconCalendarMonth size={'100%'} key={'last-modified'} />],
+  [ArtistProperty.Name, <IconAbc size={'100%'} key={'name'} />],
+  [ArtistProperty.Progress, <IconTrendingUp size={'100%'} key={'progress'} />],
+  [ArtistProperty.Rehearsals, <IconRepeat size={'100%'} key={'rehearsals'} />],
+  [ArtistProperty.Songs, <CustomIconMusicNoteEighth size={'100%'} key={'songs'} />],
 ])
