@@ -1,18 +1,18 @@
 import Order from '../../../types/Order.ts'
 import { IconArrowNarrowDown, IconArrowNarrowUp } from '@tabler/icons-react'
 import { ActionIcon, alpha, Center, Group, Menu, Space, Stack, Text, Tooltip } from '@mantine/core'
-import { MouseEvent, ReactNode, useState } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import OrderType from '../../../utils/enums/OrderType.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import { albumPropertyToIcon } from '../../../data/icons/albumPropertyIcons.tsx'
 
 interface AdvancedOrderMenuProps {
   children: ReactNode
   orders: Order[]
   setOrders: (orders: Order[]) => void
+  propertyIcons?: Map<string, ReactElement>
 }
 
-function AdvancedOrderMenu({ children, orders, setOrders }: AdvancedOrderMenuProps) {
+function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: AdvancedOrderMenuProps) {
   const [menuOpened, setMenuOpened] = useState(false)
 
   const isOnlyOneOrderActive = orders.filter((o) => o.checked === true).length === 1
@@ -110,7 +110,7 @@ function AdvancedOrderMenu({ children, orders, setOrders }: AdvancedOrderMenuPro
                           onClick={() => onClick(order, index)}
                         >
                           <Center w={15} h={15}>
-                            {albumPropertyToIcon.get(order.property)}
+                            {propertyIcons?.get(order.property)}
                           </Center>
                           <Text
                             fz={'sm'}
