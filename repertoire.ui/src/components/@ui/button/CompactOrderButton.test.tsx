@@ -1,24 +1,15 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import CompactOrderButton from './CompactOrderButton.tsx'
 import Order from '../../../types/Order.ts'
-import {screen} from "@testing-library/react";
-import {userEvent} from "@testing-library/user-event";
-import {expect} from "vitest";
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 describe('Compact Order Button', () => {
   const availableOrders: Order[] = [
-    {
-      value: 'order-1',
-      label: 'Order 1'
-    },
-    {
-      value: 'order-2',
-      label: 'Order 2'
-    },
-    {
-      value: 'order-3',
-      label: 'Order 3'
-    }
+    { label: 'Order 1', property: 'order_1' },
+    { label: 'Order 2', property: 'order_2' },
+    { label: 'Order 3', property: 'order_3' }
   ]
 
   it('should render', async () => {
