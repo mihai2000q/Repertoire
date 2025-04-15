@@ -187,7 +187,7 @@ describe('Add Playlist Songs Modal', () => {
 
     expect(capturedSearchBy.get('currentPage')).toBe('1')
     expect(capturedSearchBy.get('pageSize')).toBe('20')
-    expect(capturedSearchBy.get('orderBy')).match(/updated_at desc/i)
+    expect(capturedSearchBy.get('orderBy')).toBe('updated_at desc')
     expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
     expect(capturedSearchBy.getAll('searchBy')[0]).match(
       new RegExp(

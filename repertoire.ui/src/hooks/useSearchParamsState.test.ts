@@ -36,7 +36,7 @@ describe('use Search Params State', () => {
     const { result } = routerRenderHook(() => useSearchParamsState(songsSearchParamsState))
     const [state, setState] = result.current
 
-    expect(state).toEqual(testSearchParamsInitialState)
+    expect(state).toStrictEqual(testSearchParamsInitialState)
 
     const newTestValue = 23
 

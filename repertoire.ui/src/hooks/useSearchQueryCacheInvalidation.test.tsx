@@ -6,7 +6,7 @@ import {expect} from "vitest";
 import useCentrifuge from "./useCentrifuge.ts";
 import {waitFor} from "@testing-library/react";
 
-describe('use Search Query Invalidation', () => {
+describe('use Search Query Cache Invalidation', () => {
   const centrifugoUrl = 'wss://chat.example.com'
 
   const token = 'some-token'

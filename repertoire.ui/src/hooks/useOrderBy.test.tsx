@@ -6,25 +6,25 @@ import OrderType from '../utils/enums/OrderType'
 describe('use Order By', () => {
   it('should return empty array for null orders', () => {
     const { result } = renderHook(() => useOrderBy(null))
-    expect(result.current).toEqual([])
+    expect(result.current).toStrictEqual([])
   })
 
   it('should handle single order with default type', () => {
     const orders: Order[] = [{ property: 'name', checked: true }]
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual(['name asc'])
+    expect(result.current).toStrictEqual(['name asc'])
   })
 
   it('should handle explicit order type', () => {
     const orders: Order[] = [{ property: 'name', type: OrderType.Descending, checked: true }]
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual(['name desc'])
+    expect(result.current).toStrictEqual(['name desc'])
   })
 
   it('should handle nullable ascending', () => {
     const orders: Order[] = [{ property: 'name', nullable: true, checked: true }]
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual(['name asc nulls first'])
+    expect(result.current).toStrictEqual(['name asc nulls first'])
   })
 
   it('should handle nullable descending', () => {
@@ -32,7 +32,7 @@ describe('use Order By', () => {
       { property: 'name', type: OrderType.Descending, nullable: true, checked: true }
     ]
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual(['name desc nulls last'])
+    expect(result.current).toStrictEqual(['name desc nulls last'])
   })
 
   it('should ignore unchecked orders', () => {
@@ -41,7 +41,7 @@ describe('use Order By', () => {
       { property: 'age', checked: true }
     ]
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual(['age asc'])
+    expect(result.current).toStrictEqual(['age asc'])
   })
 
   it('should handle thenBy orders', () => {
@@ -58,7 +58,7 @@ describe('use Order By', () => {
     ]
 
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual([
+    expect(result.current).toStrictEqual([
       'department asc',
       'team asc',
       'location desc',
@@ -73,14 +73,14 @@ describe('use Order By', () => {
       initialProps: { orders: initialOrders }
     })
 
-    expect(result.current).toEqual(['name asc'])
+    expect(result.current).toStrictEqual(['name asc'])
 
     const newOrders = [
       { property: 'date', type: OrderType.Descending, nullable: true, checked: true }
     ]
     act(() => rerender({ orders: newOrders }))
 
-    expect(result.current).toEqual(['date desc nulls last'])
+    expect(result.current).toStrictEqual(['date desc nulls last'])
   })
 
   it('should handle complex mixed cases', () => {
@@ -101,7 +101,7 @@ describe('use Order By', () => {
     ]
 
     const { result } = renderHook(() => useOrderBy(orders))
-    expect(result.current).toEqual([
+    expect(result.current).toStrictEqual([
       'company asc nulls first',
       'department desc',
       'hireDate asc',

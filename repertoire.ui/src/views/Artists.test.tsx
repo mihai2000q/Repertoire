@@ -323,11 +323,11 @@ describe('Artists', () => {
 
     reduxRouterRender(<Artists />)
 
-    await waitFor(() => expect(orderBy).toEqual([createOrder(initialOrder)]))
+    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(initialOrder)]))
 
     await user.click(screen.getByRole('button', { name: 'order-artists' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
-    await waitFor(() => expect(orderBy).toEqual([createOrder(newOrder), createOrder(initialOrder)]))
+    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)]))
   })
 })

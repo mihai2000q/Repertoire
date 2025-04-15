@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeAll } from 'vitest'
-import { useLocalStorage } from './useLocalStorage.ts'
+import useLocalStorage from './useLocalStorage.ts'
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -20,7 +20,7 @@ const localStorageMock = (() => {
   }
 })()
 
-describe('useLocalStorage', () => {
+describe('use Local Storage', () => {
   beforeAll(() => {
     localStorage.clear()
     Object.defineProperty(window, 'localStorage', {
@@ -88,14 +88,14 @@ describe('useLocalStorage', () => {
 
     const { result } = renderHook(() => useLocalStorage({ key: 'testKey', defaultValue }))
 
-    expect(result.current[0]).toEqual(defaultValue)
+    expect(result.current[0]).toStrictEqual(defaultValue)
 
     act(() => {
       result.current[1](newValue)
     })
 
-    expect(result.current[0]).toEqual(newValue)
-    expect(JSON.parse(localStorage.getItem('testKey')!)).toEqual(newValue)
+    expect(result.current[0]).toStrictEqual(newValue)
+    expect(JSON.parse(localStorage.getItem('testKey')!)).toStrictEqual(newValue)
   })
 
   it('should handle setting value when no defaultValue was provided', () => {

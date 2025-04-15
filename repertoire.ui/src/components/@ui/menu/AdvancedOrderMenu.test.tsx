@@ -137,5 +137,5 @@ describe('Advanced Order Menu', () => {
     expect(setOrders).toHaveBeenCalledWith(newOrders)
   })
 
-  it('should be bale to reorder orders', async () => {})
+  it('should be able to reorder orders', async () => {})
 })

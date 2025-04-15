@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDidUpdate } from '@mantine/hooks'
 
-export function useLocalStorage<T>({
+export default function useLocalStorage<T>({
   key,
   defaultValue
 }: {
