@@ -1,11 +1,11 @@
 import Order from '../types/Order.ts'
 import { useState } from 'react'
-import { useDidUpdate } from '@mantine/hooks'
 import createOrder from '../utils/createOrder.ts'
+import useDidUpdateShallow from './useDidUpdateShallow.ts'
 
 export default function useOrderBy(orders: Order[] | null = null): string[] {
   const [orderBy, setOrderBy] = useState<string[]>(createOrders(orders))
-  useDidUpdate(() => setOrderBy(createOrders(orders)), [orders])
+  useDidUpdateShallow(() => setOrderBy(createOrders(orders)), [orders])
   return orderBy
 }
 
