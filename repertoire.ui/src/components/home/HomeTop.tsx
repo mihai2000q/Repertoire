@@ -11,6 +11,11 @@ import HomeSongCard from './top/HomeSongCard.tsx'
 import HomeSongsLoader from './top/loader/HomeSongsLoader.tsx'
 import HomeArtistsLoader from './top/loader/HomeArtistsLoader.tsx'
 import HomeArtistCard from './top/HomeArtistCard.tsx'
+import createOrder from '../../utils/createOrder.ts'
+import SongProperty from '../../utils/enums/SongProperty.ts'
+import OrderType from '../../utils/enums/OrderType.ts'
+import ArtistProperty from '../../utils/enums/ArtistProperty.ts'
+import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
 
 enum TopEntity {
   Songs,
@@ -66,19 +71,28 @@ function HomeTop() {
   const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['progress desc', 'title asc']
+    orderBy: [
+      createOrder({ property: SongProperty.Progress, type: OrderType.Descending }),
+      createOrder({ property: SongProperty.Title })
+    ]
   })
 
   const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['updated_at desc', 'title asc']
+    orderBy: [
+      createOrder({ property: AlbumProperty.Progress, type: OrderType.Descending }),
+      createOrder({ property: AlbumProperty.Title })
+    ]
   })
 
   const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['updated_at desc', 'name asc']
+    orderBy: [
+      createOrder({ property: ArtistProperty.Progress, type: OrderType.Descending }),
+      createOrder({ property: ArtistProperty.Name })
+    ]
   })
 
   const topRef = useRef<HTMLDivElement>(null)
@@ -197,19 +211,19 @@ function HomeTop() {
           style={{ transition: 'padding-bottom 0.3s' }}
         >
           {topEntity === TopEntity.Songs &&
-            ((isSongsLoading || !songs) ? (
+            (isSongsLoading || !songs ? (
               <HomeSongsLoader />
             ) : (
               songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
             ))}
           {topEntity === TopEntity.Albums &&
-            ((isAlbumsLoading || !albums) ? (
+            (isAlbumsLoading || !albums ? (
               <HomeAlbumsLoader />
             ) : (
               albums.models.map((album) => <HomeAlbumCard key={album.id} album={album} />)
             ))}
           {topEntity === TopEntity.Artists &&
-            ((isArtistsLoading || !artists) ? (
+            (isArtistsLoading || !artists ? (
               <HomeArtistsLoader />
             ) : (
               artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)

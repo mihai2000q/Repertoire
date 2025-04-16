@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import {screen, waitFor} from '@testing-library/react'
 import Albums from './Albums.tsx'
 import { emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
@@ -9,6 +9,8 @@ import Album from '../types/models/Album.ts'
 import Song from '../types/models/Song.ts'
 import { RootState } from '../state/store.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import albumsOrders from "../data/albums/albumsOrders.ts";
+import createOrder from "../utils/createOrder.ts";
 
 describe('Albums', () => {
   const albums: Album[] = [
@@ -257,5 +259,33 @@ describe('Albums', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount + 1} albums out of ${totalCount + 1}`)
     ).toBeInTheDocument()
+  })
+
+  it('should order the albums', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = albumsOrders[8]
+    const newOrder = albumsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/albums', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Album> = {
+          models: albums,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Albums />)
+
+    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(initialOrder)]))
+
+    await user.click(screen.getByRole('button', { name: 'order-albums' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)]))
   })
 })

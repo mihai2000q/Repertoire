@@ -41,7 +41,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     useDeleteImageFromSongMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [songHasChanged, setSongHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = songHasChanged || imageHasChanged
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -57,14 +59,14 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     clearInputErrorOnChange: true,
     validate: zodResolver(editSongHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(
+      setSongHasChanged(
         values.title !== song.title ||
           values.releaseDate?.getTime() !==
             (song.releaseDate ? new Date(song.releaseDate).getTime() : undefined) ||
-          values.image !== song.imageUrl ||
           values.artistId !== song.artist?.id ||
           values.albumId !== song.album?.id
       )
+      setImageHasChanged(values.image !== song.imageUrl)
     }
   })
 
@@ -82,17 +84,16 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   }, [album])
 
   async function updateSong({ title, releaseDate, image, albumId, artistId }: EditSongHeaderForm) {
-    title = title.trim()
-
-    await updateSongMutation({
-      ...song,
-      guitarTuningId: song.guitarTuning?.id,
-      id: song.id,
-      title: title,
-      releaseDate: releaseDate,
-      albumId: albumId,
-      artistId: artistId
-    }).unwrap()
+    if (songHasChanged)
+      await updateSongMutation({
+        ...song,
+        guitarTuningId: song.guitarTuning?.id,
+        id: song.id,
+        title: title.trim(),
+        releaseDate: releaseDate,
+        albumId: albumId,
+        artistId: artistId
+      }).unwrap()
 
     if (image !== null && typeof image !== 'string') {
       await saveImageMutation({
@@ -105,7 +106,8 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
     toast.info('Song header updated!')
     onClose()
-    setHasChanged(false)
+    setSongHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (

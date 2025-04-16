@@ -23,11 +23,23 @@ import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
 import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/useOrderBy.ts'
+import songsOrders from '../data/songs/songsOrders.ts'
+import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
+import { songPropertyIcons } from '../data/icons/songPropertyIcons.tsx'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
   const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
   const { currentPage } = searchParams
+
+  const [orders, setOrders] = useLocalStorage({
+    key: LocalStorageKeys.SongsOrders,
+    defaultValue: songsOrders
+  })
+  const orderBy = useOrderBy(orders)
 
   const pageSize = 40
   const {
@@ -37,7 +49,7 @@ function Songs(): ReactElement {
   } = useGetSongsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: ['created_at DESC']
+    orderBy: orderBy
   })
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
@@ -68,9 +80,11 @@ function Songs(): ReactElement {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconArrowsSort size={17} />
-        </ActionIcon>
+        <AdvancedOrderMenu orders={orders} setOrders={setOrders} propertyIcons={songPropertyIcons}>
+          <ActionIcon aria-label={'order-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
+            <IconArrowsSort size={17} />
+          </ActionIcon>
+        </AdvancedOrderMenu>
         <ActionIcon aria-label={'filter-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconFilterFilled size={17} />
         </ActionIcon>

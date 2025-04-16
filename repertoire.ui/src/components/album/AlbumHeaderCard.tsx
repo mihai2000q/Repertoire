@@ -15,7 +15,7 @@ import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
-import titleFontSize from '../../utils/titleFontSize.ts'
+import titleFontSize from '../../utils/style/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 
@@ -72,8 +72,7 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
           src={isUnknownAlbum ? null : album.imageUrl}
           alt={!isUnknownAlbum && album.imageUrl ? album.title : null}
           radius={'10%'}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           bg={isUnknownAlbum ? 'white' : 'gray.5'}
           style={(theme) => ({
             aspectRatio: 1,

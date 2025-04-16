@@ -70,7 +70,7 @@ describe('Artist Songs Card', () => {
 
   const order: Order = {
     label: "Songs' order",
-    value: 'order value'
+    property: 'songs_order'
   }
 
   const handlers = [

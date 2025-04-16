@@ -24,11 +24,23 @@ import UnknownAlbumCard from '../components/albums/UnknownAlbumCard.tsx'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
 import albumsSearchParamsState from '../state/searchParams/AlbumsSearchParamsState.ts'
+import useOrderBy from '../hooks/useOrderBy.ts'
+import albumsOrders from '../data/albums/albumsOrders.ts'
+import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
+import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import { albumPropertyIcons } from '../data/icons/albumPropertyIcons.tsx'
 
 function Albums() {
   useFixedDocumentTitle('Albums')
   const [searchParams, setSearchParams] = useSearchParamsState(albumsSearchParamsState)
   const { currentPage } = searchParams
+
+  const [orders, setOrders] = useLocalStorage({
+    key: LocalStorageKeys.AlbumsOrders,
+    defaultValue: albumsOrders
+  })
+  const orderBy = useOrderBy(orders)
 
   const pageSize = 40
   const {
@@ -38,7 +50,7 @@ function Albums() {
   } = useGetAlbumsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: ['created_at DESC']
+    orderBy: orderBy
   })
 
   const showUnknownAlbum = useShowUnknownAlbum()
@@ -71,16 +83,19 @@ function Albums() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-albums'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconArrowsSort size={17} />
-        </ActionIcon>
+        <AdvancedOrderMenu orders={orders} setOrders={setOrders} propertyIcons={albumPropertyIcons}>
+          <ActionIcon aria-label={'order-albums'} variant={'grey'} size={'lg'} disabled={isLoading}>
+            <IconArrowsSort size={17} />
+          </ActionIcon>
+        </AdvancedOrderMenu>
         <ActionIcon aria-label={'filter-albums'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconFilterFilled size={17} />
         </ActionIcon>
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
-          {startCount} - {endCount} albums out of {(albums?.totalCount ?? 0) + (showUnknownAlbum ? 1 : 0)}
+          {startCount} - {endCount} albums out of{' '}
+          {(albums?.totalCount ?? 0) + (showUnknownAlbum ? 1 : 0)}
         </Text>
       )}
 

@@ -1,25 +1,54 @@
 import Order from '../../types/Order.ts'
 import SongProperty from '../../utils/enums/SongProperty.ts'
+import OrderType from '../../utils/enums/OrderType.ts'
 
 const artistSongsOrders: Order[] = [
   {
-    value: 'release_date desc nulls last, title asc',
     label: 'Latest Releases',
-    property: SongProperty.ReleaseDate
+    property: SongProperty.ReleaseDate,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.Title }]
   },
-  { value: 'title asc', label: 'Alphabetically', property: SongProperty.Title },
   {
-    value: 'difficulty desc nulls last, title asc',
+    label: 'Alphabetically',
+    property: SongProperty.Title,
+    type: OrderType.Ascending
+  },
+  {
     label: 'Difficulty',
-    property: SongProperty.Difficulty
+    property: SongProperty.Difficulty,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.Title }]
   },
-  { value: 'rehearsals desc, title asc', label: 'Rehearsals', property: SongProperty.Rehearsals },
-  { value: 'confidence desc, title asc', label: 'Confidence', property: SongProperty.Confidence },
-  { value: 'progress desc, title asc', label: 'Progress', property: SongProperty.Progress },
   {
-    value: 'last_time_played desc nulls last, title asc',
-    label: 'Last Time Played',
-    property: SongProperty.LastTimePlayed
+    label: 'Rehearsals',
+    property: SongProperty.Rehearsals,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.Title }]
+  },
+  {
+    label: 'Confidence',
+    property: SongProperty.Confidence,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.Title }]
+  },
+  {
+    label: 'Progress',
+    property: SongProperty.Progress,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.Title }]
+  },
+  {
+    label: 'Last Played',
+    property: SongProperty.LastPlayed,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.Title }]
   }
 ]
 

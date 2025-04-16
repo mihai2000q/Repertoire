@@ -1,6 +1,14 @@
-enum SongProperty {
+enum AlbumProperty {
+  Artist = '"Artist".name',
+  Confidence = 'confidence',
+  CreationDate = 'created_at',
+  LastModified = 'updated_at',
+  LastPlayed = 'last_time_played',
+  Progress = 'progress',
+  Rehearsals = 'rehearsals',
   ReleaseDate = 'release_date',
-  Title = 'title',
+  Songs = 'songs_count',
+  Title = 'title'
 }
 
-export default SongProperty
+export default AlbumProperty

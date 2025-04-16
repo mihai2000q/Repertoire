@@ -6,7 +6,8 @@ import {
   Center,
   Group,
   Loader,
-  Pagination, SimpleGrid,
+  Pagination,
+  SimpleGrid,
   Space,
   Stack,
   Text,
@@ -23,11 +24,23 @@ import useShowUnknownArtist from '../hooks/useShowUnknownArtist.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
 import artistsSearchParamsState from '../state/searchParams/ArtistsSearchParamsState.ts'
+import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/useOrderBy.ts'
+import artistsOrders from '../data/artists/artistsOrders.ts'
+import { artistPropertyIcons } from '../data/icons/artistPropertyIcons.tsx'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
   const [searchParams, setSearchParams] = useSearchParamsState(artistsSearchParamsState)
   const { currentPage } = searchParams
+
+  const [orders, setOrders] = useLocalStorage({
+    key: LocalStorageKeys.ArtistsOrders,
+    defaultValue: artistsOrders
+  })
+  const orderBy = useOrderBy(orders)
 
   const pageSize = 40
   const {
@@ -37,7 +50,7 @@ function Artists() {
   } = useGetArtistsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: ['created_at DESC']
+    orderBy: orderBy
   })
 
   const showUnknownArtist = useShowUnknownArtist()
@@ -70,9 +83,20 @@ function Artists() {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-artists'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconArrowsSort size={17} />
-        </ActionIcon>
+        <AdvancedOrderMenu
+          orders={orders}
+          setOrders={setOrders}
+          propertyIcons={artistPropertyIcons}
+        >
+          <ActionIcon
+            aria-label={'order-artists'}
+            variant={'grey'}
+            size={'lg'}
+            disabled={isLoading}
+          >
+            <IconArrowsSort size={17} />
+          </ActionIcon>
+        </AdvancedOrderMenu>
         <ActionIcon aria-label={'filter-artists'} variant={'grey'} size={'lg'} disabled={isLoading}>
           <IconFilterFilled size={17} />
         </ActionIcon>

@@ -8,8 +8,11 @@ import { setupServer } from 'msw/node'
 import { default as ArtistType } from './../types/models/Artist.ts'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
-import Album from "../types/models/Album.ts";
-import {SearchBase} from "../types/models/Search.ts";
+import Album from '../types/models/Album.ts'
+import { SearchBase } from '../types/models/Search.ts'
+import createOrder from '../utils/createOrder.ts'
+import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
+import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 
 describe('Artist', () => {
   const artist: ArtistType = {
@@ -92,7 +95,15 @@ describe('Artist', () => {
     expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(artist.name)
 
+    expect(albumsParams.getAll('orderBy')).toStrictEqual([
+      createOrder(artistAlbumsOrders[0]),
+      createOrder(artistAlbumsOrders[0].thenBy[0])
+    ])
     expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id = '${artist.id}'`])
+    expect(albumsParams.getAll('orderBy')).toStrictEqual([
+      createOrder(artistSongsOrders[0]),
+      createOrder(artistSongsOrders[0].thenBy[0])
+    ])
     expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id = '${artist.id}'`])
   })
 
@@ -122,7 +133,15 @@ describe('Artist', () => {
     expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()
     expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
 
+    expect(albumsParams.getAll('orderBy')).toStrictEqual([
+      createOrder(artistAlbumsOrders[0]),
+      createOrder(artistAlbumsOrders[0].thenBy[0])
+    ])
     expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id IS NULL`])
+    expect(albumsParams.getAll('orderBy')).toStrictEqual([
+      createOrder(artistSongsOrders[0]),
+      createOrder(artistSongsOrders[0].thenBy[0])
+    ])
     expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id IS NULL`])
   })
 

@@ -274,5 +274,5 @@ export const emptySongSection: SongSection = {
 
 export const emptyOrder: Order = {
   label: '',
-  value: ''
+  property: ''
 }

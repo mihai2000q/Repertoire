@@ -21,6 +21,9 @@ import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
 import dayjs from 'dayjs'
 import Song from '../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import createOrder from '../../utils/createOrder.ts'
+import SongProperty from '../../utils/enums/SongProperty.ts'
+import OrderType from '../../utils/enums/OrderType.ts'
 
 function Loader() {
   return (
@@ -147,7 +150,11 @@ function HomeRecentlyPlayedSongs() {
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['last_time_played desc', 'progress desc', 'title desc'],
+    orderBy: [
+      createOrder({ property: SongProperty.LastPlayed, type: OrderType.Descending }),
+      createOrder({ property: SongProperty.Progress, type: OrderType.Descending }),
+      createOrder({ property: SongProperty.Title })
+    ],
     searchBy: ['last_time_played IS NOT NULL']
   })
 

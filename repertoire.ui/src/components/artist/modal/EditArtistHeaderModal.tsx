@@ -38,7 +38,9 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     useDeleteImageFromArtistMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [artistHasChanged, setArtistHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = artistHasChanged || imageHasChanged
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -52,11 +54,8 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     clearInputErrorOnChange: true,
     validate: zodResolver(editArtistHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(
-        values.name !== artist.name ||
-          values.image !== artist.imageUrl ||
-          values.isBand !== artist.isBand
-      )
+      setArtistHasChanged(values.name !== artist.name || values.isBand !== artist.isBand)
+      setImageHasChanged(values.image !== artist.imageUrl)
     }
   })
 
@@ -65,26 +64,24 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
   useDidUpdate(() => setImage(artist.imageUrl), [artist])
 
   async function updateArtist({ name, image, isBand }: EditArtistHeaderForm) {
-    name = name.trim()
+    if (artistHasChanged)
+      await updateArtistMutation({
+        id: artist.id,
+        name: name.trim(),
+        isBand: isBand
+      }).unwrap()
 
-    await updateArtistMutation({
-      id: artist.id,
-      name: name,
-      isBand: isBand
-    }).unwrap()
-
-    if (image !== null && typeof image !== 'string') {
+    if (image !== null && typeof image !== 'string')
       await saveImageMutation({
         id: artist.id,
         image: image
       })
-    } else if (image === null && artist.imageUrl) {
-      await deleteImageMutation(artist.id)
-    }
+    else if (image === null && artist.imageUrl) await deleteImageMutation(artist.id)
 
     toast.info('Artist updated!')
     onClose()
-    setHasChanged(false)
+    setArtistHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (

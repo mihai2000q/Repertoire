@@ -31,7 +31,7 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
         onMouseLeave={() => setIsImageHovered(false)}
         size={125}
         src={artist.imageUrl}
-        alt={artist.name}
+        alt={artist.imageUrl && artist.name}
         bg={'gray.0'}
         onClick={handleClick}
         sx={(theme) => ({

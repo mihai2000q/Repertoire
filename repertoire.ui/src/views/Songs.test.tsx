@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Songs from './Songs.tsx'
 import { emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
@@ -8,6 +8,8 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import createOrder from '../utils/createOrder.ts'
+import songsOrders from '../data/songs/songsOrders.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -187,5 +189,33 @@ describe('Songs', () => {
 
     expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-song-card')).toBeInTheDocument()
+  })
+
+  it('should order the songs', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = songsOrders[12]
+    const newOrder = songsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/songs', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Song> = {
+          models: songs,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Songs />)
+
+    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(initialOrder)]))
+
+    await user.click(screen.getByRole('button', { name: 'order-songs' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)]))
   })
 })

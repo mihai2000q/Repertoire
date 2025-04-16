@@ -23,6 +23,9 @@ import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import createOrder from '../../../utils/createOrder.ts'
+import OrderType from '../../../utils/enums/OrderType.ts'
+import SongProperty from '../../../utils/enums/SongProperty.ts'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -41,7 +44,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   } = useGetSongsQuery({
     currentPage: 1,
     pageSize: 20,
-    orderBy: ['updated_at desc'],
+    orderBy: [createOrder({ property: SongProperty.LastModified, type: OrderType.Descending })],
     searchBy: [
       `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
       ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])

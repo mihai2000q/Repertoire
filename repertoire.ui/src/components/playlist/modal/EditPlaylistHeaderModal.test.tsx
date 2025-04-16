@@ -35,7 +35,10 @@ describe('Edit Playlist Header Modal', () => {
     expect(screen.getByRole('heading', { name: /edit playlist header/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', playlist.imageUrl)
+    expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute(
+      'src',
+      playlist.imageUrl
+    )
 
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
@@ -92,19 +95,14 @@ describe('Edit Playlist Header Modal', () => {
     })
   })
 
-  it('should send edit request and save image request when the image is replaced', async () => {
+  it('should send only save image request when the image is replaced', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdatePlaylistRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/playlists', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdatePlaylistRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/playlists/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -124,28 +122,18 @@ describe('Edit Playlist Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      id: playlist.id,
-      title: playlist.title,
-      description: playlist.description
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(playlist.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and save image request when the image is first added', async () => {
+  it('should send only save image request when the image is first added', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdatePlaylistRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/playlists', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdatePlaylistRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/playlists/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -171,26 +159,16 @@ describe('Edit Playlist Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      id: playlist.id,
-      title: playlist.title,
-      description: playlist.description
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(playlist.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete image request', async () => {
+  it('should send only delete image request when the image is removed', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdatePlaylistRequest
     server.use(
-      http.put('/playlists', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdatePlaylistRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.delete(`/playlists/images/${playlist.id}`, () => {
         return HttpResponse.json({ message: 'it worked' })
       })
@@ -209,11 +187,51 @@ describe('Edit Playlist Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('should send edit request and save image request when both have changed', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+    const newTitle = 'New Playlist'
+    const onClose = vitest.fn()
+
+    let capturedRequest: UpdatePlaylistRequest
+    let capturedSaveImageFormData: FormData
+    server.use(
+      http.put('/playlists', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdatePlaylistRequest
+        return HttpResponse.json({ message: 'it worked' })
+      }),
+      http.put('/playlists/images', async (req) => {
+        capturedSaveImageFormData = await req.request.formData()
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(
+      withToastify(<EditPlaylistHeaderModal opened={true} onClose={onClose} playlist={playlist} />)
+    )
+
+    const titleField = screen.getByRole('textbox', { name: /title/i })
+    const saveButton = screen.getByRole('button', { name: /save/i })
+
+    await user.clear(titleField)
+    await user.type(titleField, newTitle)
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    await user.click(saveButton)
+
+    expect(await screen.findByText(/playlist updated/i)).toBeInTheDocument()
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       id: playlist.id,
-      title: playlist.title,
+      title: newTitle,
       description: playlist.description
     })
+    expect(capturedSaveImageFormData.get('id')).toBe(playlist.id)
+    expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
   it('should disable the save button when no changes are made', async () => {

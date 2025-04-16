@@ -208,7 +208,7 @@ describe('Artist Song Card', () => {
     it('should display the last time played date, when it is last time played', () => {
       const order = {
         ...emptyOrder,
-        property: SongProperty.LastTimePlayed
+        property: SongProperty.LastPlayed
       }
 
       const localSong = {

@@ -127,8 +127,7 @@ function AddNewSongModalSecondStep({
                             provided.draggableProps.style.left = 24
                           }
                           if ('top' in provided.draggableProps.style) {
-                            provided.draggableProps.style.top =
-                              provided.draggableProps.style.top - 36
+                            provided.draggableProps.style.top -= 36
                           }
                         }
                         return (

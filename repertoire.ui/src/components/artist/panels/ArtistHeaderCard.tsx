@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import { useState } from 'react'
-import lowerTitleFontSize from '../../../utils/lowerTitleFontSize.ts'
+import lowerTitleFontSize from '../../../utils/style/lowerTitleFontSize.ts'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface ArtistHeaderCardProps {

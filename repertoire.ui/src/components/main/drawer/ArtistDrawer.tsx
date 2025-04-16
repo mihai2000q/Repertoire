@@ -30,6 +30,10 @@ import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import createOrder from '../../../utils/createOrder.ts'
+import OrderType from '../../../utils/enums/OrderType.ts'
+import AlbumProperty from '../../../utils/enums/AlbumProperty.ts'
+import SongProperty from '../../../utils/enums/SongProperty.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -48,14 +52,28 @@ function ArtistDrawer() {
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
     {
-      orderBy: ['release_date desc nulls last', 'title asc'],
+      orderBy: [
+        createOrder({
+          property: AlbumProperty.ReleaseDate,
+          type: OrderType.Descending,
+          nullable: true
+        }),
+        createOrder({ property: AlbumProperty.Title })
+      ],
       searchBy: [`artist_id = '${artistId}'`]
     },
     { skip: !artistId }
   )
   const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
     {
-      orderBy: ['release_date desc nulls last', 'title asc'],
+      orderBy: [
+        createOrder({
+          property: SongProperty.ReleaseDate,
+          type: OrderType.Descending,
+          nullable: true
+        }),
+        createOrder({ property: SongProperty.Title })
+      ],
       searchBy: [`songs.artist_id = '${artistId}'`]
     },
     { skip: !artistId }

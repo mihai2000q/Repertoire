@@ -25,7 +25,7 @@ import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
-import {ArtistSearch} from "../../../types/models/Search.ts";
+import { ArtistSearch } from '../../../types/models/Search.ts'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -40,7 +40,9 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     useDeleteImageFromAlbumMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [albumHasChanged, setAlbumHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = albumHasChanged || imageHasChanged
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -55,13 +57,13 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     clearInputErrorOnChange: true,
     validate: zodResolver(editAlbumHeaderValidation),
     onValuesChange: (values) => {
-      setHasChanged(
+      setAlbumHasChanged(
         values.title !== album.title ||
           values.releaseDate?.getTime() !==
             (album.releaseDate ? new Date(album.releaseDate).getTime() : undefined) ||
-          values.artistId !== album.artist?.id ||
-          values.image !== album.imageUrl
+          values.artistId !== album.artist?.id
       )
+      setImageHasChanged(values.image !== album.imageUrl)
     }
   })
 
@@ -73,27 +75,25 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
 
   async function updateAlbum({ title, releaseDate, image, artistId }: EditAlbumHeaderForm) {
-    title = title.trim()
+    if (albumHasChanged)
+      await updateAlbumMutation({
+        id: album.id,
+        title: title.trim(),
+        releaseDate: releaseDate,
+        artistId: artistId
+      }).unwrap()
 
-    await updateAlbumMutation({
-      id: album.id,
-      title: title,
-      releaseDate: releaseDate,
-      artistId: artistId
-    }).unwrap()
-
-    if (image && typeof image !== 'string') {
+    if (image && typeof image !== 'string')
       await saveImageMutation({
         id: album.id,
         image: image
       })
-    } else if (!image && album.imageUrl) {
-      await deleteImageMutation(album.id)
-    }
+    else if (!image && album.imageUrl) await deleteImageMutation(album.id)
 
     toast.info('Album updated!')
     onClose()
-    setHasChanged(false)
+    setAlbumHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (

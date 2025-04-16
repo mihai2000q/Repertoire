@@ -14,7 +14,7 @@ import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import titleFontSize from '../../../utils/titleFontSize.ts'
+import titleFontSize from '../../../utils/style/titleFontSize.ts'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
@@ -74,8 +74,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           radius={'10%'}
           src={song.imageUrl ?? song.album?.imageUrl}
           alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           bg={'gray.5'}
           style={(theme) => ({
             aspectRatio: 1,

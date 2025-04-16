@@ -1,11 +1,37 @@
 import Order from '../../types/Order.ts'
 import SongProperty from '../../utils/enums/SongProperty.ts'
+import OrderType from '../../utils/enums/OrderType.ts'
 
 const playlistSongsOrders: Order[] = [
-  { value: 'song_track_no asc', label: 'Track Number', property: SongProperty.PlaylistTrackNo },
-  { value: 'release_date desc', label: 'Latest Releases', property: SongProperty.ReleaseDate },
-  { value: 'title asc', label: 'Alphabetically', property: SongProperty.Title },
-  { value: 'release_date asc', label: 'First Releases', property: SongProperty.ReleaseDate }
+  { label: 'Track Number', property: SongProperty.PlaylistTrackNo },
+  { label: 'Alphabetically', property: SongProperty.Title },
+  {
+    label: 'Latest Releases',
+    property: SongProperty.ReleaseDate,
+    type: OrderType.Descending,
+    nullable: true
+  },
+  {
+    label: 'Difficulty',
+    property: SongProperty.Difficulty,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.PlaylistTrackNo }]
+  },
+  {
+    label: 'Progress',
+    property: SongProperty.Progress,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.PlaylistTrackNo }]
+  },
+  {
+    label: 'Last Played',
+    property: SongProperty.LastPlayed,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.PlaylistTrackNo }]
+  }
 ]
 
 export default playlistSongsOrders

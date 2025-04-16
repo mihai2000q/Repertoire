@@ -13,6 +13,9 @@ import {
 import { useGetPlaylistsQuery } from '../../state/api/playlistsApi.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { IconPlaylist } from '@tabler/icons-react'
+import createOrder from '../../utils/createOrder.ts'
+import OrderType from '../../utils/enums/OrderType.ts'
+import PlaylistProperty from '../../utils/enums/PlaylistProperty.ts'
 
 function Loader() {
   return (
@@ -76,7 +79,7 @@ function HomePlaylists({ ...others }: CardProps) {
   const { data: playlists, isLoading } = useGetPlaylistsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['updated_at desc']
+    orderBy: [createOrder({ property: PlaylistProperty.LastModified, type: OrderType.Descending })]
   })
 
   return (
