@@ -6,6 +6,7 @@ import (
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
+	"slices"
 	"testing"
 	"time"
 
@@ -162,6 +163,65 @@ func ResponseBandMember(t *testing.T, bandMember model.BandMember, response mode
 func ResponseBandMemberRole(t *testing.T, bandMemberRole model.BandMemberRole, response model.BandMemberRole) {
 	assert.Equal(t, bandMemberRole.ID, response.ID)
 	assert.Equal(t, bandMemberRole.Name, response.Name)
+}
+
+func ResponseEnhancedSong(
+	t *testing.T,
+	song model.Song,
+	response model.EnhancedSong,
+) {
+	assert.Equal(t, song.ID, response.ID)
+	assert.Equal(t, song.Title, response.Title)
+	assert.Equal(t, song.Description, response.Description)
+	Time(t, song.ReleaseDate, response.ReleaseDate)
+	assert.Equal(t, song.ImageURL, response.ImageURL)
+	assert.Equal(t, song.IsRecorded, response.IsRecorded)
+	assert.Equal(t, song.Bpm, response.Bpm)
+	assert.Equal(t, song.Difficulty, response.Difficulty)
+	assert.Equal(t, song.SongsterrLink, response.SongsterrLink)
+	assert.Equal(t, song.YoutubeLink, response.YoutubeLink)
+	assert.Equal(t, song.AlbumTrackNo, response.AlbumTrackNo)
+	assert.Equal(t, song.Rehearsals, response.Rehearsals)
+	assert.Equal(t, song.Confidence, response.Confidence)
+	assert.Equal(t, song.Progress, response.Progress)
+
+	if song.Album != nil {
+		ResponseAlbum(t, *song.Album, *response.Album, false, false)
+	} else {
+		assert.Nil(t, response.Album)
+	}
+
+	if song.Artist != nil {
+		ResponseArtist(t, *song.Artist, *response.Artist, true)
+	} else {
+		assert.Nil(t, response.Artist)
+	}
+
+	ResponseSongSettings(t, song.Settings, response.Settings)
+
+	if song.GuitarTuning != nil {
+		ResponseGuitarTuning(t, *song.GuitarTuning, *response.GuitarTuning)
+	} else {
+		assert.Nil(t, response.GuitarTuning)
+	}
+
+	for i := range song.Sections {
+		ResponseSongSection(t, song.Sections[i], response.Sections[i], false)
+	}
+
+	for i := range song.Playlists {
+		ResponsePlaylist(t, song.Playlists[i], response.Playlists[i], false)
+	}
+
+	solos := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
+		return section.SongSectionType.Name != "Solo"
+	}))
+	riffs := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
+		return section.SongSectionType.Name != "Riff"
+	}))
+	assert.Equal(t, len(song.Sections), response.SectionsCount)
+	assert.Equal(t, solos, response.Solos)
+	assert.Equal(t, riffs, response.Riffs)
 }
 
 func ResponseSong(

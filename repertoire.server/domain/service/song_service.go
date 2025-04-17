@@ -17,7 +17,7 @@ type SongService interface {
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
-	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
+	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.EnhancedSong], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
@@ -131,7 +131,7 @@ func (s *songService) DeleteImage(id uuid.UUID) *wrapper.ErrorCode {
 	return s.deleteImageFromSong.Handle(id)
 }
 
-func (s *songService) GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode) {
+func (s *songService) GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.EnhancedSong], *wrapper.ErrorCode) {
 	return s.getAllSongs.Handle(request, token)
 }
 

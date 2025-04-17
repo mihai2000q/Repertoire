@@ -10,6 +10,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type EnhancedSong struct {
+	Song
+	SectionsCount float64 `gorm:"->" json:"sectionsCount"`
+	Solos         float64 `gorm:"->" json:"solos"`
+	Riffs         float64 `gorm:"->" json:"riffs"`
+}
+
 type Song struct {
 	ID             uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title          string             `gorm:"size:100; not null" json:"title"`

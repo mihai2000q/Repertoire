@@ -24,7 +24,7 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseSongs []model.Song
+	var responseSongs []model.EnhancedSong
 	_ = json.Unmarshal(w.Body.Bytes(), &responseSongs)
 
 	db := utils.GetDatabase(t)
@@ -39,14 +39,6 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 		Find(&songs)
 
 	for i := range responseSongs {
-		assertion.ResponseSong(
-			t,
-			songs[i],
-			responseSongs[i],
-			true,
-			true,
-			true,
-			false,
-		)
+		assertion.ResponseEnhancedSong(t, songs[i], responseSongs[i])
 	}
 }
