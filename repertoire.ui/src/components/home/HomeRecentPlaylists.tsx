@@ -43,8 +43,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
     <Group wrap={'nowrap'}>
       <Avatar
         radius={'28%'}
-        w={60}
-        h={'unset'}
+        size={60}
         src={playlist.imageUrl}
         alt={playlist.imageUrl && playlist.title}
         bg={'gray.5'}
@@ -75,7 +74,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
   )
 }
 
-function HomePlaylists({ ...others }: CardProps) {
+function HomeRecentPlaylists({ ...others }: CardProps) {
   const { data: playlists, isLoading } = useGetPlaylistsQuery({
     pageSize: 20,
     currentPage: 1,
@@ -86,7 +85,7 @@ function HomePlaylists({ ...others }: CardProps) {
     <Card aria-label={'playlists'} variant={'panel'} {...others} p={0}>
       <Stack h={'100%'} gap={'xs'}>
         <Text c={'gray.7'} fz={'lg'} fw={800} px={'md'} pt={'sm'}>
-          Playlists
+          Recent Playlists
         </Text>
 
         {playlists?.models.length === 0 && (
@@ -97,8 +96,8 @@ function HomePlaylists({ ...others }: CardProps) {
 
         <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7}>
           {/*DO NOT Change the Max Height, it helps with the responsive layout (somehow for some reason)*/}
-          {/*Also the value 100 is randomly chosen, it has no effect whatsoever*/}
-          <SimpleGrid cols={2} px={'md'} pt={'xs'} mah={100}>
+          {/*Also value 100 is randomly chosen, it has no effect whatsoever*/}
+          <SimpleGrid cols={2} px={'md'} py={'xs'} mah={100}>
             {isLoading || !playlists ? (
               <Loader />
             ) : (
@@ -113,4 +112,4 @@ function HomePlaylists({ ...others }: CardProps) {
   )
 }
 
-export default HomePlaylists
+export default HomeRecentPlaylists

@@ -1,12 +1,12 @@
 import { emptyPlaylist, reduxRender } from '../../test-utils.tsx'
-import HomePlaylists from './HomePlaylists.tsx'
+import HomeRecentPlaylists from './HomeRecentPlaylists.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { screen } from '@testing-library/react'
 
-describe('Home Playlists', () => {
+describe('Home Recent Playlists', () => {
   const playlists: Playlist[] = [
     {
       ...emptyPlaylist,
@@ -40,9 +40,9 @@ describe('Home Playlists', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<HomePlaylists />)
+    reduxRender(<HomeRecentPlaylists />)
 
-    expect(screen.getByText(/playlists/i)).toBeInTheDocument()
+    expect(screen.getByText(/recent playlists/i)).toBeInTheDocument()
     for (const playlist of playlists) {
       expect(await screen.findByText(playlist.title)).toBeInTheDocument()
       if (playlist.imageUrl)
@@ -66,7 +66,7 @@ describe('Home Playlists', () => {
       })
     )
 
-    reduxRender(<HomePlaylists />)
+    reduxRender(<HomeRecentPlaylists />)
 
     expect(await screen.findByText(/no playlists/i)).toBeInTheDocument()
   })
