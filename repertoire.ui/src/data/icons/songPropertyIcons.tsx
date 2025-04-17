@@ -7,6 +7,7 @@ import {
   IconCalendarMonth,
   IconCalendarRepeat,
   IconCalendarWeek,
+  IconList,
   IconRepeat,
   IconStarFilled,
   IconTimeline,
@@ -30,6 +31,7 @@ export const songPropertyIcons = new Map<string, ReactElement>([
   [SongProperty.ReleaseDate, <IconCalendarRepeat size={'100%'} key={'release-date'} />],
   [SongProperty.Riffs, <IconBombFilled size={'100%'} key={'riffs'} />],
   [SongProperty.Rehearsals, <IconRepeat size={'100%'} key={'rehearsals'} />],
+  [SongProperty.Sections, <IconList size={'100%'} key={'riffs'} />],
   [SongProperty.Solos, <CustomIconLightningTrio size={'100%'} key={'solos'} />],
   [SongProperty.Title, <IconAbc size={'100%'} key={'title'} />]
 ])

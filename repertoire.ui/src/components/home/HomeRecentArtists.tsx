@@ -84,14 +84,11 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
   )
 }
 
-function HomeTopArtists({ ...others }: CardProps) {
+function HomeRecentArtists({ ...others }: CardProps) {
   const { data: artists, isLoading } = useGetArtistsQuery({
     pageSize: 15,
     currentPage: 1,
-    orderBy: [
-      createOrder({ property: ArtistProperty.Progress, type: OrderType.Descending }),
-      createOrder({ property: ArtistProperty.Name })
-    ]
+    orderBy: [createOrder({ property: ArtistProperty.LastModified, type: OrderType.Descending })]
   })
 
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -121,7 +118,7 @@ function HomeTopArtists({ ...others }: CardProps) {
       <Stack h={'100%'} gap={'xs'}>
         <Group px={'md'} pt={'sm'} justify={'space-between'}>
           <Text c={'gray.7'} fz={'lg'} fw={800}>
-            Top Artists
+            Recent Artists
           </Text>
 
           <Group gap={4}>
@@ -173,4 +170,4 @@ function HomeTopArtists({ ...others }: CardProps) {
   )
 }
 
-export default HomeTopArtists
+export default HomeRecentArtists

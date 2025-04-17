@@ -4,11 +4,11 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Artist from '../../types/models/Artist.ts'
 import { screen } from '@testing-library/react'
-import HomeTopArtists from './HomeTopArtists.tsx'
+import HomeRecentArtists from './HomeRecentArtists.tsx'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../state/store.ts'
 
-describe('Home Top Artists', () => {
+describe('Home Recent Artists', () => {
   const artists: Artist[] = [
     {
       ...emptyArtist,
@@ -42,9 +42,9 @@ describe('Home Top Artists', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<HomeTopArtists />)
+    reduxRender(<HomeRecentArtists />)
 
-    expect(screen.getByText(/top artists/i)).toBeInTheDocument()
+    expect(screen.getByText(/recent artists/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'forward' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument()
     expect(screen.getByTestId('artists-loader')).toBeInTheDocument()
@@ -71,7 +71,7 @@ describe('Home Top Artists', () => {
       })
     )
 
-    reduxRender(<HomeTopArtists />)
+    reduxRender(<HomeRecentArtists />)
 
     expect(await screen.findByText(/no artists/i)).toBeInTheDocument()
   })
@@ -81,7 +81,7 @@ describe('Home Top Artists', () => {
 
     const artist = artists[1]
 
-    const [_, store] = reduxRender(<HomeTopArtists />)
+    const [_, store] = reduxRender(<HomeRecentArtists />)
 
     await user.click(await screen.findByRole('img', { name: artist.name }))
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()

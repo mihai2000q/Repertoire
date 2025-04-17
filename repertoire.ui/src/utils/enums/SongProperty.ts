@@ -13,6 +13,7 @@ enum SongProperty {
   Rehearsals = 'rehearsals',
   ReleaseDate = 'release_date',
   Riffs = 'riffs',
+  Sections = 'sections_count',
   Solos = 'solos',
   Title = 'title'
 }
