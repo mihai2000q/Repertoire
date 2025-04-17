@@ -13,7 +13,7 @@ type SongRepository interface {
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetAllByUser(
-		songs *[]model.Song,
+		songs *[]model.EnhancedSong,
 		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
@@ -109,7 +109,7 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 }
 
 func (s songRepository) GetAllByUser(
-	songs *[]model.Song,
+	songs *[]model.EnhancedSong,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -117,7 +117,6 @@ func (s songRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := s.client.Model(&model.Song{}).
-		Distinct("songs.*").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Preload("Sections.Instrument").
@@ -126,6 +125,9 @@ func (s songRepository) GetAllByUser(
 		Joins("Album").
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
 		Where(model.Song{UserID: userID})
+
+	s.enhanceSongsWithSongSectionsQuery(tx, userID)
+
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)
 	tx = database.Paginate(tx, currentPage, pageSize)
@@ -135,8 +137,11 @@ func (s songRepository) GetAllByUser(
 func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
 	tx := s.client.Model(&model.Song{}).
 		Distinct("songs.id").
-		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id").
+		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO REMOVE
 		Where(model.Song{UserID: userID})
+
+	s.enhanceSongsWithSongSectionsQuery(tx, userID)
+
 	tx = database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
@@ -237,6 +242,27 @@ func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 
 func (s songRepository) Delete(id uuid.UUID) error {
 	return s.client.Delete(&model.Song{}, id).Error
+}
+
+func (s songRepository) enhanceSongsWithSongSectionsQuery(tx *gorm.DB, userID uuid.UUID) {
+	enhancedSections := s.client.Model(&model.SongSection{}).
+		Select("song_id",
+			"COUNT(*) as sections_count",
+			"COUNT(*) filter (where song_section_types.name = 'Solo') as solos",
+			"COUNT(*) filter (where song_section_types.name = 'Riff') as riffs",
+		).
+		Joins("LEFT JOIN song_section_types ON song_section_types.id = song_sections.song_section_type_id").
+		Joins("JOIN songs ON songs.id = song_sections.song_id").
+		Where("songs.user_id = ?", userID).
+		Group("song_id")
+
+	tx.Joins("LEFT JOIN (?) AS es ON es.song_id = songs.id", enhancedSections).
+		Select(
+			"songs.*",
+			"COALESCE(es.sections_count, 0) as sections_count",
+			"COALESCE(es.solos, 0) as solos",
+			"COALESCE(es.riffs, 0) as riffs",
+		)
 }
 
 // Settings

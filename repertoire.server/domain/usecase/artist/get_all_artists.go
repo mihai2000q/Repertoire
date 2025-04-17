@@ -20,7 +20,7 @@ func NewGetAllArtists(repository repository.ArtistRepository, jwtService service
 	}
 }
 
-func (g GetAllArtists) Handle(request requests.GetArtistsRequest, token string) (result wrapper.WithTotalCount[model.Artist], e *wrapper.ErrorCode) {
+func (g GetAllArtists) Handle(request requests.GetArtistsRequest, token string) (result wrapper.WithTotalCount[model.EnhancedArtist], e *wrapper.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode

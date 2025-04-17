@@ -20,7 +20,7 @@ func NewGetAllAlbums(repository repository.AlbumRepository, jwtService service.J
 	}
 }
 
-func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result wrapper.WithTotalCount[model.Album], e *wrapper.ErrorCode) {
+func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result wrapper.WithTotalCount[model.EnhancedAlbum], e *wrapper.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode

@@ -24,7 +24,7 @@ func TestGetAllAlbums_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseAlbums []model.Album
+	var responseAlbums []model.EnhancedAlbum
 	_ = json.Unmarshal(w.Body.Bytes(), &responseAlbums)
 
 	db := utils.GetDatabase(t)
@@ -33,6 +33,6 @@ func TestGetAllAlbums_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
 	db.Joins("Artist").Find(&albums)
 
 	for i := range responseAlbums {
-		assertion.ResponseAlbum(t, albums[i], responseAlbums[i], true, false)
+		assertion.ResponseEnhancedAlbum(t, albums[i], responseAlbums[i], false)
 	}
 }

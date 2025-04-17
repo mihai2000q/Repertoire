@@ -86,9 +86,8 @@ func TestGetAll_WhenGetPlaylistsCountFails_ShouldReturnInternalServerError(t *te
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
-	expectedPlaylists := &[]model.Playlist{
-		{Title: "Some Playlist"},
-		{Title: "Some other Playlist"},
+	expectedPlaylists := &[]model.EnhancedPlaylist{
+		{Playlist: model.Playlist{Title: "Some Playlist"}},
 	}
 
 	// given - mocking
@@ -142,9 +141,9 @@ func TestGetAll_WhenSuccessful_ShouldReturnPlaylistsWithTotalCount(t *testing.T)
 	request := requests.GetPlaylistsRequest{}
 	token := "This is a token"
 
-	expectedPlaylists := &[]model.Playlist{
-		{Title: "Some Playlist"},
-		{Title: "Some other Playlist"},
+	expectedPlaylists := &[]model.EnhancedPlaylist{
+		{Playlist: model.Playlist{Title: "Some Playlist"}},
+		{Playlist: model.Playlist{Title: "Some other Playlist"}},
 	}
 	expectedTotalCount := &[]int64{20}[0]
 

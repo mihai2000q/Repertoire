@@ -3,10 +3,31 @@ package model
 import (
 	"gorm.io/gorm"
 	"repertoire/server/internal"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+type EnhancedPlaylist struct {
+	Playlist
+	SongsCount  float64  `gorm:"->" json:"songsCount"`
+	SongsIDsAgg string   `gorm:"->; column:song_ids" json:"-"`
+	SongsIDs    []string `gorm:"-" json:"songIds"`
+}
+
+func (p *EnhancedPlaylist) AfterFind(*gorm.DB) error {
+	p.SongsIDs = []string{}
+
+	if len(p.SongsIDsAgg) == 0 {
+		return nil
+	}
+
+	for _, id := range strings.Split(p.SongsIDsAgg, ",") {
+		p.SongsIDs = append(p.SongsIDs, id)
+	}
+	return nil
+}
 
 type Playlist struct {
 	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
@@ -38,6 +59,10 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
 	p.ImageURL = p.ImageURL.ToFullURL(p.UpdatedAt)
+
+	if len(p.PlaylistSongs) == 0 {
+		return nil
+	}
 
 	p.Songs = []Song{} // in case there are no playlist songs
 	for _, playlistSong := range p.PlaylistSongs {
