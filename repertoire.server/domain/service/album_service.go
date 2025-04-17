@@ -16,7 +16,7 @@ type AlbumService interface {
 	Delete(request requests.DeleteAlbumRequest) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Get(request requests.GetAlbumRequest) (model.Album, *wrapper.ErrorCode)
-	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode)
+	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.EnhancedAlbum], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromAlbumRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
@@ -82,7 +82,7 @@ func (a *albumService) Get(request requests.GetAlbumRequest) (model.Album, *wrap
 	return a.getAlbum.Handle(request)
 }
 
-func (a *albumService) GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.Album], *wrapper.ErrorCode) {
+func (a *albumService) GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.EnhancedAlbum], *wrapper.ErrorCode) {
 	return a.getAllAlbums.Handle(request, token)
 }
 

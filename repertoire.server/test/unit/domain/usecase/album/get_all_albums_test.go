@@ -89,9 +89,8 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedAlbums := &[]model.Album{
-		{Title: "Some Album"},
-		{Title: "Some other Album"},
+	expectedAlbums := &[]model.EnhancedAlbum{
+		{Album: model.Album{Title: "Some Album"}},
 	}
 
 	albumRepository.
@@ -141,9 +140,9 @@ func TestGetAll_WhenSuccessful_ShouldReturnAlbumsWithTotalCount(t *testing.T) {
 	request := requests.GetAlbumsRequest{}
 	token := "this is a token"
 
-	expectedAlbums := &[]model.Album{
-		{Title: "Some Album"},
-		{Title: "Some other Album"},
+	expectedAlbums := &[]model.EnhancedAlbum{
+		{Album: model.Album{Title: "Some Album"}},
+		{Album: model.Album{Title: "Some Other Album"}},
 	}
 	expectedTotalCount := &[]int64{20}[0]
 

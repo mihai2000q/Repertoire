@@ -73,7 +73,7 @@ func (a *AlbumRepositoryMock) GetAllByIDsWithSongsAndArtist(albums *[]model.Albu
 }
 
 func (a *AlbumRepositoryMock) GetAllByUser(
-	albums *[]model.Album,
+	albums *[]model.EnhancedAlbum,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -83,7 +83,7 @@ func (a *AlbumRepositoryMock) GetAllByUser(
 	args := a.Called(albums, userID, currentPage, pageSize, orderBy, searchBy)
 
 	if len(args) > 1 {
-		*albums = *args.Get(1).(*[]model.Album)
+		*albums = *args.Get(1).(*[]model.EnhancedAlbum)
 	}
 
 	return args.Error(0)

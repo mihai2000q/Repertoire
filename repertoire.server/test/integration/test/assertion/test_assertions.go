@@ -54,6 +54,52 @@ func AssertMessage[T any](
 
 // models
 
+func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.EnhancedAlbum, withEnhancedSongs bool) {
+	assert.Equal(t, album.ID, response.ID)
+	assert.Equal(t, album.Title, response.Title)
+	Time(t, album.ReleaseDate, response.ReleaseDate)
+	assert.Equal(t, album.ImageURL, response.ImageURL)
+
+	if album.Artist != nil {
+		ResponseArtist(t, *album.Artist, *response.Artist, false)
+	} else {
+		assert.Nil(t, response.Artist)
+	}
+
+	if !withEnhancedSongs {
+		return
+	}
+
+	var rehearsals float64 = 0
+	var confidence float64 = 0
+	var progress float64 = 0
+	var lastTimePlayed *time.Time
+	for _, song := range album.Songs {
+		rehearsals = rehearsals + song.Rehearsals
+		confidence = confidence + song.Confidence
+		progress = progress + song.Progress
+		if song.LastTimePlayed != nil && lastTimePlayed == nil ||
+			song.LastTimePlayed != nil && lastTimePlayed != nil && lastTimePlayed.Before(*song.LastTimePlayed) {
+			lastTimePlayed = song.LastTimePlayed
+		}
+	}
+	if rehearsals > 0 {
+		rehearsals = rehearsals / float64(len(album.Songs))
+	}
+	if confidence > 0 {
+		confidence = confidence / float64(len(album.Songs))
+	}
+	if progress > 0 {
+		progress = progress / float64(len(album.Songs))
+	}
+
+	assert.Len(t, response.SongsCount, len(album.Songs))
+	assert.Equal(t, rehearsals, response.Rehearsals)
+	assert.Equal(t, confidence, response.Confidence)
+	assert.Equal(t, progress, response.Progress)
+	assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
+}
+
 func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withArtist bool, withSongs bool) {
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)

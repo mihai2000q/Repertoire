@@ -8,6 +8,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type EnhancedAlbum struct {
+	Album
+	SongsCount     float64   `gorm:"->" json:"songsCount"`
+	Rehearsals     float64   `gorm:"->" json:"rehearsals"`
+	Confidence     float64   `gorm:"->" json:"confidence"`
+	Progress       float64   `gorm:"->" json:"progress"`
+	LastTimePlayed time.Time `gorm:"->" json:"lastTimePlayed"`
+}
+
 type Album struct {
 	ID          uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title       string             `gorm:"size:100; not null" json:"title"`
