@@ -2,13 +2,15 @@ import Artist from '../../types/models/Artist.ts'
 import { Avatar, Center, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { IconTrash } from '@tabler/icons-react'
+import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDeleteArtistMutation } from '../../state/api/artistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
+import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
+import { useAppDispatch } from '../../state/store.ts'
 
 interface ArtistCardProps {
   artist: Artist
@@ -16,6 +18,7 @@ interface ArtistCardProps {
 
 function ArtistCard({ artist }: ArtistCardProps) {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
@@ -30,6 +33,10 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
   function handleClick() {
     navigate(`/artist/${artist.id}`)
+  }
+
+  function handleOpenDrawer() {
+    dispatch(openArtistDrawer(artist.id))
   }
 
   async function handleDelete() {
@@ -83,6 +90,12 @@ function ArtistCard({ artist }: ArtistCardProps) {
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>
+          <Menu.Item
+            leftSection={<IconLayoutSidebarLeftExpand size={14} />}
+            onClick={handleOpenDrawer}
+          >
+            Open Drawer
+          </Menu.Item>
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

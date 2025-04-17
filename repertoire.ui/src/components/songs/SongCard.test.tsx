@@ -171,12 +171,28 @@ describe('Song Card', () => {
       target: screen.getByLabelText(`default-icon-${song.title}`)
     })
 
+    expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
+    it('should open song drawer when clicking on open drawer', async () => {
+      const user = userEvent.setup()
+
+      const [_, store] = reduxRouterRender(withToastify(<SongCard song={song} />))
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${song.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
+
+      expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
+      expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
+    })
+
     it('should display warning modal when clicking on delete', async () => {
       const user = userEvent.setup()
 
