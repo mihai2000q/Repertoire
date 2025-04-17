@@ -2,10 +2,10 @@ import Album from '../../types/models/Album.ts'
 import { Avatar, Center, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
+import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
-import { IconTrash } from '@tabler/icons-react'
+import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -36,6 +36,10 @@ function AlbumCard({ album }: AlbumCardProps) {
 
   function handleArtistClick() {
     dispatch(openArtistDrawer(album.artist.id))
+  }
+
+  function handleOpenDrawer() {
+    dispatch(openAlbumDrawer(album.id))
   }
 
   async function handleDelete() {
@@ -82,6 +86,12 @@ function AlbumCard({ album }: AlbumCardProps) {
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>
+          <Menu.Item
+            leftSection={<IconLayoutSidebarLeftExpand size={14} />}
+            onClick={handleOpenDrawer}
+          >
+            Open Drawer
+          </Menu.Item>
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

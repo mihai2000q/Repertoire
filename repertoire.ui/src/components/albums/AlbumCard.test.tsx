@@ -61,10 +61,27 @@ describe('Album Card', () => {
       keys: '[MouseRight>]',
       target: screen.getByLabelText(`default-icon-${album.title}`)
     })
+
+    expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
+    it('should open album drawer when clicking on open drawer', async () => {
+      const user = userEvent.setup()
+
+      const [_, store] = reduxRouterRender(withToastify(<AlbumCard album={album} />))
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${album.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
+
+      expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
+      expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(album.id)
+    })
+
     it('should display warning modal when clicking on delete', async () => {
       const user = userEvent.setup()
 

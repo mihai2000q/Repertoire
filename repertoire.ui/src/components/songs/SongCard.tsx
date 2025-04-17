@@ -2,13 +2,14 @@ import Song from '../../types/models/Song'
 import { Anchor, Avatar, Box, Card, Center, Group, Menu, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
+import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, ReactElement } from 'react'
 import {
   IconBoltFilled,
   IconBombFilled,
   IconBrandYoutubeFilled,
   IconGuitarPickFilled,
+  IconLayoutSidebarLeftExpand,
   IconMicrophoneFilled,
   IconStarFilled,
   IconTrash
@@ -76,6 +77,10 @@ function SongCard({ song }: SongCardProps) {
   function handleOpenYoutube(e: MouseEvent<HTMLElement>) {
     e.stopPropagation()
     openYoutube()
+  }
+
+  function handleOpenDrawer() {
+    dispatch(openSongDrawer(song.id))
   }
 
   async function handleDelete() {
@@ -210,6 +215,12 @@ function SongCard({ song }: SongCardProps) {
       </Menu.Target>
 
       <Menu.Dropdown {...menuDropdownProps}>
+        <Menu.Item
+          leftSection={<IconLayoutSidebarLeftExpand size={14} />}
+          onClick={handleOpenDrawer}
+        >
+          Open Drawer
+        </Menu.Item>
         <PartialRehearsalMenuItem songId={song.id} />
         <PerfectRehearsalMenuItem songId={song.id} />
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
