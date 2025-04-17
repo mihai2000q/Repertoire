@@ -9,6 +9,7 @@ const songsOrders: Order[] = [
   { label: 'Album', property: SongProperty.Album, nullable: true, checked: false },
   { label: 'Guitar Tuning', property: SongProperty.GuitarTuning, nullable: true, checked: false },
   { label: 'Difficulty', property: SongProperty.Difficulty, nullable: true, checked: false },
+  { label: 'Sections', property: SongProperty.Sections, checked: false },
   { label: 'Solos', property: SongProperty.Solos, checked: false },
   { label: 'Riffs', property: SongProperty.Riffs, checked: false },
   { label: 'Rehearsals', property: SongProperty.Rehearsals, checked: false },
