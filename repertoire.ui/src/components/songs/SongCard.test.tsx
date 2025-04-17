@@ -1,13 +1,7 @@
 import { screen } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
-import {
-  emptyArtist,
-  emptySong,
-  emptySongSection,
-  reduxRouterRender,
-  withToastify
-} from '../../test-utils'
+import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import Difficulty from '../../utils/enums/Difficulty.ts'
@@ -124,16 +118,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      sections: [
-        {
-          ...emptySongSection,
-          name: 'Solo 1',
-          songSectionType: {
-            id: '',
-            name: 'Solo'
-          },
-        }
-      ]
+      solos: 1
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -149,24 +134,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      sections: [
-        {
-          ...emptySongSection,
-          name: 'Solo 1',
-          songSectionType: {
-            id: '',
-            name: 'Solo'
-          }
-        },
-        {
-          ...emptySongSection,
-          name: 'Solo 2',
-          songSectionType: {
-            id: '',
-            name: 'Solo'
-          }
-        }
-      ]
+      solos: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -182,24 +150,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      sections: [
-        {
-          ...emptySongSection,
-          name: 'Riff 1',
-          songSectionType: {
-            id: '',
-            name: 'Riff'
-          }
-        },
-        {
-          ...emptySongSection,
-          name: 'Riff 2',
-          songSectionType: {
-            id: '',
-            name: 'Riff'
-          }
-        }
-      ]
+      riffs: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)

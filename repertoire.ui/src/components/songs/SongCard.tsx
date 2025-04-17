@@ -57,8 +57,6 @@ function SongCard({ song }: SongCardProps) {
   const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   const { color: difficultyColor } = useDifficultyInfo(song?.difficulty)
-  const solos = song.sections.filter((s) => s.songSectionType.name === 'Solo').length
-  const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
@@ -159,17 +157,21 @@ function SongCard({ song }: SongCardProps) {
                       <CustomIconGuitarHead size={iconSize} aria-label={'guitar-tuning-icon'} />
                     </LocalTooltip>
                   )}
-                  {riffs > 1 && (
-                    <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
+                  {song?.riffs > 1 && (
+                    <LocalTooltip label={`This song has ${song.riffs} riffs`}>
                       <IconBombFilled size={iconSize} aria-label={'riffs-icon'} />
                     </LocalTooltip>
                   )}
-                  {solos > 0 && (
+                  {song?.solos > 0 && (
                     <LocalTooltip
-                      label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
+                      label={
+                        song.solos === 1
+                          ? 'This song has a solo'
+                          : `This song has ${song.solos} solos`
+                      }
                     >
-                      <Center c={solos === 1 ? 'yellow.4' : 'yellow.5'}>
-                        {solos > 1 ? (
+                      <Center c={song.solos === 1 ? 'yellow.4' : 'yellow.5'}>
+                        {song.solos > 1 ? (
                           <CustomIconLightningTrio size={iconSize} aria-label={'solos-icon'} />
                         ) : (
                           <IconBoltFilled size={iconSize} aria-label={'solo-icon'} />
