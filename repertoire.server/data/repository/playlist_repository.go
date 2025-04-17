@@ -1,11 +1,10 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type PlaylistRepository interface {
@@ -13,7 +12,7 @@ type PlaylistRepository interface {
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
 	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
 	GetAllByUser(
-		playlists *[]model.Playlist,
+		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
@@ -63,7 +62,7 @@ func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uui
 }
 
 func (p playlistRepository) GetAllByUser(
-	playlists *[]model.Playlist,
+	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -71,7 +70,12 @@ func (p playlistRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := p.client.Model(&model.Playlist{}).
-		Preload("Songs").
+		Select(
+			"playlists.*",
+			"COALESCE(es.songs_count, 0) AS songs_count",
+			" es.songs_ids as songs_ids",
+		).
+		Joins("LEFT JOIN (?) AS es ON es.playlist_id = playlists.id", p.getSongsByPlaylistQuery(userID)).
 		Where(model.Playlist{UserID: userID})
 	tx = database.SearchBy(tx, searchBy)
 	tx = database.OrderBy(tx, orderBy)
@@ -81,7 +85,9 @@ func (p playlistRepository) GetAllByUser(
 
 func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
 	tx := p.client.Model(&model.Playlist{}).
+		Joins("LEFT JOIN (?) AS es ON es.playlist_id = playlists.id", p.getSongsByPlaylistQuery(userID)).
 		Where(model.Playlist{UserID: userID})
+
 	tx = database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
@@ -122,4 +128,12 @@ func (p playlistRepository) Delete(id uuid.UUID) error {
 
 func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {
 	return p.client.Delete(&playlistSongs).Error
+}
+
+func (p playlistRepository) getSongsByPlaylistQuery(userID uuid.UUID) *gorm.DB {
+	return p.client.Model(&model.PlaylistSong{}).
+		Select("playlist_id, COUNT(*) as songs_count, STRING_AGG(song_id::text, ',') as songs_ids").
+		Joins("JOIN playlists ON playlists.id = playlist_songs.playlist_id").
+		Where("playlists.user_id = ?", userID).
+		Group("playlist_id")
 }

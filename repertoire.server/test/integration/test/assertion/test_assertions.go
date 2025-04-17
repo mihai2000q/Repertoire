@@ -86,6 +86,7 @@ func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withAr
 func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist, withBandMembers bool) {
 	assert.Equal(t, artist.ID, response.ID)
 	assert.Equal(t, artist.Name, response.Name)
+	assert.Equal(t, artist.IsBand, response.IsBand)
 	assert.Equal(t, artist.ImageURL, response.ImageURL)
 
 	if withBandMembers {
@@ -228,6 +229,19 @@ func ResponseSongSection(
 func ResponseSongSectionType(t *testing.T, songSectionType model.SongSectionType, response model.SongSectionType) {
 	assert.Equal(t, songSectionType.ID, response.ID)
 	assert.Equal(t, songSectionType.Name, response.Name)
+}
+
+func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response model.EnhancedPlaylist) {
+	assert.Equal(t, playlist.ID, response.ID)
+	assert.Equal(t, playlist.Title, response.Title)
+	assert.Equal(t, playlist.Description, response.Description)
+	assert.Equal(t, playlist.ImageURL, response.ImageURL)
+
+	assert.Len(t, response.SongsIDs, len(playlist.Songs))
+	assert.Equal(t, response.SongsCount, len(playlist.Songs))
+	for i := range playlist.Songs {
+		assert.Equal(t, playlist.Songs[i].ID, response.SongsIDs[i])
+	}
 }
 
 func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongsMetadata bool) {

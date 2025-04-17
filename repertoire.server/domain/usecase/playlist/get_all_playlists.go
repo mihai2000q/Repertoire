@@ -23,7 +23,7 @@ func NewGetAllPlaylists(repository repository.PlaylistRepository, jwtService ser
 func (g GetAllPlaylists) Handle(
 	request requests.GetPlaylistsRequest,
 	token string,
-) (result wrapper.WithTotalCount[model.Playlist], e *wrapper.ErrorCode) {
+) (result wrapper.WithTotalCount[model.EnhancedPlaylist], e *wrapper.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode

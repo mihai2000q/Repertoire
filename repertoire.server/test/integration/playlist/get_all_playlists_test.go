@@ -24,18 +24,15 @@ func TestGetAllPlaylists_WhenSuccessful_ShouldReturnPlaylists(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responsePlaylists []model.Playlist
+	var responsePlaylists []model.EnhancedPlaylist
 	_ = json.Unmarshal(w.Body.Bytes(), &responsePlaylists)
 
 	db := utils.GetDatabase(t)
 
 	var playlists []model.Playlist
-	db.Preload("Songs").
-		Preload("Songs.Artist").
-		Preload("Songs.Album").
-		Find(&playlists)
+	db.Preload("Songs").Find(&playlists)
 
 	for i := range responsePlaylists {
-		assertion.ResponsePlaylist(t, playlists[i], responsePlaylists[i], false)
+		assertion.ResponseEnhancedPlaylist(t, playlists[i], responsePlaylists[i])
 	}
 }

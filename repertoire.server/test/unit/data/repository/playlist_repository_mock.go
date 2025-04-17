@@ -43,7 +43,7 @@ func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, i
 }
 
 func (p *PlaylistRepositoryMock) GetAllByUser(
-	playlists *[]model.Playlist,
+	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -53,7 +53,7 @@ func (p *PlaylistRepositoryMock) GetAllByUser(
 	args := p.Called(playlists, userID, currentPage, pageSize, orderBy, searchBy)
 
 	if len(args) > 1 {
-		*playlists = *args.Get(1).(*[]model.Playlist)
+		*playlists = *args.Get(1).(*[]model.EnhancedPlaylist)
 	}
 
 	return args.Error(0)
