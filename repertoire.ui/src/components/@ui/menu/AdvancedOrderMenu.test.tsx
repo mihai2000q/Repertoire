@@ -11,7 +11,7 @@ describe('Advanced Order Menu', () => {
   const initialOrders: Order[] = [
     { label: 'Title', property: AlbumProperty.Title, checked: false, type: OrderType.Descending },
     { label: 'Release Date', property: AlbumProperty.ReleaseDate, nullable: true, checked: false },
-    { label: 'Artist', property: AlbumProperty.Artist, checked: true },
+    { label: 'Artist', property: AlbumProperty.ArtistName, checked: true },
     { label: 'Confidence', property: AlbumProperty.Confidence, type: OrderType.Ascending }
   ]
 

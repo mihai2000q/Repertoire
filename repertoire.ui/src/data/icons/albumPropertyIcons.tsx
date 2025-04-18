@@ -15,7 +15,7 @@ import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusi
 import SongProperty from '../../types/enums/SongProperty.ts'
 
 export const albumPropertyIcons = new Map<string, ReactElement>([
-  [AlbumProperty.Artist, <IconUser size={'100%'} key={'artist'} />],
+  [AlbumProperty.ArtistName, <IconUser size={'100%'} key={'artist'} />],
   [AlbumProperty.Confidence, <IconTimeline size={'100%'} key={'confidence'} />],
   [AlbumProperty.CreationDate, <IconCalendarWeek size={'100%'} key={'creation-date'} />],
   [AlbumProperty.LastModified, <IconCalendarMonth size={'100%'} key={'last-modified'} />],
