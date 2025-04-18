@@ -1,5 +1,5 @@
 import Order from "../types/Order.ts";
-import OrderType from "./enums/OrderType.ts";
+import OrderType from "../types/enums/OrderType.ts";
 
 export default function createOrder(order: Order): string {
   return (

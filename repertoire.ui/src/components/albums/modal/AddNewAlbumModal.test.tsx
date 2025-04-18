@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw'
 import { CreateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import dayjs from "dayjs";
 
 describe('Add New Album Modal', () => {

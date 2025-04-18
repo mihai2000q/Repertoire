@@ -9,7 +9,7 @@ import { http, HttpResponse } from 'msw'
 import { UpdateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 
 describe('Edit Album Header Modal', () => {
   const album: Album = {

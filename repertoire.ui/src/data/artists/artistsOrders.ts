@@ -1,7 +1,7 @@
 import Order from '../../types/Order.ts'
-import ArtistProperty from '../../utils/enums/ArtistProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
-import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
+import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 
 const artistsOrders: Order[] = [
   { label: 'Name', property: ArtistProperty.Name, checked: false },

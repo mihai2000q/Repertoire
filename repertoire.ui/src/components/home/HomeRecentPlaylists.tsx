@@ -14,8 +14,8 @@ import { useGetPlaylistsQuery } from '../../state/api/playlistsApi.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { IconPlaylist } from '@tabler/icons-react'
 import createOrder from '../../utils/createOrder.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
-import PlaylistProperty from '../../utils/enums/PlaylistProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
 
 function Loader() {
   return (

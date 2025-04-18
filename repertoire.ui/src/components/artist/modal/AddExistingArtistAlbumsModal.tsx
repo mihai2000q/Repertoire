@@ -22,7 +22,7 @@ import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 

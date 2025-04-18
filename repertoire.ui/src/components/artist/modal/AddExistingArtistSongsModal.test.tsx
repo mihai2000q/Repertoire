@@ -7,7 +7,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddSongsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 
 describe('Add Existing Artist Songs Modal', () => {
   const songs: SongSearch[] = [

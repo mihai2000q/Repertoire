@@ -12,10 +12,10 @@ import HomeSongsLoader from './top/loader/HomeSongsLoader.tsx'
 import HomeArtistsLoader from './top/loader/HomeArtistsLoader.tsx'
 import HomeArtistCard from './top/HomeArtistCard.tsx'
 import createOrder from '../../utils/createOrder.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
-import ArtistProperty from '../../utils/enums/ArtistProperty.ts'
-import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 
 enum TopEntity {
   Songs,

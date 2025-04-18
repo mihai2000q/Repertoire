@@ -23,7 +23,7 @@ import { MouseEvent, useEffect } from 'react'
 import { useAddSongsToAlbumMutation } from '../../../state/api/albumsApi.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 interface AddExistingAlbumSongsModalProps {

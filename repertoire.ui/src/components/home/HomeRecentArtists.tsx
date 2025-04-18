@@ -19,8 +19,8 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import createOrder from '../../utils/createOrder.ts'
-import ArtistProperty from '../../utils/enums/ArtistProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
+import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
 
 function Loader() {
   return (

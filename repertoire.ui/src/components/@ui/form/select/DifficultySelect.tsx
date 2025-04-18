@@ -1,5 +1,5 @@
 import { ComboboxItem, Select } from '@mantine/core'
-import Difficulty from '../../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../../types/enums/Difficulty.ts'
 import { IconStarFilled } from '@tabler/icons-react'
 
 const difficulties = Object.entries(Difficulty).map(([key, value]) => ({

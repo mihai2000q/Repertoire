@@ -14,7 +14,7 @@ import Artist from '../../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import Album from '../../../types/models/Album.ts'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
 import {

@@ -1,4 +1,4 @@
-import OrderType from '../utils/enums/OrderType.ts'
+import OrderType from './enums/OrderType.ts'
 
 export default interface Order {
   label?: string

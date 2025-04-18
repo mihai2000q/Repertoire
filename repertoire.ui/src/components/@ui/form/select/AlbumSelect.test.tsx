@@ -6,7 +6,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import AlbumSelect from './AlbumSelect.tsx'
-import searchType from '../../../../utils/enums/SearchType.ts'
+import searchType from '../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 
 describe('Band Member Select', () => {

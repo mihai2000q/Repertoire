@@ -1,4 +1,4 @@
-import Difficulty from '../utils/enums/Difficulty.ts'
+import Difficulty from '../types/enums/Difficulty.ts'
 import { MantineTheme, useMantineTheme } from '@mantine/core'
 
 interface useDifficultyInfoResult {

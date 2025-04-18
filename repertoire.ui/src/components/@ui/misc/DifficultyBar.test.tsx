@@ -1,6 +1,6 @@
 import { mantineRender } from '../../../test-utils.tsx'
 import DifficultyBar from './DifficultyBar.tsx'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 

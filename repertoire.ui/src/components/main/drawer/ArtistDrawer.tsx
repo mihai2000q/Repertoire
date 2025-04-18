@@ -31,9 +31,9 @@ import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import createOrder from '../../../utils/createOrder.ts'
-import OrderType from '../../../utils/enums/OrderType.ts'
-import AlbumProperty from '../../../utils/enums/AlbumProperty.ts'
-import SongProperty from '../../../utils/enums/SongProperty.ts'
+import OrderType from '../../../types/enums/OrderType.ts'
+import AlbumProperty from '../../../types/enums/AlbumProperty.ts'
+import SongProperty from '../../../types/enums/SongProperty.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()

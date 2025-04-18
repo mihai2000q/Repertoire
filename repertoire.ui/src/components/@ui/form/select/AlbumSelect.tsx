@@ -18,7 +18,7 @@ import { useDebouncedValue } from '@mantine/hooks'
 import dayjs from 'dayjs'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 
 interface AlbumSelectProps extends TextInputProps {

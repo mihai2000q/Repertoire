@@ -14,7 +14,7 @@ import { IconUserFilled } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
 import CustomIconUserAlt from "../../icons/CustomIconUserAlt.tsx";
 

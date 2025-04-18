@@ -6,7 +6,7 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
 import EditSongInformationModal from './EditSongInformationModal.tsx'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 
 describe('Edit Song Information Modal', () => {
   const guitarTunings: GuitarTuning[] = [

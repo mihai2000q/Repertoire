@@ -22,8 +22,8 @@ import dayjs from 'dayjs'
 import Song from '../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import createOrder from '../../utils/createOrder.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
 
 function Loader() {
   return (

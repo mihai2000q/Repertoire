@@ -12,7 +12,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
 import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'

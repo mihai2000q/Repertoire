@@ -24,8 +24,8 @@ import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import createOrder from '../../../utils/createOrder.ts'
-import OrderType from '../../../utils/enums/OrderType.ts'
-import SongProperty from '../../../utils/enums/SongProperty.ts'
+import OrderType from '../../../types/enums/OrderType.ts'
+import SongProperty from '../../../types/enums/SongProperty.ts'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -46,6 +46,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     pageSize: 20,
     orderBy: [createOrder({ property: SongProperty.LastModified, type: OrderType.Descending })],
     searchBy: [
+      // TODO: Update
       `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
       ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]

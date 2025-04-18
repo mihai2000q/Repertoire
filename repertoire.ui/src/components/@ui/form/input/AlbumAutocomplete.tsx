@@ -16,7 +16,7 @@ import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 

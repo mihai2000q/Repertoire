@@ -1,6 +1,6 @@
 import Order from '../types/Order.ts'
 import createOrder from './createOrder.ts'
-import OrderType from './enums/OrderType.ts'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('create Order', () => {
   it.each([

@@ -15,7 +15,7 @@ import { http, HttpResponse } from 'msw'
 import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 
 describe('Edit Song Header Modal', () => {
   const song: Song = {

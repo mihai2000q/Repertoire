@@ -1,5 +1,5 @@
 import { Group, GroupProps, Progress, Tooltip } from '@mantine/core'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 
 interface DifficultyBarProps extends GroupProps {

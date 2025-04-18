@@ -8,9 +8,9 @@ import { userEvent } from '@testing-library/user-event'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { CreateSongRequest } from '../../../types/requests/SongRequests.ts'
 import { GuitarTuning, SongSectionType } from '../../../types/models/Song.ts'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import dayjs from 'dayjs'
 
 describe('Add New Song Modal', () => {
