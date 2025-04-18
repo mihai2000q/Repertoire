@@ -24,7 +24,11 @@ const playlistsApi = api.injectEndpoints({
     }),
     getPlaylist: build.query<Playlist, string>({
       query: (arg) => `playlists/${arg}`,
-      providesTags: ['Playlists', 'Songs']
+      providesTags: ['Playlists', 'Songs'],
+      transformResponse: (response: Playlist) => ({
+        ...response,
+        songs: response.songs === null ? [] : response.songs
+      })
     }),
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
       query: (body) => ({
