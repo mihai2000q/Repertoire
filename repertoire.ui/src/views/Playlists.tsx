@@ -122,7 +122,7 @@ function Playlists() {
         {playlists?.models.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
-        {playlists?.totalCount > 0 && currentPage == totalPages && (
+        {!isFetching && playlists?.totalCount > 0 && currentPage == totalPages && (
           <Card
             aria-label={'new-playlist-card'}
             variant={'add-new'}
@@ -140,12 +140,13 @@ function Playlists() {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isFetching ? (
+        {!isLoading ? (
           <Pagination
             data-testid={'playlists-pagination'}
             value={currentPage}
             onChange={handleCurrentPageChange}
             total={totalPages}
+            disabled={isFetching}
           />
         ) : (
           <Loader size={25} />

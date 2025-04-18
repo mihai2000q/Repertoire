@@ -129,12 +129,13 @@ function Albums() {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isFetching ? (
+        {!isLoading ? (
           <Pagination
             data-testid={'albums-pagination'}
             value={currentPage}
             onChange={handleCurrentPageChange}
             total={totalPages}
+            disabled={isFetching}
           />
         ) : (
           <Loader size={25} />

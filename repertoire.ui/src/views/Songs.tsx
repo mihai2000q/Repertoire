@@ -103,7 +103,7 @@ function Songs(): ReactElement {
       >
         {(isLoading || !songs) && <SongsLoader />}
         {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
-        {songs?.totalCount > 0 && currentPage == totalPages && (
+        {!isFetching && songs?.totalCount > 0 && currentPage == totalPages && (
           <Card
             variant={'add-new'}
             aria-label={'new-song-card'}
@@ -120,12 +120,13 @@ function Songs(): ReactElement {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isFetching ? (
+        {!isLoading ? (
           <Pagination
             data-testid={'songs-pagination'}
             value={currentPage}
             onChange={handleCurrentPageChange}
             total={totalPages}
+            disabled={isFetching}
           />
         ) : (
           <Loader size={25} />

@@ -118,32 +118,34 @@ function Artists() {
       >
         {(isLoading || !artists) && <ArtistsLoader />}
         {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
-        {showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
-        {((artists?.totalCount > 0 && currentPage == totalPages) ||
-          (artists?.totalCount === 0 && showUnknownArtist)) && (
-          <Card
-            variant={'add-new'}
-            aria-label={'new-artist-card'}
-            radius={'50%'}
-            onClick={openAddNewArtistModal}
-            style={{ aspectRatio: 1 }}
-          >
-            <Center h={'100%'}>
-              <IconUserPlus size={'100%'} style={{ padding: '29%' }} />
-            </Center>
-          </Card>
-        )}
+        {!isFetching && showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
+        {!isFetching &&
+          ((artists?.totalCount > 0 && currentPage == totalPages) ||
+            (artists?.totalCount === 0 && showUnknownArtist)) && (
+            <Card
+              variant={'add-new'}
+              aria-label={'new-artist-card'}
+              radius={'50%'}
+              onClick={openAddNewArtistModal}
+              style={{ aspectRatio: 1 }}
+            >
+              <Center h={'100%'}>
+                <IconUserPlus size={'100%'} style={{ padding: '29%' }} />
+              </Center>
+            </Card>
+          )}
       </SimpleGrid>
 
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isFetching ? (
+        {!isLoading ? (
           <Pagination
             data-testid={'artists-pagination'}
             value={currentPage}
             onChange={handleCurrentPageChange}
             total={totalPages}
+            disabled={isFetching}
           />
         ) : (
           <Loader size={25} />
