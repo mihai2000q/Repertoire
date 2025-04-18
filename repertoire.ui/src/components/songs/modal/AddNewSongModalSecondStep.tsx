@@ -14,7 +14,7 @@ import {
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import {
-  IconCalendarFilled,
+  IconCalendarRepeat,
   IconGripVertical,
   IconInfoCircleFilled,
   IconMinus
@@ -84,7 +84,7 @@ function AddNewSongModalSecondStep({
         <Group flex={1} gap={'xxs'}>
           <DatePickerInput
             flex={1}
-            leftSection={<IconCalendarFilled size={20} />}
+            leftSection={<IconCalendarRepeat size={20} />}
             label={'Release Date'}
             placeholder={'Choose the release date'}
             key={form.key('releaseDate')}
