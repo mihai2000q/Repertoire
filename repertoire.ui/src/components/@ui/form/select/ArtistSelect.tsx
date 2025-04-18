@@ -1,10 +1,12 @@
 import {
-  Avatar, Center,
+  Avatar,
+  Center,
   Combobox,
   Group,
   HoverCard,
   LoadingOverlay,
   ScrollArea,
+  Stack,
   Text,
   TextInput,
   TextInputProps,
@@ -16,7 +18,7 @@ import { useDebouncedValue } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
 import SearchType from '../../../../types/enums/SearchType.ts'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
-import CustomIconUserAlt from "../../icons/CustomIconUserAlt.tsx";
+import CustomIconUserAlt from '../../icons/CustomIconUserAlt.tsx'
 
 interface ArtistSelectProps extends TextInputProps {
   artist: ArtistSearch | null
@@ -151,20 +153,22 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {artists?.totalCount === 0 && search.trim() === '' ? (
-              <Combobox.Empty>There are no artists</Combobox.Empty>
-            ) : artists?.totalCount === 0 ? (
-              <Combobox.Empty>No artists found</Combobox.Empty>
-            ) : (
-              artists?.models.map((artist) => (
-                <ArtistOption key={artist.id} localArtist={artist as ArtistSearch} />
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {artists?.totalCount === 0 && search.trim() === '' ? (
+                <Combobox.Empty>There are no artists</Combobox.Empty>
+              ) : artists?.totalCount === 0 ? (
+                <Combobox.Empty>No artists found</Combobox.Empty>
+              ) : (
+                artists?.models.map((artist) => (
+                  <ArtistOption key={artist.id} localArtist={artist as ArtistSearch} />
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

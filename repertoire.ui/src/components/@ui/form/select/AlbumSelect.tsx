@@ -157,20 +157,22 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {albums?.totalCount === 0 && search.trim() === '' ? (
-              <Combobox.Empty>There are no albums</Combobox.Empty>
-            ) : albums?.totalCount === 0 ? (
-              <Combobox.Empty>No albums found</Combobox.Empty>
-            ) : (
-              albums?.models.map((album) => (
-                <AlbumOption key={album.id} localAlbum={album as AlbumSearch} />
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {albums?.totalCount === 0 && search.trim() === '' ? (
+                <Combobox.Empty>There are no albums</Combobox.Empty>
+              ) : albums?.totalCount === 0 ? (
+                <Combobox.Empty>No albums found</Combobox.Empty>
+              ) : (
+                albums?.models.map((album) => (
+                  <AlbumOption key={album.id} localAlbum={album as AlbumSearch} />
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>
