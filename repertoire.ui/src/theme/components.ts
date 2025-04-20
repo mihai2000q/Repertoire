@@ -8,6 +8,7 @@ import {
   Chip,
   Combobox,
   Highlight,
+  Indicator,
   LoadingOverlay,
   Menu,
   Modal,
@@ -134,6 +135,11 @@ export const components = {
     defaultProps: {
       color: 'transparent',
       highlightStyles: { fontWeight: 700 }
+    }
+  }),
+  Indicator: Indicator.extend({
+    defaultProps: {
+      fw: 500
     }
   }),
   LoadingOverlay: LoadingOverlay.extend({
