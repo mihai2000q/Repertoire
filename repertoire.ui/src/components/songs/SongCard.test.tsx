@@ -118,7 +118,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      solos: 1
+      solosCount: 1
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -134,7 +134,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      solos: 2
+      solosCount: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -150,7 +150,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      riffs: 2
+      riffsCount: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)

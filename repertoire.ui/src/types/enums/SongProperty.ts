@@ -13,9 +13,9 @@ enum SongProperty {
   Progress = 'progress',
   Rehearsals = 'rehearsals',
   ReleaseDate = 'release_date',
-  Riffs = 'riffs',
+  Riffs = 'riffs_count',
   Sections = 'sections_count',
-  Solos = 'solos',
+  Solos = 'solos_count',
   Title = 'title'
 }
 
