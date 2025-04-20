@@ -2,6 +2,7 @@ enum SongProperty {
   AlbumTrackNo = 'album_track_no',
   AlbumTitle = '"Album".title',
   ArtistName = '"Artist".name',
+  BPM = 'bpm',
   CreationDate = 'created_at',
   Confidence = 'confidence',
   Difficulty = 'difficulty',

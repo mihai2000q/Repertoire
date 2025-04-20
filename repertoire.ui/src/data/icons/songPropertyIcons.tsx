@@ -17,10 +17,12 @@ import {
 import CustomIconGuitarHead from '../../components/@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconLightningTrio from '../../components/@ui/icons/CustomIconLightningTrio.tsx'
+import CustomIconMetronome from '../../components/@ui/icons/CustomIconMetronome.tsx'
 
 export const songPropertyIcons = new Map<string, ReactElement>([
   [SongProperty.AlbumTitle, <CustomIconAlbumVinyl size={'100%'} key={'album'} />],
   [SongProperty.ArtistName, <IconUser size={'100%'} key={'artist'} />],
+  [SongProperty.BPM, <CustomIconMetronome size={'100%'} key={'bpm'} />],
   [SongProperty.CreationDate, <IconCalendarWeek size={'100%'} key={'creation-date'} />],
   [SongProperty.Confidence, <IconTimeline size={'100%'} key={'confidence'} />],
   [SongProperty.Difficulty, <IconStarFilled size={'100%'} key={'difficulty'} />],
