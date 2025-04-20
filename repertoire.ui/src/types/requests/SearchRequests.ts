@@ -7,4 +7,5 @@ export interface GetSearchRequest {
   type?: SearchType
   filter?: string[]
   order?: string[]
+  ids?: string[]
 }

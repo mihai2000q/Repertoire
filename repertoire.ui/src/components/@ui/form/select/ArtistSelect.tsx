@@ -23,9 +23,10 @@ import CustomIconUserAlt from '../../icons/CustomIconUserAlt.tsx'
 interface ArtistSelectProps extends TextInputProps {
   artist: ArtistSearch | null
   setArtist: (artist: ArtistSearch | null) => void
+  ids?: string[]
 }
 
-function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
+function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption()
   })
@@ -44,7 +45,8 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
     currentPage: 1,
     pageSize: 10,
     type: SearchType.Artist,
-    order: ['updatedAt:desc']
+    order: ['updatedAt:desc'],
+    ids: ids
   })
 
   const ArtistHoverCard = () => (

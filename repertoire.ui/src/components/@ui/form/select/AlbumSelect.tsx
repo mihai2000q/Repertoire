@@ -24,9 +24,10 @@ import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 interface AlbumSelectProps extends TextInputProps {
   album: AlbumSearch | null
   setAlbum: (album: AlbumSearch | null) => void
+  ids?: string[]
 }
 
-function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
+function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption()
   })
@@ -45,7 +46,8 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
     currentPage: 1,
     pageSize: 10,
     type: SearchType.Album,
-    order: ['updatedAt:desc']
+    order: ['updatedAt:desc'],
+    ids: ids
   })
 
   const AlbumHoverCard = () => (
