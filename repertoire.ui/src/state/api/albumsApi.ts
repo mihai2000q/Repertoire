@@ -22,7 +22,7 @@ const albumsApi = api.injectEndpoints({
       query: (arg) => ({
         url: `albums${createQueryParams(arg)}`
       }),
-      providesTags: ['Albums', 'Artists']
+      providesTags: ['Albums', 'Artists', 'Songs']
     }),
     getAlbum: build.query<Album, GetAlbumRequest>({
       query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
@@ -42,7 +42,7 @@ const albumsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Albums', 'Artists']
+      invalidatesTags: ['Albums']
     }),
     saveImageToAlbum: build.mutation<HttpMessageResponse, SaveImageToAlbumRequest>({
       query: (request) => ({

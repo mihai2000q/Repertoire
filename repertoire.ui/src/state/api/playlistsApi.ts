@@ -20,7 +20,7 @@ const playlistsApi = api.injectEndpoints({
       query: (arg) => ({
         url: `playlists${createQueryParams(arg)}`
       }),
-      providesTags: ['Playlists']
+      providesTags: ['Playlists', 'Songs']
     }),
     getPlaylist: build.query<Playlist, string>({
       query: (arg) => `playlists/${arg}`,
@@ -76,7 +76,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs', 'Playlists']
     }),
     moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
       query: (body) => ({
@@ -92,7 +92,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs', 'Playlists']
     })
   })
 })

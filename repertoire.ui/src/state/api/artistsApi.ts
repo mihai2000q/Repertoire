@@ -27,7 +27,7 @@ const artistsApi = api.injectEndpoints({
       query: (arg) => ({
         url: `artists${createQueryParams(arg)}`
       }),
-      providesTags: ['Artists']
+      providesTags: ['Artists', 'Albums', 'Songs']
     }),
     getArtist: build.query<Artist, string>({
       query: (arg) => `artists/${arg}`,
