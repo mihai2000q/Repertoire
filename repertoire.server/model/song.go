@@ -13,8 +13,8 @@ import (
 type EnhancedSong struct {
 	Song
 	SectionsCount float64 `gorm:"->" json:"sectionsCount"`
-	Solos         float64 `gorm:"->" json:"solos"`
-	Riffs         float64 `gorm:"->" json:"riffs"`
+	SolosCount    float64 `gorm:"->" json:"solosCount"`
+	RiffsCount    float64 `gorm:"->" json:"riffsCount"`
 }
 
 type Song struct {

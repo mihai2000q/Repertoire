@@ -1,13 +1,10 @@
 package repository
 
 import (
-	"repertoire/server/data/database"
-	"repertoire/server/model"
-	"slices"
-	"strings"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"repertoire/server/data/database"
+	"repertoire/server/model"
 )
 
 type AlbumRepository interface {
@@ -95,6 +92,8 @@ func (a albumRepository) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, id
 		Error
 }
 
+var compoundAlbumsFields = []string{"songs_count", "rehearsals", "confidence", "progress"}
+
 func (a albumRepository) GetAllByUser(
 	albums *[]model.EnhancedAlbum,
 	userID uuid.UUID,
@@ -108,21 +107,14 @@ func (a albumRepository) GetAllByUser(
 		Where(model.Album{UserID: userID}).
 		Select("albums.*")
 
-	containsFunc := func(s string) bool {
-		return strings.Contains(s, "songs_count") ||
-			strings.Contains(s, "rehearsals") ||
-			strings.Contains(s, "confidence") ||
-			strings.Contains(s, "progress") ||
-			strings.Contains(s, "last_time_played")
-	}
+	database.AddCoalesceToCompoundFields(&searchBy, compoundAlbumsFields)
+	database.AddCoalesceToCompoundFields(&orderBy, compoundAlbumsFields)
 
-	if slices.ContainsFunc(searchBy, containsFunc) || slices.ContainsFunc(orderBy, containsFunc) {
-		a.enhanceAlbumsWithSongsQuery(tx, userID)
-	}
+	a.addSongsSubQuery(tx, userID)
 
-	tx = database.SearchBy(tx, searchBy)
-	tx = database.OrderBy(tx, orderBy)
-	tx = database.Paginate(tx, currentPage, pageSize)
+	database.SearchBy(tx, searchBy)
+	database.OrderBy(tx, orderBy)
+	database.Paginate(tx, currentPage, pageSize)
 	return tx.Find(&albums).Error
 }
 
@@ -131,19 +123,11 @@ func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searc
 		Joins("Artist").
 		Where(model.Album{UserID: userID})
 
-	containsFunc := func(s string) bool {
-		return strings.Contains(s, "songs_count") ||
-			strings.Contains(s, "rehearsals") ||
-			strings.Contains(s, "confidence") ||
-			strings.Contains(s, "progress") ||
-			strings.Contains(s, "last_time_played")
-	}
+	database.AddCoalesceToCompoundFields(&searchBy, compoundAlbumsFields)
 
-	if slices.ContainsFunc(searchBy, containsFunc) {
-		a.enhanceAlbumsWithSongsQuery(tx, userID)
-	}
+	a.addSongsSubQuery(tx, userID)
 
-	tx = database.SearchBy(tx, searchBy)
+	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
 
@@ -201,24 +185,26 @@ func (a albumRepository) RemoveSongs(album *model.Album, songs *[]model.Song) er
 	return a.client.Model(&album).Association("Songs").Delete(&songs)
 }
 
-func (a albumRepository) enhanceAlbumsWithSongsQuery(tx *gorm.DB, userID uuid.UUID) {
-	enhancedSongs := a.client.Model(&model.Song{}).
+func (a albumRepository) addSongsSubQuery(tx *gorm.DB, userID uuid.UUID) {
+	tx.Joins("LEFT JOIN (?) AS ss ON ss.album_id = albums.id", a.getSongsSubQuery(userID)).
+		Select("albums.*",
+			"COALESCE(ss.songs_count, 0) AS songs_count",
+			"COALESCE(ss.rehearsals, 0) as rehearsals",
+			"COALESCE(ss.confidence, 0) as confidence",
+			"COALESCE(ss.progress, 0) as progress",
+			"ss.last_time_played as last_time_played",
+		)
+}
+
+func (a albumRepository) getSongsSubQuery(userID uuid.UUID) *gorm.DB {
+	return a.client.Model(&model.Song{}).
 		Select("album_id",
 			"COUNT(*) as songs_count",
-			"ROUND(AVG(rehearsals)) as rehearsals",
-			"ROUND(AVG(confidence)) as confidence",
-			"CEIL(AVG(progress)) as progress",
+			"AVG(rehearsals) as rehearsals",
+			"AVG(confidence) as confidence",
+			"AVG(progress) as progress",
 			"MAX(last_time_played) as last_time_played",
 		).
 		Group("album_id").
 		Where(model.Song{UserID: userID})
-
-	tx.Joins("LEFT JOIN (?) AS es ON es.album_id = albums.id", enhancedSongs)
-	tx.Select("albums.*",
-		"COALESCE(es.songs_count, 0) AS songs_count",
-		"COALESCE(es.rehearsals, 0) as rehearsals",
-		"COALESCE(es.confidence, 0) as confidence",
-		"COALESCE(es.progress, 0) as progress",
-		"es.last_time_played as last_time_played",
-	)
 }
