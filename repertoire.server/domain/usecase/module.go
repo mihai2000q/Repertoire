@@ -84,6 +84,7 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewDeleteImageFromSong),
 	fx.Provide(song.NewGetAllSongs),
 	fx.Provide(song.NewGetSong),
+	fx.Provide(song.NewGetSongFiltersMetadata),
 	fx.Provide(song.NewSaveImageToSong),
 	fx.Provide(song.NewUpdateSong),
 	fx.Provide(song.NewUpdateSongSettings),

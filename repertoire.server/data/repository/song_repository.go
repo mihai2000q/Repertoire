@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"repertoire/server/data/database"
@@ -12,6 +13,7 @@ type SongRepository interface {
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
+	GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.EnhancedSong,
 		userID uuid.UUID,
@@ -107,6 +109,56 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Find(&song, model.Song{ID: id}).
 		Error
 }
+
+func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error {
+	err := s.client.Table("artists").
+		Where("user_id = ?", userID).
+		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
+		Select(
+			"JSON_AGG(DISTINCT artist_id) filter (WHERE artist_id IS NOT NULL) as artist_ids",
+			"JSON_AGG(DISTINCT album_id) filter (WHERE album_id IS NOT NULL) as album_ids",
+			"MIN(songs.release_date) AS min_release_date",
+			"MAX(songs.release_date) AS max_release_date",
+			"MIN(bpm) AS min_bpm",
+			"MAX(bpm) AS max_bpm",
+			"JSON_AGG(DISTINCT difficulty) filter (WHERE difficulty IS NOT NULL) as difficulties",
+			"JSON_AGG(DISTINCT guitar_tuning_id) filter (WHERE guitar_tuning_id IS NOT NULL) as guitar_tuning_ids",
+			"MIN(COALESCE(ss.sections_count, 0)) AS min_sections_count",
+			"MAX(COALESCE(ss.sections_count, 0)) AS max_sections_count",
+			"MIN(COALESCE(ss.solos_count, 0)) AS min_solos_count",
+			"MAX(COALESCE(ss.solos_count, 0)) AS max_solos_count",
+			"MIN(COALESCE(ss.riffs_count, 0)) AS min_riffs_count",
+			"MAX(COALESCE(ss.riffs_count, 0)) AS max_riffs_count",
+			"MIN(rehearsals, 0) as min_rehearsals",
+			"MAX(rehearsals, 0) as max_rehearsals",
+			"MIN(confidence, 0) as min_confidence",
+			"MAX(confidence, 0) as max_confidence",
+			"MIN(progress, 0) as min_progress",
+			"MAX(progress, 0) as max_progress",
+			"MIN(last_time_played) as min_last_time_played",
+			"MAX(last_time_played) as max_last_time_played",
+		).
+		Scan(&metadata).
+		Error
+	if err != nil {
+		return err
+	}
+	if metadata.ArtistIDsAgg != "" {
+		return json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
+	}
+	if metadata.AlbumIDsAgg != "" {
+		return json.Unmarshal([]byte(metadata.AlbumIDsAgg), &metadata.AlbumIDs)
+	}
+	if metadata.DifficultiesAgg != "" {
+		return json.Unmarshal([]byte(metadata.DifficultiesAgg), &metadata.Difficulties)
+	}
+	if metadata.GuitarTuningIDsAgg != "" {
+		return json.Unmarshal([]byte(metadata.GuitarTuningIDsAgg), &metadata.GuitarTuningIDs)
+	}
+	return nil
+}
+
+var compoundSongsFields = []string{"sections_count", "solos_count", "riffs_count"}
 
 func (s songRepository) GetAllByUser(
 	songs *[]model.EnhancedSong,
