@@ -26,7 +26,7 @@ import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import { playlistPropertyIcons } from '../data/icons/playlistPropertyIcons.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
-import useOrderBy from '../hooks/useOrderBy.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
 
 function Playlists() {

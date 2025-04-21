@@ -1,7 +1,7 @@
-import Order from '../types/Order.ts'
+import Order from '../../types/Order.ts'
 import { useState } from 'react'
-import createOrder from '../utils/createOrder.ts'
-import useDidUpdateShallow from './useDidUpdateShallow.ts'
+import createOrder from '../../utils/createOrder.ts'
+import useDidUpdateShallow from '../useDidUpdateShallow.ts'
 
 export default function useOrderBy(orders: Order[] | null = null): string[] {
   const [orderBy, setOrderBy] = useState<string[]>(createOrders(orders))

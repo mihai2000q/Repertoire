@@ -13,7 +13,7 @@ import ArtistHeaderCard from '../components/artist/panels/ArtistHeaderCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import BandMembersCard from '../components/artist/panels/BandMembersCard.tsx'
 import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
-import useOrderBy from '../hooks/useOrderBy.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 
 function Artist() {

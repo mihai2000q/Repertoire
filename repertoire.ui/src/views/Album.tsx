@@ -9,7 +9,7 @@ import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
-import useOrderBy from '../hooks/useOrderBy.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 
 function Album() {
