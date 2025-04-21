@@ -69,6 +69,18 @@ func (a ArtistHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (a ArtistHandler) GetFiltersMetadata(c *gin.Context) {
+	token := a.GetTokenFromContext(c)
+
+	result, errorCode := a.service.GetFiltersMetadata(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (a ArtistHandler) Create(c *gin.Context) {
 	var request requests.CreateArtistRequest
 	errorCode := a.BindAndValidate(c, &request)

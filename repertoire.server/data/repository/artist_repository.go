@@ -14,6 +14,7 @@ type ArtistRepository interface {
 	GetWithAlbums(artist *model.Artist, id uuid.UUID) error
 	GetWithSongs(artist *model.Artist, id uuid.UUID) error
 	GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error
+	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.EnhancedArtist,
@@ -96,6 +97,33 @@ func (a artistRepository) GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UU
 		Preload("Songs").
 		Preload("Songs.Album").
 		Find(&artist, model.Artist{ID: id}).
+		Error
+}
+
+func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID) error {
+	return a.client.
+		Select(
+			"MIN(COALESCE(bms.band_members_count, 0)) AS min_band_members_count",
+			"MAX(COALESCE(bms.band_members_count, 0)) AS max_band_members_count",
+			"MIN(COALESCE(ass.albums_count, 0)) AS min_albums_count",
+			"MAX(COALESCE(ass.albums_count, 0)) AS max_albums_count",
+			"MIN(COALESCE(ss.songs_count, 0)) AS min_songs_count",
+			"MAX(COALESCE(ss.songs_count, 0)) AS max_songs_count",
+			"MIN(COALESCE(CEIL(ss.rehearsals), 0)) as min_rehearsals",
+			"MAX(COALESCE(CEIL(ss.rehearsals), 0)) as max_rehearsals",
+			"MIN(COALESCE(CEIL(ss.confidence), 0)) as min_confidence",
+			"MAX(COALESCE(CEIL(ss.confidence), 0)) as max_confidence",
+			"MIN(COALESCE(CEIL(ss.progress), 0)) as min_progress",
+			"MAX(COALESCE(CEIL(ss.progress), 0)) as max_progress",
+			"MIN(ss.last_time_played) as min_last_time_played",
+			"MAX(ss.last_time_played) as max_last_time_played",
+		).
+		Table("artists").
+		Joins("LEFT JOIN (?) AS bms ON bms.artist_id = artists.id", a.getBandMembersSubQuery(userID)).
+		Joins("LEFT JOIN (?) AS aas ON aas.artist_id = artists.id", a.getAlbumsSubQuery(userID)).
+		Joins("LEFT JOIN (?) AS ss ON ss.artist_id = artists.id", a.getSongsSubQuery(userID)).
+		Where("user_id = ?", userID).
+		Scan(&metadata).
 		Error
 }
 
