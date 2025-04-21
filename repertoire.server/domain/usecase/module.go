@@ -23,6 +23,7 @@ var albumUseCases = fx.Options(
 	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewDeleteImageFromAlbum),
 	fx.Provide(album.NewGetAlbum),
+	fx.Provide(album.NewGetAlbumFiltersMetadata),
 	fx.Provide(album.NewGetAllAlbums),
 	fx.Provide(album.NewMoveSongFromAlbum),
 	fx.Provide(album.NewRemoveSongsFromAlbum),

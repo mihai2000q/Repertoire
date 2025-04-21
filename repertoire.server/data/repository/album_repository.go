@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"repertoire/server/data/database"
@@ -12,6 +13,7 @@ type AlbumRepository interface {
 	GetWithSongs(album *model.Album, id uuid.UUID) error
 	GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error
+	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
@@ -72,6 +74,37 @@ func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID, s
 		Joins("Artist").
 		Find(&album, model.Album{ID: id}).
 		Error
+}
+
+func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID) error {
+	err := a.client.
+		Select(
+			"JSON_AGG(DISTINCT artist_id) filter (WHERE artist_id IS NOT NULL) as artist_ids",
+			"MIN(albums.release_date) AS min_release_date",
+			"MAX(albums.release_date) AS max_release_date",
+			"MIN(COALESCE(ss.songs_count, 0)) AS min_songs_count",
+			"MAX(COALESCE(ss.songs_count, 0)) AS max_songs_count",
+			"MIN(COALESCE(CEIL(ss.rehearsals), 0)) as min_rehearsals",
+			"MAX(COALESCE(CEIL(ss.rehearsals), 0)) as max_rehearsals",
+			"MIN(COALESCE(CEIL(ss.confidence), 0)) as min_confidence",
+			"MAX(COALESCE(CEIL(ss.confidence), 0)) as max_confidence",
+			"MIN(COALESCE(CEIL(ss.progress), 0)) as min_progress",
+			"MAX(COALESCE(CEIL(ss.progress), 0)) as max_progress",
+			"MIN(ss.last_time_played) as min_last_time_played",
+			"MAX(ss.last_time_played) as max_last_time_played",
+		).
+		Table("albums").
+		Joins("LEFT JOIN (?) AS ss ON ss.album_id = albums.id", a.getSongsSubQuery(userID)).
+		Where("user_id = ?", userID).
+		Scan(&metadata).
+		Error
+	if err != nil {
+		return err
+	}
+	if metadata.ArtistIDsAgg != "" {
+		return json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
+	}
+	return nil
 }
 
 func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {

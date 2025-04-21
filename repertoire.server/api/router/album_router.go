@@ -15,6 +15,7 @@ func (a AlbumRouter) RegisterRoutes() {
 	{
 		api.GET("/:id", a.handler.Get)
 		api.GET("", a.handler.GetAll)
+		api.GET("/filters-metadata", a.handler.GetFiltersMetadata)
 		api.POST("", a.handler.Create)
 		api.POST("/add-songs", a.handler.AddSongs)
 		api.PUT("", a.handler.Update)
