@@ -1,5 +1,4 @@
 import { act, renderHook } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import useFiltersHandlers from './useFiltersHandlers.ts'
 import Filter from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'

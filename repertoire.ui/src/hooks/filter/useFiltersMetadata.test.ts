@@ -1,25 +1,23 @@
 import { renderHook } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import useFiltersMetadata from './useFiltersMetadata.ts'
 import Filter, { FilterValue } from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 
 describe('useFiltersMetadata', () => {
-  const mockFiltersMetadataMap = vi.fn()
   const initialFilters = new Map<string, Filter>([
     ['name=', { property: 'name', operator: FilterOperator.Equal, value: '', isSet: false }],
     ['age>', { property: 'age', operator: FilterOperator.GreaterThan, value: 0, isSet: false }]
   ])
 
-  beforeEach(() => mockFiltersMetadataMap.mockClear())
-
   it('should not update filters when metadata is null', () => {
     const setFilters = vi.fn()
+    const filtersMetadataMap = vi.fn()
     const { result } = renderHook(() =>
-      useFiltersMetadata(null, initialFilters, setFilters, mockFiltersMetadataMap)
+      useFiltersMetadata(null, initialFilters, setFilters, filtersMetadataMap)
     )
 
-    expect(mockFiltersMetadataMap).not.toHaveBeenCalled()
+    expect(filtersMetadataMap).not.toHaveBeenCalled()
     expect(setFilters).not.toHaveBeenCalled()
     expect(result.current).toEqual(initialFilters)
   })
@@ -31,12 +29,13 @@ describe('useFiltersMetadata', () => {
       ['age>', 25]
     ]
 
-    mockFiltersMetadataMap.mockReturnValue(expectedUpdates)
+    const filtersMetadataMap = vi.fn()
+    filtersMetadataMap.mockReturnValue(expectedUpdates)
     const setFilters = vi.fn()
 
     const { result, rerender } = renderHook(
       ({ metadata }) =>
-        useFiltersMetadata(metadata, initialFilters, setFilters, mockFiltersMetadataMap),
+        useFiltersMetadata(metadata, initialFilters, setFilters, filtersMetadataMap),
       { initialProps: { metadata: null } }
     )
 
@@ -45,7 +44,7 @@ describe('useFiltersMetadata', () => {
     // update metadata
     rerender({ metadata })
 
-    expect(mockFiltersMetadataMap).toHaveBeenCalledWith(metadata)
+    expect(filtersMetadataMap).toHaveBeenCalledWith(metadata)
     expect(setFilters).toHaveBeenCalledTimes(1)
 
     const updatedFilters = setFilters.mock.calls[0][0]
@@ -57,12 +56,11 @@ describe('useFiltersMetadata', () => {
   it('should preserve existing filter properties when updating values', () => {
     const metadata = { some: 'metadata' }
     const expectedUpdates: [string, FilterValue][] = [['name=', 'John']]
-    mockFiltersMetadataMap.mockReturnValue(expectedUpdates)
+    const filtersMetadataMap = vi.fn()
+    filtersMetadataMap.mockReturnValue(expectedUpdates)
     const setFilters = vi.fn()
 
-    renderHook(() =>
-      useFiltersMetadata(metadata, initialFilters, setFilters, mockFiltersMetadataMap)
-    )
+    renderHook(() => useFiltersMetadata(metadata, initialFilters, setFilters, filtersMetadataMap))
 
     const updatedFilters = setFilters.mock.calls[0][0]
     const updatedNameFilter = updatedFilters.get('name=')
@@ -74,12 +72,13 @@ describe('useFiltersMetadata', () => {
 
   it('should maintain referential equality for initialFilters ref between renders', () => {
     const metadata = { some: 'metadata' }
-    mockFiltersMetadataMap.mockReturnValue([['name', 'John']])
+    const filtersMetadataMap = vi.fn()
+    filtersMetadataMap.mockReturnValue([['name', 'John']])
     const setFilters = vi.fn()
 
     const { result, rerender } = renderHook(
       ({ metadata }) =>
-        useFiltersMetadata(metadata, initialFilters, setFilters, mockFiltersMetadataMap),
+        useFiltersMetadata(metadata, initialFilters, setFilters, filtersMetadataMap),
       { initialProps: { metadata: null } }
     )
 

@@ -35,7 +35,6 @@ function RightSideEntityDrawer({
           marginTop: titleBarHeight
         },
         inner: {
-          height: `calc(100% - ${titleBarHeight})`,
           marginTop: titleBarHeight
         },
         body: {
