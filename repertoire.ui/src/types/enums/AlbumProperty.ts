@@ -1,4 +1,5 @@
 enum AlbumProperty {
+  ArtistId = '"Artist".id',
   ArtistName = '"Artist".name',
   Confidence = 'confidence',
   CreationDate = 'created_at',
