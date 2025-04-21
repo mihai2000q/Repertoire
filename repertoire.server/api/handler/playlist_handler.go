@@ -69,6 +69,18 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (p PlaylistHandler) GetFiltersMetadata(c *gin.Context) {
+	token := p.GetTokenFromContext(c)
+
+	result, errorCode := p.service.GetFiltersMetadata(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (p PlaylistHandler) Create(c *gin.Context) {
 	var request requests.CreatePlaylistRequest
 	errorCode := p.BindAndValidate(c, &request)
