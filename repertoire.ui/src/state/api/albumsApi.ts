@@ -15,6 +15,7 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { AlbumFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const albumsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -27,6 +28,14 @@ const albumsApi = api.injectEndpoints({
     getAlbum: build.query<Album, GetAlbumRequest>({
       query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Albums', 'Artists', 'Songs']
+    }),
+    getAlbumFiltersMetadata: build.query<AlbumFiltersMetadata, void>({
+      query: () => 'albums/filters-metadata',
+      providesTags: ['Albums', 'Artists', 'Songs'],
+      transformResponse: (response: AlbumFiltersMetadata) => ({
+        ...response,
+        artistIds: response.artistIds === null ? [] : response.artistIds
+      })
     }),
     createAlbum: build.mutation<{ id: string }, CreateAlbumRequest>({
       query: (body) => ({
@@ -99,6 +108,7 @@ const albumsApi = api.injectEndpoints({
 export const {
   useGetAlbumsQuery,
   useGetAlbumQuery,
+  useLazyGetAlbumFiltersMetadataQuery,
   useCreateAlbumMutation,
   useUpdateAlbumMutation,
   useSaveImageToAlbumMutation,

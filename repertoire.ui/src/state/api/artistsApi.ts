@@ -20,6 +20,7 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { ArtistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const artistsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -32,6 +33,10 @@ const artistsApi = api.injectEndpoints({
     getArtist: build.query<Artist, string>({
       query: (arg) => `artists/${arg}`,
       providesTags: ['Artists']
+    }),
+    getArtistFiltersMetadata: build.query<ArtistFiltersMetadata, void>({
+      query: () => 'artists/filters-metadata',
+      providesTags: ['Albums', 'Artists', 'Songs']
     }),
     createArtist: build.mutation<{ id: string }, CreateArtistRequest>({
       query: (body) => ({
@@ -168,6 +173,7 @@ const artistsApi = api.injectEndpoints({
 export const {
   useGetArtistQuery,
   useGetArtistsQuery,
+  useLazyGetArtistFiltersMetadataQuery,
   useCreateArtistMutation,
   useUpdateArtistMutation,
   useSaveImageToArtistMutation,

@@ -9,7 +9,8 @@ import {
   DeleteSongSectionRequest,
   GetSongsRequest,
   MoveSongSectionRequest,
-  SaveImageToSongRequest, UpdateAllSongSectionsRequest,
+  SaveImageToSongRequest,
+  UpdateAllSongSectionsRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
   UpdateSongSectionsOccurrencesRequest,
@@ -19,6 +20,7 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -39,6 +41,15 @@ const songsApi = api.injectEndpoints({
               bandMembers: response.artist.bandMembers === null ? [] : response.artist.bandMembers
             }
           : response.artist
+      })
+    }),
+    getSongFiltersMetadata: build.query<SongFiltersMetadata, void>({
+      query: () => 'songs/filters-metadata',
+      providesTags: ['Songs', 'Artists', 'Albums'],
+      transformResponse: (response: SongFiltersMetadata) => ({
+        ...response,
+        artistIds: response.artistIds === null ? [] : response.artistIds,
+        albumIds: response.albumIds === null ? [] : response.albumIds
       })
     }),
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
@@ -191,6 +202,7 @@ const songsApi = api.injectEndpoints({
 export const {
   useGetSongsQuery,
   useGetSongQuery,
+  useLazyGetSongFiltersMetadataQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPartialSongRehearsalMutation,

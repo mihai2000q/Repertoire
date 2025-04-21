@@ -13,6 +13,7 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { PlaylistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -24,11 +25,15 @@ const playlistsApi = api.injectEndpoints({
     }),
     getPlaylist: build.query<Playlist, string>({
       query: (arg) => `playlists/${arg}`,
-      providesTags: ['Playlists', 'Songs'],
+      providesTags: ['Playlists', 'Songs', 'Albums', 'Artists'],
       transformResponse: (response: Playlist) => ({
         ...response,
         songs: response.songs === null ? [] : response.songs
       })
+    }),
+    getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, void>({
+      query: () => 'playlists/filters-metadata',
+      providesTags: ['Playlists', 'Songs']
     }),
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
       query: (body) => ({
@@ -100,6 +105,7 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
+  useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
   useUpdatePlaylistMutation,
   useSaveImageToPlaylistMutation,
