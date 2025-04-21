@@ -304,7 +304,7 @@ func TestSearchGet_WhenArtistsWithIDsAndNotIDs_ShouldReturnSearchResult(t *testi
 	}
 	idsFilter = strings.TrimRight(idsFilter, ", ") + "]"
 
-	notIDsFilter := "id IN ["
+	notIDsFilter := "id NOT IN ["
 	for _, id := range request.IDs {
 		notIDsFilter = notIDsFilter + string(*request.Type) + "-" + id + ", "
 	}
