@@ -165,7 +165,7 @@ func ArtistFiltersMetadata(t *testing.T, metadata model.ArtistFiltersMetadata, a
 	var maxLastTimePlayed *time.Time
 
 	for _, artist := range artists {
-		bandMembersCount := int64(len(artist.Albums))
+		bandMembersCount := int64(len(artist.BandMembers))
 		if minBandMembersCount == nil || bandMembersCount < *minBandMembersCount {
 			minBandMembersCount = &bandMembersCount
 		}

@@ -24,7 +24,7 @@ func Paginate(tx *gorm.DB, currentPage *int, pageSize *int) *gorm.DB {
 
 func OrderBy(tx *gorm.DB, orderBy []string) *gorm.DB {
 	for _, o := range orderBy {
-		tx.Order(o)
+		tx = tx.Order(o)
 	}
 	return tx
 }
