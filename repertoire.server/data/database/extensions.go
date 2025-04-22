@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"reflect"
+	"slices"
 	"strings"
 )
 
-func AddCoalesceToCompoundFields(str *[]string, compoundFields []string) {
-	for i, s := range *str {
+func AddCoalesceToCompoundFields(str []string, compoundFields []string) []string {
+	var newStr = slices.Clone(str)
+	for i, s := range newStr {
 		for _, field := range compoundFields {
 			if strings.Contains(s, field) {
-				(*str)[i] = strings.Replace(s, field, "COALESCE("+field+",0)", 1)
+				newStr[i] = strings.Replace(s, field, "COALESCE("+field+",0)", 1)
 			}
 		}
 	}
+	return newStr
 }
 
 func Paginate(tx *gorm.DB, currentPage *int, pageSize *int) *gorm.DB {

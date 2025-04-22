@@ -190,10 +190,10 @@ func (s songRepository) GetAllByUser(
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
 		Where(model.Song{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundSongsFields)
-	database.AddCoalesceToCompoundFields(&orderBy, compoundSongsFields)
-
 	s.addSongSectionsSubQuery(tx, userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundSongsFields)
+	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundSongsFields)
 
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
@@ -207,9 +207,8 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO REMOVE
 		Where(model.Song{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundSongsFields)
-
 	s.addSongSectionsSubQuery(tx, userID)
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundSongsFields)
 
 	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
