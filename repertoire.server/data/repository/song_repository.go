@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+	"slices"
+	"strings"
 )
 
 type SongRepository interface {
@@ -187,10 +189,10 @@ func (s songRepository) GetAllByUser(
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
-		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
 		Where(model.Song{UserID: userID})
 
 	s.addSongSectionsSubQuery(tx, userID)
+	searchBy = s.addPlaylistsFilter(tx, searchBy)
 
 	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundSongsFields)
 	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundSongsFields)
@@ -203,11 +205,11 @@ func (s songRepository) GetAllByUser(
 
 func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
 	tx := s.client.Model(&model.Song{}).
-		Distinct("songs.id").
-		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO REMOVE
 		Where(model.Song{UserID: userID})
 
 	s.addSongSectionsSubQuery(tx, userID)
+	searchBy = s.addPlaylistsFilter(tx, searchBy)
+
 	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundSongsFields)
 
 	database.SearchBy(tx, searchBy)
@@ -415,4 +417,23 @@ func (s songRepository) getSongSectionsSubQuery(userID uuid.UUID) *gorm.DB {
 		Joins("JOIN songs ON songs.id = song_sections.song_id").
 		Where("songs.user_id = ?", userID).
 		Group("song_id")
+}
+
+func (s songRepository) addPlaylistsFilter(tx *gorm.DB, searchBy []string) []string {
+	propertyPrefix := "playlist_id != "
+	newSearchBy := slices.Clone(searchBy)
+	for i := range newSearchBy {
+		if strings.HasPrefix(newSearchBy[i], propertyPrefix) {
+			playlistId := strings.TrimLeft(newSearchBy[i], propertyPrefix)
+			playlistsSubQuery := s.client.
+				Select("1").
+				Table("playlist_songs").
+				Where("song_id = songs.id").
+				Where("playlist_id = ?", playlistId)
+			tx.Where(`NOT EXISTS (?)`, playlistsSubQuery)
+			newSearchBy = append(newSearchBy[:i], newSearchBy[i+1:]...)
+			break
+		}
+	}
+	return newSearchBy
 }
