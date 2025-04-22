@@ -72,6 +72,16 @@ func (a *ArtistRepositoryMock) GetWithAlbumsAndSongs(artist *model.Artist, id uu
 	return args.Error(0)
 }
 
+func (a *ArtistRepositoryMock) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID) error {
+	args := a.Called(metadata, userID)
+
+	if len(args) > 1 {
+		*metadata = *args.Get(1).(*model.ArtistFiltersMetadata)
+	}
+
+	return args.Error(0)
+}
+
 func (a *ArtistRepositoryMock) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
 	args := a.Called(artists, ids)
 

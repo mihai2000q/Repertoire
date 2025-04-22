@@ -38,6 +38,20 @@ func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Order:  []string{"release_date asc"},
 			},
 		},
+		{
+			"With IDs",
+			requests.SearchGetRequest{
+				Type: &[]enums.SearchType{enums.Song}[0],
+				IDs:  []string{"1", "2"},
+			},
+		},
+		{
+			"With Not IDs",
+			requests.SearchGetRequest{
+				Type:   &[]enums.SearchType{enums.Song}[0],
+				NotIDs: []string{"1", "2"},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -63,7 +77,7 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 	}{
 		// Current Page
 		{
-			"Current Page is invalid because page size is required with Page Size",
+			"Current Page is invalid because it is required with Page Size",
 			requests.SearchGetRequest{
 				PageSize: &[]int{20}[0],
 			},
@@ -72,7 +86,7 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 		},
 		// Page Size
 		{
-			"Page Size is invalid because page size is required with Current Page",
+			"Page Size is invalid because it is required with Current Page",
 			requests.SearchGetRequest{
 				CurrentPage: &[]int{1}[0],
 			},
@@ -87,6 +101,24 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			},
 			"Type",
 			"search_type_enum",
+		},
+		// IDs
+		{
+			"IDs is invalid because the type is required with",
+			requests.SearchGetRequest{
+				IDs: []string{"1"},
+			},
+			"Type",
+			"required_with",
+		},
+		// Not IDs
+		{
+			"NotIDs is invalid because the type is required with",
+			requests.SearchGetRequest{
+				NotIDs: []string{"1"},
+			},
+			"Type",
+			"required_with",
 		},
 	}
 	for _, tt := range tests {

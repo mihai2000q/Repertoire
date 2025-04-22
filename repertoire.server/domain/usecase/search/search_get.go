@@ -34,6 +34,24 @@ func (g Get) Handle(
 		return wrapper.WithTotalCount[any]{}, errCode
 	}
 
+	if len(request.IDs) > 0 {
+		filter := "id IN ["
+		for _, id := range request.IDs {
+			filter = filter + string(*request.Type) + "-" + id + ", "
+		}
+		filter = strings.TrimRight(filter, ", ") + "]"
+		request.Filter = append(request.Filter, filter)
+	}
+
+	if len(request.IDs) > 0 {
+		filter := "id NOT IN ["
+		for _, id := range request.IDs {
+			filter = filter + string(*request.Type) + "-" + id + ", "
+		}
+		filter = strings.TrimRight(filter, ", ") + "]"
+		request.Filter = append(request.Filter, filter)
+	}
+
 	searchResult, errCode := g.meiliSearchService.Search(
 		request.Query,
 		request.CurrentPage,

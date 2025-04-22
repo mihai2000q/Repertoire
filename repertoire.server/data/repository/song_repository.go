@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"repertoire/server/data/database"
@@ -12,6 +13,7 @@ type SongRepository interface {
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
+	GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error
 	GetAllByUser(
 		songs *[]model.EnhancedSong,
 		userID uuid.UUID,
@@ -108,6 +110,68 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Error
 }
 
+func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error {
+	err := s.client.Table("songs").
+		Where("user_id = ?", userID).
+		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
+		Select(
+			"JSON_AGG(DISTINCT artist_id) filter (WHERE artist_id IS NOT NULL) as artist_ids",
+			"JSON_AGG(DISTINCT album_id) filter (WHERE album_id IS NOT NULL) as album_ids",
+			"MIN(songs.release_date) AS min_release_date",
+			"MAX(songs.release_date) AS max_release_date",
+			"MIN(bpm) AS min_bpm",
+			"MAX(bpm) AS max_bpm",
+			"JSON_AGG(DISTINCT difficulty) filter (WHERE difficulty IS NOT NULL) as difficulties",
+			"JSON_AGG(DISTINCT guitar_tuning_id) filter (WHERE guitar_tuning_id IS NOT NULL) as guitar_tuning_ids",
+			"MIN(COALESCE(ss.sections_count, 0)) AS min_sections_count",
+			"MAX(COALESCE(ss.sections_count, 0)) AS max_sections_count",
+			"MIN(COALESCE(ss.solos_count, 0)) AS min_solos_count",
+			"MAX(COALESCE(ss.solos_count, 0)) AS max_solos_count",
+			"MIN(COALESCE(ss.riffs_count, 0)) AS min_riffs_count",
+			"MAX(COALESCE(ss.riffs_count, 0)) AS max_riffs_count",
+			"MIN(rehearsals) as min_rehearsals",
+			"MAX(rehearsals) as max_rehearsals",
+			"MIN(confidence) as min_confidence",
+			"MAX(confidence) as max_confidence",
+			"MIN(progress) as min_progress",
+			"MAX(progress) as max_progress",
+			"MIN(last_time_played) as min_last_time_played",
+			"MAX(last_time_played) as max_last_time_played",
+		).
+		Scan(&metadata).
+		Error
+	if err != nil {
+		return err
+	}
+	if metadata.ArtistIDsAgg != "" {
+		err := json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
+		if err != nil {
+			return err
+		}
+	}
+	if metadata.AlbumIDsAgg != "" {
+		err := json.Unmarshal([]byte(metadata.AlbumIDsAgg), &metadata.AlbumIDs)
+		if err != nil {
+			return err
+		}
+	}
+	if metadata.DifficultiesAgg != "" {
+		err := json.Unmarshal([]byte(metadata.DifficultiesAgg), &metadata.Difficulties)
+		if err != nil {
+			return err
+		}
+	}
+	if metadata.GuitarTuningIDsAgg != "" {
+		err := json.Unmarshal([]byte(metadata.GuitarTuningIDsAgg), &metadata.GuitarTuningIDs)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+var compoundSongsFields = []string{"sections_count", "solos_count", "riffs_count"}
+
 func (s songRepository) GetAllByUser(
 	songs *[]model.EnhancedSong,
 	userID uuid.UUID,
@@ -126,11 +190,14 @@ func (s songRepository) GetAllByUser(
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO: Based on the search by add programmatically
 		Where(model.Song{UserID: userID})
 
-	s.enhanceSongsWithSongSectionsQuery(tx, userID)
+	database.AddCoalesceToCompoundFields(&searchBy, compoundSongsFields)
+	database.AddCoalesceToCompoundFields(&orderBy, compoundSongsFields)
 
-	tx = database.SearchBy(tx, searchBy)
-	tx = database.OrderBy(tx, orderBy)
-	tx = database.Paginate(tx, currentPage, pageSize)
+	s.addSongSectionsSubQuery(tx, userID)
+
+	database.SearchBy(tx, searchBy)
+	database.OrderBy(tx, orderBy)
+	database.Paginate(tx, currentPage, pageSize)
 	return tx.Find(&songs).Error
 }
 
@@ -140,9 +207,11 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 		Joins("LEFT JOIN playlist_songs ON playlist_songs.song_id = songs.id"). // TODO REMOVE
 		Where(model.Song{UserID: userID})
 
-	s.enhanceSongsWithSongSectionsQuery(tx, userID)
+	database.AddCoalesceToCompoundFields(&searchBy, compoundSongsFields)
 
-	tx = database.SearchBy(tx, searchBy)
+	s.addSongSectionsSubQuery(tx, userID)
+
+	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
 
@@ -244,27 +313,6 @@ func (s songRepository) Delete(id uuid.UUID) error {
 	return s.client.Delete(&model.Song{}, id).Error
 }
 
-func (s songRepository) enhanceSongsWithSongSectionsQuery(tx *gorm.DB, userID uuid.UUID) {
-	enhancedSections := s.client.Model(&model.SongSection{}).
-		Select("song_id",
-			"COUNT(*) as sections_count",
-			"COUNT(*) filter (where song_section_types.name = 'Solo') as solos",
-			"COUNT(*) filter (where song_section_types.name = 'Riff') as riffs",
-		).
-		Joins("LEFT JOIN song_section_types ON song_section_types.id = song_sections.song_section_type_id").
-		Joins("JOIN songs ON songs.id = song_sections.song_id").
-		Where("songs.user_id = ?", userID).
-		Group("song_id")
-
-	tx.Joins("LEFT JOIN (?) AS es ON es.song_id = songs.id", enhancedSections).
-		Select(
-			"songs.*",
-			"COALESCE(es.sections_count, 0) as sections_count",
-			"COALESCE(es.solos, 0) as solos",
-			"COALESCE(es.riffs, 0) as riffs",
-		)
-}
-
 // Settings
 
 func (s songRepository) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
@@ -345,4 +393,27 @@ func (s songRepository) GetSongSectionHistory(
 
 func (s songRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
 	return s.client.Create(&history).Error
+}
+
+func (s songRepository) addSongSectionsSubQuery(tx *gorm.DB, userID uuid.UUID) {
+	tx.Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
+		Select(
+			"songs.*",
+			"COALESCE(ss.sections_count, 0) as sections_count",
+			"COALESCE(ss.solos_count, 0) as solos_count",
+			"COALESCE(ss.riffs_count, 0) as riffs_count",
+		)
+}
+
+func (s songRepository) getSongSectionsSubQuery(userID uuid.UUID) *gorm.DB {
+	return s.client.Model(&model.SongSection{}).
+		Select("song_id",
+			"COUNT(*) as sections_count",
+			"COUNT(*) filter (where song_section_types.name = 'Solo') as solos_count",
+			"COUNT(*) filter (where song_section_types.name = 'Riff') as riffs_count",
+		).
+		Joins("LEFT JOIN song_section_types ON song_section_types.id = song_sections.song_section_type_id").
+		Joins("JOIN songs ON songs.id = song_sections.song_id").
+		Where("songs.user_id = ?", userID).
+		Group("song_id")
 }
