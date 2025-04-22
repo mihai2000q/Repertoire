@@ -55,7 +55,7 @@ func AssertMessage[T any](
 
 // models
 
-func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.EnhancedAlbum, withEnhancedSongs bool) {
+func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.EnhancedAlbum) {
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
 	Time(t, album.ReleaseDate, response.ReleaseDate)
@@ -67,14 +67,12 @@ func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.Enhan
 		assert.Nil(t, response.Artist)
 	}
 
-	if withEnhancedSongs {
-		assert.Equal(t, len(album.Songs), response.SongsCount)
-		rehearsals, confidence, progress, lastTimePlayed := getAverageSongsStats(album.Songs)
-		assert.Equal(t, rehearsals, response.Rehearsals)
-		assert.Equal(t, confidence, response.Confidence)
-		assert.Equal(t, progress, response.Progress)
-		assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
-	}
+	assert.Equal(t, len(album.Songs), response.SongsCount)
+	rehearsals, confidence, progress, lastTimePlayed := getAverageSongsStats(album.Songs)
+	assert.Equal(t, rehearsals, response.Rehearsals)
+	assert.Equal(t, confidence, response.Confidence)
+	assert.Equal(t, progress, response.Progress)
+	assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
 }
 
 func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withArtist bool, withSongs bool) {
@@ -110,29 +108,20 @@ func ResponseEnhancedArtist(
 	t *testing.T,
 	artist model.Artist,
 	response model.EnhancedArtist,
-	withEnhancedBandMembers bool,
-	withEnhancedAlbums bool,
-	withEnhancedSongs bool,
 ) {
 	assert.Equal(t, artist.ID, response.ID)
 	assert.Equal(t, artist.Name, response.Name)
 	assert.Equal(t, artist.IsBand, response.IsBand)
 	assert.Equal(t, artist.ImageURL, response.ImageURL)
 
-	if withEnhancedBandMembers {
-		assert.Equal(t, len(artist.BandMembers), response.BandMembersCount)
-	}
-	if withEnhancedAlbums {
-		assert.Equal(t, len(artist.Albums), response.AlbumsCount)
-	}
-	if withEnhancedSongs {
-		assert.Equal(t, len(artist.Songs), response.SongsCount)
-		rehearsals, confidence, progress, lastTimePlayed := getAverageSongsStats(artist.Songs)
-		assert.Equal(t, rehearsals, response.Rehearsals)
-		assert.Equal(t, confidence, response.Confidence)
-		assert.Equal(t, progress, response.Progress)
-		assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
-	}
+	assert.Equal(t, len(artist.BandMembers), response.BandMembersCount)
+	assert.Equal(t, len(artist.Albums), response.AlbumsCount)
+	assert.Equal(t, len(artist.Songs), response.SongsCount)
+	rehearsals, confidence, progress, lastTimePlayed := getAverageSongsStats(artist.Songs)
+	assert.Equal(t, rehearsals, response.Rehearsals)
+	assert.Equal(t, confidence, response.Confidence)
+	assert.Equal(t, progress, response.Progress)
+	assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
 }
 
 func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist, withBandMembers bool) {
@@ -220,8 +209,8 @@ func ResponseEnhancedSong(
 		return section.SongSectionType.Name != "Riff"
 	}))
 	assert.Equal(t, len(song.Sections), response.SectionsCount)
-	assert.Equal(t, solos, response.Solos)
-	assert.Equal(t, riffs, response.Riffs)
+	assert.Equal(t, solos, response.SolosCount)
+	assert.Equal(t, riffs, response.RiffsCount)
 }
 
 func ResponseSong(
@@ -348,10 +337,10 @@ func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response mo
 	assert.Equal(t, playlist.Description, response.Description)
 	assert.Equal(t, playlist.ImageURL, response.ImageURL)
 
-	assert.Len(t, response.SongsIDs, len(playlist.Songs))
+	assert.Len(t, response.SongIDs, len(playlist.Songs))
 	assert.Equal(t, response.SongsCount, len(playlist.Songs))
 	for i := range playlist.Songs {
-		assert.Equal(t, playlist.Songs[i].ID, response.SongsIDs[i])
+		assert.Equal(t, playlist.Songs[i].ID, response.SongIDs[i])
 	}
 }
 

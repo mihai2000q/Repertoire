@@ -30,9 +30,11 @@ func TestGetAllAlbums_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
 	db := utils.GetDatabase(t)
 
 	var albums []model.Album
-	db.Joins("Artist").Find(&albums)
+	db.Preload("Songs").
+		Joins("Artist").
+		Find(&albums)
 
 	for i := range responseAlbums {
-		assertion.ResponseEnhancedAlbum(t, albums[i], responseAlbums[i], false)
+		assertion.ResponseEnhancedAlbum(t, albums[i], responseAlbums[i])
 	}
 }

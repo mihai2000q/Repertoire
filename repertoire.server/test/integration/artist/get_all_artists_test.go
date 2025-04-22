@@ -31,16 +31,16 @@ func TestGetAllArtists_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 	db := utils.GetDatabase(t)
 
 	var artists []model.Artist
-	db.Find(&artists)
+	db.Preload("BandMembers").
+		Preload("Albums").
+		Preload("Songs").
+		Find(&artists)
 
 	for i := range responseArtists {
 		assertion.ResponseEnhancedArtist(
 			t,
 			artists[i],
 			responseArtists[i],
-			false,
-			false,
-			false,
 		)
 	}
 }
