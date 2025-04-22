@@ -111,7 +111,7 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 }
 
 func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error {
-	err := s.client.Table("artists").
+	err := s.client.Table("songs").
 		Where("user_id = ?", userID).
 		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
 		Select(
@@ -129,12 +129,12 @@ func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, 
 			"MAX(COALESCE(ss.solos_count, 0)) AS max_solos_count",
 			"MIN(COALESCE(ss.riffs_count, 0)) AS min_riffs_count",
 			"MAX(COALESCE(ss.riffs_count, 0)) AS max_riffs_count",
-			"MIN(rehearsals, 0) as min_rehearsals",
-			"MAX(rehearsals, 0) as max_rehearsals",
-			"MIN(confidence, 0) as min_confidence",
-			"MAX(confidence, 0) as max_confidence",
-			"MIN(progress, 0) as min_progress",
-			"MAX(progress, 0) as max_progress",
+			"MIN(rehearsals) as min_rehearsals",
+			"MAX(rehearsals) as max_rehearsals",
+			"MIN(confidence) as min_confidence",
+			"MAX(confidence) as max_confidence",
+			"MIN(progress) as min_progress",
+			"MAX(progress) as max_progress",
 			"MIN(last_time_played) as min_last_time_played",
 			"MAX(last_time_played) as max_last_time_played",
 		).
@@ -144,16 +144,28 @@ func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, 
 		return err
 	}
 	if metadata.ArtistIDsAgg != "" {
-		return json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
+		err := json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
+		if err != nil {
+			return err
+		}
 	}
 	if metadata.AlbumIDsAgg != "" {
-		return json.Unmarshal([]byte(metadata.AlbumIDsAgg), &metadata.AlbumIDs)
+		err := json.Unmarshal([]byte(metadata.AlbumIDsAgg), &metadata.AlbumIDs)
+		if err != nil {
+			return err
+		}
 	}
 	if metadata.DifficultiesAgg != "" {
-		return json.Unmarshal([]byte(metadata.DifficultiesAgg), &metadata.Difficulties)
+		err := json.Unmarshal([]byte(metadata.DifficultiesAgg), &metadata.Difficulties)
+		if err != nil {
+			return err
+		}
 	}
 	if metadata.GuitarTuningIDsAgg != "" {
-		return json.Unmarshal([]byte(metadata.GuitarTuningIDsAgg), &metadata.GuitarTuningIDs)
+		err := json.Unmarshal([]byte(metadata.GuitarTuningIDsAgg), &metadata.GuitarTuningIDs)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

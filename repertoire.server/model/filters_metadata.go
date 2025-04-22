@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
+	"repertoire/server/internal/enums"
 	"time"
 )
 
@@ -66,11 +67,11 @@ type SongFiltersMetadata struct {
 	MinReleaseDate *time.Time `gorm:"->" json:"minReleaseDate"`
 	MaxReleaseDate *time.Time `gorm:"->" json:"maxReleaseDate"`
 
-	MinBpm uint `gorm:"->" json:"minBpm"`
-	MaxBpm uint `gorm:"->" json:"maxBpm"`
+	MinBpm *uint `gorm:"->" json:"minBpm"`
+	MaxBpm *uint `gorm:"->" json:"maxBpm"`
 
-	DifficultiesAgg string   `gorm:"->; column:difficulties" json:"-"`
-	Difficulties    []string `gorm:"-" json:"difficulties"`
+	DifficultiesAgg string             `gorm:"->; column:difficulties" json:"-"`
+	Difficulties    []enums.Difficulty `gorm:"-" json:"difficulties"`
 
 	GuitarTuningIDsAgg string      `gorm:"->; column:guitar_tuning_ids" json:"-"`
 	GuitarTuningIDs    []uuid.UUID `gorm:"-" json:"guitarTuningIds"`

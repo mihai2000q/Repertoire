@@ -105,8 +105,8 @@ func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetada
 		Select(
 			"MIN(COALESCE(bms.band_members_count, 0)) AS min_band_members_count",
 			"MAX(COALESCE(bms.band_members_count, 0)) AS max_band_members_count",
-			"MIN(COALESCE(ass.albums_count, 0)) AS min_albums_count",
-			"MAX(COALESCE(ass.albums_count, 0)) AS max_albums_count",
+			"MIN(COALESCE(aas.albums_count, 0)) AS min_albums_count",
+			"MAX(COALESCE(aas.albums_count, 0)) AS max_albums_count",
 			"MIN(COALESCE(ss.songs_count, 0)) AS min_songs_count",
 			"MAX(COALESCE(ss.songs_count, 0)) AS max_songs_count",
 			"MIN(COALESCE(CEIL(ss.rehearsals), 0)) as min_rehearsals",
