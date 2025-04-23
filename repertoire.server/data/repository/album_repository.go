@@ -140,10 +140,10 @@ func (a albumRepository) GetAllByUser(
 		Where(model.Album{UserID: userID}).
 		Select("albums.*")
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundAlbumsFields)
-	database.AddCoalesceToCompoundFields(&orderBy, compoundAlbumsFields)
-
 	a.addSongsSubQuery(tx, userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
+	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundAlbumsFields)
 
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
@@ -156,9 +156,9 @@ func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searc
 		Joins("Artist").
 		Where(model.Album{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundAlbumsFields)
-
 	a.addSongsSubQuery(tx, userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
 
 	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error

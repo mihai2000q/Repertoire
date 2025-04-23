@@ -191,7 +191,7 @@ describe('Add Playlist Songs Modal', () => {
     expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
     expect(capturedSearchBy.getAll('searchBy')[0]).match(
       new RegExp(
-        `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
+        `playlist_id != ${playlistId}`,
         'i'
       )
     )

@@ -148,14 +148,14 @@ func (a artistRepository) GetAllByUser(
 	tx := a.client.Model(&model.Artist{}).
 		Where(model.Artist{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundArtistsFields)
-	database.AddCoalesceToCompoundFields(&orderBy, compoundArtistsFields)
-
 	dbSelect := []string{"artists.*"}
 	dbSelect = append(dbSelect, a.addBandMembersSubQuery(tx, userID))
 	dbSelect = append(dbSelect, a.addAlbumsSubQuery(tx, userID))
 	dbSelect = append(dbSelect, a.addSongsSubQuery(tx, userID)...)
 	tx.Select(dbSelect)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundArtistsFields)
+	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundArtistsFields)
 
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
@@ -167,13 +167,13 @@ func (a artistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, sear
 	tx := a.client.Model(&model.Artist{}).
 		Where(model.Artist{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundArtistsFields)
-
 	dbSelect := []string{"artists.*"}
 	dbSelect = append(dbSelect, a.addBandMembersSubQuery(tx, userID))
 	dbSelect = append(dbSelect, a.addAlbumsSubQuery(tx, userID))
 	dbSelect = append(dbSelect, a.addSongsSubQuery(tx, userID)...)
 	tx.Select(dbSelect)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundArtistsFields)
 
 	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error

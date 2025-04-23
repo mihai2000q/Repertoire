@@ -94,8 +94,8 @@ func (p playlistRepository) GetAllByUser(
 		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundPlaylistsFields)
-	database.AddCoalesceToCompoundFields(&orderBy, compoundPlaylistsFields)
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundPlaylistsFields)
 
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
@@ -108,7 +108,7 @@ func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, se
 		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
 
-	database.AddCoalesceToCompoundFields(&searchBy, compoundPlaylistsFields)
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
 
 	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
