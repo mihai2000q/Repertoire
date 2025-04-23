@@ -1,5 +1,4 @@
 import { renderHook } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import useFiltersMetadata from './useFiltersMetadata.ts'
 import Filter, { FilterValue } from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
@@ -45,7 +44,7 @@ describe('useFiltersMetadata', () => {
     rerender({ metadata })
 
     expect(filtersMetadataMap).toHaveBeenCalledWith(metadata)
-    expect(setFilters).toHaveBeenCalledTimes(1)
+    expect(setFilters).toHaveBeenCalledOnce()
 
     const updatedFilters = setFilters.mock.calls[0][0]
     expect(updatedFilters.get('name=').value).toBe('John')

@@ -79,8 +79,8 @@ describe('use Filters', () => {
 
     const [filters] = result.current
     expect(filters.size).toBe(1)
-    expect(filters.get('name=')?.value).toBe('Alice')
-    expect(filters.get('name=')?.isSet).toBe(true)
+    expect(filters.get('name=').value).toBe('Alice')
+    expect(filters.get('name=').isSet).toBe(true)
   })
 
   it('should initialize with empty map when no initial filters provided', () => {

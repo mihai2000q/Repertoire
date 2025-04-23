@@ -37,7 +37,7 @@ describe('useFiltersHandlers', () => {
 
       act(() => result.current.handleIsSetChange('name=', true))
 
-      expect(setFilters).toHaveBeenCalledTimes(1)
+      expect(setFilters).toHaveBeenCalledOnce()
       const updatedFilters = setFilters.mock.calls[0][0]
       expect(updatedFilters.get('name=')).toStrictEqual({
         ...initialFilters.get('name='),

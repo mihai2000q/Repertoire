@@ -20,7 +20,7 @@ describe('use Did Update Shallow', () => {
     expect(effect).not.toHaveBeenCalled()
 
     rerender({ deps: [2] })
-    expect(effect).toHaveBeenCalledTimes(1)
+    expect(effect).toHaveBeenCalledOnce()
 
     rerender({ deps: [3] })
     expect(effect).toHaveBeenCalledTimes(2)
@@ -54,6 +54,6 @@ describe('use Did Update Shallow', () => {
     expect(effect).not.toHaveBeenCalled()
 
     rerender({ deps: [{ a: 2 }] })
-    expect(effect).toHaveBeenCalledTimes(1)
+    expect(effect).toHaveBeenCalledOnce()
   })
 })
