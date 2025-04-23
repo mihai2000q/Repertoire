@@ -1,9 +1,9 @@
 package model
 
 import (
+	"encoding/json"
 	"gorm.io/gorm"
 	"repertoire/server/internal"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,20 +11,14 @@ import (
 
 type EnhancedPlaylist struct {
 	Playlist
-	SongsCount  float64  `gorm:"->" json:"songsCount"`
-	SongsIDsAgg string   `gorm:"->; column:song_ids" json:"-"`
-	SongsIDs    []string `gorm:"-" json:"songIds"`
+	SongsCount float64     `gorm:"->" json:"songsCount"`
+	SongIDsAgg string      `gorm:"->; column:song_ids" json:"-"`
+	SongIDs    []uuid.UUID `gorm:"-" json:"songIds"`
 }
 
 func (p *EnhancedPlaylist) AfterFind(*gorm.DB) error {
-	p.SongsIDs = []string{}
-
-	if len(p.SongsIDsAgg) == 0 {
-		return nil
-	}
-
-	for _, id := range strings.Split(p.SongsIDsAgg, ",") {
-		p.SongsIDs = append(p.SongsIDs, id)
+	if p.SongIDsAgg != "" {
+		return json.Unmarshal([]byte(p.SongIDsAgg), &p.SongIDs)
 	}
 	return nil
 }
@@ -64,7 +58,6 @@ func (p *Playlist) AfterFind(*gorm.DB) error {
 		return nil
 	}
 
-	p.Songs = []Song{} // in case there are no playlist songs
 	for _, playlistSong := range p.PlaylistSongs {
 		newSong := playlistSong.Song
 		newSong.PlaylistTrackNo = playlistSong.SongTrackNo

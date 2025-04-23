@@ -69,6 +69,18 @@ func (s SongHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (s SongHandler) GetFiltersMetadata(c *gin.Context) {
+	token := s.GetTokenFromContext(c)
+
+	result, errorCode := s.service.GetFiltersMetadata(token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (s SongHandler) Create(c *gin.Context) {
 	var request requests.CreateSongRequest
 	errCode := s.BindAndValidate(c, &request)

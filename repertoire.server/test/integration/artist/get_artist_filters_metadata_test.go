@@ -2,6 +2,7 @@ package artist
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -10,37 +11,28 @@ import (
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func TestGetAllArtists_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
+func TestGetArtistFiltersMetadata_WhenSuccessful_ShouldReturnArtistFiltersMetadata(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().GET(w, "/api/artists")
+	core.NewTestHandler().GET(w, "/api/artists/filters-metadata")
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseArtists []model.EnhancedArtist
-	_ = json.Unmarshal(w.Body.Bytes(), &responseArtists)
-
-	db := utils.GetDatabase(t)
+	var metadata model.ArtistFiltersMetadata
+	_ = json.Unmarshal(w.Body.Bytes(), &metadata)
 
 	var artists []model.Artist
+	db := utils.GetDatabase(t)
 	db.Preload("BandMembers").
 		Preload("Albums").
 		Preload("Songs").
 		Find(&artists)
 
-	for i := range responseArtists {
-		assertion.ResponseEnhancedArtist(
-			t,
-			artists[i],
-			responseArtists[i],
-		)
-	}
+	assertion.ArtistFiltersMetadata(t, metadata, artists)
 }

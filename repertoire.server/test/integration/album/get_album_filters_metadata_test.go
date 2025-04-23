@@ -13,28 +13,23 @@ import (
 	"testing"
 )
 
-func TestGetAllAlbums_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {
+func TestGetAlbumFiltersMetadata_WhenSuccessful_ShouldReturnAlbumFiltersMetadata(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().GET(w, "/api/albums")
+	core.NewTestHandler().GET(w, "/api/albums/filters-metadata")
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseAlbums []model.EnhancedAlbum
-	_ = json.Unmarshal(w.Body.Bytes(), &responseAlbums)
-
-	db := utils.GetDatabase(t)
+	var metadata model.AlbumFiltersMetadata
+	_ = json.Unmarshal(w.Body.Bytes(), &metadata)
 
 	var albums []model.Album
-	db.Preload("Songs").
-		Joins("Artist").
-		Find(&albums)
+	db := utils.GetDatabase(t)
+	db.Preload("Songs").Find(&albums)
 
-	for i := range responseAlbums {
-		assertion.ResponseEnhancedAlbum(t, albums[i], responseAlbums[i])
-	}
+	assertion.AlbumFiltersMetadata(t, metadata, albums)
 }

@@ -11,6 +11,7 @@ type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
 	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
+	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
@@ -61,6 +62,21 @@ func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uui
 		Find(&playlist, model.Playlist{ID: id}).Error
 }
 
+func (p playlistRepository) GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID) error {
+	return p.client.
+		Select(
+			"MIN(COALESCE(ss.songs_count, 0)) AS min_songs_count",
+			"MAX(COALESCE(ss.songs_count, 0)) AS max_songs_count",
+		).
+		Table("playlists").
+		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
+		Where("user_id = ?", userID).
+		Scan(&metadata).
+		Error
+}
+
+var compoundPlaylistsFields = []string{"songs_count"}
+
 func (p playlistRepository) GetAllByUser(
 	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,
@@ -72,23 +88,29 @@ func (p playlistRepository) GetAllByUser(
 	tx := p.client.Model(&model.Playlist{}).
 		Select(
 			"playlists.*",
-			"COALESCE(es.songs_count, 0) AS songs_count",
-			" es.songs_ids as songs_ids",
+			"COALESCE(ss.songs_count, 0) AS songs_count",
+			" ss.song_ids as song_ids",
 		).
-		Joins("LEFT JOIN (?) AS es ON es.playlist_id = playlists.id", p.getSongsByPlaylistQuery(userID)).
+		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
-	tx = database.SearchBy(tx, searchBy)
-	tx = database.OrderBy(tx, orderBy)
-	tx = database.Paginate(tx, currentPage, pageSize)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundPlaylistsFields)
+
+	database.SearchBy(tx, searchBy)
+	database.OrderBy(tx, orderBy)
+	database.Paginate(tx, currentPage, pageSize)
 	return tx.Find(&playlists).Error
 }
 
 func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
 	tx := p.client.Model(&model.Playlist{}).
-		Joins("LEFT JOIN (?) AS es ON es.playlist_id = playlists.id", p.getSongsByPlaylistQuery(userID)).
+		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
 
-	tx = database.SearchBy(tx, searchBy)
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+
+	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
 
@@ -130,9 +152,9 @@ func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) err
 	return p.client.Delete(&playlistSongs).Error
 }
 
-func (p playlistRepository) getSongsByPlaylistQuery(userID uuid.UUID) *gorm.DB {
+func (p playlistRepository) getSongsByPlaylistSubQuery(userID uuid.UUID) *gorm.DB {
 	return p.client.Model(&model.PlaylistSong{}).
-		Select("playlist_id, COUNT(*) as songs_count, STRING_AGG(song_id::text, ',') as songs_ids").
+		Select("playlist_id, COUNT(*) as songs_count, JSON_AGG(song_id) as song_ids").
 		Joins("JOIN playlists ON playlists.id = playlist_songs.playlist_id").
 		Where("playlists.user_id = ?", userID).
 		Group("playlist_id")

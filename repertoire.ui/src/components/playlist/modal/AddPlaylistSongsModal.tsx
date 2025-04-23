@@ -46,8 +46,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     pageSize: 20,
     orderBy: [createOrder({ property: SongProperty.LastModified, type: OrderType.Descending })],
     searchBy: [
-      // TODO: Update
-      `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
+      `playlist_id != ${playlistId}`,
       ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
     ]
   })

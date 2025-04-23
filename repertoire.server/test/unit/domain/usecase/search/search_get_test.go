@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func TestGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {
+func TestSearchGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	_uut := search.NewGet(jwtService, nil)
@@ -40,7 +40,7 @@ func TestGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {
 	jwtService.AssertExpectations(t)
 }
 
-func TestGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) {
+func TestSearchGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
@@ -81,7 +81,7 @@ func TestGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) {
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
+func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
@@ -251,6 +251,104 @@ func TestGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 			assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
 			assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
 		}
+	}
+
+	jwtService.AssertExpectations(t)
+	searchEngineService.AssertExpectations(t)
+}
+
+func TestSearchGet_WhenArtistsWithIDsAndNotIDs_ShouldReturnSearchResult(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	searchEngineService := new(service.SearchEngineServiceMock)
+	_uut := search.NewGet(jwtService, searchEngineService)
+
+	request := requests.SearchGetRequest{
+		Query:       "test",
+		CurrentPage: &[]int{1}[0],
+		PageSize:    &[]int{20}[0],
+		Type:        &[]enums.SearchType{enums.Artist}[0],
+		Filter:      []string{"artist.id is null"},
+		IDs:         []string{uuid.New().String(), uuid.New().String(), uuid.New().String()},
+		NotIDs:      []string{uuid.New().String(), uuid.New().String(), uuid.New().String()},
+	}
+	token := "some token"
+
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	modelsResult := []map[string]interface{}{
+		{
+			"id":     "artist-" + uuid.New().String(),
+			"type":   enums.Artist,
+			"title":  "Artist 1",
+			"userID": userID,
+		},
+		{
+			"id":       "artist-" + uuid.New().String(),
+			"type":     enums.Artist,
+			"title":    "Artist 1",
+			"imageUrl": "something.png",
+			"userID":   userID,
+		},
+	}
+
+	var finalResult []any
+	for _, m := range modelsResult {
+		finalResult = append(finalResult, m)
+	}
+
+	idsFilter := "id IN ["
+	for _, id := range request.IDs {
+		idsFilter = idsFilter + string(*request.Type) + "-" + id + ", "
+	}
+	idsFilter = strings.TrimRight(idsFilter, ", ") + "]"
+
+	notIDsFilter := "id NOT IN ["
+	for _, id := range request.IDs {
+		notIDsFilter = notIDsFilter + string(*request.Type) + "-" + id + ", "
+	}
+	notIDsFilter = strings.TrimRight(notIDsFilter, ", ") + "]"
+
+	filter := append(request.Filter, idsFilter, notIDsFilter)
+	searchResult := wrapper.WithTotalCount[any]{
+		Models:     finalResult,
+		TotalCount: int64(len(modelsResult)),
+	}
+	searchEngineService.
+		On(
+			"Search",
+			request.Query,
+			request.CurrentPage,
+			request.PageSize,
+			request.Type,
+			userID,
+			filter,
+			request.Order,
+		).
+		Return(searchResult, nil).
+		Once()
+
+	// when
+	result, errCode := _uut.Handle(request, token)
+
+	// then
+	assert.NotEmpty(t, result)
+	assert.Nil(t, errCode)
+
+	assert.Equal(t, searchResult.TotalCount, result.TotalCount)
+	for i := range result.Models {
+		currBase := result.Models[i].(model.SearchBase)
+		expectedMap := searchResult.Models[i].(map[string]interface{})
+
+		assert.Equal(t, searchResult.Models[i].(map[string]interface{})["type"], currBase.Type)
+		assert.Equal(t, searchResult.Models[i].(map[string]interface{})["userId"], currBase.UserID)
+
+		curr := result.Models[i].(model.ArtistSearch)
+		assert.Equal(t, strings.Replace("artist-", (expectedMap["id"]).(string), "", 1), currBase.ID)
+		assert.Equal(t, expectedMap["name"], curr.Name)
+		assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
+		assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
 	}
 
 	jwtService.AssertExpectations(t)

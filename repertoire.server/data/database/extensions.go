@@ -1,18 +1,30 @@
 package database
 
 import (
+	"fmt"
 	"gorm.io/gorm"
+	"reflect"
+	"slices"
 	"strings"
 )
+
+func AddCoalesceToCompoundFields(str []string, compoundFields []string) []string {
+	var newStr = slices.Clone(str)
+	for i, s := range newStr {
+		for _, field := range compoundFields {
+			if strings.Contains(s, field) {
+				newStr[i] = strings.Replace(s, field, "COALESCE("+field+",0)", 1)
+			}
+		}
+	}
+	return newStr
+}
 
 func Paginate(tx *gorm.DB, currentPage *int, pageSize *int) *gorm.DB {
 	if currentPage == nil || pageSize == nil {
 		return tx
 	}
-
-	return tx.
-		Offset((*currentPage - 1) * *pageSize).
-		Limit(*pageSize)
+	return tx.Offset((*currentPage - 1) * *pageSize).Limit(*pageSize)
 }
 
 func OrderBy(tx *gorm.DB, orderBy []string) *gorm.DB {
@@ -24,45 +36,50 @@ func OrderBy(tx *gorm.DB, orderBy []string) *gorm.DB {
 
 func SearchBy(tx *gorm.DB, searchBy []string) *gorm.DB {
 	for _, s := range searchBy {
-		tx = tx.Where(s)
-		// TODO: SECURITY ZERO SO CHANGE
-		/*property, search := splitSearch(s)
-		if search == "" {
-			tx = tx.Where(property)
+		condition, search := splitSearch(s)
+		if reflect.TypeOf(search).String() == "string" && search == "" {
+			tx.Where(condition)
 		} else {
-			tx = tx.Where(property, search)
-		}*/
+			tx.Where(condition, search)
+		}
 	}
 	return tx
 }
 
-func splitSearch(str string) (string, string) {
-	spaces := 0
-	firstIndex := 0
-	lastIndex := 0
+func splitSearch(str string) (string, any) {
+	startIndexOfOperator := 0
+	startIndexOfSearchValue := 0
 
-	for i, r := range str {
-		if r == ' ' {
-			spaces = spaces + 1
+	spaces := 0
+	for i, s := range str {
+		if s == ' ' {
+			spaces++
 		}
-		if spaces == 1 && firstIndex == 0 {
-			firstIndex = i
+		if spaces == 1 && startIndexOfOperator == 0 {
+			startIndexOfOperator = i
 		}
 		if spaces == 2 {
-			lastIndex = i
+			startIndexOfSearchValue = i
 			break
 		}
 	}
 
-	// What if the condition is:
-	// Property IS NULL
-	// Property IS NOT NULL
-	// Property = IS NULL
-	symbol := str[firstIndex+1 : lastIndex-1]
-	if (symbol != "=" && symbol != "<>" && symbol != "<" && symbol != ">" && symbol != "=<" && symbol != ">=") &&
-		(strings.HasSuffix(str, "IS NULL") || strings.HasSuffix(str, "IS NOT NULL")) {
+	property := str[:startIndexOfOperator]
+	operator := str[startIndexOfOperator+1 : startIndexOfSearchValue]
+	searchValue := str[startIndexOfSearchValue+1:]
+
+	condition := fmt.Sprintf("(%s %s (?))", property, operator)
+
+	if operator == "IS" {
 		return str, ""
 	}
+	if operator == "IN" {
+		var values []string
+		for _, val := range strings.Split(searchValue, ",") {
+			values = append(values, strings.TrimSpace(val))
+		}
+		return condition, values
+	}
 
-	return str[:lastIndex] + " ?", str[lastIndex+1:]
+	return condition, searchValue
 }
