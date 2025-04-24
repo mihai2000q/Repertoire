@@ -5,6 +5,7 @@ import {
   Card,
   Center,
   Group,
+  Indicator,
   Pagination,
   SimpleGrid,
   Space,
@@ -15,7 +16,7 @@ import {
 import ArtistsLoader from '../components/artists/ArtistsLoader.tsx'
 import ArtistCard from '../components/artists/ArtistCard.tsx'
 import AddNewArtistModal from '../components/artists/modal/AddNewArtistModal.tsx'
-import { useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import UnknownArtistCard from '../components/artists/UnknownArtistCard.tsx'
@@ -29,6 +30,10 @@ import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import artistsOrders from '../data/artists/artistsOrders.ts'
 import { artistPropertyIcons } from '../data/icons/artistPropertyIcons.tsx'
+import useFilters from '../hooks/filter/useFilters.ts'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import ArtistsFilters from '../components/artists/ArtistsFilters.tsx'
+import artistsFilters from '../data/artists/artistsFilters.ts'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
@@ -41,6 +46,10 @@ function Artists() {
   })
   const orderBy = useOrderBy(orders)
 
+  const [filters, filtersSize, setFilters] = useFilters(artistsFilters)
+  const searchBy = useSearchBy(filters)
+  useDidUpdate(() => handleCurrentPageChange(1), [filters])
+
   const pageSize = 40
   const {
     data: artists,
@@ -49,10 +58,12 @@ function Artists() {
   } = useGetArtistsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: orderBy
+    orderBy: orderBy,
+    searchBy: searchBy
   })
 
   const showUnknownArtist = useShowUnknownArtist()
+  const [filtersOpened, { toggle: toggleFilters, close: closeFilters }] = useDisclosure(false)
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     artists?.totalCount + (showUnknownArtist ? 1 : 0),
@@ -96,9 +107,24 @@ function Artists() {
             <IconArrowsSort size={17} />
           </ActionIcon>
         </AdvancedOrderMenu>
-        <ActionIcon aria-label={'filter-artists'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconFilterFilled size={17} />
-        </ActionIcon>
+        <Indicator
+          color={'primary'}
+          size={15}
+          offset={3}
+          label={filtersSize}
+          disabled={filtersSize === 0}
+          zIndex={2}
+        >
+          <ActionIcon
+            aria-label={'filter-artists'}
+            variant={'grey'}
+            size={'lg'}
+            disabled={isLoading}
+            onClick={toggleFilters}
+          >
+            <IconFilterFilled size={17} />
+          </ActionIcon>
+        </Indicator>
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
@@ -107,8 +133,11 @@ function Artists() {
         </Text>
       )}
 
-      {artists?.totalCount === 0 && !showUnknownArtist && (
+      {artists?.totalCount === 0 && !showUnknownArtist && filtersSize === 0 && (
         <Text mt={'sm'}>There are no artists yet. Try to add one</Text>
+      )}
+      {artists?.totalCount === 0 && !showUnknownArtist && filtersSize > 0 && (
+        <Text mt={'sm'}>There are no artists with these filter properties</Text>
       )}
       <SimpleGrid
         cols={{ base: 3, xs: 4, sm: 3, betweenSmMd: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}
@@ -147,6 +176,13 @@ function Artists() {
         />
       </Box>
 
+      <ArtistsFilters
+        opened={filtersOpened}
+        onClose={closeFilters}
+        filters={filters}
+        setFilters={setFilters}
+        isArtistsLoading={isFetching}
+      />
       <AddNewArtistModal opened={openedAddNewArtistModal} onClose={closeAddNewArtistModal} />
     </Stack>
   )

@@ -14,7 +14,7 @@ import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
 import User from './types/models/User.ts'
 import Playlist from './types/models/Playlist.ts'
-import { AlbumFiltersMetadata, PlaylistFiltersMetadata } from './types/models/FiltersMetadata.ts'
+import { AlbumFiltersMetadata, ArtistFiltersMetadata, PlaylistFiltersMetadata } from './types/models/FiltersMetadata.ts'
 
 // Custom Matchers
 
@@ -280,6 +280,26 @@ export const emptyOrder: Order = {
   property: ''
 }
 
+export const defaultArtistFiltersMetadata: ArtistFiltersMetadata = {
+  minBandMembersCount: 0,
+  maxBandMembersCount: 5,
+
+  minAlbumsCount: 0,
+  maxAlbumsCount: 5,
+
+  minSongsCount: 0,
+  maxSongsCount: 12,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
+
 export const defaultAlbumFiltersMetadata: AlbumFiltersMetadata = {
   artistIds: [],
 
@@ -290,7 +310,7 @@ export const defaultAlbumFiltersMetadata: AlbumFiltersMetadata = {
   maxRehearsals: 55,
 
   minConfidence: 0,
-  maxConfidence: 55,
+  maxConfidence: 75,
 
   minProgress: 0,
   maxProgress: 100
