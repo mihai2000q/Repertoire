@@ -1,10 +1,10 @@
-import { reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../../test-utils.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { BandMemberRole } from '../../../../types/models/Artist.ts'
+import { BandMemberRole } from '../../../../../types/models/Artist.ts'
 import BandMemberRoleMultiSelect from './BandMemberRoleMultiSelect.tsx'
 
 describe('Band Member Role Multi Select', () => {

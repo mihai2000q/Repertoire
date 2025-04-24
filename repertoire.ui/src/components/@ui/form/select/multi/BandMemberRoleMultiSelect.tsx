@@ -9,7 +9,7 @@ import {
   Text,
   useCombobox
 } from '@mantine/core'
-import { useGetBandMemberRolesQuery } from '../../../../state/api/artistsApi.ts'
+import { useGetBandMemberRolesQuery } from '../../../../../state/api/artistsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { IconCheck } from '@tabler/icons-react'
 
