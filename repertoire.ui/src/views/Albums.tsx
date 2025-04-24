@@ -30,7 +30,7 @@ import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 import { albumPropertyIcons } from '../data/icons/albumPropertyIcons.tsx'
-import AlbumFilters from '../components/albums/AlbumFilters.tsx'
+import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
 import useSearchBy from '../hooks/api/useSearchBy.ts'
 import albumsFilters from '../data/albums/albumsFilters.ts'
 import useFilters from '../hooks/filter/useFilters.ts'
@@ -169,7 +169,7 @@ function Albums() {
         />
       </Box>
 
-      <AlbumFilters
+      <AlbumsFilters
         opened={filtersOpened}
         onClose={closeFilters}
         filters={filters}
