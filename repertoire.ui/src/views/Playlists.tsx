@@ -30,8 +30,8 @@ import useOrderBy from '../hooks/api/useOrderBy.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
 import PlaylistsFilters from '../components/playlists/PlaylistsFilters.tsx'
 import useFilters from '../hooks/filter/useFilters.ts'
-import albumsFilters from '../data/albums/albumsFilters.ts'
 import useSearchBy from '../hooks/api/useSearchBy.ts'
+import playlistsFilters from '../data/playlists/playlistsFilters.ts'
 
 function Playlists() {
   useFixedDocumentTitle('Playlists')
@@ -44,7 +44,7 @@ function Playlists() {
   })
   const orderBy = useOrderBy(orders)
 
-  const [filters, filtersSize, setFilters] = useFilters(albumsFilters)
+  const [filters, filtersSize, setFilters] = useFilters(playlistsFilters)
   const searchBy = useSearchBy(filters)
   useDidUpdate(() => handleCurrentPageChange(1), [filters])
 

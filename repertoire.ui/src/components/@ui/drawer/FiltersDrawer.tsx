@@ -57,7 +57,7 @@ function FiltersDrawer({
   function handleResetFilters() {
     setFilters(initialFilters)
     setInternalFilters(initialFilters)
-    additionalReset()
+    if (additionalReset) additionalReset()
   }
 
   return (

@@ -1,4 +1,5 @@
 import { Checkbox, Group, MantineStyleProps, Stack, Text } from '@mantine/core'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface DoubleCheckboxProps extends MantineStyleProps {
   checked1: boolean
@@ -8,7 +9,7 @@ interface DoubleCheckboxProps extends MantineStyleProps {
   title?: string
   label1?: string
   label2?: string
-  isLoading?: boolean
+  disabled?: boolean
 }
 
 function DoubleCheckbox({
@@ -19,8 +20,19 @@ function DoubleCheckbox({
   title,
   label1,
   label2,
-  isLoading
+  disabled
 }: DoubleCheckboxProps) {
+  useDidUpdate(() => {
+    if (checked1 && checked2) {
+      onChange2(false)
+    }
+  }, [checked1])
+  useDidUpdate(() => {
+    if (checked2 && checked1) {
+      onChange1(false)
+    }
+  }, [checked2])
+
   return (
     <Stack gap={'xxs'}>
       {title && (
@@ -28,30 +40,20 @@ function DoubleCheckbox({
           {title}
         </Text>
       )}
-      <Group>
+      <Group aria-label={title}>
         <Checkbox
           label={label1}
           styles={{ label: { paddingLeft: 8 } }}
-          disabled={isLoading}
+          disabled={disabled}
           checked={checked1}
-          onChange={(value) => {
-            onChange1(value.currentTarget.checked)
-            if (value.currentTarget.checked) {
-              onChange2(false)
-            }
-          }}
+          onChange={(value) => onChange1(value.currentTarget.checked)}
         />
         <Checkbox
           label={label2}
           styles={{ label: { paddingLeft: 8 } }}
-          disabled={isLoading}
+          disabled={disabled}
           checked={checked2}
-          onChange={(value) => {
-            onChange2(value.currentTarget.checked)
-            if (value.currentTarget.checked) {
-              onChange1(false)
-            }
-          }}
+          onChange={(value) => onChange2(value.currentTarget.checked)}
         />
       </Group>
     </Stack>

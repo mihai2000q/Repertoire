@@ -102,8 +102,8 @@ describe('Playlists Filters', () => {
     expect(setFilters).toHaveBeenCalledTimes(2)
     const updatedFilters = setFilters.mock.calls[1][0]
     expect(updatedFilters.get(minSongsKey).value).toBe(newMinSongsValue)
-    expect(updatedFilters.get(maxSongsKey).value).toBe(newMaxSongsValue)
     expect(updatedFilters.get(minSongsKey).isSet).toBeTruthy()
+    expect(updatedFilters.get(maxSongsKey).value).toBe(newMaxSongsValue)
     expect(updatedFilters.get(maxSongsKey).isSet).toBeTruthy()
   })
 
@@ -111,9 +111,6 @@ describe('Playlists Filters', () => {
     const user = userEvent.setup()
 
     const setFilters = vi.fn()
-
-    const newMinSongsValue = 1
-    const newMaxSongsValue = 5
 
     reduxRender(
       <PlaylistFilters
@@ -128,15 +125,15 @@ describe('Playlists Filters', () => {
     await waitFor(() =>
       expect(screen.getByRole('textbox', { name: /min songs/i })).not.toBeDisabled()
     )
-
-    await fillFilterFields(newMinSongsValue, newMaxSongsValue)
-
+    await fillFilterFields()
     await user.click(screen.getByRole('button', { name: /reset/i }))
-
     assertFiltersMetadataOnFields()
   })
 
-  async function fillFilterFields(newMinSongsValue: number, newMaxSongsValue: number) {
+  async function fillFilterFields(
+    newMinSongsValue: number = filtersMetadata.minSongsCount + 1,
+    newMaxSongsValue: number = filtersMetadata.minSongsCount - 1
+  ) {
     const user = userEvent.setup()
 
     await user.clear(screen.getByRole('textbox', { name: /min songs/i }))
