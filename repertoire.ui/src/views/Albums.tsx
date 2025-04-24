@@ -6,7 +6,6 @@ import {
   Center,
   Group,
   Indicator,
-  Loader,
   Pagination,
   SimpleGrid,
   Space,
@@ -75,10 +74,6 @@ function Albums() {
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
 
-  function handleFiltersClick() {
-    toggleFilters()
-  }
-
   function handleCurrentPageChange(p: number) {
     setSearchParams({ ...searchParams, currentPage: p })
   }
@@ -116,7 +111,7 @@ function Albums() {
             variant={'grey'}
             size={'lg'}
             disabled={isLoading}
-            onClick={handleFiltersClick}
+            onClick={toggleFilters}
           >
             <IconFilterFilled size={17} />
           </ActionIcon>
@@ -165,17 +160,13 @@ function Albums() {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isLoading ? (
-          <Pagination
-            data-testid={'albums-pagination'}
-            value={currentPage}
-            onChange={handleCurrentPageChange}
-            total={totalPages}
-            disabled={isFetching}
-          />
-        ) : (
-          <Loader size={25} />
-        )}
+        <Pagination
+          data-testid={'albums-pagination'}
+          value={currentPage}
+          onChange={handleCurrentPageChange}
+          total={totalPages}
+          disabled={isFetching}
+        />
       </Box>
 
       <AlbumFilters

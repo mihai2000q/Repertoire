@@ -7,7 +7,6 @@ import {
   Card,
   Center,
   Group,
-  Loader,
   Pagination,
   SimpleGrid,
   Space,
@@ -140,17 +139,13 @@ function Playlists() {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isLoading ? (
-          <Pagination
-            data-testid={'playlists-pagination'}
-            value={currentPage}
-            onChange={handleCurrentPageChange}
-            total={totalPages}
-            disabled={isFetching}
-          />
-        ) : (
-          <Loader size={25} />
-        )}
+        <Pagination
+          data-testid={'playlists-pagination'}
+          value={currentPage}
+          onChange={handleCurrentPageChange}
+          total={totalPages}
+          disabled={isFetching}
+        />
       </Box>
 
       <AddNewPlaylistModal opened={openedAddNewPlaylistModal} onClose={closeAddNewPlaylistModal} />
