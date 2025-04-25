@@ -3,28 +3,28 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { BandMemberRole } from '../../../../../types/models/Artist.ts'
-import BandMemberRoleMultiSelect from './BandMemberRoleMultiSelect.tsx'
+import { GuitarTuning } from '../../../../../types/models/Song.ts'
+import GuitarTuningMultiSelect from './GuitarTuningMultiSelect.tsx'
 
-describe('Band Member Role Multi Select', () => {
-  const bandMemberRoles: BandMemberRole[] = [
+describe('Guitar Tuning Multi Select', () => {
+  const guitarTunings: GuitarTuning[] = [
     {
       id: '1',
-      name: 'Guitarist'
+      name: 'E Standard'
     },
     {
       id: '2',
-      name: 'Voice'
+      name: 'Drop D'
     },
     {
       id: '3',
-      name: 'Drummer'
+      name: 'Drop C'
     }
   ]
 
   const handlers = [
-    http.get('/artists/band-members/roles', async () => {
-      return HttpResponse.json(bandMemberRoles)
+    http.get('/songs/guitar-tunings', async () => {
+      return HttpResponse.json(guitarTunings)
     })
   ]
 
@@ -36,15 +36,15 @@ describe('Band Member Role Multi Select', () => {
 
   afterAll(() => server.close())
 
-  it('should render and change roles', async () => {
+  it('should render and change guitar tunings', async () => {
     const user = userEvent.setup()
 
-    const newRoles = [bandMemberRoles[0], bandMemberRoles[1]]
+    const newTunings = [guitarTunings[0], guitarTunings[1]]
 
-    const label = 'band-member-roles'
+    const label = 'guitar-tunings'
     const setIds = vitest.fn()
 
-    reduxRender(<BandMemberRoleMultiSelect ids={[]} setIds={setIds} label={label} />)
+    reduxRender(<GuitarTuningMultiSelect ids={[]} setIds={setIds} label={label} />)
 
     const multiSelect = screen.getByRole('textbox', { name: label })
     expect(multiSelect).toHaveValue('')
@@ -52,16 +52,16 @@ describe('Band Member Role Multi Select', () => {
     await waitFor(() => expect(multiSelect).not.toBeDisabled())
 
     await user.click(multiSelect)
-    for (const role of bandMemberRoles) {
-      expect(await screen.findByRole('option', { name: role.name })).toBeInTheDocument()
+    for (const tuning of guitarTunings) {
+      expect(await screen.findByRole('option', { name: tuning.name })).toBeInTheDocument()
     }
 
-    for (const role of newRoles) {
-      await user.click(screen.getByRole('option', { name: role.name }))
+    for (const tuning of newTunings) {
+      await user.click(screen.getByRole('option', { name: tuning.name }))
     }
 
-    expect(setIds).toHaveBeenCalledTimes(newRoles.length)
-    newRoles.reduce((a: string[], b) => {
+    expect(setIds).toHaveBeenCalledTimes(newTunings.length)
+    newTunings.reduce((a: string[], b) => {
       if (a.length !== 0) expect(setIds).toHaveBeenCalledWith(a) // skip the first case
       return [...a, b.id]
     }, [])
