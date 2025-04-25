@@ -116,7 +116,7 @@ func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, 
 	err := s.client.Table("songs").
 		Where("user_id = ?", userID).
 		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
-		Joins("JOIN song_sections ON song_sections.song_id = songs.id").
+		Joins("LEFT JOIN song_sections ON song_sections.song_id = songs.id").
 		Select(
 			"JSON_AGG(DISTINCT artist_id) filter (WHERE artist_id IS NOT NULL) as artist_ids",
 			"JSON_AGG(DISTINCT album_id) filter (WHERE album_id IS NOT NULL) as album_ids",
