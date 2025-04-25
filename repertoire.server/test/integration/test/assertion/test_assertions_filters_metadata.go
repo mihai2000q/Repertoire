@@ -308,8 +308,9 @@ func PlaylistFiltersMetadata(t *testing.T, metadata model.PlaylistFiltersMetadat
 func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs []model.Song) {
 	artistIDsMap := make(map[uuid.UUID]bool)
 	albumIDsMap := make(map[uuid.UUID]bool)
-	guitarTuningIDsMap := make(map[uuid.UUID]bool)
 	difficultiesMap := make(map[enums.Difficulty]bool)
+	guitarTuningIDsMap := make(map[uuid.UUID]bool)
+	instrumentIDsMap := make(map[uuid.UUID]bool)
 
 	var minReleaseDate *time.Time
 	var maxReleaseDate *time.Time
@@ -345,11 +346,11 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 		if song.AlbumID != nil {
 			albumIDsMap[*song.AlbumID] = true
 		}
-		if song.GuitarTuningID != nil {
-			guitarTuningIDsMap[*song.GuitarTuningID] = true
-		}
 		if song.Difficulty != nil {
 			difficultiesMap[*song.Difficulty] = true
+		}
+		if song.GuitarTuningID != nil {
+			guitarTuningIDsMap[*song.GuitarTuningID] = true
 		}
 
 		if song.ReleaseDate != nil && minReleaseDate != nil && song.ReleaseDate.Before(*minReleaseDate) ||
@@ -411,6 +412,9 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 			if section.SongSectionType.Name == "Riff" {
 				riffsCount++
 			}
+			if section.InstrumentID != nil {
+				instrumentIDsMap[*section.InstrumentID] = true
+			}
 		}
 
 		if minSectionsCount == nil || *minSectionsCount > sectionsCount {
@@ -441,19 +445,24 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	for key := range albumIDsMap {
 		albumIDs = append(albumIDs, key)
 	}
-	var guitarTuningIDs []uuid.UUID
-	for key := range guitarTuningIDsMap {
-		guitarTuningIDs = append(guitarTuningIDs, key)
-	}
 	var difficulties []enums.Difficulty
 	for key := range difficultiesMap {
 		difficulties = append(difficulties, key)
 	}
+	var guitarTuningIDs []uuid.UUID
+	for key := range guitarTuningIDsMap {
+		guitarTuningIDs = append(guitarTuningIDs, key)
+	}
+	var instrumentIDs []uuid.UUID
+	for key := range instrumentIDsMap {
+		instrumentIDs = append(instrumentIDs, key)
+	}
 
 	assert.ElementsMatch(t, artistIDs, metadata.ArtistIDs)
 	assert.ElementsMatch(t, albumIDs, metadata.AlbumIDs)
-	assert.ElementsMatch(t, guitarTuningIDs, metadata.GuitarTuningIDs)
 	assert.ElementsMatch(t, difficulties, metadata.Difficulties)
+	assert.ElementsMatch(t, guitarTuningIDs, metadata.GuitarTuningIDs)
+	assert.ElementsMatch(t, instrumentIDs, metadata.InstrumentIDs)
 
 	Time(t, minReleaseDate, metadata.MinReleaseDate)
 	Time(t, maxReleaseDate, metadata.MaxReleaseDate)
