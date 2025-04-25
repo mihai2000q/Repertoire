@@ -5,6 +5,7 @@ import {
   Card,
   Center,
   Group,
+  Indicator,
   Pagination,
   SimpleGrid,
   Space,
@@ -15,7 +16,7 @@ import {
 import { useGetSongsQuery } from '../state/api/songsApi.ts'
 import SongCard from '../components/songs/SongCard.tsx'
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../components/songs/SongsLoader.tsx'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
@@ -28,6 +29,10 @@ import useOrderBy from '../hooks/api/useOrderBy.ts'
 import songsOrders from '../data/songs/songsOrders.ts'
 import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import { songPropertyIcons } from '../data/icons/songPropertyIcons.tsx'
+import useFilters from '../hooks/filter/useFilters.ts'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import SongsFilters from '../components/songs/SongsFilters.tsx'
+import songsFilters from '../data/songs/songsFilters.ts'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
@@ -40,6 +45,10 @@ function Songs(): ReactElement {
   })
   const orderBy = useOrderBy(orders)
 
+  const [filters, filtersSize, setFilters] = useFilters(songsFilters)
+  const searchBy = useSearchBy(filters)
+  useDidUpdate(() => handleCurrentPageChange(1), [filters])
+
   const pageSize = 40
   const {
     data: songs,
@@ -48,8 +57,11 @@ function Songs(): ReactElement {
   } = useGetSongsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: orderBy
+    orderBy: orderBy,
+    searchBy: searchBy
   })
+
+  const [filtersOpened, { toggle: toggleFilters, close: closeFilters }] = useDisclosure(false)
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     songs?.totalCount,
@@ -84,9 +96,24 @@ function Songs(): ReactElement {
             <IconArrowsSort size={17} />
           </ActionIcon>
         </AdvancedOrderMenu>
-        <ActionIcon aria-label={'filter-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconFilterFilled size={17} />
-        </ActionIcon>
+        <Indicator
+          color={'primary'}
+          size={15}
+          offset={3}
+          label={filtersSize}
+          disabled={filtersSize === 0}
+          zIndex={2}
+        >
+          <ActionIcon
+            aria-label={'filter-songs'}
+            variant={'grey'}
+            size={'lg'}
+            disabled={isLoading}
+            onClick={toggleFilters}
+          >
+            <IconFilterFilled size={17} />
+          </ActionIcon>
+        </Indicator>
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
@@ -94,7 +121,12 @@ function Songs(): ReactElement {
         </Text>
       )}
 
-      {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
+      {songs?.totalCount === 0 && filtersSize === 0 && (
+        <Text mt={'sm'}>There are no songs yet. Try to add one</Text>
+      )}
+      {songs?.totalCount === 0 && filtersSize > 0 && (
+        <Text mt={'sm'}>There are no songs with these filter properties</Text>
+      )}
       <SimpleGrid
         cols={{ base: 2, xs: 3, sm: 2, betweenSmMd: 3, betweenMdLg: 4, lg: 5, xl: 6, xxl: 7 }}
         spacing={'lg'}
@@ -127,6 +159,14 @@ function Songs(): ReactElement {
           disabled={isFetching}
         />
       </Box>
+
+      <SongsFilters
+        opened={filtersOpened}
+        onClose={closeFilters}
+        filters={filters}
+        setFilters={setFilters}
+        isSongsLoading={isLoading}
+      />
 
       <AddNewSongModal opened={openedAddNewSongModal} onClose={closeAddNewSongModal} />
     </Stack>

@@ -1,3 +1,5 @@
+import Difficulty from '../enums/Difficulty.ts'
+
 export interface AlbumFiltersMetadata {
   artistIds: string[]
 
@@ -56,12 +58,12 @@ export interface SongFiltersMetadata {
   minReleaseDate?: string
   maxReleaseDate?: string
 
-  minBpm: number
-  maxBpm: number
+  minBpm?: number
+  maxBpm?: number
 
-  difficulties: string[]
-
+  difficulties: Difficulty[]
   guitarTuningIds: string[]
+  instrumentIds: string[]
 
   minSectionsCount: number
   maxSectionsCount: number

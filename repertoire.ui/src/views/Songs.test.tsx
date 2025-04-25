@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import Songs from './Songs.tsx'
-import { emptySong, reduxRouterRender } from '../test-utils.tsx'
+import { defaultSongFiltersMetadata, emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Song, { GuitarTuning, SongSectionType } from '../types/models/Song.ts'
@@ -10,6 +10,8 @@ import { RootState } from '../state/store.ts'
 import { SearchBase } from '../types/models/Search.ts'
 import createOrder from '../utils/createOrder.ts'
 import songsOrders from '../data/songs/songsOrders.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -70,6 +72,9 @@ describe('Songs', () => {
     http.get('/songs/sections/types', async () => {
       const response: SongSectionType[] = []
       return HttpResponse.json(response)
+    }),
+    http.get('/songs/filters-metadata', async () => {
+      return HttpResponse.json(defaultSongFiltersMetadata)
     })
   ]
 
@@ -216,6 +221,45 @@ describe('Songs', () => {
     await user.click(screen.getByRole('button', { name: 'order-songs' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
-    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)]))
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)])
+    )
+  })
+
+  it('should filter the songs by min Solos', async () => {
+    const user = userEvent.setup()
+
+    const newMinSolosValue = 1
+
+    let searchBy: string[]
+    server.use(
+      http.get('/songs', (req) => {
+        searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+        const response: WithTotalCountResponse<Song> = {
+          models: songs,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Songs />)
+
+    await waitFor(() => expect(searchBy).toStrictEqual([]))
+
+    await user.click(screen.getByRole('button', { name: 'filter-songs' }))
+
+    await user.clear(screen.getByRole('textbox', { name: /min solos/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /min solos/i }),
+      newMinSolosValue.toString()
+    )
+    await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+    await waitFor(() =>
+      expect(searchBy).toStrictEqual([
+        `${SongProperty.Solos} ${FilterOperator.GreaterThanOrEqual} ${newMinSolosValue}`
+      ])
+    )
   })
 })
