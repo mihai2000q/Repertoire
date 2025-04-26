@@ -1,8 +1,8 @@
 enum SongProperty {
   AlbumTrackNo = 'album_track_no',
-  AlbumId = '"Album".id',
+  AlbumId = 'album_id',
   AlbumTitle = '"Album".title',
-  ArtistId = '"Artist".id',
+  ArtistId = 'artist_id',
   ArtistName = '"Artist".name',
   BPM = 'bpm',
   CreationDate = 'created_at',
@@ -11,6 +11,7 @@ enum SongProperty {
   GuitarTuningId = 'guitar_tuning_id',
   GuitarTuningOrder = '"GuitarTuning"."order"',
   InstrumentId = 'instrument_id',
+  IsRecorded = 'is_recorded',
   LastModified = 'updated_at',
   LastPlayed = 'last_time_played',
   PlaylistTrackNo = 'playlist_track_no',

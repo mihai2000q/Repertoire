@@ -8,6 +8,14 @@ const songsFilters: Filter[] = [
 
   { property: SongProperty.ArtistId, operator: FilterOperator.Equal, isSet: false },
 
+  { property: SongProperty.IsRecorded, operator: FilterOperator.Equal, isSet: false, value: true },
+  {
+    property: SongProperty.IsRecorded,
+    operator: FilterOperator.NotEqual,
+    isSet: false,
+    value: true
+  },
+
   { property: SongProperty.ReleaseDate, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.ReleaseDate, operator: FilterOperator.LessThanOrEqual, isSet: false },
   { property: SongProperty.ReleaseDate, operator: FilterOperator.IsNull, isSet: false },

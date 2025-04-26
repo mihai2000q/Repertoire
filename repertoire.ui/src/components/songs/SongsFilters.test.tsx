@@ -141,6 +141,9 @@ describe('Songs Filters', () => {
   const albumKey = SongProperty.AlbumId + FilterOperator.Equal
   const artistKey = SongProperty.ArtistId + FilterOperator.Equal
 
+  const equalIsRecordedKey = SongProperty.IsRecorded + FilterOperator.Equal
+  const notEqualIsRecordedKey = SongProperty.IsRecorded + FilterOperator.NotEqual
+
   const minReleaseDateKey = SongProperty.ReleaseDate + FilterOperator.GreaterThanOrEqual
   const maxReleaseDateKey = SongProperty.ReleaseDate + FilterOperator.LessThanOrEqual
   const isNullReleaseDateKey = SongProperty.ReleaseDate + FilterOperator.IsNull
@@ -610,6 +613,48 @@ describe('Songs Filters', () => {
       const updatedFilters = setFilters.mock.calls[1][0]
       expect(updatedFilters.get(artistKey).value).toStrictEqual(newArtist.id)
       expect(updatedFilters.get(artistKey).isSet).toBeTruthy()
+    })
+
+    it('should update is recorded field', async () => {
+      const user = userEvent.setup()
+
+      const setFilters = vi.fn()
+      reduxRender(
+        <SongFilters
+          opened={true}
+          onClose={vi.fn()}
+          filters={initialFilters}
+          setFilters={setFilters}
+        />
+      )
+
+      // wait for filters metadata to be initialized
+      await waitFor(() =>
+        expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
+      )
+
+      // first, yes, it has been played before
+      await user.click(
+        within(screen.getByLabelText(/is recorded/i)).getByRole('checkbox', { name: /yes/i })
+      )
+
+      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+      expect(setFilters).toHaveBeenCalledTimes(2)
+      let updatedFilters = setFilters.mock.calls[1][0]
+      expect(updatedFilters.get(equalIsRecordedKey).isSet).toBeTruthy()
+
+      // then, no, it hasn't been played before
+      await user.click(
+        within(screen.getByLabelText(/is recorded/i)).getByRole('checkbox', { name: /no/i })
+      )
+
+      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+      expect(setFilters).toHaveBeenCalledTimes(3)
+      updatedFilters = setFilters.mock.calls[2][0]
+      expect(updatedFilters.get(notEqualIsRecordedKey).isSet).toBeTruthy()
+      expect(updatedFilters.get(equalIsRecordedKey).isSet).toBeFalsy()
     })
 
     it('should update has release date field', async () => {

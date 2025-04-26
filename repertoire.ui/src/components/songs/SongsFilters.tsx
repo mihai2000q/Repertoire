@@ -83,15 +83,32 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         <AlbumSelect
           album={album}
           setAlbum={setAlbum}
-          ids={filtersMetadata?.albumIds} // not working
+          ids={filtersMetadata?.albumIds}
           disabled={isLoading}
         />
 
         <ArtistSelect
           artist={artist}
           setArtist={setArtist}
-          ids={filtersMetadata?.artistIds} // either
+          ids={filtersMetadata?.artistIds}
           disabled={isLoading || album !== null}
+        />
+
+        <DoubleCheckbox
+          title={'Is Recorded?'}
+          label1={'Yes'}
+          checked1={
+            internalFilters.get(SongProperty.IsRecorded + FilterOperator.Equal).isSet
+          }
+          onChange1={(value) =>
+            handleIsSetChange(SongProperty.IsRecorded + FilterOperator.Equal, value)
+          }
+          label2={'No'}
+          checked2={internalFilters.get(SongProperty.IsRecorded + FilterOperator.NotEqual).isSet}
+          onChange2={(value) =>
+            handleIsSetChange(SongProperty.IsRecorded + FilterOperator.NotEqual, value)
+          }
+          disabled={isLoading}
         />
 
         <DatePickerInput
