@@ -373,10 +373,11 @@ describe('Artists', () => {
     )
     await user.click(screen.getByRole('button', { name: 'apply-filters' }))
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(searchBy).toStrictEqual([
         `${ArtistProperty.Songs} ${FilterOperator.GreaterThanOrEqual} ${newMinSongsValue}`
       ])
-    )
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })

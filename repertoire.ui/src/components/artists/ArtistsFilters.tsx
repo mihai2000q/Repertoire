@@ -39,6 +39,7 @@ function ArtistsFilters({
     filtersMetadata,
     filters,
     setFilters,
+    setInternalFilters,
     artistsFiltersMetadataMap
   )
 

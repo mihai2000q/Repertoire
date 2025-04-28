@@ -30,15 +30,15 @@ import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import artistsOrders from '../data/artists/artistsOrders.ts'
 import { artistPropertyIcons } from '../data/icons/artistPropertyIcons.tsx'
-import useFilters from '../hooks/filter/useFilters.ts'
 import useSearchBy from '../hooks/api/useSearchBy.ts'
 import ArtistsFilters from '../components/artists/ArtistsFilters.tsx'
 import artistsFilters from '../data/artists/artistsFilters.ts'
+import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
   const [searchParams, setSearchParams] = useSearchParamsState(artistsSearchParamsState)
-  const { currentPage } = searchParams
+  const { currentPage, activeFilters } = searchParams
 
   const [orders, setOrders] = useLocalStorage({
     key: LocalStorageKeys.ArtistsOrders,
@@ -46,9 +46,14 @@ function Artists() {
   })
   const orderBy = useOrderBy(orders)
 
-  const [filters, filtersSize, setFilters] = useFilters(artistsFilters)
+  const [filters, setFilters] = useSearchParamFilters({
+    initialFilters: artistsFilters,
+    activeFilters: activeFilters,
+    setSearchParams: setSearchParams
+  })
+  const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [filters])
+  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {
