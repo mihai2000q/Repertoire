@@ -168,10 +168,10 @@ function AlbumsFilters({
             thumbToLabel={'confidence-to'}
             label={(value) => `${value}%`}
             value={[
-              internalFilters.get(AlbumProperty.Confidence + FilterOperator.GreaterThanOrEqual)
-                .value as number ?? 0,
-              internalFilters.get(AlbumProperty.Confidence + FilterOperator.LessThanOrEqual)
-                .value as number ?? 100
+              (internalFilters.get(AlbumProperty.Confidence + FilterOperator.GreaterThanOrEqual)
+                .value as number) ?? 0,
+              (internalFilters.get(AlbumProperty.Confidence + FilterOperator.LessThanOrEqual)
+                .value as number) ?? 100
             ]}
             onChange={(values) =>
               handleDoubleValueChange(

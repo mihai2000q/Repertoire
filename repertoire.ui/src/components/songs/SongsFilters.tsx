@@ -97,9 +97,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         <DoubleCheckbox
           title={'Is Recorded?'}
           label1={'Yes'}
-          checked1={
-            internalFilters.get(SongProperty.IsRecorded + FilterOperator.Equal).isSet
-          }
+          checked1={internalFilters.get(SongProperty.IsRecorded + FilterOperator.Equal).isSet}
           onChange1={(value) =>
             handleIsSetChange(SongProperty.IsRecorded + FilterOperator.Equal, value)
           }

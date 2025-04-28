@@ -179,10 +179,10 @@ function ArtistsFilters({
             thumbToLabel={'confidence-to'}
             label={(value) => `${value}%`}
             value={[
-              internalFilters.get(ArtistProperty.Confidence + FilterOperator.GreaterThanOrEqual)
-                .value as number ?? 0,
-              internalFilters.get(ArtistProperty.Confidence + FilterOperator.LessThanOrEqual)
-                .value as number ?? 100
+              (internalFilters.get(ArtistProperty.Confidence + FilterOperator.GreaterThanOrEqual)
+                .value as number) ?? 0,
+              (internalFilters.get(ArtistProperty.Confidence + FilterOperator.LessThanOrEqual)
+                .value as number) ?? 100
             ]}
             onChange={(values) =>
               handleDoubleValueChange(

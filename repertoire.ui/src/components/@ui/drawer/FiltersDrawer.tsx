@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, SetStateAction, useEffect } from 'react'
+import { Dispatch, ReactNode, SetStateAction } from 'react'
 import {
   ActionIcon,
   Button,
@@ -42,8 +42,6 @@ function FiltersDrawer({
   const offset = '120px'
   const drawerOffset = '8px'
   const titleSize = '60px'
-
-  useEffect(() => setInternalFilters(initialFilters), [])
 
   const disabledApplyFilters = JSON.stringify([...internalFilters]) === JSON.stringify([...filters])
   const disabledResetFilters =

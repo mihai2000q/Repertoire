@@ -265,7 +265,7 @@ describe('Albums Filters', () => {
   })
 
   describe('should update filters', () => {
-    it('should update songs, rehearsals, confidence and progress fields', async () => {
+    it('should update artist, songs, rehearsals, confidence and progress fields', async () => {
       const user = userEvent.setup()
 
       const setFilters = vi.fn()
@@ -463,7 +463,7 @@ describe('Albums Filters', () => {
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('textbox', { name: /artist/i }))
-    await user.click(await screen.findByLabelText(newArtist.name))
+    await user.click(await screen.findByRole('option', { name: newArtist.name }))
 
     await user.clear(screen.getByRole('textbox', { name: /min songs/i }))
     await user.type(

@@ -39,7 +39,6 @@ describe('FiltersDrawer', () => {
     expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /apply-filters/i })).toBeInTheDocument()
     expect(screen.getByTestId(testId)).toBeInTheDocument()
-    expect(setInternalFilters).toHaveBeenCalledWith(initialFilters)
   })
 
   describe('Apply Filters button', () => {
