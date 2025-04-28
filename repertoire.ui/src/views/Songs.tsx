@@ -29,15 +29,15 @@ import useOrderBy from '../hooks/api/useOrderBy.ts'
 import songsOrders from '../data/songs/songsOrders.ts'
 import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import { songPropertyIcons } from '../data/icons/songPropertyIcons.tsx'
-import useFilters from '../hooks/filter/useFilters.ts'
 import useSearchBy from '../hooks/api/useSearchBy.ts'
 import SongsFilters from '../components/songs/SongsFilters.tsx'
 import songsFilters from '../data/songs/songsFilters.ts'
+import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
   const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
-  const { currentPage } = searchParams
+  const { currentPage, activeFilters } = searchParams
 
   const [orders, setOrders] = useLocalStorage({
     key: LocalStorageKeys.SongsOrders,
@@ -45,9 +45,14 @@ function Songs(): ReactElement {
   })
   const orderBy = useOrderBy(orders)
 
-  const [filters, filtersSize, setFilters] = useFilters(songsFilters)
+  const [filters, setFilters] = useSearchParamFilters({
+    initialFilters: songsFilters,
+    activeFilters: activeFilters,
+    setSearchParams: setSearchParams
+  })
+  const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [filters])
+  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

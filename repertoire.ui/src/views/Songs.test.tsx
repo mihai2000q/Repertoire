@@ -256,10 +256,11 @@ describe('Songs', () => {
     )
     await user.click(screen.getByRole('button', { name: 'apply-filters' }))
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(searchBy).toStrictEqual([
         `${SongProperty.Solos} ${FilterOperator.GreaterThanOrEqual} ${newMinSolosValue}`
       ])
-    )
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })

@@ -41,6 +41,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
     filtersMetadata,
     filters,
     setFilters,
+    setInternalFilters,
     songsFiltersMetadataMap
   )
 
