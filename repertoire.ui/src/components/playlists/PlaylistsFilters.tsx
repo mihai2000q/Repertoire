@@ -36,6 +36,7 @@ function PlaylistsFilters({
     filtersMetadata,
     filters,
     setFilters,
+    setInternalFilters,
     playlistsFiltersMetadataMap
   )
 

@@ -21,7 +21,6 @@ import PlaylistsLoader from '../components/playlists/PlaylistsLoader.tsx'
 import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
-import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
 import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import { playlistPropertyIcons } from '../data/icons/playlistPropertyIcons.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
@@ -29,14 +28,15 @@ import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
 import PlaylistsFilters from '../components/playlists/PlaylistsFilters.tsx'
-import useFilters from '../hooks/filter/useFilters.ts'
 import useSearchBy from '../hooks/api/useSearchBy.ts'
 import playlistsFilters from '../data/playlists/playlistsFilters.ts'
+import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
+import playlistsSearchParamsState from '../state/searchParams/PlaylistsSearchParamsState.ts'
 
 function Playlists() {
   useFixedDocumentTitle('Playlists')
-  const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
-  const { currentPage } = searchParams
+  const [searchParams, setSearchParams] = useSearchParamsState(playlistsSearchParamsState)
+  const { currentPage, activeFilters } = searchParams
 
   const [orders, setOrders] = useLocalStorage({
     key: LocalStorageKeys.PlaylistsOrders,
@@ -44,9 +44,14 @@ function Playlists() {
   })
   const orderBy = useOrderBy(orders)
 
-  const [filters, filtersSize, setFilters] = useFilters(playlistsFilters)
+  const [filters, setFilters] = useSearchParamFilters({
+    initialFilters: playlistsFilters,
+    activeFilters: activeFilters,
+    setSearchParams: setSearchParams
+  })
+  const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [filters])
+  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

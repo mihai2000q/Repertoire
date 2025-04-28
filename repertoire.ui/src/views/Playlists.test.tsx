@@ -240,10 +240,11 @@ describe('Playlists', () => {
     await user.type(screen.getByRole('textbox', { name: /min songs/i }), newMinSongsValue.toString())
     await user.click(screen.getByRole('button', { name: 'apply-filters' }))
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(searchBy).toStrictEqual([
         `${PlaylistProperty.Songs} ${FilterOperator.GreaterThanOrEqual} ${newMinSongsValue}`
       ])
-    )
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })
