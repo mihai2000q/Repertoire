@@ -24,6 +24,8 @@ import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.ts
 import SongProperty from '../../types/enums/SongProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
+import FilterOperator from '../../types/enums/FilterOperator.ts'
 
 function Loader() {
   return (
@@ -152,12 +154,15 @@ function HomeRecentlyPlayedSongs() {
     { property: SongProperty.Progress, type: OrderType.Descending },
     { property: SongProperty.Title }
   ])
+  const searchBy = useSearchBy([
+    { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull }
+  ])
 
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
     orderBy: orderBy,
-    searchBy: ['last_time_played IS NOT NULL']
+    searchBy: searchBy
   })
 
   return (

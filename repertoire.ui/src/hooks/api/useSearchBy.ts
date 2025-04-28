@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Filter from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
+import { useDidUpdate } from '@mantine/hooks'
 
-export default function useSearchBy(filters: Map<string, Filter>): string[] {
+export default function useSearchBy(filters: Map<string, Filter> | Filter[]): string[] {
   const [searchBy, setSearchBy] = useState(constructFilters(filters))
-  useEffect(() => setSearchBy(constructFilters(filters)), [filters])
+  useDidUpdate(() => setSearchBy(constructFilters(filters)), [filters])
   return searchBy
 }
 
-function constructFilters(filters: Map<string, Filter>) {
+function constructFilters(filters: Map<string, Filter> | Filter[]) {
   const newFilters: string[] = []
-  filters.forEach((filter) => {
+  filters.forEach((filter: Filter) => {
     if (filter.isSet === false) return
     newFilters.push(createFilter(filter))
   })

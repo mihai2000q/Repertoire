@@ -34,6 +34,8 @@ import OrderType from '../../../types/enums/OrderType.ts'
 import AlbumProperty from '../../../types/enums/AlbumProperty.ts'
 import SongProperty from '../../../types/enums/SongProperty.ts'
 import useOrderBy from '../../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../../hooks/api/useSearchBy.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -59,10 +61,13 @@ function ArtistDrawer() {
     },
     { property: AlbumProperty.Title }
   ])
+  const albumsSearchBy = useSearchBy([
+    { property: AlbumProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }
+  ])
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
     {
       orderBy: albumsOrderBy,
-      searchBy: [`artist_id = ${artistId}`]
+      searchBy: albumsSearchBy
     },
     { skip: !artistId }
   )
@@ -75,10 +80,13 @@ function ArtistDrawer() {
     },
     { property: SongProperty.Title }
   ])
+  const songsSearchBy = useSearchBy([
+    { property: SongProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }
+  ])
   const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
     {
       orderBy: songsOrderBy,
-      searchBy: [`songs.artist_id = ${artistId}`]
+      searchBy: songsSearchBy
     },
     { skip: !artistId }
   )

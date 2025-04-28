@@ -12,7 +12,7 @@ describe('use Filters', () => {
 
     const { result } = renderHook(() => useFilters(initialFilters))
 
-    const [filters, activeCount, _] = result.current
+    const [filters, _, activeCount] = result.current
     expect(filters.size).toBe(2)
     expect(filters.get('name=')).toEqual(initialFilters[0])
     expect(filters.get('age>')).toEqual(initialFilters[1])
@@ -22,19 +22,19 @@ describe('use Filters', () => {
   it('should correctly count active filters', () => {
     const initialFilters: Filter[] = [
       { property: 'name', operator: FilterOperator.Equal, value: 'John', isSet: true },
-      { property: 'age', operator: FilterOperator.GreaterThan, value: 18, isSet: true },
+      { property: 'age', operator: FilterOperator.GreaterThan, value: 18 },
       { property: 'email', operator: FilterOperator.LessThan, value: '', isSet: false }
     ]
 
     const { result } = renderHook(() => useFilters(initialFilters))
 
-    const [_, activeCount] = result.current
+    const [_, __, activeCount] = result.current
     expect(activeCount).toBe(2)
   })
 
   it('should update filters and active count when setFilters is called', () => {
     const { result } = renderHook(() => useFilters())
-    const [_, __, setFilters] = result.current
+    const [_, setFilters] = result.current
 
     act(() => {
       const newFilters = new Map<string, Filter>()
@@ -47,7 +47,7 @@ describe('use Filters', () => {
       setFilters(newFilters)
     })
 
-    const [filters, activeCount] = result.current
+    const [filters, __, activeCount] = result.current
     expect(filters.size).toBe(1)
     expect(activeCount).toBe(1)
     expect(filters.get('name=')).toEqual({
@@ -64,7 +64,7 @@ describe('use Filters', () => {
     ]
 
     const { result } = renderHook(() => useFilters(initialFilters))
-    const [_, __, setFilters] = result.current
+    const [_, setFilters] = result.current
 
     act(() => {
       const newFilters = new Map<string, Filter>()
@@ -86,7 +86,7 @@ describe('use Filters', () => {
   it('should initialize with empty map when no initial filters provided', () => {
     const { result } = renderHook(() => useFilters())
 
-    const [filters, activeCount, _] = result.current
+    const [filters, _, activeCount] = result.current
     expect(filters.size).toBe(0)
     expect(activeCount).toBe(0)
   })
@@ -94,7 +94,7 @@ describe('use Filters', () => {
   it('should handle empty initial filters array', () => {
     const { result } = renderHook(() => useFilters([]))
 
-    const [filters, activeCount] = result.current
+    const [filters, _, activeCount] = result.current
     expect(filters.size).toBe(0)
     expect(activeCount).toBe(0)
   })

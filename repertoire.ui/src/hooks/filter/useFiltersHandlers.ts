@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction } from 'react'
 export default function useFiltersHandlers(
   filters: Map<string, Filter>,
   setFilters: Dispatch<SetStateAction<Map<string, Filter>>>,
-  initialFilters: Map<string, Filter>
+  initialFilters?: Map<string, Filter>
 ) {
   function handleIsSetChange(key: string, isSet: boolean) {
     const newFilters = new Map<string, Filter>([...filters])
@@ -14,10 +14,14 @@ export default function useFiltersHandlers(
 
   function handleValueChange(key: string, value: FilterValue) {
     const newFilters = new Map<string, Filter>([...filters])
-    const initialFilter = initialFilters.get(key)
+    const initialFilter = initialFilters?.get(key)
     newFilters.set(key, {
       ...newFilters.get(key),
-      isSet: initialFilter.value !== value && value !== '' && value !== null && value !== undefined,
+      isSet:
+        (!initialFilter || initialFilter.value !== value) &&
+        value !== '' &&
+        value !== null &&
+        value !== undefined,
       value: value
     })
     setFilters(newFilters)
@@ -31,19 +35,25 @@ export default function useFiltersHandlers(
   ) {
     const newFilters = new Map<string, Filter>([...filters])
 
-    const initialFilter1 = initialFilters.get(key1)
+    const initialFilter1 = initialFilters?.get(key1)
     newFilters.set(key1, {
       ...newFilters.get(key1),
       isSet:
-        initialFilter1.value !== value1 && value1 !== '' && value1 !== null && value1 !== undefined,
+        (!initialFilter1 || initialFilter1.value !== value1) &&
+        value1 !== '' &&
+        value1 !== null &&
+        value1 !== undefined,
       value: value1
     })
 
-    const initialFilter2 = initialFilters.get(key2)
+    const initialFilter2 = initialFilters?.get(key2)
     newFilters.set(key2, {
       ...newFilters.get(key2),
       isSet:
-        initialFilter2.value !== value2 && value2 !== '' && value2 !== null && value2 !== undefined,
+        (!initialFilter2 || initialFilter2.value !== value2) &&
+        value2 !== '' &&
+        value2 !== null &&
+        value2 !== undefined,
       value: value2
     })
 

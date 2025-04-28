@@ -14,6 +14,7 @@ enum SongProperty {
   IsRecorded = 'is_recorded',
   LastModified = 'updated_at',
   LastPlayed = 'last_time_played',
+  PlaylistId = 'playlist_id',
   PlaylistTrackNo = 'playlist_track_no',
   Progress = 'progress',
   Rehearsals = 'rehearsals',
@@ -21,7 +22,7 @@ enum SongProperty {
   Riffs = 'riffs_count',
   Sections = 'sections_count',
   Solos = 'solos_count',
-  Title = 'title'
+  Title = 'songs.title'
 }
 
 export default SongProperty

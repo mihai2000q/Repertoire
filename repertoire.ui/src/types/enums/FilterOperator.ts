@@ -8,6 +8,7 @@ enum FilterOperator {
   NotEqual = '<>',
   IsNull = 'IS NULL',
   IsNotNull = 'IS NOT NULL',
+  PatternMatching = '~*'
 }
 
 export default FilterOperator;

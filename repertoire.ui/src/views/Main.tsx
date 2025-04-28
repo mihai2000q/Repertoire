@@ -3,7 +3,7 @@ import Sidebar from '../components/main/Sidebar'
 import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
-import { AppShell, Box, ScrollArea } from '@mantine/core'
+import { AppShell, Box } from '@mantine/core'
 import TitleBar from '../components/main/TitleBar'
 import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
@@ -43,9 +43,7 @@ function Main(): ReactElement {
         <Topbar toggleSidebar={toggleSidebarMobile} />
         <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
         <AppShell.Main h={'100%'} mih={0}>
-          {/*<ScrollArea.Autosize scrollbars={'y'} mah={`calc(100vh - ${titleBarHeight} - ${topbarHeight})`}>*/}
-            <Outlet />
-          {/*</ScrollArea.Autosize>*/}
+          <Outlet />
         </AppShell.Main>
       </AppShell>
 

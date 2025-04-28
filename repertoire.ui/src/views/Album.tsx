@@ -11,6 +11,9 @@ import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
 
 function Album() {
   const params = useParams()
@@ -44,6 +47,9 @@ function Album() {
     else if (album) setDocumentTitle(album.title)
   }, [album, isUnknownAlbum])
 
+  const songsSearchBy = useSearchBy([
+    { property: SongProperty.AlbumId, operator: FilterOperator.IsNull }
+  ])
   const {
     data: songs,
     isLoading: isSongsLoading,
@@ -51,7 +57,7 @@ function Album() {
   } = useGetSongsQuery(
     {
       orderBy: orderBy,
-      searchBy: ['album_id IS NULL']
+      searchBy: songsSearchBy
     },
     { skip: !isUnknownAlbum }
   )
