@@ -30,15 +30,15 @@ import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 import { albumPropertyIcons } from '../data/icons/albumPropertyIcons.tsx'
-import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
 import useSearchBy from '../hooks/api/useSearchBy.ts'
+import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import albumsFilters from '../data/albums/albumsFilters.ts'
-import useFilters from '../hooks/filter/useFilters.ts'
+import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
 
 function Albums() {
   useFixedDocumentTitle('Albums')
   const [searchParams, setSearchParams] = useSearchParamsState(albumsSearchParamsState)
-  const { currentPage } = searchParams
+  const { currentPage, activeFilters } = searchParams
 
   const [orders, setOrders] = useLocalStorage({
     key: LocalStorageKeys.AlbumsOrders,
@@ -46,9 +46,14 @@ function Albums() {
   })
   const orderBy = useOrderBy(orders)
 
-  const [filters, filtersSize, setFilters] = useFilters(albumsFilters)
+  const [filters, setFilters] = useSearchParamFilters({
+    initialFilters: albumsFilters,
+    activeFilters: activeFilters,
+    setSearchParams: setSearchParams
+  })
+  const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [filters])
+  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

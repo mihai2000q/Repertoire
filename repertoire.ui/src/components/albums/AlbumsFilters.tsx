@@ -42,6 +42,7 @@ function AlbumsFilters({
     filtersMetadata,
     filters,
     setFilters,
+    setInternalFilters,
     albumsFiltersMetadataMap
   )
 
