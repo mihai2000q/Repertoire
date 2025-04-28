@@ -5,6 +5,7 @@ export default function useFiltersMetadata<TMetadata>(
   metadata: TMetadata,
   filters: Map<string, Filter>,
   setFilters: Dispatch<SetStateAction<Map<string, Filter>>>,
+  setInternalFilters: Dispatch<SetStateAction<Map<string, Filter>>>,
   filtersMetadataMap: (metadata: TMetadata) => [string, FilterValue][]
 ): Map<string, Filter> {
   const initialFilters = useRef(new Map<string, Filter>([...filters]))
@@ -12,13 +13,19 @@ export default function useFiltersMetadata<TMetadata>(
   useEffect(() => {
     if (!metadata) return
 
-    filtersMetadataMap(metadata).forEach(([key, value]) =>
-      initialFilters.current.set(key, {
-        ...filters.get(key),
+    const newFilters = new Map<string, Filter>([...filters])
+    filtersMetadataMap(metadata).forEach(([key, value]) => {
+      const curr = filters.get(key)
+      const newFilter: Filter = {
+        ...curr,
         value: value
-      })
-    )
-    setFilters(initialFilters.current)
+      }
+
+      initialFilters.current.set(key, { ...newFilter, isSet: false })
+      if (!curr.isSet) newFilters.set(key, newFilter)
+    })
+    setFilters(newFilters)
+    setInternalFilters(newFilters)
   }, [metadata])
 
   return initialFilters.current
