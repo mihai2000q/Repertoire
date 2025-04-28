@@ -3,7 +3,7 @@ import useSearchParamFilters from './useSearchParamFilters.ts'
 import Filter from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 
-describe('useSearchParamFilters', () => {
+describe('use Search Param Filters', () => {
   const initialFilters: Filter[] = [
     { property: 'name', operator: FilterOperator.Equal, value: '', isSet: false },
     { property: 'age', operator: FilterOperator.GreaterThan, value: 0, isSet: false }

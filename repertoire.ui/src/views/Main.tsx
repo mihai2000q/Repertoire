@@ -3,7 +3,7 @@ import Sidebar from '../components/main/Sidebar'
 import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
-import { AppShell, Box } from '@mantine/core'
+import { AppShell, Box, ScrollArea } from '@mantine/core'
 import TitleBar from '../components/main/TitleBar'
 import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
@@ -20,6 +20,7 @@ function Main(): ReactElement {
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
+  const topbarHeight = '65px'
 
   const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
@@ -28,7 +29,7 @@ function Main(): ReactElement {
       {isDesktop && <TitleBar />}
       <AppShell
         layout={'alt'}
-        header={{ height: 65 }}
+        header={{ height: topbarHeight }}
         navbar={{
           width: 'max(15vw, 250px)',
           breakpoint: 'sm',
@@ -42,7 +43,9 @@ function Main(): ReactElement {
         <Topbar toggleSidebar={toggleSidebarMobile} />
         <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
         <AppShell.Main h={'100%'} mih={0}>
-          <Outlet />
+          {/*<ScrollArea.Autosize scrollbars={'y'} mah={`calc(100vh - ${titleBarHeight} - ${topbarHeight})`}>*/}
+            <Outlet />
+          {/*</ScrollArea.Autosize>*/}
         </AppShell.Main>
       </AppShell>
 

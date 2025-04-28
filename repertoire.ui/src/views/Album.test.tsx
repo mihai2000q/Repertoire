@@ -10,7 +10,6 @@ import { RootState } from '../state/store.ts'
 import { expect } from 'vitest'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import createOrder from "../utils/createOrder.ts";
 
 describe('Album', () => {
   const songs: Song[] = [
@@ -81,7 +80,7 @@ describe('Album', () => {
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(album.title)
 
-    expect(songsOrderBy).toStrictEqual([createOrder(albumSongsOrders[0])])
+    expect(songsOrderBy).toStrictEqual([albumSongsOrders[0].property + albumSongsOrders[0].type])
   })
 
   it('should render and display info from songs when the album is unknown', async () => {
@@ -111,6 +110,6 @@ describe('Album', () => {
     expect(songsSearchBy).toHaveLength(1)
     expect(songsSearchBy[0]).toMatch('album_id IS NULL')
 
-    expect(songsOrderBy).toStrictEqual([createOrder(albumSongsOrders[1])])
+    expect(songsOrderBy).toStrictEqual([albumSongsOrders[1].property + albumSongsOrders[1].type])
   })
 })

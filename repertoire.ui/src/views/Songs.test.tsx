@@ -8,7 +8,6 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import createOrder from '../utils/createOrder.ts'
 import songsOrders from '../data/songs/songsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
@@ -216,13 +215,16 @@ describe('Songs', () => {
 
     reduxRouterRender(<Songs />)
 
-    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(initialOrder)]))
+    await waitFor(() => expect(orderBy).toStrictEqual([initialOrder.property + initialOrder.type]))
 
     await user.click(screen.getByRole('button', { name: 'order-songs' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
     await waitFor(() =>
-      expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)])
+      expect(orderBy).toStrictEqual([
+        newOrder.property + newOrder.type,
+        initialOrder.property + initialOrder.type
+      ])
     )
   })
 

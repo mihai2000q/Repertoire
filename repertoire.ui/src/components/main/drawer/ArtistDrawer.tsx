@@ -30,10 +30,10 @@ import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
-import createOrder from '../../../utils/createOrder.ts'
 import OrderType from '../../../types/enums/OrderType.ts'
 import AlbumProperty from '../../../types/enums/AlbumProperty.ts'
 import SongProperty from '../../../types/enums/SongProperty.ts'
+import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -50,31 +50,35 @@ function ArtistDrawer() {
   const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
+
+  const albumsOrderBy = useOrderBy([
+    {
+      property: AlbumProperty.ReleaseDate,
+      type: OrderType.Descending,
+      nullable: true
+    },
+    { property: AlbumProperty.Title }
+  ])
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
     {
-      orderBy: [
-        createOrder({
-          property: AlbumProperty.ReleaseDate,
-          type: OrderType.Descending,
-          nullable: true
-        }),
-        createOrder({ property: AlbumProperty.Title })
-      ],
-      searchBy: [`artist_id = '${artistId}'`]
+      orderBy: albumsOrderBy,
+      searchBy: [`artist_id = ${artistId}`]
     },
     { skip: !artistId }
   )
+
+  const songsOrderBy = useOrderBy([
+    {
+      property: SongProperty.ReleaseDate,
+      type: OrderType.Descending,
+      nullable: true
+    },
+    { property: SongProperty.Title }
+  ])
   const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
     {
-      orderBy: [
-        createOrder({
-          property: SongProperty.ReleaseDate,
-          type: OrderType.Descending,
-          nullable: true
-        }),
-        createOrder({ property: SongProperty.Title })
-      ],
-      searchBy: [`songs.artist_id = '${artistId}'`]
+      orderBy: songsOrderBy,
+      searchBy: [`songs.artist_id = ${artistId}`]
     },
     { skip: !artistId }
   )

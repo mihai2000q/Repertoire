@@ -10,7 +10,6 @@ import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 import Album from '../types/models/Album.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import createOrder from '../utils/createOrder.ts'
 import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
 import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 
@@ -96,15 +95,15 @@ describe('Artist', () => {
     expect((store.getState() as RootState).global.documentTitle).toBe(artist.name)
 
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
-      createOrder(artistAlbumsOrders[0]),
-      createOrder(artistAlbumsOrders[0].thenBy[0])
+      artistAlbumsOrders[0].property + artistAlbumsOrders[0].type,
+      artistAlbumsOrders[0].thenBy[0].property + artistAlbumsOrders[0].thenBy[0].type
     ])
-    expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id = '${artist.id}'`])
+    expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id = ${artist.id}`])
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
-      createOrder(artistSongsOrders[0]),
-      createOrder(artistSongsOrders[0].thenBy[0])
+      artistSongsOrders[0].property + artistSongsOrders[0].type,
+      artistSongsOrders[0].thenBy[0].property + artistSongsOrders[0].thenBy[0].type
     ])
-    expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id = '${artist.id}'`])
+    expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id = ${artist.id}`])
   })
 
   it('should render and display only songs and albums when the artist is unknown', async () => {
@@ -134,13 +133,13 @@ describe('Artist', () => {
     expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
 
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
-      createOrder(artistAlbumsOrders[0]),
-      createOrder(artistAlbumsOrders[0].thenBy[0])
+      artistAlbumsOrders[0].property + artistAlbumsOrders[0].type,
+      artistAlbumsOrders[0].thenBy[0].property + artistAlbumsOrders[0].thenBy[0].type
     ])
     expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id IS NULL`])
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
-      createOrder(artistSongsOrders[0]),
-      createOrder(artistSongsOrders[0].thenBy[0])
+      artistSongsOrders[0].property + artistSongsOrders[0].type,
+      artistSongsOrders[0].thenBy[0].property + artistSongsOrders[0].thenBy[0].type
     ])
     expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id IS NULL`])
   })

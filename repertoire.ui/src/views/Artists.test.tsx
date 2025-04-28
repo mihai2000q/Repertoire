@@ -14,7 +14,6 @@ import Artist from '../types/models/Artist.ts'
 import Song from '../types/models/Song.ts'
 import Album from '../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
-import createOrder from '../utils/createOrder.ts'
 import artistsOrders from '../data/artists/artistsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import ArtistProperty from '../types/enums/ArtistProperty.ts'
@@ -333,13 +332,16 @@ describe('Artists', () => {
 
     reduxRouterRender(<Artists />)
 
-    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(initialOrder)]))
+    await waitFor(() => expect(orderBy).toStrictEqual([initialOrder.property + initialOrder.type]))
 
     await user.click(screen.getByRole('button', { name: 'order-artists' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
     await waitFor(() =>
-      expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)])
+      expect(orderBy).toStrictEqual([
+        newOrder.property + newOrder.type,
+        initialOrder.property + initialOrder.type
+      ])
     )
   })
 

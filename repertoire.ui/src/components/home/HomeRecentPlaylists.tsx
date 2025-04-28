@@ -13,9 +13,9 @@ import {
 import { useGetPlaylistsQuery } from '../../state/api/playlistsApi.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { IconPlaylist } from '@tabler/icons-react'
-import createOrder from '../../utils/createOrder.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
+import useOrderBy from '../../hooks/api/useOrderBy.ts'
 
 function Loader() {
   return (
@@ -75,10 +75,14 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
 }
 
 function HomeRecentPlaylists({ ...others }: CardProps) {
+  const orderBy = useOrderBy([
+    { property: PlaylistProperty.LastModified, type: OrderType.Descending }
+  ])
+
   const { data: playlists, isLoading } = useGetPlaylistsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: [createOrder({ property: PlaylistProperty.LastModified, type: OrderType.Descending })]
+    orderBy: orderBy
   })
 
   return (

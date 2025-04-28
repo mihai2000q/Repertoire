@@ -202,7 +202,7 @@ describe('Add Playlist Songs Modal', () => {
 
     await waitFor(() => {
       expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`songs.title ~* '${searchValue}'`)
+      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`songs.title ~* ${searchValue}`)
     })
   })
 

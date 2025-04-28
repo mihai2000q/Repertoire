@@ -46,7 +46,7 @@ function Artist() {
     isFetching: isAlbumsFetching
   } = useGetAlbumsQuery({
     orderBy: albumsOrderBy,
-    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = '${artistId}'`]
+    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = ${artistId}`]
   })
   const {
     data: songs,
@@ -54,7 +54,7 @@ function Artist() {
     isFetching: isSongsFetching
   } = useGetSongsQuery({
     orderBy: songsOrderBy,
-    searchBy: [isUnknownArtist ? 'songs.artist_id IS NULL' : `songs.artist_id = '${artistId}'`]
+    searchBy: [isUnknownArtist ? 'songs.artist_id IS NULL' : `songs.artist_id = ${artistId}`]
   })
 
   if (isLoading || (!artist && !isUnknownArtist)) return <ArtistLoader />

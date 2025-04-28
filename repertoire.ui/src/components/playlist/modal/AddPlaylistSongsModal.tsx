@@ -23,9 +23,9 @@ import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import createOrder from '../../../utils/createOrder.ts'
 import OrderType from '../../../types/enums/OrderType.ts'
 import SongProperty from '../../../types/enums/SongProperty.ts'
+import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -37,6 +37,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
 
+  const orderBy = useOrderBy([{ property: SongProperty.LastModified, type: OrderType.Descending }])
+
   const {
     data: songs,
     isLoading: songsIsLoading,
@@ -44,10 +46,10 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   } = useGetSongsQuery({
     currentPage: 1,
     pageSize: 20,
-    orderBy: [createOrder({ property: SongProperty.LastModified, type: OrderType.Descending })],
+    orderBy: orderBy,
     searchBy: [
       `playlist_id != ${playlistId}`,
-      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
+      ...(searchValue.trim() === '' ? [] : [`songs.title ~* ${searchValue}`])
     ]
   })
 

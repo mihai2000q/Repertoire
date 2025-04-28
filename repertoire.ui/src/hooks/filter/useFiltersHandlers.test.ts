@@ -3,7 +3,7 @@ import useFiltersHandlers from './useFiltersHandlers.ts'
 import Filter from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 
-describe('useFiltersHandlers', () => {
+describe('use Filters Handlers', () => {
   const initialFilters = new Map<string, Filter>([
     ['name=', { property: 'name', operator: FilterOperator.Equal, value: '', isSet: false }],
     ['age>', { property: 'age', operator: FilterOperator.GreaterThan, value: 0, isSet: false }],
