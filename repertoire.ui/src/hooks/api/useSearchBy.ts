@@ -5,7 +5,7 @@ import { useDidUpdate } from '@mantine/hooks'
 
 export default function useSearchBy(filters: Map<string, Filter> | Filter[]): string[] {
   const [searchBy, setSearchBy] = useState(constructFilters(filters))
-  useDidUpdate(() => setSearchBy(constructFilters(filters)), [filters])
+  useDidUpdate(() => setSearchBy(constructFilters(filters)), [JSON.stringify([...filters])])
   return searchBy
 }
 
