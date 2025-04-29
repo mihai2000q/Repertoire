@@ -1,6 +1,7 @@
 package album
 
 import (
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
@@ -22,13 +23,16 @@ func NewGetAlbumFiltersMetadata(
 	}
 }
 
-func (g GetAlbumFiltersMetadata) Handle(token string) (metadata model.AlbumFiltersMetadata, e *wrapper.ErrorCode) {
+func (g GetAlbumFiltersMetadata) Handle(
+	request requests.GetAlbumFiltersMetadataRequest,
+	token string,
+) (metadata model.AlbumFiltersMetadata, e *wrapper.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return metadata, errCode
 	}
-	
-	err := g.repository.GetFiltersMetadata(&metadata, userID)
+
+	err := g.repository.GetFiltersMetadata(&metadata, userID, request.SearchBy)
 	if err != nil {
 		return metadata, wrapper.InternalServerError(err)
 	}

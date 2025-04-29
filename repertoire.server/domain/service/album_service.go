@@ -16,7 +16,10 @@ type AlbumService interface {
 	Delete(request requests.DeleteAlbumRequest) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Get(request requests.GetAlbumRequest) (model.Album, *wrapper.ErrorCode)
-	GetFiltersMetadata(token string) (model.AlbumFiltersMetadata, *wrapper.ErrorCode)
+	GetFiltersMetadata(
+		request requests.GetAlbumFiltersMetadataRequest,
+		token string,
+	) (model.AlbumFiltersMetadata, *wrapper.ErrorCode)
 	GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.EnhancedAlbum], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromAlbumRequest) *wrapper.ErrorCode
@@ -86,8 +89,11 @@ func (a *albumService) Get(request requests.GetAlbumRequest) (model.Album, *wrap
 	return a.getAlbum.Handle(request)
 }
 
-func (a *albumService) GetFiltersMetadata(token string) (model.AlbumFiltersMetadata, *wrapper.ErrorCode) {
-	return a.getAlbumFiltersMetadata.Handle(token)
+func (a *albumService) GetFiltersMetadata(
+	request requests.GetAlbumFiltersMetadataRequest,
+	token string,
+) (model.AlbumFiltersMetadata, *wrapper.ErrorCode) {
+	return a.getAlbumFiltersMetadata.Handle(request, token)
 }
 
 func (a *albumService) GetAll(request requests.GetAlbumsRequest, token string) (wrapper.WithTotalCount[model.EnhancedAlbum], *wrapper.ErrorCode) {
