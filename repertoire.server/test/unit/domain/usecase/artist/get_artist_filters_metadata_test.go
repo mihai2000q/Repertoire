@@ -3,6 +3,7 @@ package artist
 import (
 	"errors"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -20,13 +21,14 @@ func TestGetArtistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnInternal
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewGetArtistFiltersMetadata(jwtService, artistRepository)
 
+	request := requests.GetArtistFiltersMetadataRequest{}
 	token := "some token"
 
 	internalError := wrapper.InternalServerError(errors.New("some internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -43,18 +45,19 @@ func TestGetArtistFiltersMetadata_WhenGetFails_ShouldReturnInternalServerErrorEr
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewGetArtistFiltersMetadata(jwtService, artistRepository)
 
+	request := requests.GetArtistFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("some internal error")
-	artistRepository.On("GetFiltersMetadata", new(model.ArtistFiltersMetadata), userID).
+	artistRepository.On("GetFiltersMetadata", new(model.ArtistFiltersMetadata), userID, request.SearchBy).
 		Return(internalError).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -72,6 +75,7 @@ func TestGetArtistFiltersMetadata_WhenSuccessful_ShouldReturnArtistFiltersMetada
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewGetArtistFiltersMetadata(jwtService, artistRepository)
 
+	request := requests.GetArtistFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
@@ -80,12 +84,12 @@ func TestGetArtistFiltersMetadata_WhenSuccessful_ShouldReturnArtistFiltersMetada
 	metadata := model.ArtistFiltersMetadata{
 		MinConfidence: float64(0),
 	}
-	artistRepository.On("GetFiltersMetadata", new(model.ArtistFiltersMetadata), userID).
+	artistRepository.On("GetFiltersMetadata", new(model.ArtistFiltersMetadata), userID, request.SearchBy).
 		Return(nil, &metadata).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Nil(t, errCode)

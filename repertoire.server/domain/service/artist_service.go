@@ -19,7 +19,7 @@ type ArtistService interface {
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetArtistsRequest, token string) (wrapper.WithTotalCount[model.EnhancedArtist], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode)
-	GetFiltersMetadata(token string) (model.ArtistFiltersMetadata, *wrapper.ErrorCode)
+	GetFiltersMetadata(request requests.GetArtistFiltersMetadataRequest, token string) (model.ArtistFiltersMetadata, *wrapper.ErrorCode)
 	RemoveAlbums(request requests.RemoveAlbumsFromArtistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromArtistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
@@ -135,8 +135,11 @@ func (a *artistService) Get(id uuid.UUID) (model.Artist, *wrapper.ErrorCode) {
 	return a.getArtist.Handle(id)
 }
 
-func (a *artistService) GetFiltersMetadata(token string) (model.ArtistFiltersMetadata, *wrapper.ErrorCode) {
-	return a.getArtistFiltersMetadata.Handle(token)
+func (a *artistService) GetFiltersMetadata(
+	request requests.GetArtistFiltersMetadataRequest,
+	token string,
+) (model.ArtistFiltersMetadata, *wrapper.ErrorCode) {
+	return a.getArtistFiltersMetadata.Handle(request, token)
 }
 
 func (a *artistService) RemoveAlbums(request requests.RemoveAlbumsFromArtistRequest) *wrapper.ErrorCode {
