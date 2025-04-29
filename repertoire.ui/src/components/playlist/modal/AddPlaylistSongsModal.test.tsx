@@ -15,7 +15,10 @@ import { userEvent } from '@testing-library/user-event'
 import { AddSongsToPlaylistRequest } from '../../../types/requests/PlaylistRequests.ts'
 import Artist from '../../../types/models/Artist.ts'
 import Album from '../../../types/models/Album.ts'
-import {expect} from "vitest";
+import { expect } from 'vitest'
+import OrderType from '../../../types/enums/OrderType.ts'
+import SongProperty from '../../../types/enums/SongProperty.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
 
 describe('Add Playlist Songs Modal', () => {
   const album: Album = {
@@ -187,13 +190,12 @@ describe('Add Playlist Songs Modal', () => {
 
     expect(capturedSearchBy.get('currentPage')).toBe('1')
     expect(capturedSearchBy.get('pageSize')).toBe('20')
-    expect(capturedSearchBy.get('orderBy')).toBe('updated_at desc')
+    expect(capturedSearchBy.get('orderBy')).toBe(
+      `${SongProperty.LastModified} ${OrderType.Descending}`
+    )
     expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
-    expect(capturedSearchBy.getAll('searchBy')[0]).match(
-      new RegExp(
-        `playlist_id != ${playlistId}`,
-        'i'
-      )
+    expect(capturedSearchBy.getAll('searchBy')[0]).toBe(
+      `${SongProperty.PlaylistId} ${FilterOperator.NotEqual} ${playlistId}`
     )
 
     // search
@@ -202,7 +204,12 @@ describe('Add Playlist Songs Modal', () => {
 
     await waitFor(() => {
       expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(`songs.title ~* ${searchValue}`)
+      expect(capturedSearchBy.getAll('searchBy')[0]).toBe(
+        `${SongProperty.PlaylistId} ${FilterOperator.NotEqual} ${playlistId}`
+      )
+      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(
+        `${SongProperty.Title} ${FilterOperator.PatternMatching} ${searchValue}`
+      )
     })
   })
 
