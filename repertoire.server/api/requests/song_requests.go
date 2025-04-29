@@ -14,6 +14,10 @@ type GetSongsRequest struct {
 	SearchBy    []string `form:"searchBy"`
 }
 
+type GetSongFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy"`
+}
+
 type CreateSongRequest struct {
 	Title          string `validate:"required,max=100"`
 	Description    string

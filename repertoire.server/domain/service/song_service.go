@@ -19,7 +19,10 @@ type SongService interface {
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetSongsRequest, token string) (wrapper.WithTotalCount[model.EnhancedSong], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode)
-	GetFiltersMetadata(token string) (model.SongFiltersMetadata, *wrapper.ErrorCode)
+	GetFiltersMetadata(
+		request requests.GetSongFiltersMetadataRequest,
+		token string,
+	) (model.SongFiltersMetadata, *wrapper.ErrorCode)
 	SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode
 	Update(request requests.UpdateSongRequest) *wrapper.ErrorCode
 	UpdateSettings(request requests.UpdateSongSettingsRequest) *wrapper.ErrorCode
@@ -143,8 +146,11 @@ func (s *songService) Get(id uuid.UUID) (model.Song, *wrapper.ErrorCode) {
 	return s.getSong.Handle(id)
 }
 
-func (s *songService) GetFiltersMetadata(token string) (model.SongFiltersMetadata, *wrapper.ErrorCode) {
-	return s.getSongFiltersMetadata.Handle(token)
+func (s *songService) GetFiltersMetadata(
+	request requests.GetSongFiltersMetadataRequest,
+	token string,
+) (model.SongFiltersMetadata, *wrapper.ErrorCode) {
+	return s.getSongFiltersMetadata.Handle(request, token)
 }
 
 func (s *songService) SaveImage(file *multipart.FileHeader, songID uuid.UUID) *wrapper.ErrorCode {

@@ -3,6 +3,7 @@ package song
 import (
 	"errors"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -20,13 +21,14 @@ func TestGetSongFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnInternalSe
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewGetSongFiltersMetadata(jwtService, songRepository)
 
+	request := requests.GetSongFiltersMetadataRequest{}
 	token := "some token"
 
 	internalError := wrapper.InternalServerError(errors.New("some internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -43,18 +45,19 @@ func TestGetSongFiltersMetadata_WhenGetFails_ShouldReturnInternalServerErrorErro
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewGetSongFiltersMetadata(jwtService, songRepository)
 
+	request := requests.GetSongFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("some internal error")
-	songRepository.On("GetFiltersMetadata", new(model.SongFiltersMetadata), userID).
+	songRepository.On("GetFiltersMetadata", new(model.SongFiltersMetadata), userID, request.SearchBy).
 		Return(internalError).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -72,6 +75,7 @@ func TestGetSongFiltersMetadata_WhenSuccessful_ShouldReturnSongFiltersMetadata(t
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewGetSongFiltersMetadata(jwtService, songRepository)
 
+	request := requests.GetSongFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
@@ -80,12 +84,12 @@ func TestGetSongFiltersMetadata_WhenSuccessful_ShouldReturnSongFiltersMetadata(t
 	metadata := model.SongFiltersMetadata{
 		MinConfidence: float64(0),
 	}
-	songRepository.On("GetFiltersMetadata", new(model.SongFiltersMetadata), userID).
+	songRepository.On("GetFiltersMetadata", new(model.SongFiltersMetadata), userID, request.SearchBy).
 		Return(nil, &metadata).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Nil(t, errCode)

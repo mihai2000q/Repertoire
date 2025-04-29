@@ -70,7 +70,7 @@ func (a ArtistHandler) GetAll(c *gin.Context) {
 }
 
 func (a ArtistHandler) GetFiltersMetadata(c *gin.Context) {
-	var request requests.GetArtistsRequest
+	var request requests.GetArtistFiltersMetadataRequest
 	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)

@@ -51,8 +51,12 @@ func (s *SongRepositoryMock) GetWithAssociations(song *model.Song, id uuid.UUID)
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error {
-	args := s.Called(metadata, userID)
+func (s *SongRepositoryMock) GetFiltersMetadata(
+	metadata *model.SongFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	args := s.Called(metadata, userID, searchBy)
 
 	if len(args) > 1 {
 		*metadata = *args.Get(1).(*model.SongFiltersMetadata)

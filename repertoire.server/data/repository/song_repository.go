@@ -15,7 +15,7 @@ type SongRepository interface {
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
-	GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error
+	GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByUser(
 		songs *[]model.EnhancedSong,
 		userID uuid.UUID,
@@ -112,11 +112,12 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Error
 }
 
-func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID) error {
-	err := s.client.Table("songs").
-		Where("user_id = ?", userID).
-		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
-		Joins("LEFT JOIN song_sections ON song_sections.song_id = songs.id").
+func (s songRepository) GetFiltersMetadata(
+	metadata *model.SongFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	tx := s.client.
 		Select(
 			"JSON_AGG(DISTINCT artist_id) filter (WHERE artist_id IS NOT NULL) as artist_ids",
 			"JSON_AGG(DISTINCT album_id) filter (WHERE album_id IS NOT NULL) as album_ids",
@@ -142,8 +143,14 @@ func (s songRepository) GetFiltersMetadata(metadata *model.SongFiltersMetadata, 
 			"MIN(last_time_played) as min_last_time_played",
 			"MAX(last_time_played) as max_last_time_played",
 		).
-		Scan(&metadata).
-		Error
+		Table("songs").
+		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
+		Joins("LEFT JOIN song_sections ON song_sections.song_id = songs.id").
+		Where("user_id = ?", userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
+	database.SearchBy(tx, searchBy)
+	err := tx.Scan(&metadata).Error
 	if err != nil {
 		return err
 	}
