@@ -8,8 +8,10 @@ import { setupServer } from 'msw/node'
 import { default as AlbumType } from './../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
 import { expect } from 'vitest'
-import albumSongsOrders from '../data/album/albumSongsOrders.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
+import OrderType from '../types/enums/OrderType.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
 
 describe('Album', () => {
   const songs: Song[] = [
@@ -80,7 +82,7 @@ describe('Album', () => {
     expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(album.title)
 
-    expect(songsOrderBy).toStrictEqual([albumSongsOrders[0].property + albumSongsOrders[0].type])
+    expect(songsOrderBy).toStrictEqual(['album_track_no asc'])
   })
 
   it('should render and display info from songs when the album is unknown', async () => {
@@ -108,8 +110,8 @@ describe('Album', () => {
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
 
     expect(songsSearchBy).toHaveLength(1)
-    expect(songsSearchBy[0]).toMatch('album_id IS NULL')
+    expect(songsSearchBy[0]).toBe(`${SongProperty.AlbumId} ${FilterOperator.IsNull}`)
 
-    expect(songsOrderBy).toStrictEqual([albumSongsOrders[1].property + albumSongsOrders[1].type])
+    expect(songsOrderBy).toStrictEqual([`${SongProperty.Title} ${OrderType.Ascending}`])
   })
 })

@@ -11,6 +11,7 @@ import { SearchBase } from '../types/models/Search.ts'
 import songsOrders from '../data/songs/songsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -215,15 +216,17 @@ describe('Songs', () => {
 
     reduxRouterRender(<Songs />)
 
-    await waitFor(() => expect(orderBy).toStrictEqual([initialOrder.property + initialOrder.type]))
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
+    )
 
     await user.click(screen.getByRole('button', { name: 'order-songs' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([
-        newOrder.property + newOrder.type,
-        initialOrder.property + initialOrder.type
+        newOrder.property + ' ' + OrderType.Ascending,
+        initialOrder.property + ' ' + initialOrder.type
       ])
     )
   })

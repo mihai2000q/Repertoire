@@ -13,6 +13,7 @@ import albumsOrders from '../data/albums/albumsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import AlbumProperty from '../types/enums/AlbumProperty.ts'
 import { expect } from 'vitest'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('Albums', () => {
   const albums: Album[] = [
@@ -286,15 +287,17 @@ describe('Albums', () => {
 
     reduxRouterRender(<Albums />)
 
-    await waitFor(() => expect(orderBy).toStrictEqual([initialOrder.property + initialOrder.type]))
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
+    )
 
     await user.click(screen.getByRole('button', { name: 'order-albums' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([
-        newOrder.property + newOrder.type,
-        initialOrder.property + initialOrder.type
+        newOrder.property + ' ' + OrderType.Ascending,
+        initialOrder.property + ' ' + initialOrder.type
       ])
     )
   })
