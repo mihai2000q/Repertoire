@@ -1,6 +1,7 @@
 package playlist
 
 import (
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/wrapper"
@@ -22,13 +23,16 @@ func NewGetPlaylistFiltersMetadata(
 	}
 }
 
-func (g GetPlaylistFiltersMetadata) Handle(token string) (metadata model.PlaylistFiltersMetadata, e *wrapper.ErrorCode) {
+func (g GetPlaylistFiltersMetadata) Handle(
+	request requests.GetPlaylistFiltersMetadataRequest,
+	token string,
+) (metadata model.PlaylistFiltersMetadata, e *wrapper.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return metadata, errCode
 	}
 
-	err := g.repository.GetFiltersMetadata(&metadata, userID)
+	err := g.repository.GetFiltersMetadata(&metadata, userID, request.SearchBy)
 	if err != nil {
 		return metadata, wrapper.InternalServerError(err)
 	}

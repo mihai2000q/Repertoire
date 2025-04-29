@@ -11,7 +11,7 @@ type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
 	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
-	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID) error
+	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
@@ -62,17 +62,24 @@ func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uui
 		Find(&playlist, model.Playlist{ID: id}).Error
 }
 
-func (p playlistRepository) GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID) error {
-	return p.client.
+func (p playlistRepository) GetFiltersMetadata(
+	metadata *model.PlaylistFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	tx := p.client.
 		Select(
 			"MIN(COALESCE(ss.songs_count, 0)) AS min_songs_count",
 			"MAX(COALESCE(ss.songs_count, 0)) AS max_songs_count",
 		).
 		Table("playlists").
 		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
-		Where("user_id = ?", userID).
-		Scan(&metadata).
-		Error
+		Where("user_id = ?", userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+
+	database.SearchBy(tx, searchBy)
+	return tx.Scan(&metadata).Error
 }
 
 var compoundPlaylistsFields = []string{"songs_count"}
