@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 1
     name: Build 🔨
     steps:
     - name: Checkout Repo
@@ -26,7 +26,7 @@ jobs:
 
   unit-testing:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
     name: Unit Testing 🧪
     steps:
     - name: Checkout Repo
