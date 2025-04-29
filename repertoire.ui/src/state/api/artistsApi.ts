@@ -25,17 +25,15 @@ import { ArtistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 const artistsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getArtists: build.query<WithTotalCountResponse<Artist>, GetArtistsRequest>({
-      query: (arg) => ({
-        url: `artists${createQueryParams(arg)}`
-      }),
+      query: (arg) => `artists${createQueryParams(arg)}`,
       providesTags: ['Artists', 'Albums', 'Songs']
     }),
     getArtist: build.query<Artist, string>({
       query: (arg) => `artists/${arg}`,
       providesTags: ['Artists']
     }),
-    getArtistFiltersMetadata: build.query<ArtistFiltersMetadata, void>({
-      query: () => 'artists/filters-metadata',
+    getArtistFiltersMetadata: build.query<ArtistFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `artists/filters-metadata${createQueryParams(arg)}`,
       providesTags: ['Albums', 'Artists', 'Songs']
     }),
     createArtist: build.mutation<{ id: string }, CreateArtistRequest>({
@@ -173,6 +171,7 @@ const artistsApi = api.injectEndpoints({
 export const {
   useGetArtistQuery,
   useGetArtistsQuery,
+  useGetArtistFiltersMetadataQuery,
   useLazyGetArtistFiltersMetadataQuery,
   useCreateArtistMutation,
   useUpdateArtistMutation,

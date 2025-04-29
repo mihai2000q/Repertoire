@@ -4,55 +4,76 @@ import Filter, { FilterValue } from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 
 describe('use Filters Metadata', () => {
-  const initialFilters = new Map<string, Filter>([
+  const filters = new Map<string, Filter>([
     ['name=', { property: 'name', operator: FilterOperator.Equal, value: '', isSet: false }],
-    ['age>', { property: 'age', operator: FilterOperator.GreaterThan, value: 0, isSet: false }]
+    ['age>', { property: 'age', operator: FilterOperator.GreaterThan, value: 0, isSet: false }],
+    ['age<', { property: 'age', operator: FilterOperator.LessThanOrEqual, value: 80, isSet: true }],
+    ['allergies_null', { property: 'allergies', operator: FilterOperator.IsNull, isSet: true }]
   ])
 
-  it('should not update filters when metadata is null', () => {
+  it('should not update filters when both metadata are null', () => {
     const setFilters = vi.fn()
     const setInternalFilters = vi.fn()
 
     const filtersMetadataMap = vi.fn()
     const { result } = renderHook(() =>
-      useFiltersMetadata(null, initialFilters, setFilters, setInternalFilters, filtersMetadataMap)
+      useFiltersMetadata(
+        null,
+        null,
+        filters,
+        setFilters,
+        setInternalFilters,
+        filtersMetadataMap
+      )
     )
 
     expect(filtersMetadataMap).not.toHaveBeenCalled()
     expect(setFilters).not.toHaveBeenCalled()
     expect(setInternalFilters).not.toHaveBeenCalled()
-    expect(result.current).toEqual(initialFilters)
+    expect(result.current).toEqual(filters)
   })
 
-  it('should update both filters and internal filters when metadata changes', () => {
-    const metadata = { some: 'metadata' }
-    const expectedUpdates: [string, FilterValue][] = [
-      ['name=', 'John'],
-      ['age>', 25]
-    ]
+  it('should update initial filters, filters and internal filters, when initial metadata changes and metadata is null', () => {
+    const initialMetadata = { some: 'initial-metadata' }
 
     const setFilters = vi.fn()
     const setInternalFilters = vi.fn()
-    const filtersMetadataMap = vi.fn().mockReturnValue(expectedUpdates)
+    const metadataMap: [string, FilterValue][] = [
+      ['name=', 'John'],
+    ]
+    const filtersMetadataMap = vi.fn().mockReturnValue(metadataMap)
 
-    const { result, rerender } = renderHook(
-      ({ metadata }) =>
-        useFiltersMetadata(
-          metadata,
-          initialFilters,
-          setFilters,
-          setInternalFilters,
-          filtersMetadataMap
-        ),
-      { initialProps: { metadata: null } }
+    const { result } = renderHook(() =>
+      useFiltersMetadata(
+        initialMetadata,
+        null,
+        filters,
+        setFilters,
+        setInternalFilters,
+        filtersMetadataMap
+      )
     )
 
-    expect(result.current).toEqual(initialFilters)
+    expect(filtersMetadataMap).toHaveBeenCalledTimes(2)
+    expect(filtersMetadataMap).toHaveBeenCalledWith(initialMetadata)
 
-    // Update metadata
-    rerender({ metadata })
+    // initial filters
+    expect(result.current.size).toBe(4)
+    expect(result.current.get('name=')).toStrictEqual({
+      ...filters.get('name='),
+      value: 'John',
+    })
+    expect(result.current.get('age>')).toStrictEqual(filters.get('age>'))
+    expect(result.current.get('age<')).toStrictEqual({
+      ...filters.get('age<'),
+      isSet: false,
+    })
+    expect(result.current.get('allergies_null')).toStrictEqual({
+      ...filters.get('allergies_null'),
+      isSet: false,
+    })
 
-    expect(filtersMetadataMap).toHaveBeenCalledWith(metadata)
+    // filters
     expect(setFilters).toHaveBeenCalledOnce()
     expect(setInternalFilters).toHaveBeenCalledOnce()
 
@@ -60,60 +81,88 @@ describe('use Filters Metadata', () => {
     const internalFilters = setInternalFilters.mock.calls[0][0]
     expect(internalFilters).toEqual(expectedFilters)
 
-    expect(expectedFilters.get('name=').value).toBe('John')
-    expect(expectedFilters.get('age>').value).toBe(25)
-    expect(result.current).toEqual(expect.any(Map))
+    expect(expectedFilters.size).toBe(4)
+    expect(expectedFilters.get('name=')).toStrictEqual({
+      ...filters.get('name='),
+      value: 'John',
+    })
+    expect(expectedFilters.get('age>')).toStrictEqual(filters.get('age>'))
+    expect(expectedFilters.get('age<')).toStrictEqual(filters.get('age<'))
+    expect(expectedFilters.get('allergies_null')).toStrictEqual(filters.get('allergies_null'))
   })
 
-  it('should update isSet status when updating values to initial filters, and not for those already set', () => {
+  it('should update filters and internal filters, when metadata changes', () => {
+    const initialMetadata = { some: 'initial-metadata' }
     const metadata = { some: 'metadata' }
-    const existingFilters = new Map(initialFilters)
-    existingFilters.set('name=', { ...existingFilters.get('name='), isSet: true, value: 'Michael' })
-    const expectedUpdates: [string, FilterValue][] = [['name=', 'John'], ['age>', 12]]
 
     const setFilters = vi.fn()
-    const filtersMetadataMap = vi.fn().mockReturnValue(expectedUpdates)
+    const setInternalFilters = vi.fn()
+    const initialMetadataMap: [string, FilterValue][] = [
+      ['name=', 'J']
+    ]
+    const metadataMap: [string, FilterValue][] = [
+      ['name=', 'John'],
+    ]
+    const filtersMetadataMap = vi.fn((args) => {
+      if (args === initialMetadata) return initialMetadataMap
+      if (args === metadata) return metadataMap
+    })
 
     const { result } = renderHook(() =>
-      useFiltersMetadata(metadata, existingFilters, setFilters, vi.fn(), filtersMetadataMap)
+      useFiltersMetadata(
+        initialMetadata,
+        metadata,
+        filters,
+        setFilters,
+        setInternalFilters,
+        filtersMetadataMap
+      )
     )
 
-    const updatedFilters = setFilters.mock.calls[0][0]
-    expect(updatedFilters.get('name=')).toEqual({
-      ...existingFilters.get('name='),
-      value: 'Michael',
-      isSet: true
-    })
-    expect(updatedFilters.get('age>')).toEqual({
-      ...existingFilters.get('age>'),
-      value: 12,
-      isSet: false
+    expect(filtersMetadataMap).toHaveBeenCalledTimes(2)
+    expect(filtersMetadataMap).toHaveBeenCalledWith(initialMetadata)
+    expect(filtersMetadataMap).toHaveBeenCalledWith(metadata)
+
+    // initial filters
+    expect(result.current.size).toBe(4)
+    expect(result.current.get('name=')).toStrictEqual({
+      ...filters.get('name='),
+      value: 'J',
     })
 
-    expect(result.current.get('name=')).toEqual({
-      ...existingFilters.get('name='),
+    // filters
+    expect(setFilters).toHaveBeenCalledOnce()
+    expect(setInternalFilters).toHaveBeenCalledOnce()
+
+    const expectedFilters = setFilters.mock.calls[0][0]
+
+    expect(expectedFilters.size).toBe(4)
+    expect(expectedFilters.get('name=')).toStrictEqual({
+      ...filters.get('name='),
       value: 'John',
-      isSet: false
-    })
-    expect(result.current.get('age>')).toEqual({
-      ...existingFilters.get('age>'),
-      value: 12,
-      isSet: false
     })
   })
 
-  it('should maintain referential equality for initialFilters ref', () => {
+  it('should maintain referential equality for initial filters', () => {
+    const initialMetadata = { some: 'initial-metadata' }
     const metadata = { some: 'metadata' }
     const filtersMetadataMap = vi.fn().mockReturnValue([['name=', 'John']])
 
     const { result, rerender } = renderHook(
-      ({ metadata }) =>
-        useFiltersMetadata(metadata, initialFilters, vi.fn(), vi.fn(), filtersMetadataMap),
-      { initialProps: { metadata: null } }
+      ({ initialMetadata, metadata }) =>
+        useFiltersMetadata(
+          initialMetadata,
+          metadata,
+          filters,
+          vi.fn(),
+          vi.fn(),
+          filtersMetadataMap
+        ),
+      { initialProps: { initialMetadata: null, metadata: null } }
     )
 
     const firstRef = result.current
-    rerender({ metadata })
+    rerender({ initialMetadata, metadata })
     expect(result.current).toBe(firstRef)
   })
 })

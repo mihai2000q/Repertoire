@@ -20,17 +20,15 @@ import { AlbumFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 const albumsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getAlbums: build.query<WithTotalCountResponse<Album>, GetAlbumsRequest>({
-      query: (arg) => ({
-        url: `albums${createQueryParams(arg)}`
-      }),
+      query: (arg) => `albums${createQueryParams(arg)}`,
       providesTags: ['Albums', 'Artists', 'Songs']
     }),
     getAlbum: build.query<Album, GetAlbumRequest>({
       query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Albums', 'Artists', 'Songs']
     }),
-    getAlbumFiltersMetadata: build.query<AlbumFiltersMetadata, void>({
-      query: () => 'albums/filters-metadata',
+    getAlbumFiltersMetadata: build.query<AlbumFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `albums/filters-metadata${createQueryParams(arg)}`,
       providesTags: ['Albums', 'Artists', 'Songs'],
       transformResponse: (response: AlbumFiltersMetadata) => ({
         ...response,
@@ -108,6 +106,7 @@ const albumsApi = api.injectEndpoints({
 export const {
   useGetAlbumsQuery,
   useGetAlbumQuery,
+  useGetAlbumFiltersMetadataQuery,
   useLazyGetAlbumFiltersMetadataQuery,
   useCreateAlbumMutation,
   useUpdateAlbumMutation,

@@ -18,9 +18,7 @@ import { PlaylistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getPlaylists: build.query<WithTotalCountResponse<Playlist>, GetPlaylistsRequest>({
-      query: (arg) => ({
-        url: `playlists${createQueryParams(arg)}`
-      }),
+      query: (arg) => `playlists${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
     }),
     getPlaylist: build.query<Playlist, string>({
@@ -31,8 +29,8 @@ const playlistsApi = api.injectEndpoints({
         songs: response.songs === null ? [] : response.songs
       })
     }),
-    getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, void>({
-      query: () => 'playlists/filters-metadata',
+    getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
     }),
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
@@ -105,6 +103,7 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
+  useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
   useUpdatePlaylistMutation,

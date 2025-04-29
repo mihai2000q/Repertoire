@@ -6,7 +6,10 @@ import ArtistSelect from '../@ui/form/select/ArtistSelect.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarCheck, IconCalendarRepeat } from '@tabler/icons-react'
 import FiltersDrawer from '../@ui/drawer/FiltersDrawer.tsx'
-import { useLazyGetSongFiltersMetadataQuery } from '../../state/api/songsApi.ts'
+import {
+  useGetSongFiltersMetadataQuery,
+  useLazyGetSongFiltersMetadataQuery
+} from '../../state/api/songsApi.ts'
 import SongProperty from '../../types/enums/SongProperty.ts'
 import { songsFiltersMetadataMap } from '../../data/songs/songsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
@@ -20,6 +23,7 @@ import DifficultyMultiSelect from '../@ui/form/select/multi/DifficultyMultiSelec
 import Difficulty from '../../types/enums/Difficulty.ts'
 import GuitarTuningMultiSelect from '../@ui/form/select/multi/GuitarTuningMultiSelect.tsx'
 import InstrumentMultiSelect from '../@ui/form/select/multi/InstrumentMultiSelect.tsx'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
 
 interface SongsFiltersProps {
   opened: boolean
@@ -30,14 +34,21 @@ interface SongsFiltersProps {
 }
 
 function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: SongsFiltersProps) {
-  const [getFiltersMetadata, { data: filtersMetadata, isLoading }] =
+  const [getFiltersMetadata, { data: initialFiltersMetadata, isLoading }] =
     useLazyGetSongFiltersMetadataQuery()
   useEffect(() => {
-    getFiltersMetadata(undefined, true)
+    getFiltersMetadata({}, true)
   }, [])
+
+  const searchBy = useSearchBy(filters)
+  const { data: filtersMetadata } = useGetSongFiltersMetadataQuery(
+    { searchBy: searchBy },
+    { skip: searchBy.length === 0 }
+  )
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(
+    initialFiltersMetadata,
     filtersMetadata,
     filters,
     setFilters,
@@ -84,14 +95,14 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         <AlbumSelect
           album={album}
           setAlbum={setAlbum}
-          ids={filtersMetadata?.albumIds}
+          ids={filtersMetadata?.albumIds ?? initialFiltersMetadata?.albumIds}
           disabled={isLoading}
         />
 
         <ArtistSelect
           artist={artist}
           setArtist={setArtist}
-          ids={filtersMetadata?.artistIds}
+          ids={filtersMetadata?.artistIds ?? initialFiltersMetadata?.artistIds}
           disabled={isLoading || album !== null}
         />
 
@@ -192,7 +203,9 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           setDifficulties={(ids) => {
             handleValueChange(SongProperty.Difficulty + FilterOperator.In, ids as Difficulty[])
           }}
-          availableDifficulties={filtersMetadata?.difficulties}
+          availableDifficulties={
+            filtersMetadata?.difficulties ?? initialFiltersMetadata?.difficulties
+          }
           disabled={isLoading}
         />
         <DoubleCheckbox
@@ -220,7 +233,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           setIds={(ids) => {
             handleValueChange(SongProperty.GuitarTuningId + FilterOperator.In, ids as string[])
           }}
-          availableIds={filtersMetadata?.guitarTuningIds}
+          availableIds={filtersMetadata?.guitarTuningIds ?? initialFiltersMetadata?.guitarTuningIds}
           disabled={isLoading}
         />
         <DoubleCheckbox
@@ -250,7 +263,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           setIds={(ids) => {
             handleValueChange(SongProperty.InstrumentId + FilterOperator.In, ids as string[])
           }}
-          availableIds={filtersMetadata?.instrumentIds}
+          availableIds={filtersMetadata?.instrumentIds ?? initialFiltersMetadata?.instrumentIds}
           disabled={isLoading}
         />
 

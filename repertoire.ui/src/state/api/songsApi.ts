@@ -25,9 +25,7 @@ import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
-      query: (arg) => ({
-        url: `songs${createQueryParams(arg)}`
-      }),
+      query: (arg) => `songs${createQueryParams(arg)}`,
       providesTags: ['Songs', 'Artists', 'Albums']
     }),
     getSong: build.query<Song, string>({
@@ -43,8 +41,8 @@ const songsApi = api.injectEndpoints({
           : response.artist
       })
     }),
-    getSongFiltersMetadata: build.query<SongFiltersMetadata, void>({
-      query: () => 'songs/filters-metadata',
+    getSongFiltersMetadata: build.query<SongFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `songs/filters-metadata${createQueryParams(arg)}`,
       providesTags: ['Songs', 'Artists', 'Albums'],
       transformResponse: (response: SongFiltersMetadata) => ({
         ...response,
@@ -202,6 +200,7 @@ const songsApi = api.injectEndpoints({
 export const {
   useGetSongsQuery,
   useGetSongQuery,
+  useGetSongFiltersMetadataQuery,
   useLazyGetSongFiltersMetadataQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,

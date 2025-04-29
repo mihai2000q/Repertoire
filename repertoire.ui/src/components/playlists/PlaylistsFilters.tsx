@@ -2,13 +2,17 @@ import Filter from '../../types/Filter.ts'
 import { Stack } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import FiltersDrawer from '../@ui/drawer/FiltersDrawer.tsx'
-import { useLazyGetPlaylistFiltersMetadataQuery } from '../../state/api/playlistsApi.ts'
+import {
+  useGetPlaylistFiltersMetadataQuery,
+  useLazyGetPlaylistFiltersMetadataQuery
+} from '../../state/api/playlistsApi.ts'
 import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
 import { playlistsFiltersMetadataMap } from '../../data/playlists/playlistsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../hooks/filter/useFiltersHandlers.ts'
 import NumberInputRange from '../@ui/form/input/NumberInputRange.tsx'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
 
 interface PlaylistFiltersProps {
   opened: boolean
@@ -25,14 +29,21 @@ function PlaylistsFilters({
   setFilters,
   isPlaylistsLoading
 }: PlaylistFiltersProps) {
-  const [getFiltersMetadata, { data: filtersMetadata, isLoading }] =
+  const [getFiltersMetadata, { data: initialFiltersMetadata, isLoading }] =
     useLazyGetPlaylistFiltersMetadataQuery()
   useEffect(() => {
-    getFiltersMetadata(undefined, true)
+    getFiltersMetadata({}, true)
   }, [])
+
+  const searchBy = useSearchBy(filters)
+  const { data: filtersMetadata } = useGetPlaylistFiltersMetadataQuery(
+    { searchBy: searchBy },
+    { skip: searchBy.length === 0 }
+  )
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(
+    initialFiltersMetadata,
     filtersMetadata,
     filters,
     setFilters,

@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarCheck } from '@tabler/icons-react'
 import FiltersDrawer from '../@ui/drawer/FiltersDrawer.tsx'
-import { useLazyGetArtistFiltersMetadataQuery } from '../../state/api/artistsApi.ts'
+import {
+  useGetArtistFiltersMetadataQuery,
+  useLazyGetArtistFiltersMetadataQuery
+} from '../../state/api/artistsApi.ts'
 import ArtistProperty from '../../types/enums/ArtistProperty.ts'
 import { artistsFiltersMetadataMap } from '../../data/artists/artistsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
@@ -12,6 +15,7 @@ import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../hooks/filter/useFiltersHandlers.ts'
 import NumberInputRange from '../@ui/form/input/NumberInputRange.tsx'
 import DoubleCheckbox from '../@ui/filter/DoubleCheckbox.tsx'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
 
 interface ArtistsFiltersProps {
   opened: boolean
@@ -28,14 +32,21 @@ function ArtistsFilters({
   setFilters,
   isArtistsLoading
 }: ArtistsFiltersProps) {
-  const [getFiltersMetadata, { data: filtersMetadata, isLoading }] =
+  const [getFiltersMetadata, { data: initialFiltersMetadata, isLoading }] =
     useLazyGetArtistFiltersMetadataQuery()
   useEffect(() => {
-    getFiltersMetadata(undefined, true)
+    getFiltersMetadata({}, true)
   }, [])
+
+  const searchBy = useSearchBy(filters)
+  const { data: filtersMetadata } = useGetArtistFiltersMetadataQuery(
+    { searchBy: searchBy },
+    { skip: searchBy.length === 0 }
+  )
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(
+    initialFiltersMetadata,
     filtersMetadata,
     filters,
     setFilters,

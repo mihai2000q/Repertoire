@@ -6,7 +6,10 @@ import ArtistSelect from '../@ui/form/select/ArtistSelect.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarCheck, IconCalendarRepeat } from '@tabler/icons-react'
 import FiltersDrawer from '../@ui/drawer/FiltersDrawer.tsx'
-import { useLazyGetAlbumFiltersMetadataQuery } from '../../state/api/albumsApi.ts'
+import {
+  useGetAlbumFiltersMetadataQuery,
+  useLazyGetAlbumFiltersMetadataQuery
+} from '../../state/api/albumsApi.ts'
 import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import { albumsFiltersMetadataMap } from '../../data/albums/albumsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
@@ -15,6 +18,7 @@ import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../hooks/filter/useFiltersHandlers.ts'
 import NumberInputRange from '../@ui/form/input/NumberInputRange.tsx'
 import DoubleCheckbox from '../@ui/filter/DoubleCheckbox.tsx'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
 
 interface AlbumsFiltersProps {
   opened: boolean
@@ -31,14 +35,21 @@ function AlbumsFilters({
   setFilters,
   isAlbumsLoading
 }: AlbumsFiltersProps) {
-  const [getFiltersMetadata, { data: filtersMetadata, isLoading }] =
+  const [getFiltersMetadata, { data: initialFiltersMetadata, isLoading }] =
     useLazyGetAlbumFiltersMetadataQuery()
   useEffect(() => {
-    getFiltersMetadata(undefined, true)
+    getFiltersMetadata({}, true)
   }, [])
+
+  const searchBy = useSearchBy(filters)
+  const { data: filtersMetadata } = useGetAlbumFiltersMetadataQuery(
+    { searchBy: searchBy },
+    { skip: searchBy.length === 0 }
+  )
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(
+    initialFiltersMetadata,
     filtersMetadata,
     filters,
     setFilters,
@@ -70,7 +81,7 @@ function AlbumsFilters({
         <ArtistSelect
           artist={artist}
           setArtist={setArtist}
-          ids={filtersMetadata?.artistIds}
+          ids={filtersMetadata?.artistIds ?? initialFiltersMetadata?.artistIds}
           disabled={isLoading}
         />
 
