@@ -15,6 +15,7 @@ import {
   NavLink,
   NumberFormatter,
   NumberInput,
+  RangeSlider,
   ScrollArea,
   ScrollAreaAutosize,
   Select,
@@ -236,6 +237,11 @@ export const components = {
   NumberInput: NumberInput.extend({
     defaultProps: {
       clampBehavior: 'strict'
+    }
+  }),
+  RangeSlider: RangeSlider.extend({
+    defaultProps: {
+      minRange: 1
     }
   }),
   ScrollArea: ScrollArea.extend({
