@@ -12,12 +12,13 @@ import {
 import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
 import { IconFilterFilled } from '@tabler/icons-react'
 import Filter from '../../../types/Filter.ts'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface FiltersDrawerProps {
   opened: boolean
   onClose: () => void
   filters: Map<string, Filter>
-  setFilters: Dispatch<SetStateAction<Map<string, Filter>>>
+  setFilters: (filters: Map<string, Filter>, withSearchParams?: boolean) => void
   internalFilters: Map<string, Filter>
   setInternalFilters: Dispatch<SetStateAction<Map<string, Filter>>>
   initialFilters: Map<string, Filter>
@@ -42,6 +43,8 @@ function FiltersDrawer({
   const offset = '120px'
   const drawerOffset = '8px'
   const titleSize = '60px'
+
+  useDidUpdate(() => setInternalFilters(filters), [JSON.stringify([...filters])])
 
   const disabledApplyFilters = JSON.stringify([...internalFilters]) === JSON.stringify([...filters])
   const disabledResetFilters =

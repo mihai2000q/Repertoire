@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Filter from '../../types/Filter.ts'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface useSearchParamFiltersProps<TState> {
   initialFilters: Filter[]
@@ -9,7 +10,7 @@ interface useSearchParamFiltersProps<TState> {
 
 type useSearchParamFiltersReturnType = [
   filters: Map<string, Filter>,
-  setFilters: (filters: Map<string, Filter>) => void
+  setFilters: (filters: Map<string, Filter>, withSearchParams?: boolean) => void
 ]
 
 export default function useSearchParamFilters<
@@ -28,8 +29,23 @@ export default function useSearchParamFilters<
       )
     )
   )
+  useDidUpdate(
+    () =>
+      setFilters(
+        new Map<string, Filter>(
+          Array.from(filters.values()).map((f) =>
+            activeFilters.get(f.property + f.operator)
+              ? [f.property + f.operator, activeFilters.get(f.property + f.operator)]
+              : [f.property + f.operator, { ...f, isSet: false }]
+          )
+        )
+      ),
+    [JSON.stringify([...activeFilters])]
+  )
 
-  const setFiltersAndSearchParams = (newFilters: Map<string, Filter>) => {
+  const setFiltersAndSearchParams = (newFilters: Map<string, Filter>, withSearchParams = true) => {
+    setFilters(newFilters)
+    if (!withSearchParams) return
     const newActiveFilters = new Map<string, Filter>()
     newFilters.forEach((value, key) => {
       if (value.isSet) {
@@ -38,9 +54,9 @@ export default function useSearchParamFilters<
     })
     setSearchParams((prevState) => ({
       ...prevState,
-      activeFilters: newActiveFilters
+      activeFilters: newActiveFilters,
+      ...('currentPage' in prevState ? { currentPage: 1 } : {})
     }))
-    setFilters(newFilters)
   }
   return [filters, setFiltersAndSearchParams]
 }

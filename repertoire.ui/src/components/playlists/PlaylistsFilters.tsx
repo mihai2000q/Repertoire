@@ -18,7 +18,7 @@ interface PlaylistFiltersProps {
   opened: boolean
   onClose: () => void
   filters: Map<string, Filter>
-  setFilters: (filters: Map<string, Filter>) => void
+  setFilters: (filters: Map<string, Filter>, withSearchParams?: boolean) => void
   isPlaylistsLoading?: boolean
 }
 
@@ -36,10 +36,7 @@ function PlaylistsFilters({
   }, [])
 
   const searchBy = useSearchBy(filters)
-  const { data: filtersMetadata } = useGetPlaylistFiltersMetadataQuery(
-    { searchBy: searchBy },
-    { skip: searchBy.length === 0 }
-  )
+  const { data: filtersMetadata } = useGetPlaylistFiltersMetadataQuery({ searchBy: searchBy })
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(

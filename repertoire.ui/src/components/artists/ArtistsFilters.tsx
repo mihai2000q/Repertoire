@@ -21,7 +21,7 @@ interface ArtistsFiltersProps {
   opened: boolean
   onClose: () => void
   filters: Map<string, Filter>
-  setFilters: (filters: Map<string, Filter>) => void
+  setFilters: (filters: Map<string, Filter>, withSearchParams?: boolean) => void
   isArtistsLoading?: boolean
 }
 
@@ -39,10 +39,7 @@ function ArtistsFilters({
   }, [])
 
   const searchBy = useSearchBy(filters)
-  const { data: filtersMetadata } = useGetArtistFiltersMetadataQuery(
-    { searchBy: searchBy },
-    { skip: searchBy.length === 0 }
-  )
+  const { data: filtersMetadata } = useGetArtistFiltersMetadataQuery({ searchBy: searchBy })
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(

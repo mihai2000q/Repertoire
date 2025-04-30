@@ -1,6 +1,6 @@
 import { useGetPlaylistsQuery } from '../state/api/playlistsApi.ts'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import {
   ActionIcon,
   Box,
@@ -51,7 +51,6 @@ function Playlists() {
   })
   const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

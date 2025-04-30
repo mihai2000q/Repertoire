@@ -24,7 +24,7 @@ interface AlbumsFiltersProps {
   opened: boolean
   onClose: () => void
   filters: Map<string, Filter>
-  setFilters: (filters: Map<string, Filter>) => void
+  setFilters: (filters: Map<string, Filter>, withSearchParams?: boolean) => void
   isAlbumsLoading?: boolean
 }
 
@@ -42,10 +42,7 @@ function AlbumsFilters({
   }, [])
 
   const searchBy = useSearchBy(filters)
-  const { data: filtersMetadata } = useGetAlbumFiltersMetadataQuery(
-    { searchBy: searchBy },
-    { skip: searchBy.length === 0 }
-  )
+  const { data: filtersMetadata } = useGetAlbumFiltersMetadataQuery({ searchBy: searchBy })
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(
@@ -81,7 +78,7 @@ function AlbumsFilters({
         <ArtistSelect
           artist={artist}
           setArtist={setArtist}
-          ids={filtersMetadata?.artistIds ?? initialFiltersMetadata?.artistIds}
+          ids={filtersMetadata?.artistIds}
           disabled={isLoading}
         />
 

@@ -33,11 +33,9 @@ describe('use Filters Metadata', () => {
     expect(result.current).toEqual(filters)
   })
 
-  it('should update initial filters, filters and internal filters, when initial metadata changes and metadata is null', () => {
+  it('should update initial filters when initial metadata changes', () => {
     const initialMetadata = { some: 'initial-metadata' }
 
-    const setFilters = vi.fn()
-    const setInternalFilters = vi.fn()
     const metadataMap: [string, FilterValue][] = [
       ['name=', 'John'],
     ]
@@ -48,13 +46,13 @@ describe('use Filters Metadata', () => {
         initialMetadata,
         null,
         filters,
-        setFilters,
-        setInternalFilters,
+        vi.fn(),
+        vi.fn(),
         filtersMetadataMap
       )
     )
 
-    expect(filtersMetadataMap).toHaveBeenCalledTimes(2)
+    expect(filtersMetadataMap).toHaveBeenCalledOnce()
     expect(filtersMetadataMap).toHaveBeenCalledWith(initialMetadata)
 
     // initial filters
@@ -72,12 +70,38 @@ describe('use Filters Metadata', () => {
       ...filters.get('allergies_null'),
       isSet: false,
     })
+  })
+
+  it('should update filters and internal filters, when metadata changes', () => {
+    const metadata = { some: 'metadata' }
+
+    const setFilters = vi.fn()
+    const setInternalFilters = vi.fn()
+    const metadataMap: [string, FilterValue][] = [
+      ['name=', 'John'],
+    ]
+    const filtersMetadataMap = vi.fn().mockReturnValue(metadataMap)
+
+    renderHook(() =>
+      useFiltersMetadata(
+        null,
+        metadata,
+        filters,
+        setFilters,
+        setInternalFilters,
+        filtersMetadataMap
+      )
+    )
+
+    expect(filtersMetadataMap).toHaveBeenCalledOnce()
+    expect(filtersMetadataMap).toHaveBeenCalledWith(metadata)
 
     // filters
     expect(setFilters).toHaveBeenCalledOnce()
     expect(setInternalFilters).toHaveBeenCalledOnce()
 
     const expectedFilters = setFilters.mock.calls[0][0]
+    const expectedWithSearchParams = setFilters.mock.calls[0][1]
     const internalFilters = setInternalFilters.mock.calls[0][0]
     expect(internalFilters).toEqual(expectedFilters)
 
@@ -89,9 +113,10 @@ describe('use Filters Metadata', () => {
     expect(expectedFilters.get('age>')).toStrictEqual(filters.get('age>'))
     expect(expectedFilters.get('age<')).toStrictEqual(filters.get('age<'))
     expect(expectedFilters.get('allergies_null')).toStrictEqual(filters.get('allergies_null'))
+    expect(expectedWithSearchParams).toBeFalsy()
   })
 
-  it('should update filters and internal filters, when metadata changes', () => {
+  it('should update initial filters, filters and internal filters, when metadata and initial metadata change', () => {
     const initialMetadata = { some: 'initial-metadata' }
     const metadata = { some: 'metadata' }
 
@@ -135,6 +160,8 @@ describe('use Filters Metadata', () => {
     expect(setInternalFilters).toHaveBeenCalledOnce()
 
     const expectedFilters = setFilters.mock.calls[0][0]
+    const internalFilters = setInternalFilters.mock.calls[0][0]
+    expect(internalFilters).toEqual(expectedFilters)
 
     expect(expectedFilters.size).toBe(4)
     expect(expectedFilters.get('name=')).toStrictEqual({

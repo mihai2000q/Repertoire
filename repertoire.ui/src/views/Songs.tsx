@@ -16,7 +16,7 @@ import {
 import { useGetSongsQuery } from '../state/api/songsApi.ts'
 import SongCard from '../components/songs/SongCard.tsx'
 import { IconArrowsSort, IconFilterFilled, IconMusicPlus, IconPlus } from '@tabler/icons-react'
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import AddNewSongModal from '../components/songs/modal/AddNewSongModal.tsx'
 import SongsLoader from '../components/songs/SongsLoader.tsx'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
@@ -52,7 +52,6 @@ function Songs(): ReactElement {
   })
   const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

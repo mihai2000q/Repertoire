@@ -16,7 +16,7 @@ import {
 import AlbumsLoader from '../components/albums/AlbumsLoader.tsx'
 import AlbumCard from '../components/albums/AlbumCard.tsx'
 import AddNewAlbumModal from '../components/albums/modal/AddNewAlbumModal.tsx'
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconDisc, IconFilterFilled, IconPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useShowUnknownAlbum from '../hooks/useShowUnknownAlbum.ts'
@@ -53,7 +53,6 @@ function Albums() {
   })
   const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

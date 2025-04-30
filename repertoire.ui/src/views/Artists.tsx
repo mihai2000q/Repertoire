@@ -16,7 +16,7 @@ import {
 import ArtistsLoader from '../components/artists/ArtistsLoader.tsx'
 import ArtistCard from '../components/artists/ArtistCard.tsx'
 import AddNewArtistModal from '../components/artists/modal/AddNewArtistModal.tsx'
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import { IconArrowsSort, IconFilterFilled, IconPlus, IconUserPlus } from '@tabler/icons-react'
 import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import UnknownArtistCard from '../components/artists/UnknownArtistCard.tsx'
@@ -53,7 +53,6 @@ function Artists() {
   })
   const filtersSize = activeFilters.size
   const searchBy = useSearchBy(filters)
-  useDidUpdate(() => handleCurrentPageChange(1), [JSON.stringify([...activeFilters])])
 
   const pageSize = 40
   const {

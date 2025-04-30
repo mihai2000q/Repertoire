@@ -29,7 +29,7 @@ interface SongsFiltersProps {
   opened: boolean
   onClose: () => void
   filters: Map<string, Filter>
-  setFilters: (filters: Map<string, Filter>) => void
+  setFilters: (filters: Map<string, Filter>, withSearchParams?: boolean) => void
   isSongsLoading?: boolean
 }
 
@@ -41,10 +41,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
   }, [])
 
   const searchBy = useSearchBy(filters)
-  const { data: filtersMetadata } = useGetSongFiltersMetadataQuery(
-    { searchBy: searchBy },
-    { skip: searchBy.length === 0 }
-  )
+  const { data: filtersMetadata } = useGetSongFiltersMetadataQuery({ searchBy: searchBy })
 
   const [internalFilters, setInternalFilters] = useState(filters)
   const initialFilters = useFiltersMetadata(
@@ -95,14 +92,14 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         <AlbumSelect
           album={album}
           setAlbum={setAlbum}
-          ids={filtersMetadata?.albumIds ?? initialFiltersMetadata?.albumIds}
+          ids={filtersMetadata?.albumIds}
           disabled={isLoading}
         />
 
         <ArtistSelect
           artist={artist}
           setArtist={setArtist}
-          ids={filtersMetadata?.artistIds ?? initialFiltersMetadata?.artistIds}
+          ids={filtersMetadata?.artistIds}
           disabled={isLoading || album !== null}
         />
 
@@ -203,9 +200,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           setDifficulties={(ids) => {
             handleValueChange(SongProperty.Difficulty + FilterOperator.In, ids as Difficulty[])
           }}
-          availableDifficulties={
-            filtersMetadata?.difficulties ?? initialFiltersMetadata?.difficulties
-          }
+          availableDifficulties={filtersMetadata?.difficulties}
           disabled={isLoading}
         />
         <DoubleCheckbox
@@ -233,7 +228,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           setIds={(ids) => {
             handleValueChange(SongProperty.GuitarTuningId + FilterOperator.In, ids as string[])
           }}
-          availableIds={filtersMetadata?.guitarTuningIds ?? initialFiltersMetadata?.guitarTuningIds}
+          availableIds={filtersMetadata?.guitarTuningIds}
           disabled={isLoading}
         />
         <DoubleCheckbox
@@ -263,7 +258,7 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           setIds={(ids) => {
             handleValueChange(SongProperty.InstrumentId + FilterOperator.In, ids as string[])
           }}
-          availableIds={filtersMetadata?.instrumentIds ?? initialFiltersMetadata?.instrumentIds}
+          availableIds={filtersMetadata?.instrumentIds}
           disabled={isLoading}
         />
 

@@ -23,8 +23,8 @@ describe('use Search Param Filters', () => {
     )
 
     const [filters] = result.current
-    expect(filters.get('name=')).toEqual(initialFilters[0])
-    expect(filters.get('age>')).toEqual(initialFilters[1])
+    expect(filters.get('name=')).toStrictEqual(initialFilters[0])
+    expect(filters.get('age>')).toStrictEqual(initialFilters[1])
   })
 
   it('should initialize with active filters taking precedence', () => {
@@ -35,13 +35,33 @@ describe('use Search Param Filters', () => {
     )
 
     const [filters] = result.current
-    expect(filters.get('name=')).toEqual(activeFilters.get('name='))
-    expect(filters.get('age>')).toEqual(
-      expect.objectContaining({ property: 'age', operator: FilterOperator.GreaterThan })
-    )
+    expect(filters.get('name=')).toStrictEqual(activeFilters.get('name='))
+    expect(filters.get('age>')).toStrictEqual(initialFilters[1])
   })
 
-  it('should update both filters and search params when setting new filters', () => {
+  it('should re-initialize state when active filters change', () => {
+    const { result, rerender } = renderHook(
+      ({ activeFilters }) =>
+        useSearchParamFilters({
+          initialFilters,
+          activeFilters: activeFilters,
+          setSearchParams: vi.fn()
+        }),
+      { initialProps: { activeFilters: new Map() } }
+    )
+
+    const [filters] = result.current
+    expect(filters.get('name=')).toStrictEqual(initialFilters[0])
+    expect(filters.get('age>')).toStrictEqual(initialFilters[1])
+
+    rerender({ activeFilters: activeFilters })
+
+    const [rerenderedFilters] = result.current
+    expect(rerenderedFilters.get('name=')).toStrictEqual(activeFilters.get('name='))
+    expect(rerenderedFilters.get('age>')).toStrictEqual(initialFilters[1])
+  })
+
+  it('should update filters and search params when setting new filters', () => {
     const setSearchParams = vi.fn()
 
     const { result } = renderHook(() =>
@@ -62,12 +82,57 @@ describe('use Search Param Filters', () => {
     expect(updatedFilters.get('age>').value).toBe(25)
 
     // Should update search params with only active filters
-    expect(setSearchParams).toHaveBeenCalled()
+    expect(setSearchParams).toHaveBeenCalledOnce()
     const searchParamsUpdate = setSearchParams.mock.calls[0][0]
     const updatedSearchParams = searchParamsUpdate({})
     expect(updatedSearchParams.activeFilters.size).toBe(2)
     expect(updatedSearchParams.activeFilters.get('name=').value).toBe('Alice')
     expect(updatedSearchParams.activeFilters.get('age>').value).toBe(25)
+  })
+
+  it('should update current page on search params when there is one', () => {
+    const setSearchParams = vi.fn()
+
+    const { result } = renderHook(() =>
+      useSearchParamFilters({ initialFilters, activeFilters, setSearchParams })
+    )
+    const [, setFilters] = result.current
+
+    const newFilters = new Map<string, Filter>([
+      ['name=', { ...activeFilters.get('name='), value: 'Alice' }],
+      ['age>', { property: 'age', operator: FilterOperator.GreaterThan, value: 25, isSet: true }]
+    ])
+
+    act(() => setFilters(newFilters))
+
+    expect(setSearchParams).toHaveBeenCalledOnce()
+    const searchParamsUpdate = setSearchParams.mock.calls[0][0]
+    const updatedSearchParams = searchParamsUpdate({})
+    expect(updatedSearchParams.activeFilters.size).toBe(2)
+    expect(updatedSearchParams.activeFilters.get('name=').value).toBe('Alice')
+    expect(updatedSearchParams.activeFilters.get('age>').value).toBe(25)
+  })
+
+  it('should update only filters when setting new filters and search params is disabled', () => {
+    const setSearchParams = vi.fn()
+
+    const { result } = renderHook(() =>
+      useSearchParamFilters({ initialFilters, activeFilters, setSearchParams })
+    )
+    const [, setFilters] = result.current
+
+    const newFilters = new Map<string, Filter>([
+      ['name=', { ...activeFilters.get('name='), value: 'Alice' }],
+      ['age>', { property: 'age', operator: FilterOperator.GreaterThan, value: 25, isSet: true }]
+    ])
+
+    act(() => setFilters(newFilters, false))
+
+    const [updatedFilters] = result.current
+    expect(updatedFilters.get('name=').value).toBe('Alice')
+    expect(updatedFilters.get('age>').value).toBe(25)
+
+    expect(setSearchParams).not.toHaveBeenCalled()
   })
 
   it('should only include filters isSet true in search params', () => {
