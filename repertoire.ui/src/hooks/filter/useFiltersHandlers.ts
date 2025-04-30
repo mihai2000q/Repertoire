@@ -74,5 +74,27 @@ export default function useFiltersHandlers(
     return [date1, date2]
   }
 
-  return { handleIsSetChange, handleValueChange, handleDoubleValueChange, getDateRangeValues }
+  function getSliderValues(key1: string, key2: string): [number, number] {
+    const value1 = filters.get(key1).value
+    const value2 = filters.get(key2).value
+
+    let number1 = (value1 ?? 0) as number
+    let number2 = (value2 ?? 0) as number
+
+    if (number1 === number2 && number2 === 100) {
+      number1--
+    } else if (value1 === value2) {
+      number2++
+    }
+
+    return [number1, number2]
+  }
+
+  return {
+    handleIsSetChange,
+    handleValueChange,
+    handleDoubleValueChange,
+    getDateRangeValues,
+    getSliderValues
+  }
 }

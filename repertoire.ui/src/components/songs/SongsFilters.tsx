@@ -53,8 +53,13 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
     songsFiltersMetadataMap
   )
 
-  const { handleIsSetChange, handleValueChange, handleDoubleValueChange, getDateRangeValues } =
-    useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
+  const {
+    handleIsSetChange,
+    handleValueChange,
+    handleDoubleValueChange,
+    getDateRangeValues,
+    getSliderValues
+  } = useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
 
   const [album, setAlbum] = useState<AlbumSearch>(null)
   useDidUpdate(() => {
@@ -369,12 +374,10 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
             thumbFromLabel={'confidence-from'}
             thumbToLabel={'confidence-to'}
             label={(value) => `${value}%`}
-            value={[
-              (internalFilters.get(SongProperty.Confidence + FilterOperator.GreaterThanOrEqual)
-                .value as number) ?? 0,
-              (internalFilters.get(SongProperty.Confidence + FilterOperator.LessThanOrEqual)
-                .value as number) ?? 100
-            ]}
+            value={getSliderValues(
+              SongProperty.Confidence + FilterOperator.GreaterThanOrEqual,
+              SongProperty.Confidence + FilterOperator.LessThanOrEqual
+            )}
             onChange={(values) =>
               handleDoubleValueChange(
                 SongProperty.Confidence + FilterOperator.GreaterThanOrEqual,

@@ -51,8 +51,13 @@ function ArtistsFilters({
     artistsFiltersMetadataMap
   )
 
-  const { handleIsSetChange, handleValueChange, handleDoubleValueChange, getDateRangeValues } =
-    useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
+  const {
+    handleIsSetChange,
+    handleValueChange,
+    handleDoubleValueChange,
+    getDateRangeValues,
+    getSliderValues
+  } = useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
 
   return (
     <FiltersDrawer
@@ -187,12 +192,10 @@ function ArtistsFilters({
             thumbFromLabel={'confidence-from'}
             thumbToLabel={'confidence-to'}
             label={(value) => `${value}%`}
-            value={[
-              (internalFilters.get(ArtistProperty.Confidence + FilterOperator.GreaterThanOrEqual)
-                .value as number) ?? 0,
-              (internalFilters.get(ArtistProperty.Confidence + FilterOperator.LessThanOrEqual)
-                .value as number) ?? 100
-            ]}
+            value={getSliderValues(
+              ArtistProperty.Confidence + FilterOperator.GreaterThanOrEqual,
+              ArtistProperty.Confidence + FilterOperator.LessThanOrEqual
+            )}
             onChange={(values) =>
               handleDoubleValueChange(
                 ArtistProperty.Confidence + FilterOperator.GreaterThanOrEqual,

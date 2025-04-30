@@ -54,8 +54,13 @@ function AlbumsFilters({
     albumsFiltersMetadataMap
   )
 
-  const { handleIsSetChange, handleValueChange, handleDoubleValueChange, getDateRangeValues } =
-    useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
+  const {
+    handleIsSetChange,
+    handleValueChange,
+    handleDoubleValueChange,
+    getDateRangeValues,
+    getSliderValues
+  } = useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
 
   const [artist, setArtist] = useState<ArtistSearch>(null)
   useDidUpdate(() => {
@@ -176,12 +181,10 @@ function AlbumsFilters({
             thumbFromLabel={'confidence-from'}
             thumbToLabel={'confidence-to'}
             label={(value) => `${value}%`}
-            value={[
-              (internalFilters.get(AlbumProperty.Confidence + FilterOperator.GreaterThanOrEqual)
-                .value as number) ?? 0,
-              (internalFilters.get(AlbumProperty.Confidence + FilterOperator.LessThanOrEqual)
-                .value as number) ?? 100
-            ]}
+            value={getSliderValues(
+              AlbumProperty.Confidence + FilterOperator.GreaterThanOrEqual,
+              AlbumProperty.Confidence + FilterOperator.LessThanOrEqual
+            )}
             onChange={(values) =>
               handleDoubleValueChange(
                 AlbumProperty.Confidence + FilterOperator.GreaterThanOrEqual,

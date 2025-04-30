@@ -159,4 +159,54 @@ describe('use Filters Handlers', () => {
       expect(date2.getDate()).toBe(2)
     })
   })
+
+  describe('get Slider Values', () => {
+    it('should return numbers for valid values', () => {
+      const initialState = new Map<string, Filter>([
+        ['age>', { ...initialFilters.get('age>'), value: 10 }],
+        ['age<', { ...initialFilters.get('age<'), value: 15 }]
+      ])
+      const { result } = render(initialState)
+
+      const [number1, number2] = result.current.getSliderValues('age>', 'age<')
+      expect(number1).toBe(10)
+      expect(number2).toBe(15)
+    })
+
+    it('should return 0 for null values', () => {
+      const initialState = new Map<string, Filter>([
+        ['age>', { ...initialFilters.get('age>') }],
+        ['age<', { ...initialFilters.get('age<') }]
+      ])
+      const { result } = render(initialState)
+
+      const [number1, number2] = result.current.getSliderValues('age>', 'age<')
+      expect(number1).toBe(0)
+      expect(number2).toBe(0)
+    })
+
+    it('should adjust numbers when they are the same and they are 100', () => {
+      const initialState = new Map<string, Filter>([
+        ['age>', { ...initialFilters.get('age>'), value: 100 }],
+        ['age<', { ...initialFilters.get('age<'), value: 100 }]
+      ])
+      const { result } = render(initialState)
+
+      const [number1, number2] = result.current.getSliderValues('age>', 'age<')
+      expect(number1).toBe(99)
+      expect(number2).toBe(100)
+    })
+
+    it('should adjust numbers when they are the same', () => {
+      const initialState = new Map<string, Filter>([
+        ['age>', { ...initialFilters.get('age>'), value: 15 }],
+        ['age<', { ...initialFilters.get('age<'), value: 15 }]
+      ])
+      const { result } = render(initialState)
+
+      const [number1, number2] = result.current.getSliderValues('age>', 'age<')
+      expect(number1).toBe(15)
+      expect(number2).toBe(16)
+    })
+  })
 })
