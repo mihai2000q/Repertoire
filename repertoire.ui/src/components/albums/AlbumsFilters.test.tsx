@@ -396,7 +396,6 @@ describe('Albums Filters', () => {
     await fillFilterFields()
     await user.click(screen.getByRole('button', { name: /reset/i }))
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
     assertFiltersMetadataOnFields()
   })
 

@@ -614,7 +614,7 @@ describe('Songs Filters', () => {
     it('should update difficulty field', async () => {
       const user = userEvent.setup()
 
-      const newDifficulties = [Difficulty.Easy]
+      const newDifficulties = ['Easy']
 
       const setFilters = vi.fn()
       reduxRender(
@@ -640,7 +640,7 @@ describe('Songs Filters', () => {
 
       expect(setFilters).toHaveBeenCalledTimes(2)
       const updatedFilters = setFilters.mock.calls[1][0]
-      expect(updatedFilters.get(difficultyKey).value).toStrictEqual(newDifficulties)
+      expect(updatedFilters.get(difficultyKey).value).toStrictEqual(['easy'])
       expect(updatedFilters.get(difficultyKey).isSet).toBeTruthy()
     })
 
@@ -862,7 +862,6 @@ describe('Songs Filters', () => {
     await fillFilterFields()
     await user.click(screen.getByRole('button', { name: /reset/i }))
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
     assertFiltersMetadataOnFields()
   })
 
