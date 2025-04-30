@@ -5,13 +5,6 @@ import { AlbumFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const albumsFilters: Filter[] = [
   {
-    property: AlbumProperty.ArtistId,
-    operator: FilterOperator.Equal,
-    isSet: false,
-    value: undefined
-  },
-
-  {
     property: AlbumProperty.ReleaseDate,
     operator: FilterOperator.GreaterThanOrEqual,
     isSet: false

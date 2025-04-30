@@ -1,8 +1,6 @@
 import Filter from '../../types/Filter.ts'
 import { RangeSlider, Stack, Text } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { ArtistSearch } from '../../types/models/Search.ts'
-import ArtistSelect from '../@ui/form/select/ArtistSelect.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarCheck, IconCalendarRepeat } from '@tabler/icons-react'
 import FiltersDrawer from '../@ui/drawer/FiltersDrawer.tsx'
@@ -13,7 +11,6 @@ import {
 import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import { albumsFiltersMetadataMap } from '../../data/albums/albumsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
-import { useDidUpdate } from '@mantine/hooks'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../hooks/filter/useFiltersHandlers.ts'
 import NumberInputRange from '../@ui/form/input/NumberInputRange.tsx'
@@ -62,11 +59,6 @@ function AlbumsFilters({
     getSliderValues
   } = useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
 
-  const [artist, setArtist] = useState<ArtistSearch>(null)
-  useDidUpdate(() => {
-    handleValueChange(AlbumProperty.ArtistId + FilterOperator.Equal, artist?.id)
-  }, [artist])
-
   return (
     <FiltersDrawer
       opened={opened}
@@ -77,16 +69,8 @@ function AlbumsFilters({
       setInternalFilters={setInternalFilters}
       initialFilters={initialFilters}
       isLoading={isAlbumsLoading}
-      additionalReset={() => setArtist(null)}
     >
       <Stack px={'lg'} pb={'lg'}>
-        <ArtistSelect
-          artist={artist}
-          setArtist={setArtist}
-          ids={filtersMetadata?.artistIds}
-          disabled={isLoading}
-        />
-
         <DatePickerInput
           flex={1}
           type={'range'}

@@ -9,40 +9,11 @@ import SongProperty from '../../types/enums/SongProperty.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import Filter from '../../types/Filter.ts'
 import { userEvent } from '@testing-library/user-event'
-import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import { AlbumSearch, ArtistSearch } from '../../types/models/Search.ts'
-import SearchType from '../../types/enums/SearchType.ts'
 import dayjs from 'dayjs'
 import Difficulty from '../../types/enums/Difficulty.ts'
 import { GuitarTuning, Instrument } from '../../types/models/Song.ts'
 
 describe('Songs Filters', () => {
-  const albums: AlbumSearch[] = [
-    {
-      id: '1',
-      title: 'Album 1',
-      type: SearchType.Album
-    },
-    {
-      id: '2',
-      title: 'Album 2',
-      type: SearchType.Album
-    }
-  ]
-
-  const artists: ArtistSearch[] = [
-    {
-      id: '1',
-      name: 'Artist 1',
-      type: SearchType.Artist
-    },
-    {
-      id: '2',
-      name: 'Artist 2',
-      type: SearchType.Artist
-    }
-  ]
-
   const guitarTunings: GuitarTuning[] = [
     {
       id: '1',
@@ -66,8 +37,8 @@ describe('Songs Filters', () => {
   ]
 
   const filtersMetadata: SongFiltersMetadata = {
-    albumIds: albums.map((album) => album.id),
-    artistIds: artists.map((artist) => artist.id),
+    albumIds: [],
+    artistIds: [],
 
     minReleaseDate: '1997-12-24',
     maxReleaseDate: '2024-11-11',
@@ -105,21 +76,6 @@ describe('Songs Filters', () => {
     http.get('/songs/filters-metadata', async () => {
       return HttpResponse.json(filtersMetadata)
     }),
-    http.get('/search', async (req) => {
-      const type = new URL(req.request.url).searchParams.get('type')
-      if (type === SearchType.Album) {
-        const response: WithTotalCountResponse<AlbumSearch> = {
-          models: albums,
-          totalCount: albums.length
-        }
-        return HttpResponse.json(response)
-      }
-      const response: WithTotalCountResponse<ArtistSearch> = {
-        models: artists,
-        totalCount: artists.length
-      }
-      return HttpResponse.json(response)
-    }),
     http.get('/songs/guitar-tunings', async () => {
       return HttpResponse.json(guitarTunings)
     }),
@@ -137,9 +93,6 @@ describe('Songs Filters', () => {
   const initialFilters = new Map<string, Filter>(
     songsFilters.map((filter) => [filter.property + filter.operator, filter])
   )
-
-  const albumKey = SongProperty.AlbumId + FilterOperator.Equal
-  const artistKey = SongProperty.ArtistId + FilterOperator.Equal
 
   const equalIsRecordedKey = SongProperty.IsRecorded + FilterOperator.Equal
   const notEqualIsRecordedKey = SongProperty.IsRecorded + FilterOperator.NotEqual
@@ -190,28 +143,6 @@ describe('Songs Filters', () => {
   it('should render', async () => {
     const setFilters = vi.fn()
 
-    let capturedAlbumIds: string[]
-    let capturedArtistIds: string[]
-    server.use(
-      http.get('/search', async (req) => {
-        const searchParams = new URL(req.request.url).searchParams
-        if (searchParams.get('type') === SearchType.Album) {
-          capturedAlbumIds = searchParams.getAll('ids')
-          const response: WithTotalCountResponse<AlbumSearch> = {
-            models: albums,
-            totalCount: albums.length
-          }
-          return HttpResponse.json(response)
-        }
-        capturedArtistIds = searchParams.getAll('ids')
-        const response: WithTotalCountResponse<ArtistSearch> = {
-          models: artists,
-          totalCount: artists.length
-        }
-        return HttpResponse.json(response)
-      })
-    )
-
     const [{ rerender }] = reduxRender(
       <SongFilters
         opened={true}
@@ -222,9 +153,6 @@ describe('Songs Filters', () => {
     )
 
     // initially, fields are disabled
-    expect(screen.getByRole('textbox', { name: /album/i })).toBeDisabled()
-    expect(screen.getByRole('textbox', { name: /artist/i })).toBeDisabled()
-
     expect(screen.getByRole('button', { name: /release date/i })).toBeDisabled()
     expect(
       within(screen.getByLabelText(/has release date/i)).getByRole('checkbox', { name: /yes/i })
@@ -261,6 +189,13 @@ describe('Songs Filters', () => {
 
     expect(screen.getByRole('textbox', { name: /instruments/i })).toBeDisabled()
 
+    expect(
+      within(screen.getByLabelText(/is recorded/i)).getByRole('checkbox', { name: /yes/i })
+    ).toBeDisabled()
+    expect(
+      within(screen.getByLabelText(/is recorded/i)).getByRole('checkbox', { name: /no/i })
+    ).toBeDisabled()
+
     expect(screen.getByRole('textbox', { name: /min sections/i })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: /max sections/i })).toBeDisabled()
 
@@ -296,13 +231,7 @@ describe('Songs Filters', () => {
     // then set filters is called to set the filters' metadata
     await waitFor(() => expect(setFilters).toHaveBeenCalledOnce())
 
-    expect(capturedAlbumIds).toStrictEqual(filtersMetadata.albumIds)
-    expect(capturedArtistIds).toStrictEqual(filtersMetadata.artistIds)
-
     const updatedFilters = setFilters.mock.calls[0][0]
-    expect(updatedFilters.get(albumKey).isSet).toBeFalsy()
-    expect(updatedFilters.get(artistKey).isSet).toBeFalsy()
-
     expect(updatedFilters.get(minReleaseDateKey).value).toBe(filtersMetadata.minReleaseDate)
     expect(updatedFilters.get(minReleaseDateKey).isSet).toBeFalsy()
     expect(updatedFilters.get(maxReleaseDateKey).value).toBe(filtersMetadata.maxReleaseDate)
@@ -326,6 +255,9 @@ describe('Songs Filters', () => {
     expect(updatedFilters.get(isNotNullGuitarTuningKey).isSet).toBeFalsy()
 
     expect(updatedFilters.get(instrumentKey).isSet).toBeFalsy()
+
+    expect(updatedFilters.get(equalIsRecordedKey).isSet).toBeFalsy()
+    expect(updatedFilters.get(notEqualIsRecordedKey).isSet).toBeFalsy()
 
     expect(updatedFilters.get(minSectionsKey).value).toBe(filtersMetadata.minSectionsCount)
     expect(updatedFilters.get(minSectionsKey).isSet).toBeFalsy()
@@ -551,68 +483,6 @@ describe('Songs Filters', () => {
       expect(updatedFilters.get(minProgressKey).isSet).toBeTruthy()
       expect(updatedFilters.get(maxProgressKey).value).toBe(newMaxProgressValue)
       expect(updatedFilters.get(maxProgressKey).isSet).toBeTruthy()
-    })
-
-    it('should update album field', async () => {
-      const user = userEvent.setup()
-
-      const newAlbum = albums[0]
-
-      const setFilters = vi.fn()
-      reduxRender(
-        <SongFilters
-          opened={true}
-          onClose={vi.fn()}
-          filters={initialFilters}
-          setFilters={setFilters}
-        />
-      )
-
-      // wait for filters metadata to be initialized
-      await waitFor(() =>
-        expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
-      )
-
-      await user.click(screen.getByRole('textbox', { name: /album/i }))
-      await user.click(await screen.findByRole('option', { name: newAlbum.title }))
-
-      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
-
-      expect(setFilters).toHaveBeenCalledTimes(2)
-      const updatedFilters = setFilters.mock.calls[1][0]
-      expect(updatedFilters.get(albumKey).value).toStrictEqual(newAlbum.id)
-      expect(updatedFilters.get(albumKey).isSet).toBeTruthy()
-    })
-
-    it('should update artist field', async () => {
-      const user = userEvent.setup()
-
-      const newArtist = artists[0]
-
-      const setFilters = vi.fn()
-      reduxRender(
-        <SongFilters
-          opened={true}
-          onClose={vi.fn()}
-          filters={initialFilters}
-          setFilters={setFilters}
-        />
-      )
-
-      // wait for filters metadata to be initialized
-      await waitFor(() =>
-        expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
-      )
-
-      await user.click(screen.getByRole('textbox', { name: /artist/i }))
-      await user.click(await screen.findByRole('option', { name: newArtist.name }))
-
-      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
-
-      expect(setFilters).toHaveBeenCalledTimes(2)
-      const updatedFilters = setFilters.mock.calls[1][0]
-      expect(updatedFilters.get(artistKey).value).toStrictEqual(newArtist.id)
-      expect(updatedFilters.get(artistKey).isSet).toBeTruthy()
     })
 
     it('should update is recorded field', async () => {

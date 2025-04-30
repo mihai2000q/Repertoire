@@ -4,18 +4,6 @@ import FilterOperator from '../../types/enums/FilterOperator.ts'
 import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const songsFilters: Filter[] = [
-  { property: SongProperty.AlbumId, operator: FilterOperator.Equal, isSet: false },
-
-  { property: SongProperty.ArtistId, operator: FilterOperator.Equal, isSet: false },
-
-  { property: SongProperty.IsRecorded, operator: FilterOperator.Equal, isSet: false, value: true },
-  {
-    property: SongProperty.IsRecorded,
-    operator: FilterOperator.NotEqual,
-    isSet: false,
-    value: true
-  },
-
   { property: SongProperty.ReleaseDate, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.ReleaseDate, operator: FilterOperator.LessThanOrEqual, isSet: false },
   { property: SongProperty.ReleaseDate, operator: FilterOperator.IsNull, isSet: false },
@@ -35,6 +23,14 @@ const songsFilters: Filter[] = [
   { property: SongProperty.GuitarTuningId, operator: FilterOperator.IsNotNull, isSet: false },
 
   { property: SongProperty.InstrumentId, operator: FilterOperator.In, isSet: false },
+
+  { property: SongProperty.IsRecorded, operator: FilterOperator.Equal, isSet: false, value: true },
+  {
+    property: SongProperty.IsRecorded,
+    operator: FilterOperator.NotEqual,
+    isSet: false,
+    value: true
+  },
 
   { property: SongProperty.Sections, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.Sections, operator: FilterOperator.LessThanOrEqual, isSet: false },

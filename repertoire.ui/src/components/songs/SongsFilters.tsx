@@ -1,8 +1,6 @@
 import Filter from '../../types/Filter.ts'
 import { RangeSlider, Stack, Text } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import { AlbumSearch, ArtistSearch } from '../../types/models/Search.ts'
-import ArtistSelect from '../@ui/form/select/ArtistSelect.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarCheck, IconCalendarRepeat } from '@tabler/icons-react'
 import FiltersDrawer from '../@ui/drawer/FiltersDrawer.tsx'
@@ -13,12 +11,10 @@ import {
 import SongProperty from '../../types/enums/SongProperty.ts'
 import { songsFiltersMetadataMap } from '../../data/songs/songsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
-import { useDidUpdate } from '@mantine/hooks'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../hooks/filter/useFiltersHandlers.ts'
 import NumberInputRange from '../@ui/form/input/NumberInputRange.tsx'
 import DoubleCheckbox from '../@ui/filter/DoubleCheckbox.tsx'
-import AlbumSelect from '../@ui/form/select/AlbumSelect.tsx'
 import DifficultyMultiSelect from '../@ui/form/select/multi/DifficultyMultiSelect.tsx'
 import Difficulty from '../../types/enums/Difficulty.ts'
 import GuitarTuningMultiSelect from '../@ui/form/select/multi/GuitarTuningMultiSelect.tsx'
@@ -61,23 +57,6 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
     getSliderValues
   } = useFiltersHandlers(internalFilters, setInternalFilters, initialFilters)
 
-  const [album, setAlbum] = useState<AlbumSearch>(null)
-  useDidUpdate(() => {
-    handleDoubleValueChange(
-      SongProperty.AlbumId + FilterOperator.Equal,
-      album?.id,
-      SongProperty.ArtistId + FilterOperator.Equal,
-      album ? undefined : artist?.id
-    )
-    setArtist(album?.artist as ArtistSearch | undefined)
-  }, [album])
-
-  const [artist, setArtist] = useState<ArtistSearch>(null)
-  useDidUpdate(() => {
-    if (album) return
-    handleValueChange(SongProperty.ArtistId + FilterOperator.Equal, artist?.id)
-  }, [artist])
-
   return (
     <FiltersDrawer
       opened={opened}
@@ -88,41 +67,8 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
       setInternalFilters={setInternalFilters}
       initialFilters={initialFilters}
       isLoading={isSongsLoading}
-      additionalReset={() => {
-        setArtist(null)
-        setAlbum(null)
-      }}
     >
       <Stack px={'lg'} pb={'lg'}>
-        <AlbumSelect
-          album={album}
-          setAlbum={setAlbum}
-          ids={filtersMetadata?.albumIds}
-          disabled={isLoading}
-        />
-
-        <ArtistSelect
-          artist={artist}
-          setArtist={setArtist}
-          ids={filtersMetadata?.artistIds}
-          disabled={isLoading || album !== null}
-        />
-
-        <DoubleCheckbox
-          title={'Is Recorded?'}
-          label1={'Yes'}
-          checked1={internalFilters.get(SongProperty.IsRecorded + FilterOperator.Equal).isSet}
-          onChange1={(value) =>
-            handleIsSetChange(SongProperty.IsRecorded + FilterOperator.Equal, value)
-          }
-          label2={'No'}
-          checked2={internalFilters.get(SongProperty.IsRecorded + FilterOperator.NotEqual).isSet}
-          onChange2={(value) =>
-            handleIsSetChange(SongProperty.IsRecorded + FilterOperator.NotEqual, value)
-          }
-          disabled={isLoading}
-        />
-
         <DatePickerInput
           flex={1}
           type={'range'}
@@ -264,6 +210,21 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
             handleValueChange(SongProperty.InstrumentId + FilterOperator.In, ids as string[])
           }}
           availableIds={filtersMetadata?.instrumentIds}
+          disabled={isLoading}
+        />
+
+        <DoubleCheckbox
+          title={'Is Recorded?'}
+          label1={'Yes'}
+          checked1={internalFilters.get(SongProperty.IsRecorded + FilterOperator.Equal).isSet}
+          onChange1={(value) =>
+            handleIsSetChange(SongProperty.IsRecorded + FilterOperator.Equal, value)
+          }
+          label2={'No'}
+          checked2={internalFilters.get(SongProperty.IsRecorded + FilterOperator.NotEqual).isSet}
+          onChange2={(value) =>
+            handleIsSetChange(SongProperty.IsRecorded + FilterOperator.NotEqual, value)
+          }
           disabled={isLoading}
         />
 
