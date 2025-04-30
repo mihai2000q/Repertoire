@@ -286,7 +286,7 @@ describe('Add Existing Artist Songs Modal', () => {
     await user.click(await screen.findByRole('checkbox', { name: songToNotDeselect }))
     await user.click(await screen.findByRole('checkbox', { name: songToDeselect }))
 
-    // search for the first song, so that second one disappears
+    // search for the first song, so that the second one disappears
     await user.type(searchBox, songToNotDeselect)
 
     await waitFor(() => {

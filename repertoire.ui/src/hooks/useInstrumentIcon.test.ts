@@ -10,7 +10,7 @@ describe('use Instrument Icon', () => {
     expect(result.current('Voice')).not.toBeUndefined()
     expect(result.current('Voice')).not.toBeNull()
 
-    // return specific icon with instrument type
+    // return specific icon with an instrument type
     const instrument: Instrument = {
       id: '1',
       name: 'Electric Guitar'

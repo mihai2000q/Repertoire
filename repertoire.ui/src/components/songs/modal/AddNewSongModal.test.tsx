@@ -152,7 +152,8 @@ describe('Add New Song Modal', () => {
 
       reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something') // to validate and go to next step
+      // to validate and go to the next step
+      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something')
       await user.click(screen.getByRole('button', { name: /second step/i }))
 
       shouldRender()
@@ -182,7 +183,8 @@ describe('Add New Song Modal', () => {
 
       reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something') // to validate and go to next step
+      // to validate and go to next step
+      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something')
       await user.click(screen.getByRole('button', { name: /final step/i }))
 
       shouldRender()
@@ -287,14 +289,14 @@ describe('Add New Song Modal', () => {
 
       expect(screen.getByRole('button', { name: 'remove-section' })).toBeInTheDocument()
 
-      // add second section
+      // add the second section
       await user.click(screen.getByRole('button', { name: /add section/i }))
       expect(screen.queryAllByRole('textbox', { name: /name/i })).toHaveLength(2)
 
-      // populate first section's name
+      // populate the first section's name
       await user.type(screen.queryAllByRole('textbox', { name: /name/i })[0], 'something')
 
-      // remove first section
+      // remove the first section
       await user.click(screen.queryAllByRole('button', { name: 'remove-section' })[0])
       expect(screen.queryAllByRole('textbox', { name: /name/i })).toHaveLength(1)
       expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('') // not the one from above
