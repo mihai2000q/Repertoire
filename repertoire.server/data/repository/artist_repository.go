@@ -124,7 +124,7 @@ func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetada
 		Joins("LEFT JOIN (?) AS ss ON ss.artist_id = artists.id", a.getSongsSubQuery(userID)).
 		Where("user_id = ?", userID)
 
-	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundArtistsFields)
 	database.SearchBy(tx, searchBy)
 	return tx.Scan(&metadata).Error
 }

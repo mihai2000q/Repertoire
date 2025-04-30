@@ -148,7 +148,8 @@ func (s songRepository) GetFiltersMetadata(
 		Joins("LEFT JOIN song_sections ON song_sections.song_id = songs.id").
 		Where("user_id = ?", userID)
 
-	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
+	searchBy = s.addInstrumentsFilter(tx, searchBy)
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundSongsFields)
 	database.SearchBy(tx, searchBy)
 	err := tx.Scan(&metadata).Error
 	if err != nil {
