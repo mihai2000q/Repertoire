@@ -20,7 +20,10 @@ interface DifficultyMultiSelectProps extends PillsInputProps {
   availableDifficulties?: Difficulty[]
 }
 
-const allDifficulties = Object.entries(Difficulty).map(([_, value]) => value)
+const allDifficultiesMap = new Map<Difficulty, string>([
+  ...(Object.entries(Difficulty).map(([key, value]) => [value, key]) as [Difficulty, string][])
+])
+const allDifficulties = Array.from(allDifficultiesMap.keys())
 
 function DifficultyMultiSelect({
   difficulties,
@@ -80,7 +83,7 @@ function DifficultyMultiSelect({
                   withRemoveButton
                   onRemove={() => handleValueRemove(diff)}
                 >
-                  {capitalizeFirstLetter(diff)}
+                  {allDifficultiesMap.get(diff)}
                 </Pill>
               ))
             ) : (
@@ -110,7 +113,7 @@ function DifficultyMultiSelect({
               <Combobox.Option value={diff} key={diff} active={difficulties.includes(diff)}>
                 <Group gap={6}>
                   {difficulties.includes(diff) && <IconCheck size={14} />}
-                  <Text fz={'sm'}>{capitalizeFirstLetter(diff)}</Text>
+                  <Text fz={'sm'}>{allDifficultiesMap.get(diff)}</Text>
                 </Group>
               </Combobox.Option>
             ))}
@@ -119,10 +122,6 @@ function DifficultyMultiSelect({
       </Combobox.Dropdown>
     </Combobox>
   )
-}
-
-function capitalizeFirstLetter(val: string) {
-  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 
 export default DifficultyMultiSelect
