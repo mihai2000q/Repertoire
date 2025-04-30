@@ -1,5 +1,6 @@
 import {
-  Box, Center,
+  Box,
+  Center,
   Combobox,
   Group,
   Input,
@@ -32,7 +33,9 @@ function InstrumentMultiSelect({
 }: InstrumentMultiSelectProps) {
   const { data, isLoading } = useGetInstrumentsQuery()
   const instruments = availableIds
-    ? data?.filter((instrument) => availableIds.includes(instrument.id))
+    ? data?.filter(
+        (instrument) => availableIds.includes(instrument.id) || ids.includes(instrument.id)
+      )
     : data
 
   const combobox = useCombobox({

@@ -30,7 +30,7 @@ function GuitarTuningMultiSelect({
 }: GuitarTuningMultiSelectProps) {
   const { data, isLoading } = useGetGuitarTuningsQuery()
   const guitarTunings = availableIds
-    ? data?.filter((tuning) => availableIds.includes(tuning.id))
+    ? data?.filter((tuning) => availableIds.includes(tuning.id) || ids.includes(tuning.id))
     : data
 
   const combobox = useCombobox({

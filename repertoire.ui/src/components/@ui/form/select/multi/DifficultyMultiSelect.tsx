@@ -20,6 +20,8 @@ interface DifficultyMultiSelectProps extends PillsInputProps {
   availableDifficulties?: Difficulty[]
 }
 
+const allDifficulties = Object.entries(Difficulty).map(([_, value]) => value)
+
 function DifficultyMultiSelect({
   difficulties,
   setDifficulties,
@@ -28,7 +30,11 @@ function DifficultyMultiSelect({
   availableDifficulties,
   ...others
 }: DifficultyMultiSelectProps) {
-  availableDifficulties ??= Object.entries(Difficulty).map(([_, value]) => value)
+  availableDifficulties = availableDifficulties
+    ? allDifficulties.filter(
+        (diff) => availableDifficulties.includes(diff) || difficulties.includes(diff)
+      )
+    : allDifficulties
 
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -67,9 +73,14 @@ function DifficultyMultiSelect({
         >
           <Pill.Group>
             {difficulties.length > 0 ? (
-              difficulties.map((d) => (
-                <Pill fz={'sm'} key={d} withRemoveButton onRemove={() => handleValueRemove(d)}>
-                  {difficulties?.find((d2) => d === d2)}
+              difficulties.map((diff) => (
+                <Pill
+                  fz={'sm'}
+                  key={diff}
+                  withRemoveButton
+                  onRemove={() => handleValueRemove(diff)}
+                >
+                  {capitalizeFirstLetter(diff)}
                 </Pill>
               ))
             ) : (
@@ -95,11 +106,11 @@ function DifficultyMultiSelect({
       <Combobox.Dropdown>
         <Combobox.Options>
           <ScrollArea.Autosize mah={150} scrollbarSize={5}>
-            {availableDifficulties?.map((diff) => (
+            {availableDifficulties.map((diff) => (
               <Combobox.Option value={diff} key={diff} active={difficulties.includes(diff)}>
                 <Group gap={6}>
                   {difficulties.includes(diff) && <IconCheck size={14} />}
-                  <Text fz={'sm'}>{diff}</Text>
+                  <Text fz={'sm'}>{capitalizeFirstLetter(diff)}</Text>
                 </Group>
               </Combobox.Option>
             ))}
@@ -108,6 +119,10 @@ function DifficultyMultiSelect({
       </Combobox.Dropdown>
     </Combobox>
   )
+}
+
+function capitalizeFirstLetter(val: string) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
 
 export default DifficultyMultiSelect
