@@ -17,11 +17,7 @@ export default function useFiltersHandlers(
     const initialFilter = initialFilters?.get(key)
     newFilters.set(key, {
       ...newFilters.get(key),
-      isSet:
-        (!initialFilter || initialFilter.value !== value) &&
-        value !== '' &&
-        value !== null &&
-        value !== undefined,
+      isSet: isSet(value, initialFilter),
       value: value
     })
     setFilters(newFilters)
@@ -38,22 +34,14 @@ export default function useFiltersHandlers(
     const initialFilter1 = initialFilters?.get(key1)
     newFilters.set(key1, {
       ...newFilters.get(key1),
-      isSet:
-        (!initialFilter1 || initialFilter1.value !== value1) &&
-        value1 !== '' &&
-        value1 !== null &&
-        value1 !== undefined,
+      isSet: isSet(value1, initialFilter1),
       value: value1
     })
 
     const initialFilter2 = initialFilters?.get(key2)
     newFilters.set(key2, {
       ...newFilters.get(key2),
-      isSet:
-        (!initialFilter2 || initialFilter2.value !== value2) &&
-        value2 !== '' &&
-        value2 !== null &&
-        value2 !== undefined,
+      isSet: isSet(value2, initialFilter2),
       value: value2
     })
 
@@ -97,4 +85,12 @@ export default function useFiltersHandlers(
     getDateRangeValues,
     getSliderValues
   }
+}
+
+function isSet(value: FilterValue, initialFilter: Filter): boolean {
+  return (!initialFilter || initialFilter.value !== value) &&
+    value !== '' &&
+    (!Array.isArray(value) || value.length !== 0) &&
+    value !== null &&
+    value !== undefined
 }
