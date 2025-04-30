@@ -69,7 +69,7 @@ function ArtistDrawer() {
       orderBy: albumsOrderBy,
       searchBy: albumsSearchBy
     },
-    { skip: !artistId }
+    { skip: !artistId || albumsSearchBy[0].includes('undefined') }
   )
 
   const songsOrderBy = useOrderBy([
@@ -88,7 +88,7 @@ function ArtistDrawer() {
       orderBy: songsOrderBy,
       searchBy: songsSearchBy
     },
-    { skip: !artistId }
+    { skip: !artistId || songsSearchBy[0].includes('undefined') }
   )
 
   useEffect(() => {
