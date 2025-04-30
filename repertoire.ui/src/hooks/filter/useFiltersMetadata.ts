@@ -21,7 +21,7 @@ export default function useFiltersMetadata<TMetadata>(
     filters.forEach((filter, key) => {
       const newInitialFilter: Filter = initialFiltersMetadata.has(key)
         ? { ...filter, value: initialFiltersMetadata.get(key), isSet: false }
-        : { ...filter, isSet: false }
+        : { ...filter, value: undefined, isSet: false }
 
       initialFilters.current.set(key, newInitialFilter)
     })

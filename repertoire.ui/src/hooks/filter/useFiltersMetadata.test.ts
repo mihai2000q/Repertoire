@@ -17,14 +17,7 @@ describe('use Filters Metadata', () => {
 
     const filtersMetadataMap = vi.fn()
     const { result } = renderHook(() =>
-      useFiltersMetadata(
-        null,
-        null,
-        filters,
-        setFilters,
-        setInternalFilters,
-        filtersMetadataMap
-      )
+      useFiltersMetadata(null, null, filters, setFilters, setInternalFilters, filtersMetadataMap)
     )
 
     expect(filtersMetadataMap).not.toHaveBeenCalled()
@@ -36,20 +29,11 @@ describe('use Filters Metadata', () => {
   it('should update initial filters when initial metadata changes', () => {
     const initialMetadata = { some: 'initial-metadata' }
 
-    const metadataMap: [string, FilterValue][] = [
-      ['name=', 'John'],
-    ]
+    const metadataMap: [string, FilterValue][] = [['name=', 'John']]
     const filtersMetadataMap = vi.fn().mockReturnValue(metadataMap)
 
     const { result } = renderHook(() =>
-      useFiltersMetadata(
-        initialMetadata,
-        null,
-        filters,
-        vi.fn(),
-        vi.fn(),
-        filtersMetadataMap
-      )
+      useFiltersMetadata(initialMetadata, null, filters, vi.fn(), vi.fn(), filtersMetadataMap)
     )
 
     expect(filtersMetadataMap).toHaveBeenCalledOnce()
@@ -59,16 +43,21 @@ describe('use Filters Metadata', () => {
     expect(result.current.size).toBe(4)
     expect(result.current.get('name=')).toStrictEqual({
       ...filters.get('name='),
-      value: 'John',
+      value: 'John'
     })
-    expect(result.current.get('age>')).toStrictEqual(filters.get('age>'))
+    expect(result.current.get('age>')).toStrictEqual({
+      ...filters.get('age>'),
+      value: undefined
+    })
     expect(result.current.get('age<')).toStrictEqual({
       ...filters.get('age<'),
-      isSet: false,
+      value: undefined,
+      isSet: false
     })
     expect(result.current.get('allergies_null')).toStrictEqual({
       ...filters.get('allergies_null'),
-      isSet: false,
+      value: undefined,
+      isSet: false
     })
   })
 
@@ -77,9 +66,7 @@ describe('use Filters Metadata', () => {
 
     const setFilters = vi.fn()
     const setInternalFilters = vi.fn()
-    const metadataMap: [string, FilterValue][] = [
-      ['name=', 'John'],
-    ]
+    const metadataMap: [string, FilterValue][] = [['name=', 'John']]
     const filtersMetadataMap = vi.fn().mockReturnValue(metadataMap)
 
     renderHook(() =>
@@ -108,7 +95,7 @@ describe('use Filters Metadata', () => {
     expect(expectedFilters.size).toBe(4)
     expect(expectedFilters.get('name=')).toStrictEqual({
       ...filters.get('name='),
-      value: 'John',
+      value: 'John'
     })
     expect(expectedFilters.get('age>')).toStrictEqual(filters.get('age>'))
     expect(expectedFilters.get('age<')).toStrictEqual(filters.get('age<'))
@@ -122,12 +109,8 @@ describe('use Filters Metadata', () => {
 
     const setFilters = vi.fn()
     const setInternalFilters = vi.fn()
-    const initialMetadataMap: [string, FilterValue][] = [
-      ['name=', 'J']
-    ]
-    const metadataMap: [string, FilterValue][] = [
-      ['name=', 'John'],
-    ]
+    const initialMetadataMap: [string, FilterValue][] = [['name=', 'J']]
+    const metadataMap: [string, FilterValue][] = [['name=', 'John']]
     const filtersMetadataMap = vi.fn((args) => {
       if (args === initialMetadata) return initialMetadataMap
       if (args === metadata) return metadataMap
@@ -152,7 +135,7 @@ describe('use Filters Metadata', () => {
     expect(result.current.size).toBe(4)
     expect(result.current.get('name=')).toStrictEqual({
       ...filters.get('name='),
-      value: 'J',
+      value: 'J'
     })
 
     // filters
@@ -166,7 +149,7 @@ describe('use Filters Metadata', () => {
     expect(expectedFilters.size).toBe(4)
     expect(expectedFilters.get('name=')).toStrictEqual({
       ...filters.get('name='),
-      value: 'John',
+      value: 'John'
     })
   })
 
