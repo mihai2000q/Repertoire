@@ -164,7 +164,7 @@ describe('Edit Song Description Modal', () => {
     await user.type(rehearsalsField, newRehearsals.toString())
 
     for (let i = section.confidence; i < newConfidence; i++) {
-      fireEvent.keyDown(confidenceField, { key: 'ArrowRight', code: 'ArrowRight' })
+      fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
     }
 
     expect(saveButton).not.toHaveAttribute('data-disabled')
@@ -325,7 +325,7 @@ describe('Edit Song Description Modal', () => {
     await user.click(await screen.findByText(section.bandMember?.name ?? bandMembers[0].name))
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
-    // change instrument
+    // change an instrument
     await user.click(instrumentField)
     await user.click(await screen.findByText(instruments[0].name))
     expect(saveButton).not.toHaveAttribute('data-disabled')
@@ -336,11 +336,11 @@ describe('Edit Song Description Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     // change confidence
-    fireEvent.keyDown(confidenceField, { key: 'ArrowRight', code: 'ArrowRight' })
+    fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
     expect(saveButton).not.toHaveAttribute('data-disabled')
 
     // reset confidence
-    fireEvent.keyDown(confidenceField, { key: 'ArrowLeft', code: 'ArrowLeft' })
+    fireEvent.keyDown(confidenceField, { key: 'ArrowLeft' })
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
   })
 

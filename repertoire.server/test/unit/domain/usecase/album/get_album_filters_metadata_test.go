@@ -3,6 +3,7 @@ package album
 import (
 	"errors"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -20,13 +21,14 @@ func TestGetAlbumFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnInternalS
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewGetAlbumFiltersMetadata(jwtService, albumRepository)
 
+	request := requests.GetAlbumFiltersMetadataRequest{}
 	token := "some token"
 
 	internalError := wrapper.InternalServerError(errors.New("some internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -43,18 +45,19 @@ func TestGetAlbumFiltersMetadata_WhenGetFails_ShouldReturnInternalServerErrorErr
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewGetAlbumFiltersMetadata(jwtService, albumRepository)
 
+	request := requests.GetAlbumFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("some internal error")
-	albumRepository.On("GetFiltersMetadata", new(model.AlbumFiltersMetadata), userID).
+	albumRepository.On("GetFiltersMetadata", new(model.AlbumFiltersMetadata), userID, request.SearchBy).
 		Return(internalError).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -72,6 +75,7 @@ func TestGetAlbumFiltersMetadata_WhenSuccessful_ShouldReturnAlbumFiltersMetadata
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewGetAlbumFiltersMetadata(jwtService, albumRepository)
 
+	request := requests.GetAlbumFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
@@ -80,12 +84,12 @@ func TestGetAlbumFiltersMetadata_WhenSuccessful_ShouldReturnAlbumFiltersMetadata
 	metadata := model.AlbumFiltersMetadata{
 		MinConfidence: float64(0),
 	}
-	albumRepository.On("GetFiltersMetadata", new(model.AlbumFiltersMetadata), userID).
+	albumRepository.On("GetFiltersMetadata", new(model.AlbumFiltersMetadata), userID, request.SearchBy).
 		Return(nil, &metadata).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Nil(t, errCode)

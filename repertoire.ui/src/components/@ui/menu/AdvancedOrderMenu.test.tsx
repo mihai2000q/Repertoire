@@ -1,17 +1,17 @@
 import Order from '../../../types/Order.ts'
-import AlbumProperty from '../../../utils/enums/AlbumProperty.ts'
+import AlbumProperty from '../../../types/enums/AlbumProperty.ts'
 import { mantineRender } from '../../../test-utils.tsx'
 import AdvancedOrderMenu from './AdvancedOrderMenu.tsx'
 import { ReactNode } from 'react'
 import { userEvent } from '@testing-library/user-event'
 import { screen, within } from '@testing-library/react'
-import OrderType from '../../../utils/enums/OrderType.ts'
+import OrderType from '../../../types/enums/OrderType.ts'
 
 describe('Advanced Order Menu', () => {
   const initialOrders: Order[] = [
     { label: 'Title', property: AlbumProperty.Title, checked: false, type: OrderType.Descending },
     { label: 'Release Date', property: AlbumProperty.ReleaseDate, nullable: true, checked: false },
-    { label: 'Artist', property: AlbumProperty.Artist, checked: true },
+    { label: 'Artist', property: AlbumProperty.ArtistName, checked: true },
     { label: 'Confidence', property: AlbumProperty.Confidence, type: OrderType.Ascending }
   ]
 

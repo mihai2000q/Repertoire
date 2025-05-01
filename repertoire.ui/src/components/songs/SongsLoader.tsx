@@ -2,7 +2,7 @@ import { Card, Skeleton, Stack } from '@mantine/core'
 
 function SongsLoader() {
   return Array.from(Array(40)).map((_, i) => (
-    <Card key={i} p={0} radius={'lg'} shadow={'md'}>
+    <Card key={i} p={0} radius={'lg'} shadow={'md'} pb={'md'}>
       <Stack gap={0}>
         <Skeleton radius={'16px'} w={'100%'} h={'unset'} style={{ aspectRatio: 8 / 7 }} />
 

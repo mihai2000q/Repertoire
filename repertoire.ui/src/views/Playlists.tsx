@@ -7,7 +7,7 @@ import {
   Card,
   Center,
   Group,
-  Loader,
+  Indicator,
   Pagination,
   SimpleGrid,
   Space,
@@ -21,24 +21,36 @@ import PlaylistsLoader from '../components/playlists/PlaylistsLoader.tsx'
 import PlaylistCard from '../components/playlists/PlaylistCard.tsx'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
-import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
 import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import { playlistPropertyIcons } from '../data/icons/playlistPropertyIcons.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
-import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
-import useOrderBy from '../hooks/useOrderBy.ts'
+import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
+import PlaylistsFilters from '../components/playlists/PlaylistsFilters.tsx'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import playlistsFilters from '../data/playlists/playlistsFilters.ts'
+import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
+import playlistsSearchParamsState from '../state/searchParams/PlaylistsSearchParamsState.ts'
 
 function Playlists() {
   useFixedDocumentTitle('Playlists')
-  const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
-  const { currentPage } = searchParams
+  const [searchParams, setSearchParams] = useSearchParamsState(playlistsSearchParamsState)
+  const { currentPage, activeFilters } = searchParams
 
   const [orders, setOrders] = useLocalStorage({
     key: LocalStorageKeys.PlaylistsOrders,
     defaultValue: playlistsOrders
   })
   const orderBy = useOrderBy(orders)
+
+  const [filters, setFilters] = useSearchParamFilters({
+    initialFilters: playlistsFilters,
+    activeFilters: activeFilters,
+    setSearchParams: setSearchParams
+  })
+  const filtersSize = activeFilters.size
+  const searchBy = useSearchBy(filters)
 
   const pageSize = 40
   const {
@@ -48,8 +60,11 @@ function Playlists() {
   } = useGetPlaylistsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: orderBy
+    orderBy: orderBy,
+    searchBy: searchBy
   })
+
+  const [filtersOpened, { toggle: toggleFilters, close: closeFilters }] = useDisclosure(false)
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     playlists?.totalCount,
@@ -95,14 +110,24 @@ function Playlists() {
             <IconArrowsSort size={17} />
           </ActionIcon>
         </AdvancedOrderMenu>
-        <ActionIcon
-          aria-label={'filter-playlists'}
-          variant={'grey'}
-          size={'lg'}
-          disabled={isLoading}
+        <Indicator
+          color={'primary'}
+          size={15}
+          offset={3}
+          label={filtersSize}
+          disabled={filtersSize === 0}
+          zIndex={2}
         >
-          <IconFilterFilled size={17} />
-        </ActionIcon>
+          <ActionIcon
+            aria-label={'filter-playlists'}
+            variant={'grey'}
+            size={'lg'}
+            disabled={isLoading}
+            onClick={toggleFilters}
+          >
+            <IconFilterFilled size={17} />
+          </ActionIcon>
+        </Indicator>
       </Group>
       {!isLoading && (
         <Text inline mb={'xs'}>
@@ -110,8 +135,11 @@ function Playlists() {
         </Text>
       )}
 
-      {playlists?.totalCount === 0 && (
+      {playlists?.totalCount === 0 && filtersSize === 0 && (
         <Text mt={'sm'}>There are no playlists yet. Try to add one</Text>
+      )}
+      {playlists?.totalCount === 0 && filtersSize > 0 && (
+        <Text mt={'sm'}>There are no playlists with these filters</Text>
       )}
       <SimpleGrid
         cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
@@ -122,7 +150,7 @@ function Playlists() {
         {playlists?.models.map((playlist) => (
           <PlaylistCard key={playlist.id} playlist={playlist} />
         ))}
-        {playlists?.totalCount > 0 && currentPage == totalPages && (
+        {!isFetching && playlists?.totalCount > 0 && currentPage == totalPages && (
           <Card
             aria-label={'new-playlist-card'}
             variant={'add-new'}
@@ -140,17 +168,22 @@ function Playlists() {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isFetching ? (
-          <Pagination
-            data-testid={'playlists-pagination'}
-            value={currentPage}
-            onChange={handleCurrentPageChange}
-            total={totalPages}
-          />
-        ) : (
-          <Loader size={25} />
-        )}
+        <Pagination
+          data-testid={'playlists-pagination'}
+          value={currentPage}
+          onChange={handleCurrentPageChange}
+          total={totalPages}
+          disabled={isFetching}
+        />
       </Box>
+
+      <PlaylistsFilters
+        opened={filtersOpened}
+        onClose={closeFilters}
+        filters={filters}
+        setFilters={setFilters}
+        isPlaylistsLoading={isFetching}
+      />
 
       <AddNewPlaylistModal opened={openedAddNewPlaylistModal} onClose={closeAddNewPlaylistModal} />
     </Stack>

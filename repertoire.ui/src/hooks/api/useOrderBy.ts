@@ -1,11 +1,11 @@
-import Order from '../types/Order.ts'
+import Order from '../../types/Order.ts'
 import { useState } from 'react'
-import createOrder from '../utils/createOrder.ts'
-import useDidUpdateShallow from './useDidUpdateShallow.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import { useDidUpdate } from '@mantine/hooks'
 
 export default function useOrderBy(orders: Order[] | null = null): string[] {
   const [orderBy, setOrderBy] = useState<string[]>(createOrders(orders))
-  useDidUpdateShallow(() => setOrderBy(createOrders(orders)), [orders])
+  useDidUpdate(() => setOrderBy(createOrders(orders)), [JSON.stringify(orders)])
   return orderBy
 }
 
@@ -20,4 +20,16 @@ function createOrders(orders: Order[] | null): string[] | null {
     }
   }
   return newOrders
+}
+
+function createOrder(order: Order): string {
+  return (
+    `${order.property} ` +
+    `${order.type ?? OrderType.Ascending}` +
+    `${
+      order.nullable === true
+        ? ' ' + (order.type === OrderType.Descending ? 'nulls last' : 'nulls first')
+        : ''
+    }`
+  )
 }

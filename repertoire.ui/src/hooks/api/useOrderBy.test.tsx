@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
-import useOrderBy from './useOrderBy'
-import Order from '../types/Order'
-import OrderType from '../utils/enums/OrderType'
+import useOrderBy from './useOrderBy.ts'
+import Order from '../../types/Order.ts'
+import OrderType from '../../types/enums/OrderType.ts'
 
 describe('use Order By', () => {
   it('should return empty array for null orders', () => {

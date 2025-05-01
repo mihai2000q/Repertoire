@@ -1,4 +1,4 @@
-import SongProperty from '../../utils/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
 import { ReactElement } from 'react'
 import {
   IconAbc,
@@ -17,14 +17,16 @@ import {
 import CustomIconGuitarHead from '../../components/@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconLightningTrio from '../../components/@ui/icons/CustomIconLightningTrio.tsx'
+import CustomIconMetronome from '../../components/@ui/icons/CustomIconMetronome.tsx'
 
 export const songPropertyIcons = new Map<string, ReactElement>([
-  [SongProperty.Album, <CustomIconAlbumVinyl size={'100%'} key={'album'} />],
-  [SongProperty.Artist, <IconUser size={'100%'} key={'artist'} />],
+  [SongProperty.AlbumTitle, <CustomIconAlbumVinyl size={'100%'} key={'album'} />],
+  [SongProperty.ArtistName, <IconUser size={'100%'} key={'artist'} />],
+  [SongProperty.BPM, <CustomIconMetronome size={'100%'} key={'bpm'} />],
   [SongProperty.CreationDate, <IconCalendarWeek size={'100%'} key={'creation-date'} />],
   [SongProperty.Confidence, <IconTimeline size={'100%'} key={'confidence'} />],
   [SongProperty.Difficulty, <IconStarFilled size={'100%'} key={'difficulty'} />],
-  [SongProperty.GuitarTuning, <CustomIconGuitarHead size={'100%'} key={'guitar-tuning'} />],
+  [SongProperty.GuitarTuningOrder, <CustomIconGuitarHead size={'100%'} key={'guitar-tuning'} />],
   [SongProperty.LastModified, <IconCalendarMonth size={'100%'} key={'last-modified'} />],
   [SongProperty.LastPlayed, <IconCalendarCheck size={'100%'} key={'last-played'} />],
   [SongProperty.Progress, <IconTrendingUp size={'100%'} key={'progress'} />],

@@ -23,7 +23,7 @@ import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
 import Order from '../../types/Order.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import SongProperty from '../../utils/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
 
 interface AlbumSongsCardProps {
   album: Album | undefined

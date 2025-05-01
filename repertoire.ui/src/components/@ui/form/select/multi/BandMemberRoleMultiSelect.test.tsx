@@ -1,10 +1,9 @@
-import { reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../../test-utils.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { BandMemberRole } from '../../../../types/models/Artist.ts'
+import { BandMemberRole } from '../../../../../types/models/Artist.ts'
 import BandMemberRoleMultiSelect from './BandMemberRoleMultiSelect.tsx'
 
 describe('Band Member Role Multi Select', () => {
@@ -63,7 +62,7 @@ describe('Band Member Role Multi Select', () => {
 
     expect(setIds).toHaveBeenCalledTimes(newRoles.length)
     newRoles.reduce((a: string[], b) => {
-      if (a.length !== 0) expect(setIds).toHaveBeenCalledWith(a) // skip first case
+      if (a.length !== 0) expect(setIds).toHaveBeenCalledWith(a) // skip the first case
       return [...a, b.id]
     }, [])
   })

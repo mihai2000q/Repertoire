@@ -1,14 +1,16 @@
 import { screen, waitFor } from '@testing-library/react'
 import Playlists from './Playlists.tsx'
-import { emptyPlaylist, reduxRouterRender } from '../test-utils.tsx'
+import { defaultPlaylistFiltersMetadata, emptyPlaylist, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Playlist from '../types/models/Playlist.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
-import createOrder from '../utils/createOrder.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
+import PlaylistProperty from '../types/enums/PlaylistProperty.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -57,6 +59,9 @@ describe('Playlists', () => {
         totalCount: totalCount
       }
       return HttpResponse.json(response)
+    }),
+    http.get('/playlists/filters-metadata', async () => {
+      return HttpResponse.json(defaultPlaylistFiltersMetadata)
     })
   ]
 
@@ -198,11 +203,56 @@ describe('Playlists', () => {
 
     reduxRouterRender(<Playlists />)
 
-    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(initialOrder)]))
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
+    )
 
     await user.click(screen.getByRole('button', { name: 'order-playlists' }))
     await user.click(screen.getByRole('button', { name: newOrder.label }))
 
-    await waitFor(() => expect(orderBy).toStrictEqual([createOrder(newOrder), createOrder(initialOrder)]))
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([
+        newOrder.property + ' ' + OrderType.Ascending,
+        initialOrder.property + ' ' + initialOrder.type
+      ])
+    )
+  })
+
+  it('should filter the playlists by min Songs', async () => {
+    const user = userEvent.setup()
+
+    const newMinSongsValue = 1
+
+    let searchBy: string[]
+    server.use(
+      http.get('/playlists', (req) => {
+        searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+        const response: WithTotalCountResponse<Playlist> = {
+          models: playlists,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Playlists />)
+
+    await waitFor(() => expect(searchBy).toStrictEqual([]))
+
+    await user.click(screen.getByRole('button', { name: 'filter-playlists' }))
+
+    await user.clear(screen.getByRole('textbox', { name: /min songs/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /min songs/i }),
+      newMinSongsValue.toString()
+    )
+    await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+    await waitFor(() => {
+      expect(searchBy).toStrictEqual([
+        `${PlaylistProperty.Songs} ${FilterOperator.GreaterThanOrEqual} ${newMinSongsValue}`
+      ])
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })

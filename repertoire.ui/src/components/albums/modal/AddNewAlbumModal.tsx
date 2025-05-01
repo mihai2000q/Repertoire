@@ -11,7 +11,7 @@ import {
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
-import { IconCalendarFilled } from '@tabler/icons-react'
+import { IconCalendarRepeat } from '@tabler/icons-react'
 import { ArtistSearch } from '../../../types/models/Search.ts'
 
 interface AddNewAlbumModalProps {
@@ -90,7 +90,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
               <DatePickerInput
                 flex={1}
                 label={'Release Date'}
-                leftSection={<IconCalendarFilled size={20} />}
+                leftSection={<IconCalendarRepeat size={20} />}
                 placeholder={'Choose the release date'}
                 key={form.key('releaseDate')}
                 {...form.getInputProps('releaseDate')}

@@ -76,6 +76,9 @@ type SongFiltersMetadata struct {
 	GuitarTuningIDsAgg string      `gorm:"->; column:guitar_tuning_ids" json:"-"`
 	GuitarTuningIDs    []uuid.UUID `gorm:"-" json:"guitarTuningIds"`
 
+	InstrumentIDsAgg string      `gorm:"->; column:instrument_ids" json:"-"`
+	InstrumentIDs    []uuid.UUID `gorm:"-" json:"instrumentIds"`
+
 	MinSectionsCount int64 `gorm:"->" json:"minSectionsCount"`
 	MaxSectionsCount int64 `gorm:"->" json:"maxSectionsCount"`
 

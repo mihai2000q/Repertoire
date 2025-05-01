@@ -144,18 +144,20 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         </Tooltip>
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {bandMembers?.length === 0 ? (
-              <Combobox.Empty>Artist has no members</Combobox.Empty>
-            ) : filteredMembers?.length === 0 ? (
-              <Combobox.Empty>No members found</Combobox.Empty>
-            ) : (
-              filteredMembers?.map((bandMember) => (
-                <BandMemberOption key={bandMember.id} member={bandMember} />
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {bandMembers?.length === 0 ? (
+                <Combobox.Empty>Artist has no members</Combobox.Empty>
+              ) : filteredMembers?.length === 0 ? (
+                <Combobox.Empty>No members found</Combobox.Empty>
+              ) : (
+                filteredMembers?.map((bandMember) => (
+                  <BandMemberOption key={bandMember.id} member={bandMember} />
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

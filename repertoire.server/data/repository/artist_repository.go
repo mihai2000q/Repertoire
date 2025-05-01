@@ -14,7 +14,7 @@ type ArtistRepository interface {
 	GetWithAlbums(artist *model.Artist, id uuid.UUID) error
 	GetWithSongs(artist *model.Artist, id uuid.UUID) error
 	GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error
-	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID) error
+	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.EnhancedArtist,
@@ -100,8 +100,8 @@ func (a artistRepository) GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UU
 		Error
 }
 
-func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID) error {
-	return a.client.
+func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error {
+	tx := a.client.
 		Select(
 			"MIN(COALESCE(bms.band_members_count, 0)) AS min_band_members_count",
 			"MAX(COALESCE(bms.band_members_count, 0)) AS max_band_members_count",
@@ -122,9 +122,11 @@ func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetada
 		Joins("LEFT JOIN (?) AS bms ON bms.artist_id = artists.id", a.getBandMembersSubQuery(userID)).
 		Joins("LEFT JOIN (?) AS aas ON aas.artist_id = artists.id", a.getAlbumsSubQuery(userID)).
 		Joins("LEFT JOIN (?) AS ss ON ss.artist_id = artists.id", a.getSongsSubQuery(userID)).
-		Where("user_id = ?", userID).
-		Scan(&metadata).
-		Error
+		Where("user_id = ?", userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundArtistsFields)
+	database.SearchBy(tx, searchBy)
+	return tx.Scan(&metadata).Error
 }
 
 func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {

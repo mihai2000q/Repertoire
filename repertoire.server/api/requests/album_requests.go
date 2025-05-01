@@ -18,6 +18,10 @@ type GetAlbumsRequest struct {
 	SearchBy    []string `form:"searchBy"`
 }
 
+type GetAlbumFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy"`
+}
+
 type CreateAlbumRequest struct {
 	Title       string `validate:"required,max=100"`
 	ReleaseDate *time.Time

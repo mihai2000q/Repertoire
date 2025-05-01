@@ -19,7 +19,10 @@ type PlaylistService interface {
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.EnhancedPlaylist], *wrapper.ErrorCode)
 	Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
-	GetFiltersMetadata(token string) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode)
+	GetFiltersMetadata(
+		request requests.GetPlaylistFiltersMetadataRequest,
+		token string,
+	) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
@@ -106,8 +109,11 @@ func (p *playlistService) Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
 	return p.getPlaylist.Handle(id)
 }
 
-func (p *playlistService) GetFiltersMetadata(token string) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode) {
-	return p.getPlaylistFiltersMetadata.Handle(token)
+func (p *playlistService) GetFiltersMetadata(
+	request requests.GetPlaylistFiltersMetadataRequest,
+	token string,
+) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode) {
+	return p.getPlaylistFiltersMetadata.Handle(request, token)
 }
 
 func (p *playlistService) MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode {

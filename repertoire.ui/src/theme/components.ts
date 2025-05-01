@@ -8,12 +8,14 @@ import {
   Chip,
   Combobox,
   Highlight,
+  Indicator,
   LoadingOverlay,
   Menu,
   Modal,
   NavLink,
   NumberFormatter,
   NumberInput,
+  RangeSlider,
   ScrollArea,
   ScrollAreaAutosize,
   Select,
@@ -136,6 +138,11 @@ export const components = {
       highlightStyles: { fontWeight: 700 }
     }
   }),
+  Indicator: Indicator.extend({
+    defaultProps: {
+      fw: 500
+    }
+  }),
   LoadingOverlay: LoadingOverlay.extend({
     defaultProps: {
       overlayProps: { radius: 'md', blur: 2 },
@@ -230,6 +237,11 @@ export const components = {
   NumberInput: NumberInput.extend({
     defaultProps: {
       clampBehavior: 'strict'
+    }
+  }),
+  RangeSlider: RangeSlider.extend({
+    defaultProps: {
+      minRange: 1
     }
   }),
   ScrollArea: ScrollArea.extend({

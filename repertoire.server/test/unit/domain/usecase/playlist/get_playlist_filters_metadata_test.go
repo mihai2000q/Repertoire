@@ -3,6 +3,7 @@ package playlist
 import (
 	"errors"
 	"net/http"
+	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -20,13 +21,14 @@ func TestGetPlaylistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnIntern
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewGetPlaylistFiltersMetadata(jwtService, playlistRepository)
 
+	request := requests.GetPlaylistFiltersMetadataRequest{}
 	token := "some token"
 
 	internalError := wrapper.InternalServerError(errors.New("some internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -43,18 +45,19 @@ func TestGetPlaylistFiltersMetadata_WhenGetFails_ShouldReturnInternalServerError
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewGetPlaylistFiltersMetadata(jwtService, playlistRepository)
 
+	request := requests.GetPlaylistFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("some internal error")
-	playlistRepository.On("GetFiltersMetadata", new(model.PlaylistFiltersMetadata), userID).
+	playlistRepository.On("GetFiltersMetadata", new(model.PlaylistFiltersMetadata), userID, request.SearchBy).
 		Return(internalError).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Empty(t, result)
@@ -72,6 +75,7 @@ func TestGetPlaylistFiltersMetadata_WhenSuccessful_ShouldReturnPlaylistFiltersMe
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewGetPlaylistFiltersMetadata(jwtService, playlistRepository)
 
+	request := requests.GetPlaylistFiltersMetadataRequest{}
 	token := "some token"
 
 	userID := uuid.New()
@@ -80,12 +84,12 @@ func TestGetPlaylistFiltersMetadata_WhenSuccessful_ShouldReturnPlaylistFiltersMe
 	metadata := model.PlaylistFiltersMetadata{
 		MinSongsCount: 0,
 	}
-	playlistRepository.On("GetFiltersMetadata", new(model.PlaylistFiltersMetadata), userID).
+	playlistRepository.On("GetFiltersMetadata", new(model.PlaylistFiltersMetadata), userID, request.SearchBy).
 		Return(nil, &metadata).
 		Once()
 
 	// when
-	result, errCode := _uut.Handle(token)
+	result, errCode := _uut.Handle(request, token)
 
 	// then
 	assert.Nil(t, errCode)

@@ -4,7 +4,7 @@ import Song from '../../types/models/Song'
 import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
-import Difficulty from '../../utils/enums/Difficulty.ts'
+import Difficulty from '../../types/enums/Difficulty.ts'
 import { RootState } from '../../state/store.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -118,7 +118,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      solos: 1
+      solosCount: 1
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -134,7 +134,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      solos: 2
+      solosCount: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -150,7 +150,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      riffs: 2
+      riffsCount: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)

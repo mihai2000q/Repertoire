@@ -21,9 +21,11 @@ import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
 import dayjs from 'dayjs'
 import Song from '../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import createOrder from '../../utils/createOrder.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
+import FilterOperator from '../../types/enums/FilterOperator.ts'
 
 function Loader() {
   return (
@@ -147,15 +149,20 @@ function LocalSongCard({ song }: { song: Song }) {
 }
 
 function HomeRecentlyPlayedSongs() {
+  const orderBy = useOrderBy([
+    { property: SongProperty.LastPlayed, type: OrderType.Descending },
+    { property: SongProperty.Progress, type: OrderType.Descending },
+    { property: SongProperty.Title }
+  ])
+  const searchBy = useSearchBy([
+    { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull }
+  ])
+
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: [
-      createOrder({ property: SongProperty.LastPlayed, type: OrderType.Descending }),
-      createOrder({ property: SongProperty.Progress, type: OrderType.Descending }),
-      createOrder({ property: SongProperty.Title })
-    ],
-    searchBy: ['last_time_played IS NOT NULL']
+    orderBy: orderBy,
+    searchBy: searchBy
   })
 
   return (

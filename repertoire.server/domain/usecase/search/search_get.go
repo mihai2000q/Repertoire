@@ -39,16 +39,16 @@ func (g Get) Handle(
 		for _, id := range request.IDs {
 			filter = filter + string(*request.Type) + "-" + id + ", "
 		}
-		filter = strings.TrimRight(filter, ", ") + "]"
+		filter = strings.TrimSuffix(filter, ", ") + "]"
 		request.Filter = append(request.Filter, filter)
 	}
 
-	if len(request.IDs) > 0 {
+	if len(request.NotIDs) > 0 {
 		filter := "id NOT IN ["
-		for _, id := range request.IDs {
+		for _, id := range request.NotIDs {
 			filter = filter + string(*request.Type) + "-" + id + ", "
 		}
-		filter = strings.TrimRight(filter, ", ") + "]"
+		filter = strings.TrimSuffix(filter, ", ") + "]"
 		request.Filter = append(request.Filter, filter)
 	}
 

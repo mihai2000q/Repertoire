@@ -13,7 +13,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
-import OrderType from '../../../utils/enums/OrderType.ts'
+import OrderType from '../../../types/enums/OrderType.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 
 interface AdvancedOrderMenuProps {

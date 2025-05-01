@@ -1,14 +1,20 @@
 import Order from '../../types/Order.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
 
 const songsOrders: Order[] = [
   { label: 'Title', property: SongProperty.Title, checked: false },
   { label: 'Release Date', property: SongProperty.ReleaseDate, nullable: true, checked: false },
-  { label: 'Artist', property: SongProperty.Artist, nullable: true, checked: false },
-  { label: 'Album', property: SongProperty.Album, nullable: true, checked: false },
-  { label: 'Guitar Tuning', property: SongProperty.GuitarTuning, nullable: true, checked: false },
+  { label: 'Album', property: SongProperty.AlbumTitle, nullable: true, checked: false },
+  { label: 'Artist', property: SongProperty.ArtistName, nullable: true, checked: false },
+  { label: 'BPM', property: SongProperty.BPM, nullable: true, checked: false },
   { label: 'Difficulty', property: SongProperty.Difficulty, nullable: true, checked: false },
+  {
+    label: 'Guitar Tuning',
+    property: SongProperty.GuitarTuningOrder,
+    nullable: true,
+    checked: false
+  },
   { label: 'Sections', property: SongProperty.Sections, checked: false },
   { label: 'Solos', property: SongProperty.Solos, checked: false },
   { label: 'Riffs', property: SongProperty.Riffs, checked: false },

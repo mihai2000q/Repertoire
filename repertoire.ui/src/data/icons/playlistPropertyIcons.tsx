@@ -1,4 +1,4 @@
-import PlaylistProperty from '../../utils/enums/PlaylistProperty.ts'
+import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
 import { ReactElement } from 'react'
 import { IconAbc, IconCalendarMonth, IconCalendarWeek } from '@tabler/icons-react'
 import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'

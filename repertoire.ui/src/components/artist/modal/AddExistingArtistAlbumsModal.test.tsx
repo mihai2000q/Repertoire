@@ -7,7 +7,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddAlbumsToArtistRequest } from '../../../types/requests/ArtistRequests.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 
 describe('Add Existing Artist Albums Modal', () => {
   const albums: AlbumSearch[] = [

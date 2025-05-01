@@ -11,7 +11,7 @@ import {
   useUpdateBandMemberMutation
 } from '../../../state/api/artistsApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
-import BandMemberRoleMultiSelect from '../../@ui/form/select/BandMemberRoleMultiSelect.tsx'
+import BandMemberRoleMultiSelect from '../../@ui/form/select/multi/BandMemberRoleMultiSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { BandMember } from '../../../types/models/Artist.ts'
 import ColorInputButton from '../../@ui/form/input/ColorInputButton.tsx'

@@ -19,6 +19,9 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const theme = useMantineTheme()
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
+  const disableGoBack = window.history.state?.idx < 1
+  const disableGoForward = window.history.state?.idx >= window.history.length - 1
+
   function handleGoBack() {
     navigate(-1)
   }
@@ -68,7 +71,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
               size={'lg'}
               variant={'grey'}
               radius={'50%'}
-              disabled={window.history.state?.idx < 1}
+              disabled={disableGoBack}
               onClick={handleGoBack}
             >
               <IconChevronLeft size={20} />
@@ -79,7 +82,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
               size={'lg'}
               variant={'grey'}
               radius={'50%'}
-              disabled={window.history.state?.idx >= window.history.length - 1}
+              disabled={disableGoForward}
               onClick={handleGoForward}
             >
               <IconChevronRight size={20} />

@@ -6,6 +6,7 @@ import {
   HoverCard,
   LoadingOverlay,
   ScrollArea,
+  Stack,
   Text,
   TextInput,
   useCombobox
@@ -14,7 +15,7 @@ import { ChangeEvent, FocusEvent } from 'react'
 import { IconUserFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
 import CustomIconUserAlt from '../../icons/CustomIconUserAlt.tsx'
 
@@ -135,40 +136,42 @@ function ArtistAutocomplete({
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {totalCount === 0 ? (
-              <Combobox.Empty>No artist found</Combobox.Empty>
-            ) : (
-              artists?.map((artist) => (
-                <Combobox.Option
-                  key={artist.id}
-                  value={artist.name}
-                  aria-label={artist.name}
-                  onClick={() => setArtist(artist)}
-                >
-                  <Group gap={'xs'} wrap={'nowrap'}>
-                    <Avatar
-                      size={'sm'}
-                      src={artist.imageUrl}
-                      alt={artist.name}
-                      style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                      bg={'gray.0'}
-                    >
-                      <Center c={'gray.7'}>
-                        <CustomIconUserAlt size={13} />
-                      </Center>
-                    </Avatar>
-                    <Text inline fw={500} lineClamp={2}>
-                      {artist.name}
-                    </Text>
-                  </Group>
-                </Combobox.Option>
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {totalCount === 0 ? (
+                <Combobox.Empty>No artist found</Combobox.Empty>
+              ) : (
+                artists?.map((artist) => (
+                  <Combobox.Option
+                    key={artist.id}
+                    value={artist.name}
+                    aria-label={artist.name}
+                    onClick={() => setArtist(artist)}
+                  >
+                    <Group gap={'xs'} wrap={'nowrap'}>
+                      <Avatar
+                        size={'sm'}
+                        src={artist.imageUrl}
+                        alt={artist.name}
+                        style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                        bg={'gray.0'}
+                      >
+                        <Center c={'gray.7'}>
+                          <CustomIconUserAlt size={13} />
+                        </Center>
+                      </Avatar>
+                      <Text inline fw={500} lineClamp={2}>
+                        {artist.name}
+                      </Text>
+                    </Group>
+                  </Combobox.Option>
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

@@ -1,5 +1,5 @@
 import { FileWithPath } from '@mantine/dropzone'
-import Difficulty from '../../utils/enums/Difficulty.ts'
+import Difficulty from '../enums/Difficulty.ts'
 
 export interface GetSongsRequest {
   currentPage?: number

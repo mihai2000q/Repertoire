@@ -2,7 +2,7 @@ import { mantineRender } from '../../../../test-utils.tsx'
 import DifficultySelect from './DifficultySelect.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Difficulty from '../../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../../types/enums/Difficulty.ts'
 import { expect } from 'vitest'
 
 describe('Difficulty Select', () => {

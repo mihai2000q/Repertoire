@@ -162,21 +162,21 @@ function SongCard({ song }: SongCardProps) {
                       <CustomIconGuitarHead size={iconSize} aria-label={'guitar-tuning-icon'} />
                     </LocalTooltip>
                   )}
-                  {song?.riffs > 1 && (
-                    <LocalTooltip label={`This song has ${song.riffs} riffs`}>
+                  {song.riffsCount > 1 && (
+                    <LocalTooltip label={`This song has ${song.riffsCount} riffs`}>
                       <IconBombFilled size={iconSize} aria-label={'riffs-icon'} />
                     </LocalTooltip>
                   )}
-                  {song?.solos > 0 && (
+                  {song.solosCount > 0 && (
                     <LocalTooltip
                       label={
-                        song.solos === 1
+                        song.solosCount === 1
                           ? 'This song has a solo'
-                          : `This song has ${song.solos} solos`
+                          : `This song has ${song.solosCount} solos`
                       }
                     >
-                      <Center c={song.solos === 1 ? 'yellow.4' : 'yellow.5'}>
-                        {song.solos > 1 ? (
+                      <Center c={song.solosCount === 1 ? 'yellow.4' : 'yellow.5'}>
+                        {song.solosCount > 1 ? (
                           <CustomIconLightningTrio size={iconSize} aria-label={'solos-icon'} />
                         ) : (
                           <IconBoltFilled size={iconSize} aria-label={'solo-icon'} />

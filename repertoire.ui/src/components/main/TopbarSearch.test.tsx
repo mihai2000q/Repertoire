@@ -11,7 +11,7 @@ import {
   SearchBase,
   SongSearch
 } from '../../types/models/Search.ts'
-import SearchType from '../../utils/enums/SearchType.ts'
+import SearchType from '../../types/enums/SearchType.ts'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 

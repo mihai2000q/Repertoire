@@ -16,16 +16,20 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
+import { useDebouncedValue, useDidUpdate, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddSongsToPlaylistMutation } from '../../../state/api/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import createOrder from '../../../utils/createOrder.ts'
-import OrderType from '../../../utils/enums/OrderType.ts'
-import SongProperty from '../../../utils/enums/SongProperty.ts'
+import OrderType from '../../../types/enums/OrderType.ts'
+import SongProperty from '../../../types/enums/SongProperty.ts'
+import useOrderBy from '../../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../../hooks/api/useSearchBy.ts'
+import useFilters from '../../../hooks/filter/useFilters.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import useFiltersHandlers from '../../../hooks/filter/useFiltersHandlers.ts'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -37,6 +41,25 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
 
+  const orderBy = useOrderBy([{ property: SongProperty.LastModified, type: OrderType.Descending }])
+  const [filters, setFilters] = useFilters([
+    {
+      property: SongProperty.PlaylistId,
+      operator: FilterOperator.NotEqualVariant,
+      value: playlistId,
+      isSet: true
+    },
+    { property: SongProperty.Title, operator: FilterOperator.PatternMatching, isSet: false }
+  ])
+  const { handleValueChange } = useFiltersHandlers(filters, setFilters)
+  const searchBy = useSearchBy(filters)
+
+  useDidUpdate(
+    () =>
+      handleValueChange(SongProperty.Title + FilterOperator.PatternMatching, searchValue.trim()),
+    [searchValue]
+  )
+
   const {
     data: songs,
     isLoading: songsIsLoading,
@@ -44,11 +67,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   } = useGetSongsQuery({
     currentPage: 1,
     pageSize: 20,
-    orderBy: [createOrder({ property: SongProperty.LastModified, type: OrderType.Descending })],
-    searchBy: [
-      `playlist_id != ${playlistId}`,
-      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
-    ]
+    orderBy: orderBy,
+    searchBy: searchBy
   })
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToPlaylistMutation()

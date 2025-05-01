@@ -7,7 +7,7 @@ import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import ArtistAutocomplete from './ArtistAutocomplete.tsx'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 
 describe('Artist Autocomplete', () => {
   const artists: ArtistSearch[] = [

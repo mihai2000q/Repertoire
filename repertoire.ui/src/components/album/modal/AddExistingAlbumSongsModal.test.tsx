@@ -7,7 +7,7 @@ import { setupServer } from 'msw/node'
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { AddSongsToAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 
 describe('Add Existing Album Songs Modal', () => {
@@ -310,7 +310,7 @@ describe('Add Existing Album Songs Modal', () => {
     await user.click(await screen.findByRole('checkbox', { name: songToNotDeselect }))
     await user.click(await screen.findByRole('checkbox', { name: songToDeselect }))
 
-    // search for the first song, so that second one disappears
+    // search for the first song, so that the second one disappears
     await user.type(searchBox, songToNotDeselect)
 
     await waitFor(() => {

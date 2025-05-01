@@ -11,11 +11,11 @@ import HomeSongCard from './top/HomeSongCard.tsx'
 import HomeSongsLoader from './top/loader/HomeSongsLoader.tsx'
 import HomeArtistsLoader from './top/loader/HomeArtistsLoader.tsx'
 import HomeArtistCard from './top/HomeArtistCard.tsx'
-import createOrder from '../../utils/createOrder.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import OrderType from '../../utils/enums/OrderType.ts'
-import ArtistProperty from '../../utils/enums/ArtistProperty.ts'
-import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import useOrderBy from '../../hooks/api/useOrderBy.ts'
 
 enum TopEntity {
   Songs,
@@ -68,31 +68,34 @@ const TabButton = ({
 )
 
 function HomeTop() {
+  const songsOrderBy = useOrderBy([
+    { property: SongProperty.Progress, type: OrderType.Descending },
+    { property: SongProperty.Title }
+  ])
   const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: [
-      createOrder({ property: SongProperty.Progress, type: OrderType.Descending }),
-      createOrder({ property: SongProperty.Title })
-    ]
+    orderBy: songsOrderBy
   })
 
+  const albumsOrderBy = useOrderBy([
+    { property: AlbumProperty.Progress, type: OrderType.Descending },
+    { property: AlbumProperty.Title }
+  ])
   const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: [
-      createOrder({ property: AlbumProperty.Progress, type: OrderType.Descending }),
-      createOrder({ property: AlbumProperty.Title })
-    ]
+    orderBy: albumsOrderBy
   })
 
+  const artistsOrderBy = useOrderBy([
+    { property: ArtistProperty.Progress, type: OrderType.Descending },
+    { property: ArtistProperty.Name }
+  ])
   const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: [
-      createOrder({ property: ArtistProperty.Progress, type: OrderType.Descending }),
-      createOrder({ property: ArtistProperty.Name })
-    ]
+    orderBy: artistsOrderBy
   })
 
   const topRef = useRef<HTMLDivElement>(null)

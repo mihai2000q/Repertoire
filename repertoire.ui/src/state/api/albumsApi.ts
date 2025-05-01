@@ -15,18 +15,25 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { AlbumFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const albumsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getAlbums: build.query<WithTotalCountResponse<Album>, GetAlbumsRequest>({
-      query: (arg) => ({
-        url: `albums${createQueryParams(arg)}`
-      }),
-      providesTags: ['Albums', 'Artists']
+      query: (arg) => `albums${createQueryParams(arg)}`,
+      providesTags: ['Albums', 'Artists', 'Songs']
     }),
     getAlbum: build.query<Album, GetAlbumRequest>({
       query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Albums', 'Artists', 'Songs']
+    }),
+    getAlbumFiltersMetadata: build.query<AlbumFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `albums/filters-metadata${createQueryParams(arg)}`,
+      providesTags: ['Albums', 'Artists', 'Songs'],
+      transformResponse: (response: AlbumFiltersMetadata) => ({
+        ...response,
+        artistIds: response.artistIds === null ? [] : response.artistIds
+      })
     }),
     createAlbum: build.mutation<{ id: string }, CreateAlbumRequest>({
       query: (body) => ({
@@ -42,7 +49,7 @@ const albumsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Albums', 'Artists']
+      invalidatesTags: ['Albums']
     }),
     saveImageToAlbum: build.mutation<HttpMessageResponse, SaveImageToAlbumRequest>({
       query: (request) => ({
@@ -99,6 +106,8 @@ const albumsApi = api.injectEndpoints({
 export const {
   useGetAlbumsQuery,
   useGetAlbumQuery,
+  useGetAlbumFiltersMetadataQuery,
+  useLazyGetAlbumFiltersMetadataQuery,
   useCreateAlbumMutation,
   useUpdateAlbumMutation,
   useSaveImageToAlbumMutation,

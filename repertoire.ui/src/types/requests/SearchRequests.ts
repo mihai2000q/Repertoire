@@ -1,4 +1,4 @@
-import SearchType from "../../utils/enums/SearchType.ts";
+import SearchType from "../enums/SearchType.ts";
 
 export interface GetSearchRequest {
   query: string
@@ -7,4 +7,5 @@ export interface GetSearchRequest {
   type?: SearchType
   filter?: string[]
   order?: string[]
+  ids?: string[]
 }

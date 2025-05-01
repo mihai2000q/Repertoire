@@ -9,6 +9,10 @@ type GetPlaylistsRequest struct {
 	SearchBy    []string `form:"searchBy"`
 }
 
+type GetPlaylistFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy"`
+}
+
 type CreatePlaylistRequest struct {
 	Title       string `validate:"required,max=100"`
 	Description string

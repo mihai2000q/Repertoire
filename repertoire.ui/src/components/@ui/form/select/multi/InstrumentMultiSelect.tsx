@@ -1,4 +1,6 @@
 import {
+  Box,
+  Center,
   Combobox,
   Group,
   Input,
@@ -9,29 +11,39 @@ import {
   Text,
   useCombobox
 } from '@mantine/core'
-import { useGetBandMemberRolesQuery } from '../../../../state/api/artistsApi.ts'
+import { useGetInstrumentsQuery } from '../../../../../state/api/songsApi.ts'
 import { Dispatch, SetStateAction } from 'react'
+import useInstrumentIcon from '../../../../../hooks/useInstrumentIcon.tsx'
 import { IconCheck } from '@tabler/icons-react'
 
-interface BandMemberRoleMultiSelectProps extends PillsInputProps {
+interface InstrumentMultiSelectProps extends PillsInputProps {
   ids: string[]
   setIds: Dispatch<SetStateAction<string[]>>
   placeholder?: string
+  availableIds?: string[]
 }
 
-function BandMemberRoleMultiSelect({
+function InstrumentMultiSelect({
   ids,
   setIds,
   label,
   placeholder,
+  availableIds,
   ...others
-}: BandMemberRoleMultiSelectProps) {
-  const { data: bandMemberRoles, isLoading } = useGetBandMemberRolesQuery()
+}: InstrumentMultiSelectProps) {
+  const { data, isLoading } = useGetInstrumentsQuery()
+  const instruments = availableIds
+    ? data?.filter(
+        (instrument) => availableIds.includes(instrument.id) || ids.includes(instrument.id)
+      )
+    : data
 
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
     onDropdownOpen: () => combobox.updateSelectedOptionIndex('active')
   })
+
+  const getInstrumentIcon = useInstrumentIcon()
 
   const handleValueSelect = (id: string) =>
     setIds(ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id])
@@ -63,7 +75,9 @@ function BandMemberRoleMultiSelect({
             {ids.length > 0 ? (
               ids.map((id) => (
                 <Pill fz={'sm'} key={id} withRemoveButton onRemove={() => handleValueRemove(id)}>
-                  {bandMemberRoles?.find((r) => r.id === id).name}
+                  <Center c={'primary.7'} w={15} h={'100%'}>
+                    {getInstrumentIcon(instruments?.find((r) => r.id === id).name)}
+                  </Center>
                 </Pill>
               ))
             ) : (
@@ -89,11 +103,24 @@ function BandMemberRoleMultiSelect({
       <Combobox.Dropdown>
         <Combobox.Options>
           <ScrollArea.Autosize mah={150} scrollbarSize={5}>
-            {bandMemberRoles?.map((role) => (
-              <Combobox.Option value={role.id} key={role.id} active={ids.includes(role.id)}>
-                <Group gap={6}>
-                  {ids.includes(role.id) && <IconCheck size={14} />}
-                  <Text fz={'sm'}>{role.name}</Text>
+            {instruments?.map((ins) => (
+              <Combobox.Option value={ins.id} key={ins.id} active={ids.includes(ins.id)}>
+                <Group flex={1} gap={'xs'}>
+                  <Box c={'primary.7'} w={19} h={19}>
+                    {getInstrumentIcon(ins.name)}
+                  </Box>
+                  <Text fz={'sm'} fw={500}>
+                    {ins.name}
+                  </Text>
+                  {ids.includes(ins.id) && (
+                    <IconCheck
+                      size={18}
+                      opacity={0.6}
+                      stroke={1.5}
+                      color={'currentColor'}
+                      style={{ marginInlineStart: 'auto' }}
+                    />
+                  )}
                 </Group>
               </Combobox.Option>
             ))}
@@ -104,4 +131,4 @@ function BandMemberRoleMultiSelect({
   )
 }
 
-export default BandMemberRoleMultiSelect
+export default InstrumentMultiSelect

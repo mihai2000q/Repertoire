@@ -23,8 +23,8 @@ import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
 import Song from '../../types/models/Song.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import LocalStorageKeys from '../../utils/enums/LocalStorageKeys.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
 import useLocalStorage from "../../hooks/useLocalStorage.ts";
 
 interface PlaylistSongsCardProps {

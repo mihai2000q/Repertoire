@@ -13,17 +13,24 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { PlaylistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getPlaylists: build.query<WithTotalCountResponse<Playlist>, GetPlaylistsRequest>({
-      query: (arg) => ({
-        url: `playlists${createQueryParams(arg)}`
-      }),
-      providesTags: ['Playlists']
+      query: (arg) => `playlists${createQueryParams(arg)}`,
+      providesTags: ['Playlists', 'Songs']
     }),
     getPlaylist: build.query<Playlist, string>({
       query: (arg) => `playlists/${arg}`,
+      providesTags: ['Playlists', 'Songs', 'Albums', 'Artists'],
+      transformResponse: (response: Playlist) => ({
+        ...response,
+        songs: response.songs === null ? [] : response.songs
+      })
+    }),
+    getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
     }),
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
@@ -72,7 +79,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs', 'Playlists']
     }),
     moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
       query: (body) => ({
@@ -88,7 +95,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs', 'Playlists']
     })
   })
 })
@@ -96,6 +103,8 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
+  useGetPlaylistFiltersMetadataQuery,
+  useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
   useUpdatePlaylistMutation,
   useSaveImageToPlaylistMutation,

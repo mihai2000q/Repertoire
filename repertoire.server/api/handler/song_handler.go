@@ -70,9 +70,22 @@ func (s SongHandler) GetAll(c *gin.Context) {
 }
 
 func (s SongHandler) GetFiltersMetadata(c *gin.Context) {
+	var request requests.GetSongFiltersMetadataRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := s.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
 	token := s.GetTokenFromContext(c)
 
-	result, errorCode := s.service.GetFiltersMetadata(token)
+	result, errorCode := s.service.GetFiltersMetadata(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

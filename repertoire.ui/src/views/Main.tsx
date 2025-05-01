@@ -20,6 +20,7 @@ function Main(): ReactElement {
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
+  const topbarHeight = '65px'
 
   const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
@@ -28,7 +29,7 @@ function Main(): ReactElement {
       {isDesktop && <TitleBar />}
       <AppShell
         layout={'alt'}
-        header={{ height: 65 }}
+        header={{ height: topbarHeight }}
         navbar={{
           width: 'max(15vw, 250px)',
           breakpoint: 'sm',

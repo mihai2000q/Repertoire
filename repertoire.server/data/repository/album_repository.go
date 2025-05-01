@@ -13,7 +13,7 @@ type AlbumRepository interface {
 	GetWithSongs(album *model.Album, id uuid.UUID) error
 	GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error
-	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID) error
+	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
@@ -76,8 +76,8 @@ func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID, s
 		Error
 }
 
-func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID) error {
-	err := a.client.
+func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID, searchBy []string) error {
+	tx := a.client.
 		Select(
 			"JSON_AGG(DISTINCT artist_id) filter (WHERE artist_id IS NOT NULL) as artist_ids",
 			"MIN(albums.release_date) AS min_release_date",
@@ -95,9 +95,11 @@ func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata
 		).
 		Table("albums").
 		Joins("LEFT JOIN (?) AS ss ON ss.album_id = albums.id", a.getSongsSubQuery(userID)).
-		Where("user_id = ?", userID).
-		Scan(&metadata).
-		Error
+		Where("user_id = ?", userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
+	database.SearchBy(tx, searchBy)
+	err := tx.Scan(&metadata).Error
 	if err != nil {
 		return err
 	}

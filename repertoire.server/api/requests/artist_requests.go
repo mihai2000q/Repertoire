@@ -9,6 +9,10 @@ type GetArtistsRequest struct {
 	SearchBy    []string `form:"searchBy"`
 }
 
+type GetArtistFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy"`
+}
+
 type CreateArtistRequest struct {
 	Name   string `validate:"required,max=100"`
 	IsBand bool

@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react'
 import { useForm, zodResolver } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
-import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
+import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
@@ -137,7 +137,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
                 <DatePickerInput
                   flex={1}
                   label={'Release Date'}
-                  leftSection={<IconCalendarFilled size={20} />}
+                  leftSection={<IconCalendarRepeat size={20} />}
                   placeholder={'Choose the release date'}
                   key={form.key('releaseDate')}
                   {...form.getInputProps('releaseDate')}
