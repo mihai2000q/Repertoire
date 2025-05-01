@@ -21,8 +21,8 @@ import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-rea
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
 import SongProperty from '../../types/enums/SongProperty.ts'
-import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
-import SongConfidenceBar from '../@ui/misc/SongConfidenceBar.tsx'
+import ProgressBar from '../@ui/misc/ProgressBar.tsx'
+import ConfidenceBar from '../@ui/misc/ConfidenceBar.tsx'
 import DifficultyBar from '../@ui/misc/DifficultyBar.tsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
@@ -208,10 +208,10 @@ function AlbumSongCard({
                   </Tooltip.Floating>
                 )}
                 {order.property === SongProperty.Confidence && (
-                  <SongConfidenceBar confidence={song.confidence} flex={1} />
+                  <ConfidenceBar confidence={song.confidence} flex={1} />
                 )}
                 {order.property === SongProperty.Progress && (
-                  <SongProgressBar progress={song.progress} flex={1} />
+                  <ProgressBar progress={song.progress} flex={1} />
                 )}
                 {order.property === SongProperty.LastPlayed && (
                   <Tooltip

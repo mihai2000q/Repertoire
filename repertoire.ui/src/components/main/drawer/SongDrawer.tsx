@@ -37,8 +37,8 @@ import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSl
 import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
-import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
-import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
+import ConfidenceBar from '../../@ui/misc/ConfidenceBar.tsx'
+import ProgressBar from '../../@ui/misc/ProgressBar.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
@@ -389,7 +389,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <SongConfidenceBar confidence={song.confidence} size={7} />
+                  <ConfidenceBar confidence={song.confidence} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -402,7 +402,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <SongProgressBar progress={song.progress} size={7} />
+                  <ProgressBar progress={song.progress} size={7} />
                 </Grid.Col>
               </>
             )}
