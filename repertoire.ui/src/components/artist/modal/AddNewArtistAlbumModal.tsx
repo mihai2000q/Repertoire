@@ -14,6 +14,7 @@ import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.t
 import { IconCalendarRepeat, IconDisc } from '@tabler/icons-react'
 import DatePickerButton from '../../@ui/form/date/DatePickerButton.tsx'
 import { toast } from 'react-toastify'
+import dayjs from 'dayjs'
 
 interface AddNewArtistAlbumModalProps {
   opened: boolean
@@ -27,7 +28,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
   const [image, setImage] = useState<FileWithPath>(null)
-  const [releaseDate, setReleaseDate] = useState<Date | null>(null)
+  const [releaseDate, setReleaseDate] = useState<Date>()
   useEffect(() => form.setFieldValue('releaseDate', releaseDate), [releaseDate])
 
   const onCloseWithImage = () => {
@@ -80,11 +81,15 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
                   {...form.getInputProps('title')}
                 />
                 <DatePickerButton
+                  mt={16}
                   aria-label={'release-date'}
                   icon={<IconCalendarRepeat size={20} />}
-                  mt={16}
                   value={releaseDate}
                   onChange={setReleaseDate}
+                  tooltipLabels={{
+                    default: 'Select a release date',
+                    selected: (val) => `Released on ${dayjs(val).format('D MMMM YYYY')}`
+                  }}
                 />
               </Group>
             </Group>

@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import DatePickerButton from './DatePickerButton.tsx'
-import { IconCalendar } from '@tabler/icons-react'
 import { mantineRender } from '../../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 import dayjs from 'dayjs'
@@ -13,25 +12,32 @@ describe('Date Picker Button', () => {
     const onChange = vi.fn()
 
     const now = new Date()
-    const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+    const newDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
 
-    mantineRender(
-      <DatePickerButton
-        aria-label={ariaLabel}
-        value={null}
-        onChange={onChange}
-        icon={<IconCalendar data-testid="custom-icon" />}
-      />
+    const { rerender } = mantineRender(
+      <DatePickerButton aria-label={ariaLabel} value={null} onChange={onChange} />
     )
 
-    expect(screen.getByRole('button', { name: ariaLabel })).toBeInTheDocument()
+    const button = screen.getByRole('button', { name: ariaLabel })
 
-    await user.click(screen.getByRole('button', { name: ariaLabel }))
+    expect(button).toBeInTheDocument()
+
+    await user.hover(button)
+    expect(await screen.findByRole('tooltip', { name: 'Select a date' })).toBeInTheDocument()
+
+    await user.click(button)
     expect(await screen.findByRole('dialog')).toBeInTheDocument()
-    await user.click(
-      screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
-    )
+    await user.click(screen.getByRole('button', { name: dayjs(newDate).format('D MMMM YYYY') }))
 
-    expect(onChange).toHaveBeenCalledExactlyOnceWith(newReleaseDate)
+    expect(onChange).toHaveBeenCalledExactlyOnceWith(newDate)
+
+    rerender(<DatePickerButton aria-label={ariaLabel} value={newDate} onChange={onChange} />)
+
+    await user.hover(button)
+    expect(
+      await screen.findByRole('tooltip', {
+        name: `${dayjs(newDate).format('D MMMM YYYY')} is selected`
+      })
+    ).toBeInTheDocument()
   })
 })
