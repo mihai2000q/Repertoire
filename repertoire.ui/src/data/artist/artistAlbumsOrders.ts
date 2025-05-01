@@ -14,6 +14,34 @@ const artistAlbumsOrders: Order[] = [
     label: 'Alphabetically',
     property: AlbumProperty.Title,
     type: OrderType.Ascending
+  },
+  {
+    label: 'Rehearsals',
+    property: AlbumProperty.Rehearsals,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  },
+  {
+    label: 'Confidence',
+    property: AlbumProperty.Confidence,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  },
+  {
+    label: 'Progress',
+    property: AlbumProperty.Progress,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  },
+  {
+    label: 'Last Played',
+    property: AlbumProperty.LastPlayed,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
   }
 ]
 
