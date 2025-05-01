@@ -195,7 +195,7 @@ describe('Add Playlist Songs Modal', () => {
     )
     expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
     expect(capturedSearchBy.getAll('searchBy')[0]).toBe(
-      `${SongProperty.PlaylistId} ${FilterOperator.NotEqual} ${playlistId}`
+      `${SongProperty.PlaylistId} ${FilterOperator.NotEqualVariant} ${playlistId}`
     )
 
     // search
@@ -205,7 +205,7 @@ describe('Add Playlist Songs Modal', () => {
     await waitFor(() => {
       expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
       expect(capturedSearchBy.getAll('searchBy')[0]).toBe(
-        `${SongProperty.PlaylistId} ${FilterOperator.NotEqual} ${playlistId}`
+        `${SongProperty.PlaylistId} ${FilterOperator.NotEqualVariant} ${playlistId}`
       )
       expect(capturedSearchBy.getAll('searchBy')[1]).toBe(
         `${SongProperty.Title} ${FilterOperator.PatternMatching} ${searchValue}`

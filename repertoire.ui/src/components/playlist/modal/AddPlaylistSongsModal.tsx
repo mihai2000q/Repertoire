@@ -45,7 +45,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   const [filters, setFilters] = useFilters([
     {
       property: SongProperty.PlaylistId,
-      operator: FilterOperator.NotEqual,
+      operator: FilterOperator.NotEqualVariant,
       value: playlistId,
       isSet: true
     },
@@ -59,7 +59,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
       handleValueChange(SongProperty.Title + FilterOperator.PatternMatching, searchValue.trim()),
     [searchValue]
   )
-  
+
   const {
     data: songs,
     isLoading: songsIsLoading,

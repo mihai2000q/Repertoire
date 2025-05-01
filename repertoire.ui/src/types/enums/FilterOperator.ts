@@ -6,6 +6,7 @@ enum FilterOperator {
   LessThan = '<',
   LessThanOrEqual = '<=',
   NotEqual = '<>',
+  NotEqualVariant = '!=',
   IsNull = 'IS NULL',
   IsNotNull = 'IS NOT NULL',
   PatternMatching = '~*'
