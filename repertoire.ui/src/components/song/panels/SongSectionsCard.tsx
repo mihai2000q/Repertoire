@@ -18,7 +18,7 @@ import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection, SongSettings } from '../../../types/models/Song.ts'
 import SongSectionCard from '../SongSectionCard.tsx'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
@@ -56,13 +56,17 @@ function SongSectionsCard({
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
   useDidUpdate(() => setState(sections), [sections])
 
-  const maxSectionProgress =
-    sections.length > 0
-      ? sections.reduce(
-          (accumulator, currentValue) => Math.max(accumulator, currentValue.progress),
-          sections[0].progress
-        )
-      : 0
+  const [maxSectionRehearsals, maxSectionProgress] = useMemo(() => {
+    let rehearsals = 0
+    let progress = 0
+
+    sections.forEach((section) => {
+      if (section.rehearsals > rehearsals) rehearsals = section.rehearsals
+      if (section.progress > progress) progress = section.progress
+    })
+
+    return [rehearsals, progress]
+  }, [sections])
 
   const [showDetails, setShowDetails] = useState(false)
 
@@ -251,6 +255,7 @@ function SongSectionsCard({
                           isDragging={snapshot.isDragging}
                           showDetails={showDetails}
                           maxSectionProgress={maxSectionProgress}
+                          maxSectionRehearsals={maxSectionRehearsals}
                           bandMembers={bandMembers}
                           isArtistBand={isArtistBand}
                         />

@@ -23,7 +23,7 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import { useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import {
   useDeleteSongSectionMutation,
@@ -34,6 +34,23 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { BandMember } from '../../types/models/Artist.ts'
 import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
+import { useState } from 'react'
+
+function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
+  return rehearsalsMaxLength > 4
+    ? 'xs'
+    : rehearsalsMaxLength > 3
+      ? 'md'
+      : rehearsalsMaxLength > 2
+        ? 20
+        : rehearsalsMaxLength > 1
+          ? 23
+          : 27
+}
+
+function getRehearsalsWidth(rehearsalsMaxLength: number) {
+  return (rehearsalsMaxLength > 2 ? 9 : rehearsalsMaxLength > 1 ? 10 : 12) * rehearsalsMaxLength
+}
 
 interface SongSectionCardProps {
   section: SongSectionModel
@@ -41,6 +58,7 @@ interface SongSectionCardProps {
   isDragging: boolean
   showDetails: boolean
   maxSectionProgress: number
+  maxSectionRehearsals: number
   draggableProvided?: DraggableProvided
   bandMembers?: BandMember[]
   isArtistBand?: boolean
@@ -52,10 +70,23 @@ function SongSectionCard({
   isDragging,
   showDetails,
   maxSectionProgress,
+  maxSectionRehearsals,
   draggableProvided,
   bandMembers,
   isArtistBand
 }: SongSectionCardProps) {
+  const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
+    getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
+  )
+  const [rehearsalsWidth, setRehearsalsWidth] = useState(
+    getRehearsalsWidth(maxSectionRehearsals.toString().length)
+  )
+  useDidUpdate(() => {
+    const rehearsalsMaxLength = maxSectionRehearsals.toString().length
+    setRehearsalsMarginLeft(getRehearsalsMarginLeft(rehearsalsMaxLength))
+    setRehearsalsWidth(getRehearsalsWidth(rehearsalsMaxLength))
+  }, [maxSectionRehearsals])
+
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation, { isLoading: isDeleteLoading }] = useDeleteSongSectionMutation()
 
@@ -99,7 +130,6 @@ function SongSectionCard({
       <Menu.Target>
         <Stack
           py={'xs'}
-          px={'md'}
           aria-label={`song-section-${section.name}`}
           sx={(theme) => ({
             cursor: 'default',
@@ -118,7 +148,7 @@ function SongSectionCard({
           {...draggableProvided?.draggableProps}
           onContextMenu={openMenu}
         >
-          <Group gap={'xs'}>
+          <Group gap={'xs'} px={'md'}>
             <ActionIcon
               aria-label={'drag-handle'}
               variant={'subtle'}
@@ -207,7 +237,7 @@ function SongSectionCard({
           </Group>
 
           <Collapse in={showDetails}>
-            <Group aria-label={`song-section-details-${section.name}`} gap={'xl'} px={'md'}>
+            <Group aria-label={`song-section-details-${section.name}`} gap={'lg'} pr={'lg'}>
               <Tooltip.Floating
                 role={'tooltip'}
                 label={
@@ -216,7 +246,15 @@ function SongSectionCard({
                   </>
                 }
               >
-                <Text fw={500} c={'dimmed'} fz={'md'} inline>
+                <Text
+                  ml={rehearsalsMarginLeft}
+                  w={rehearsalsWidth}
+                  fz={12}
+                  ta={'center'}
+                  fw={500}
+                  c={'dimmed'}
+                  inline
+                >
                   <NumberFormatter value={section.rehearsals} />
                 </Text>
               </Tooltip.Floating>

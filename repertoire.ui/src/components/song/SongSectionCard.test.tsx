@@ -45,6 +45,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={false}
         isDragging={false}
       />
@@ -82,6 +83,7 @@ describe('Song Section Card', () => {
         }}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={false}
         isDragging={false}
         isArtistBand={true}
@@ -110,6 +112,7 @@ describe('Song Section Card', () => {
         }}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={false}
         isDragging={false}
         isArtistBand={false}
@@ -128,6 +131,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={maxSectionProgress}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
@@ -167,6 +171,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
@@ -189,6 +194,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
@@ -209,6 +215,7 @@ describe('Song Section Card', () => {
           section={section}
           songId={''}
           maxSectionProgress={0}
+          maxSectionRehearsals={0}
           showDetails={true}
           isDragging={false}
         />
@@ -237,6 +244,7 @@ describe('Song Section Card', () => {
             section={section}
             songId={songId}
             maxSectionProgress={0}
+            maxSectionRehearsals={0}
             showDetails={true}
             isDragging={false}
           />
@@ -270,6 +278,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
