@@ -5,6 +5,7 @@ import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { CreateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
+import dayjs from 'dayjs'
 
 describe('Add New Artist Album Modal', () => {
   const server = setupServer()
@@ -25,37 +26,83 @@ describe('Add New Artist Album Modal', () => {
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
-  it('should send only create request when no image is uploaded', async () => {
-    const user = userEvent.setup()
+  describe('should send only create request when no image is uploaded', () => {
+    it('minimal', async () => {
+      const user = userEvent.setup()
 
-    const newTitle = 'New Album'
+      const newTitle = 'New Album'
 
-    const onClose = vitest.fn()
+      const onClose = vitest.fn()
 
-    let capturedRequest: CreateAlbumRequest
-    server.use(
-      http.post('/albums', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateAlbumRequest
-        return HttpResponse.json({ message: 'it worked' })
-      })
-    )
+      let capturedRequest: CreateAlbumRequest
+      server.use(
+        http.post('/albums', async (req) => {
+          capturedRequest = (await req.request.json()) as CreateAlbumRequest
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
 
-    reduxRender(
-      withToastify(<AddNewArtistAlbumModal opened={true} onClose={onClose} artistId={undefined} />)
-    )
+      reduxRender(
+        withToastify(
+          <AddNewArtistAlbumModal opened={true} onClose={onClose} artistId={undefined} />
+        )
+      )
 
-    await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-    await user.click(screen.getByRole('button', { name: /submit/i }))
+      await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+      await user.click(screen.getByRole('button', { name: /submit/i }))
 
-    await waitFor(() =>
-      expect(capturedRequest).toStrictEqual({
-        title: newTitle
-      })
-    )
-    expect(onClose).toHaveBeenCalledOnce()
+      await waitFor(() =>
+        expect(capturedRequest).toStrictEqual({
+          title: newTitle
+        })
+      )
+      expect(onClose).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(`${newTitle} added!`))
-    expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+      expect(screen.getByText(`${newTitle} added!`))
+      expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+    })
+
+    it('with release date', async () => {
+      const user = userEvent.setup()
+
+      const newTitle = 'New Album'
+      const now = new Date()
+      const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+
+      const onClose = vitest.fn()
+
+      let capturedRequest: CreateAlbumRequest
+      server.use(
+        http.post('/albums', async (req) => {
+          capturedRequest = (await req.request.json()) as CreateAlbumRequest
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      reduxRender(
+        withToastify(
+          <AddNewArtistAlbumModal opened={true} onClose={onClose} artistId={undefined} />
+        )
+      )
+
+      await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+      await user.type(screen.getByRole('button', { name: /release-date/i }), newTitle)
+      await user.click(
+        screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
+      )
+      await user.click(screen.getByRole('button', { name: /submit/i }))
+
+      await waitFor(() =>
+        expect(capturedRequest).toStrictEqual({
+          title: newTitle,
+          releaseDate: newReleaseDate.toISOString()
+        })
+      )
+      expect(onClose).toHaveBeenCalledOnce()
+
+      expect(screen.getByText(`${newTitle} added!`))
+      expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+    })
   })
 
   it('should send only create request when no image is uploaded', async () => {
