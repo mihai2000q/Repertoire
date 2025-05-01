@@ -1,4 +1,4 @@
-import { emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import ArtistSongCard from './ArtistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -21,11 +21,9 @@ describe('Artist Song Card', () => {
   }
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
-    title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
+    title: 'Album 1'
   }
 
   const server = setupServer()
@@ -82,11 +80,7 @@ describe('Artist Song Card', () => {
     const localSongWithAlbum: Song = {
       ...song,
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something-album.png'
       }
     }
@@ -342,12 +336,7 @@ describe('Artist Song Card', () => {
       )
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={song}
-          artistId={''}
-          isUnknownArtist={false}
-          order={emptyOrder}
-        />
+        <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -370,12 +359,7 @@ describe('Artist Song Card', () => {
     }
 
     const [_, store] = reduxRouterRender(
-      <ArtistSongCard
-        song={localSong}
-        artistId={''}
-        isUnknownArtist={false}
-        order={emptyOrder}
-      />
+      <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     await user.click(screen.getByText(localSong.album.title))

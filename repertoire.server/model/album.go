@@ -10,11 +10,11 @@ import (
 
 type EnhancedAlbum struct {
 	Album
-	SongsCount     float64   `gorm:"->" json:"songsCount"`
-	Rehearsals     float64   `gorm:"->" json:"rehearsals"`
-	Confidence     float64   `gorm:"->" json:"confidence"`
-	Progress       float64   `gorm:"->" json:"progress"`
-	LastTimePlayed time.Time `gorm:"->" json:"lastTimePlayed"`
+	SongsCount     float64    `gorm:"->" json:"songsCount"`
+	Rehearsals     float64    `gorm:"->" json:"rehearsals"`
+	Confidence     float64    `gorm:"->" json:"confidence"`
+	Progress       float64    `gorm:"->" json:"progress"`
+	LastTimePlayed *time.Time `gorm:"->" json:"lastTimePlayed"`
 }
 
 type Album struct {

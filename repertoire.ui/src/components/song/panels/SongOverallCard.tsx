@@ -1,7 +1,7 @@
 import { Card, Flex, Grid, NumberFormatter, Stack, Text, Tooltip } from '@mantine/core'
 import Song from '../../../types/models/Song.ts'
-import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
-import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
+import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
+import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
 
 interface SongOverallCardProps {
   song: Song
@@ -51,7 +51,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Flex>
           </Grid.Col>
           <Grid.Col span={6}>
-            <SongConfidenceBar confidence={song.confidence} flex={1} />
+            <ConfidenceBar confidence={song.confidence} flex={1} />
           </Grid.Col>
 
           <Grid.Col span={6}>
@@ -64,7 +64,7 @@ function SongOverallCard({ song }: SongOverallCardProps) {
             </Flex>
           </Grid.Col>
           <Grid.Col span={6}>
-            <SongProgressBar progress={song.progress} flex={1} />
+            <ProgressBar progress={song.progress} flex={1} />
           </Grid.Col>
         </Grid>
       </Stack>

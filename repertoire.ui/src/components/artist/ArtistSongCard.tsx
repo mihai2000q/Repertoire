@@ -4,6 +4,7 @@ import {
   alpha,
   Avatar,
   Center,
+  Flex,
   Group,
   Menu,
   NumberFormatter,
@@ -20,9 +21,9 @@ import { useDisclosure, useHover } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
 import SongProperty from '../../types/enums/SongProperty.ts'
-import DifficultyBar from '../@ui/misc/DifficultyBar.tsx'
-import SongConfidenceBar from '../@ui/misc/SongConfidenceBar.tsx'
-import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
+import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
+import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
@@ -163,10 +164,10 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                 </>
               )}
             </Group>
-            <Group>
+            <Flex>
               {order.property === SongProperty.ReleaseDate && (
                 <Tooltip
-                  label={`Song was released on ${dayjs(song.releaseDate).format('DD MMMM YYYY')}`}
+                  label={`Song was released on ${dayjs(song.releaseDate).format('D MMMM YYYY')}`}
                   openDelay={400}
                   disabled={!song.releaseDate}
                 >
@@ -193,10 +194,10 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                 </Tooltip.Floating>
               )}
               {order.property === SongProperty.Confidence && (
-                <SongConfidenceBar confidence={song.confidence} w={100} mt={4} />
+                <ConfidenceBar confidence={song.confidence} w={100} mt={4} />
               )}
               {order.property === SongProperty.Progress && (
-                <SongProgressBar progress={song.progress} w={100} mt={4} />
+                <ProgressBar progress={song.progress} w={100} mt={4} />
               )}
               {order.property === SongProperty.LastPlayed && (
                 <Tooltip
@@ -211,7 +212,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                   </Text>
                 </Tooltip>
               )}
-            </Group>
+            </Flex>
           </Stack>
 
           <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>

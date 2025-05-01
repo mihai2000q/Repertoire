@@ -9,6 +9,11 @@ export default interface Album {
   artist?: Artist
   songs: Song[]
 
+  rehearsals: number,
+  confidence: number,
+  progress: number,
+  lastTimePlayed?: string
+
   createdAt: string
   updatedAt: string
 }

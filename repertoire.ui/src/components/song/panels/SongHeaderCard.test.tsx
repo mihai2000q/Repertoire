@@ -133,11 +133,7 @@ describe('Song Header Card', () => {
     const localSongWithAlbum: Song = {
       ...song,
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something-album.png'
       }
     }

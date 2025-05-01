@@ -34,11 +34,11 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
-import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
+import DifficultyBar from '../../@ui/bar/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
-import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
-import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
+import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
+import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
@@ -389,7 +389,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <SongConfidenceBar confidence={song.confidence} size={7} />
+                  <ConfidenceBar confidence={song.confidence} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -402,7 +402,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <SongProgressBar progress={song.progress} size={7} />
+                  <ProgressBar progress={song.progress} size={7} />
                 </Grid.Col>
               </>
             )}

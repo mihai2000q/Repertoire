@@ -347,11 +347,7 @@ describe('Edit Song Header Modal', () => {
       ...song,
       imageUrl: undefined,
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something.png'
       }
     }

@@ -5,11 +5,14 @@ import {
   Avatar,
   Center,
   Checkbox,
+  Flex,
   Group,
   Menu,
+  NumberFormatter,
   Space,
   Stack,
-  Text
+  Text,
+  Tooltip
 } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
@@ -25,6 +28,8 @@ import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import { useRemoveAlbumsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
+import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -140,11 +145,52 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             <Text fw={500} lineClamp={order.property === AlbumProperty.Title ? 2 : 1}>
               {album.title}
             </Text>
-            {order.property === AlbumProperty.ReleaseDate && album.releaseDate && (
-              <Text fz={'xs'} c={'dimmed'}>
-                {dayjs(album.releaseDate).format('D MMM YYYY')}
-              </Text>
-            )}
+            <Flex>
+              {order.property === AlbumProperty.ReleaseDate && (
+                <Tooltip
+                  label={`Album was released on ${dayjs(album.releaseDate).format('D MMMM YYYY')}`}
+                  openDelay={400}
+                  disabled={!album.releaseDate}
+                >
+                  <Text fz={'xs'} c={'dimmed'}>
+                    {album.releaseDate && dayjs(album.releaseDate).format('D MMM YYYY')}
+                  </Text>
+                </Tooltip>
+              )}
+              {order.property === AlbumProperty.Rehearsals && (
+                <Tooltip.Floating
+                  role={'tooltip'}
+                  label={
+                    <>
+                      Rehearsals: <NumberFormatter value={album.rehearsals} />
+                    </>
+                  }
+                >
+                  <Text fz={'xs'} c={'dimmed'}>
+                    <NumberFormatter value={album.rehearsals} />
+                  </Text>
+                </Tooltip.Floating>
+              )}
+              {order.property === AlbumProperty.Confidence && (
+                <ConfidenceBar confidence={album.confidence} w={100} mt={4} />
+              )}
+              {order.property === AlbumProperty.Progress && (
+                <ProgressBar progress={album.progress} w={100} mt={4} />
+              )}
+              {order.property === AlbumProperty.LastPlayed && (
+                <Tooltip
+                  label={`Album was played last time on ${dayjs(album.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                  openDelay={400}
+                  disabled={!album.lastTimePlayed}
+                >
+                  <Text fz={'xs'} c={'dimmed'}>
+                    {album.lastTimePlayed
+                      ? dayjs(album.lastTimePlayed).format('D MMM YYYY')
+                      : 'never'}
+                  </Text>
+                </Tooltip>
+              )}
+            </Flex>
           </Stack>
 
           <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>

@@ -223,11 +223,7 @@ describe('Song Drawer', () => {
       ...song,
       id: '3123123123',
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something-album.png'
       }
     }

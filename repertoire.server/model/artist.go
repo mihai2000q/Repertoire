@@ -10,13 +10,13 @@ import (
 
 type EnhancedArtist struct {
 	Artist
-	BandMembersCount float64   `gorm:"->" json:"bandMembersCount"`
-	AlbumsCount      float64   `gorm:"->" json:"albumsCount"`
-	SongsCount       float64   `gorm:"->" json:"songsCount"`
-	Rehearsals       float64   `gorm:"->" json:"rehearsals"`
-	Confidence       float64   `gorm:"->" json:"confidence"`
-	Progress         float64   `gorm:"->" json:"progress"`
-	LastTimePlayed   time.Time `gorm:"->" json:"lastTimePlayed"`
+	BandMembersCount float64    `gorm:"->" json:"bandMembersCount"`
+	AlbumsCount      float64    `gorm:"->" json:"albumsCount"`
+	SongsCount       float64    `gorm:"->" json:"songsCount"`
+	Rehearsals       float64    `gorm:"->" json:"rehearsals"`
+	Confidence       float64    `gorm:"->" json:"confidence"`
+	Progress         float64    `gorm:"->" json:"progress"`
+	LastTimePlayed   *time.Time `gorm:"->" json:"lastTimePlayed"`
 }
 
 type Artist struct {

@@ -17,7 +17,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { useHover } from '@mantine/hooks'
 import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent } from 'react'
-import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
 import Song from '../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
@@ -130,7 +130,7 @@ function LocalSongCard({ song }: { song: Song }) {
           </Stack>
         </Grid.Col>
         <Grid.Col span={4} display={{ base: 'block', md: 'none', xxl: 'block' }}>
-          <SongProgressBar progress={song.progress} mx={'xs'} />
+          <ProgressBar progress={song.progress} mx={'xs'} />
         </Grid.Col>
         <Grid.Col span={{ base: 3, md: 4, xxl: 3 }} px={'md'}>
           <Tooltip
