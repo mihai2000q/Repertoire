@@ -442,7 +442,7 @@ func (s songRepository) addPlaylistsFilter(tx *gorm.DB, searchBy []string) []str
 	newSearchBy := slices.Clone(searchBy)
 	for i := range newSearchBy {
 		if strings.HasPrefix(newSearchBy[i], propertyPrefix) {
-			playlistId := strings.TrimLeft(newSearchBy[i], propertyPrefix)
+			playlistId := strings.TrimPrefix(newSearchBy[i], propertyPrefix)
 			playlistsSubQuery := s.client.
 				Select("1").
 				Table("playlist_songs").
@@ -462,7 +462,7 @@ func (s songRepository) addInstrumentsFilter(tx *gorm.DB, searchBy []string) []s
 	for i := range newSearchBy {
 		if strings.HasPrefix(newSearchBy[i], propertyPrefix) {
 			var instrumentIds []string
-			for _, id := range strings.Split(strings.TrimLeft(newSearchBy[i], propertyPrefix), ",") {
+			for _, id := range strings.Split(strings.TrimPrefix(newSearchBy[i], propertyPrefix), ",") {
 				instrumentIds = append(instrumentIds, strings.TrimSpace(id))
 			}
 			instrumentsSubQuery := s.client.
