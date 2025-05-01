@@ -5,7 +5,7 @@ import EditPanelCard from '../../@ui/card/EditPanelCard.tsx'
 import Song from '../../../types/models/Song.ts'
 import { useDisclosure } from '@mantine/hooks'
 import EditSongInformationModal from '../modal/EditSongInformationModal.tsx'
-import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
+import DifficultyBar from '../../@ui/bar/DifficultyBar.tsx'
 
 const NotSet = ({ label }: { label?: string }) => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>

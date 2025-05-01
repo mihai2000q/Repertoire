@@ -1,7 +1,7 @@
 import { Card, Flex, Grid, NumberFormatter, Stack, Text, Tooltip } from '@mantine/core'
 import Song from '../../../types/models/Song.ts'
-import ProgressBar from '../../@ui/misc/ProgressBar.tsx'
-import ConfidenceBar from '../../@ui/misc/ConfidenceBar.tsx'
+import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
+import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
 
 interface SongOverallCardProps {
   song: Song
