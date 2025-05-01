@@ -231,7 +231,10 @@ export const emptyAlbum: Album = {
   id: '',
   songs: [],
   title: '',
-  updatedAt: ''
+  updatedAt: '',
+  rehearsals: 0,
+  confidence: 0,
+  progress: 0
 }
 
 export const emptySong: Song = {

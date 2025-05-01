@@ -1,4 +1,4 @@
-import { emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import AddNewAlbumSongModal from './AddNewAlbumSongModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
@@ -9,11 +9,8 @@ import Album from '../../../types/models/Album.ts'
 
 describe('Add New Album Song Modal', () => {
   const album: Album = {
-    id: '1',
-    title: '',
-    songs: [],
-    createdAt: '',
-    updatedAt: ''
+    ...emptyAlbum,
+    id: '1'
   }
 
   const server = setupServer()

@@ -1,4 +1,4 @@
-import { emptyOrder, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyOrder, reduxRouterRender } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
@@ -12,11 +12,9 @@ import { setupServer } from 'msw/node'
 
 describe('Artist Album Card', () => {
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
-    title: 'Album 1',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
+    title: 'Album 1'
   }
 
   const server = setupServer()
@@ -80,6 +78,88 @@ describe('Artist Album Card', () => {
       expect(
         screen.getByText(dayjs(localAlbum.releaseDate).format('D MMM YYYY'))
       ).toBeInTheDocument()
+    })
+
+    it('should display the rehearsals, when it is rehearsals', () => {
+      const order = {
+        ...emptyOrder,
+        property: AlbumProperty.Rehearsals
+      }
+
+      const localAlbum = {
+        ...album,
+        rehearsals: 34
+      }
+
+      reduxRouterRender(
+        <ArtistAlbumCard album={localAlbum} artistId={''} isUnknownArtist={false} order={order} />
+      )
+
+      expect(screen.getAllByText(localAlbum.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
+      expect(screen.getAllByText(localAlbum.rehearsals)[0]).toBeVisible()
+      expect(screen.getAllByText(localAlbum.rehearsals)[1]).not.toBeVisible()
+    })
+
+    it('should display the confidence bar, when it is confidence', () => {
+      const order = {
+        ...emptyOrder,
+        property: AlbumProperty.Confidence
+      }
+
+      const localAlbum = {
+        ...album,
+        confidence: 23
+      }
+
+      reduxRouterRender(
+        <ArtistAlbumCard album={localAlbum} artistId={''} isUnknownArtist={false} order={order} />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
+    })
+
+    it('should display the progress bar, when it is progress', () => {
+      const order = {
+        ...emptyOrder,
+        property: AlbumProperty.Progress
+      }
+
+      const localAlbum = {
+        ...album,
+        progress: 123
+      }
+
+      reduxRouterRender(
+        <ArtistAlbumCard album={localAlbum} artistId={''} isUnknownArtist={false} order={order} />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
+    })
+
+    it('should display the last time played date, when it is last time played', () => {
+      const order = {
+        ...emptyOrder,
+        property: AlbumProperty.LastPlayed
+      }
+
+      const localAlbum = {
+        ...album,
+        lastTimePlayed: '2024-10-12T10:30'
+      }
+
+      const [{ rerender }] = reduxRouterRender(
+        <ArtistAlbumCard album={localAlbum} artistId={''} isUnknownArtist={false} order={order} />
+      )
+
+      expect(
+        screen.getByText(dayjs(localAlbum.lastTimePlayed).format('D MMM YYYY'))
+      ).toBeInTheDocument()
+
+      rerender(
+        <ArtistAlbumCard album={album} artistId={''} isUnknownArtist={false} order={order} />
+      )
+
+      expect(screen.getByText(/never/i)).toBeInTheDocument()
     })
   })
 

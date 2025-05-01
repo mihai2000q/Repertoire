@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import Artists from './Artists.tsx'
 import {
   defaultArtistFiltersMetadata,
+  emptyAlbum,
   emptyArtist,
   emptySong,
   reduxRouterRender
@@ -56,11 +57,8 @@ describe('Artists', () => {
       const response: WithTotalCountResponse<Album> = {
         models: [
           {
-            id: '',
-            title: 'Some Album',
-            songs: [],
-            createdAt: '',
-            updatedAt: ''
+            ...emptyAlbum,
+            title: 'Some Album'
           }
         ],
         totalCount: 1

@@ -1,7 +1,13 @@
 import { screen } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
-import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../test-utils'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
 import Difficulty from '../../types/enums/Difficulty.ts'
@@ -54,11 +60,7 @@ describe('Song Card', () => {
     const localSongWithAlbum: Song = {
       ...song,
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something-album.png'
       }
     }

@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyAlbum, reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditAlbumHeaderModal from './EditAlbumHeaderModal.tsx'
 import Album from '../../../types/models/Album.ts'
 import { act, screen, waitFor } from '@testing-library/react'
@@ -13,11 +13,9 @@ import SearchType from '../../../types/enums/SearchType.ts'
 
 describe('Edit Album Header Modal', () => {
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    songs: [],
-    createdAt: '',
-    updatedAt: '',
     releaseDate: '2024-12-12T00:00:00',
     imageUrl: 'some-image.png'
   }

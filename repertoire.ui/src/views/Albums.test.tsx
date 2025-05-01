@@ -1,6 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import Albums from './Albums.tsx'
-import { defaultAlbumFiltersMetadata, emptySong, reduxRouterRender } from '../test-utils.tsx'
+import {
+  defaultAlbumFiltersMetadata,
+  emptyAlbum,
+  emptySong,
+  reduxRouterRender
+} from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
@@ -18,18 +23,14 @@ import OrderType from '../types/enums/OrderType.ts'
 describe('Albums', () => {
   const albums: Album[] = [
     {
+      ...emptyAlbum,
       id: '1',
-      title: 'Album 1',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      title: 'Album 1'
     },
     {
+      ...emptyAlbum,
       id: '2',
-      title: 'Album 2',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      title: 'Album 2'
     }
   ]
   const totalCount = 2
