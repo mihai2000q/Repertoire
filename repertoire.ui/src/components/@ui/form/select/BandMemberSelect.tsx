@@ -89,7 +89,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         >
           <IconUser size={14} />
         </Avatar>
-        <Text inline fw={500} lineClamp={2}>
+        <Text lh={'xxs'} fw={500} lineClamp={2}>
           {member.name}
         </Text>
       </Group>

@@ -82,7 +82,7 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                         <IconInfoCircleFilled size={13} />
                       </Box>
 
-                      <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                      <Text fw={500} c={'dimmed'} fz={'xs'}>
                         If no image is uploaded, it will be inherited.
                       </Text>
                     </Group>
@@ -93,7 +93,7 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                         <IconInfoCircleFilled size={13} />
                       </Box>
 
-                      <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                      <Text fw={500} c={'dimmed'} fz={'xs'}>
                         The new song will inherit the <b>{inheritedValues.join(', ')}</b>.
                       </Text>
                     </Group>

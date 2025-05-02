@@ -205,10 +205,10 @@ function SongSectionCard({
               </Box>
             )}
 
-            <Text inline fw={600}>
+            <Text lh={'xxs'} fw={600}>
               {section.songSectionType.name}
             </Text>
-            <Text flex={1} inline truncate={'end'}>
+            <Text flex={1} lh={'xxs'} truncate={'end'}>
               {section.name}
             </Text>
 

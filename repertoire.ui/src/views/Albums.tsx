@@ -122,7 +122,7 @@ function Albums() {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text inline mb={'xs'}>
+        <Text lh={'xxs'} mb={'xs'}>
           {startCount} - {endCount} albums out of{' '}
           {(albums?.totalCount ?? 0) + (showUnknownAlbum ? 1 : 0)}
         </Text>

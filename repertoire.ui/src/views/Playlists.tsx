@@ -130,7 +130,7 @@ function Playlists() {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text inline mb={'xs'}>
+        <Text lh={'xxs'} mb={'xs'}>
           {startCount} - {endCount} playlists out of {playlists?.totalCount ?? 0}
         </Text>
       )}

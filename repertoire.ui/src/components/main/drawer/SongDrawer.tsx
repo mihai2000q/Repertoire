@@ -195,7 +195,7 @@ function SongDrawer() {
                     cursor: 'pointer',
                     '&:hover': { textDecoration: 'underline' }
                   }}
-                  inline
+                  lh={'xxs'}
                   lineClamp={1}
                 >
                   {song.artist.name}
@@ -206,7 +206,7 @@ function SongDrawer() {
             {song.album && (
               <Group gap={0} wrap={'nowrap'}>
                 {song.artist && (
-                  <Text fw={500} c={'dimmed'} inline pr={4}>
+                  <Text fw={500} c={'dimmed'} lh={'xxs'} pr={4}>
                     on
                   </Text>
                 )}
@@ -214,7 +214,7 @@ function SongDrawer() {
                   <HoverCard.Target>
                     <Text
                       fw={600}
-                      inline
+                      lh={'xxs'}
                       c={'dark'}
                       sx={{
                         cursor: 'pointer',
@@ -245,7 +245,7 @@ function SongDrawer() {
                         <Text fw={500} fz={'xs'} inline>
                           Album
                         </Text>
-                        <Text fw={600} fz={'md'} inline lineClamp={2}>
+                        <Text fw={600} fz={'md'} lh={'xxs'} lineClamp={2}>
                           {song.album.title}
                         </Text>
                         {song.album.releaseDate && (

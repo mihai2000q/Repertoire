@@ -86,7 +86,7 @@ function ArtistAutocomplete({
               <CustomIconUserAlt size={18} />
             </Center>
           </Avatar>
-          <Text inline fw={500} lineClamp={2}>
+          <Text lh={'xxs'} fw={500} lineClamp={2}>
             {artist.name}
           </Text>
         </Group>
@@ -164,7 +164,7 @@ function ArtistAutocomplete({
                           <CustomIconUserAlt size={13} />
                         </Center>
                       </Avatar>
-                      <Text inline fw={500} lineClamp={2}>
+                      <Text lh={'xxs'} fw={500} lineClamp={2}>
                         {artist.name}
                       </Text>
                     </Group>

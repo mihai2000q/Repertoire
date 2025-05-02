@@ -299,7 +299,7 @@ function ArtistDrawer() {
                     {song.title}
                   </Text>
                   {song.album && (
-                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} inline>
+                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} lh={'xxs'}>
                       {song.album.title}
                     </Text>
                   )}

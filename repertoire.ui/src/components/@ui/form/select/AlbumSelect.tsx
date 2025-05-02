@@ -67,7 +67,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
             </Center>
           </Avatar>
           <Stack gap={'xxs'}>
-            <Text inline fw={500} lineClamp={2}>
+            <Text lh={'xxs'} fw={500} lineClamp={2}>
               {album.title}
             </Text>
             {album.artist && (
@@ -106,7 +106,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
           </Center>
         </Avatar>
         <Stack gap={0}>
-          <Text inline fw={500} lineClamp={2}>
+          <Text lh={'xxs'} fw={500} lineClamp={localAlbum.artist ? 1 : 2}>
             {localAlbum.title}
           </Text>
           {localAlbum.artist && (

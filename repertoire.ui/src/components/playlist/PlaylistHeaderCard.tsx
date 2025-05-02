@@ -82,11 +82,11 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             {playlist.title}
           </Title>
 
-          <Text fw={500} fz={'sm'} c={'dimmed'} inline>
+          <Text fw={500} fz={'sm'} c={'dimmed'} lh={'xxs'}>
             {playlist.songs.length} song{plural(playlist.songs)}
           </Text>
 
-          <Text fz={'sm'} c={'dimmed'} lineClamp={3}>
+          <Text fz={'sm'} c={'dimmed'} lineClamp={2} lh={'xs'}>
             {playlist.description}
           </Text>
         </Stack>

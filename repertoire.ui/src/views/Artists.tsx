@@ -131,7 +131,7 @@ function Artists() {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text inline mb={'xs'}>
+        <Text lh={'xxs'} mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
           {(artists?.totalCount ?? 0) + (showUnknownArtist ? 1 : 0)}
         </Text>

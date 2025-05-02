@@ -120,7 +120,7 @@ function Songs(): ReactElement {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text inline mb={'xs'}>
+        <Text lh={'xxs'} mb={'xs'}>
           {startCount} - {endCount} songs out of {songs?.totalCount ?? 0}
         </Text>
       )}
