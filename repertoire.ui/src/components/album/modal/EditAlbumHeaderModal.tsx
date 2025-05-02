@@ -1,7 +1,7 @@
 import Album from '../../../types/models/Album.ts'
 import {
-  Box,
   Button,
+  Center,
   Group,
   LoadingOverlay,
   Modal,
@@ -111,9 +111,9 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
             {album.imageUrl !== image && (
               <Group gap={'xxs'}>
-                <Box c={'primary.8'}>
+                <Center c={'primary.8'}>
                   <IconInfoCircleFilled size={13} />
-                </Box>
+                </Center>
 
                 <Text inline fw={500} c={'dimmed'} fz={'xs'}>
                   This change will update all the associated songs
@@ -146,9 +146,9 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
               {album.artist?.id !== artist?.id && (
                 <Group gap={'xxs'}>
-                  <Box c={'primary.8'}>
+                  <Center c={'primary.8'}>
                     <IconInfoCircleFilled size={13} />
-                  </Box>
+                  </Center>
 
                   <Text inline fw={500} c={'dimmed'} fz={'xs'}>
                     This change will update all the associated songs&#39; artist

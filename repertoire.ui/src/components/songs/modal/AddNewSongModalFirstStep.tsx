@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Textarea, TextInput, Tooltip } from '@mantine/core'
+import { Center, Group, Stack, Textarea, TextInput, Tooltip } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
 import AlbumAutocomplete from '../../@ui/form/input/AlbumAutocomplete.tsx'
@@ -56,7 +56,7 @@ function AddNewSongModalFirstStep({
             {...form.getInputProps('artistName')}
           />
           {album && (
-            <Box c={'primary.8'} mt={'lg'} ml={4}>
+            <Center c={'primary.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
@@ -65,7 +65,7 @@ function AddNewSongModalFirstStep({
               >
                 <IconInfoCircleFilled aria-label={'artist-info'} size={18} />
               </Tooltip>
-            </Box>
+            </Center>
           )}
         </Group>
       </Group>

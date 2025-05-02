@@ -110,9 +110,9 @@ function AddExistingAlbumSongsModal({
               Choose songs
             </Text>
             <Tooltip label={'All songs will inherit the artist of the album'}>
-              <Box c={'primary.8'}>
+              <Center c={'primary.8'}>
                 <IconInfoCircleFilled aria-label={'info-icon'} size={15} />
-              </Box>
+              </Center>
             </Tooltip>
           </Group>
 

@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Text, TextInput } from '@mantine/core'
+import { Center, Group, Stack, Text, TextInput } from '@mantine/core'
 import {
   IconBrandYoutubeFilled,
   IconGuitarPickFilled,
@@ -40,9 +40,9 @@ function AddNewSongModalFinalStep({ form, image, setImage, album }: AddNewSongMo
 
       {!image && album?.imageUrl && (
         <Group gap={6}>
-          <Box c={'primary.8'} mt={3}>
+          <Center c={'primary.8'}>
             <IconInfoCircleFilled size={15} />
-          </Box>
+          </Center>
 
           <Text inline fw={500} c={'dimmed'} fz={'xs'}>
             If no image is uploaded, it will be inherited from the album

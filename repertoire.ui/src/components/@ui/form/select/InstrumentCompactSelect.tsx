@@ -2,6 +2,7 @@ import {
   ActionIcon,
   alpha,
   Box,
+  Center,
   Combobox,
   ComboboxProps,
   Group,
@@ -63,9 +64,9 @@ const InstrumentCompactSelect = forwardRef<HTMLButtonElement, InstrumentCompactS
         }
       >
         <Group gap={'xs'} wrap={'nowrap'}>
-          <Box c={'primary.7'} w={19} h={19}>
+          <Center c={'primary.7'} w={19} h={19}>
             {getInstrumentIcon(instrumentOption.name)}
-          </Box>
+          </Center>
           <Text fz={'sm'} fw={500} lineClamp={1}>
             {instrumentOption.name}
           </Text>

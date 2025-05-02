@@ -113,9 +113,9 @@ function AddExistingArtistAlbumsModal({
               ta={'center'}
               label={'All songs related to the added album will be added to the artist too'}
             >
-              <Box c={'primary.8'}>
+              <Center c={'primary.8'}>
                 <IconInfoCircleFilled size={15} aria-label={'info-icon'} />
-              </Box>
+              </Center>
             </Tooltip>
           </Group>
 

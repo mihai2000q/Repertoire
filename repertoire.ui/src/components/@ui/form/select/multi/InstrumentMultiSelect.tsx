@@ -1,5 +1,4 @@
 import {
-  Box,
   Center,
   Combobox,
   Group,
@@ -106,9 +105,9 @@ function InstrumentMultiSelect({
             {instruments?.map((ins) => (
               <Combobox.Option value={ins.id} key={ins.id} active={ids.includes(ins.id)}>
                 <Group flex={1} gap={'xs'}>
-                  <Box c={'primary.7'} w={19} h={19}>
+                  <Center c={'primary.7'} w={19} h={19}>
                     {getInstrumentIcon(ins.name)}
-                  </Box>
+                  </Center>
                   <Text fz={'sm'} fw={500}>
                     {ins.name}
                   </Text>
