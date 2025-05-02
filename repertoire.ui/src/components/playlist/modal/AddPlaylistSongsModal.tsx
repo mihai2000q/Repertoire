@@ -146,8 +146,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
             </Group>
           )}
 
-          <ScrollArea w={'100%'} scrollbars={'y'} scrollbarSize={7}>
-            <Stack gap={0} style={{ maxHeight: '50vh' }}>
+          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+            <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
                 visible={!songsIsLoading && songsIsFetching}
@@ -205,7 +205,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                           highlight={search}
                           highlightStyles={{ fontWeight: 800 }}
                           fw={500}
-                          truncate={'end'}
+                          lineClamp={1}
                         >
                           {song.title}
                         </Highlight>
@@ -230,7 +230,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                 ))
               )}
             </Stack>
-          </ScrollArea>
+          </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={songIds.length > 0} label="Select songs">

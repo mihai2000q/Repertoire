@@ -147,8 +147,8 @@ function EditSongSectionsOccurrencesModal({
           <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
           <Stack>
-            <ScrollArea scrollbars={'y'} scrollbarSize={7}>
-              <Stack px={'md'} gap={'xs'} style={{ maxHeight: '50vh' }}>
+            <ScrollArea.Autosize mah={'50vh'} scrollbars={'y'} scrollbarSize={7}>
+              <Stack px={'md'} gap={'xs'}>
                 {sections.map((section) => (
                   <Group key={section.id} aria-label={`section-${section.name}`} gap={'xxs'}>
                     <TextInput
@@ -205,7 +205,7 @@ function EditSongSectionsOccurrencesModal({
                   </Group>
                 ))}
               </Stack>
-            </ScrollArea>
+            </ScrollArea.Autosize>
 
             <Tooltip
               disabled={hasChanged}
