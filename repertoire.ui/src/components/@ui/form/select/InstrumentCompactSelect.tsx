@@ -134,6 +134,8 @@ const InstrumentCompactSelect = forwardRef<HTMLButtonElement, InstrumentCompactS
             <Tooltip
               label={`${instrument.name} is selected`}
               openDelay={200}
+              multiline={true}
+              maw={200}
               position={'top'}
               disabled={combobox.dropdownOpened}
             >
