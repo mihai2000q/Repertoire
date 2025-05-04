@@ -3,7 +3,17 @@ import Order from '../../../types/Order.ts'
 import { Dispatch, SetStateAction } from 'react'
 import Song from '../../../types/models/Song.ts'
 import ArtistSongsLoader from '../loader/ArtistSongsLoader.tsx'
-import { ActionIcon, Card, Group, LoadingOverlay, Menu, Space, Stack, Text } from '@mantine/core'
+import {
+  ActionIcon,
+  Card,
+  Group,
+  LoadingOverlay,
+  Menu,
+  ScrollArea,
+  Space,
+  Stack,
+  Text
+} from '@mantine/core'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import ArtistSongCard from '../ArtistSongCard.tsx'
@@ -39,8 +49,8 @@ function ArtistSongsCard({
   if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'songs-card'} p={0} h={'100%'} mb={'lg'}>
-      <Stack gap={0}>
+    <Card variant={'panel'} aria-label={'songs-card'} flex={1} p={0} mah={'100%'}>
+      <Stack gap={0} mah={'100%'}>
         <LoadingOverlay visible={isFetching} />
 
         <Group px={'md'} py={'xs'} gap={'xs'}>
@@ -72,25 +82,41 @@ function ArtistSongsCard({
             </Menu.Dropdown>
           </Menu>
         </Group>
-        <Stack gap={0}>
-          {songs.models.map((song) => (
-            <ArtistSongCard
-              key={song.id}
-              song={song}
-              artistId={artistId}
-              isUnknownArtist={isUnknownArtist}
-              order={order}
-            />
-          ))}
-          {songs.models.length === songs.totalCount && (
-            <NewHorizontalCard
-              ariaLabel={'new-songs-card'}
-              onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
-            >
-              Add New Songs
-            </NewHorizontalCard>
-          )}
-        </Stack>
+
+        <ScrollArea.Autosize
+          scrollbars={'y'}
+          scrollbarSize={7}
+          mah={'100%'}
+          styles={{
+            viewport: {
+              '> div': {
+                display: 'block !important',
+                width: 0,
+                minWidth: '100%'
+              }
+            }
+          }}
+        >
+          <Stack gap={0} style={{ overflow: 'hidden' }}>
+            {songs.models.map((song) => (
+              <ArtistSongCard
+                key={song.id}
+                song={song}
+                artistId={artistId}
+                isUnknownArtist={isUnknownArtist}
+                order={order}
+              />
+            ))}
+            {songs.models.length === songs.totalCount && (
+              <NewHorizontalCard
+                ariaLabel={'new-songs-card'}
+                onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
+              >
+                Add New Songs
+              </NewHorizontalCard>
+            )}
+          </Stack>
+        </ScrollArea.Autosize>
       </Stack>
 
       <AddNewArtistSongModal
