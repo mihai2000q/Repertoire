@@ -63,7 +63,7 @@ function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: Advan
       <Menu.Target>{children}</Menu.Target>
 
       <Menu.Dropdown>
-        <ScrollArea scrollbars={'y'} scrollbarSize={7}>
+        <ScrollArea.Autosize mah={'40vh'} scrollbars={'y'} scrollbarSize={7}>
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (
@@ -71,7 +71,6 @@ function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: Advan
                   gap={'xxs'}
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  style={{ maxHeight: '40vh' }}
                 >
                   {orders.map((order, index) => (
                     <Draggable key={order.label} index={index} draggableId={order.label}>
@@ -171,7 +170,7 @@ function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: Advan
               )}
             </Droppable>
           </DragDropContext>
-        </ScrollArea>
+        </ScrollArea.Autosize>
       </Menu.Dropdown>
     </Menu>
   )
