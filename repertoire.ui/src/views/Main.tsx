@@ -13,6 +13,7 @@ import AlbumDrawer from '../components/main/drawer/AlbumDrawer.tsx'
 import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
+import useTopbarHeight from '../hooks/useTopbarHeight.ts'
 
 function Main(): ReactElement {
   useErrorRedirection()
@@ -20,7 +21,7 @@ function Main(): ReactElement {
 
   const isDesktop = useIsDesktop()
   const titleBarHeight = useTitleBarHeight()
-  const topbarHeight = '65px'
+  const topbarHeight = useTopbarHeight()
 
   const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
