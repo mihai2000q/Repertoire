@@ -27,6 +27,7 @@ import Song from './views/Song.tsx'
 import Playlists from './views/Playlists.tsx'
 import Playlist from './views/Playlist.tsx'
 import useIsDesktop from './hooks/useIsDesktop.ts'
+import { ScrollRefProvider } from './context/ScrollRefContext.tsx'
 
 function App(): ReactElement {
   const isDesktop = useIsDesktop()
@@ -35,44 +36,46 @@ function App(): ReactElement {
   return (
     <div className={'app'}>
       <Provider store={store}>
-        <MantineProvider
-          theme={theme}
-          forceColorScheme={'light'}
-          stylesTransform={emotionTransform}
-        >
-          <MantineEmotionProvider cache={emotionCache}>
-            <Router>
-              <CustomizedToastContainer />
-              <Routes>
-                <Route element={<Main />}>
-                  <Route path={'/'} element={<Navigate to={'home'} replace />} />
+        <ScrollRefProvider>
+          <MantineProvider
+            theme={theme}
+            forceColorScheme={'light'}
+            stylesTransform={emotionTransform}
+          >
+            <MantineEmotionProvider cache={emotionCache}>
+              <Router>
+                <CustomizedToastContainer />
+                <Routes>
+                  <Route element={<Main />}>
+                    <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
-                  <Route element={<IsAlreadyAuthenticated />}>
-                    <Route path={'sign-in'} element={<SignIn />} />
-                    <Route path={'sign-up'} element={<SignUp />} />
+                    <Route element={<IsAlreadyAuthenticated />}>
+                      <Route path={'sign-in'} element={<SignIn />} />
+                      <Route path={'sign-up'} element={<SignUp />} />
+                    </Route>
+
+                    <Route element={<RequireAuthentication />}>
+                      <Route path={'home'} element={<Home />} />
+                      <Route path={'artists'} element={<Artists />} />
+                      <Route path={'artist/:id'} element={<Artist />} />
+                      <Route path={'albums'} element={<Albums />} />
+                      <Route path={'album/:id'} element={<Album />} />
+                      <Route path={'songs'} element={<Songs />} />
+                      <Route path={'song/:id'} element={<Song />} />
+                      <Route path={'playlists'} element={<Playlists />} />
+                      <Route path={'playlist/:id'} element={<Playlist />} />
+
+                      {/* Errors */}
+                      <Route path={'401'} element={<Unauthorized />} />
+                      <Route path={'404'} element={<NotFound />} />
+                      <Route path={'*'} element={<Navigate to={'404'} replace />} />
+                    </Route>
                   </Route>
-
-                  <Route element={<RequireAuthentication />}>
-                    <Route path={'home'} element={<Home />} />
-                    <Route path={'artists'} element={<Artists />} />
-                    <Route path={'artist/:id'} element={<Artist />} />
-                    <Route path={'albums'} element={<Albums />} />
-                    <Route path={'album/:id'} element={<Album />} />
-                    <Route path={'songs'} element={<Songs />} />
-                    <Route path={'song/:id'} element={<Song />} />
-                    <Route path={'playlists'} element={<Playlists />} />
-                    <Route path={'playlist/:id'} element={<Playlist />} />
-
-                    {/* Errors */}
-                    <Route path={'401'} element={<Unauthorized />} />
-                    <Route path={'404'} element={<NotFound />} />
-                    <Route path={'*'} element={<Navigate to={'404'} replace />} />
-                  </Route>
-                </Route>
-              </Routes>
-            </Router>
-          </MantineEmotionProvider>
-        </MantineProvider>
+                </Routes>
+              </Router>
+            </MantineEmotionProvider>
+          </MantineProvider>
+        </ScrollRefProvider>
       </Provider>
     </div>
   )
