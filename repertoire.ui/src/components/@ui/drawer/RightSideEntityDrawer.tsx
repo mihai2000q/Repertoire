@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Drawer } from '@mantine/core'
+import { Drawer, ScrollArea } from '@mantine/core'
 import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
 
 interface RightSideEntityDrawerProps {
@@ -20,12 +20,10 @@ function RightSideEntityDrawer({
   const titleBarHeight = useTitleBarHeight()
 
   return (
-    <Drawer
-      withCloseButton={false}
+    <Drawer.Root
       opened={opened}
       onClose={onClose}
       position="right"
-      overlayProps={{ backgroundOpacity: 0.1, blur: 1 }}
       size={'max(28%, 440px)'}
       shadow="xl"
       radius={'8 0 0 8'}
@@ -43,8 +41,28 @@ function RightSideEntityDrawer({
         }
       }}
     >
-      {isLoading ? loader : children && children}
-    </Drawer>
+      <Drawer.Overlay backgroundOpacity={0.1} blur={1} />
+      <Drawer.Content>
+        <Drawer.Body>
+          <ScrollArea.Autosize
+            mah={`calc(100vh - ${titleBarHeight})`}
+            scrollbars={'y'}
+            scrollbarSize={10}
+            styles={{
+              viewport: {
+                '> div': {
+                  display: 'block !important',
+                  minWidth: '100%',
+                  width: 0
+                }
+              }
+            }}
+          >
+            {isLoading ? loader : children && children}
+          </ScrollArea.Autosize>
+        </Drawer.Body>
+      </Drawer.Content>
+    </Drawer.Root>
   )
 }
 
