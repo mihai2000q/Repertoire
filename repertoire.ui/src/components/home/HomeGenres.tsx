@@ -97,8 +97,12 @@ function HomeGenres({ ...others }: CardProps) {
           </Anchor>
         </Group>
 
-        <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7}>
-          <Grid columns={10} px={'md'} pt={'sm'} gutter={'sm'}>
+        <ScrollArea
+          h={'100%'}
+          scrollbars={'y'}
+          scrollbarSize={7}
+        >
+          <Grid columns={10} px={'md'} pt={'sm'} pb={'md'} gutter={'sm'}>
             {mockGenres.map((genre) => (
               <Grid.Col span={genre.isSmall ? 4 : 6} key={genre.genre}>
                 <Card

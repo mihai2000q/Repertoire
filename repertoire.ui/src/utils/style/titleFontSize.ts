@@ -1,14 +1,14 @@
+const breakpoints = {
+  xl: 50,
+  lg: 36,
+  md: 26,
+  sm: 20,
+  xs: 16,
+  xxs: 12
+}
+
 export default function titleFontSize(str: string | undefined | null): string {
   if (str === undefined || str === null || str.trim() === '') return '0'
-
-  const breakpoints = {
-    xl: 50,
-    lg: 36,
-    md: 26,
-    sm: 20,
-    xs: 16,
-    xxs: 12
-  }
 
   const size =
     str.length > breakpoints.xl
