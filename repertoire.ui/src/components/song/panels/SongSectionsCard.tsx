@@ -3,7 +3,7 @@ import {
   useAddPerfectSongRehearsalMutation,
   useMoveSongSectionMutation
 } from '../../../state/api/songsApi.ts'
-import { ActionIcon, Box, Card, Group, Stack, Text, Tooltip } from '@mantine/core'
+import { ActionIcon, Box, Card, Group, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
 import {
   IconCheck,
   IconChecks,
@@ -18,12 +18,13 @@ import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection, SongSettings } from '../../../types/models/Song.ts'
 import SongSectionCard from '../SongSectionCard.tsx'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
 import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
+import { useScrollRef } from '../../../context/ScrollRefContext.tsx'
 
 interface SongSectionsCardProps {
   sections: SongSection[]
@@ -52,6 +53,14 @@ function SongSectionsCard({
   const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
+
+  const scrollableRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useScrollRef()
+
+  const scrollIntoView = () => {
+    scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
+    scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
+  }
 
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
   useDidUpdate(() => setState(sections), [sections])
@@ -235,56 +244,64 @@ function SongSectionsCard({
           </Tooltip.Group>
         </Group>
 
-        <Stack gap={0}>
-          <DragDropContext onDragEnd={onSectionsDragEnd}>
-            <Droppable droppableId="dnd-list" direction="vertical">
-              {(provided) => (
-                <Box ref={provided.innerRef} {...provided.droppableProps}>
-                  {internalSections.map((section, index) => (
-                    <Draggable
-                      key={section.id}
-                      index={index}
-                      draggableId={section.id}
-                      isDragDisabled={isMoveLoading}
-                    >
-                      {(provided, snapshot) => (
-                        <SongSectionCard
-                          section={section}
-                          songId={songId}
-                          draggableProvided={provided}
-                          isDragging={snapshot.isDragging}
-                          showDetails={showDetails}
-                          maxSectionProgress={maxSectionProgress}
-                          maxSectionRehearsals={maxSectionRehearsals}
-                          bandMembers={bandMembers}
-                          isArtistBand={isArtistBand}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-          </DragDropContext>
+        <ScrollArea.Autosize
+          viewportRef={scrollableRef}
+          mah={391.35}
+          scrollbars={'y'}
+          scrollbarSize={7}
+        >
+          <Stack gap={0}>
+            <DragDropContext onDragEnd={onSectionsDragEnd}>
+              <Droppable droppableId="dnd-list" direction="vertical">
+                {(provided) => (
+                  <Box ref={provided.innerRef} {...provided.droppableProps}>
+                    {internalSections.map((section, index) => (
+                      <Draggable
+                        key={section.id}
+                        index={index}
+                        draggableId={section.id}
+                        isDragDisabled={isMoveLoading}
+                      >
+                        {(provided, snapshot) => (
+                          <SongSectionCard
+                            section={section}
+                            songId={songId}
+                            draggableProvided={provided}
+                            isDragging={snapshot.isDragging}
+                            showDetails={showDetails}
+                            maxSectionProgress={maxSectionProgress}
+                            maxSectionRehearsals={maxSectionRehearsals}
+                            bandMembers={bandMembers}
+                            isArtistBand={isArtistBand}
+                          />
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </Box>
+                )}
+              </Droppable>
+            </DragDropContext>
 
-          {sections.length === 0 && (
-            <NewHorizontalCard
-              ariaLabel={'add-new-song-section-card'}
-              onClick={openedAdd ? closeAdd : openAdd}
-            >
-              Add New Song Section
-            </NewHorizontalCard>
-          )}
+            {sections.length === 0 && (
+              <NewHorizontalCard
+                ariaLabel={'add-new-song-section-card'}
+                onClick={openedAdd ? closeAdd : openAdd}
+              >
+                Add New Song Section
+              </NewHorizontalCard>
+            )}
 
-          <AddNewSongSection
-            songId={songId}
-            opened={openedAdd}
-            onClose={closeAdd}
-            settings={settings}
-            bandMembers={bandMembers}
-          />
-        </Stack>
+            <AddNewSongSection
+              songId={songId}
+              opened={openedAdd}
+              onClose={closeAdd}
+              settings={settings}
+              bandMembers={bandMembers}
+              scrollIntoView={scrollIntoView}
+            />
+          </Stack>
+        </ScrollArea.Autosize>
       </Stack>
 
       <EditSongSectionsOccurrencesModal
