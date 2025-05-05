@@ -98,10 +98,21 @@ function HomeRecentPlaylists({ ...others }: CardProps) {
           </Text>
         )}
 
-        <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7}>
-          {/*DO NOT Change the Max Height, it helps with the responsive layout (somehow for some reason)*/}
-          {/*Also value 100 is randomly chosen, it has no effect whatsoever*/}
-          <SimpleGrid cols={2} px={'md'} py={'xs'} mah={100}>
+        <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7} styles={{
+          root: {
+            height: '100%'
+          },
+          viewport: {
+            '> div': {
+              height: 0,
+              minHeight: '100%',
+              display: 'block !important',
+              minWidth: '100%',
+              width: 0
+            }
+          }
+        }}>
+          <SimpleGrid cols={2} px={'md'} py={'xs'}>
             {isLoading || !playlists ? (
               <Loader />
             ) : (

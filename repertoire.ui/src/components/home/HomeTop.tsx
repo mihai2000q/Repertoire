@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { forwardRef, useRef, useState } from 'react'
 import { ActionIcon, Button, Center, Group, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useDidUpdate, useViewportSize } from '@mantine/hooks'
@@ -67,7 +67,7 @@ const TabButton = ({
   </Button>
 )
 
-function HomeTop() {
+const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
   const songsOrderBy = useOrderBy([
     { property: SongProperty.Progress, type: OrderType.Descending },
     { property: SongProperty.Title }
@@ -123,7 +123,7 @@ function HomeTop() {
   }
 
   return (
-    <Stack gap={0} aria-label={'top'}>
+    <Stack ref={ref} gap={0} aria-label={'top'}>
       <Title px={'xl'} order={2} fw={800} lh={1} mb={'xs'} fz={'max(3vw, 36px)'}>
         Welcome Back
       </Title>
@@ -235,6 +235,8 @@ function HomeTop() {
       </ScrollArea>
     </Stack>
   )
-}
+})
+
+HomeTop.displayName = 'HomeTop'
 
 export default HomeTop
