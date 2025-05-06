@@ -1,18 +1,20 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import {
   AddNewArtistAlbumForm,
   addNewArtistAlbumValidation
 } from '../../../validation/artistsForm.ts'
-import { toast } from 'react-toastify'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
 } from '../../../state/api/albumsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
-import { IconDisc } from '@tabler/icons-react'
+import { IconCalendarRepeat, IconDisc } from '@tabler/icons-react'
+import DatePickerButton from '../../@ui/form/date/DatePickerButton.tsx'
+import { toast } from 'react-toastify'
+import dayjs from 'dayjs'
 
 interface AddNewArtistAlbumModalProps {
   opened: boolean
@@ -26,6 +28,8 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
   const [image, setImage] = useState<FileWithPath>(null)
+  const [releaseDate, setReleaseDate] = useState<Date>()
+  useEffect(() => form.setFieldValue('releaseDate', releaseDate), [releaseDate])
 
   const onCloseWithImage = () => {
     onClose()
@@ -43,10 +47,10 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
     validate: zodResolver(addNewArtistAlbumValidation)
   })
 
-  async function addAlbum({ title }: AddNewArtistAlbumForm) {
+  async function addAlbum({ title, releaseDate }: AddNewArtistAlbumForm) {
     title = title.trim()
 
-    const res = await createAlbumMutation({ title, artistId }).unwrap()
+    const res = await createAlbumMutation({ title, releaseDate, artistId }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
@@ -66,15 +70,28 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
                 setImage={setImage}
                 icon={<IconDisc size={45} />}
               />
-              <TextInput
-                flex={1}
-                withAsterisk={true}
-                maxLength={100}
-                label="Title"
-                placeholder="The title of the album"
-                key={form.key('title')}
-                {...form.getInputProps('title')}
-              />
+              <Group gap={'xs'} flex={1}>
+                <TextInput
+                  flex={1}
+                  withAsterisk={true}
+                  maxLength={100}
+                  label="Title"
+                  placeholder="The title of the album"
+                  key={form.key('title')}
+                  {...form.getInputProps('title')}
+                />
+                <DatePickerButton
+                  mt={16}
+                  aria-label={'release-date'}
+                  icon={<IconCalendarRepeat size={20} />}
+                  value={releaseDate}
+                  onChange={setReleaseDate}
+                  tooltipLabels={{
+                    default: 'Select a release date',
+                    selected: (val) => `Released on ${dayjs(val).format('D MMMM YYYY')}`
+                  }}
+                />
+              </Group>
             </Group>
 
             <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
