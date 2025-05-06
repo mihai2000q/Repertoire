@@ -34,6 +34,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import albumsFilters from '../data/albums/albumsFilters.ts'
 import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
+import useMainScroll from '../hooks/useMainScroll.ts'
 
 function Albums() {
   useFixedDocumentTitle('Albums')
@@ -78,7 +79,11 @@ function Albums() {
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
 
-  function handleCurrentPageChange(p: number) {
+  const { ref: mainScrollRef } = useMainScroll()
+
+  function handleCurrentPageChange (p: number) {
+    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 

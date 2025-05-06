@@ -33,6 +33,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import SongsFilters from '../components/songs/SongsFilters.tsx'
 import songsFilters from '../data/songs/songsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
+import useMainScroll from '../hooks/useMainScroll.ts'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
@@ -76,7 +77,11 @@ function Songs(): ReactElement {
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
 
-  const handleCurrentPageChange = (p: number) => {
+  const { ref: mainScrollRef } = useMainScroll()
+
+  function handleCurrentPageChange (p: number) {
+    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 
