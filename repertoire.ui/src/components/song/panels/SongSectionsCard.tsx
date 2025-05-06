@@ -24,7 +24,7 @@ import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
 import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
-import { useScrollRef } from '../../../context/ScrollRefContext.tsx'
+import useMainScroll from '../../../hooks/useMainScroll.ts'
 
 interface SongSectionsCardProps {
   sections: SongSection[]
@@ -55,11 +55,11 @@ function SongSectionsCard({
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
   const scrollableRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useScrollRef()
+  const { ref: mainScrollRef } = useMainScroll()
 
   const scrollIntoView = () => {
     scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
-    scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
+    mainScrollRef.current.scrollTo({ top: mainScrollRef.current.scrollHeight, behavior: 'smooth' })
   }
 
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)

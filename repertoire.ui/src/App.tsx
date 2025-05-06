@@ -27,7 +27,7 @@ import Song from './views/Song.tsx'
 import Playlists from './views/Playlists.tsx'
 import Playlist from './views/Playlist.tsx'
 import useIsDesktop from './hooks/useIsDesktop.ts'
-import { ScrollRefProvider } from './context/ScrollRefContext.tsx'
+import { MainScrollProvider } from './context/MainScrollContext.tsx'
 
 function App(): ReactElement {
   const isDesktop = useIsDesktop()
@@ -36,7 +36,7 @@ function App(): ReactElement {
   return (
     <div className={'app'}>
       <Provider store={store}>
-        <ScrollRefProvider>
+        <MainScrollProvider>
           <MantineProvider
             theme={theme}
             forceColorScheme={'light'}
@@ -75,7 +75,7 @@ function App(): ReactElement {
               </Router>
             </MantineEmotionProvider>
           </MantineProvider>
-        </ScrollRefProvider>
+        </MainScrollProvider>
       </Provider>
     </div>
   )

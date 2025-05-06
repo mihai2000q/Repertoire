@@ -14,7 +14,7 @@ import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
 import useTopbarHeight from '../hooks/useTopbarHeight.ts'
-import { useScrollRef } from '../context/ScrollRefContext.tsx'
+import useMainScroll from '../hooks/useMainScroll.ts'
 
 function Main(): ReactElement {
   useErrorRedirection()
@@ -26,7 +26,7 @@ function Main(): ReactElement {
 
   const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
-  const viewportRef = useScrollRef()
+  const { ref: viewportRef } = useMainScroll()
 
   return (
     <Box w={'100%'} h={'100%'}>
