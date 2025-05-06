@@ -67,14 +67,24 @@ describe('Playlists', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+  })
 
   afterEach(() => {
     window.location.search = ''
     server.resetHandlers()
   })
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it('should render and display relevant info when there are playlists', async () => {
     const [_, store] = reduxRouterRender(<Playlists />)
