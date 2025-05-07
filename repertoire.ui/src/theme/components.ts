@@ -166,6 +166,9 @@ export const components = {
       }
     },
     styles: (theme) => ({
+      content: {
+        overflow: 'hidden',
+      },
       title: {
         fontSize: theme.fontSizes.lg,
         fontWeight: 600,
