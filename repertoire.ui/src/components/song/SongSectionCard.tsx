@@ -134,14 +134,19 @@ function SongSectionCard({
           sx={(theme) => ({
             cursor: 'default',
             transition: '0.25s',
-            borderRadius: isDragging ? '16px' : '0px',
-            border: isDragging
-              ? `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
-              : '1px solid transparent',
+            borderRadius: 0,
+            border: '1px solid transparent',
 
             '&:hover': {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            },
+
+            ...isDragging && {
+              boxShadow: theme.shadows.xl,
+              borderRadius: '16px',
+              backgroundColor: alpha(theme.white, 0.33),
+              border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
             }
           })}
           ref={draggableProvided?.innerRef}

@@ -135,14 +135,19 @@ function AlbumSongCard({
           }}
           sx={(theme) => ({
             transition: '0.3s',
+            borderRadius: 0,
             border: '1px solid transparent',
             ...(isSelected && {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             }),
 
-            borderRadius: isDragging ? '16px' : '0px',
-            borderColor: isDragging ? alpha(theme.colors.primary[9], 0.33) : 'transparent'
+            ...isDragging && {
+              boxShadow: theme.shadows.xl,
+              borderRadius: '16px',
+              backgroundColor: alpha(theme.white, 0.33),
+              border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
+            }
           })}
           px={'md'}
           py={'xs'}
