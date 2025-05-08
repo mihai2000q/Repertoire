@@ -35,7 +35,7 @@ func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"With Filtering and Sorting",
 			requests.SearchGetRequest{
 				Filter: []string{"release_date > 145023"},
-				Order:  []string{"release_date asc"},
+				Order:  []string{"release_date:asc", "price:desc"},
 			},
 		},
 		{
@@ -119,6 +119,31 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			},
 			"Type",
 			"required_with",
+		},
+		// Order
+		{
+			"Order is invalid because of the separator",
+			requests.SearchGetRequest{
+				Order: []string{"price asc"},
+			},
+			"Order",
+			"search_order",
+		},
+		{
+			"Order is invalid because of the order type",
+			requests.SearchGetRequest{
+				Order: []string{"price:ascending"},
+			},
+			"Order",
+			"search_order",
+		},
+		{
+			"Order is invalid because of the spaces",
+			requests.SearchGetRequest{
+				Order: []string{"the price is   :ascending"},
+			},
+			"Order",
+			"search_order",
 		},
 	}
 	for _, tt := range tests {
