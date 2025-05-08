@@ -6,7 +6,7 @@ import { userEvent } from '@testing-library/user-event'
 import Artist from '../../types/models/Artist.ts'
 import Album from '../../types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
-import { expect } from 'vitest'
+import { afterEach, expect } from 'vitest'
 
 describe('Playlist Song Card', () => {
   const song: Song = {
@@ -94,7 +94,9 @@ describe('Playlist Song Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
+    const [{ rerender }] = reduxRouterRender(
+      <PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />
+    )
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -102,22 +104,54 @@ describe('Playlist Song Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+
+    rerender(
+      <PlaylistSongCard
+        song={{ ...song, artist: emptyArtist, album: emptyAlbum }}
+        handleRemove={() => {}}
+        isDragging={false}
+      />
+    )
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
   })
 
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />)
+    const [{ rerender }] = reduxRouterRender(
+      <PlaylistSongCard song={song} handleRemove={() => {}} isDragging={false} />
+    )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+
+    rerender(
+      <PlaylistSongCard
+        song={{ ...song, artist: emptyArtist, album: emptyAlbum }}
+        handleRemove={() => {}}
+        isDragging={false}
+      />
+    )
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
   })
 
   describe('on menu', () => {
@@ -130,9 +164,36 @@ describe('Playlist Song Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
 
       expect(window.location.pathname).toBe(`/song/${song.id}`)
+    })
 
-      // restore
-      window.location.pathname = '/'
+    it('should navigate to artist when clicking on view artist', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, artist: emptyArtist }
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /view artist/i }))
+
+      expect(window.location.pathname).toBe(`/artist/${localSong.artist.id}`)
+    })
+
+    it('should navigate to album when clicking on view album', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, album: emptyAlbum }
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} handleRemove={() => {}} isDragging={false} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /view album/i }))
+
+      expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
     })
 
     it('should display warning modal and remove, when clicking on remove', async () => {

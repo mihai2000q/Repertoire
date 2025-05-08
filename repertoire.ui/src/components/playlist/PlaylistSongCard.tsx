@@ -58,6 +58,14 @@ function PlaylistSongCard({
     navigate(`/song/${song.id}`)
   }
 
+  function handleViewArtist() {
+    navigate(`/artist/${song.artist.id}`)
+  }
+
+  function handleViewAlbum() {
+    navigate(`/album/${song.album.id}`)
+  }
+
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()
     openRemoveWarning()
@@ -67,6 +75,20 @@ function PlaylistSongCard({
     <>
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
+      </Menu.Item>
+      <Menu.Item
+        leftSection={<IconUser size={14} />}
+        disabled={!song.artist}
+        onClick={handleViewArtist}
+      >
+        View Artist
+      </Menu.Item>
+      <Menu.Item
+        leftSection={<IconDisc size={14} />}
+        disabled={!song.album}
+        onClick={handleViewAlbum}
+      >
+        View Album
       </Menu.Item>
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
