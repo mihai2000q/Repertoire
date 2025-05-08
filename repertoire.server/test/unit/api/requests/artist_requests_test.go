@@ -26,7 +26,7 @@ func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"name asc"},
-				SearchBy:    []string{"name = Metallica"},
+				SearchBy:    []string{"name = Metallica", "release_date is null"},
 			},
 		},
 	}
@@ -78,6 +78,13 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"PageSize",
 			"required_with",
 		},
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetArtistsRequest{SearchBy: []string{"songs is not nullish"}},
+			"SearchBy",
+			"search_by",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -91,6 +98,70 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetArtistsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateGetArtistFiltersMetadataRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetArtistFiltersMetadataRequest
+	}{
+		{
+			"All Null",
+			requests.GetArtistFiltersMetadataRequest{},
+		},
+		{
+			"Nothing Null",
+			requests.GetArtistFiltersMetadataRequest{
+				SearchBy: []string{"name = Metallica", "release_date is null"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetArtistFiltersMetadataRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetArtistFiltersMetadataRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetArtistFiltersMetadataRequest{SearchBy: []string{"songs is not nullish"}},
+			"SearchBy",
+			"search_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetArtistFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})

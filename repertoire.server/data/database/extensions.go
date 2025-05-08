@@ -70,10 +70,10 @@ func splitSearch(str string) (string, any) {
 
 	condition := fmt.Sprintf("(%s %s (?))", property, operator)
 
-	if operator == "IS" {
+	if strings.ToLower(operator) == "is" {
 		return str, ""
 	}
-	if operator == "IN" {
+	if strings.ToLower(operator) == "in" {
 		var values []string
 		for _, val := range strings.Split(searchValue, ",") {
 			values = append(values, strings.TrimSpace(val))

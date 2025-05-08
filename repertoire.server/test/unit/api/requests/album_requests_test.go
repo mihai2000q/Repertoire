@@ -144,6 +144,13 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			"PageSize",
 			"required_with",
 		},
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetAlbumsRequest{SearchBy: []string{"songs not_equal to something that doesn't matter"}},
+			"SearchBy",
+			"search_by",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -157,6 +164,70 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetAlbumsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateGetAlbumFiltersMetadataRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetAlbumFiltersMetadataRequest
+	}{
+		{
+			"All Null",
+			requests.GetAlbumFiltersMetadataRequest{},
+		},
+		{
+			"Nothing Null",
+			requests.GetAlbumFiltersMetadataRequest{
+				SearchBy: []string{"title = something", "is_recorded <> false"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetAlbumFiltersMetadataRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetAlbumFiltersMetadataRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetAlbumFiltersMetadataRequest{SearchBy: []string{"songs not_equal to something that doesn't matter"}},
+			"SearchBy",
+			"search_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetAlbumFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
