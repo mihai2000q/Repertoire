@@ -44,6 +44,7 @@ import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuIt
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import YoutubeContextMenu from '../../@ui/menu/YoutubeContextMenu.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -428,17 +429,19 @@ function SongDrawer() {
               )}
 
               {song.youtubeLink && (
-                <Tooltip label={'Open Youtube'}>
-                  <ActionIcon
-                    mb={3}
-                    variant={'transparent'}
-                    c={'red.7'}
-                    aria-label={'youtube'}
-                    onClick={openYoutube}
-                  >
-                    <IconBrandYoutubeFilled size={25} />
-                  </ActionIcon>
-                </Tooltip>
+                <YoutubeContextMenu title={song.title} link={song.youtubeLink}>
+                  <Tooltip label={'Open Youtube'}> {/*not working as it's not passing refs accordingly*/}
+                    <ActionIcon
+                      mb={3}
+                      variant={'transparent'}
+                      c={'red.7'}
+                      aria-label={'youtube'}
+                      onClick={openYoutube}
+                    >
+                      <IconBrandYoutubeFilled size={25} />
+                    </ActionIcon>
+                  </Tooltip>
+                </YoutubeContextMenu>
               )}
             </Tooltip.Group>
           </Group>

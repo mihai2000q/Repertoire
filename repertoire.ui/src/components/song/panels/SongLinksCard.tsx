@@ -5,6 +5,7 @@ import EditPanelCard from '../../@ui/card/EditPanelCard.tsx'
 import EditSongLinksModal from '../modal/EditSongLinksModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
+import YoutubeContextMenu from '../../@ui/menu/YoutubeContextMenu.tsx'
 
 interface SongLinksCardProps {
   song: Song
@@ -49,20 +50,22 @@ function SongLinksCard({ song }: SongLinksCardProps) {
             </Anchor>
           )}
           {song.youtubeLink && (
-            <Button
-              fullWidth
-              maw={400}
-              variant={'gradient'}
-              size={'md'}
-              radius={'lg'}
-              leftSection={<IconBrandYoutube size={30} />}
-              fz={'h6'}
-              fw={700}
-              gradient={{ from: 'red.7', to: 'red.1', deg: 90 }}
-              onClick={openYoutube}
-            >
-              Youtube
-            </Button>
+            <YoutubeContextMenu title={song.title} link={song.youtubeLink}>
+              <Button
+                fullWidth
+                maw={400}
+                variant={'gradient'}
+                size={'md'}
+                radius={'lg'}
+                leftSection={<IconBrandYoutube size={30} />}
+                fz={'h6'}
+                fw={700}
+                gradient={{ from: 'red.7', to: 'red.1', deg: 90 }}
+                onClick={openYoutube}
+              >
+                Youtube
+              </Button>
+            </YoutubeContextMenu>
           )}
         </Stack>
       </Stack>

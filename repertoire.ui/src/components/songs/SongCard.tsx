@@ -28,6 +28,7 @@ import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import YoutubeContextMenu from '../@ui/menu/YoutubeContextMenu.tsx'
 
 const iconSize = 18
 const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
@@ -115,10 +116,10 @@ function SongCard({ song }: SongCardProps) {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
             },
-            ...openedMenu && {
+            ...(openedMenu && {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
-            }
+            })
           })}
         >
           <Stack gap={0}>
@@ -215,11 +216,17 @@ function SongCard({ song }: SongCardProps) {
                     </LocalAnchor>
                   )}
                   {song.youtubeLink && (
-                    <LocalTooltip label={'Open Youtube'}>
-                      <Center c={'red.7'} onClick={handleOpenYoutube}>
-                        <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
-                      </Center>
-                    </LocalTooltip>
+                    <YoutubeContextMenu
+                      title={song.title}
+                      link={song.youtubeLink}
+                      onContextMenu={(e) => e.stopPropagation()}
+                    >
+                      <LocalTooltip label={'Open Youtube'}>
+                        <Center c={'red.7'} onClick={handleOpenYoutube}>
+                          <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
+                        </Center>
+                      </LocalTooltip>
+                    </YoutubeContextMenu>
                   )}
                 </Tooltip.Group>
               </Group>
