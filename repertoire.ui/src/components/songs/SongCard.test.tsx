@@ -32,7 +32,10 @@ describe('Song Card', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -166,7 +169,7 @@ describe('Song Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<SongCard song={song} />)
+    const [{ rerender }] = reduxRouterRender(<SongCard song={song} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -174,9 +177,18 @@ describe('Song Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+
+    rerender(<SongCard song={{ ...song, artist: emptyArtist, album: emptyAlbum }} />)
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
   })
 
   describe('on menu', () => {
@@ -193,6 +205,36 @@ describe('Song Card', () => {
 
       expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
       expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
+    })
+
+    it('should navigate to artist when clicking on view artist', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, artist: { ...emptyArtist, id: '1' } }
+
+      reduxRouterRender(<SongCard song={localSong} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${localSong.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view artist/i }))
+      expect(window.location.pathname).toBe(`/artist/${localSong.artist.id}`)
+    })
+
+    it('should navigate to album when clicking on view album', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, album: { ...emptyAlbum, id: '1' } }
+
+      reduxRouterRender(<SongCard song={localSong} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${localSong.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view album/i }))
+      expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
     })
 
     it('should display warning modal when clicking on delete', async () => {

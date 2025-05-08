@@ -8,11 +8,13 @@ import {
   IconBoltFilled,
   IconBombFilled,
   IconBrandYoutubeFilled,
+  IconDisc,
   IconGuitarPickFilled,
   IconLayoutSidebarLeftExpand,
   IconMicrophoneFilled,
   IconStarFilled,
-  IconTrash
+  IconTrash,
+  IconUser
 } from '@tabler/icons-react'
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
@@ -81,6 +83,14 @@ function SongCard({ song }: SongCardProps) {
 
   function handleOpenDrawer() {
     dispatch(openSongDrawer(song.id))
+  }
+
+  function handleViewArtist() {
+    navigate(`/artist/${song.artist.id}`)
+  }
+
+  function handleViewAlbum() {
+    navigate(`/album/${song.album.id}`)
   }
 
   async function handleDelete() {
@@ -224,6 +234,20 @@ function SongCard({ song }: SongCardProps) {
           onClick={handleOpenDrawer}
         >
           Open Drawer
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconUser size={14} />}
+          disabled={!song.artist}
+          onClick={handleViewArtist}
+        >
+          View Artist
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconDisc size={14} />}
+          disabled={!song.album}
+          onClick={handleViewAlbum}
+        >
+          View Album
         </Menu.Item>
         <PartialRehearsalMenuItem songId={song.id} />
         <PerfectRehearsalMenuItem songId={song.id} />
