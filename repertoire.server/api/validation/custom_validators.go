@@ -68,9 +68,12 @@ func Color(fl validator.FieldLevel) bool {
 }
 
 func OrderBy(fl validator.FieldLevel) bool {
-	orderBy := fl.Field().Interface().([]string)
+	orderBy, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
 	for _, o := range orderBy {
-		if validateOrderByElem(o) == false {
+		if !validateOrderByElem(o) {
 			return false
 		}
 	}
@@ -78,9 +81,12 @@ func OrderBy(fl validator.FieldLevel) bool {
 }
 
 func SearchOrder(fl validator.FieldLevel) bool {
-	order := fl.Field().Interface().([]string)
+	order, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
 	for _, o := range order {
-		if validateSearchOrderElem(o) == false {
+		if !validateSearchOrderElem(o) {
 			return false
 		}
 	}
@@ -88,14 +94,19 @@ func SearchOrder(fl validator.FieldLevel) bool {
 }
 
 func SearchBy(fl validator.FieldLevel) bool {
-	searchBy := fl.Field().Interface().([]string)
+	searchBy, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
 	for _, s := range searchBy {
-		if validateSearchByElem(s) == false {
+		if !validateSearchByElem(s) {
 			return false
 		}
 	}
 	return true
 }
+
+// private functions
 
 func validateOrderByElem(orderBy string) bool {
 	split := strings.Split(orderBy, " ")
@@ -127,7 +138,7 @@ func validateSearchOrderElem(order string) bool {
 	split := strings.Split(order, ":")
 	return len(split) == 2 &&
 		len(strings.Split(order, " ")) == 1 &&
-		validateOrderType(split[1])
+		validateOrderType(strings.ToLower(split[1]))
 }
 
 var filterOperators = []string{"=", "!=", "<>", "<", ">", "<=", ">=", "is", "in"}
