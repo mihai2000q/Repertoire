@@ -16,7 +16,7 @@ import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
-import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconCircleMinus, IconDisc, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
@@ -71,6 +71,10 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     navigate(`/song/${song.id}`)
   }
 
+  function handleViewAlbum() {
+    navigate(`/album/${song.album.id}`)
+  }
+
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()
     openRemoveWarning()
@@ -93,6 +97,13 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     <>
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
+      </Menu.Item>
+      <Menu.Item
+        leftSection={<IconDisc size={14} />}
+        disabled={!song.album}
+        onClick={handleViewAlbum}
+      >
+        View Album
       </Menu.Item>
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
