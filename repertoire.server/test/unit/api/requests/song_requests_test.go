@@ -27,7 +27,7 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			requests.GetSongsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
-				OrderBy:     []string{"title asc", "created_at desc"},
+				OrderBy:     []string{"title asc nulls first", "created_at desc"},
 				SearchBy:    []string{"title = something", "is_recorded <> false"},
 			},
 		},
@@ -79,6 +79,13 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			requests.GetSongsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
+		},
+		// Order By Test Cases
+		{
+			"Order By is invalid because of the invalid 'first'",
+			requests.GetSongsRequest{OrderBy: []string{"title asc", "songs asc nulls firsts"}},
+			"OrderBy",
+			"order_by",
 		},
 		// Search By Test Cases
 		{

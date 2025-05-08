@@ -8,13 +8,13 @@ import (
 
 type GetAlbumRequest struct {
 	ID           uuid.UUID `validate:"required"`
-	SongsOrderBy []string  `form:"songsOrderBy"`
+	SongsOrderBy []string  `form:"songsOrderBy" validate:"order_by"`
 }
 
 type GetAlbumsRequest struct {
 	CurrentPage *int     `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
-	OrderBy     []string `form:"orderBy"`
+	OrderBy     []string `form:"orderBy" validate:"order_by"`
 	SearchBy    []string `form:"searchBy" validate:"search_by"`
 }
 

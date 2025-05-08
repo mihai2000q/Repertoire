@@ -78,6 +78,13 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			"PageSize",
 			"required_with",
 		},
+		// Order By Cases
+		{
+			"Order By is invalid because it has invalid order type",
+			requests.GetPlaylistsRequest{OrderBy: []string{"title ascending"}},
+			"OrderBy",
+			"order_by",
+		},
 		// Search By Test Cases
 		{
 			"Search By is invalid because the operator is not supported",
