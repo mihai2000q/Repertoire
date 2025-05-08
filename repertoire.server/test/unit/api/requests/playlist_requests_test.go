@@ -151,8 +151,8 @@ func TestValidateGetPlaylistFiltersMetadataRequest_WhenSingleFieldIsInvalid_Shou
 	}{
 		// Search By Test Cases
 		{
-			"Search By is invalid because the operator is not supported",
-			requests.GetPlaylistFiltersMetadataRequest{SearchBy: []string{"title = okay", "songs is nullish"}},
+			"Search By is invalid because it is incomplete, missing operator and value",
+			requests.GetPlaylistFiltersMetadataRequest{SearchBy: []string{"title = okay", "songs"}},
 			"SearchBy",
 			"search_by",
 		},

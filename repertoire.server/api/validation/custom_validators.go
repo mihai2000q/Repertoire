@@ -100,17 +100,17 @@ func validateOrderByElem(orderBy string) bool {
 	}
 	if len(split) == 4 {
 		return validateOrderType(strings.ToLower(split[1])) &&
-			validateOrderNullability(strings.ToLower(split[1]), strings.ToLower(split[2]))
+			validateOrderNullability(strings.ToLower(split[2]), strings.ToLower(split[3]))
 	}
 	return false
 }
 
 func validateOrderType(str string) bool {
-	return str != "asc" && str != "desc"
+	return str == "asc" || str == "desc"
 }
 
 func validateOrderNullability(str1 string, str2 string) bool {
-	return str1 != "nulls" && str2 != "last" && str2 != "first"
+	return str1 == "nulls" && (str2 == "last" || str2 == "first")
 }
 
 var filterOperators = []string{"=", "!=", "<>", "<", ">", "<=", ">=", "is", "in"}
