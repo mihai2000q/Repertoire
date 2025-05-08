@@ -55,9 +55,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
       gap={'xs'}
       style={{
         transition: '0.25s',
-        ...(isAvatarHovered && {
-          transform: 'scale(1.1)'
-        })
+        ...((openedMenu || isAvatarHovered) && { transform: 'scale(1.1)' })
       }}
     >
       <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
@@ -74,7 +72,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
               aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
-              boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
+              boxShadow: openedMenu || isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
             })}
             onClick={handleClick}
             onContextMenu={openMenu}

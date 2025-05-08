@@ -23,7 +23,10 @@ describe('Album Song Card', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -293,9 +296,6 @@ describe('Album Song Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
 
       expect(window.location.pathname).toBe(`/song/${song.id}`)
-
-      // restore
-      window.location.pathname = '/'
     })
 
     it('should display warning modal and remove song from album, when clicking on remove song', async () => {

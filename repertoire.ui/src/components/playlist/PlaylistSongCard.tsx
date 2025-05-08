@@ -4,7 +4,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent, useState } from 'react'
-import { IconDots, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconCircleMinus, IconDisc, IconDots, IconEye, IconUser } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
@@ -12,17 +12,18 @@ import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import { useRemoveSongsFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
 
 interface PlaylistSongCardProps {
   song: Song
-  handleRemove: () => void
+  playlistId: string
   isDragging: boolean
   draggableProvided?: DraggableProvided
 }
 
 function PlaylistSongCard({
   song,
-  handleRemove,
+  playlistId,
   isDragging,
   draggableProvided
 }: PlaylistSongCardProps) {
@@ -30,6 +31,9 @@ function PlaylistSongCard({
   const navigate = useNavigate()
   const { ref: hoverRef, hovered } = useHover()
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
+
+  const [removeSongsFromPlaylist, { isLoading: isRemoveLoading }] =
+    useRemoveSongsFromPlaylistMutation()
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
@@ -58,9 +62,21 @@ function PlaylistSongCard({
     navigate(`/song/${song.id}`)
   }
 
+  function handleViewArtist() {
+    navigate(`/artist/${song.artist.id}`)
+  }
+
+  function handleViewAlbum() {
+    navigate(`/album/${song.album.id}`)
+  }
+
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()
     openRemoveWarning()
+  }
+
+  function handleRemoveFromPlaylist() {
+    removeSongsFromPlaylist({ songIds: [song.id], id: playlistId })
   }
 
   const menuDropdown = (
@@ -68,14 +84,28 @@ function PlaylistSongCard({
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <Menu.Item
+        leftSection={<IconUser size={14} />}
+        disabled={!song.artist}
+        onClick={handleViewArtist}
+      >
+        View Artist
+      </Menu.Item>
+      <Menu.Item
+        leftSection={<IconDisc size={14} />}
+        disabled={!song.album}
+        onClick={handleViewAlbum}
+      >
+        View Album
+      </Menu.Item>
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       <Menu.Item
-        leftSection={<IconTrash size={14} />}
+        leftSection={<IconCircleMinus size={14} />}
         c={'red.5'}
         onClick={handleOpenRemoveWarning}
       >
-        Remove
+        Remove from Playlist
       </Menu.Item>
     </>
   )
@@ -102,12 +132,12 @@ function PlaylistSongCard({
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             }),
 
-            ...isDragging && {
+            ...(isDragging && {
               boxShadow: theme.shadows.xl,
               borderRadius: '16px',
               backgroundColor: alpha(theme.white, 0.33),
               border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
-            }
+            })
           })}
           px={'md'}
           py={'xs'}
@@ -190,7 +220,7 @@ function PlaylistSongCard({
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
-        title={`Remove Song`}
+        title={`Remove Song From Playlist`}
         description={
           <Stack gap={'xxs'}>
             <Group gap={'xxs'}>
@@ -200,7 +230,8 @@ function PlaylistSongCard({
             </Group>
           </Stack>
         }
-        onYes={handleRemove}
+        isLoading={isRemoveLoading}
+        onYes={handleRemoveFromPlaylist}
       />
     </Menu>
   )

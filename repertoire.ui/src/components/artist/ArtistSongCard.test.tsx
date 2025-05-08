@@ -30,7 +30,10 @@ describe('Artist Song Card', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -227,7 +230,7 @@ describe('Artist Song Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
+    const [{ rerender }] = reduxRouterRender(
       <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
@@ -237,26 +240,52 @@ describe('Artist Song Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+
+    rerender(
+      <ArtistSongCard
+        song={{ ...song, album: emptyAlbum }}
+        artistId={''}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
+    )
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
   })
 
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
+    const [{ rerender }] = reduxRouterRender(
       <ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={emptyOrder} />
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+
+    rerender(
+      <ArtistSongCard
+        song={{ ...song, album: emptyAlbum }}
+        artistId={''}
+        isUnknownArtist={false}
+        order={emptyOrder}
+      />
+    )
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
   })
 
   it('should display less information on the menu when the artist is unknown', async () => {
@@ -284,9 +313,21 @@ describe('Artist Song Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
 
       expect(window.location.pathname).toBe(`/song/${song.id}`)
+    })
 
-      // restore
-      window.location.pathname = '/'
+    it('should navigate to song when clicking on view details', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, album: emptyAlbum }
+
+      reduxRouterRender(
+        <ArtistSongCard song={localSong} artistId={''} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /view album/i }))
+
+      expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
     })
 
     it('should display warning modal and remove song from artist, when clicking on remove from artist', async () => {

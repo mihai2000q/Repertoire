@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
-import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
+import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -42,6 +42,10 @@ function AlbumCard({ album }: AlbumCardProps) {
     dispatch(openAlbumDrawer(album.id))
   }
 
+  function handleViewArtist() {
+    navigate(`/artist/${album.artist.id}`)
+  }
+
   async function handleDelete() {
     await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
     toast.success(`${album.title} deleted!`)
@@ -52,7 +56,10 @@ function AlbumCard({ album }: AlbumCardProps) {
       aria-label={`album-card-${album.title}`}
       align={'center'}
       gap={0}
-      style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
+      style={{
+        transition: '0.3s',
+        ...((openedMenu || isImageHovered) && { transform: 'scale(1.1)' })
+      }}
     >
       <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
@@ -72,7 +79,8 @@ function AlbumCard({ album }: AlbumCardProps) {
               cursor: 'pointer',
               transition: '0.3s',
               boxShadow: theme.shadows.xxl,
-              '&:hover': { boxShadow: theme.shadows.xxl_hover }
+              '&:hover': { boxShadow: theme.shadows.xxl_hover },
+              ...(openedMenu && { boxShadow: theme.shadows.xxl_hover })
             })}
           >
             <Center c={'white'}>
@@ -91,6 +99,13 @@ function AlbumCard({ album }: AlbumCardProps) {
             onClick={handleOpenDrawer}
           >
             Open Drawer
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<IconUser size={14} />}
+            disabled={!album.artist}
+            onClick={handleViewArtist}
+          >
+            View Artist
           </Menu.Item>
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete

@@ -1,5 +1,5 @@
 import Album from 'src/types/models/Album.ts'
-import {emptyAlbum, emptyArtist, reduxRouterRender, withToastify} from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
 import Artist from 'src/types/models/Artist.ts'
@@ -12,20 +12,23 @@ describe('Album Card', () => {
   const album: Album = {
     ...emptyAlbum,
     id: '1',
-    title: 'Album 1',
+    title: 'Album 1'
   }
 
   const artist: Artist = {
     ...emptyArtist,
     id: '1',
-    name: 'Artist 1',
+    name: 'Artist 1'
   }
 
   const server = setupServer()
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -47,7 +50,10 @@ describe('Album Card', () => {
     reduxRouterRender(<AlbumCard album={localAlbum} />)
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute('src', localAlbum.imageUrl)
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
+      'src',
+      localAlbum.imageUrl
+    )
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
   })
@@ -55,7 +61,7 @@ describe('Album Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<AlbumCard album={album} />)
+    const [{ rerender }] = reduxRouterRender(<AlbumCard album={album} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -63,14 +69,20 @@ describe('Album Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
+
+    rerender(<AlbumCard album={{ ...album, artist: emptyArtist }} />)
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
   })
 
   describe('on menu', () => {
     it('should open album drawer when clicking on open drawer', async () => {
       const user = userEvent.setup()
 
-      const [_, store] = reduxRouterRender(withToastify(<AlbumCard album={album} />))
+      const [_, store] = reduxRouterRender(<AlbumCard album={album} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -80,6 +92,21 @@ describe('Album Card', () => {
 
       expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
       expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(album.id)
+    })
+
+    it('should navigate to artist when clicking on view artist', async () => {
+      const user = userEvent.setup()
+
+      const localAlbum = { ...album, artist: { ...emptyArtist, id: '1' } }
+
+      reduxRouterRender(<AlbumCard album={localAlbum} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${localAlbum.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view artist/i }))
+      expect(window.location.pathname).toBe(`/artist/${localAlbum.artist.id}`)
     })
 
     it('should display warning modal when clicking on delete', async () => {
