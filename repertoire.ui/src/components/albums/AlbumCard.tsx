@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
-import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
+import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -40,6 +40,10 @@ function AlbumCard({ album }: AlbumCardProps) {
 
   function handleOpenDrawer() {
     dispatch(openAlbumDrawer(album.id))
+  }
+
+  function handleViewArtist() {
+    navigate(`/artist/${album.artist.id}`)
   }
 
   async function handleDelete() {
@@ -95,6 +99,13 @@ function AlbumCard({ album }: AlbumCardProps) {
             onClick={handleOpenDrawer}
           >
             Open Drawer
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<IconUser size={14} />}
+            disabled={!album.artist}
+            onClick={handleViewArtist}
+          >
+            View Artist
           </Menu.Item>
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
