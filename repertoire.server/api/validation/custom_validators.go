@@ -106,6 +106,19 @@ func SearchBy(fl validator.FieldLevel) bool {
 	return true
 }
 
+func SearchFilter(fl validator.FieldLevel) bool {
+	order, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
+	for _, o := range order {
+		if !validateSearchFilterElem(o) {
+			return false
+		}
+	}
+	return true
+}
+
 // private functions
 
 func validateOrderByElem(orderBy string) bool {
@@ -132,13 +145,6 @@ func validateOrderType(str string) bool {
 
 func validateOrderNullability(str1 string, str2 string) bool {
 	return str1 == "nulls" && (str2 == "last" || str2 == "first")
-}
-
-func validateSearchOrderElem(order string) bool {
-	split := strings.Split(order, ":")
-	return len(split) == 2 &&
-		len(strings.Split(order, " ")) == 1 &&
-		validateOrderType(strings.ToLower(split[1]))
 }
 
 var filterOperators = []string{"=", "!=", "<>", "<", ">", "<=", ">=", "is", "in"}

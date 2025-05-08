@@ -32,10 +32,23 @@ func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			},
 		},
 		{
-			"With Filtering and Sorting",
+			"With Filtering",
 			requests.SearchGetRequest{
-				Filter: []string{"release_date > 145023"},
-				Order:  []string{"release_date:asc", "price:desc"},
+				Filter: []string{
+					"release_date > 145023",
+					"(album IS NULL OR title = \"something else\" OR artist.id = 12345)",
+					"NOT release_date > 123",
+					"NOT release_date IS NULL",
+					"release_date IS NOT NULL",
+					"(artist IS NULL)",
+					"id IN [12, 123]",
+				},
+			},
+		},
+		{
+			"With Sorting",
+			requests.SearchGetRequest{
+				Order: []string{"release_date:asc", "price:desc"},
 			},
 		},
 		{
@@ -119,6 +132,23 @@ func TestValidateSearchGetRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			},
 			"Type",
 			"required_with",
+		},
+		// Filter
+		{
+			"Filter is invalid",
+			requests.SearchGetRequest{
+				Filter: []string{"price something else"},
+			},
+			"Filter",
+			"search_filter",
+		},
+		{
+			"Filter is invalid",
+			requests.SearchGetRequest{
+				Filter: []string{"price = else or price = some"},
+			},
+			"Filter",
+			"search_filter",
 		},
 		// Order
 		{
