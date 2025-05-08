@@ -66,7 +66,10 @@ describe('Album Drawer', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -216,9 +219,6 @@ describe('Album Drawer', () => {
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/album/${album.id}`)
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
-
-      // restore
-      window.location.pathname = '/'
     })
 
     it('should display warning modal and delete the album when clicking delete', async () => {

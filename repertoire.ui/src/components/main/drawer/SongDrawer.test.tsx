@@ -56,7 +56,10 @@ describe('Song Drawer', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -291,9 +294,6 @@ describe('Song Drawer', () => {
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(window.location.pathname).toBe(`/song/${song.id}`)
-
-      // restore
-      window.location.pathname = '/'
     })
 
     it('should display warning modal and delete the song when clicking delete', async () => {

@@ -107,7 +107,7 @@ function AlbumSongCard({
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownAlbum && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
-          Remove from album
+          Remove from Album
         </Menu.Item>
       )}
       <Menu.Item

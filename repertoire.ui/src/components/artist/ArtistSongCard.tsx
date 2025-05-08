@@ -109,7 +109,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
-          Remove from artist
+          Remove from Artist
         </Menu.Item>
       )}
       <Menu.Item

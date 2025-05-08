@@ -21,7 +21,10 @@ describe('Artist Album Card', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -219,9 +222,6 @@ describe('Artist Album Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
 
       expect(window.location.pathname).toBe(`/album/${album.id}`)
-
-      // restore
-      window.location.pathname = '/'
     })
 
     it('should display warning modal and remove album from artist, when clicking on remove from artist', async () => {
