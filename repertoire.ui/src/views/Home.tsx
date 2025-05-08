@@ -5,16 +5,30 @@ import HomeTop from '../components/home/HomeTop.tsx'
 import HomeRecentlyPlayedSongs from '../components/home/HomeRecentlyPlayedSongs.tsx'
 import HomeGenres from '../components/home/HomeGenres.tsx'
 import HomeRecentPlaylists from '../components/home/HomeRecentPlaylists.tsx'
-import HomeRecentArtists from "../components/home/HomeRecentArtists.tsx";
+import HomeRecentArtists from '../components/home/HomeRecentArtists.tsx'
+import { useElementSize } from '@mantine/hooks'
+import useTitleBarHeight from '../hooks/useTitleBarHeight.ts'
+import useTopbarHeight from '../hooks/useTopbarHeight.ts'
 
 function Home(): ReactElement {
   useFixedDocumentTitle('Home')
 
-  return (
-    <Stack h={'100%'}>
-      <HomeTop />
+  const titleBarHeight = useTitleBarHeight()
+  const topbarHeight = useTopbarHeight()
+  const stackGap = '16px'
+  const { ref: topRef, height: topHeight } = useElementSize()
 
-      <SimpleGrid px={'xl'} cols={{ base: 1, md: 2, lg: 3 }} h={'100%'} mb={'lg'} mih={300}>
+  return (
+    <Stack h={'100%'} gap={stackGap}>
+      <HomeTop ref={topRef} />
+
+      <SimpleGrid
+        px={'xl'}
+        cols={{ base: 1, md: 2, lg: 3 }}
+        h={`calc(100vh - ${topHeight}px - ${topbarHeight} - ${titleBarHeight} - ${stackGap})`}
+        pb={'lg'}
+        mih={300}
+      >
         <HomeGenres visibleFrom={'md'} />
         <HomeRecentlyPlayedSongs />
         <Stack visibleFrom={'lg'}>

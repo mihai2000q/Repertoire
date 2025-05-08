@@ -6,6 +6,7 @@ import {
   Group,
   LoadingOverlay,
   Menu,
+  ScrollArea,
   SimpleGrid,
   Space,
   Stack,
@@ -50,8 +51,8 @@ function ArtistAlbumsCard({
   if (isLoading || !albums) return <ArtistAlbumsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'albums-card'} p={0} h={'100%'} mb={'lg'}>
-      <Stack gap={0}>
+    <Card variant={'panel'} aria-label={'albums-card'} p={0} mah={'100%'}>
+      <Stack gap={0} mah={'100%'}>
         <LoadingOverlay visible={isFetching} />
 
         <Group px={'md'} py={'xs'} gap={'xs'}>
@@ -85,28 +86,30 @@ function ArtistAlbumsCard({
           </Menu>
         </Group>
 
-        <SimpleGrid cols={{ sm: 1, md: 2, xl: 3 }} spacing={0} verticalSpacing={0}>
-          {albums.models.map((album) => (
-            <ArtistAlbumCard
-              key={album.id}
-              album={album}
-              artistId={artistId}
-              isUnknownArtist={isUnknownArtist}
-              order={order}
-            />
-          ))}
-          {albums.models.length === albums.totalCount && (
-            <NewHorizontalCard
-              ariaLabel={'new-albums-card'}
-              borderRadius={'8px'}
-              onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
-              icon={<IconDisc size={18} />}
-              p={'9px 8px 5px 8px'}
-            >
-              Add New Albums
-            </NewHorizontalCard>
-          )}
-        </SimpleGrid>
+        <ScrollArea.Autosize scrollbars={'y'} scrollbarSize={7}>
+          <SimpleGrid cols={{ sm: 1, md: 2, xl: 3 }} spacing={0} verticalSpacing={0}>
+            {albums.models.map((album) => (
+              <ArtistAlbumCard
+                key={album.id}
+                album={album}
+                artistId={artistId}
+                isUnknownArtist={isUnknownArtist}
+                order={order}
+              />
+            ))}
+            {albums.models.length === albums.totalCount && (
+              <NewHorizontalCard
+                ariaLabel={'new-albums-card'}
+                borderRadius={'8px'}
+                onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
+                icon={<IconDisc size={18} />}
+                p={'9px 8px 5px 8px'}
+              >
+                Add New Albums
+              </NewHorizontalCard>
+            )}
+          </SimpleGrid>
+        </ScrollArea.Autosize>
       </Stack>
 
       <AddNewArtistAlbumModal

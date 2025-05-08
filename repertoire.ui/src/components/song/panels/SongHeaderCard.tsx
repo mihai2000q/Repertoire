@@ -140,7 +140,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                   <HoverCard.Target>
                     <Text
                       fw={600}
-                      inline
+                      lh={'xxs'}
                       lineClamp={1}
                       c={'dark'}
                       sx={{
@@ -172,7 +172,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         <Text fw={500} fz={'xs'} inline>
                           Album
                         </Text>
-                        <Text fw={600} fz={'md'} inline lineClamp={2}>
+                        <Text fw={600} fz={'md'} lh={'xxs'} lineClamp={2}>
                           {song.album.title}
                         </Text>
                         {song.album.releaseDate && (

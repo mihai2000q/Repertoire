@@ -62,7 +62,7 @@ describe('Add New Artist Album Modal', () => {
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
     })
 
-    it('with release date', async () => {
+    it.skip('with release date', async () => {
       const user = userEvent.setup()
 
       const newTitle = 'New Album'

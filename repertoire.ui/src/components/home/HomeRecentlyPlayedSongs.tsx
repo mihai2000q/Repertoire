@@ -197,7 +197,7 @@ function HomeRecentlyPlayedSongs() {
         )}
 
         <ScrollArea scrollbars={'y'} scrollbarSize={7}>
-          <Stack gap={'xxs'} h={'100%'}>
+          <Stack gap={'xxs'}>
             {isLoading || !songs ? (
               <Loader />
             ) : (

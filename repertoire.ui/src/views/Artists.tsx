@@ -34,6 +34,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import ArtistsFilters from '../components/artists/ArtistsFilters.tsx'
 import artistsFilters from '../data/artists/artistsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
+import useMainScroll from '../hooks/useMainScroll.ts'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
@@ -78,7 +79,11 @@ function Artists() {
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
-  const handleCurrentPageChange = (p: number) => {
+  const { ref: mainScrollRef } = useMainScroll()
+
+  function handleCurrentPageChange (p: number) {
+    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 
@@ -131,7 +136,7 @@ function Artists() {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text inline mb={'xs'}>
+        <Text lh={'xxs'} mb={'xs'}>
           {startCount} - {endCount} artists out of{' '}
           {(artists?.totalCount ?? 0) + (showUnknownArtist ? 1 : 0)}
         </Text>

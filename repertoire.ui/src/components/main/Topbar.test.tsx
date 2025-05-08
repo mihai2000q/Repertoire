@@ -6,8 +6,8 @@ import { http, HttpResponse, ws } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
-import WithTotalCountResponse from "../../types/responses/WithTotalCountResponse.ts";
-import {SearchBase} from "../../types/models/Search.ts";
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import { SearchBase } from '../../types/models/Search.ts'
 
 describe('Topbar', () => {
   const render = (token: string | null = 'some token', toggleSidebar: () => void = () => {}) =>
@@ -36,7 +36,15 @@ describe('Topbar', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') },
+        isTopScrollPositionOver0: 0
+      }))
+    }))
+  })
 
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'
@@ -47,7 +55,10 @@ describe('Topbar', () => {
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it('should display just the search bar, when token is not available', async () => {
     server.use(

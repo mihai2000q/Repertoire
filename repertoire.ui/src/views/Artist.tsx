@@ -1,4 +1,4 @@
-import { Divider, Grid, Stack } from '@mantine/core'
+import { Divider, Flex, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { useGetArtistQuery } from '../state/api/artistsApi.ts'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
@@ -19,8 +19,16 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import AlbumProperty from '../types/enums/AlbumProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
+import useTitleBarHeight from '../hooks/useTitleBarHeight.ts'
+import useTopbarHeight from '../hooks/useTopbarHeight.ts'
+import { useElementSize } from '@mantine/hooks'
 
 function Artist() {
+  const titleBarHeight = useTitleBarHeight()
+  const topbarHeight = useTopbarHeight()
+  const stackGap = '16px'
+  const { ref: headerRef, height: headerHeight } = useElementSize()
+
   const params = useParams()
   const setDocumentTitle = useDynamicDocumentTitle()
   const artistId = params['id'] ?? ''
@@ -75,8 +83,9 @@ function Artist() {
   if (isLoading || (!artist && !isUnknownArtist)) return <ArtistLoader />
 
   return (
-    <Stack px={'xl'}>
+    <Stack px={'xl'} gap={stackGap}>
       <ArtistHeaderCard
+        ref={headerRef}
         artist={artist}
         albumsTotalCount={albums?.totalCount}
         songsTotalCount={songs?.totalCount}
@@ -85,9 +94,17 @@ function Artist() {
 
       <Divider />
 
-      <Grid align={'flex-start'}>
-        <Grid.Col span={{ sm: 12, md: 6.5 }}>
-          <Stack>
+      <Grid
+        align={'flex-start'}
+        mih={340}
+        styles={{
+          inner: {
+            height: `max(calc(100vh - ${headerHeight}px - ${topbarHeight} - ${titleBarHeight} - 2*${stackGap} - 1px - 6px), 340px)`
+          }
+        }}
+      >
+        <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
+          <Stack h={'100%'}>
             {!isUnknownArtist && artist.isBand && (
               <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
             )}
@@ -104,16 +121,18 @@ function Artist() {
           </Stack>
         </Grid.Col>
 
-        <Grid.Col span={{ sm: 12, md: 5.5 }}>
-          <ArtistSongsCard
-            songs={songs}
-            isLoading={isSongsLoading}
-            isFetching={isSongsFetching}
-            isUnknownArtist={isUnknownArtist}
-            order={songsOrder}
-            setOrder={setSongsOrder}
-            artistId={artist?.id}
-          />
+        <Grid.Col span={{ sm: 12, md: 5.5 }} h={'100%'}>
+          <Flex mah={'100%'}>
+            <ArtistSongsCard
+              songs={songs}
+              isLoading={isSongsLoading}
+              isFetching={isSongsFetching}
+              isUnknownArtist={isUnknownArtist}
+              order={songsOrder}
+              setOrder={setSongsOrder}
+              artistId={artist?.id}
+            />
+          </Flex>
         </Grid.Col>
       </Grid>
     </Stack>

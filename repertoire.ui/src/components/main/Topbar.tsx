@@ -1,11 +1,12 @@
 import { ReactElement } from 'react'
 import { ActionIcon, AppShell, Group, Space, useMantineTheme } from '@mantine/core'
 import { IconBellFilled, IconChevronLeft, IconChevronRight, IconMenu2 } from '@tabler/icons-react'
-import { useMediaQuery, useWindowScroll } from '@mantine/hooks'
+import { useMediaQuery } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import TopbarSearch from './TopbarSearch.tsx'
 import TopbarUser from './TopbarUser.tsx'
+import useMainScroll from '../../hooks/useMainScroll.ts'
 
 interface TopbarProps {
   toggleSidebar: () => void
@@ -14,7 +15,7 @@ interface TopbarProps {
 function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const navigate = useNavigate()
   const isDesktop = useIsDesktop()
-  const [scrollPosition] = useWindowScroll()
+  const { isTopScrollPositionOver0 } = useMainScroll()
 
   const theme = useMantineTheme()
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
@@ -37,7 +38,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
       top={'unset'}
       style={(theme) => ({
         transition: '0.35s',
-        ...(scrollPosition.y !== 0 && { boxShadow: theme.shadows.md })
+        ...(isTopScrollPositionOver0 && { boxShadow: theme.shadows.md })
       })}
     >
       <Group h={'100%'} gap={0}>

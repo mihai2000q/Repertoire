@@ -1,8 +1,8 @@
 import {
   ActionIcon,
   alpha,
-  Box,
   Button,
+  Center,
   ComboboxItem,
   Group,
   NumberInput,
@@ -91,7 +91,7 @@ function AddNewSongModalSecondStep({
             {...form.getInputProps('releaseDate')}
           />
           {album?.releaseDate && (
-            <Box c={'primary.8'} mt={'lg'} ml={4}>
+            <Center c={'primary.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
@@ -100,7 +100,7 @@ function AddNewSongModalSecondStep({
               >
                 <IconInfoCircleFilled aria-label={'release-date-info'} size={18} />
               </Tooltip>
-            </Box>
+            </Center>
           )}
         </Group>
       </Group>
@@ -109,16 +109,11 @@ function AddNewSongModalSecondStep({
         <Text fw={500} fz={'sm'}>
           Sections
         </Text>
-        <ScrollArea scrollbars={'y'} scrollbarSize={7}>
+        <ScrollArea.Autosize mah={'35vh'} scrollbars={'y'} scrollbarSize={7}>
           <DragDropContext onDragEnd={onSectionsDragEnd}>
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (
-                <Stack
-                  gap={0}
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  style={{ maxHeight: '35vh' }}
-                >
+                <Stack gap={0} ref={provided.innerRef} {...provided.droppableProps}>
                   {sections.map((section, index) => (
                     <Draggable key={section.id} index={index} draggableId={section.id}>
                       {(provided, snapshot) => {
@@ -208,7 +203,7 @@ function AddNewSongModalSecondStep({
               )}
             </Droppable>
           </DragDropContext>
-        </ScrollArea>
+        </ScrollArea.Autosize>
 
         <Button style={{ alignSelf: 'start' }} variant={'subtle'} onClick={handleAddSection}>
           Add Section

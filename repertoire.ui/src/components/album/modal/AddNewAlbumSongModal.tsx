@@ -1,4 +1,4 @@
-import { Box, Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { Button, Center, Group, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
@@ -78,22 +78,22 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                 <Stack gap={0} mt={3}>
                   {!image && album?.imageUrl && (
                     <Group gap={'xxs'}>
-                      <Box c={'primary.8'}>
+                      <Center c={'primary.8'} mb={1}>
                         <IconInfoCircleFilled size={13} />
-                      </Box>
+                      </Center>
 
-                      <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                      <Text fw={500} c={'dimmed'} fz={'xs'}>
                         If no image is uploaded, it will be inherited.
                       </Text>
                     </Group>
                   )}
                   {inheritedValues.length > 0 && (
                     <Group gap={'xxs'} wrap={'nowrap'}>
-                      <Box c={'primary.8'}>
+                      <Center c={'primary.8'}>
                         <IconInfoCircleFilled size={13} />
-                      </Box>
+                      </Center>
 
-                      <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                      <Text fw={500} c={'dimmed'} fz={'xs'}>
                         The new song will inherit the <b>{inheritedValues.join(', ')}</b>.
                       </Text>
                     </Group>

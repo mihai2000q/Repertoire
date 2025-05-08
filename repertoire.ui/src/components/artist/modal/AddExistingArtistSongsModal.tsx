@@ -130,8 +130,8 @@ function AddExistingArtistSongsModal({
             </Group>
           )}
 
-          <ScrollArea w={'100%'} scrollbars={'y'} scrollbarSize={7}>
-            <Stack gap={0} style={{ maxHeight: '50vh' }}>
+          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+            <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
                 visible={!songsIsLoading && songsIsFetching}
@@ -202,7 +202,7 @@ function AddExistingArtistSongsModal({
                 ))
               )}
             </Stack>
-          </ScrollArea>
+          </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={songIds.length > 0} label="Select songs">

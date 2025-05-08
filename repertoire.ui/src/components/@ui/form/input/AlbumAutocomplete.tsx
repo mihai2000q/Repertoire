@@ -56,7 +56,13 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
   const AlbumHoverCard = () => (
     <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
       <HoverCard.Target>
-        <Avatar radius={'md'} size={23} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+        <Avatar
+          radius={'md'}
+          size={23}
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          bg={'gray.5'}
+        >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={11} />
           </Center>
@@ -70,7 +76,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             </Center>
           </Avatar>
           <Stack gap={'xxs'}>
-            <Text inline fw={500} lineClamp={2}>
+            <Text lh={'xxs'} fw={500} lineClamp={2}>
               {album.title}
             </Text>
             {album.artist && (
@@ -149,7 +155,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                         radius={'md'}
                         size={'sm'}
                         src={album.imageUrl}
-                        alt={album.title}
+                        alt={album.imageUrl && album.title}
                         bg={'gray.5'}
                       >
                         <Center c={'white'}>
@@ -157,7 +163,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                         </Center>
                       </Avatar>
                       <Stack gap={0}>
-                        <Text inline fw={500} lineClamp={2}>
+                        <Text lh={'xxs'} fw={500} lineClamp={album.artist ? 1 : 2}>
                           {album.title}
                         </Text>
                         {album.artist && (

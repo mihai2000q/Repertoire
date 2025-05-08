@@ -1,7 +1,7 @@
 import Song from '../../../types/models/Song.ts'
 import {
-  Box,
   Button,
+  Center,
   Group,
   LoadingOverlay,
   Modal,
@@ -125,9 +125,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
             {!image && song.album?.imageUrl && (
               <Group gap={6}>
-                <Box c={'primary.8'} mt={3}>
+                <Center c={'primary.8'} mt={3}>
                   <IconInfoCircleFilled size={15} />
-                </Box>
+                </Center>
 
                 <Text inline fw={500} c={'dimmed'} fz={'xs'}>
                   The song image is inherited from the album
@@ -157,7 +157,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
               <Group gap={'xxs'} flex={1}>
                 <ArtistSelect artist={artist} setArtist={setArtist} disabled={!!album} />
                 {album && (
-                  <Box c={'primary.8'} mt={'lg'} ml={4}>
+                  <Center c={'primary.8'} mt={'lg'} ml={4}>
                     <Tooltip
                       multiline
                       w={210}
@@ -166,7 +166,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
                     >
                       <IconInfoCircleFilled aria-label={'artist-info'} size={18} />
                     </Tooltip>
-                  </Box>
+                  </Center>
                 )}
               </Group>
             </Group>

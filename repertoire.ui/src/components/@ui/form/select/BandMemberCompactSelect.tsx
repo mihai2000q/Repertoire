@@ -67,7 +67,7 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
           >
             <IconUser size={14} />
           </Avatar>
-          <Text inline fw={500} lineClamp={2}>
+          <Text lh={'xxs'} fw={500} lineClamp={2}>
             {member.name}
           </Text>
         </Group>
@@ -89,8 +89,14 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
         <Combobox.Target withAriaAttributes={false}>
           {bandMember ? (
             <Tooltip
-              label={`${bandMember.name} is selected`}
+              label={
+                <Text fz={'sm'} c={'white'} lineClamp={2}>
+                  {bandMember.name} is selected
+                </Text>
+              }
               openDelay={200}
+              multiline={true}
+              maw={250}
               disabled={combobox.dropdownOpened}
             >
               <UnstyledButton

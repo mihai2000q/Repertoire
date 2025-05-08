@@ -152,7 +152,7 @@ function LargeImageDropzoneWithPreview({
           <IconPhoto size={40} />
         </Dropzone.Idle>
 
-        <Text size="xl" inline>
+        <Text fz={'xl'} c={'inherit'}>
           Drag {label} here or click to select it
         </Text>
       </Group>

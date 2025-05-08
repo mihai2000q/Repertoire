@@ -1,4 +1,4 @@
-import {Box, ComboboxItem, Group, Select, SelectProps, Text} from '@mantine/core'
+import { Center, ComboboxItem, Group, Select, SelectProps, Text } from '@mantine/core'
 import { useGetInstrumentsQuery } from '../../../../state/api/songsApi.ts'
 import { IconCheck } from '@tabler/icons-react'
 import useInstrumentIcon from '../../../../hooks/useInstrumentIcon.tsx'
@@ -19,10 +19,12 @@ function InstrumentSelect({ option, onOptionChange, ...others }: InstrumentSelec
 
   const renderSelectOption: SelectProps['renderOption'] = ({ option, checked }) => (
     <Group flex={1} gap={'xs'}>
-      <Box c={'primary.7'} w={19} h={19}>
+      <Center c={'primary.7'} w={19} h={19}>
         {getInstrumentIcon(option?.label)}
-      </Box>
-      <Text fz={'sm'} fw={500}>{option.label}</Text>
+      </Center>
+      <Text fz={'sm'} fw={500}>
+        {option.label}
+      </Text>
       {checked && (
         <IconCheck
           size={18}
@@ -43,9 +45,9 @@ function InstrumentSelect({ option, onOptionChange, ...others }: InstrumentSelec
       data={data}
       value={option?.value ?? null}
       leftSection={
-        <Box c={option ? 'primary.7' : 'gray.6'} w={22} h={22}>
+        <Center c={option ? 'primary.7' : 'gray.6'} w={22} h={22}>
           {getInstrumentIcon(option?.label)}
-        </Box>
+        </Center>
       }
       onChange={(_, option) => onOptionChange(option)}
       renderOption={renderSelectOption}
