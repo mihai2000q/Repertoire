@@ -68,9 +68,25 @@ func Color(fl validator.FieldLevel) bool {
 }
 
 func OrderBy(fl validator.FieldLevel) bool {
-	orderBy := fl.Field().Interface().([]string)
+	orderBy, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
 	for _, o := range orderBy {
-		if validateOrderByElem(o) == false {
+		if !validateOrderByElem(o) {
+			return false
+		}
+	}
+	return true
+}
+
+func SearchOrder(fl validator.FieldLevel) bool {
+	order, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
+	for _, o := range order {
+		if !validateSearchOrderElem(o) {
 			return false
 		}
 	}
@@ -78,14 +94,32 @@ func OrderBy(fl validator.FieldLevel) bool {
 }
 
 func SearchBy(fl validator.FieldLevel) bool {
-	searchBy := fl.Field().Interface().([]string)
+	searchBy, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
 	for _, s := range searchBy {
-		if validateSearchByElem(s) == false {
+		if !validateSearchByElem(s) {
 			return false
 		}
 	}
 	return true
 }
+
+func SearchFilter(fl validator.FieldLevel) bool {
+	order, ok := fl.Field().Interface().([]string)
+	if !ok {
+		return false
+	}
+	for _, o := range order {
+		if !validateSearchFilterElem(o) {
+			return false
+		}
+	}
+	return true
+}
+
+// private functions
 
 func validateOrderByElem(orderBy string) bool {
 	split := strings.Split(orderBy, " ")
@@ -116,29 +150,13 @@ func validateOrderNullability(str1 string, str2 string) bool {
 var filterOperators = []string{"=", "!=", "<>", "<", ">", "<=", ">=", "is", "in"}
 
 func validateSearchByElem(searchBy string) bool {
-	startIndexOfOperator := 0
-	startIndexOfSearchValue := 0
-
-	spaces := 0
-	for i, s := range searchBy {
-		if s == ' ' {
-			spaces++
-		}
-		if spaces == 1 && startIndexOfOperator == 0 {
-			startIndexOfOperator = i
-		}
-		if spaces == 2 {
-			startIndexOfSearchValue = i
-			break
-		}
-	}
-
-	if startIndexOfOperator == 0 || startIndexOfSearchValue == 0 || len(searchBy) == startIndexOfOperator+1 {
+	split := strings.SplitN(searchBy, " ", 3)
+	if len(split) != 3 {
 		return false
 	}
 
-	operator := strings.ToLower(searchBy[startIndexOfOperator+1 : startIndexOfSearchValue])
-	searchValue := searchBy[startIndexOfSearchValue+1:]
+	operator := strings.ToLower(split[1])
+	searchValue := split[2]
 
 	if operator == "is" {
 		searchValue = strings.ToLower(searchValue)

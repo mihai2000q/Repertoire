@@ -84,7 +84,17 @@ func registerCustomValidators(validate *validator.Validate) error {
 		return err
 	}
 
+	err = validate.RegisterValidation("search_order", SearchOrder)
+	if err != nil {
+		return err
+	}
+
 	err = validate.RegisterValidation("search_by", SearchBy)
+	if err != nil {
+		return err
+	}
+
+	err = validate.RegisterValidation("search_filter", SearchFilter)
 	if err != nil {
 		return err
 	}

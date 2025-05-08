@@ -47,26 +47,11 @@ func SearchBy(tx *gorm.DB, searchBy []string) *gorm.DB {
 }
 
 func splitSearch(str string) (string, any) {
-	startIndexOfOperator := 0
-	startIndexOfSearchValue := 0
+	split := strings.SplitN(str, " ", 3)
 
-	spaces := 0
-	for i, s := range str {
-		if s == ' ' {
-			spaces++
-		}
-		if spaces == 1 && startIndexOfOperator == 0 {
-			startIndexOfOperator = i
-		}
-		if spaces == 2 {
-			startIndexOfSearchValue = i
-			break
-		}
-	}
-
-	property := str[:startIndexOfOperator]
-	operator := str[startIndexOfOperator+1 : startIndexOfSearchValue]
-	searchValue := str[startIndexOfSearchValue+1:]
+	property := split[0]
+	operator := split[1]
+	searchValue := split[2]
 
 	condition := fmt.Sprintf("(%s %s (?))", property, operator)
 
