@@ -104,6 +104,10 @@ function SongCard({ song }: SongCardProps) {
             '&:hover': {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
+            },
+            ...openedMenu && {
+              boxShadow: theme.shadows.xxl,
+              transform: 'scale(1.1)'
             }
           })}
         >

@@ -38,7 +38,10 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
       aria-label={`playlist-card-${playlist.title}`}
       align={'center'}
       gap={0}
-      style={{ transition: '0.3s', ...(isImageHovered && { transform: 'scale(1.1)' }) }}
+      style={{
+        transition: '0.3s',
+        ...((openedMenu || isImageHovered) && { transform: 'scale(1.1)' })
+      }}
     >
       <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
         <Menu.Target>
@@ -58,7 +61,8 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
               cursor: 'pointer',
               transition: '0.3s',
               boxShadow: theme.shadows.xxl,
-              '&:hover': { boxShadow: theme.shadows.xxl_hover }
+              '&:hover': { boxShadow: theme.shadows.xxl_hover },
+              ...(openedMenu && { boxShadow: theme.shadows.xxl_hover })
             })}
           >
             <Center c={'white'}>
