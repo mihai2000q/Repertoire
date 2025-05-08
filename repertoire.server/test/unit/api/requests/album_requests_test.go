@@ -25,7 +25,7 @@ func TestValidateGetAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"Maximal",
 			requests.GetAlbumRequest{
 				ID:           uuid.New(),
-				SongsOrderBy: []string{"title asc", "created_at desc"},
+				SongsOrderBy: []string{"title", "created_at desc"},
 			},
 		},
 	}
@@ -57,6 +57,13 @@ func TestValidateGetAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			requests.GetAlbumRequest{ID: uuid.Nil},
 			"ID",
 			"required",
+		},
+		// Songs Order By Cases
+		{
+			"Songs Order By is invalid because it has invalid order type",
+			requests.GetAlbumRequest{ID: uuid.New(), SongsOrderBy: []string{"title ascending"}},
+			"SongsOrderBy",
+			"order_by",
 		},
 	}
 	for _, tt := range tests {
@@ -91,7 +98,7 @@ func TestValidateGetAlbumsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			requests.GetAlbumsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
-				OrderBy:     []string{"title asc", "created_at desc"},
+				OrderBy:     []string{"title nulls first", "created_at desc nulls last"},
 				SearchBy:    []string{"title = something", "is_recorded <> false"},
 			},
 		},
@@ -143,6 +150,13 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			requests.GetAlbumsRequest{CurrentPage: &[]int{1}[0]},
 			"PageSize",
 			"required_with",
+		},
+		// Order By Test Cases
+		{
+			"Order By is invalid because of the missing first or last",
+			requests.GetAlbumsRequest{OrderBy: []string{"songs asc nulls"}},
+			"OrderBy",
+			"order_by",
 		},
 		// Search By Test Cases
 		{

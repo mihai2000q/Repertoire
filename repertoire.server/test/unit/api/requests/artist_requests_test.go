@@ -78,9 +78,16 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"PageSize",
 			"required_with",
 		},
+		// Order By Test Cases
+		{
+			"Order By is invalid because of the invalid null instead of nulls",
+			requests.GetArtistsRequest{OrderBy: []string{"songs asc null last"}},
+			"OrderBy",
+			"order_by",
+		},
 		// Search By Test Cases
 		{
-			"Search By is invalid because the operator is not supported",
+			"Search By is invalid because of the value",
 			requests.GetArtistsRequest{SearchBy: []string{"songs is not nullish"}},
 			"SearchBy",
 			"search_by",
@@ -144,7 +151,7 @@ func TestValidateGetArtistFiltersMetadataRequest_WhenSingleFieldIsInvalid_Should
 	}{
 		// Search By Test Cases
 		{
-			"Search By is invalid because the operator is not supported",
+			"Search By is invalid because of the value",
 			requests.GetArtistFiltersMetadataRequest{SearchBy: []string{"songs is not nullish"}},
 			"SearchBy",
 			"search_by",

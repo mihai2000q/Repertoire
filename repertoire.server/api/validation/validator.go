@@ -79,6 +79,11 @@ func registerCustomValidators(validate *validator.Validate) error {
 		return err
 	}
 
+	err = validate.RegisterValidation("order_by", OrderBy)
+	if err != nil {
+		return err
+	}
+
 	err = validate.RegisterValidation("search_by", SearchBy)
 	if err != nil {
 		return err

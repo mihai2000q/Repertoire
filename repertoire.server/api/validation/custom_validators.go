@@ -67,6 +67,16 @@ func Color(fl validator.FieldLevel) bool {
 	return regex.MatchString(fl.Field().String())
 }
 
+func OrderBy(fl validator.FieldLevel) bool {
+	orderBy := fl.Field().Interface().([]string)
+	for _, o := range orderBy {
+		if validateOrderByElem(o) == false {
+			return false
+		}
+	}
+	return true
+}
+
 func SearchBy(fl validator.FieldLevel) bool {
 	searchBy := fl.Field().Interface().([]string)
 	for _, s := range searchBy {
@@ -75,6 +85,32 @@ func SearchBy(fl validator.FieldLevel) bool {
 		}
 	}
 	return true
+}
+
+func validateOrderByElem(orderBy string) bool {
+	split := strings.Split(orderBy, " ")
+	if len(split) == 1 {
+		return true
+	}
+	if len(split) == 2 {
+		return validateOrderType(strings.ToLower(split[1]))
+	}
+	if len(split) == 3 {
+		return validateOrderNullability(strings.ToLower(split[1]), strings.ToLower(split[2]))
+	}
+	if len(split) == 4 {
+		return validateOrderType(strings.ToLower(split[1])) &&
+			validateOrderNullability(strings.ToLower(split[2]), strings.ToLower(split[3]))
+	}
+	return false
+}
+
+func validateOrderType(str string) bool {
+	return str == "asc" || str == "desc"
+}
+
+func validateOrderNullability(str1 string, str2 string) bool {
+	return str1 == "nulls" && (str2 == "last" || str2 == "first")
 }
 
 var filterOperators = []string{"=", "!=", "<>", "<", ">", "<=", ">=", "is", "in"}
@@ -95,6 +131,10 @@ func validateSearchByElem(searchBy string) bool {
 			startIndexOfSearchValue = i
 			break
 		}
+	}
+
+	if startIndexOfOperator == 0 || startIndexOfSearchValue == 0 || len(searchBy) == startIndexOfOperator+1 {
+		return false
 	}
 
 	operator := strings.ToLower(searchBy[startIndexOfOperator+1 : startIndexOfSearchValue])
