@@ -6,6 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/model"
+	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
 
@@ -17,7 +18,7 @@ import (
 func TestRemoveSongsFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
+	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:      uuid.New(),
@@ -44,7 +45,7 @@ func TestRemoveSongsFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalS
 func TestRemoveSongsFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
+	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:      uuid.New(),
@@ -71,10 +72,11 @@ func TestRemoveSongsFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenTransactionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
+	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:      uuid.New(),
@@ -90,7 +92,47 @@ func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServer
 		Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	playlistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+}
+
+func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	transactionManager := new(transaction.ManagerMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
+
+	request := requests.RemoveSongsFromPlaylistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// given - mocking
+	playlistSongs := &[]model.PlaylistSong{
+		{SongID: request.SongIDs[0], SongTrackNo: 1},
+	}
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil, playlistSongs).
+		Once()
+
+	repositoryFactory.On("NewPlaylistRepository").Return(transactionPlaylistRepository).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("internal error")
+	transactionPlaylistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
 		Return(internalError).
 		Once()
 
@@ -103,12 +145,18 @@ func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServer
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	transactionPlaylistRepository.AssertExpectations(t)
 }
 
 func TestRemoveSongsFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
+	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:      uuid.New(),
@@ -123,12 +171,15 @@ func TestRemoveSongsFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInt
 		Return(nil, playlistSongs).
 		Once()
 
-	playlistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
+	repositoryFactory.On("NewPlaylistRepository").Return(transactionPlaylistRepository).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	transactionPlaylistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("UpdateAllPlaylistSongs", mock.IsType(playlistSongs)).
+	transactionPlaylistRepository.On("UpdateAllPlaylistSongs", mock.IsType(playlistSongs)).
 		Return(internalError).
 		Once()
 
@@ -141,12 +192,18 @@ func TestRemoveSongsFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInt
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	transactionPlaylistRepository.AssertExpectations(t)
 }
 
 func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
+	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository)
+	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:      uuid.New(),
@@ -165,7 +222,10 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 		Return(nil, playlistSongs).
 		Once()
 
-	playlistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
+	repositoryFactory.On("NewPlaylistRepository").Return(transactionPlaylistRepository).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	transactionPlaylistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
 		Run(func(args mock.Arguments) {
 			songs := args.Get(0).(*[]model.PlaylistSong)
 			assert.Len(t, *songs, len(request.SongIDs))
@@ -176,7 +236,7 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 		Return(nil).
 		Once()
 
-	playlistRepository.On("UpdateAllPlaylistSongs", mock.IsType(playlistSongs)).
+	transactionPlaylistRepository.On("UpdateAllPlaylistSongs", mock.IsType(playlistSongs)).
 		Run(func(args mock.Arguments) {
 			newSongs := args.Get(0).(*[]model.PlaylistSong)
 			assert.Len(t, *newSongs, len(*playlistSongs)-len(request.SongIDs))
@@ -195,4 +255,6 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 	assert.Nil(t, errCode)
 
 	playlistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	transactionPlaylistRepository.AssertExpectations(t)
 }
