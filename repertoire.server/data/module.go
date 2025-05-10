@@ -5,6 +5,7 @@ import (
 	"go.uber.org/fx/fxevent"
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/http"
 	"repertoire/server/data/http/client"
 	"repertoire/server/data/logger"
@@ -31,6 +32,11 @@ var loggers = fx.Options(
 	fx.WithLogger(func(logger *logger.FxLogger) fxevent.Logger {
 		return &fxevent.ZapLogger{Logger: logger.Logger.Logger}
 	}),
+)
+
+var databaseOptions = fx.Options(
+	fx.Provide(database.NewClient),
+	fx.Provide(transaction.NewManager),
 )
 
 var httpClients = fx.Options(
@@ -62,7 +68,7 @@ var services = fx.Options(
 var Module = fx.Options(
 	caches,
 	loggers,
-	fx.Provide(database.NewClient),
+	databaseOptions,
 	httpClients,
 	fx.Provide(message.NewPublisher),
 	fx.Provide(realtime.NewCentrifugoClient),
