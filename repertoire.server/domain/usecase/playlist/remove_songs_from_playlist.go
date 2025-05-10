@@ -3,6 +3,7 @@ package playlist
 import (
 	"errors"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -10,7 +11,8 @@ import (
 )
 
 type RemoveSongsFromPlaylist struct {
-	repository repository.PlaylistRepository
+	repository  repository.PlaylistRepository
+	transaction transaction.Manager
 }
 
 func NewRemoveSongsFromPlaylist(repository repository.PlaylistRepository) RemoveSongsFromPlaylist {
@@ -42,13 +44,18 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 	if len(songsToDelete) != len(request.SongIDs) {
 		return wrapper.NotFoundError(errors.New("could not find all songs"))
 	}
-	// TODO: TRANSACTION!!!
-	err = r.repository.RemoveSongs(&songsToDelete)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
 
-	err = r.repository.UpdateAllPlaylistSongs(&songsToPreserve)
+	err = r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
+		playlistRepo := factory.NewPlaylistRepository()
+
+		if err := playlistRepo.RemoveSongs(&songsToDelete); err != nil {
+			return err
+		}
+		if err := playlistRepo.UpdateAllPlaylistSongs(&songsToPreserve); err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
