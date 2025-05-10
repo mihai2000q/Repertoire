@@ -36,7 +36,7 @@ var loggers = fx.Options(
 
 var databaseOptions = fx.Options(
 	fx.Provide(database.NewClient),
-	fx.Provide(transaction.NewTransactionHandler),
+	fx.Provide(transaction.NewTransactionManager),
 )
 
 var httpClients = fx.Options(
