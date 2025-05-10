@@ -15,8 +15,14 @@ type RemoveSongsFromPlaylist struct {
 	transaction transaction.Manager
 }
 
-func NewRemoveSongsFromPlaylist(repository repository.PlaylistRepository) RemoveSongsFromPlaylist {
-	return RemoveSongsFromPlaylist{repository: repository}
+func NewRemoveSongsFromPlaylist(
+	repository repository.PlaylistRepository,
+	transaction transaction.Manager,
+) RemoveSongsFromPlaylist {
+	return RemoveSongsFromPlaylist{
+		repository:  repository,
+		transaction: transaction,
+	}
 }
 
 func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode {

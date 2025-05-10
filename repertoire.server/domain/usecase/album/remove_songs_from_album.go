@@ -21,10 +21,12 @@ type RemoveSongsFromAlbum struct {
 
 func NewRemoveSongsFromAlbum(
 	repository repository.AlbumRepository,
+	transaction transaction.Manager,
 	messagePublisherService service.MessagePublisherService,
 ) RemoveSongsFromAlbum {
 	return RemoveSongsFromAlbum{
 		repository:              repository,
+		transaction:             transaction,
 		messagePublisherService: messagePublisherService,
 	}
 }
