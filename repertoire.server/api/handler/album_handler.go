@@ -49,13 +49,13 @@ func (a AlbumHandler) Get(c *gin.Context) {
 		return
 	}
 
-	user, errorCode := a.service.Get(request)
+	album, errorCode := a.service.Get(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, album)
 }
 
 func (a AlbumHandler) GetAll(c *gin.Context) {

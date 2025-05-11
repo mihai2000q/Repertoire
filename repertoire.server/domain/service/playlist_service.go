@@ -18,7 +18,7 @@ type PlaylistService interface {
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.EnhancedPlaylist], *wrapper.ErrorCode)
-	Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
+	Get(request requests.GetPlaylistRequest) (model.Playlist, *wrapper.ErrorCode)
 	GetFiltersMetadata(
 		request requests.GetPlaylistFiltersMetadataRequest,
 		token string,
@@ -105,8 +105,8 @@ func (p *playlistService) GetAll(request requests.GetPlaylistsRequest, token str
 	return p.getAllPlaylists.Handle(request, token)
 }
 
-func (p *playlistService) Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode) {
-	return p.getPlaylist.Handle(id)
+func (p *playlistService) Get(request requests.GetPlaylistRequest) (model.Playlist, *wrapper.ErrorCode) {
+	return p.getPlaylist.Handle(request)
 }
 
 func (p *playlistService) GetFiltersMetadata(

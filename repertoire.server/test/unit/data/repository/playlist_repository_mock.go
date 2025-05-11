@@ -32,8 +32,8 @@ func (p *PlaylistRepositoryMock) GetPlaylistSongs(playlistSongs *[]model.Playlis
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
-	args := p.Called(playlist, id)
+func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOderBy []string) error {
+	args := p.Called(playlist, id, songsOderBy)
 
 	if len(args) > 1 {
 		*playlist = *args.Get(1).(*model.Playlist)

@@ -11,6 +11,78 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestValidateGetPlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetPlaylistRequest
+	}{
+		{
+			"Minimal",
+			requests.GetPlaylistRequest{ID: uuid.New()},
+		},
+		{
+			"Maximal",
+			requests.GetPlaylistRequest{
+				ID:           uuid.New(),
+				SongsOrderBy: []string{"title", "created_at desc"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetPlaylistRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Cases
+		{
+			"ID is invalid because it is required",
+			requests.GetPlaylistRequest{ID: uuid.Nil},
+			"ID",
+			"required",
+		},
+		// Songs Order By Cases
+		{
+			"Songs Order By is invalid because it has invalid order type",
+			requests.GetPlaylistRequest{ID: uuid.New(), SongsOrderBy: []string{"title ascending"}},
+			"SongsOrderBy",
+			"order_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetPlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
