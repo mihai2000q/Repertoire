@@ -51,7 +51,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
   })
 
   const AlbumHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
         <Avatar
           radius={'md'}

@@ -164,7 +164,7 @@ function SongSectionCard({
             </ActionIcon>
 
             {isArtistBand && section.bandMember && (
-              <HoverCard withArrow={true} openDelay={200} position="top" shadow={'md'}>
+              <HoverCard openDelay={200} position="top">
                 <HoverCard.Target>
                   <Avatar
                     size={25}

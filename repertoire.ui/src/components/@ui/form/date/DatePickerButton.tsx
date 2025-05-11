@@ -27,7 +27,6 @@ function DatePickerButton({
     <Popover
       opened={opened}
       onChange={setOpened}
-      shadow={'sm'}
       transitionProps={{ transition: 'scale-y', duration: 160 }}
     >
       <Popover.Target>

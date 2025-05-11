@@ -136,7 +136,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                     on
                   </Text>
                 )}
-                <HoverCard shadow={'lg'} withArrow>
+                <HoverCard>
                   <HoverCard.Target>
                     <Text
                       fw={600}

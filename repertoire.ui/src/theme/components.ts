@@ -8,6 +8,7 @@ import {
   Chip,
   Combobox,
   Highlight,
+  HoverCard,
   Indicator,
   LoadingOverlay,
   Menu,
@@ -15,6 +16,7 @@ import {
   NavLink,
   NumberFormatter,
   NumberInput,
+  Popover,
   RangeSlider,
   ScrollArea,
   ScrollAreaAutosize,
@@ -138,6 +140,12 @@ export const components = {
       highlightStyles: { fontWeight: 700 }
     }
   }),
+  HoverCard: HoverCard.extend({
+    defaultProps: {
+      shadow: 'md',
+      withArrow: true
+    }
+  }),
   Indicator: Indicator.extend({
     defaultProps: {
       fw: 500
@@ -240,6 +248,12 @@ export const components = {
   NumberInput: NumberInput.extend({
     defaultProps: {
       clampBehavior: 'strict'
+    }
+  }),
+  Popover: Popover.extend({
+    defaultProps: {
+      withArrow: true,
+      shadow: 'sm'
     }
   }),
   RangeSlider: RangeSlider.extend({
