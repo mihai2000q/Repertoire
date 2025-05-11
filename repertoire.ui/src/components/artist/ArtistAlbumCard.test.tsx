@@ -139,7 +139,7 @@ describe('Artist Album Card', () => {
       expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
     })
 
-    it('should display the last time played date, when it is last time played', () => {
+    it('should display the last played date, when it is last played', () => {
       const order = {
         ...emptyOrder,
         property: AlbumProperty.LastPlayed
