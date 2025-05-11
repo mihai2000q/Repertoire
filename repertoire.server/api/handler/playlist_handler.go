@@ -41,7 +41,7 @@ func (p PlaylistHandler) Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, playlist)
 }
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
