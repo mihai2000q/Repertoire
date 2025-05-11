@@ -4,6 +4,7 @@ import {
   alpha,
   Avatar,
   Center,
+  Flex,
   Grid,
   Group,
   Menu,
@@ -142,12 +143,12 @@ function AlbumSongCard({
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             }),
 
-            ...isDragging && {
+            ...(isDragging && {
               boxShadow: theme.shadows.xl,
               borderRadius: '16px',
               backgroundColor: alpha(theme.white, 0.33),
               border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
-            }
+            })
           })}
           px={'md'}
           py={'xs'}
@@ -176,7 +177,10 @@ function AlbumSongCard({
                   bg={'gray.5'}
                 >
                   <Center c={'white'}>
-                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+                    <CustomIconMusicNoteEighth
+                      aria-label={`default-icon-${song.title}`}
+                      size={20}
+                    />
                   </Center>
                 </Avatar>
 
@@ -194,7 +198,7 @@ function AlbumSongCard({
                   : 'auto'
               }
             >
-              <Group px={'10%'}>
+              <Flex px={'10%'}>
                 {order.property === SongProperty.Difficulty && (
                   <DifficultyBar difficulty={song.difficulty} miw={'max(15vw, 120px)'} />
                 )}
@@ -226,12 +230,12 @@ function AlbumSongCard({
                   >
                     <Text fw={500} c={'dimmed'} inline>
                       {song.lastTimePlayed
-                        ? dayjs(song.lastTimePlayed).format('D MMM YYYY')
+                        ? dayjs(song.lastTimePlayed).format('DD MMM YYYY')
                         : 'never'}
                     </Text>
                   </Tooltip>
                 )}
-              </Group>
+              </Flex>
             </Grid.Col>
 
             <Grid.Col span={'content'}>

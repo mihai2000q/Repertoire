@@ -183,7 +183,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                   disabled={!song.releaseDate}
                 >
                   <Text fz={'xs'} c={'dimmed'}>
-                    {song.releaseDate && dayjs(song.releaseDate).format('D MMM YYYY')}
+                    {song.releaseDate && dayjs(song.releaseDate).format('DD MMM YYYY')}
                   </Text>
                 </Tooltip>
               )}
@@ -218,7 +218,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                 >
                   <Text fz={'xs'} c={'dimmed'}>
                     {song.lastTimePlayed
-                      ? dayjs(song.lastTimePlayed).format('D MMM YYYY')
+                      ? dayjs(song.lastTimePlayed).format('DD MMM YYYY')
                       : 'never'}
                   </Text>
                 </Tooltip>

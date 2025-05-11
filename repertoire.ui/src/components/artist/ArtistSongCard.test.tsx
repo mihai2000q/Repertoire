@@ -120,7 +120,7 @@ describe('Artist Song Card', () => {
       )
 
       expect(
-        screen.getByText(dayjs(localSong.releaseDate).format('D MMM YYYY'))
+        screen.getByText(dayjs(localSong.releaseDate).format('DD MMM YYYY'))
       ).toBeInTheDocument()
     })
 
@@ -218,7 +218,7 @@ describe('Artist Song Card', () => {
       )
 
       expect(
-        screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
       ).toBeInTheDocument()
 
       rerender(<ArtistSongCard song={song} artistId={''} isUnknownArtist={false} order={order} />)
