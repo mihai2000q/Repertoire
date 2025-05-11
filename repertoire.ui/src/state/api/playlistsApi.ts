@@ -4,6 +4,7 @@ import Playlist from '../../types/models/Playlist.ts'
 import {
   AddSongsToPlaylistRequest,
   CreatePlaylistRequest,
+  GetPlaylistRequest,
   GetPlaylistsRequest,
   MoveSongFromPlaylistRequest,
   RemoveSongsFromPlaylistRequest,
@@ -21,8 +22,8 @@ const playlistsApi = api.injectEndpoints({
       query: (arg) => `playlists${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
     }),
-    getPlaylist: build.query<Playlist, string>({
-      query: (arg) => `playlists/${arg}`,
+    getPlaylist: build.query<Playlist, GetPlaylistRequest>({
+      query: (arg) => `playlists/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Playlists', 'Songs', 'Albums', 'Artists'],
       transformResponse: (response: Playlist) => ({
         ...response,

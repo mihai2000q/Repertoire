@@ -15,7 +15,7 @@ enum SongProperty {
   LastModified = 'songs.updated_at',
   LastPlayed = 'last_time_played',
   PlaylistId = 'playlist_id',
-  PlaylistTrackNo = 'playlist_track_no',
+  PlaylistTrackNo = 'song_track_no',
   Progress = 'songs.progress',
   Rehearsals = 'songs.rehearsals',
   ReleaseDate = 'songs.release_date',

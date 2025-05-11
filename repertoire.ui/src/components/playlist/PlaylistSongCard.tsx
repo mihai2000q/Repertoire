@@ -1,5 +1,17 @@
 import Song from '../../types/models/Song.ts'
-import { ActionIcon, alpha, Avatar, Center, Group, Menu, Stack, Text } from '@mantine/core'
+import {
+  ActionIcon,
+  alpha,
+  Avatar,
+  Center, Flex,
+  Grid,
+  Group,
+  Menu,
+  NumberFormatter,
+  Stack,
+  Text,
+  Tooltip
+} from '@mantine/core'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
@@ -13,10 +25,17 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.
 import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import { useRemoveSongsFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import Order from '../../types/Order.ts'
+import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
+import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
+import dayjs from 'dayjs'
 
 interface PlaylistSongCardProps {
   song: Song
   playlistId: string
+  order: Order
   isDragging: boolean
   draggableProvided?: DraggableProvided
 }
@@ -24,6 +43,7 @@ interface PlaylistSongCardProps {
 function PlaylistSongCard({
   song,
   playlistId,
+  order,
   isDragging,
   draggableProvided
 }: PlaylistSongCardProps) {
@@ -144,74 +164,150 @@ function PlaylistSongCard({
           onClick={handleClick}
           onContextMenu={openMenu}
         >
-          <Text fw={500} w={35} ta={'center'}>
-            {song.playlistTrackNo}
-          </Text>
+          <Grid columns={12} align={'center'} w={'100%'}>
+            <Grid.Col
+              span={
+                order.property === SongProperty.PlaylistTrackNo ||
+                order.property === SongProperty.Title
+                  ? 'auto'
+                  : 6
+              }
+            >
+              <Group>
+                <Text fw={500} miw={30} maw={30} ta={'center'}>
+                  {song.playlistTrackNo}
+                </Text>
 
-          <Avatar
-            radius={'md'}
-            src={song.imageUrl ?? song.album?.imageUrl}
-            alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-            bg={'gray.5'}
-          >
-            <Center c={'white'}>
-              <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
-            </Center>
-          </Avatar>
+                <Avatar
+                  radius={'md'}
+                  src={song.imageUrl ?? song.album?.imageUrl}
+                  alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+                  bg={'gray.5'}
+                >
+                  <Center c={'white'}>
+                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+                  </Center>
+                </Avatar>
 
-          <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
-            <Group gap={'xxs'} wrap={'nowrap'}>
-              <Text fw={500} truncate={'end'}>
-                {song.title}
-              </Text>
-              {song.album && (
-                <>
-                  <Text fz={'sm'}>-</Text>
-                  <Text
-                    fz={'sm'}
-                    c={'dimmed'}
-                    truncate={'end'}
-                    sx={{ '&:hover': { textDecoration: 'underline' } }}
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleAlbumClick}
+                <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
+                  <Group gap={'xxs'} wrap={'nowrap'}>
+                    <Text fw={500} lineClamp={1}>
+                      {song.title}
+                    </Text>
+                    {song.album && (
+                      <>
+                        <Text fz={'sm'}>-</Text>
+                        <Text
+                          fz={'sm'}
+                          c={'dimmed'}
+                          lineClamp={1}
+                          sx={{ '&:hover': { textDecoration: 'underline' } }}
+                          style={{ cursor: 'pointer' }}
+                          onClick={handleAlbumClick}
+                        >
+                          {song.album.title}
+                        </Text>
+                      </>
+                    )}
+                  </Group>
+                  {song.artist && (
+                    <Text
+                      fz={'sm'}
+                      c={'dimmed'}
+                      sx={{ '&:hover': { textDecoration: 'underline' } }}
+                      style={{ cursor: 'pointer', alignSelf: 'start' }}
+                      onClick={handleArtistClick}
+                      lineClamp={1}
+                    >
+                      {song.artist.name}
+                    </Text>
+                  )}
+                </Stack>
+              </Group>
+            </Grid.Col>
+
+            <Grid.Col
+              span={
+                order.property === SongProperty.PlaylistTrackNo ||
+                order.property === SongProperty.Title
+                  ? 0
+                  : 'auto'
+              }
+            >
+              <Flex px={'10%'}>
+                {order.property === SongProperty.ReleaseDate && (
+                  <Tooltip
+                    label={`Song was released on ${dayjs(song.releaseDate).format('D MMMM YYYY')}`}
+                    openDelay={400}
+                    disabled={!song.releaseDate}
                   >
-                    {song.album.title}
-                  </Text>
-                </>
-              )}
-            </Group>
-            {song.artist && (
-              <Text
-                fz={'sm'}
-                c={'dimmed'}
-                sx={{ '&:hover': { textDecoration: 'underline' } }}
-                style={{ cursor: 'pointer', alignSelf: 'start' }}
-                onClick={handleArtistClick}
-                lineClamp={1}
-              >
-                {song.artist.name}
-              </Text>
-            )}
-          </Stack>
+                    <Text fw={500} c={'dimmed'} inline>
+                      {song.releaseDate
+                        ? dayjs(song.releaseDate).format('DD MMM YYYY')
+                        : 'unknown'}
+                    </Text>
+                  </Tooltip>
+                )}
+                {order.property === SongProperty.Difficulty && (
+                  <DifficultyBar difficulty={song.difficulty} miw={'max(15vw, 120px)'} />
+                )}
+                {order.property === SongProperty.Rehearsals && (
+                  <Tooltip.Floating
+                    role={'tooltip'}
+                    label={
+                      <>
+                        Rehearsals: <NumberFormatter value={song.rehearsals} />
+                      </>
+                    }
+                  >
+                    <Text fw={500} c={'dimmed'} inline>
+                      <NumberFormatter value={song.rehearsals} />
+                    </Text>
+                  </Tooltip.Floating>
+                )}
+                {order.property === SongProperty.Confidence && (
+                  <ConfidenceBar confidence={song.confidence} flex={1} />
+                )}
+                {order.property === SongProperty.Progress && (
+                  <ProgressBar progress={song.progress} flex={1} />
+                )}
+                {order.property === SongProperty.LastPlayed && (
+                  <Tooltip
+                    label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                    openDelay={400}
+                    disabled={!song.lastTimePlayed}
+                  >
+                    <Text fw={500} c={'dimmed'} inline>
+                      {song.lastTimePlayed
+                        ? dayjs(song.lastTimePlayed).format('DD MMM YYYY')
+                        : 'never'}
+                    </Text>
+                  </Tooltip>
+                )}
+              </Flex>
+            </Grid.Col>
 
-          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
-            <Menu.Target>
-              <ActionIcon
-                size={'md'}
-                variant={'grey'}
-                aria-label={'more-menu'}
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  transition: '0.3s',
-                  opacity: isSelected ? 1 : 0
-                }}
-              >
-                <IconDots size={15} />
-              </ActionIcon>
-            </Menu.Target>
+            <Grid.Col span={'content'}>
+              <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+                <Menu.Target>
+                  <ActionIcon
+                    size={'md'}
+                    variant={'grey'}
+                    aria-label={'more-menu'}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      transition: '0.3s',
+                      opacity: isSelected ? 1 : 0
+                    }}
+                  >
+                    <IconDots size={15} />
+                  </ActionIcon>
+                </Menu.Target>
 
-            <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
-          </Menu>
+                <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+              </Menu>
+            </Grid.Col>
+          </Grid>
         </Group>
       </Menu.Target>
 

@@ -1,4 +1,10 @@
-import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptyOrder,
+  emptySong,
+  reduxRouterRender
+} from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
@@ -10,6 +16,9 @@ import { afterEach, expect } from 'vitest'
 import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import Difficulty from '../../types/enums/Difficulty.ts'
+import dayjs from 'dayjs'
 
 describe('Playlist Song Card', () => {
   const song: Song = {
@@ -42,9 +51,10 @@ describe('Playlist Song Card', () => {
 
   afterAll(() => server.close())
 
-
   it('should render and display minimal info', () => {
-    reduxRouterRender(<PlaylistSongCard song={song} playlistId={''} isDragging={false} />)
+    reduxRouterRender(
+      <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+    )
 
     expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
     expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
@@ -61,7 +71,7 @@ describe('Playlist Song Card', () => {
     }
 
     reduxRouterRender(
-      <PlaylistSongCard song={localSong} playlistId={''} isDragging={false} />
+      <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
     )
 
     expect(screen.getByText(localSong.playlistTrackNo)).toBeInTheDocument()
@@ -83,7 +93,7 @@ describe('Playlist Song Card', () => {
     }
 
     const [{ rerender }] = reduxRouterRender(
-      <PlaylistSongCard song={localSong} playlistId={''} isDragging={false} />
+      <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
     )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', localSong.imageUrl)
@@ -97,7 +107,12 @@ describe('Playlist Song Card', () => {
     }
 
     rerender(
-      <PlaylistSongCard song={localSongWithAlbum} playlistId={''} isDragging={false} />
+      <PlaylistSongCard
+        song={localSongWithAlbum}
+        playlistId={''}
+        order={emptyOrder}
+        isDragging={false}
+      />
     )
 
     expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
@@ -106,11 +121,139 @@ describe('Playlist Song Card', () => {
     )
   })
 
+  describe('on order property change', () => {
+    it('should display the release date, when it is release date', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.ReleaseDate
+      }
+
+      const localSong = {
+        ...song,
+        releaseDate: '2024-10-12T10:30'
+      }
+
+      const [{ rerender }] = reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={order} isDragging={false} />
+      )
+
+      expect(
+        screen.getByText(dayjs(localSong.releaseDate).format('DD MMM YYYY'))
+      ).toBeInTheDocument()
+
+      rerender(<PlaylistSongCard song={song} playlistId={''} order={order} isDragging={false} />)
+
+      expect(screen.getByText(/unknown/i)).toBeInTheDocument()
+    })
+
+    it('should display the difficulty bar, when it is difficulty', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Difficulty
+      }
+
+      const localSong = {
+        ...song,
+        difficulty: Difficulty.Easy
+      }
+
+      const [{ rerender }] = reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={order} isDragging={false} />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
+
+      rerender(<PlaylistSongCard song={song} playlistId={''} order={order} isDragging={false} />)
+
+      expect(screen.getByRole('progressbar', { name: 'difficulty' })).toBeInTheDocument()
+    })
+
+    it('should display the rehearsals, when it is rehearsals', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Rehearsals
+      }
+
+      const localSong = {
+        ...song,
+        rehearsals: 34
+      }
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={order} isDragging={false} />
+      )
+
+      expect(screen.getAllByText(localSong.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
+      expect(screen.getAllByText(localSong.rehearsals)[0]).toBeVisible()
+      expect(screen.getAllByText(localSong.rehearsals)[1]).not.toBeVisible()
+    })
+
+    it('should display the confidence bar, when it is confidence', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Confidence
+      }
+
+      const localSong = {
+        ...song,
+        confidence: 23
+      }
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={order} isDragging={false} />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
+    })
+
+    it('should display the progress bar, when it is progress', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.Progress
+      }
+
+      const localSong = {
+        ...song,
+        progress: 123
+      }
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={order} isDragging={false} />
+      )
+
+      expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
+    })
+
+    it('should display the last played date, when it is last  played', () => {
+      const order = {
+        ...emptyOrder,
+        property: SongProperty.LastPlayed
+      }
+
+      const localSong = {
+        ...song,
+        lastTimePlayed: '2024-10-12T10:30'
+      }
+
+      const [{ rerender }] = reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={order} isDragging={false} />
+      )
+
+      expect(
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
+      ).toBeInTheDocument()
+
+      rerender(<PlaylistSongCard song={song} playlistId={''} order={order} isDragging={false} />)
+
+      expect(screen.getByText(/never/i)).toBeInTheDocument()
+    })
+  })
+
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
     const [{ rerender }] = reduxRouterRender(
-      <PlaylistSongCard song={song} playlistId={''} isDragging={false} />
+      <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
     )
 
     await user.pointer({
@@ -132,6 +275,7 @@ describe('Playlist Song Card', () => {
       <PlaylistSongCard
         song={{ ...song, artist: emptyArtist, album: emptyAlbum }}
         playlistId={''}
+        order={emptyOrder}
         isDragging={false}
       />
     )
@@ -143,7 +287,7 @@ describe('Playlist Song Card', () => {
     const user = userEvent.setup()
 
     const [{ rerender }] = reduxRouterRender(
-      <PlaylistSongCard song={song} playlistId={''} isDragging={false} />
+      <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -162,6 +306,7 @@ describe('Playlist Song Card', () => {
       <PlaylistSongCard
         song={{ ...song, artist: emptyArtist, album: emptyAlbum }}
         playlistId={''}
+        order={emptyOrder}
         isDragging={false}
       />
     )
@@ -173,7 +318,9 @@ describe('Playlist Song Card', () => {
     it('should navigate to song when clicking on view details', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(<PlaylistSongCard song={song} playlistId={''} isDragging={false} />)
+      reduxRouterRender(
+        <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
@@ -187,7 +334,7 @@ describe('Playlist Song Card', () => {
       const localSong = { ...song, artist: emptyArtist }
 
       reduxRouterRender(
-        <PlaylistSongCard song={localSong} playlistId={''} isDragging={false} />
+        <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
       )
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
@@ -202,7 +349,7 @@ describe('Playlist Song Card', () => {
       const localSong = { ...song, album: emptyAlbum }
 
       reduxRouterRender(
-        <PlaylistSongCard song={localSong} playlistId={''} isDragging={false} />
+        <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
       )
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
@@ -225,7 +372,12 @@ describe('Playlist Song Card', () => {
       const playlistId = 'some-id'
 
       reduxRouterRender(
-        <PlaylistSongCard song={song} playlistId={playlistId} isDragging={false} />
+        <PlaylistSongCard
+          song={song}
+          playlistId={playlistId}
+          order={emptyOrder}
+          isDragging={false}
+        />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -251,7 +403,7 @@ describe('Playlist Song Card', () => {
     }
 
     const [_, store] = reduxRouterRender(
-      <PlaylistSongCard song={localSong} playlistId={''} isDragging={false} />
+      <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
     )
 
     await user.click(screen.getByText(localSong.album.title))
@@ -269,7 +421,7 @@ describe('Playlist Song Card', () => {
     }
 
     const [_, store] = reduxRouterRender(
-      <PlaylistSongCard song={localSong} playlistId={''} isDragging={false} />
+      <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
     )
 
     await user.click(screen.getByText(localSong.artist.name))
