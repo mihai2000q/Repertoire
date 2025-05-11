@@ -3,11 +3,10 @@ package playlist
 import (
 	"errors"
 	"reflect"
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type GetPlaylist struct {
@@ -20,8 +19,11 @@ func NewGetPlaylist(repository repository.PlaylistRepository) GetPlaylist {
 	}
 }
 
-func (g GetPlaylist) Handle(id uuid.UUID) (playlist model.Playlist, e *wrapper.ErrorCode) {
-	err := g.repository.GetWithAssociations(&playlist, id)
+func (g GetPlaylist) Handle(request requests.GetPlaylistRequest) (playlist model.Playlist, e *wrapper.ErrorCode) {
+	if len(request.SongsOrderBy) == 0 {
+		request.SongsOrderBy = []string{"song_track_no"}
+	}
+	err := g.repository.GetWithAssociations(&playlist, request.ID, request.SongsOrderBy)
 	if err != nil {
 		return playlist, wrapper.InternalServerError(err)
 	}

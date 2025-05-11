@@ -29,13 +29,27 @@ func NewPlaylistHandler(
 }
 
 func (p PlaylistHandler) Get(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	var request requests.GetPlaylistRequest
+	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := p.service.Get(id)
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := p.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	playlist, errorCode := p.service.Get(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
