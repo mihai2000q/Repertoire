@@ -166,7 +166,7 @@ func TestAuthService_SignUp_WhenSignInFails_ShouldReturnInternalServerError(t *t
 		Once()
 
 	internalError := wrapper.InternalServerError(errors.New("internal error"))
-	authService.On("SignIn", strings.ToLower(request.Email), hashedPassword).
+	authService.On("SignIn", strings.ToLower(request.Email), request.Password).
 		Return("", internalError).
 		Once()
 
@@ -204,17 +204,17 @@ func TestAuthService_SignUp_WhenSuccessful_ShouldReturnNewToken(t *testing.T) {
 	hashedPassword := "hashed password"
 	bCryptService.On("Hash", request.Password).Return(hashedPassword, nil).Once()
 
-	var user *model.User
-	userRepository.On("Create", mock.IsType(user)).
+	var expectedUser *model.User
+	userRepository.On("Create", mock.IsType(expectedUser)).
 		Run(func(args mock.Arguments) {
-			user = args.Get(0).(*model.User)
-			assertCreatedUser(t, *user, request, hashedPassword)
+			expectedUser = args.Get(0).(*model.User)
+			assertCreatedUser(t, *expectedUser, request, hashedPassword)
 		}).
 		Return(nil).
 		Once()
 
 	expectedToken := "This is the generated token"
-	authService.On("SignIn", strings.ToLower(request.Email), hashedPassword).
+	authService.On("SignIn", strings.ToLower(request.Email), request.Password).
 		Return(expectedToken, nil).
 		Once()
 

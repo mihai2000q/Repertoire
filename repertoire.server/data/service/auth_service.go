@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"repertoire/server/data/http/client"
@@ -27,5 +28,9 @@ func (a authService) SignIn(email string, password string) (string, *wrapper.Err
 	if response.StatusCode() != http.StatusOK {
 		return "", wrapper.InternalServerError(errors.New("failed to sign in" + response.String()))
 	}
-	return response.String(), nil
+	var token string
+	if err = json.Unmarshal(response.Body(), &token); err != nil {
+		return "", wrapper.InternalServerError(err)
+	}
+	return token, nil
 }

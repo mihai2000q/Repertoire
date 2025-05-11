@@ -34,7 +34,8 @@ func (t *testAuthServer) handle() http.HandlerFunc {
 			_, _ = w.Write(res)
 		}
 		if r.RequestURI == "/sign-in" {
-			_, _ = w.Write([]byte(t.createToken()))
+			token, _ := json.Marshal(t.createToken())
+			_, _ = w.Write(token)
 		}
 	}
 }
