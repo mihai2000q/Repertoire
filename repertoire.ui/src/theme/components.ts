@@ -61,6 +61,31 @@ export const components = {
             backgroundColor: alpha(theme.colors.gray[4], 0.3),
             shadows: theme.shadows.lg
           }
+        },
+
+        '&[data-variant="form"]': {
+          color: theme.colors.gray[5],
+          backgroundColor: theme.colors.gray[0],
+
+          '&:hover': {
+            color: theme.colors.gray[6],
+            backgroundColor: theme.colors.gray[2]
+          },
+
+          '&[data-disabled="true"]': {
+            color: theme.colors.gray[3],
+            backgroundColor: 'transparent'
+          },
+
+          '&[aria-selected="true"]': {
+            color: theme.colors.green[5],
+            backgroundColor: alpha(theme.colors.green[1], 0.5),
+
+            '&:hover': {
+              color: theme.colors.green[6],
+              backgroundColor: theme.colors.green[1]
+            }
+          }
         }
       }
     })
@@ -328,7 +353,7 @@ export const components = {
 declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
-    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle'
+    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle' | 'form'
   }
 
   // noinspection JSUnusedGlobalSymbols
