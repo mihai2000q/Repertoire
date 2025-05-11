@@ -53,7 +53,13 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
   const AlbumHoverCard = () => (
     <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
       <HoverCard.Target>
-        <Avatar radius={'md'} size={23} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+        <Avatar
+          radius={'md'}
+          size={23}
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          bg={'gray.5'}
+        >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={11} />
           </Center>
@@ -61,7 +67,13 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar radius={'md'} size={'lg'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+          <Avatar
+            radius={'md'}
+            size={'lg'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+          >
             <Center c={'white'}>
               <CustomIconAlbumVinyl size={25} />
             </Center>
@@ -98,7 +110,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
           radius={'md'}
           size={'sm'}
           src={localAlbum.imageUrl}
-          alt={localAlbum.title}
+          alt={localAlbum.imageUrl && localAlbum.title}
           bg={'gray.5'}
         >
           <Center c={'white'}>

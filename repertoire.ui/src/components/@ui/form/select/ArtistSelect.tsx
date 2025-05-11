@@ -55,7 +55,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
         <Avatar
           size={23}
           src={artist.imageUrl}
-          alt={artist.name}
+          alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
         >
@@ -69,7 +69,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
           <Avatar
             size={'md'}
             src={artist.imageUrl}
-            alt={artist.name}
+            alt={artist.imageUrl && artist.name}
             style={(theme) => ({ boxShadow: theme.shadows.sm })}
             bg={'gray.0'}
           >
@@ -96,7 +96,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
         <Avatar
           size={'sm'}
           src={localArtist.imageUrl}
-          alt={localArtist.name}
+          alt={localArtist.imageUrl && localArtist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
         >

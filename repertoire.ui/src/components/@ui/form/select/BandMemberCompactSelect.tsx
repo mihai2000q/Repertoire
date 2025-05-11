@@ -63,7 +63,7 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
             variant={'light'}
             color={member.color}
             src={member.imageUrl}
-            alt={member.name}
+            alt={member.imageUrl && member.name}
           >
             <IconUser size={14} />
           </Avatar>

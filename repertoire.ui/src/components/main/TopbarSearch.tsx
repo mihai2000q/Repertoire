@@ -29,7 +29,7 @@ import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../@ui/icons/CustomIconPlaylist2.tsx'
 import useSearchQueryCacheInvalidation from '../../hooks/useSearchQueryCacheInvalidation.ts'
-import CustomIconUserAlt from "../@ui/icons/CustomIconUserAlt.tsx";
+import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
@@ -130,7 +130,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar
           src={artist.imageUrl}
-          alt={artist.name}
+          alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
         >
@@ -162,7 +162,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
           src={album.imageUrl}
-          alt={album.title}
+          alt={album.imageUrl && album.title}
           indicatorIcon={<CustomIconAlbumVinyl size={12} />}
           defaultIcon={<CustomIconAlbumVinyl size={16} />}
         />
@@ -205,7 +205,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
           src={song.imageUrl ?? song.album?.imageUrl}
-          alt={song.title}
+          alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
           indicatorIcon={<CustomIconMusicNoteEighth size={12} />}
           defaultIcon={<CustomIconMusicNoteEighth size={20} />}
         />
@@ -248,7 +248,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
       <Group gap={'xs'} wrap={'nowrap'}>
         <AvatarIndicator
           src={playlist.imageUrl}
-          alt={playlist.title}
+          alt={playlist.imageUrl && playlist.title}
           indicatorIcon={<CustomIconPlaylist2 size={12} />}
           defaultIcon={<IconPlaylist size={18} />}
         />

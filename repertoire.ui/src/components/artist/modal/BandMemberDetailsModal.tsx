@@ -27,7 +27,7 @@ function BandMemberDetailsModal({ opened, onClose, bandMember }: AddNewBandMembe
                 radius={'22px'}
                 color={bandMember.color}
                 src={bandMember.imageUrl}
-                alt={bandMember.name}
+                alt={bandMember.imageUrl && bandMember.name}
                 style={(theme) => ({ boxShadow: theme.shadows.lg })}
               >
                 <IconUser size={60} />
