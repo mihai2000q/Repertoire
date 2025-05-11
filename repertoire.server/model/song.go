@@ -70,6 +70,10 @@ func (s *Song) AfterFind(*gorm.DB) error {
 	if s.Album != nil {
 		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(s.Album.UpdatedAt)
 	}
+	if s.Settings.DefaultBandMember != nil {
+		s.Settings.DefaultBandMember.ImageURL =
+			s.Settings.DefaultBandMember.ImageURL.ToFullURL(s.Settings.DefaultBandMember.UpdatedAt)
+	}
 
 	return nil
 }

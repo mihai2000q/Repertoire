@@ -62,7 +62,7 @@ func (s *SignUp) Handle(request requests.SignUpRequest) (string, *wrapper.ErrorC
 		return "", wrapper.InternalServerError(err)
 	}
 
-	return s.authService.SignIn(user.Email, user.Password)
+	return s.authService.SignIn(user.Email, request.Password)
 }
 
 func (s *SignUp) createAndAttachDefaultData(user *model.User) {

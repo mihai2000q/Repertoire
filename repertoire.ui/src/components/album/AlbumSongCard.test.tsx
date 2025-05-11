@@ -192,7 +192,7 @@ describe('Album Song Card', () => {
       expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
     })
 
-    it('should display the date, when it is last time played', () => {
+    it('should display the date, when it is last played', () => {
       const order = {
         ...emptyOrder,
         property: SongProperty.LastPlayed
@@ -214,7 +214,7 @@ describe('Album Song Card', () => {
       )
 
       expect(
-        screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
+        screen.getByText(dayjs(localSong.lastTimePlayed).format('DD MMM YYYY'))
       ).toBeInTheDocument()
 
       rerender(

@@ -64,7 +64,7 @@ function ArtistAutocomplete({
         <Avatar
           size={23}
           src={artist.imageUrl}
-          alt={artist.name}
+          alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
         >
@@ -78,7 +78,7 @@ function ArtistAutocomplete({
           <Avatar
             size={'md'}
             src={artist.imageUrl}
-            alt={artist.name}
+            alt={artist.imageUrl && artist.name}
             style={(theme) => ({ boxShadow: theme.shadows.sm })}
             bg={'gray.0'}
           >
@@ -156,7 +156,7 @@ function ArtistAutocomplete({
                       <Avatar
                         size={'sm'}
                         src={artist.imageUrl}
-                        alt={artist.name}
+                        alt={artist.imageUrl && artist.name}
                         style={(theme) => ({ boxShadow: theme.shadows.sm })}
                         bg={'gray.0'}
                       >

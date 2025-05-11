@@ -70,7 +70,13 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar radius={'md'} size={'lg'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+          <Avatar
+            radius={'md'}
+            size={'lg'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+          >
             <Center c={'white'}>
               <CustomIconAlbumVinyl size={25} />
             </Center>
