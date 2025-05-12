@@ -45,7 +45,6 @@ const TextInputButton = forwardRef<HTMLButtonElement, TextInputButtonProps>(
           >
             <ActionIcon
               ref={ref}
-              size={'lg'}
               variant={'form'}
               aria-selected={isSelected === true}
               aria-invalid={!!inputProps.error}

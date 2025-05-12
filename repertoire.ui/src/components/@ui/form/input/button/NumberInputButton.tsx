@@ -45,7 +45,6 @@ const NumberInputButton = forwardRef<HTMLButtonElement, NumberInputButtonProps>(
           >
             <ActionIcon
               ref={ref}
-              size={'lg'}
               variant={'form'}
               aria-selected={isSelected}
               aria-invalid={!!inputProps.error}

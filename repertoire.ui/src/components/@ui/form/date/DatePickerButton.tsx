@@ -8,6 +8,7 @@ interface DatePickerButtonProps extends ActionIconProps {
   value: Date | null | undefined
   onChange: (value: Date | null | undefined) => void
   icon?: ReactNode
+  successIcon?: ReactNode
   tooltipLabels?: {
     default?: string
     selected?: (date: Date) => string
@@ -15,9 +16,10 @@ interface DatePickerButtonProps extends ActionIconProps {
 }
 
 function DatePickerButton({
-  icon,
   value,
   onChange,
+  successIcon,
+  icon,
   tooltipLabels,
   ...others
 }: DatePickerButtonProps) {
@@ -44,14 +46,13 @@ function DatePickerButton({
           <ActionIcon
             variant={'form'}
             aria-selected={value !== null}
-            size={'lg'}
             onClick={() => setOpened(!opened)}
             {...others}
           >
             {value !== null ? (
-              <IconCalendarCheck size={20} />
+              (successIcon ?? <IconCalendarCheck size={18} />)
             ) : (
-              (icon ?? <IconCalendar size={20} />)
+              (icon ?? <IconCalendar size={18} />)
             )}
           </ActionIcon>
         </Tooltip>

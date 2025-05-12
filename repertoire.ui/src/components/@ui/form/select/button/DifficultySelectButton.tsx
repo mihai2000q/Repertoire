@@ -97,14 +97,13 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
           >
             <ActionIcon
               ref={ref}
-              size={'lg'}
               variant={'form'}
               aria-label={'difficulty'}
               aria-selected={difficulty !== null}
               onClick={() => combobox.toggleDropdown()}
               {...others}
             >
-              {icon ?? <IconStarFilled size={20} />}
+              {icon ?? <IconStarFilled size={16} />}
             </ActionIcon>
           </Tooltip>
         </Combobox.Target>

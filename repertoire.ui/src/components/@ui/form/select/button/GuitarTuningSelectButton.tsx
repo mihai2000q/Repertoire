@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   ActionIconProps,
+  Center,
   Combobox,
   Group,
   ScrollArea,
@@ -96,7 +97,6 @@ const GuitarTuningSelectButton = forwardRef<HTMLButtonElement, GuitarTuningSelec
           >
             <ActionIcon
               ref={ref}
-              size={'lg'}
               variant={'form'}
               aria-label={'guitar-tuning'}
               aria-selected={guitarTuning !== null}
@@ -104,7 +104,11 @@ const GuitarTuningSelectButton = forwardRef<HTMLButtonElement, GuitarTuningSelec
               onClick={() => combobox.toggleDropdown()}
               {...others}
             >
-              {icon ?? <CustomIconGuitarHead size={20} />}
+              {icon ?? (
+                <Center mr={2}>
+                  <CustomIconGuitarHead size={17} />
+                </Center>
+              )}
             </ActionIcon>
           </Tooltip>
         </Combobox.Target>
