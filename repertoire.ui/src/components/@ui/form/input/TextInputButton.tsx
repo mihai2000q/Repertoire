@@ -48,13 +48,9 @@ const TextInputButton = forwardRef<HTMLButtonElement, TextInputButtonProps>(
               size={'lg'}
               variant={'form'}
               aria-selected={isSelected === true}
+              aria-invalid={!!inputProps.error}
               onClick={() => setOpened(!opened)}
               {...others}
-              c={inputProps.error && 'red.7'}
-              bg={inputProps.error && 'red.2'}
-              styles={(theme) => ({
-                root: { ...(inputProps.error && { border: `2px solid ${theme.colors.red[5]}` }) }
-              })}
             >
               {icon}
             </ActionIcon>

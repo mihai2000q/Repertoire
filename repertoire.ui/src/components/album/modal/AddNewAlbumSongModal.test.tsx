@@ -336,37 +336,47 @@ describe('Add New Album Song Modal', () => {
     reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={undefined} />)
 
     // songsterr
-    await user.click(screen.getByRole('button', { name: /songsterr/i }))
+    const songsterrButton = screen.getByRole('button', { name: /songsterr/i })
+    await user.click(songsterrButton)
     const songsterr = screen.getByRole('textbox', { name: /songsterr/i })
 
+    expect(songsterrButton).not.toBeInvalid()
     expect(songsterr).not.toBeInvalid()
     await user.type(songsterr, 'something')
     act(() => songsterr.blur())
     expect(songsterr).toBeInvalid()
+    expect(songsterrButton).toBeInvalid()
 
     await user.clear(songsterr)
     act(() => songsterr.blur())
     expect(songsterr).not.toBeInvalid()
+    expect(songsterrButton).not.toBeInvalid()
 
     await user.click(songsterr)
     await user.paste(validSongsterrLink)
     expect(songsterr).not.toBeInvalid()
+    expect(songsterrButton).not.toBeInvalid()
 
     // youtube
-    await user.click(screen.getByRole('button', { name: /youtube/i }))
+    const youtubeButton = screen.getByRole('button', { name: /youtube/i })
+    await user.click(youtubeButton)
     const youtube = screen.getByRole('textbox', { name: /youtube/i })
 
     expect(youtube).not.toBeInvalid()
+    expect(youtubeButton).not.toBeInvalid()
     await user.type(youtube, 'something')
     act(() => youtube.blur())
     expect(youtube).toBeInvalid()
+    expect(youtubeButton).toBeInvalid()
 
     await user.clear(youtube)
     act(() => youtube.blur())
     expect(youtube).not.toBeInvalid()
+    expect(youtubeButton).not.toBeInvalid()
 
     await user.click(youtube)
     await user.paste(validSongsterrLink)
     expect(youtube).not.toBeInvalid()
+    expect(youtubeButton).not.toBeInvalid()
   })
 })

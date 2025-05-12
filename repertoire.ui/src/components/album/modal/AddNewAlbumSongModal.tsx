@@ -166,8 +166,12 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                         default: 'Enter Songsterr Link',
                         selected: 'Songsterr Link entered!'
                       }}
-                      variant={'grey'}
+                      variant={'transparent'}
                       sx={(theme) => ({
+                        ...(Object.entries(theme.components.ActionIcon.styles(theme).root).find(
+                          (s) => s[0] === '&[data-variant="form"]'
+                        )[1] as object),
+
                         '&[aria-selected="true"]': {
                           color: theme.colors.blue[5],
                           backgroundColor: alpha(theme.colors.blue[1], 0.5),
@@ -196,8 +200,11 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                         default: 'Enter Youtube Link',
                         selected: 'Youtube Link entered!'
                       }}
-                      variant={'grey'}
+                      variant={'transparent'}
                       sx={(theme) => ({
+                        ...(Object.entries(theme.components.ActionIcon.styles(theme).root).find(
+                          (s) => s[0] === '&[data-variant="form"]'
+                        )[1] as object),
                         '&[aria-selected="true"]': {
                           color: theme.colors.red[5],
                           backgroundColor: alpha(theme.colors.red[1], 0.5),

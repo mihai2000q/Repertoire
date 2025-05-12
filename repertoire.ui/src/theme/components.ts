@@ -85,6 +85,17 @@ export const components = {
               color: theme.colors.green[6],
               backgroundColor: theme.colors.green[1]
             }
+          },
+
+          '&[aria-invalid="true"]': {
+            border: `2px solid ${theme.colors.red[5]}`,
+            color: theme.colors.red[7],
+            backgroundColor: alpha(theme.colors.red[2], 0.75),
+
+            '&:hover': {
+              color: theme.colors.red[8],
+              backgroundColor: theme.colors.red[2]
+            }
           }
         }
       }
