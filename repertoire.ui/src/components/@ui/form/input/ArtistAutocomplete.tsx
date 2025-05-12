@@ -59,7 +59,7 @@ function ArtistAutocomplete({
   }
 
   const ArtistHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
         <Avatar
           size={23}

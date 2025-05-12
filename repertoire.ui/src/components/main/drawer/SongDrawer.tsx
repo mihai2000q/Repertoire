@@ -210,7 +210,7 @@ function SongDrawer() {
                     on
                   </Text>
                 )}
-                <HoverCard shadow={'lg'} withArrow>
+                <HoverCard>
                   <HoverCard.Target>
                     <Text
                       fw={600}

@@ -6,6 +6,8 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { CreateSongRequest } from '../../../types/requests/SongRequests.ts'
 import Album from '../../../types/models/Album.ts'
+import { GuitarTuning } from '../../../types/models/Song.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 
 describe('Add New Album Song Modal', () => {
   const album: Album = {
@@ -13,13 +15,38 @@ describe('Add New Album Song Modal', () => {
     id: '1'
   }
 
-  const server = setupServer()
+  const guitarTunings: GuitarTuning[] = [
+    {
+      id: '1',
+      name: 'E Standard'
+    },
+    {
+      id: '2',
+      name: 'Drop D'
+    },
+    {
+      id: '3',
+      name: 'Drop A'
+    }
+  ]
+
+  const handlers = [
+    http.get('/songs/guitar-tunings', async () => {
+      return HttpResponse.json(guitarTunings)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
   afterEach(() => server.resetHandlers())
 
   afterAll(() => server.close())
+
+  const validSongsterrLink =
+    'https://www.songsterr.com/a/wsa/metallica-master-of-puppets-tab-s455118'
+  const validYoutubeLink = 'https://www.youtube.com/watch?v=E0ozmU9cJDg'
 
   it('should render', () => {
     reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={undefined} />)
@@ -28,6 +55,13 @@ describe('Add New Album Song Modal', () => {
     expect(screen.getByRole('heading', { name: /add new song/i })).toBeInTheDocument()
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: /guitar-tuning/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /difficulty/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /bpm/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /songsterr/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /youtube/i })).toBeInTheDocument()
+
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
@@ -81,39 +115,137 @@ describe('Add New Album Song Modal', () => {
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
   })
 
-  it('should send only create request when no image is uploaded', async () => {
-    const user = userEvent.setup()
+  describe('should send only create request when no image is uploaded', () => {
+    it('minimal', async () => {
+      const user = userEvent.setup()
 
-    const newTitle = 'New Song'
+      const newTitle = 'New Song'
 
-    const onClose = vitest.fn()
+      const onClose = vitest.fn()
 
-    let capturedRequest: CreateSongRequest
-    server.use(
-      http.post('/songs', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongRequest
-        return HttpResponse.json({ message: 'it worked' })
-      })
-    )
+      let capturedRequest: CreateSongRequest
+      server.use(
+        http.post('/songs', async (req) => {
+          capturedRequest = (await req.request.json()) as CreateSongRequest
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
 
-    reduxRender(
-      withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={album} />)
-    )
+      reduxRender(
+        withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={album} />)
+      )
 
-    await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-    await user.click(screen.getByRole('button', { name: /submit/i }))
+      await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+      await user.click(screen.getByRole('button', { name: /submit/i }))
 
-    await waitFor(() =>
-      expect(capturedRequest).toStrictEqual({
-        title: newTitle,
-        description: '',
-        albumId: album.id
-      })
-    )
-    expect(onClose).toHaveBeenCalledOnce()
+      await waitFor(() =>
+        expect(capturedRequest).toStrictEqual({
+          title: newTitle,
+          description: '',
+          albumId: album.id
+        })
+      )
+      expect(onClose).toHaveBeenCalledOnce()
 
-    expect(screen.getByText(`${newTitle} added!`))
-    expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+      expect(screen.getByText(`${newTitle} added!`))
+      expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+    })
+
+    it('with optional fields', async () => {
+      const user = userEvent.setup()
+
+      const newTitle = 'New Song'
+      const newGuitarTuning = guitarTunings[1]
+      const newDifficulty = Difficulty.Medium
+      const newBpm = 123
+
+      const onClose = vitest.fn()
+
+      let capturedRequest: CreateSongRequest
+      server.use(
+        http.post('/songs', async (req) => {
+          capturedRequest = (await req.request.json()) as CreateSongRequest
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      reduxRender(
+        withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={album} />)
+      )
+
+      // fill form
+      await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
+
+      await user.click(screen.getByRole('button', { name: 'guitar-tuning' }))
+      await user.click(screen.getByRole('option', { name: newGuitarTuning.name }))
+      expect(screen.getByRole('button', { name: 'guitar-tuning' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+
+      await user.click(screen.getByRole('button', { name: 'difficulty' }))
+      await user.click(screen.getByRole('option', { name: newDifficulty }))
+      expect(screen.getByRole('button', { name: 'difficulty' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+
+      await user.click(screen.getByRole('button', { name: 'bpm' }))
+      await user.type(screen.getByRole('textbox', { name: 'bpm' }), newBpm.toString())
+      expect(screen.getByRole('button', { name: 'bpm' })).toHaveAttribute('aria-selected', 'true')
+
+      await user.click(screen.getByRole('button', { name: 'songsterr' }))
+      await user.click(screen.getByRole('textbox', { name: 'songsterr' }))
+      await user.paste(validSongsterrLink)
+      expect(screen.getByRole('button', { name: 'songsterr' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+
+      await user.click(screen.getByRole('button', { name: 'youtube' }))
+      await user.click(screen.getByRole('textbox', { name: 'youtube' }))
+      await user.paste(validYoutubeLink)
+      expect(screen.getByRole('button', { name: 'youtube' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+
+      await user.click(screen.getByRole('button', { name: /submit/i }))
+
+      await waitFor(() =>
+        expect(capturedRequest).toStrictEqual({
+          title: newTitle,
+          description: '',
+          albumId: album.id,
+          guitarTuningId: newGuitarTuning.id,
+          difficulty: newDifficulty,
+          bpm: newBpm,
+          songsterrLink: validSongsterrLink,
+          youtubeLink: validYoutubeLink
+        })
+      )
+      expect(onClose).toHaveBeenCalledOnce()
+
+      expect(screen.getByText(`${newTitle} added!`))
+
+      // reset form
+      expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+
+      await user.click(screen.getByRole('button', { name: 'guitar-tuning' }))
+      expect(screen.getByRole('textbox', { name: 'search' })).toHaveValue('')
+
+      await user.click(screen.getByRole('button', { name: 'difficulty' }))
+      expect(screen.getAllByRole('textbox', { name: 'search' })[1]).toHaveValue('')
+
+      await user.click(screen.getByRole('button', { name: 'bpm' }))
+      expect(screen.getByRole('textbox', { name: 'bpm' })).toHaveValue('')
+
+      await user.click(screen.getByRole('button', { name: 'songsterr' }))
+      expect(screen.getByRole('textbox', { name: 'songsterr' })).toHaveValue('')
+
+      await user.click(screen.getByRole('button', { name: 'youtube' }))
+      expect(screen.getByRole('textbox', { name: 'youtube' })).toHaveValue('')
+    })
   })
 
   it('should send create request and save image request when the image is uploaded', async () => {
@@ -199,5 +331,55 @@ describe('Add New Album Song Modal', () => {
     await user.clear(title)
     act(() => title.blur())
     expect(title).toBeInvalid()
+  })
+
+  it("should validate songsterr and youtube links' fields", async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={undefined} />)
+
+    // songsterr
+    const songsterrButton = screen.getByRole('button', { name: /songsterr/i })
+    await user.click(songsterrButton)
+    const songsterr = screen.getByRole('textbox', { name: /songsterr/i })
+
+    expect(songsterrButton).not.toBeInvalid()
+    expect(songsterr).not.toBeInvalid()
+    await user.type(songsterr, 'something')
+    act(() => songsterr.blur())
+    expect(songsterr).toBeInvalid()
+    expect(songsterrButton).toBeInvalid()
+
+    await user.clear(songsterr)
+    act(() => songsterr.blur())
+    expect(songsterr).not.toBeInvalid()
+    expect(songsterrButton).not.toBeInvalid()
+
+    await user.click(songsterr)
+    await user.paste(validSongsterrLink)
+    expect(songsterr).not.toBeInvalid()
+    expect(songsterrButton).not.toBeInvalid()
+
+    // youtube
+    const youtubeButton = screen.getByRole('button', { name: /youtube/i })
+    await user.click(youtubeButton)
+    const youtube = screen.getByRole('textbox', { name: /youtube/i })
+
+    expect(youtube).not.toBeInvalid()
+    expect(youtubeButton).not.toBeInvalid()
+    await user.type(youtube, 'something')
+    act(() => youtube.blur())
+    expect(youtube).toBeInvalid()
+    expect(youtubeButton).toBeInvalid()
+
+    await user.clear(youtube)
+    act(() => youtube.blur())
+    expect(youtube).not.toBeInvalid()
+    expect(youtubeButton).not.toBeInvalid()
+
+    await user.click(youtube)
+    await user.paste(validYoutubeLink)
+    expect(youtube).not.toBeInvalid()
+    expect(youtubeButton).not.toBeInvalid()
   })
 })

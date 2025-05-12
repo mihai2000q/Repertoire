@@ -42,7 +42,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
       : bandMembers
 
   const BandMemberHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
         <Avatar
           size={24}

@@ -20,13 +20,7 @@ function PopoverConfirmation({
   onConfirm
 }: PopoverConfirmationProps) {
   return (
-    <Popover
-      transitionProps={{ transition: 'fade-up' }}
-      position={'top'}
-      withArrow
-      shadow={'sm'}
-      {...popoverProps}
-    >
+    <Popover transitionProps={{ transition: 'fade-up' }} position={'top'} {...popoverProps}>
       <Popover.Target>{children}</Popover.Target>
 
       <Popover.Dropdown>

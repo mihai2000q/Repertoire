@@ -1,6 +1,6 @@
 import { DatePicker } from '@mantine/dates'
 import { ReactNode, useState } from 'react'
-import { ActionIcon, ActionIconProps, alpha, Popover, Tooltip } from '@mantine/core'
+import { ActionIcon, ActionIconProps, Popover, Tooltip } from '@mantine/core'
 import { IconCalendar, IconCalendarCheck } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 
@@ -27,7 +27,6 @@ function DatePickerButton({
     <Popover
       opened={opened}
       onChange={setOpened}
-      shadow={'sm'}
       transitionProps={{ transition: 'scale-y', duration: 160 }}
     >
       <Popover.Target>
@@ -43,19 +42,9 @@ function DatePickerButton({
           openDelay={500}
         >
           <ActionIcon
-            variant={value !== null ? 'transparent' : 'grey'}
+            variant={'form'}
+            aria-selected={value !== null}
             size={'lg'}
-            sx={(theme) => ({
-              ...(value !== null && {
-                color: theme.colors.green[5],
-                backgroundColor: alpha(theme.colors.green[1], 0.5),
-
-                '&:hover': {
-                  color: theme.colors.green[6],
-                  backgroundColor: theme.colors.green[1]
-                }
-              })
-            })}
             onClick={() => setOpened(!opened)}
             {...others}
           >
