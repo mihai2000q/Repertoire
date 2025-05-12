@@ -160,6 +160,21 @@ function HomeRecentArtists({ ...others }: CardProps) {
           scrollbarSize={7}
           viewportRef={viewportRef}
           viewportProps={{ onScroll: handleOnScroll }}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to right, transparent 97%, ${theme.white}),
+                linear-gradient(to left, transparent 97%, ${theme.white})
+              `
+            }
+          })}
         >
           <Group wrap={'nowrap'} h={'100%'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
             {isLoading || !artists ? (

@@ -98,20 +98,40 @@ function HomeRecentPlaylists({ ...others }: CardProps) {
           </Text>
         )}
 
-        <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7} styles={{
-          root: {
-            height: '100%'
-          },
-          viewport: {
-            '> div': {
-              height: 0,
-              minHeight: '100%',
-              display: 'block !important',
-              minWidth: '100%',
-              width: 0
+        <ScrollArea
+          h={'100%'}
+          scrollbars={'y'}
+          scrollbarSize={7}
+          styles={{
+            root: {
+              height: '100%'
+            },
+            viewport: {
+              '> div': {
+                height: 0,
+                minHeight: '100%',
+                display: 'block !important',
+                minWidth: '100%',
+                width: 0
+              }
             }
-          }
-        }}>
+          }}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to top, transparent 99%, ${theme.white}),
+                linear-gradient(to bottom, transparent 95%, ${theme.white})
+              `
+            }
+          })}
+        >
           <SimpleGrid cols={2} px={'md'} py={'xs'}>
             {isLoading || !playlists ? (
               <Loader />
