@@ -95,7 +95,7 @@ function Artist() {
       <Divider />
 
       <Grid
-        align={'flex-start'}
+        align={'start'}
         mih={340}
         styles={{
           inner: {

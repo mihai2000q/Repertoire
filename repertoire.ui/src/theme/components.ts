@@ -211,7 +211,7 @@ export const components = {
     },
     styles: (theme) => ({
       content: {
-        overflow: 'hidden',
+        overflow: 'hidden'
       },
       title: {
         fontSize: theme.fontSizes.lg,
