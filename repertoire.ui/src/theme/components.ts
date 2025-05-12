@@ -21,6 +21,7 @@ import {
   ScrollArea,
   ScrollAreaAutosize,
   Select,
+  Stepper,
   StylesApiProps,
   Tabs,
   Text,
@@ -320,6 +321,13 @@ export const components = {
         type: 'hover'
       }
     }
+  }),
+  Stepper: Stepper.extend({
+    styles: (theme) => ({
+      step: {
+        borderRadius: theme.radius.md
+      }
+    })
   }),
   Tabs: Tabs.extend({
     defaultProps: {
