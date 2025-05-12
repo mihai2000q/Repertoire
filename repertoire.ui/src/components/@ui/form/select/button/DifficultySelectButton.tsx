@@ -10,7 +10,7 @@ import {
 } from '@mantine/core'
 import { IconCheck, IconSearch, IconStarFilled } from '@tabler/icons-react'
 import { forwardRef, ReactNode, useEffect, useState } from 'react'
-import Difficulty from '../../../../types/enums/Difficulty.ts'
+import Difficulty from '../../../../../types/enums/Difficulty.ts'
 
 const allDifficultiesMap = new Map<Difficulty, string>([
   ...(Object.entries(Difficulty).map(([key, value]) => [value, key]) as [Difficulty, string][])

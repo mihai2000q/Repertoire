@@ -11,12 +11,12 @@ import {
   Tooltip,
   useCombobox
 } from '@mantine/core'
-import { useGetInstrumentsQuery } from '../../../../state/api/songsApi.ts'
+import { useGetInstrumentsQuery } from '../../../../../state/api/songsApi.ts'
 import { IconCheck, IconSearch } from '@tabler/icons-react'
-import useInstrumentIcon from '../../../../hooks/useInstrumentIcon.tsx'
+import useInstrumentIcon from '../../../../../hooks/useInstrumentIcon.tsx'
 import { forwardRef, useEffect, useState } from 'react'
-import CustomIconTriangleMusic from '../../icons/CustomIconTriangleMusic.tsx'
-import { Instrument } from '../../../../types/models/Song.ts'
+import CustomIconTriangleMusic from '../../../icons/CustomIconTriangleMusic.tsx'
+import { Instrument } from '../../../../../types/models/Song.ts'
 
 interface InstrumentCompactSelectProps extends ComboboxProps {
   instrument: Instrument | null

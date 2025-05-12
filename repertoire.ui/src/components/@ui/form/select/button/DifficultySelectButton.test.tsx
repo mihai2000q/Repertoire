@@ -1,7 +1,7 @@
-import { mantineRender } from '../../../../test-utils.tsx'
+import { mantineRender } from '../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Difficulty from '../../../../types/enums/Difficulty.ts'
+import Difficulty from '../../../../../types/enums/Difficulty.ts'
 import { expect } from 'vitest'
 import DifficultySelectButton from './DifficultySelectButton.tsx'
 

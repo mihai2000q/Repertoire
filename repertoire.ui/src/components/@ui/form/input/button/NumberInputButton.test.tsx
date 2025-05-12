@@ -1,4 +1,4 @@
-import { mantineRender } from '../../../../test-utils.tsx'
+import { mantineRender } from '../../../../../test-utils.tsx'
 import NumberInputButton from './NumberInputButton.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'

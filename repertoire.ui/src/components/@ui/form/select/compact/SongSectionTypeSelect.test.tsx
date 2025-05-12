@@ -1,9 +1,9 @@
-import { reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../../test-utils.tsx'
 import {screen, waitFor} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { SongSectionType } from '../../../../types/models/Song.ts'
+import { SongSectionType } from '../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import SongSectionTypeSelect from './SongSectionTypeSelect.tsx'
 

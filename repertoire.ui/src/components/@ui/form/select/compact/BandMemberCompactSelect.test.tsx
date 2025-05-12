@@ -1,8 +1,8 @@
-import { reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
-import { BandMember } from '../../../../types/models/Artist.ts'
+import { BandMember } from '../../../../../types/models/Artist.ts'
 import BandMemberCompactSelect from './BandMemberCompactSelect.tsx'
 
 describe('Band Member Compact Select', () => {

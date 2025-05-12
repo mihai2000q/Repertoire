@@ -8,11 +8,11 @@ import {
   Tooltip,
   useCombobox
 } from '@mantine/core'
-import { useGetGuitarTuningsQuery } from '../../../../state/api/songsApi.ts'
+import { useGetGuitarTuningsQuery } from '../../../../../state/api/songsApi.ts'
 import { IconCheck, IconSearch } from '@tabler/icons-react'
 import { forwardRef, ReactNode, useEffect, useState } from 'react'
-import { GuitarTuning } from '../../../../types/models/Song.ts'
-import CustomIconGuitarHead from '../../icons/CustomIconGuitarHead.tsx'
+import { GuitarTuning } from '../../../../../types/models/Song.ts'
+import CustomIconGuitarHead from '../../../icons/CustomIconGuitarHead.tsx'
 
 interface GuitarTuningSelectButtonProps extends ActionIconProps {
   guitarTuning: GuitarTuning | null
