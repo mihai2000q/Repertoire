@@ -12,7 +12,7 @@ import {
   UnstyledButton,
   useCombobox
 } from '@mantine/core'
-import { BandMember } from '../../../../types/models/Artist.ts'
+import { BandMember } from '../../../../../types/models/Artist.ts'
 import { IconSearch, IconUser } from '@tabler/icons-react'
 import { forwardRef, useEffect, useState } from 'react'
 

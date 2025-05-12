@@ -196,7 +196,25 @@ function HomeRecentlyPlayedSongs() {
           </Text>
         )}
 
-        <ScrollArea scrollbars={'y'} scrollbarSize={7}>
+        <ScrollArea
+          scrollbars={'y'}
+          scrollbarSize={7}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to top, transparent 98%, ${theme.white}),
+                linear-gradient(to bottom, transparent 96%, ${theme.white})
+              `
+            }
+          })}
+        >
           <Stack gap={'xxs'}>
             {isLoading || !songs ? (
               <Loader />

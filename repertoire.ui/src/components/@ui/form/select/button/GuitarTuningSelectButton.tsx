@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   ActionIconProps,
+  Center,
   Combobox,
   Group,
   ScrollArea,
@@ -8,30 +9,29 @@ import {
   Tooltip,
   useCombobox
 } from '@mantine/core'
-import { IconCheck, IconSearch, IconStarFilled } from '@tabler/icons-react'
+import { useGetGuitarTuningsQuery } from '../../../../../state/api/songsApi.ts'
+import { IconCheck, IconSearch } from '@tabler/icons-react'
 import { forwardRef, ReactNode, useEffect, useState } from 'react'
-import Difficulty from '../../../../types/enums/Difficulty.ts'
+import { GuitarTuning } from '../../../../../types/models/Song.ts'
+import CustomIconGuitarHead from '../../../icons/CustomIconGuitarHead.tsx'
 
-const allDifficultiesMap = new Map<Difficulty, string>([
-  ...(Object.entries(Difficulty).map(([key, value]) => [value, key]) as [Difficulty, string][])
-])
-const allDifficulties = Array.from(allDifficultiesMap.keys())
-
-interface DifficultySelectButtonProps extends ActionIconProps {
-  difficulty: Difficulty | null
-  setDifficulty: (difficulty: Difficulty | null) => void
+interface GuitarTuningSelectButtonProps extends ActionIconProps {
+  guitarTuning: GuitarTuning | null
+  setGuitarTuning: (guitarTuning: GuitarTuning | null) => void
   icon?: ReactNode
 }
 
-const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectButtonProps>(
-  ({ difficulty, setDifficulty, icon, ...others }, ref) => {
-    const [value, setValue] = useState<string>(allDifficultiesMap[difficulty] ?? '')
-    const [search, setSearch] = useState(allDifficultiesMap[difficulty] ?? '')
+const GuitarTuningSelectButton = forwardRef<HTMLButtonElement, GuitarTuningSelectButtonProps>(
+  ({ guitarTuning, setGuitarTuning, icon, ...others }, ref) => {
+    const { data: guitarTunings, isLoading } = useGetGuitarTuningsQuery()
+
+    const [value, setValue] = useState<string>(guitarTuning?.name ?? '')
+    const [search, setSearch] = useState(guitarTuning?.name ?? '')
 
     useEffect(() => {
-      setValue(allDifficultiesMap.get(difficulty) ?? '')
-      setSearch(allDifficultiesMap.get(difficulty) ?? '')
-    }, [difficulty])
+      setValue(guitarTuning?.name ?? '')
+      setSearch(guitarTuning?.name ?? '')
+    }, [guitarTuning])
 
     const combobox = useCombobox({
       onDropdownClose: () => {
@@ -44,23 +44,25 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
       }
     })
 
-    const filteredDifficulties =
+    const filteredGuitarTunings =
       search.trim() !== ''
-        ? allDifficulties?.filter((d) => d.includes(search.toLowerCase().trim()))
-        : allDifficulties
+        ? guitarTunings?.filter((gt) => gt.name.toLowerCase().includes(search.toLowerCase().trim()))
+        : guitarTunings
 
-    const DifficultyOption = ({ difficultyOption }: { difficultyOption: Difficulty }) => (
+    const GuitarTuningOption = ({ guitarTuningOption }: { guitarTuningOption: GuitarTuning }) => (
       <Combobox.Option
-        key={difficultyOption}
-        value={difficultyOption}
-        aria-label={difficultyOption}
-        onClick={() => setDifficulty(difficultyOption === difficulty ? null : difficultyOption)}
+        key={guitarTuningOption.id}
+        value={guitarTuningOption.name}
+        aria-label={guitarTuningOption.name}
+        onClick={() =>
+          setGuitarTuning(guitarTuningOption.id === guitarTuning?.id ? null : guitarTuningOption)
+        }
       >
         <Group gap={'xs'} wrap={'nowrap'}>
           <Text fz={'sm'} lineClamp={1}>
-            {allDifficultiesMap.get(difficultyOption)}
+            {guitarTuningOption.name}
           </Text>
-          {difficultyOption === difficulty && (
+          {guitarTuningOption.id === guitarTuning?.id && (
             <IconCheck
               size={16}
               opacity={0.6}
@@ -80,7 +82,7 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
     }
 
     function handleClear() {
-      setDifficulty(null)
+      setGuitarTuning(null)
     }
 
     return (
@@ -89,22 +91,24 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
           <Tooltip
             disabled={combobox.dropdownOpened}
             label={
-              difficulty !== null
-                ? `${allDifficultiesMap.get(difficulty)} is selected`
-                : 'Select a difficulty'
+              guitarTuning !== null ? `${guitarTuning.name} is selected` : 'Select a guitar tuning'
             }
             openDelay={500}
           >
             <ActionIcon
               ref={ref}
-              size={'lg'}
               variant={'form'}
-              aria-label={'difficulty'}
-              aria-selected={difficulty !== null}
+              aria-label={'guitar-tuning'}
+              aria-selected={guitarTuning !== null}
+              disabled={isLoading}
               onClick={() => combobox.toggleDropdown()}
               {...others}
             >
-              {icon ?? <IconStarFilled size={20} />}
+              {icon ?? (
+                <Center mr={2}>
+                  <CustomIconGuitarHead size={17} />
+                </Center>
+              )}
             </ActionIcon>
           </Tooltip>
         </Combobox.Target>
@@ -118,7 +122,7 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
             aria-label={'search'}
             placeholder={'Search'}
             leftSection={<IconSearch size={12} />}
-            rightSection={difficulty && <Combobox.ClearButton onClear={handleClear} />}
+            rightSection={guitarTuning && <Combobox.ClearButton onClear={handleClear} />}
             value={search}
             onChange={(e) => setSearch(e.currentTarget.value)}
             sx={{
@@ -131,11 +135,11 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
           />
           <Combobox.Options>
             <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-              {filteredDifficulties?.length === 0 ? (
-                <Combobox.Empty>No Difficulties found</Combobox.Empty>
+              {filteredGuitarTunings?.length === 0 ? (
+                <Combobox.Empty>No Guitar Tunings found</Combobox.Empty>
               ) : (
-                filteredDifficulties?.map((difficulty) => (
-                  <DifficultyOption key={difficulty} difficultyOption={difficulty} />
+                filteredGuitarTunings?.map((guitarTuning) => (
+                  <GuitarTuningOption key={guitarTuning.id} guitarTuningOption={guitarTuning} />
                 ))
               )}
             </ScrollArea.Autosize>
@@ -146,6 +150,6 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
   }
 )
 
-DifficultySelectButton.displayName = 'DifficultySelectButton'
+GuitarTuningSelectButton.displayName = 'GuitarTuningSelectButton'
 
-export default DifficultySelectButton
+export default GuitarTuningSelectButton

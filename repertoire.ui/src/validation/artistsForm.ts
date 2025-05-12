@@ -1,5 +1,9 @@
 import { z } from 'zod'
 import { FileWithPath } from '@mantine/dropzone'
+import {
+  songsterrLinkValidator,
+  youtubeLinkValidator
+} from './custom/validators.ts'
 
 export interface AddNewArtistForm {
   name: string
@@ -55,8 +59,12 @@ export const addNewArtistAlbumValidation = z.object({
 
 export interface AddNewArtistSongForm {
   title: string
+  songsterrLink?: string
+  youtubeLink?: string
 }
 
 export const addNewArtistSongValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank')
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+  songsterrLink: songsterrLinkValidator,
+  youtubeLink: youtubeLinkValidator
 })

@@ -14,7 +14,7 @@ import {
 } from '../../../state/api/artistsApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../@ui/form/select/multi/BandMemberRoleMultiSelect.tsx'
-import ColorInputButton from '../../@ui/form/input/ColorInputButton.tsx'
+import ColorInputButton from '../../@ui/form/input/button/ColorInputButton.tsx'
 import bandMemberColorSwatches from '../../../data/artist/bandMemberColorSwatches.ts'
 
 interface AddNewBandMemberModalProps {

@@ -10,17 +10,15 @@ import Album from '../../../types/models/Album.ts'
 import {
   IconBrandYoutubeFilled,
   IconGuitarPickFilled,
-  IconInfoCircleFilled,
-  IconStarFilled
+  IconInfoCircleFilled
 } from '@tabler/icons-react'
-import GuitarTuningSelectButton from '../../@ui/form/select/GuitarTuningSelectButton.tsx'
+import GuitarTuningSelectButton from '../../@ui/form/select/button/GuitarTuningSelectButton.tsx'
 import { GuitarTuning } from '../../../types/models/Song.ts'
-import DifficultySelectButton from '../../@ui/form/select/DifficultySelectButton.tsx'
+import DifficultySelectButton from '../../@ui/form/select/button/DifficultySelectButton.tsx'
 import Difficulty from '../../../types/enums/Difficulty.ts'
-import CustomIconGuitarHead from '../../@ui/icons/CustomIconGuitarHead.tsx'
-import NumberInputButton from '../../@ui/form/input/NumberInputButton.tsx'
+import NumberInputButton from '../../@ui/form/input/button/NumberInputButton.tsx'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
-import TextInputButton from '../../@ui/form/input/TextInputButton.tsx'
+import TextInputButton from '../../@ui/form/input/button/TextInputButton.tsx'
 
 interface AddNewAlbumSongModalProps {
   opened: boolean
@@ -124,19 +122,11 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                     <GuitarTuningSelectButton
                       guitarTuning={guitarTuning}
                       setGuitarTuning={setGuitarTuning}
-                      size={'md'}
-                      icon={<CustomIconGuitarHead size={16} />}
                     />
-                    <DifficultySelectButton
-                      difficulty={difficulty}
-                      setDifficulty={setDifficulty}
-                      size={'md'}
-                      icon={<IconStarFilled size={16} />}
-                    />
+                    <DifficultySelectButton difficulty={difficulty} setDifficulty={setDifficulty} />
                     <NumberInputButton
                       icon={<CustomIconMetronome size={16} />}
                       aria-label={'bpm'}
-                      size={'md'}
                       inputProps={{
                         'aria-label': 'bpm',
                         placeholder: 'Enter bpm',
@@ -153,7 +143,6 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                       icon={<IconGuitarPickFilled size={16} />}
                       inputKey={form.key('songsterrLink')}
                       aria-label={'songsterr'}
-                      size={'md'}
                       inputProps={{
                         'aria-label': 'songsterr',
                         placeholder: 'Enter Songsterr Link',
@@ -187,7 +176,6 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
                       icon={<IconBrandYoutubeFilled size={16} />}
                       inputKey={form.key('youtubeLink')}
                       aria-label={'youtube'}
-                      size={'md'}
                       inputProps={{
                         'aria-label': 'youtube',
                         placeholder: 'Enter Youtube Link',

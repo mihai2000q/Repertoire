@@ -1,5 +1,5 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm, zodResolver } from '@mantine/form'
 import {
@@ -11,7 +11,7 @@ import {
   useSaveImageToAlbumMutation
 } from '../../../state/api/albumsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
-import { IconCalendarRepeat, IconDisc } from '@tabler/icons-react'
+import { IconCalendarCheck, IconCalendarRepeat, IconDisc } from '@tabler/icons-react'
 import DatePickerButton from '../../@ui/form/date/DatePickerButton.tsx'
 import { toast } from 'react-toastify'
 import dayjs from 'dayjs'
@@ -28,8 +28,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
   const [image, setImage] = useState<FileWithPath>(null)
-  const [releaseDate, setReleaseDate] = useState<Date>()
-  useEffect(() => form.setFieldValue('releaseDate', releaseDate), [releaseDate])
+  const [releaseDate, setReleaseDate] = useState<Date>(null)
 
   const onCloseWithImage = () => {
     onClose()
@@ -47,16 +46,21 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
     validate: zodResolver(addNewArtistAlbumValidation)
   })
 
-  async function addAlbum({ title, releaseDate }: AddNewArtistAlbumForm) {
+  async function addAlbum({ title }: AddNewArtistAlbumForm) {
     title = title.trim()
 
-    const res = await createAlbumMutation({ title, releaseDate, artistId }).unwrap()
+    const res = await createAlbumMutation({
+      title,
+      releaseDate: releaseDate ?? undefined,
+      artistId
+    }).unwrap()
 
     if (image) await saveImageMutation({ image: image, id: res.id }).unwrap()
 
     toast.success(`${title} added!`)
     onCloseWithImage()
     form.reset()
+    setReleaseDate(null)
   }
 
   return (
@@ -70,7 +74,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
                 setImage={setImage}
                 icon={<IconDisc size={45} />}
               />
-              <Group gap={'xs'} flex={1}>
+              <Group gap={'xxs'} flex={1}>
                 <TextInput
                   flex={1}
                   withAsterisk={true}
@@ -81,9 +85,11 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
                   {...form.getInputProps('title')}
                 />
                 <DatePickerButton
-                  mt={16}
+                  mt={form.getInputProps('title').error ? 3 : 19}
                   aria-label={'release-date'}
+                  size={'lg'}
                   icon={<IconCalendarRepeat size={20} />}
+                  successIcon={<IconCalendarCheck size={20} />}
                   value={releaseDate}
                   onChange={setReleaseDate}
                   tooltipLabels={{

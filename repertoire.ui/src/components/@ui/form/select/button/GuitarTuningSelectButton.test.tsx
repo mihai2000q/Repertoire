@@ -1,9 +1,9 @@
-import { reduxRender } from '../../../../test-utils.tsx'
+import { reduxRender } from '../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import GuitarTuningSelectButton from './GuitarTuningSelectButton.tsx'
-import { GuitarTuning } from '../../../../types/models/Song.ts'
+import { GuitarTuning } from '../../../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 

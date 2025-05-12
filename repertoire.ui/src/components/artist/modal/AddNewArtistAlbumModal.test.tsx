@@ -23,6 +23,7 @@ describe('Add New Artist Album Modal', () => {
     expect(screen.getByRole('heading', { name: /add new album/i })).toBeInTheDocument()
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /release-date/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
@@ -62,7 +63,7 @@ describe('Add New Artist Album Modal', () => {
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
     })
 
-    it.skip('with release date', async () => {
+    it('with release date', async () => {
       const user = userEvent.setup()
 
       const newTitle = 'New Album'
@@ -86,9 +87,13 @@ describe('Add New Artist Album Modal', () => {
       )
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-      await user.type(screen.getByRole('button', { name: /release-date/i }), newTitle)
+      await user.click(screen.getByRole('button', { name: /release-date/i }))
       await user.click(
         screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
+      )
+      expect(screen.getByRole('button', { name: /release-date/i })).toHaveAttribute(
+        'aria-selected',
+        'true'
       )
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
@@ -102,6 +107,10 @@ describe('Add New Artist Album Modal', () => {
 
       expect(screen.getByText(`${newTitle} added!`))
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
+      expect(screen.getByRole('button', { name: /release-date/i })).not.toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
     })
   })
 

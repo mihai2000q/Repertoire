@@ -1,30 +1,30 @@
 import {
   ActionIcon,
   ActionIconProps,
+  NumberInput,
+  NumberInputProps,
   Popover,
-  TextInput,
-  TextInputProps,
   Tooltip
 } from '@mantine/core'
 import { forwardRef, ReactNode, useState } from 'react'
 
-interface TextInputButtonProps extends ActionIconProps {
+interface NumberInputButtonProps extends ActionIconProps {
   icon?: ReactNode
-  inputKey?: string
+  inputProps?: NumberInputProps
   isSelected?: boolean
-  inputProps?: TextInputProps
+  inputKey?: string
   tooltipLabels?: {
     selected: string
     default: string
   }
 }
 
-const TextInputButton = forwardRef<HTMLButtonElement, TextInputButtonProps>(
-  ({ icon, inputKey, isSelected, inputProps, tooltipLabels, ...others }, ref) => {
+const NumberInputButton = forwardRef<HTMLButtonElement, NumberInputButtonProps>(
+  ({ icon, isSelected, inputKey, inputProps, tooltipLabels, ...others }, ref) => {
     const [opened, setOpened] = useState(false)
 
     isSelected ??=
-      inputProps.value !== undefined && inputProps.value !== null && inputProps.value !== ''
+      inputProps?.value !== undefined && inputProps?.value !== null && inputProps?.value !== ''
 
     return (
       <Popover
@@ -45,9 +45,8 @@ const TextInputButton = forwardRef<HTMLButtonElement, TextInputButtonProps>(
           >
             <ActionIcon
               ref={ref}
-              size={'lg'}
               variant={'form'}
-              aria-selected={isSelected === true}
+              aria-selected={isSelected}
               aria-invalid={!!inputProps.error}
               onClick={() => setOpened(!opened)}
               {...others}
@@ -58,13 +57,13 @@ const TextInputButton = forwardRef<HTMLButtonElement, TextInputButtonProps>(
         </Popover.Target>
 
         <Popover.Dropdown miw={180} p={'xxs'}>
-          <TextInput variant={'unstyled'} size={'xs'} key={inputKey} {...inputProps} />
+          <NumberInput variant={'unstyled'} size={'xs'} key={inputKey} {...inputProps} />
         </Popover.Dropdown>
       </Popover>
     )
   }
 )
 
-TextInputButton.displayName = 'TextInputButton'
+NumberInputButton.displayName = 'NumberInputButton'
 
-export default TextInputButton
+export default NumberInputButton

@@ -203,6 +203,21 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
         scrollbars={'x'}
         offsetScrollbars={'x'}
         scrollbarSize={7}
+        sx={(theme) => ({
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            background: `
+              linear-gradient(to right, transparent 85%, ${theme.white}),
+              linear-gradient(to left, transparent 97%, ${theme.white})
+            `
+          }
+        })}
       >
         <Group
           wrap={'nowrap'}

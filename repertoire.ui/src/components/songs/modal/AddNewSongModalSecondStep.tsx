@@ -29,7 +29,7 @@ import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
-import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
+import SongSectionTypeSelect from '../../@ui/form/select/compact/SongSectionTypeSelect.tsx'
 import { AlbumSearch } from '../../../types/models/Search.ts'
 
 interface AddNewSongModalSecondStepProps {
