@@ -242,7 +242,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
                       </Center>
 
                       <Text fw={500} c={'dimmed'} fz={'xs'}>
-                        The image will be inherited from the album.
+                        The image will be inherited from album.
                       </Text>
                     </Group>
                   )}

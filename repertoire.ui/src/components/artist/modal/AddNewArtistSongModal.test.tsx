@@ -356,8 +356,8 @@ describe('Add New Artist Song Modal', () => {
 
     await user.click(screen.getByRole('button', { name: 'album' }))
     await user.click(screen.getByRole('option', { name: newAlbum.title }))
-    expect(screen.getByText(/if no image is uploaded, it will be inherited/i)).toBeInTheDocument()
-    expect(screen.getByText(/if no release date is set, it will be inherited/i)).toBeInTheDocument()
+    expect(screen.getByText(/The image will be inherited/i)).toBeInTheDocument()
+    expect(screen.getByText(/The release date will be inherited/i)).toBeInTheDocument()
   })
 
   it('should validate title', async () => {
