@@ -173,6 +173,7 @@ describe('Add New Album Song Modal', () => {
         withToastify(<AddNewAlbumSongModal opened={true} onClose={onClose} album={album} />)
       )
 
+      // fill form
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
 
       await user.click(screen.getByRole('button', { name: 'guitar-tuning' }))
@@ -226,6 +227,8 @@ describe('Add New Album Song Modal', () => {
       expect(onClose).toHaveBeenCalledOnce()
 
       expect(screen.getByText(`${newTitle} added!`))
+
+      // reset form
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
 
       await user.click(screen.getByRole('button', { name: 'guitar-tuning' }))
@@ -375,7 +378,7 @@ describe('Add New Album Song Modal', () => {
     expect(youtubeButton).not.toBeInvalid()
 
     await user.click(youtube)
-    await user.paste(validSongsterrLink)
+    await user.paste(validYoutubeLink)
     expect(youtube).not.toBeInvalid()
     expect(youtubeButton).not.toBeInvalid()
   })

@@ -82,8 +82,8 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
       description: '',
       albumId: album?.id,
       guitarTuningId: guitarTuning?.id,
-      difficulty: difficulty,
-      bpm: typeof bpm === 'string' ? undefined : bpm,
+      difficulty: difficulty ?? undefined,
+      bpm: typeof bpm === 'number' ? bpm : undefined,
       songsterrLink: songsterrLink,
       youtubeLink: youtubeLink
     }).unwrap()
