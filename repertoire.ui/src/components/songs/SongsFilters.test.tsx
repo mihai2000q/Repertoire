@@ -140,6 +140,12 @@ describe('Songs Filters', () => {
   const isNullLastPlayedKey = SongProperty.LastPlayed + FilterOperator.IsNull
   const isNotNullLastPlayedKey = SongProperty.LastPlayed + FilterOperator.IsNotNull
 
+  const isNullSongsterrLinkKey = SongProperty.SongsterrLink + FilterOperator.IsNull
+  const isNotNullSongsterrLinkKey = SongProperty.SongsterrLink + FilterOperator.IsNotNull
+
+  const isNullYoutubeLinkKey = SongProperty.YoutubeLink + FilterOperator.IsNull
+  const isNotNullYoutubeLinkKey = SongProperty.YoutubeLink + FilterOperator.IsNotNull
+
   it('should render', async () => {
     const setFilters = vi.fn()
 
@@ -228,6 +234,20 @@ describe('Songs Filters', () => {
       within(screen.getByLabelText(/has been played/i)).getByRole('checkbox', { name: /never/i })
     ).toBeDisabled()
 
+    expect(
+      within(screen.getByLabelText(/has songsterr link/i)).getByRole('checkbox', { name: /yes/i })
+    ).toBeDisabled()
+    expect(
+      within(screen.getByLabelText(/has songsterr link/i)).getByRole('checkbox', { name: /no/i })
+    ).toBeDisabled()
+
+    expect(
+      within(screen.getByLabelText(/has youtube link/i)).getByRole('checkbox', { name: /yes/i })
+    ).toBeDisabled()
+    expect(
+      within(screen.getByLabelText(/has youtube link/i)).getByRole('checkbox', { name: /no/i })
+    ).toBeDisabled()
+
     // then set filters is called to set the filters' metadata
     await waitFor(() => expect(setFilters).toHaveBeenCalledOnce())
 
@@ -295,6 +315,12 @@ describe('Songs Filters', () => {
     expect(updatedFilters.get(maxLastPlayedKey).isSet).toBeFalsy()
     expect(updatedFilters.get(isNullLastPlayedKey).isSet).toBeFalsy()
     expect(updatedFilters.get(isNotNullLastPlayedKey).isSet).toBeFalsy()
+
+    expect(updatedFilters.get(isNullSongsterrLinkKey).isSet).toBeFalsy()
+    expect(updatedFilters.get(isNotNullSongsterrLinkKey).isSet).toBeFalsy()
+
+    expect(updatedFilters.get(isNullYoutubeLinkKey).isSet).toBeFalsy()
+    expect(updatedFilters.get(isNotNullYoutubeLinkKey).isSet).toBeFalsy()
 
     // rerender with filters metadata
     const newFilters = new Map<string, Filter>([...initialFilters])
@@ -838,6 +864,90 @@ describe('Songs Filters', () => {
       updatedFilters = setFilters.mock.calls[2][0]
       expect(updatedFilters.get(isNullLastPlayedKey).isSet).toBeTruthy()
       expect(updatedFilters.get(isNotNullLastPlayedKey).isSet).toBeFalsy()
+    })
+
+    it('should update has songsterr link', async () => {
+      const user = userEvent.setup()
+
+      const setFilters = vi.fn()
+      reduxRender(
+        <SongFilters
+          opened={true}
+          onClose={vi.fn()}
+          filters={initialFilters}
+          setFilters={setFilters}
+        />
+      )
+
+      // wait for filters metadata to be initialized
+      await waitFor(() =>
+        expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
+      )
+
+      // first, yes, it has a songsterr link
+      await user.click(
+        within(screen.getByLabelText(/has songsterr link/i)).getByRole('checkbox', { name: /yes/i })
+      )
+
+      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+      expect(setFilters).toHaveBeenCalledTimes(2)
+      let updatedFilters = setFilters.mock.calls[1][0]
+      expect(updatedFilters.get(isNotNullSongsterrLinkKey).isSet).toBeTruthy()
+
+      // then, no, it doesn't have a songsterr link
+      await user.click(
+        within(screen.getByLabelText(/has songsterr link/i)).getByRole('checkbox', { name: /no/i })
+      )
+
+      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+      expect(setFilters).toHaveBeenCalledTimes(3)
+      updatedFilters = setFilters.mock.calls[2][0]
+      expect(updatedFilters.get(isNullSongsterrLinkKey).isSet).toBeTruthy()
+      expect(updatedFilters.get(isNotNullSongsterrLinkKey).isSet).toBeFalsy()
+    })
+
+    it('should update has youtube link', async () => {
+      const user = userEvent.setup()
+
+      const setFilters = vi.fn()
+      reduxRender(
+        <SongFilters
+          opened={true}
+          onClose={vi.fn()}
+          filters={initialFilters}
+          setFilters={setFilters}
+        />
+      )
+
+      // wait for filters metadata to be initialized
+      await waitFor(() =>
+        expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
+      )
+
+      // first, yes, it has a YouTube link
+      await user.click(
+        within(screen.getByLabelText(/has youtube link/i)).getByRole('checkbox', { name: /yes/i })
+      )
+
+      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+      expect(setFilters).toHaveBeenCalledTimes(2)
+      let updatedFilters = setFilters.mock.calls[1][0]
+      expect(updatedFilters.get(isNotNullYoutubeLinkKey).isSet).toBeTruthy()
+
+      // then, no, it doesn't have a YouTube link
+      await user.click(
+        within(screen.getByLabelText(/has youtube link/i)).getByRole('checkbox', { name: /no/i })
+      )
+
+      await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+      expect(setFilters).toHaveBeenCalledTimes(3)
+      updatedFilters = setFilters.mock.calls[2][0]
+      expect(updatedFilters.get(isNullYoutubeLinkKey).isSet).toBeTruthy()
+      expect(updatedFilters.get(isNotNullYoutubeLinkKey).isSet).toBeFalsy()
     })
   })
 
