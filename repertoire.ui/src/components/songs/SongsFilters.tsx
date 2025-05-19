@@ -410,6 +410,36 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           }
           disabled={isLoading}
         />
+
+        <DoubleCheckbox
+          title={'Has Songsterr Link?'}
+          label1={'Yes'}
+          checked1={internalFilters.get(SongProperty.SongsterrLink + FilterOperator.IsNotNull).isSet}
+          onChange1={(value) =>
+            handleIsSetChange(SongProperty.SongsterrLink + FilterOperator.IsNotNull, value)
+          }
+          label2={'No'}
+          checked2={internalFilters.get(SongProperty.SongsterrLink + FilterOperator.IsNull).isSet}
+          onChange2={(value) =>
+            handleIsSetChange(SongProperty.SongsterrLink + FilterOperator.IsNull, value)
+          }
+          disabled={isLoading}
+        />
+
+        <DoubleCheckbox
+          title={'Has Youtube Link?'}
+          label1={'Yes'}
+          checked1={internalFilters.get(SongProperty.YoutubeLink + FilterOperator.IsNotNull).isSet}
+          onChange1={(value) =>
+            handleIsSetChange(SongProperty.YoutubeLink + FilterOperator.IsNotNull, value)
+          }
+          label2={'No'}
+          checked2={internalFilters.get(SongProperty.YoutubeLink + FilterOperator.IsNull).isSet}
+          onChange2={(value) =>
+            handleIsSetChange(SongProperty.YoutubeLink + FilterOperator.IsNull, value)
+          }
+          disabled={isLoading}
+        />
       </Stack>
     </FiltersDrawer>
   )

@@ -22,7 +22,9 @@ enum SongProperty {
   Riffs = 'riffs_count',
   Sections = 'sections_count',
   Solos = 'solos_count',
-  Title = 'songs.title'
+  SongsterrLink = 'songsterr_link',
+  Title = 'songs.title',
+  YoutubeLink = 'youtube_link'
 }
 
 export default SongProperty

@@ -53,7 +53,13 @@ const songsFilters: Filter[] = [
   { property: SongProperty.LastPlayed, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.LastPlayed, operator: FilterOperator.LessThanOrEqual, isSet: false },
   { property: SongProperty.LastPlayed, operator: FilterOperator.IsNull, isSet: false },
-  { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull, isSet: false }
+  { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull, isSet: false },
+
+  { property: SongProperty.SongsterrLink, operator: FilterOperator.IsNull, isSet: false },
+  { property: SongProperty.SongsterrLink, operator: FilterOperator.IsNotNull, isSet: false },
+
+  { property: SongProperty.YoutubeLink, operator: FilterOperator.IsNull, isSet: false },
+  { property: SongProperty.YoutubeLink, operator: FilterOperator.IsNotNull, isSet: false }
 ]
 
 export const songsFiltersMetadataMap: (metadata: SongFiltersMetadata) => [string, FilterValue][] = (
