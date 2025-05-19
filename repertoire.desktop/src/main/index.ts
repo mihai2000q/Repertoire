@@ -18,6 +18,7 @@ function createWindow(): void {
     titleBarStyle: 'hidden'
   })
   mainWindow.removeMenu()
+  mainWindow.webContents.openDevTools()
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -27,6 +28,35 @@ function createWindow(): void {
     shell.openExternal(details.url).then()
     return { action: 'deny' }
   })
+
+  // set CSP
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          // TODO: Replace youtube-modal with proper encrypted nonce
+          `default-src 'self';
+          script-src 'self' https://*.google.com https://*.gstatic.com 'unsafe-inline' 'unsafe-eval';
+          style-src 'self' ${is.dev ? 'unsafe-inline' : 'nonce-youtube-modal'} 'unsafe-inline' https://fonts.googleapis.com;
+          font-src 'self' https://fonts.gstatic.com;
+          img-src 'self' ${import.meta.env.VITE_WEB_ORIGINS} https: data: blob:;
+          connect-src 'self' https://*.googleapis.com https://*.googlevideo.com ${import.meta.env.VITE_WEB_ORIGINS};
+          frame-src 'self' https://*.youtube-nocookie.com;
+          media-src 'self' https://*.youtube-nocookie.com blob:;
+          object-src 'none';
+          child-src 'self' https://*.youtube-nocookie.com;`
+        ],
+        'Permissions-Policy': [
+          'accelerometer=*, autoplay=*, camera=*, display-capture=*, encrypted-media=*, fullscreen=*, geolocation=*, gyroscope=*, keyboard-map=*, magnetometer=*, microphone=*, midi=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, screen-wake-lock=*, sync-xhr=*, usb=*, xr-spatial-tracking=*'
+        ]
+      }
+    })
+  })
+
+  mainWindow.webContents.setUserAgent(
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  )
 
   const gotTheLock = app.requestSingleInstanceLock()
 
@@ -43,7 +73,7 @@ function createWindow(): void {
   }
 
   // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
+  // Load the remote URL for development or the local HTML file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']).then()
   } else {
@@ -51,9 +81,11 @@ function createWindow(): void {
   }
 
   ipcMain.on('minimize', (_) =>
-    mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.minimize())
+    mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.minimize()
+  )
   ipcMain.on('maximize', (_) =>
-    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize())
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()
+  )
   ipcMain.on('close', (_) => mainWindow.close())
 }
 
@@ -66,7 +98,7 @@ app.whenReady().then(() => {
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+  // See https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
