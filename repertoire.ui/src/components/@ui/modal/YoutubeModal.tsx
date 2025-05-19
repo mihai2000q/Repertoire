@@ -13,6 +13,10 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
     xs: 4 / 3,
     sm: 16 / 9
   })
+  const src = link
+    ?.replace('watch?v=', 'embed/')
+    .replace('youtube', 'youtube-nocookie')
+    .replace(/(www\.)?youtu.be/, 'www.youtube-nocookie.com/embed')
 
   return (
     <Modal.Root opened={opened} onClose={onClose} size={'min(80vw, 1000px)'} centered>
@@ -29,10 +33,10 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
             <iframe
               width={'100%'}
               height={'100%'}
-              src={link?.replace('watch?v=', 'embed/')}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              src={src}
               allowFullScreen
               title="Embedded Youtube"
+              nonce={'youtube-modal'}
               style={{
                 borderRadius: '16px',
                 border: 'none'
