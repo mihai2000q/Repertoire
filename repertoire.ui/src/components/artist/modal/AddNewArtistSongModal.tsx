@@ -14,6 +14,7 @@ import DifficultySelectButton from '../../@ui/form/select/button/DifficultySelec
 import {
   IconBrandYoutubeFilled,
   IconCalendarRepeat,
+  IconDisc,
   IconGuitarPickFilled,
   IconInfoCircleFilled
 } from '@tabler/icons-react'
@@ -128,6 +129,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
                   <AlbumSelectButton
                     mt={form.getInputProps('title').error ? 3 : 19}
                     size={'lg'}
+                    icon={<IconDisc size={20} />}
                     album={album}
                     setAlbum={setAlbum}
                     searchFilter={artistId ? [`artist.id = ${artistId}`] : []}
