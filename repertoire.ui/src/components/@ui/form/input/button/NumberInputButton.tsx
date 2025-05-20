@@ -31,7 +31,9 @@ const NumberInputButton = forwardRef<HTMLButtonElement, NumberInputButtonProps>(
         opened={opened}
         onChange={setOpened}
         transitionProps={{ transition: 'scale-y', duration: 160 }}
+        shadow={'sm'}
         trapFocus
+        withArrow
       >
         <Popover.Target>
           <Tooltip
