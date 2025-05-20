@@ -16,6 +16,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const navigate = useNavigate()
   const isDesktop = useIsDesktop()
   const { isTopScrollPositionOver0 } = useMainScroll()
+  const shiftOrder = isDesktop ? 0 : 1
 
   const theme = useMantineTheme()
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
@@ -60,7 +61,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
             position: isSmallScreen ? 'bottom' : 'bottom-start'
           }}
           dropdownMinHeight={'max(26vh, 200px)'}
-          style={{ order: isSmallScreen ? 3 : 1 }}
+          style={{ order: isSmallScreen ? 3 - shiftOrder : 1 }}
         />
 
         <Space hiddenFrom={'sm'} flex={1} style={{ order: 2 }} />
@@ -91,7 +92,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
           </Group>
         )}
 
-        <Space flex={1} style={{ order: 4 }} />
+        <Space flex={1} style={{ order: 4 - shiftOrder }} />
 
         <ActionIcon
           variant={'subtle'}
@@ -105,12 +106,12 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
               color: theme.colors.primary[6]
             }
           })}
-          style={{ order: 5 }}
+          style={{ order: 5 - shiftOrder }}
         >
           <IconBellFilled size={18} />
         </ActionIcon>
 
-        <TopbarUser style={{ order: 6 }} />
+        <TopbarUser style={{ order: 6 - shiftOrder }} />
       </Group>
     </AppShell.Header>
   )
