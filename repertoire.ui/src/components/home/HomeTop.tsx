@@ -16,6 +16,8 @@ import OrderType from '../../types/enums/OrderType.ts'
 import ArtistProperty from '../../types/enums/ArtistProperty.ts'
 import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import useLocalStorage from '../../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
 
 enum TopEntity {
   Songs,
@@ -102,7 +104,10 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
 
   const { width } = useViewportSize()
 
-  const [topEntity, setTopEntity] = useState(TopEntity.Albums)
+  const [topEntity, setTopEntity] = useLocalStorage({
+    key: LocalStorageKeys.HomeTopEntity,
+    defaultValue: TopEntity.Albums
+  })
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
