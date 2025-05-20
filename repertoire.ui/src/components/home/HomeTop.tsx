@@ -227,7 +227,8 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
         <Group
           wrap={'nowrap'}
           align={'start'}
-          px={'xl'}
+          pl={'xl'}
+          pr={'5vw'}
           pt={'lg'}
           pb={topEntity === TopEntity.Artists && 'md'}
           gap={topEntity === TopEntity.Artists ? 'sm' : 'lg'}
