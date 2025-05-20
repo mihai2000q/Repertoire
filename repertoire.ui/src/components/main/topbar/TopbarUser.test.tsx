@@ -1,10 +1,10 @@
-import User from '../../types/models/User.ts'
-import { emptyUser, reduxRouterRender } from '../../test-utils.tsx'
+import User from '../../../types/models/User.ts'
+import { emptyUser, reduxRouterRender } from '../../../test-utils.tsx'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
-import { RootState } from '../../state/store.ts'
+import { RootState } from '../../../state/store.ts'
 import TopbarUser from './TopbarUser.tsx'
 
 describe('Topbar User', () => {

@@ -4,8 +4,8 @@ import { IconBellFilled, IconChevronLeft, IconChevronRight, IconMenu2 } from '@t
 import { useMediaQuery } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
-import TopbarSearch from './TopbarSearch.tsx'
-import TopbarUser from './TopbarUser.tsx'
+import TopbarSearch from './topbar/TopbarSearch.tsx'
+import TopbarUser from './topbar/TopbarUser.tsx'
 import useMainScroll from '../../hooks/useMainScroll.ts'
 
 interface TopbarProps {
