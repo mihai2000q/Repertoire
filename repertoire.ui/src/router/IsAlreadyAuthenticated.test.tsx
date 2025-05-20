@@ -15,7 +15,7 @@ describe('Is Already Authenticated', () => {
         <Route path={'/home'} element={<div data-testid={'home'}>Home</div>} />
         <Route path={'*'} element={<Navigate to={'/'} replace />} />
       </Routes>,
-      { auth: { token } }
+      { auth: { token, historyOnSignIn: undefined } }
     )
 
   it('should remain on Outlet if user is not authenticated', () => {

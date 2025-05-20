@@ -8,7 +8,8 @@ import { RootState } from '../../../state/store.ts'
 import TopbarUser from './TopbarUser.tsx'
 
 describe('Topbar User', () => {
-  const render = () => reduxRouterRender(<TopbarUser />, { auth: { token: 'some token' } })
+  const render = () =>
+    reduxRouterRender(<TopbarUser />, { auth: { token: 'some token', historyOnSignIn: undefined } })
 
   const user: User = {
     ...emptyUser,

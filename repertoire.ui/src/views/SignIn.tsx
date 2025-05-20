@@ -11,15 +11,14 @@ import {
   Title
 } from '@mantine/core'
 import { ReactElement } from 'react'
-import { api } from '../state/api'
 import { useAppDispatch } from '../state/store'
-import { setToken } from '../state/slice/authSlice.ts'
+import { signIn } from '../state/slice/authSlice.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
-import { authApi, useSignInMutation } from '../state/authApi.ts'
+import { useSignInMutation } from '../state/authApi.ts'
 
 function SignIn(): ReactElement {
   const dispatch = useAppDispatch()
@@ -43,12 +42,10 @@ function SignIn(): ReactElement {
     validate: zodResolver(signInValidation)
   })
 
-  async function signIn({ email, password }: SignInForm): Promise<void> {
+  async function handleSignIn({ email, password }: SignInForm): Promise<void> {
     try {
       const token = await signInMutation({ email, password }).unwrap()
-      dispatch(setToken(token))
-      dispatch(api.util.resetApiState())
-      dispatch(authApi.util.resetApiState())
+      dispatch(signIn(token))
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/
@@ -69,7 +66,7 @@ function SignIn(): ReactElement {
         </Text>
 
         <Paper withBorder shadow="md" p={30} mt={15}>
-          <form onSubmit={form.onSubmit(signIn)}>
+          <form onSubmit={form.onSubmit(handleSignIn)}>
             <Stack align={'flex-start'} gap={0} w={200}>
               <Stack w={'100%'}>
                 <TextInput

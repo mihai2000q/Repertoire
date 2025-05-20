@@ -13,10 +13,9 @@ import {
 } from '@mantine/core'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../state/store.ts'
-import { api } from '../state/api.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 import { useForm, zodResolver } from '@mantine/form'
-import { setToken } from '../state/slice/authSlice.ts'
+import { signIn } from '../state/slice/authSlice.ts'
 import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { useSignUpMutation } from '../state/api/usersApi.ts'
@@ -47,8 +46,7 @@ function SignUp(): ReactElement {
   async function signUp({ name, email, password }: SignUpForm): Promise<void> {
     try {
       const token = await signUpMutation({ name, email, password }).unwrap()
-      dispatch(setToken(token))
-      dispatch(api.util.resetApiState())
+      dispatch(signIn(token))
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/
