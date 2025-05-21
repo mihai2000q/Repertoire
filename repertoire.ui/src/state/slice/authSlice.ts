@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { api } from '../api.ts'
-import { authApi } from '../authApi.ts'
 
 export interface AuthState {
   token: string | null
@@ -23,9 +21,6 @@ export const authSlice = createSlice({
     signIn: (state, action: PayloadAction<string>) => {
       state.token = action.payload
       localStorage.setItem('access_token', state.token)
-
-      api.util.resetApiState()
-      authApi.util.resetApiState()
       state.historyOnSignIn = { index: (history.state?.idx ?? 0) + 1, justSignedIn: true }
     },
     signOut: (state) => {

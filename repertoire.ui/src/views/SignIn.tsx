@@ -18,7 +18,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm, zodResolver } from '@mantine/form'
 import { SignInForm, signInValidation } from '../validation/signInForm'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
-import { useSignInMutation } from '../state/authApi.ts'
+import { authApi, useSignInMutation } from '../state/authApi.ts'
+import { api } from '../state/api.ts'
 
 function SignIn(): ReactElement {
   const dispatch = useAppDispatch()
@@ -46,6 +47,8 @@ function SignIn(): ReactElement {
     try {
       const token = await signInMutation({ email, password }).unwrap()
       dispatch(signIn(token))
+      dispatch(api.util.resetApiState())
+      dispatch(authApi.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/

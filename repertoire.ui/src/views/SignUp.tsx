@@ -19,6 +19,8 @@ import { signIn } from '../state/slice/authSlice.ts'
 import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { useSignUpMutation } from '../state/api/usersApi.ts'
+import { api } from '../state/api.ts'
+import { authApi } from '../state/authApi.ts'
 
 function SignUp(): ReactElement {
   const dispatch = useAppDispatch()
@@ -47,6 +49,8 @@ function SignUp(): ReactElement {
     try {
       const token = await signUpMutation({ name, email, password }).unwrap()
       dispatch(signIn(token))
+      dispatch(api.util.resetApiState())
+      dispatch(authApi.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/
