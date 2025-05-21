@@ -1,5 +1,5 @@
 import { Mutex } from 'async-mutex'
-import { RootState } from './store'
+import { RootState } from './store.ts'
 import { setToken, signOut } from './slice/authSlice.ts'
 import { setErrorPath } from './slice/globalSlice.ts'
 import {

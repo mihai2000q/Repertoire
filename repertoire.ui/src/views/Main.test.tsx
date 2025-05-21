@@ -58,7 +58,7 @@ describe('Main', () => {
           <Route path={'/'} element={<div data-testid={'outlet'}>Outlet</div>} />
         </Route>
       </Routes>,
-      { auth: { token } }
+      { auth: { token, historyOnSignIn: { index: 0, justSignedIn: false } } }
     )
 
   it('should render and display just the outlet when user is not authenticated', () => {

@@ -117,7 +117,10 @@ describe('Home Top', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    localStorage.clear()
+  })
 
   afterAll(() => server.close())
 

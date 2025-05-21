@@ -16,6 +16,8 @@ import OrderType from '../../types/enums/OrderType.ts'
 import ArtistProperty from '../../types/enums/ArtistProperty.ts'
 import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import useLocalStorage from '../../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
 
 enum TopEntity {
   Songs,
@@ -102,7 +104,10 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
 
   const { width } = useViewportSize()
 
-  const [topEntity, setTopEntity] = useState(TopEntity.Albums)
+  const [topEntity, setTopEntity] = useLocalStorage({
+    key: LocalStorageKeys.HomeTopEntity,
+    defaultValue: TopEntity.Albums
+  })
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
@@ -197,36 +202,46 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
         </Center>
       )}
 
-      <ScrollArea
+      <ScrollArea.Autosize
         viewportRef={topRef}
         viewportProps={{ onScroll: handleOnScroll }}
         scrollbars={'x'}
         offsetScrollbars={'x'}
         scrollbarSize={7}
-        sx={(theme) => ({
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-            background: `
-              linear-gradient(to right, transparent 85%, ${theme.white}),
-              linear-gradient(to left, transparent 97%, ${theme.white})
-            `
+        styles={{
+          viewport: {
+            '> div': {
+              display: 'flex !important',
+              minWidth: '100%',
+              width: 0
+            }
           }
-        })}
+        }}
       >
         <Group
           wrap={'nowrap'}
           align={'start'}
-          px={'xl'}
+          pl={'xl'}
+          pr={'5vw'}
           pt={'lg'}
           pb={topEntity === TopEntity.Artists && 'md'}
           gap={topEntity === TopEntity.Artists ? 'sm' : 'lg'}
           style={{ transition: 'padding-bottom 0.3s' }}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to right, transparent 85%, ${theme.white}),
+                linear-gradient(to left, transparent 97%, ${theme.white})
+              `
+            }
+          })}
         >
           {topEntity === TopEntity.Songs &&
             (isSongsLoading || !songs ? (
@@ -247,7 +262,7 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
               artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
             ))}
         </Group>
-      </ScrollArea>
+      </ScrollArea.Autosize>
     </Stack>
   )
 })

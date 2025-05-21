@@ -3,6 +3,8 @@ import useErrorRedirection from './useErrorRedirection.ts'
 import { RootState } from '../state/store.ts'
 
 describe('use Error Redirection', () => {
+  afterEach(() => window.location.pathname = '/')
+
   it('should not navigate when the error path is undefined', () => {
     reduxRouterRenderHook(() => useErrorRedirection(), {
       global: {

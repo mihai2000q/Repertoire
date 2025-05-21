@@ -15,7 +15,7 @@ describe('Require Authentication', () => {
         <Route path={'sign-in'} element={<div data-testid={'sign-in'}>SignIn</div>} />
         <Route path={'*'} element={<Navigate to={'/'} replace />} />
       </Routes>,
-      { auth: { token } }
+      { auth: { token, historyOnSignIn: undefined } }
     )
 
   it('should remain on Outlet if user is authenticated', () => {

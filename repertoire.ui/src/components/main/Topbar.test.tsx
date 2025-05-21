@@ -15,7 +15,7 @@ describe('Topbar', () => {
       <AppShell>
         <Topbar toggleSidebar={toggleSidebar} />
       </AppShell>,
-      { auth: { token } }
+      { auth: { token, historyOnSignIn: { index: 0, justSignedIn: false } } }
     )
 
   const handlers = [

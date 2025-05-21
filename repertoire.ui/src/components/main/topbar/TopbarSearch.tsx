@@ -20,16 +20,16 @@ import {
   useCombobox
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { useGetSearchQuery } from '../../state/api/searchApi.ts'
-import { AlbumSearch, ArtistSearch, PlaylistSearch, SongSearch } from '../../types/models/Search.ts'
+import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
+import { AlbumSearch, ArtistSearch, PlaylistSearch, SongSearch } from '../../../types/models/Search.ts'
 import { useNavigate } from 'react-router-dom'
-import SearchType from '../../types/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import { MouseEvent, ReactNode, useRef, useState } from 'react'
-import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import CustomIconPlaylist2 from '../@ui/icons/CustomIconPlaylist2.tsx'
-import useSearchQueryCacheInvalidation from '../../hooks/useSearchQueryCacheInvalidation.ts'
-import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
+import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconPlaylist2 from '../../@ui/icons/CustomIconPlaylist2.tsx'
+import useSearchQueryCacheInvalidation from '../../../hooks/useSearchQueryCacheInvalidation.ts'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
