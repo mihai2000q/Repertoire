@@ -1,36 +1,24 @@
 import { ReactElement } from 'react'
-import { ActionIcon, AppShell, Group, Space, useMantineTheme } from '@mantine/core'
-import { IconBellFilled, IconChevronLeft, IconChevronRight, IconMenu2 } from '@tabler/icons-react'
+import { ActionIcon, AppShell, Flex, Group, Space, useMantineTheme } from '@mantine/core'
+import { IconBellFilled, IconMenu2 } from '@tabler/icons-react'
 import { useMediaQuery } from '@mantine/hooks'
-import { useNavigate } from 'react-router-dom'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import TopbarSearch from './topbar/TopbarSearch.tsx'
 import TopbarUser from './topbar/TopbarUser.tsx'
 import useMainScroll from '../../hooks/useMainScroll.ts'
+import TopbarNavigation from './topbar/TopbarNavigation.tsx'
 
 interface TopbarProps {
   toggleSidebar: () => void
 }
 
 function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
-  const navigate = useNavigate()
   const isDesktop = useIsDesktop()
   const { isTopScrollPositionOver0 } = useMainScroll()
   const shiftOrder = isDesktop ? 0 : 1
 
   const theme = useMantineTheme()
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
-
-  const disableGoBack = window.history.state?.idx < 1
-  const disableGoForward = window.history.state?.idx >= window.history.length - 1
-
-  function handleGoBack() {
-    navigate(-1)
-  }
-
-  function handleGoForward() {
-    navigate(1)
-  }
 
   return (
     <AppShell.Header
@@ -67,29 +55,9 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
         <Space hiddenFrom={'sm'} flex={1} style={{ order: 2 }} />
 
         {isDesktop && (
-          <Group gap={0} ml={'xs'} style={{ order: isSmallScreen ? 1 : 3 }}>
-            <ActionIcon
-              aria-label={'back'}
-              size={'lg'}
-              variant={'grey'}
-              radius={'50%'}
-              disabled={disableGoBack}
-              onClick={handleGoBack}
-            >
-              <IconChevronLeft size={20} />
-            </ActionIcon>
-
-            <ActionIcon
-              aria-label={'forward'}
-              size={'lg'}
-              variant={'grey'}
-              radius={'50%'}
-              disabled={disableGoForward}
-              onClick={handleGoForward}
-            >
-              <IconChevronRight size={20} />
-            </ActionIcon>
-          </Group>
+          <Flex style={{ order: isSmallScreen ? 1 : 3 }}>
+            <TopbarNavigation />
+          </Flex>
         )}
 
         <Space flex={1} style={{ order: 4 - shiftOrder }} />
