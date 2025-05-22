@@ -4,7 +4,7 @@ import { useGetArtistQuery } from '../state/api/artistsApi.ts'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
 import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
 import { useGetSongsQuery } from '../state/api/songsApi.ts'
-import { useEffect } from 'react'
+import { Dispatch, memo, SetStateAction, useEffect } from 'react'
 import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
 import ArtistAlbumsCard from '../components/artist/panels/ArtistAlbumsCard.tsx'
@@ -22,10 +22,13 @@ import SongProperty from '../types/enums/SongProperty.ts'
 import useTitleBarHeight from '../hooks/useTitleBarHeight.ts'
 import useTopbarHeight from '../hooks/useTopbarHeight.ts'
 import { useElementSize } from '@mantine/hooks'
+import { default as ArtistModel } from '../types/models/Artist.ts'
+import Album from '../types/models/Album.ts'
+import WithTotalCountResponse from 'src/types/responses/WithTotalCountResponse.ts'
+import Order from '../types/Order.ts'
+import Song from '../types/models/Song.ts'
 
 function Artist() {
-  const titleBarHeight = useTitleBarHeight()
-  const topbarHeight = useTopbarHeight()
   const stackGap = '16px'
   const { ref: headerRef, height: headerHeight } = useElementSize()
 
@@ -94,49 +97,112 @@ function Artist() {
 
       <Divider />
 
-      <Grid
-        align={'start'}
-        mih={340}
-        styles={{
-          inner: {
-            height: `max(calc(100vh - ${headerHeight}px - ${topbarHeight} - ${titleBarHeight} - 2*${stackGap} - 1px - 6px), 340px)`
-          }
-        }}
-      >
-        <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
-          <Stack h={'100%'}>
-            {!isUnknownArtist && artist.isBand && (
-              <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
-            )}
-
-            <ArtistAlbumsCard
-              albums={albums}
-              isLoading={isAlbumsLoading}
-              isFetching={isAlbumsFetching}
-              isUnknownArtist={isUnknownArtist}
-              order={albumsOrder}
-              setOrder={setAlbumsOrder}
-              artistId={artist?.id}
-            />
-          </Stack>
-        </Grid.Col>
-
-        <Grid.Col span={{ sm: 12, md: 5.5 }} h={'100%'}>
-          <Flex mah={'100%'}>
-            <ArtistSongsCard
-              songs={songs}
-              isLoading={isSongsLoading}
-              isFetching={isSongsFetching}
-              isUnknownArtist={isUnknownArtist}
-              order={songsOrder}
-              setOrder={setSongsOrder}
-              artistId={artist?.id}
-            />
-          </Flex>
-        </Grid.Col>
-      </Grid>
+      <ArtistContent
+        stackGap={stackGap}
+        headerHeight={headerHeight}
+        artist={artist}
+        artistId={artistId}
+        isUnknownArtist={isUnknownArtist}
+        // albums
+        albums={albums}
+        isAlbumsLoading={isAlbumsLoading}
+        isAlbumsFetching={isAlbumsFetching}
+        albumsOrder={albumsOrder}
+        setAlbumsOrder={setAlbumsOrder}
+        // songs
+        songs={songs}
+        isSongsLoading={isSongsLoading}
+        isSongsFetching={isSongsFetching}
+        songsOrder={songsOrder}
+        setSongsOrder={setSongsOrder}
+      />
     </Stack>
   )
 }
+
+const ArtistContent = memo(function ArtistContent({
+  stackGap,
+  headerHeight,
+  artist,
+  artistId,
+  isUnknownArtist,
+
+  albums,
+  isAlbumsLoading,
+  isAlbumsFetching,
+  albumsOrder,
+  setAlbumsOrder,
+
+  songs,
+  isSongsLoading,
+  isSongsFetching,
+  songsOrder,
+  setSongsOrder
+}: {
+  stackGap: string
+  headerHeight: number
+  artist: ArtistModel
+  artistId: string
+  isUnknownArtist: boolean
+
+  albums: WithTotalCountResponse<Album>
+  isAlbumsLoading: boolean
+  isAlbumsFetching: boolean
+  albumsOrder: Order
+  setAlbumsOrder: Dispatch<SetStateAction<Order>>
+
+  songs: WithTotalCountResponse<Song>
+  isSongsLoading: boolean
+  isSongsFetching: boolean
+  songsOrder: Order
+  setSongsOrder: Dispatch<SetStateAction<Order>>
+}) {
+  const titleBarHeight = useTitleBarHeight()
+  const topbarHeight = useTopbarHeight()
+
+  return (
+    <Grid
+      align={'start'}
+      mih={340}
+      styles={{
+        inner: {
+          height: `max(calc(100vh - ${headerHeight}px - ${topbarHeight} - ${titleBarHeight} - 2*${stackGap} - 1px - 6px), 340px)`
+        }
+      }}
+    >
+      <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
+        <Stack h={'100%'}>
+          {!isUnknownArtist && artist.isBand && (
+            <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
+          )}
+
+          <ArtistAlbumsCard
+            albums={albums}
+            isLoading={isAlbumsLoading}
+            isFetching={isAlbumsFetching}
+            isUnknownArtist={isUnknownArtist}
+            order={albumsOrder}
+            setOrder={setAlbumsOrder}
+            artistId={artist?.id}
+          />
+        </Stack>
+      </Grid.Col>
+
+      <Grid.Col span={{ sm: 12, md: 5.5 }} h={'100%'}>
+        <Flex mah={'100%'}>
+          <ArtistSongsCard
+            songs={songs}
+            isLoading={isSongsLoading}
+            isFetching={isSongsFetching}
+            isUnknownArtist={isUnknownArtist}
+            order={songsOrder}
+            setOrder={setSongsOrder}
+            artistId={artist?.id}
+          />
+        </Flex>
+      </Grid.Col>
+    </Grid>
+  )
+})
 
 export default Artist
