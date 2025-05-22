@@ -35,7 +35,6 @@ export const addNewBandMemberValidation = z.object({
 
 export interface AddNewArtistAlbumForm {
   title: string
-  releaseDate?: string
 }
 
 export interface EditBandMemberForm {

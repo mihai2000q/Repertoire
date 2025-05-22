@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export interface AccountForm {
   name: string
-  profilePicture: string | FileWithPath | null
+  profilePicture?: string | FileWithPath | null
 }
 
 export const accountValidation = z.object({

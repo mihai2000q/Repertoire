@@ -12,7 +12,7 @@ describe('Date Picker Button', () => {
     const onChange = vi.fn()
 
     const now = new Date()
-    const newDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+    const newDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).toISOString()
 
     const { rerender } = mantineRender(
       <DatePickerButton aria-label={ariaLabel} value={null} onChange={onChange} />

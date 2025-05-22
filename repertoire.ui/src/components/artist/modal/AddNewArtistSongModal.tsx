@@ -40,7 +40,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
 
   const [image, setImage] = useState<FileWithPath>(null)
   const [album, setAlbum] = useState<AlbumSearch>(null)
-  const [releaseDate, setReleaseDate] = useState<Date>(null)
+  const [releaseDate, setReleaseDate] = useState<string>(null)
   const [guitarTuning, setGuitarTuning] = useState<GuitarTuning>(null)
   const [difficulty, setDifficulty] = useState<Difficulty>(null)
   const [bpm, setBpm] = useState<string | number>()

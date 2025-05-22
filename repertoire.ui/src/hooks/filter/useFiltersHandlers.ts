@@ -48,7 +48,7 @@ export default function useFiltersHandlers(
     setFilters(newFilters)
   }
 
-  function getDateRangeValues(key1: string, key2: string): [Date | null, Date | null] {
+  function getDateRangeValues(key1: string, key2: string): [string | null, string | null] {
     const value1 = filters.get(key1).value
     const value2 = filters.get(key2).value
 
@@ -59,7 +59,7 @@ export default function useFiltersHandlers(
       date2.setDate(date2.getDate() + 1)
     }
 
-    return [date1, date2]
+    return [date1?.toISOString() ?? null, date2?.toISOString() ?? null]
   }
 
   function getSliderValues(key1: string, key2: string): [number, number] {

@@ -48,7 +48,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     mode: 'uncontrolled',
     initialValues: {
       title: album.title,
-      releaseDate: album.releaseDate && new Date(album.releaseDate),
+      releaseDate: album.releaseDate,
       image: album.imageUrl,
       artist: album.artist?.id
     } as EditAlbumHeaderForm,
@@ -59,7 +59,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     onValuesChange: (values) => {
       setAlbumHasChanged(
         values.title !== album.title ||
-          values.releaseDate?.getTime() !==
+          (values.releaseDate ? new Date(values.releaseDate).getTime() : undefined) !==
             (album.releaseDate ? new Date(album.releaseDate).getTime() : undefined) ||
           values.artistId !== album.artist?.id
       )

@@ -246,9 +246,9 @@ function ArtistsFilters({
           onChange={(values) =>
             handleDoubleValueChange(
               ArtistProperty.LastPlayed + FilterOperator.GreaterThanOrEqual,
-              values[0]?.toISOString() ?? null,
+              values[0] ?? null,
               ArtistProperty.LastPlayed + FilterOperator.LessThanOrEqual,
-              values[1]?.toISOString() ?? null
+              values[1] ?? null
             )
           }
         />

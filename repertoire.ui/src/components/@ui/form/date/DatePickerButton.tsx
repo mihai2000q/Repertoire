@@ -5,13 +5,13 @@ import { IconCalendar, IconCalendarCheck } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 
 interface DatePickerButtonProps extends ActionIconProps {
-  value: Date | null | undefined
-  onChange: (value: Date | null | undefined) => void
+  value: string | null | undefined
+  onChange: (value: string | null | undefined) => void
   icon?: ReactNode
   successIcon?: ReactNode
   tooltipLabels?: {
     default?: string
-    selected?: (date: Date) => string
+    selected?: (date: string) => string
   }
 }
 

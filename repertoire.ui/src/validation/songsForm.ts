@@ -11,7 +11,7 @@ export interface AddNewSongForm {
   artistName?: string
   albumTitle?: string
 
-  releaseDate?: Date
+  releaseDate?: string
   bpm?: number | string
   songsterrLink?: string
   youtubeLink?: string
@@ -25,8 +25,8 @@ export const addNewSongValidation = z.object({
 
 export interface EditSongHeaderForm {
   title: string
-  releaseDate: Date
-  image: string | FileWithPath | null
+  releaseDate?: string
+  image?: string | FileWithPath | null
   artistId?: string
   albumId?: string
 }
