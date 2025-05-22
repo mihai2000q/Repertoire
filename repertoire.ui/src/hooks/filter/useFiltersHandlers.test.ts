@@ -134,8 +134,8 @@ describe('use Filters Handlers', () => {
       const [date1, date2] = result.current.getDateRangeValues('dateFrom>', 'dateTo<')
       expect(date1).toBeInstanceOf(Date)
       expect(date2).toBeInstanceOf(Date)
-      expect(date1.toISOString()).toMatch(/2023-01-01/)
-      expect(date2.toISOString()).toMatch(/2023-01-31/)
+      expect(date1).toMatch(/2023-01-01/)
+      expect(date2).toMatch(/2023-01-31/)
     })
 
     it('should return null for null values', () => {
@@ -155,8 +155,8 @@ describe('use Filters Handlers', () => {
       const { result } = render(initialState)
 
       const [date1, date2] = result.current.getDateRangeValues('dateFrom>', 'dateTo<')
-      expect(date1.getDate()).toBe(1)
-      expect(date2.getDate()).toBe(2)
+      expect(new Date(date1).getDate()).toBe(1)
+      expect(new Date(date2).getDate()).toBe(2)
     })
   })
 

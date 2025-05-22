@@ -49,7 +49,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     mode: 'uncontrolled',
     initialValues: {
       title: song.title,
-      releaseDate: song.releaseDate && new Date(song.releaseDate),
+      releaseDate: song.releaseDate,
       image: song.imageUrl,
       artistId: song.artist?.id,
       albumId: song.album?.id
@@ -61,7 +61,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     onValuesChange: (values) => {
       setSongHasChanged(
         values.title !== song.title ||
-          values.releaseDate?.getTime() !==
+          (values.releaseDate ? new Date(values.releaseDate).getTime() : undefined) !==
             (song.releaseDate ? new Date(song.releaseDate).getTime() : undefined) ||
           values.artistId !== song.artist?.id ||
           values.albumId !== song.album?.id

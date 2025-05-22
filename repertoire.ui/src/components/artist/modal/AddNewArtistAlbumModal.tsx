@@ -28,7 +28,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
   const [image, setImage] = useState<FileWithPath>(null)
-  const [releaseDate, setReleaseDate] = useState<Date>(null)
+  const [releaseDate, setReleaseDate] = useState<string>(null)
 
   const onCloseWithImage = () => {
     onClose()
