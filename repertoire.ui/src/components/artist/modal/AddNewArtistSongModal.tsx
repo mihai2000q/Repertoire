@@ -84,7 +84,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
       description: '',
       artistId: album ? undefined : artistId,
       albumId: album?.id,
-      releaseDate: releaseDate ?? undefined,
+      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
       guitarTuningId: guitarTuning?.id,
       difficulty: difficulty ?? undefined,
       bpm: typeof bpm === 'number' ? bpm : undefined,

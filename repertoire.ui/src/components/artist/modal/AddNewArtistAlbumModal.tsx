@@ -51,7 +51,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
 
     const res = await createAlbumMutation({
       title,
-      releaseDate: releaseDate ?? undefined,
+      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
       artistId
     }).unwrap()
 

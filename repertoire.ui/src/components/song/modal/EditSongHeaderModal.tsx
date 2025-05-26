@@ -27,6 +27,7 @@ import { useDidUpdate } from '@mantine/hooks'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import dayjs from 'dayjs'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -90,7 +91,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
         guitarTuningId: song.guitarTuning?.id,
         id: song.id,
         title: title.trim(),
-        releaseDate: releaseDate,
+        releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
         albumId: albumId,
         artistId: artistId
       }).unwrap()

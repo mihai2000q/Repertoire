@@ -132,8 +132,6 @@ describe('use Filters Handlers', () => {
       const { result } = render(initialState)
 
       const [date1, date2] = result.current.getDateRangeValues('dateFrom>', 'dateTo<')
-      expect(date1).toBeInstanceOf(Date)
-      expect(date2).toBeInstanceOf(Date)
       expect(date1).toMatch(/2023-01-01/)
       expect(date2).toMatch(/2023-01-31/)
     })

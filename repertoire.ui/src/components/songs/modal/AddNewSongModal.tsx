@@ -10,6 +10,7 @@ import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
 import AddNewSongModalFinalStep from './AddNewSongModalFinalStep.tsx'
 import { useDidUpdate, useListState } from '@mantine/hooks'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import dayjs from 'dayjs'
 
 export interface AddNewSongModalSongSection {
   id: string
@@ -98,7 +99,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
       description: description,
       bpm: bpm,
       difficulty: difficulty?.value,
-      releaseDate: releaseDate,
+      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
       songsterrLink: songsterrLink,
       youtubeLink: youtubeLink,
       sections: sections.map((s) => ({ name: s.name.trim(), typeId: s.type.value })),
