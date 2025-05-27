@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
-    "@mantine/core": "^8.0.1",
-    "@mantine/emotion": "^8.0.1",
+    "@mantine/core": "^8.0.2",
+    "@mantine/emotion": "^8.0.2",
     "@types/node": "^22.15.21",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
