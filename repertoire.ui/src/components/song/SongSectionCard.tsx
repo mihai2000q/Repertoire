@@ -131,6 +131,7 @@ function SongSectionCard({
         <Stack
           py={'xs'}
           aria-label={`song-section-${section.name}`}
+          gap={0}
           sx={(theme) => ({
             cursor: 'default',
             transition: '0.25s',
@@ -213,7 +214,7 @@ function SongSectionCard({
             <Text lh={'xxs'} fw={600}>
               {section.songSectionType.name}
             </Text>
-            <Text flex={1} lh={'xxs'} truncate={'end'}>
+            <Text flex={1} lh={'xs'} truncate={'end'}>
               {section.name}
             </Text>
 
@@ -242,7 +243,7 @@ function SongSectionCard({
           </Group>
 
           <Collapse in={showDetails}>
-            <Group aria-label={`song-section-details-${section.name}`} gap={'lg'} pr={'lg'}>
+            <Group aria-label={`song-section-details-${section.name}`} pt={'md'} gap={'lg'} pr={'lg'}>
               <Tooltip.Floating
                 role={'tooltip'}
                 label={
