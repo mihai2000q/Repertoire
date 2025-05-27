@@ -84,9 +84,9 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           onChange={(values) =>
             handleDoubleValueChange(
               SongProperty.ReleaseDate + FilterOperator.GreaterThanOrEqual,
-              values[0]?.toISOString() ?? null,
+              values[0] ?? null,
               SongProperty.ReleaseDate + FilterOperator.LessThanOrEqual,
-              values[1]?.toISOString() ?? null
+              values[1] ?? null
             )
           }
         />
@@ -390,9 +390,9 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           onChange={(values) =>
             handleDoubleValueChange(
               SongProperty.LastPlayed + FilterOperator.GreaterThanOrEqual,
-              values[0]?.toISOString() ?? null,
+              values[0] ?? null,
               SongProperty.LastPlayed + FilterOperator.LessThanOrEqual,
-              values[1]?.toISOString() ?? null
+              values[1] ?? null
             )
           }
         />

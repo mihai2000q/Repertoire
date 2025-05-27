@@ -7,7 +7,7 @@ import {
 
 export interface AddNewAlbumForm {
   title: string
-  releaseDate?: Date
+  releaseDate?: string
   artistName?: string
 }
 
@@ -29,8 +29,8 @@ export const addNewAlbumSongValidation = z.object({
 
 export interface EditAlbumHeaderForm {
   title: string
-  releaseDate: Date | null
-  image: string | FileWithPath | null
+  releaseDate?: string
+  image?: string | FileWithPath | null
   artistId?: string
 }
 

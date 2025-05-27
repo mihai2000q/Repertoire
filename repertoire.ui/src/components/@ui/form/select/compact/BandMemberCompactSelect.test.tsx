@@ -46,7 +46,9 @@ describe('Band Member Compact Select', () => {
     expect(selectButton).not.toBeDisabled()
 
     await user.hover(selectButton)
-    expect(await screen.findByRole('tooltip', { name: /choose a band member/i })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('tooltip', { name: /choose a band member/i })
+    ).toBeInTheDocument()
 
     await user.click(selectButton)
 
@@ -76,16 +78,32 @@ describe('Band Member Compact Select', () => {
     expect(memberButton).toBeInTheDocument()
 
     await user.hover(memberButton)
-    expect(await screen.findByRole('tooltip', { name: new RegExp(newBandMember.name, 'i') })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('tooltip', { name: new RegExp(newBandMember.name, 'i') })
+    ).toBeInTheDocument()
 
     await user.click(memberButton)
     expect(screen.getByRole('textbox', { name: /search/i })).toHaveValue(newBandMember.name)
+  })
+
+  it('should keep the band member updated with changes from outside the component', async () => {
+    const user = userEvent.setup()
+
+    const newBandMember = bandMembers[0]
+
+    const [{ rerender }] = reduxRender(
+      <BandMemberCompactSelect
+        bandMember={newBandMember}
+        setBandMember={vi.fn()}
+        bandMembers={bandMembers}
+      />
+    )
 
     // reset the value from outside component
     rerender(
       <BandMemberCompactSelect
         bandMember={null}
-        setBandMember={setBandMember}
+        setBandMember={vi.fn()}
         bandMembers={bandMembers}
       />
     )

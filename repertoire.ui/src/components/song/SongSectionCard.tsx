@@ -259,6 +259,7 @@ function SongSectionCard({
                   fw={500}
                   c={'dimmed'}
                   inline
+                  data-testid={'rehearsals'}
                 >
                   <NumberFormatter value={section.rehearsals} />
                 </Text>

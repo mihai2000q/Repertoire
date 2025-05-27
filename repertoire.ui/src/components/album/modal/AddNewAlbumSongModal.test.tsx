@@ -235,7 +235,7 @@ describe('Add New Album Song Modal', () => {
       expect(screen.getByRole('textbox', { name: 'search' })).toHaveValue('')
 
       await user.click(screen.getByRole('button', { name: 'difficulty' }))
-      expect(screen.getAllByRole('textbox', { name: 'search' })[1]).toHaveValue('')
+      expect(screen.getByRole('textbox', { name: 'search' })).toHaveValue('')
 
       await user.click(screen.getByRole('button', { name: 'bpm' }))
       expect(screen.getByRole('textbox', { name: 'bpm' })).toHaveValue('')

@@ -13,7 +13,7 @@ export const addNewPlaylistValidation = z.object({
 export interface EditPlaylistHeaderForm {
   title: string
   description: string
-  image: string | FileWithPath | null
+  image?: string | FileWithPath | null
 }
 
 export const editPlaylistHeaderValidation = z.object({

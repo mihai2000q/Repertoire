@@ -13,6 +13,7 @@ import { DatePickerInput } from '@mantine/dates'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
 import { IconCalendarRepeat } from '@tabler/icons-react'
 import { ArtistSearch } from '../../../types/models/Search.ts'
+import dayjs from 'dayjs'
 
 interface AddNewAlbumModalProps {
   opened: boolean
@@ -50,7 +51,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
 
     const res = await createAlbumMutation({
       title: title,
-      releaseDate: releaseDate,
+      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
       artistId: artist?.id,
       artistName: artist ? undefined : artistName
     }).unwrap()

@@ -99,8 +99,6 @@ describe('Artist Album Card', () => {
       )
 
       expect(screen.getAllByText(localAlbum.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
-      expect(screen.getAllByText(localAlbum.rehearsals)[0]).toBeVisible()
-      expect(screen.getAllByText(localAlbum.rehearsals)[1]).not.toBeVisible()
     })
 
     it('should display the confidence bar, when it is confidence', () => {

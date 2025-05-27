@@ -32,6 +32,7 @@ describe('Text Input Button', () => {
     await user.click(button)
     expect(screen.getByRole('textbox', { name: inputAriaLabel })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: inputAriaLabel })).toHaveFocus()
+    await user.click(button)
 
     rerender(
       <TextInputButton

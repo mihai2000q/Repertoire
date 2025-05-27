@@ -86,9 +86,9 @@ function AlbumsFilters({
           onChange={(values) =>
             handleDoubleValueChange(
               AlbumProperty.ReleaseDate + FilterOperator.GreaterThanOrEqual,
-              values[0]?.toISOString() ?? null,
+              values[0] ?? null,
               AlbumProperty.ReleaseDate + FilterOperator.LessThanOrEqual,
-              values[1]?.toISOString() ?? null
+              values[1] ?? null
             )
           }
         />
@@ -219,9 +219,9 @@ function AlbumsFilters({
           onChange={(values) =>
             handleDoubleValueChange(
               AlbumProperty.LastPlayed + FilterOperator.GreaterThanOrEqual,
-              values[0]?.toISOString() ?? null,
+              values[0] ?? null,
               AlbumProperty.LastPlayed + FilterOperator.LessThanOrEqual,
-              values[1]?.toISOString() ?? null
+              values[1] ?? null
             )
           }
         />

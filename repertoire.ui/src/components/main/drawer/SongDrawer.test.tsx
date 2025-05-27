@@ -168,7 +168,7 @@ describe('Song Drawer', () => {
     expect(screen.getByText(localSong.bpm)).toBeInTheDocument()
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
     expect(
-      screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMM YYYY'))
+      screen.getByText(dayjs(localSong.lastTimePlayed).format('D MMMM YYYY'))
     ).toBeInTheDocument()
     expect(screen.getByText(localSong.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()

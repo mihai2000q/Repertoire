@@ -42,10 +42,10 @@ describe('Instrument Compact Select', () => {
 
     const newInstrument = instruments[0]
 
-    const onChange = vitest.fn()
+    const setInstrument = vitest.fn()
 
     const [{ rerender }] = reduxRender(
-      <InstrumentCompactSelect instrument={null} setInstrument={onChange} />
+      <InstrumentCompactSelect instrument={null} setInstrument={setInstrument} />
     )
 
     const selectButton = screen.getByRole('button', { name: 'select-instrument' })
@@ -60,10 +60,10 @@ describe('Instrument Compact Select', () => {
     const selectedOption = screen.getByRole('option', { name: newInstrument.name })
     await user.click(selectedOption)
 
-    expect(onChange).toHaveBeenCalledOnce()
-    expect(onChange).toHaveBeenCalledWith(newInstrument)
+    expect(setInstrument).toHaveBeenCalledOnce()
+    expect(setInstrument).toHaveBeenCalledWith(newInstrument)
 
-    rerender(<InstrumentCompactSelect instrument={newInstrument} setInstrument={onChange} />)
+    rerender(<InstrumentCompactSelect instrument={newInstrument} setInstrument={setInstrument} />)
 
     expect(screen.queryByRole('button', { name: 'select-band-member' })).not.toBeInTheDocument()
 
@@ -77,9 +77,19 @@ describe('Instrument Compact Select', () => {
 
     await user.click(instrumentButton)
     expect(screen.getByRole('textbox', { name: /search/i })).toHaveValue(newInstrument.name)
+  })
+
+  it('should keep the band member updated with changes from outside the component', async () => {
+    const user = userEvent.setup()
+
+    const newInstrument = instruments[0]
+
+    const [{ rerender }] = reduxRender(
+      <InstrumentCompactSelect instrument={newInstrument} setInstrument={vi.fn()} />
+    )
 
     // reset the value from outside component
-    rerender(<InstrumentCompactSelect instrument={null} setInstrument={onChange} />)
+    rerender(<InstrumentCompactSelect instrument={null} setInstrument={vi.fn()} />)
 
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'select-instrument' }))

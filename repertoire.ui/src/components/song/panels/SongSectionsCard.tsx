@@ -246,7 +246,7 @@ function SongSectionsCard({
 
         <ScrollArea.Autosize
           viewportRef={scrollableRef}
-          mah={391.35}
+          mah={391.4}
           scrollbars={'y'}
           scrollbarSize={7}
         >

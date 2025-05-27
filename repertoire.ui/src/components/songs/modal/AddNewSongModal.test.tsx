@@ -183,7 +183,7 @@ describe('Add New Song Modal', () => {
 
       reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-      // to validate and go to next step
+      // to validate and go to the next step
       await user.type(screen.getByRole('textbox', { name: /title/i }), 'something')
       await user.click(screen.getByRole('button', { name: /final step/i }))
 
