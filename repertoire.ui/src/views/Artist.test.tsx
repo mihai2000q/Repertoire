@@ -57,6 +57,9 @@ describe('Artist', () => {
         totalCount: 0
       }
       return HttpResponse.json(response)
+    }),
+    http.get(`/songs/guitar-tunings`, () => {
+      return HttpResponse.json([])
     })
   ]
 

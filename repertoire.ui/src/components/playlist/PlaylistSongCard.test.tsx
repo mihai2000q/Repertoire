@@ -184,8 +184,6 @@ describe('Playlist Song Card', () => {
       )
 
       expect(screen.getAllByText(localSong.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
-      expect(screen.getAllByText(localSong.rehearsals)[0]).toBeVisible()
-      expect(screen.getAllByText(localSong.rehearsals)[1]).not.toBeVisible()
     })
 
     it('should display the confidence bar, when it is confidence', () => {

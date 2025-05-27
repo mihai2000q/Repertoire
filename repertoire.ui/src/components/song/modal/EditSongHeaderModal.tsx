@@ -27,6 +27,7 @@ import { useDidUpdate } from '@mantine/hooks'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import dayjs from 'dayjs'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -49,7 +50,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     mode: 'uncontrolled',
     initialValues: {
       title: song.title,
-      releaseDate: song.releaseDate && new Date(song.releaseDate),
+      releaseDate: song.releaseDate,
       image: song.imageUrl,
       artistId: song.artist?.id,
       albumId: song.album?.id
@@ -61,7 +62,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     onValuesChange: (values) => {
       setSongHasChanged(
         values.title !== song.title ||
-          values.releaseDate?.getTime() !==
+          (values.releaseDate ? new Date(values.releaseDate).getTime() : undefined) !==
             (song.releaseDate ? new Date(song.releaseDate).getTime() : undefined) ||
           values.artistId !== song.artist?.id ||
           values.albumId !== song.album?.id
@@ -90,7 +91,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
         guitarTuningId: song.guitarTuning?.id,
         id: song.id,
         title: title.trim(),
-        releaseDate: releaseDate,
+        releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
         albumId: albumId,
         artistId: artistId
       }).unwrap()

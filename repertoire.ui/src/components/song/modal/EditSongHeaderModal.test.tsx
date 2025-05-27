@@ -22,7 +22,7 @@ describe('Edit Song Header Modal', () => {
     ...emptySong,
     id: '1',
     title: 'Song 1',
-    releaseDate: '2024-12-12T00:00:00',
+    releaseDate: '2024-12-12T00:00:00.000Z',
     imageUrl: 'some-image.png'
   }
 
@@ -203,7 +203,6 @@ describe('Edit Song Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       ...song,
       id: song.id,
-      releaseDate: dayjs(song.releaseDate).toISOString(),
       artistId: newArtist.id
     })
   })
@@ -335,8 +334,7 @@ describe('Edit Song Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       ...song,
       id: song.id,
-      title: newTitle,
-      releaseDate: dayjs(song.releaseDate).toISOString()
+      title: newTitle
     })
     expect(capturedSaveImageFormData.get('id')).toBe(song.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)

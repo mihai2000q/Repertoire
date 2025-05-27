@@ -1,5 +1,5 @@
 import { render, renderHook, RenderHookResult, RenderResult } from '@testing-library/react'
-import { MantineProvider } from '@mantine/core'
+import { Combobox, MantineProvider, Modal, Popover, Tooltip } from '@mantine/core'
 import { theme } from './theme/theme'
 import { ReactNode } from 'react'
 import { Provider } from 'react-redux'
@@ -59,7 +59,36 @@ expect.extend({
 // Custom Renders
 
 const MantineProviderComponent = ({ children }: { children: ReactNode }) => (
-  <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+  <MantineProvider
+    theme={{
+      ...theme,
+      components: {
+        ...theme.components,
+        Combobox: Combobox.extend({
+          defaultProps: {
+            transitionProps: { duration: 0 }
+          }
+        }),
+        Modal: Modal.extend({
+          defaultProps: {
+            transitionProps: { duration: 0 }
+          }
+        }),
+        Popover: Popover.extend({
+          defaultProps: {
+            hideDetached: false, // otherwise hidden in the unit tests,
+            transitionProps: { duration: 0 }
+          }
+        }),
+        Tooltip: Tooltip.extend({
+          defaultProps: {
+            transitionProps: { duration: 0 }
+          }
+        })
+      }
+    }}
+    stylesTransform={emotionTransform}
+  >
     <MantineEmotionProvider>{children}</MantineEmotionProvider>
   </MantineProvider>
 )

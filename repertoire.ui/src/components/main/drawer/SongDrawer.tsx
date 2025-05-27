@@ -361,7 +361,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMM YYYY')}</Text>
+                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMMM YYYY')}</Text>
                 </Grid.Col>
               </>
             )}

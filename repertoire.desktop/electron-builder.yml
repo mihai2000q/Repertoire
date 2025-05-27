@@ -7,7 +7,8 @@ files:
   - '!node_modules/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,README.md}'
+  - '!{.editorconfig,.eslintignore,.gitignore,.prettierignore,.prettierrc.yaml,eslint.config.mjs}'
+  - '!{dev-app-update.yml,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
