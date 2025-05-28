@@ -1,17 +1,17 @@
-import { reduxRouterRender } from '../../test-utils.tsx'
+import { reduxRouterRender } from '../../../test-utils.tsx'
 import TopbarSearch from './TopbarSearch.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse, ws } from 'msw'
-import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import {
   AlbumSearch,
   ArtistSearch,
   PlaylistSearch,
   SearchBase,
   SongSearch
-} from '../../types/models/Search.ts'
-import SearchType from '../../types/enums/SearchType.ts'
+} from '../../../types/models/Search.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 

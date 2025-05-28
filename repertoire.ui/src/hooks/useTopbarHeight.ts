@@ -1,3 +1,5 @@
+import useAuth from './useAuth.ts'
+
 export default function useTopbarHeight() {
-  return '65px'
+  return useAuth() ? '65px' : '0px'
 }

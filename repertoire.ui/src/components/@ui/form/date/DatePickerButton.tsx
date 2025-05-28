@@ -30,6 +30,8 @@ function DatePickerButton({
       opened={opened}
       onChange={setOpened}
       transitionProps={{ transition: 'scale-y', duration: 160 }}
+      shadow={'sm'}
+      withArrow
     >
       <Popover.Target>
         <Tooltip

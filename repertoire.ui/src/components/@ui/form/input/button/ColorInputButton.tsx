@@ -14,7 +14,7 @@ function ColorInputButton({ color, setColor, swatches }: ColorInputButtonProps) 
         Color
       </Text>
       <Group gap={'xxs'}>
-        <Popover>
+        <Popover shadow={'sm'} withArrow>
           <Popover.Target>
             <Tooltip label={'Choose a color'} openDelay={200}>
               <Button

@@ -31,6 +31,8 @@ const TextInputButton = forwardRef<HTMLButtonElement, TextInputButtonProps>(
         opened={opened}
         onChange={setOpened}
         transitionProps={{ transition: 'scale-y', duration: 160 }}
+        shadow={'sm'}
+        withArrow
         trapFocus
       >
         <Popover.Target>

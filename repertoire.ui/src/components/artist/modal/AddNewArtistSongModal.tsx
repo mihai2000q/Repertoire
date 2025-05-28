@@ -1,10 +1,11 @@
 import { alpha, Button, Center, Group, Modal, Stack, Text, TextInput, Tooltip } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import {
   AddNewArtistSongForm,
-  addNewArtistSongValidation
+  addNewArtistSongSchema
 } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
@@ -14,6 +15,7 @@ import DifficultySelectButton from '../../@ui/form/select/button/DifficultySelec
 import {
   IconBrandYoutubeFilled,
   IconCalendarRepeat,
+  IconDisc,
   IconGuitarPickFilled,
   IconInfoCircleFilled
 } from '@tabler/icons-react'
@@ -53,15 +55,15 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
     setImage(null)
   }
 
-  const form = useForm({
+  const form = useForm<AddNewArtistSongForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: ''
-    } as AddNewArtistSongForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewArtistSongValidation),
+    validate: zod4Resolver(addNewArtistSongSchema),
     onValuesChange: (values) => {
       setIsSongsterrLinkSelected(
         values.songsterrLink !== '' &&
@@ -128,6 +130,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
                   <AlbumSelectButton
                     mt={form.getInputProps('title').error ? 3 : 19}
                     size={'lg'}
+                    icon={<IconDisc size={20} />}
                     album={album}
                     setAlbum={setAlbum}
                     searchFilter={artistId ? [`artist.id = ${artistId}`] : []}

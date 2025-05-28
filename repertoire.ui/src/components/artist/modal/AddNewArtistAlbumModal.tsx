@@ -1,10 +1,11 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import {
   AddNewArtistAlbumForm,
-  addNewArtistAlbumValidation
+  addNewArtistAlbumSchema
 } from '../../../validation/artistsForm.ts'
 import {
   useCreateAlbumMutation,
@@ -35,18 +36,18 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
     setImage(null)
   }
 
-  const form = useForm({
+  const form = useForm<AddNewArtistAlbumForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: ''
-    } as AddNewArtistAlbumForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewArtistAlbumValidation)
+    validate: zod4Resolver(addNewArtistAlbumSchema)
   })
 
-  async function addAlbum({ title }: AddNewArtistAlbumForm) {
+  async function addAlbum({ title }) {
     title = title.trim()
 
     const res = await createAlbumMutation({

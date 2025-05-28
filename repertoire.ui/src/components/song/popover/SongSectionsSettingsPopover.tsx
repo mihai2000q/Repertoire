@@ -82,6 +82,8 @@ function SongSectionsSettingsPopover({
       onChange={setOpenedSettingsPopover}
       transitionProps={{ transition: 'fade-up' }}
       position={'top'}
+      shadow={'sm'}
+      withArrow
       closeOnClickOutside={
         !(openedUpdatedDefaultInstrumentPopover || openedUpdatedDefaultBandMemberPopover)
       }

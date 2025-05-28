@@ -3,13 +3,17 @@ import useAuth from './useAuth.ts'
 
 describe('use Auth', () => {
   it('should return true when there is a token, so the user is authenticated', () => {
-    const [{ result }] = reduxRenderHook(() => useAuth(), { auth: { token: '' } })
+    const [{ result }] = reduxRenderHook(() => useAuth(), {
+      auth: { token: '', historyOnSignIn: undefined }
+    })
 
     expect(result.current).toBeTruthy()
   })
 
   it('should return false when there is no token, so the user is not authenticated', () => {
-    const [{ result }] = reduxRenderHook(() => useAuth(), { auth: { token: null } })
+    const [{ result }] = reduxRenderHook(() => useAuth(), {
+      auth: { token: null, historyOnSignIn: undefined }
+    })
 
     expect(result.current).toBeFalsy()
   })

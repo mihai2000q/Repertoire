@@ -324,7 +324,7 @@ describe('Artists', () => {
   it('should order the artists', async () => {
     const user = userEvent.setup()
 
-    const initialOrder = artistsOrders[9]
+    const initialOrder = artistsOrders[1]
     const newOrder = artistsOrders[0]
 
     let orderBy: string[]

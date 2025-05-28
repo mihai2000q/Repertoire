@@ -1,6 +1,7 @@
 import { Button, ComboboxItem, Group, Modal, Space, Stepper, Text } from '@mantine/core'
-import { useForm, zodResolver } from '@mantine/form'
-import { AddNewSongForm, addNewSongValidation } from '../../../validation/songsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
@@ -46,16 +47,16 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   const [isArtistDisabled, setIsArtistDisabled] = useState(false)
   useDidUpdate(() => setIsArtistDisabled(album !== null), [album])
 
-  const form = useForm({
+  const form = useForm<AddNewSongForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: '',
       description: ''
-    } as AddNewSongForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewSongValidation),
+    validate: zod4Resolver(addNewSongSchema),
     enhanceGetInputProps: (payload) => ({
       disabled: isArtistDisabled && payload.field === 'artistName'
     })

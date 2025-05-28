@@ -1,9 +1,10 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { toast } from 'react-toastify'
-import { AddNewAlbumForm, addNewAlbumValidation } from '../../../validation/albumsForm.ts'
+import { addNewAlbumSchema, AddNewAlbumForm } from '../../../validation/albumsForm.ts'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
@@ -34,15 +35,15 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
     setImage(null)
   }
 
-  const form = useForm({
+  const form = useForm<AddNewAlbumForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: ''
-    } as AddNewAlbumForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewAlbumValidation)
+    validate: zod4Resolver(addNewAlbumSchema)
   })
 
   async function addAlbum({ title, artistName, releaseDate }: AddNewAlbumForm) {

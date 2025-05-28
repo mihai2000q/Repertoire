@@ -16,7 +16,6 @@ import {
   NavLink,
   NumberFormatter,
   NumberInput,
-  Popover,
   RangeSlider,
   ScrollArea,
   ScrollAreaAutosize,
@@ -285,12 +284,6 @@ export const components = {
   NumberInput: NumberInput.extend({
     defaultProps: {
       clampBehavior: 'strict'
-    }
-  }),
-  Popover: Popover.extend({
-    defaultProps: {
-      withArrow: true,
-      shadow: 'sm'
     }
   }),
   RangeSlider: RangeSlider.extend({

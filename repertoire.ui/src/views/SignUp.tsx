@@ -13,13 +13,15 @@ import {
 } from '@mantine/core'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../state/store.ts'
-import { api } from '../state/api.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
-import { useForm, zodResolver } from '@mantine/form'
-import { setToken } from '../state/slice/authSlice.ts'
-import { SignUpForm, signUpValidation } from '../validation/signUpForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { signIn } from '../state/slice/authSlice.ts'
+import { signUpSchema, SignUpValues } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { useSignUpMutation } from '../state/api/usersApi.ts'
+import { api } from '../state/api.ts'
+import { authApi } from '../state/authApi.ts'
 
 function SignUp(): ReactElement {
   const dispatch = useAppDispatch()
@@ -31,24 +33,25 @@ function SignUp(): ReactElement {
   const [signUpMutation, { error, isLoading }] = useSignUpMutation()
   const signUpError = (error as HttpErrorResponse | undefined)?.data?.error
 
-  const form = useForm({
+  const form = useForm<SignUpValues>({
     mode: 'uncontrolled',
     initialValues: {
       name: '',
       email: '',
       password: ''
-    } as SignUpForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(signUpValidation)
+    validate: zod4Resolver(signUpSchema)
   })
 
-  async function signUp({ name, email, password }: SignUpForm): Promise<void> {
+  async function signUp({ name, email, password }): Promise<void> {
     try {
       const token = await signUpMutation({ name, email, password }).unwrap()
-      dispatch(setToken(token))
+      dispatch(signIn(token))
       dispatch(api.util.resetApiState())
+      dispatch(authApi.util.resetApiState())
       navigate(location.state?.from?.pathname ?? 'home')
     } catch (e) {
       /*ignored*/

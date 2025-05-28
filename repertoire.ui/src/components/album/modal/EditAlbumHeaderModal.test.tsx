@@ -16,7 +16,7 @@ describe('Edit Album Header Modal', () => {
     ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    releaseDate: '2024-12-12T00:00:00',
+    releaseDate: '2024-12-12T00:00:00Z',
     imageUrl: 'some-image.png'
   }
 
