@@ -60,7 +60,7 @@ function SignUp(): ReactElement {
 
   return (
     <Container h={'100%'}>
-      <Center mih={'87vh'} style={{ flexDirection: 'column' }}>
+      <Center h={'90%'} style={{ flexDirection: 'column' }}>
         <Title ta="center" order={2}>
           Create Account
         </Title>
