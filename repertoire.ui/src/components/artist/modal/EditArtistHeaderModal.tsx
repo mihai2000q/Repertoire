@@ -15,10 +15,11 @@ import {
   useUpdateArtistMutation
 } from '../../../state/api/artistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import {
-  EditArtistHeaderForm,
-  editArtistHeaderValidation
+  editArtistHeaderSchema,
+  EditArtistHeaderForm
 } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
@@ -42,17 +43,17 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
   const [imageHasChanged, setImageHasChanged] = useState(false)
   const hasChanged = artistHasChanged || imageHasChanged
 
-  const form = useForm({
+  const form = useForm<EditArtistHeaderForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: artist.name,
       image: artist.imageUrl,
       isBand: artist.isBand
-    } as EditArtistHeaderForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editArtistHeaderValidation),
+    validate: zod4Resolver(editArtistHeaderSchema),
     onValuesChange: (values) => {
       setArtistHasChanged(values.name !== artist.name || values.isBand !== artist.isBand)
       setImageHasChanged(values.image !== artist.imageUrl)
@@ -63,7 +64,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(artist.imageUrl), [artist])
 
-  async function updateArtist({ name, image, isBand }: EditArtistHeaderForm) {
+  async function updateArtist({ name, image, isBand }) {
     if (artistHasChanged)
       await updateArtistMutation({
         id: artist.id,

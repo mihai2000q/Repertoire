@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 export interface SignUpForm {
   email: string
@@ -6,8 +6,8 @@ export interface SignUpForm {
   name: string
 }
 
-export const signUpValidation = z.object({
-  email: z.string().email('Email is invalid'),
+export const signUpSchema = z.object({
+  email: z.email('Email is invalid'),
   password: z
     .string()
     .refine((val) => /[A-Z]/.test(val), 'Password must have at least 1 upper character')
@@ -17,3 +17,4 @@ export const signUpValidation = z.object({
     .refine((val) => val.length > 0, 'Password cannot be blank'),
   name: z.string().trim().min(1, 'Name cannot be blank')
 })
+export type SignUpValues = z.infer<typeof signUpSchema>

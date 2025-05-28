@@ -16,8 +16,9 @@ import {
   useUpdateAlbumMutation
 } from '../../../state/api/albumsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditAlbumHeaderForm, editAlbumHeaderValidation } from '../../../validation/albumsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditAlbumHeaderForm, editAlbumHeaderSchema } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
@@ -45,18 +46,18 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   const [imageHasChanged, setImageHasChanged] = useState(false)
   const hasChanged = albumHasChanged || imageHasChanged
 
-  const form = useForm({
+  const form = useForm<EditAlbumHeaderForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: album.title,
       releaseDate: album.releaseDate,
       image: album.imageUrl,
-      artist: album.artist?.id
-    } as EditAlbumHeaderForm,
+      artistId: album.artist?.id
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editAlbumHeaderValidation),
+    validate: zod4Resolver(editAlbumHeaderSchema),
     onValuesChange: (values) => {
       setAlbumHasChanged(
         values.title !== album.title ||
@@ -73,7 +74,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   useDidUpdate(() => setImage(album.imageUrl), [album])
 
   const [artist, setArtist] = useState(album.artist as unknown as ArtistSearch)
-  useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
+  useDidUpdate(() => form.setFieldValue('artistId', artist?.id), [artist])
 
   async function updateAlbum({ title, releaseDate, image, artistId }: EditAlbumHeaderForm) {
     if (albumHasChanged)
@@ -87,7 +88,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     if (image && typeof image !== 'string')
       await saveImageMutation({
         id: album.id,
-        image: image
+        image: image as FileWithPath
       })
     else if (!image && album.imageUrl) await deleteImageMutation(album.id)
 

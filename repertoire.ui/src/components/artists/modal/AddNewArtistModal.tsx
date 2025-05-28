@@ -1,9 +1,10 @@
 import { Button, Checkbox, Group, Modal, Stack, Text, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { toast } from 'react-toastify'
-import { AddNewArtistForm, addNewArtistValidation } from '../../../validation/artistsForm.ts'
+import { addNewArtistSchema, AddNewArtistForm } from '../../../validation/artistsForm.ts'
 import {
   useCreateArtistMutation,
   useSaveImageToArtistMutation
@@ -28,18 +29,19 @@ function AddNewArtistModal({ opened, onClose }: AddNewArtistModalProps) {
     setImage(null)
   }
 
-  const form = useForm({
+  const form = useForm<AddNewArtistForm>({
     mode: 'uncontrolled',
     initialValues: {
-      name: ''
-    } as AddNewArtistForm,
+      name: '',
+      isBand: false
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewArtistValidation)
+    validate: zod4Resolver(addNewArtistSchema)
   })
 
-  async function addArtist({ name, isBand }: AddNewArtistForm) {
+  async function addArtist({ name, isBand }) {
     name = name.trim()
 
     const res = await createArtistMutation({ name, isBand }).unwrap()

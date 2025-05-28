@@ -14,8 +14,9 @@ import {
   Tooltip
 } from '@mantine/core'
 import { SongSection } from '../../../types/models/Song.ts'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditSongSectionForm, editSongSectionValidation } from '../../../validation/songsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditSongSectionForm, editSongSectionSchema } from '../../../validation/songsForm.ts'
 import SongSectionTypeSelect from '../../@ui/form/select/compact/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
@@ -42,7 +43,7 @@ function EditSongSectionModal({
 
   const [rehearsalsError, setRehearsalsError] = useState<string | null>()
 
-  const form = useForm({
+  const form = useForm<EditSongSectionForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: section.name,
@@ -51,11 +52,11 @@ function EditSongSectionModal({
       typeId: section.songSectionType.id,
       bandMemberId: section.bandMember?.id,
       instrumentId: section.instrument?.id
-    } as EditSongSectionForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editSongSectionValidation),
+    validate: zod4Resolver(editSongSectionSchema),
     onValuesChange: (values) => {
       setHasChanged(
         values.name !== section.name ||

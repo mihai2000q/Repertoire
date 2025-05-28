@@ -15,8 +15,9 @@ import { useAppDispatch } from '../state/store'
 import { signIn } from '../state/slice/authSlice.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useForm, zodResolver } from '@mantine/form'
-import { SignInForm, signInValidation } from '../validation/signInForm'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { signInSchema, SignInForm } from '../validation/signInForm'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { authApi, useSignInMutation } from '../state/authApi.ts'
 import { api } from '../state/api.ts'
@@ -31,16 +32,16 @@ function SignIn(): ReactElement {
   const [signInMutation, { error, isLoading }] = useSignInMutation()
   const signInError = (error as HttpErrorResponse | undefined)?.data?.error
 
-  const form = useForm({
+  const form = useForm<SignInForm>({
     mode: 'uncontrolled',
     initialValues: {
       email: '',
       password: ''
-    } as SignInForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(signInValidation)
+    validate: zod4Resolver(signInSchema)
   })
 
   async function handleSignIn({ email, password }: SignInForm): Promise<void> {

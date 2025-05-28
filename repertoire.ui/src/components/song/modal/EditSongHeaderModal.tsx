@@ -16,8 +16,9 @@ import {
   useUpdateSongMutation
 } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validation/songsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditSongHeaderForm, editSongHeaderSchema } from '../../../validation/songsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
@@ -46,7 +47,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   const [imageHasChanged, setImageHasChanged] = useState(false)
   const hasChanged = songHasChanged || imageHasChanged
 
-  const form = useForm({
+  const form = useForm<EditSongHeaderForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: song.title,
@@ -54,11 +55,11 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
       image: song.imageUrl,
       artistId: song.artist?.id,
       albumId: song.album?.id
-    } as EditSongHeaderForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editSongHeaderValidation),
+    validate: zod4Resolver(editSongHeaderSchema),
     onValuesChange: (values) => {
       setSongHasChanged(
         values.title !== song.title ||
@@ -99,7 +100,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     if (image !== null && typeof image !== 'string') {
       await saveImageMutation({
         id: song.id,
-        image: image
+        image: image as FileWithPath
       })
     } else if (image === null && song.imageUrl) {
       await deleteImageMutation(song.id)

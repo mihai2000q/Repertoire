@@ -6,10 +6,11 @@ import {
   useUpdatePlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import {
   EditPlaylistHeaderForm,
-  editPlaylistHeaderValidation
+  editPlaylistHeaderSchema
 } from '../../../validation/playlistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useDidUpdate } from '@mantine/hooks'
@@ -33,17 +34,17 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
   const [imageHasChanged, setImageHasChanged] = useState(false)
   const hasChanged = playlistHasChanged || imageHasChanged
 
-  const form = useForm({
+  const form = useForm<EditPlaylistHeaderForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: playlist.title,
       description: playlist.description,
       image: playlist.imageUrl
-    } as EditPlaylistHeaderForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editPlaylistHeaderValidation),
+    validate: zod4Resolver(editPlaylistHeaderSchema),
     onValuesChange: (values) => {
       setPlaylistHasChanged(
         values.title !== playlist.title || values.description !== playlist.description
@@ -67,7 +68,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     if (image !== null && typeof image !== 'string')
       await saveImageMutation({
         id: playlist.id,
-        image: image
+        image: image as FileWithPath
       })
     else if (image === null && playlist.imageUrl) await deleteImageMutation(playlist.id)
 

@@ -4,11 +4,12 @@ import {
   useSaveImageToPlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { toast } from 'react-toastify'
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
-import { AddNewPlaylistForm, addNewPlaylistValidation } from '../../../validation/playlistsForm.ts'
+import { AddNewPlaylistForm, addNewPlaylistSchema } from '../../../validation/playlistsForm.ts'
 import { IconPlaylist } from '@tabler/icons-react'
 
 interface AddNewPlaylistModalProps {
@@ -29,16 +30,16 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
     setImage(null)
   }
 
-  const form = useForm({
+  const form = useForm<AddNewPlaylistForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: '',
       description: ''
-    } as AddNewPlaylistForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewPlaylistValidation)
+    validate: zod4Resolver(addNewPlaylistSchema)
   })
 
   async function addPlaylist({ title, description }: AddNewPlaylistForm) {

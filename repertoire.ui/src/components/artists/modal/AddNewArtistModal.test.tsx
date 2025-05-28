@@ -48,7 +48,8 @@ describe('Add New Artist Modal', () => {
 
     await waitFor(() =>
       expect(capturedRequest).toStrictEqual({
-        name: newTitle
+        name: newTitle,
+        isBand: false
       })
     )
     expect(onClose).toHaveBeenCalledOnce()
@@ -121,7 +122,8 @@ describe('Add New Artist Modal', () => {
 
     await waitFor(() =>
       expect(capturedCreateRequest).toStrictEqual({
-        name: newTitle
+        name: newTitle,
+        isBand: false
       })
     )
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
