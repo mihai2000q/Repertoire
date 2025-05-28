@@ -19,16 +19,8 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import AlbumProperty from '../types/enums/AlbumProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
-import useTitleBarHeight from '../hooks/useTitleBarHeight.ts'
-import useTopbarHeight from '../hooks/useTopbarHeight.ts'
-import { useElementSize } from '@mantine/hooks'
 
 function Artist() {
-  const titleBarHeight = useTitleBarHeight()
-  const topbarHeight = useTopbarHeight()
-  const stackGap = '16px'
-  const { ref: headerRef, height: headerHeight } = useElementSize()
-
   const params = useParams()
   const setDocumentTitle = useDynamicDocumentTitle()
   const artistId = params['id'] ?? ''
@@ -83,9 +75,8 @@ function Artist() {
   if (isLoading || (!artist && !isUnknownArtist)) return <ArtistLoader />
 
   return (
-    <Stack px={'xl'} gap={stackGap}>
+    <Stack h={'100%'} px={'xl'} gap={'16px'}>
       <ArtistHeaderCard
-        ref={headerRef}
         artist={artist}
         albumsTotalCount={albums?.totalCount}
         songsTotalCount={songs?.totalCount}
@@ -94,15 +85,7 @@ function Artist() {
 
       <Divider />
 
-      <Grid
-        align={'start'}
-        mih={340}
-        styles={{
-          inner: {
-            height: `max(calc(100vh - ${headerHeight}px - ${topbarHeight} - ${titleBarHeight} - 2*${stackGap} - 1px - 6px), 340px)`
-          }
-        }}
-      >
+      <Grid align={'start'} mih={340} mb={8} styles={{ inner: { height: `100%` } }}>
         <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
           <Stack h={'100%'}>
             {!isUnknownArtist && artist.isBand && (
