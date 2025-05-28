@@ -3,7 +3,7 @@ import Sidebar from '../components/main/Sidebar'
 import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
 import useErrorRedirection from '../hooks/useErrorRedirection'
-import { AppShell, Box, ScrollArea } from '@mantine/core'
+import { alpha, AppShell, Box } from '@mantine/core'
 import TitleBar from '../components/main/TitleBar'
 import useAuth from '../hooks/useAuth'
 import useIsDesktop from '../hooks/useIsDesktop'
@@ -15,6 +15,31 @@ import { useDisclosure } from '@mantine/hooks'
 import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
 import useTopbarHeight from '../hooks/useTopbarHeight.ts'
 import useMainScroll from '../hooks/useMainScroll.ts'
+import { createStyles } from '@mantine/emotion'
+
+const useStyles = createStyles((theme) => ({
+  scrollbar: {
+    '&::-webkit-scrollbar': {
+      width: 9
+    },
+
+    '&::-webkit-scrollbar-track-piece': {
+      backgroundColor: 'transparent',
+      '&:hover': {
+        backgroundColor: theme.colors.gray[2]
+      }
+    },
+
+    '&::-webkit-scrollbar-thumb': {
+      borderRadius: theme.radius.md,
+      backgroundColor: alpha(theme.colors.gray[6], 0.9),
+
+      '&:hover': {
+        backgroundColor: alpha(theme.colors.gray[7], 0.75)
+      }
+    }
+  }
+}))
 
 function Main(): ReactElement {
   useErrorRedirection()
@@ -27,6 +52,7 @@ function Main(): ReactElement {
   const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
   const { ref: viewportRef } = useMainScroll()
+  const { classes } = useStyles()
 
   return (
     <Box w={'100%'} h={'100%'}>
@@ -47,26 +73,13 @@ function Main(): ReactElement {
         <Topbar toggleSidebar={toggleSidebarMobile} />
         <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
         <AppShell.Main h={'100%'} mih={0}>
-          <ScrollArea.Autosize
-            viewportRef={viewportRef}
-            scrollbars={'y'}
-            scrollbarSize={10}
-            h={`calc(100vh - ${titleBarHeight} - ${topbarHeight})`}
-            styles={{
-              root: {
-                height: '100%'
-              },
-              viewport: {
-                '> div': {
-                  display: 'block !important', // Critical for truncation
-                  minWidth: '100%', // Prevents content shrinkage
-                  width: 0 // Magic that enables proper truncation
-                }
-              }
-            }}
+          <Box
+            ref={viewportRef}
+            className={classes.scrollbar}
+            style={{ height: '100%', overflow: 'auto' }}
           >
             <Outlet />
-          </ScrollArea.Autosize>
+          </Box>
         </AppShell.Main>
       </AppShell>
 
