@@ -196,7 +196,7 @@ function SongCard({ song }: SongCardProps) {
                   {song.songsterrLink && (
                     <Anchor
                       underline={'never'}
-                      aria-label={'songsterr-icon'}
+                      aria-label={'songsterr'}
                       href={song.songsterrLink}
                       target="_blank"
                       rel="noreferrer"
@@ -208,7 +208,7 @@ function SongCard({ song }: SongCardProps) {
                           <IconGuitarPickFilled
                             role={'button'}
                             size={iconSize}
-                            aria-label={'songsterr-icon'}
+                            aria-label={'songsterr'}
                           />
                         </Center>
                       </LocalTooltip>
@@ -220,7 +220,7 @@ function SongCard({ song }: SongCardProps) {
                         <IconBrandYoutubeFilled
                           role={'button'}
                           size={iconSize}
-                          aria-label={'youtube-icon'}
+                          aria-label={'youtube'}
                         />
                       </Center>
                     </LocalTooltip>

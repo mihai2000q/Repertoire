@@ -341,9 +341,12 @@ describe('Song Drawer', () => {
 
     server.use(
       getSong(localSong),
-      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
-        return HttpResponse.json({ message: 'it worked' })
-      })
+      http.get(
+        localSong.youtubeLink.replace('youtube', 'youtube-nocookie').replace('watch?v=', 'embed/'),
+        () => {
+          return HttpResponse.json({ message: 'it worked' })
+        }
+      )
     )
 
     render()

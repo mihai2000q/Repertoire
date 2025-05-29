@@ -99,8 +99,8 @@ describe('Song Card', () => {
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
     expect(screen.getByLabelText('guitar-tuning-icon')).toBeInTheDocument()
     expect(screen.getByLabelText('difficulty-icon')).toBeInTheDocument()
-    expect(screen.getByLabelText('songsterr-icon')).toBeInTheDocument()
-    expect(screen.getByLabelText('youtube-icon')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'songsterr' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'youtube' })).toBeInTheDocument()
 
     await user.hover(screen.getByLabelText('recorded-icon'))
     expect(await screen.findByText(/is recorded/i)).toBeInTheDocument()
@@ -111,10 +111,10 @@ describe('Song Card', () => {
     await user.hover(screen.getByLabelText('difficulty-icon'))
     expect(await screen.findByText(new RegExp(localSong.difficulty))).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('songsterr-icon'))
+    await user.hover(screen.getByRole('button', { name: 'songsterr' }))
     expect(await screen.findByText(/songsterr/i)).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('youtube-icon'))
+    await user.hover(screen.getByRole('button', { name: 'youtube' }))
     expect(await screen.findByText(/youtube/i)).toBeInTheDocument()
   })
 
@@ -296,9 +296,12 @@ describe('Song Card', () => {
     }
 
     server.use(
-      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
-        return HttpResponse.json({ message: 'it worked' })
-      })
+      http.get(
+        localSong.youtubeLink.replace('youtube', 'youtube-nocookie').replace('watch?v=', 'embed/'),
+        () => {
+          return HttpResponse.json({ message: 'it worked' })
+        }
+      )
     )
 
     reduxRouterRender(<SongCard song={localSong} />)

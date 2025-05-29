@@ -7,7 +7,7 @@ import {
 } from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
-import { screen, within } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Artist from '../../types/models/Artist.ts'
 import Album from '../../types/models/Album.ts'
@@ -378,13 +378,24 @@ describe('Playlist Song Card', () => {
 
       const localSong = { ...song, youtubeLink: 'https://www.youtube.com/watch?v=tAGnKpE4NCI' }
 
+      server.use(
+        http.get(
+          localSong.youtubeLink
+            .replace('youtube', 'youtube-nocookie')
+            .replace('watch?v=', 'embed/'),
+          () => {
+            return HttpResponse.json({ message: 'it worked' })
+          }
+        )
+      )
+
       reduxRouterRender(
         <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
       )
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.hover(screen.getByRole('menuitem', { name: /open links/i }))
-      await user.click(screen.getByRole('menuitem', { name: /youtube/i }))
+      fireEvent.click(screen.getByRole('menuitem', { name: /youtube/i }))
 
       expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
     })
