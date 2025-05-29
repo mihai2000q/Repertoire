@@ -1,7 +1,7 @@
 import { IconChecks } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
-import { useAddPerfectSongRehearsalMutation } from '../../../../state/api/songsApi.ts'
-import MenuItemConfirmation from './MenuItemConfirmation.tsx'
+import { useAddPerfectSongRehearsalMutation } from '../../../../../state/api/songsApi.ts'
+import MenuItemConfirmation from '../MenuItemConfirmation.tsx'
 
 interface PerfectRehearsalMenuItemProps {
   songId: string
