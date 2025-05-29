@@ -7,7 +7,7 @@ import {
 } from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
-import { screen } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Artist from '../../types/models/Artist.ts'
 import Album from '../../types/models/Album.ts'
@@ -253,32 +253,27 @@ describe('Playlist Song Card', () => {
     const [{ rerender }] = reduxRouterRender(
       <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
     )
-
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByLabelText(`song-card-${song.title}`)
     })
-
-    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
-
-    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
-    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+    expectDefaultMenu()
 
     rerender(
       <PlaylistSongCard
-        song={{ ...song, artist: emptyArtist, album: emptyAlbum }}
+        song={{
+          ...song,
+          artist: emptyArtist,
+          album: emptyAlbum,
+          songsterrLink: 'some-link',
+          youtubeLink: 'https://www.youtube.com/watch?v=tAGnKpE4NCI'
+        }}
         playlistId={''}
         order={emptyOrder}
         isDragging={false}
       />
     )
-    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
-    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
+    await expectFullMenu()
   })
 
   it('should display menu by clicking on the dots button', async () => {
@@ -287,30 +282,52 @@ describe('Playlist Song Card', () => {
     const [{ rerender }] = reduxRouterRender(
       <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
     )
-
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
-
-    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove/i })).toBeInTheDocument()
-
-    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
-    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+    expectDefaultMenu()
 
     rerender(
       <PlaylistSongCard
-        song={{ ...song, artist: emptyArtist, album: emptyAlbum }}
+        song={{
+          ...song,
+          artist: emptyArtist,
+          album: emptyAlbum,
+          songsterrLink: 'some-link',
+          youtubeLink: 'https://www.youtube.com/watch?v=tAGnKpE4NCI'
+        }}
         playlistId={''}
         order={emptyOrder}
         isDragging={false}
       />
     )
+    await expectFullMenu()
+  })
+
+  function expectDefaultMenu() {
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /open links/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /remove from playlist/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /open links/i })).toBeDisabled()
+  }
+
+  async function expectFullMenu() {
+    const user = userEvent.setup()
+
     expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
     expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
-  })
+    expect(screen.getByRole('menuitem', { name: /open links/i })).not.toBeDisabled()
+    await user.hover(screen.getByRole('menuitem', { name: /open links/i }))
+    expect(screen.getByRole('menuitem', { name: /songsterr/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /youtube/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /songsterr/i })).not.toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /youtube/i })).not.toBeDisabled()
+  }
 
   describe('on menu', () => {
     it('should navigate to song when clicking on view details', async () => {
@@ -354,6 +371,54 @@ describe('Playlist Song Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /view album/i }))
 
       expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
+    })
+
+    it('should open youtube when clicking on open links => open youtube', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, youtubeLink: 'https://www.youtube.com/watch?v=tAGnKpE4NCI' }
+
+      server.use(
+        http.get(
+          localSong.youtubeLink
+            .replace('youtube', 'youtube-nocookie')
+            .replace('watch?v=', 'embed/'),
+          () => {
+            return HttpResponse.json({ message: 'it worked' })
+          }
+        )
+      )
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.hover(screen.getByRole('menuitem', { name: /open links/i }))
+      fireEvent.click(screen.getByRole('menuitem', { name: /youtube/i }))
+
+      expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+    })
+
+    it('should be able to open songsterr in browser when clicking on open links => open songsterr', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, songsterrLink: 'some-link' }
+
+      reduxRouterRender(
+        <PlaylistSongCard song={localSong} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
+
+      await user.click(await screen.findByRole('button', { name: 'more-menu' }))
+      await user.hover(screen.getByRole('menuitem', { name: /open links/i }))
+      expect(
+        within(screen.getByRole('link', { name: /songsterr/i })).getByRole('menuitem', {
+          name: /songsterr/i
+        })
+      ).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(
+        localSong.songsterrLink
+      )
     })
 
     it('should display warning modal and remove, when clicking on remove', async () => {

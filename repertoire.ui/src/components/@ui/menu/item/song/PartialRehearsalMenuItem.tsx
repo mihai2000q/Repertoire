@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify'
-import { useAddPartialSongRehearsalMutation } from '../../../../state/api/songsApi.ts'
-import MenuItemConfirmation from './MenuItemConfirmation.tsx'
+import { useAddPartialSongRehearsalMutation } from '../../../../../state/api/songsApi.ts'
+import MenuItemConfirmation from '../MenuItemConfirmation.tsx'
 import { IconCheck } from '@tabler/icons-react'
 
 interface PartialRehearsalMenuItemProps {

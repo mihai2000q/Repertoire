@@ -53,6 +53,38 @@ expect.extend({
       pass: equalType && equalName && equalContent,
       message: () => `received form data image is${isNot ? ' not' : ''} the expected image`
     }
+  },
+
+  async toBeExternalLink(received: HTMLElement, link: string) {
+    if (!received) {
+      return {
+        pass: false,
+        message: () => `Expected element to exist but received ${received}`
+      }
+    }
+
+    const hrefCheck = received.getAttribute('href') === link
+    const targetCheck = received.getAttribute('target') === '_blank'
+    const relCheck = received.getAttribute('rel')?.includes('noreferrer')
+
+    if (hrefCheck && targetCheck && relCheck) {
+      return {
+        pass: true,
+        message: () => `Expected element not to be an external link to ${link}`
+      }
+    }
+
+    const errors = []
+    if (!hrefCheck) errors.push(`href to be "${link}" (got "${received.getAttribute('href')}")`)
+    if (!targetCheck)
+      errors.push(`target to be "_blank" (got "${received.getAttribute('target')}")`)
+    if (!relCheck)
+      errors.push(`rel to include "noreferrer" (got "${received.getAttribute('rel')}")`)
+
+    return {
+      pass: false,
+      message: () => `Expected element to be an external link, but:\n${errors.join('\n')}`
+    }
   }
 })
 

@@ -25,23 +25,11 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 const iconSize = 18
-const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
-  <Anchor
-    underline={'never'}
-    href={link}
-    target="_blank"
-    rel="noreferrer"
-    c={'inherit'}
-    onClick={(e) => e.stopPropagation()}
-  >
-    {children}
-  </Anchor>
-)
 
 const LocalTooltip = ({ label, children }: { label: string; children: ReactElement }) => (
   <Tooltip label={label} position="bottom">
@@ -115,10 +103,10 @@ function SongCard({ song }: SongCardProps) {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
             },
-            ...openedMenu && {
+            ...(openedMenu && {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
-            }
+            })
           })}
         >
           <Stack gap={0}>
@@ -206,18 +194,34 @@ function SongCard({ song }: SongCardProps) {
                     </LocalTooltip>
                   )}
                   {song.songsterrLink && (
-                    <LocalAnchor link={song.songsterrLink}>
+                    <Anchor
+                      underline={'never'}
+                      aria-label={'songsterr'}
+                      href={song.songsterrLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      c={'inherit'}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <LocalTooltip label={'Open Songsterr'}>
                         <Center c={'blue.7'}>
-                          <IconGuitarPickFilled size={iconSize} aria-label={'songsterr-icon'} />
+                          <IconGuitarPickFilled
+                            role={'button'}
+                            size={iconSize}
+                            aria-label={'songsterr'}
+                          />
                         </Center>
                       </LocalTooltip>
-                    </LocalAnchor>
+                    </Anchor>
                   )}
                   {song.youtubeLink && (
                     <LocalTooltip label={'Open Youtube'}>
                       <Center c={'red.7'} onClick={handleOpenYoutube}>
-                        <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
+                        <IconBrandYoutubeFilled
+                          role={'button'}
+                          size={iconSize}
+                          aria-label={'youtube'}
+                        />
                       </Center>
                     </LocalTooltip>
                   )}

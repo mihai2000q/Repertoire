@@ -21,8 +21,8 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import { useRemoveSongsFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
 import SongProperty from '../../types/enums/SongProperty.ts'
@@ -31,6 +31,8 @@ import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -55,6 +57,7 @@ function PlaylistSongCard({
   const [removeSongsFromPlaylist, { isLoading: isRemoveLoading }] =
     useRemoveSongsFromPlaylistMutation()
 
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
   const [isMenuOpened, setIsMenuOpened] = useState(false)
 
@@ -118,6 +121,7 @@ function PlaylistSongCard({
       >
         View Album
       </Menu.Item>
+      <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       <Menu.Item
@@ -313,6 +317,12 @@ function PlaylistSongCard({
 
       <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
 
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}

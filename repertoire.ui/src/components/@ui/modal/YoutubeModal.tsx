@@ -19,7 +19,13 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
     .replace(/(www\.)?youtu.be/, 'www.youtube-nocookie.com/embed')
 
   return (
-    <Modal.Root opened={opened} onClose={onClose} size={'min(80vw, 1000px)'} centered>
+    <Modal.Root
+      opened={opened}
+      onClose={onClose}
+      size={'min(80vw, 1000px)'}
+      trapFocus={false}
+      centered
+    >
       <Modal.Overlay />
       <Modal.Content>
         <Modal.Header>

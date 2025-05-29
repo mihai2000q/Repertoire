@@ -1,10 +1,10 @@
-import { reduxRender, withToastify } from '../../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../../../test-utils.tsx'
 import PerfectRehearsalMenuItem from './PerfectRehearsalMenuItem.tsx'
 import { screen } from '@testing-library/react'
 import { Menu } from '@mantine/core'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
-import { AddPerfectSongRehearsalRequest } from '../../../../types/requests/SongRequests.ts'
+import { AddPerfectSongRehearsalRequest } from '../../../../../types/requests/SongRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { expect } from 'vitest'
 

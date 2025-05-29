@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
 import {
@@ -99,8 +99,8 @@ describe('Song Card', () => {
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
     expect(screen.getByLabelText('guitar-tuning-icon')).toBeInTheDocument()
     expect(screen.getByLabelText('difficulty-icon')).toBeInTheDocument()
-    expect(screen.getByLabelText('songsterr-icon')).toBeInTheDocument()
-    expect(screen.getByLabelText('youtube-icon')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'songsterr' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'youtube' })).toBeInTheDocument()
 
     await user.hover(screen.getByLabelText('recorded-icon'))
     expect(await screen.findByText(/is recorded/i)).toBeInTheDocument()
@@ -111,10 +111,10 @@ describe('Song Card', () => {
     await user.hover(screen.getByLabelText('difficulty-icon'))
     expect(await screen.findByText(new RegExp(localSong.difficulty))).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('songsterr-icon'))
+    await user.hover(screen.getByRole('button', { name: 'songsterr' }))
     expect(await screen.findByText(/songsterr/i)).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('youtube-icon'))
+    await user.hover(screen.getByRole('button', { name: 'youtube' }))
     expect(await screen.findByText(/youtube/i)).toBeInTheDocument()
   })
 
@@ -296,15 +296,37 @@ describe('Song Card', () => {
     }
 
     server.use(
-      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
-        return HttpResponse.json({ message: 'it worked' })
-      })
+      http.get(
+        localSong.youtubeLink.replace('youtube', 'youtube-nocookie').replace('watch?v=', 'embed/'),
+        () => {
+          return HttpResponse.json({ message: 'it worked' })
+        }
+      )
     )
 
     reduxRouterRender(<SongCard song={localSong} />)
 
-    await user.click(screen.getByLabelText('youtube-icon'))
+    await user.click(screen.getByRole('button', { name: 'youtube' }))
 
     expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
+
+  it('should be able to open songsterr in browser on songsterr click', () => {
+    const localSong = {
+      ...song,
+      songsterrLink: 'some-link'
+    }
+
+    reduxRouterRender(<SongCard song={localSong} />)
+
+    expect(
+      within(screen.getByRole('link', { name: /songsterr/i })).getByRole('button', {
+        name: /songsterr/i
+      })
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(
+      localSong.songsterrLink
+    )
   })
 })

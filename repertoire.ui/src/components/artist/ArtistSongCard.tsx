@@ -26,11 +26,13 @@ import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useRemoveSongsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -52,6 +54,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
 
   const isSelected = hovered || isMenuOpened || openedMenu
 
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -105,6 +108,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
       >
         View Album
       </Menu.Item>
+      <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownArtist && (
@@ -168,7 +172,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                     sx={{ '&:hover': { textDecoration: 'underline' } }}
                     style={{ cursor: 'pointer' }}
                     onClick={handleAlbumClick}
-                    inline
+                    lh={'xxs'}
                   >
                     {song.album.title}
                   </Text>
@@ -248,6 +252,12 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
 
       <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
 
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
