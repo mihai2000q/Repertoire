@@ -152,11 +152,9 @@ describe('Add New Artist Song Modal', () => {
     it('with optional fields', async () => {
       const user = userEvent.setup()
 
-      const now = new Date()
-
       const newTitle = 'New Song'
       const newAlbum = albums[0]
-      const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
+      const newReleaseDate = dayjs()
       const newGuitarTuning = guitarTunings[1]
       const newDifficulty = Difficulty.Medium
       const newBpm = 123
@@ -188,7 +186,7 @@ describe('Add New Artist Song Modal', () => {
 
       await user.click(screen.getByRole('button', { name: 'release-date' }))
       await user.click(
-        screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
+        screen.getByRole('button', { name: newReleaseDate.format('D MMMM YYYY') })
       )
       expect(screen.getByRole('button', { name: 'release-date' })).toHaveAttribute(
         'aria-selected',
@@ -236,7 +234,7 @@ describe('Add New Artist Song Modal', () => {
           title: newTitle,
           description: '',
           albumId: newAlbum.id,
-          releaseDate: newReleaseDate.toISOString(),
+          releaseDate: newReleaseDate.format('YYYY-MM-DD'),
           guitarTuningId: newGuitarTuning.id,
           difficulty: newDifficulty,
           bpm: newBpm,
@@ -347,7 +345,7 @@ describe('Add New Artist Song Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it('should', async () => {
+  it('should display info when the song will inherit fields based on album', async () => {
     const user = userEvent.setup()
 
     const newAlbum = albums[1]

@@ -74,7 +74,7 @@ describe('Album Header Card', () => {
     const localAlbum: Album = {
       ...album,
       imageUrl: 'something.png',
-      releaseDate: '2024-10-21T10:30:00',
+      releaseDate: '2024-10-21',
       artist: artist,
       songs: [
         {

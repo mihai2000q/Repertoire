@@ -67,8 +67,6 @@ describe('Add New Artist Album Modal', () => {
       const user = userEvent.setup()
 
       const newTitle = 'New Album'
-      const now = new Date()
-      const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
 
       const onClose = vitest.fn()
 
@@ -89,7 +87,7 @@ describe('Add New Artist Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.click(screen.getByRole('button', { name: /release-date/i }))
       await user.click(
-        screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
+        screen.getByRole('button', { name: dayjs().format('D MMMM YYYY') })
       )
       expect(screen.getByRole('button', { name: /release-date/i })).toHaveAttribute(
         'aria-selected',
@@ -100,7 +98,7 @@ describe('Add New Artist Album Modal', () => {
       await waitFor(() =>
         expect(capturedRequest).toStrictEqual({
           title: newTitle,
-          releaseDate: newReleaseDate.toISOString()
+          releaseDate: dayjs().format('YYYY-MM-DD')
         })
       )
       expect(onClose).toHaveBeenCalledOnce()
