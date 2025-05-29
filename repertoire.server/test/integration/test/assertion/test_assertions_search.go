@@ -3,9 +3,11 @@ package assertion
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/datatypes"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
+	"time"
 )
 
 func ArtistSearchID(t *testing.T, id uuid.UUID, searchID string) {
@@ -36,7 +38,7 @@ func ArtistSearch(t *testing.T, artistSearch model.ArtistSearch, artist model.Ar
 func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album) {
 	AlbumSearchID(t, album.ID, albumSearch.ID)
 	assert.Equal(t, album.Title, albumSearch.Title)
-	Date(t, album.ReleaseDate, albumSearch.ReleaseDate)
+	dateAndString(t, album.ReleaseDate, albumSearch.ReleaseDate)
 	assert.Equal(t, album.ImageURL.StripURL(), albumSearch.ImageUrl)
 	Time(t, &album.UpdatedAt, &albumSearch.UpdatedAt)
 	Time(t, &album.CreatedAt, &albumSearch.CreatedAt)
@@ -55,7 +57,7 @@ func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album)
 func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 	SongSearchID(t, song.ID, songSearch.ID)
 	assert.Equal(t, song.Title, songSearch.Title)
-	Date(t, song.ReleaseDate, songSearch.ReleaseDate)
+	dateAndString(t, song.ReleaseDate, songSearch.ReleaseDate)
 	assert.Equal(t, song.ImageURL.StripURL(), songSearch.ImageUrl)
 	Time(t, &song.UpdatedAt, &songSearch.UpdatedAt)
 	Time(t, &song.CreatedAt, &songSearch.CreatedAt)
@@ -73,7 +75,7 @@ func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 	if song.Album != nil {
 		assert.Equal(t, song.Album.ID, songSearch.Album.ID)
 		assert.Equal(t, song.Album.Title, songSearch.Album.Title)
-		Date(t, song.Album.ReleaseDate, songSearch.Album.ReleaseDate)
+		dateAndString(t, song.Album.ReleaseDate, songSearch.Album.ReleaseDate)
 		Time(t, &song.Album.UpdatedAt, &songSearch.Album.UpdatedAt)
 		assert.Equal(t, song.Album.ImageURL.StripURL(), songSearch.Album.ImageUrl)
 	} else {
@@ -88,4 +90,13 @@ func PlaylistSearch(t *testing.T, playlistSearch model.PlaylistSearch, playlist 
 	Time(t, &playlist.UpdatedAt, &playlist.UpdatedAt)
 	Time(t, &playlist.CreatedAt, &playlist.CreatedAt)
 	assert.Equal(t, enums.Playlist, playlistSearch.Type)
+}
+
+func dateAndString(t *testing.T, date *datatypes.Date, str *string) {
+	if date != nil {
+		assert.NotNil(t, str)
+		assert.Equal(t, (*time.Time)(date).Format("2006-01-02"), *str)
+	} else {
+		assert.Nil(t, str)
+	}
 }

@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/datatypes"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"time"
@@ -46,7 +45,7 @@ type AlbumSearch struct {
 	ImageUrl    *internal.FilePath `json:"imageUrl"`
 	Title       string             `json:"title"`
 	Artist      *AlbumArtistSearch `json:"artist"`
-	ReleaseDate *datatypes.Date    `json:"releaseDate"`
+	ReleaseDate *string            `json:"releaseDate"`
 	SearchBase
 }
 
@@ -58,10 +57,15 @@ type AlbumArtistSearch struct {
 }
 
 func (a *Album) ToSearch() AlbumSearch {
+	var releaseDate *string
+	if a.ReleaseDate != nil {
+		rd := (*time.Time)(a.ReleaseDate).Format("2006-01-02")
+		releaseDate = &rd
+	}
 	search := AlbumSearch{
 		ImageUrl:    a.ImageURL.StripURL(),
 		Title:       a.Title,
-		ReleaseDate: a.ReleaseDate,
+		ReleaseDate: releaseDate,
 		SearchBase: SearchBase{
 			ID:        "album-" + a.ID.String(),
 			UpdatedAt: a.UpdatedAt.UTC(),
@@ -95,7 +99,7 @@ func (a *Artist) ToAlbumSearch() *AlbumArtistSearch {
 type SongSearch struct {
 	ImageUrl    *internal.FilePath `json:"imageUrl"`
 	Title       string             `json:"title"`
-	ReleaseDate *datatypes.Date    `json:"releaseDate"`
+	ReleaseDate *string            `json:"releaseDate"`
 	Artist      *SongArtistSearch  `json:"artist"`
 	Album       *SongAlbumSearch   `json:"album"`
 	SearchBase
@@ -105,7 +109,7 @@ type SongAlbumSearch struct {
 	ID          uuid.UUID          `json:"id"`
 	ImageUrl    *internal.FilePath `json:"imageUrl"`
 	Title       string             `json:"title"`
-	ReleaseDate *datatypes.Date    `json:"releaseDate"`
+	ReleaseDate *string            `json:"releaseDate"`
 	UpdatedAt   time.Time          `json:"updatedAt"`
 }
 
@@ -117,10 +121,15 @@ type SongArtistSearch struct {
 }
 
 func (s *Song) ToSearch() SongSearch {
+	var releaseDate *string
+	if s.ReleaseDate != nil {
+		rd := (*time.Time)(s.ReleaseDate).Format("2006-01-02")
+		releaseDate = &rd
+	}
 	search := SongSearch{
 		ImageUrl:    s.ImageURL.StripURL(),
 		Title:       s.Title,
-		ReleaseDate: s.ReleaseDate,
+		ReleaseDate: releaseDate,
 		SearchBase: SearchBase{
 			ID:        "song-" + s.ID.String(),
 			UpdatedAt: s.UpdatedAt.UTC(),
@@ -157,10 +166,15 @@ func (a *Album) ToSongSearch() *SongAlbumSearch {
 	if a == nil {
 		return nil
 	}
+	var releaseDate *string
+	if a.ReleaseDate != nil {
+		rd := (*time.Time)(a.ReleaseDate).Format("2006-01-02")
+		releaseDate = &rd
+	}
 	return &SongAlbumSearch{
 		ID:          a.ID,
 		Title:       a.Title,
-		ReleaseDate: a.ReleaseDate,
+		ReleaseDate: releaseDate,
 		UpdatedAt:   a.UpdatedAt.UTC(),
 		ImageUrl:    a.ImageURL.StripURL(),
 	}

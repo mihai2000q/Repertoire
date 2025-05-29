@@ -2,7 +2,6 @@ package album
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/datatypes"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
@@ -70,7 +69,7 @@ var AlbumSearches = []any{
 	model.AlbumSearch{
 		Title:       "Justice For All",
 		ImageUrl:    &[]internal.FilePath{"album-image.png"}[0],
-		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+		ReleaseDate: &[]string{time.Now().Format("YYYY-MM-DD")}[0],
 		Artist:      fromArtistSearchToAlbumArtistSearch(ArtistSearches[0].(model.ArtistSearch)),
 		SearchBase: model.SearchBase{
 			ID:        "album-" + uuid.New().String(),
@@ -85,7 +84,7 @@ var AlbumSearches = []any{
 var SongSearches = []any{
 	model.SongSearch{
 		Title:       "Justice",
-		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+		ReleaseDate: &[]string{time.Now().Format("YYYY-MM-DD")}[0],
 		ImageUrl:    &[]internal.FilePath{"song-image.png"}[0],
 		Artist:      fromArtistSearchToSongArtistSearch(ArtistSearches[0].(model.ArtistSearch)),
 		Album:       fromAlbumSearchToSongAlbumSearch(AlbumSearches[0].(model.AlbumSearch)),

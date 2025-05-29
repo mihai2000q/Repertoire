@@ -37,11 +37,11 @@ func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 func Date(t *testing.T, expected *datatypes.Date, actual *datatypes.Date) {
 	if expected != nil {
 		assert.NotNil(t, actual)
-		expectedYear, expectedMonth, expectedDay := (time.Time)(*expected).Date()
-		actualYear, actualMonth, actualDay := (time.Time)(*actual).Date()
-		assert.Equal(t, expectedYear, actualYear)
-		assert.Equal(t, expectedMonth, actualMonth)
-		assert.Equal(t, expectedDay, actualDay)
+		assert.Equal(
+			t,
+			(time.Time)(*expected).Format("2006-01-02"),
+			(time.Time)(*actual).Format("2006-01-02"),
+		)
 	} else {
 		assert.Nil(t, actual)
 	}
