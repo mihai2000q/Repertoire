@@ -2,6 +2,7 @@ package album
 
 import (
 	"errors"
+	"gorm.io/datatypes"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
@@ -218,7 +219,7 @@ func TestUpdateAlbum_WhenArtistHasNotChanged_ShouldUpdateOnlyAlbumAndNotReturnAn
 	request := requests.UpdateAlbumRequest{
 		ID:          uuid.New(),
 		Title:       "New Album",
-		ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
+		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 	}
 
 	mockAlbum := &model.Album{

@@ -2,6 +2,7 @@ package album
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
@@ -144,7 +145,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 		ImageURL:    &[]internal.FilePath{"userId/Some album image path/somewhere.jpeg"}[0],
 		UserID:      Users[0].ID,
 		ArtistID:    &[]uuid.UUID{Artists[0].ID}[0],
@@ -229,7 +230,7 @@ var Songs = []model.Song{
 		ID:            uuid.New(),
 		Title:         "Test Song 1",
 		Description:   "Some description",
-		ReleaseDate:   &[]time.Time{time.Now()}[0],
+		ReleaseDate:   &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 		ImageURL:      &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
 		IsRecorded:    true,
 		Bpm:           &[]uint{123}[0],

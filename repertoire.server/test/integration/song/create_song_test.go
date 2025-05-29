@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/datatypes"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -37,7 +38,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Bpm:            &[]uint{123}[0],
 				SongsterrLink:  &[]string{"https://songsterr.com/some-song"}[0],
 				YoutubeLink:    &[]string{"https://youtu.be/9DyxtUCW84o?si=2pNX8eaV4KwKfOaF"}[0],
-				ReleaseDate:    &[]time.Time{time.Now()}[0],
+				ReleaseDate:    &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Hard}[0],
 				GuitarTuningID: &[]uuid.UUID{songData.Users[0].GuitarTunings[0].ID}[0],
 			},
@@ -67,7 +68,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			"With New Album",
 			requests.CreateSongRequest{
 				Title:       "New Song with new Artist",
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 				AlbumTitle:  &[]string{"New Album Title"}[0],
 			},
 		},
@@ -152,9 +153,7 @@ func assertCreatedSong(
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
 	assert.Nil(t, song.LastTimePlayed)
-	if request.ReleaseDate != nil {
-		assertion.Time(t, request.ReleaseDate, song.ReleaseDate)
-	}
+	assertion.Date(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
@@ -194,7 +193,7 @@ func assertCreatedSong(
 		assert.Equal(t, *request.AlbumTitle, song.Album.Title)
 		assert.Equal(t, song.ArtistID, song.Album.ArtistID)
 		assert.Equal(t, song.UserID, song.Album.UserID)
-		assertion.Time(t, request.ReleaseDate, song.ReleaseDate)
+		assertion.Date(t, request.ReleaseDate, song.ReleaseDate)
 		assert.Equal(t, uint(1), *song.AlbumTrackNo)
 	}
 
@@ -202,9 +201,7 @@ func assertCreatedSong(
 		assert.NotNil(t, song.Album)
 		assert.Equal(t, uint(len(song.Album.Songs)), *song.AlbumTrackNo)
 		assert.Equal(t, song.Album.ArtistID, song.ArtistID)
-		if request.ReleaseDate == nil {
-			assertion.Time(t, song.Album.ReleaseDate, song.ReleaseDate)
-		}
+		assertion.Date(t, song.Album.ReleaseDate, song.ReleaseDate)
 	}
 
 	if request.AlbumID == nil && request.AlbumTitle == nil {

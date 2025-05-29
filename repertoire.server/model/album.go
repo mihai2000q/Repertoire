@@ -1,6 +1,7 @@
 package model
 
 import (
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"time"
@@ -20,7 +21,7 @@ type EnhancedAlbum struct {
 type Album struct {
 	ID          uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title       string             `gorm:"size:100; not null" json:"title"`
-	ReleaseDate *time.Time         `json:"releaseDate"`
+	ReleaseDate *datatypes.Date    `json:"releaseDate"`
 	ImageURL    *internal.FilePath `json:"imageUrl"`
 	ArtistID    *uuid.UUID         `json:"artistId"`
 	Artist      *Artist            `json:"artist"`

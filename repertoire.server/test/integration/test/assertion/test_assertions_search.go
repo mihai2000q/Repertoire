@@ -36,11 +36,7 @@ func ArtistSearch(t *testing.T, artistSearch model.ArtistSearch, artist model.Ar
 func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album) {
 	AlbumSearchID(t, album.ID, albumSearch.ID)
 	assert.Equal(t, album.Title, albumSearch.Title)
-	if album.ReleaseDate != nil {
-		Time(t, album.ReleaseDate, albumSearch.ReleaseDate)
-	} else {
-		assert.Nil(t, albumSearch.ReleaseDate)
-	}
+	Date(t, album.ReleaseDate, albumSearch.ReleaseDate)
 	assert.Equal(t, album.ImageURL.StripURL(), albumSearch.ImageUrl)
 	Time(t, &album.UpdatedAt, &albumSearch.UpdatedAt)
 	Time(t, &album.CreatedAt, &albumSearch.CreatedAt)
@@ -59,11 +55,7 @@ func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album)
 func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 	SongSearchID(t, song.ID, songSearch.ID)
 	assert.Equal(t, song.Title, songSearch.Title)
-	if song.ReleaseDate != nil {
-		Time(t, song.ReleaseDate, songSearch.ReleaseDate)
-	} else {
-		assert.Nil(t, songSearch.ReleaseDate)
-	}
+	Date(t, song.ReleaseDate, songSearch.ReleaseDate)
 	assert.Equal(t, song.ImageURL.StripURL(), songSearch.ImageUrl)
 	Time(t, &song.UpdatedAt, &songSearch.UpdatedAt)
 	Time(t, &song.CreatedAt, &songSearch.CreatedAt)
@@ -81,11 +73,7 @@ func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
 	if song.Album != nil {
 		assert.Equal(t, song.Album.ID, songSearch.Album.ID)
 		assert.Equal(t, song.Album.Title, songSearch.Album.Title)
-		if song.Album.ReleaseDate != nil {
-			Time(t, song.Album.ReleaseDate, songSearch.Album.ReleaseDate)
-		} else {
-			assert.Nil(t, songSearch.Album.ReleaseDate)
-		}
+		Date(t, song.Album.ReleaseDate, songSearch.Album.ReleaseDate)
 		Time(t, &song.Album.UpdatedAt, &songSearch.Album.UpdatedAt)
 		assert.Equal(t, song.Album.ImageURL.StripURL(), songSearch.Album.ImageUrl)
 	} else {

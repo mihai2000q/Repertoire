@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"gorm.io/datatypes"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
@@ -265,7 +266,7 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"All Filled With Existing Arist",
 			requests.CreateAlbumRequest{
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
@@ -273,7 +274,7 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"All Filled With New Arist",
 			requests.CreateAlbumRequest{
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 				ArtistName:  &[]string{"New Name"}[0],
 			},
 		},
@@ -430,7 +431,7 @@ func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			requests.UpdateAlbumRequest{
 				ID:          uuid.New(),
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},

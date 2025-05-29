@@ -1,6 +1,7 @@
 package artist
 
 import (
+	"gorm.io/datatypes"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"time"
@@ -132,7 +133,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
 		UserID:      Users[0].ID,
 	},
 	{

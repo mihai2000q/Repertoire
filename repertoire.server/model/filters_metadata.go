@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
 	"repertoire/server/internal/enums"
 	"time"
 )
@@ -10,8 +11,8 @@ type AlbumFiltersMetadata struct {
 	ArtistIDsAgg string      `gorm:"->; column:artist_ids" json:"-"`
 	ArtistIDs    []uuid.UUID `gorm:"-" json:"artistIds"`
 
-	MinReleaseDate *time.Time `gorm:"->" json:"minReleaseDate"`
-	MaxReleaseDate *time.Time `gorm:"->" json:"maxReleaseDate"`
+	MinReleaseDate *datatypes.Date `gorm:"->" json:"minReleaseDate"`
+	MaxReleaseDate *datatypes.Date `gorm:"->" json:"maxReleaseDate"`
 
 	MinSongsCount int64 `gorm:"->" json:"minSongsCount"`
 	MaxSongsCount int64 `gorm:"->" json:"maxSongsCount"`
@@ -64,8 +65,8 @@ type SongFiltersMetadata struct {
 	AlbumIDsAgg string      `gorm:"->; column:album_ids" json:"-"`
 	AlbumIDs    []uuid.UUID `gorm:"-" json:"albumIds"`
 
-	MinReleaseDate *time.Time `gorm:"->" json:"minReleaseDate"`
-	MaxReleaseDate *time.Time `gorm:"->" json:"maxReleaseDate"`
+	MinReleaseDate *datatypes.Date `gorm:"->" json:"minReleaseDate"`
+	MaxReleaseDate *datatypes.Date `gorm:"->" json:"maxReleaseDate"`
 
 	MinBpm *uint `gorm:"->" json:"minBpm"`
 	MaxBpm *uint `gorm:"->" json:"maxBpm"`
