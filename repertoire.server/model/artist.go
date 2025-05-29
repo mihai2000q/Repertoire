@@ -40,7 +40,7 @@ func (a *Artist) BeforeSave(*gorm.DB) error {
 }
 
 func (a *Artist) AfterFind(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.ToFullURL(a.UpdatedAt)
+	a.ImageURL = a.ImageURL.ToFullURL()
 	return nil
 }
 
@@ -69,6 +69,6 @@ func (b *BandMember) BeforeSave(*gorm.DB) error {
 }
 
 func (b *BandMember) AfterFind(*gorm.DB) error {
-	b.ImageURL = b.ImageURL.ToFullURL(b.UpdatedAt)
+	b.ImageURL = b.ImageURL.ToFullURL()
 	return nil
 }
