@@ -8,7 +8,7 @@ import {
 import SongDrawer from './SongDrawer.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { act, screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import Song from '../../../types/models/Song.ts'
 import Artist from '../../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
@@ -351,5 +351,26 @@ describe('Song Drawer', () => {
     await user.click(await screen.findByRole('button', { name: 'youtube' }))
 
     expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
+
+  it('should be able to open songsterr in browser on songsterr click', async () => {
+    const localSong = {
+      ...song,
+      songsterrLink: 'some-link'
+    }
+
+    server.use(getSong(localSong))
+
+    render()
+
+    expect(
+      within(await screen.findByRole('link', { name: /songsterr/i })).getByRole('button', {
+        name: /songsterr/i
+      })
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(
+      localSong.songsterrLink
+    )
   })
 })

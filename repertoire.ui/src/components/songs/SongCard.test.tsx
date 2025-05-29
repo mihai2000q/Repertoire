@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
 import {
@@ -303,8 +303,27 @@ describe('Song Card', () => {
 
     reduxRouterRender(<SongCard song={localSong} />)
 
-    await user.click(screen.getByLabelText('youtube-icon'))
+    await user.click(screen.getByRole('button', { name: 'youtube' }))
 
     expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
+
+  it('should be able to open songsterr in browser on songsterr click', () => {
+    const localSong = {
+      ...song,
+      songsterrLink: 'some-link'
+    }
+
+    reduxRouterRender(<SongCard song={localSong} />)
+
+    expect(
+      within(screen.getByRole('link', { name: /songsterr/i })).getByRole('button', {
+        name: /songsterr/i
+      })
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(
+      localSong.songsterrLink
+    )
   })
 })

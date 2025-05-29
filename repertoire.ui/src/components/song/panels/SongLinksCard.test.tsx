@@ -1,5 +1,5 @@
 import Song from '../../../types/models/Song.ts'
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { emptySong, reduxRender } from '../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 import SongLinksCard from './SongLinksCard.tsx'
@@ -46,5 +46,17 @@ describe('Song Links Card', () => {
     await user.click(screen.getByRole('button', { name: /youtube/i }))
 
     expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
+
+  it('should be able to open songsterr in browser on songsterr click', () => {
+    reduxRender(<SongLinksCard song={song} />)
+
+    expect(
+      within(screen.getByRole('link', { name: /songsterr/i })).getByRole('button', {
+        name: /songsterr/i
+      })
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(song.songsterrLink)
   })
 })

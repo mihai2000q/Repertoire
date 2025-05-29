@@ -415,6 +415,7 @@ function SongDrawer() {
               {song.songsterrLink && (
                 <Tooltip label={'Open Songsterr'}>
                   <Anchor
+                    aria-label={'songsterr'}
                     underline={'never'}
                     href={song.songsterrLink}
                     target="_blank"
