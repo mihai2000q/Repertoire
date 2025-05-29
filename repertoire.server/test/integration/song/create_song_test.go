@@ -153,7 +153,9 @@ func assertCreatedSong(
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
 	assert.Nil(t, song.LastTimePlayed)
-	assertion.Date(t, request.ReleaseDate, song.ReleaseDate)
+	if request.ReleaseDate != nil {
+		assertion.Date(t, request.ReleaseDate, song.ReleaseDate)
+	}
 	assert.Equal(t, request.Difficulty, song.Difficulty)
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
@@ -201,7 +203,9 @@ func assertCreatedSong(
 		assert.NotNil(t, song.Album)
 		assert.Equal(t, uint(len(song.Album.Songs)), *song.AlbumTrackNo)
 		assert.Equal(t, song.Album.ArtistID, song.ArtistID)
-		assertion.Date(t, song.Album.ReleaseDate, song.ReleaseDate)
+		if request.ReleaseDate == nil {
+			assertion.Date(t, song.Album.ReleaseDate, song.ReleaseDate)
+		}
 	}
 
 	if request.AlbumID == nil && request.AlbumTitle == nil {

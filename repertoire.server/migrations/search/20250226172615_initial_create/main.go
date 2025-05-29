@@ -8,7 +8,6 @@ import (
 	"repertoire/server/internal"
 	"repertoire/server/internal/migration/utils"
 	"repertoire/server/model"
-	"time"
 )
 
 var uid = "20250226172615"
@@ -99,9 +98,6 @@ func addAlbums(dbClient database.Client, meiliClient search.MeiliClient) {
 
 	var meiliAlbums []model.AlbumSearch
 	for _, album := range albums {
-		if album.ReleaseDate != nil {
-			album.ReleaseDate = &[]time.Time{album.ReleaseDate.UTC()}[0]
-		}
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
@@ -123,9 +119,6 @@ func addSongs(dbClient database.Client, meiliClient search.MeiliClient) {
 
 	var meiliSongs []model.SongSearch
 	for _, song := range songs {
-		if song.ReleaseDate != nil {
-			song.ReleaseDate = &[]time.Time{song.ReleaseDate.UTC()}[0]
-		}
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
 	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
