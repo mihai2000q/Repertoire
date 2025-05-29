@@ -1,7 +1,6 @@
 package model
 
 import (
-	"gorm.io/datatypes"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"time"
@@ -22,7 +21,7 @@ type Song struct {
 	ID             uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title          string             `gorm:"size:100; not null" json:"title"`
 	Description    string             `gorm:"not null" json:"description"`
-	ReleaseDate    *datatypes.Date    `json:"releaseDate"`
+	ReleaseDate    *internal.Date     `json:"releaseDate"`
 	ImageURL       *internal.FilePath `json:"imageUrl"`
 	IsRecorded     bool               `json:"isRecorded"`
 	Bpm            *uint              `json:"bpm"`

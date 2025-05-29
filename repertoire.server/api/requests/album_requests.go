@@ -2,7 +2,7 @@ package requests
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/datatypes"
+	"repertoire/server/internal"
 )
 
 type GetAlbumRequest struct {
@@ -23,7 +23,7 @@ type GetAlbumFiltersMetadataRequest struct {
 
 type CreateAlbumRequest struct {
 	Title       string `validate:"required,max=100"`
-	ReleaseDate *datatypes.Date
+	ReleaseDate *internal.Date
 	ArtistID    *uuid.UUID `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName  *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
@@ -36,7 +36,7 @@ type AddSongsToAlbumRequest struct {
 type UpdateAlbumRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`
-	ReleaseDate *datatypes.Date
+	ReleaseDate *internal.Date
 	ArtistID    *uuid.UUID
 }
 

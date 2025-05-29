@@ -3,7 +3,7 @@ package assertion
 import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
-	"gorm.io/datatypes"
+	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"slices"
@@ -34,7 +34,7 @@ func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	}
 }
 
-func Date(t *testing.T, expected *datatypes.Date, actual *datatypes.Date) {
+func Date(t *testing.T, expected *internal.Date, actual *internal.Date) {
 	if expected != nil {
 		assert.NotNil(t, actual)
 		assert.Equal(

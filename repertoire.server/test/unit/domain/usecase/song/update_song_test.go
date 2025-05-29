@@ -2,10 +2,10 @@ package song
 
 import (
 	"errors"
-	"gorm.io/datatypes"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -475,7 +475,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				IsRecorded:     true,
 				Bpm:            &[]uint{123}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
-				ReleaseDate:    &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+				ReleaseDate:    &[]internal.Date{internal.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Hard}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=IHgFJEJgUrg"}[0],

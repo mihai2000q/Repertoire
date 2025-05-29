@@ -2,7 +2,6 @@ package album
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/datatypes"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
@@ -22,7 +21,7 @@ var ArtistSearchID = uuid.New()
 var SongSearches = []any{
 	model.SongSearch{
 		Title:       "Song 1",
-		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+		ReleaseDate: &[]string{time.Now().Format("2006-01-02")}[0],
 		ImageUrl:    &[]internal.FilePath{"song-image.png"}[0],
 		Artist: &model.SongArtistSearch{
 			ID:        ArtistSearchID,
@@ -33,7 +32,7 @@ var SongSearches = []any{
 		Album: &model.SongAlbumSearch{
 			ID:          AlbumSearchID,
 			Title:       "Album 1",
-			ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+			ReleaseDate: &[]string{time.Now().Format("2006-01-02")}[0],
 			ImageUrl:    &[]internal.FilePath{"song/artist-image.png"}[0],
 			UpdatedAt:   time.Now().UTC(),
 		},
@@ -56,7 +55,7 @@ var SongSearches = []any{
 		Album: &model.SongAlbumSearch{
 			ID:          AlbumSearchID,
 			Title:       "Album 1",
-			ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+			ReleaseDate: &[]string{time.Now().Format("2006-01-02")}[0],
 			ImageUrl:    &[]internal.FilePath{"song/artist-image.png"}[0],
 			UpdatedAt:   time.Now().UTC(),
 		},

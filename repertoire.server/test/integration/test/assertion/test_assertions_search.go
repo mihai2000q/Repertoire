@@ -3,7 +3,7 @@ package assertion
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/datatypes"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
@@ -92,7 +92,7 @@ func PlaylistSearch(t *testing.T, playlistSearch model.PlaylistSearch, playlist 
 	assert.Equal(t, enums.Playlist, playlistSearch.Type)
 }
 
-func dateAndString(t *testing.T, date *datatypes.Date, str *string) {
+func dateAndString(t *testing.T, date *internal.Date, str *string) {
 	if date != nil {
 		assert.NotNil(t, str)
 		assert.Equal(t, (*time.Time)(date).Format("2006-01-02"), *str)

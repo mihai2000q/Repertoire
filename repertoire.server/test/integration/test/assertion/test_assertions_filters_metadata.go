@@ -3,7 +3,7 @@ package assertion
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/datatypes"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
@@ -13,8 +13,8 @@ import (
 func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, albums []model.Album) {
 	artistIDsMap := make(map[uuid.UUID]bool)
 
-	var minReleaseDate *datatypes.Date
-	var maxReleaseDate *datatypes.Date
+	var minReleaseDate *internal.Date
+	var maxReleaseDate *internal.Date
 
 	var minSongsCount *int64
 	var maxSongsCount int64 = 0
@@ -313,8 +313,8 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	guitarTuningIDsMap := make(map[uuid.UUID]bool)
 	instrumentIDsMap := make(map[uuid.UUID]bool)
 
-	var minReleaseDate *datatypes.Date
-	var maxReleaseDate *datatypes.Date
+	var minReleaseDate *internal.Date
+	var maxReleaseDate *internal.Date
 
 	var minBpm *uint
 	var maxBpm *uint

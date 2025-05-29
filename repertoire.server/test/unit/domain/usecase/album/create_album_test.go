@@ -2,10 +2,10 @@ package album
 
 import (
 	"errors"
-	"gorm.io/datatypes"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -126,7 +126,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"With Existing Artist",
 			requests.CreateAlbumRequest{
 				Title:       "Some Album",
-				ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},

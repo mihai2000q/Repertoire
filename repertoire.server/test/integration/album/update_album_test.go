@@ -3,10 +3,10 @@ package album
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/datatypes"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
@@ -43,7 +43,7 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 	request := requests.UpdateAlbumRequest{
 		ID:          album.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		ArtistID:    album.ArtistID,
 	}
 
@@ -76,7 +76,7 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 	request := requests.UpdateAlbumRequest{
 		ID:          album.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		ArtistID:    &albumData.Artists[1].ID,
 	}
 

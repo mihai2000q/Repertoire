@@ -2,7 +2,7 @@ package requests
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/datatypes"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 )
 
@@ -23,7 +23,7 @@ type CreateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
-	ReleaseDate    *datatypes.Date
+	ReleaseDate    *internal.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
@@ -49,7 +49,7 @@ type UpdateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
-	ReleaseDate    *datatypes.Date
+	ReleaseDate    *internal.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	ArtistID       *uuid.UUID

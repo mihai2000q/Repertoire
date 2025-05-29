@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/datatypes"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
@@ -27,7 +27,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 			"Minimal",
 			requests.CreateAlbumRequest{
 				Title:       "New Album",
-				ReleaseDate: &[]datatypes.Date{datatypes.Date(time.Now())}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 			},
 		},
 		{
