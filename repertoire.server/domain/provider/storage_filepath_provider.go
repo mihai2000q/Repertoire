@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"repertoire/server/model"
 	"strings"
+	"time"
 )
 
 type StorageFilePathProvider interface {
@@ -31,7 +32,6 @@ func NewStorageFilePathProvider() StorageFilePathProvider {
 }
 
 var profilePicture = "profile_pic"
-var image = "image"
 var albumRootDirectory = "albums"
 var artistRootDirectory = "artists"
 var bandMemberRootDirectory = "members"
@@ -40,8 +40,10 @@ var playlistRootDirectory = "playlists"
 
 func (s storageFilePathProvider) GetUserProfilePicturePath(file *multipart.FileHeader, user model.User) string {
 	fileExtension := filepath.Ext(file.Filename)
-	filePath := user.ID.String() + "/" + profilePicture + fileExtension
-	return filePath
+	return s.builder().
+		WithDirectory(user.ID.String()).
+		WithFile(s.getTimeFormat(user.UpdatedAt) + fileExtension).
+		BuildFilePath()
 }
 
 func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, album model.Album) string {
@@ -50,14 +52,14 @@ func (s storageFilePathProvider) GetAlbumImagePath(file *multipart.FileHeader, a
 		WithDirectory(album.UserID.String()).
 		WithDirectory(albumRootDirectory).
 		WithDirectory(album.ID.String()).
-		WithFile(image + fileExtension).
+		WithFile(s.getTimeFormat(album.UpdatedAt) + fileExtension).
 		BuildFilePath()
 }
 
 func (s storageFilePathProvider) GetArtistImagePath(file *multipart.FileHeader, artist model.Artist) string {
 	fileExtension := filepath.Ext(file.Filename)
 	return s.getArtistDirectory(artist).
-		WithFile(image + fileExtension).
+		WithFile(s.getTimeFormat(artist.UpdatedAt) + fileExtension).
 		BuildFilePath()
 }
 
@@ -66,7 +68,7 @@ func (s storageFilePathProvider) GetBandMemberImagePath(file *multipart.FileHead
 	return s.getArtistDirectory(member.Artist).
 		WithDirectory(bandMemberRootDirectory).
 		WithDirectory(member.ID.String()).
-		WithFile(image + fileExtension).
+		WithFile(s.getTimeFormat(member.UpdatedAt) + fileExtension).
 		BuildFilePath()
 }
 
@@ -76,7 +78,7 @@ func (s storageFilePathProvider) GetPlaylistImagePath(file *multipart.FileHeader
 		WithDirectory(playlist.UserID.String()).
 		WithDirectory(playlistRootDirectory).
 		WithDirectory(playlist.ID.String()).
-		WithFile(image + fileExtension).
+		WithFile(s.getTimeFormat(playlist.UpdatedAt) + fileExtension).
 		BuildFilePath()
 }
 
@@ -86,7 +88,7 @@ func (s storageFilePathProvider) GetSongImagePath(file *multipart.FileHeader, so
 		WithDirectory(song.UserID.String()).
 		WithDirectory(songRootDirectory).
 		WithDirectory(song.ID.String()).
-		WithFile(image + fileExtension).
+		WithFile(s.getTimeFormat(song.UpdatedAt) + fileExtension).
 		BuildFilePath()
 }
 
@@ -126,6 +128,10 @@ func (s storageFilePathProvider) GetSongDirectoryPath(song model.Song) string {
 		WithDirectory(songRootDirectory).
 		WithDirectory(song.ID.String()).
 		BuildDirectoryPath()
+}
+
+func (s storageFilePathProvider) getTimeFormat(time time.Time) string {
+	return time.Format("2006-01-02T15:04:05")
 }
 
 func (s storageFilePathProvider) getArtistDirectory(artist model.Artist) directoryPathBuilder {

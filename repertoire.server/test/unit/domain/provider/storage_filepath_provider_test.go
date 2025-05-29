@@ -5,6 +5,7 @@ import (
 	"repertoire/server/domain/provider"
 	"repertoire/server/model"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -17,13 +18,14 @@ func TestStorageFilePathProvider_GetUserProfilePicturePath_ShouldReturnPlaylistI
 	fileExtension := ".jpg"
 	file := new(multipart.FileHeader)
 	file.Filename = "something" + fileExtension
-	user := model.User{ID: uuid.New()}
+	user := model.User{ID: uuid.New(), UpdatedAt: time.Now()}
 
 	// when
 	imagePath := _uut.GetUserProfilePicturePath(file, user)
 
 	// then
-	expectedImagePath := user.ID.String() + "/profile_pic" + fileExtension
+	expectedImagePath := user.ID.String() + "/" +
+		user.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -36,15 +38,17 @@ func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t 
 	file := new(multipart.FileHeader)
 	file.Filename = "something" + fileExtension
 	album := model.Album{
-		ID:     uuid.New(),
-		UserID: uuid.New(),
+		ID:        uuid.New(),
+		UserID:    uuid.New(),
+		UpdatedAt: time.Now(),
 	}
 
 	// when
 	imagePath := _uut.GetAlbumImagePath(file, album)
 
 	// then
-	expectedImagePath := album.UserID.String() + "/albums/" + album.ID.String() + "/image" + fileExtension
+	expectedImagePath := album.UserID.String() + "/albums/" + album.ID.String() + "/" +
+		album.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -57,15 +61,17 @@ func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(
 	file := new(multipart.FileHeader)
 	file.Filename = "something" + fileExtension
 	artist := model.Artist{
-		ID:     uuid.New(),
-		UserID: uuid.New(),
+		ID:        uuid.New(),
+		UserID:    uuid.New(),
+		UpdatedAt: time.Now(),
 	}
 
 	// when
 	imagePath := _uut.GetArtistImagePath(file, artist)
 
 	// then
-	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() + "/image" + fileExtension
+	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() + "/" +
+		artist.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -82,8 +88,9 @@ func TestStorageFilePathProvider_GetBandMemberImagePath_ShouldReturnBandMemberIm
 		UserID: uuid.New(),
 	}
 	bandMember := model.BandMember{
-		ID:     uuid.New(),
-		Artist: artist,
+		ID:        uuid.New(),
+		Artist:    artist,
+		UpdatedAt: time.Now(),
 	}
 
 	// when
@@ -91,7 +98,8 @@ func TestStorageFilePathProvider_GetBandMemberImagePath_ShouldReturnBandMemberIm
 
 	// then
 	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() +
-		"/members/" + bandMember.ID.String() + "/image" + fileExtension
+		"/members/" + bandMember.ID.String() + "/" +
+		bandMember.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -104,15 +112,17 @@ func TestStorageFilePathProvider_GetPlaylistImagePath_ShouldReturnPlaylistImageP
 	file := new(multipart.FileHeader)
 	file.Filename = "something" + fileExtension
 	playlist := model.Playlist{
-		ID:     uuid.New(),
-		UserID: uuid.New(),
+		ID:        uuid.New(),
+		UserID:    uuid.New(),
+		UpdatedAt: time.Now(),
 	}
 
 	// when
 	imagePath := _uut.GetPlaylistImagePath(file, playlist)
 
 	// then
-	expectedImagePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + "/image" + fileExtension
+	expectedImagePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + "/" +
+		playlist.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -125,15 +135,17 @@ func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *t
 	file := new(multipart.FileHeader)
 	file.Filename = "something" + fileExtension
 	song := model.Song{
-		ID:     uuid.New(),
-		UserID: uuid.New(),
+		ID:        uuid.New(),
+		UserID:    uuid.New(),
+		UpdatedAt: time.Now(),
 	}
 
 	// when
 	imagePath := _uut.GetSongImagePath(file, song)
 
 	// then
-	expectedImagePath := song.UserID.String() + "/songs/" + song.ID.String() + "/image" + fileExtension
+	expectedImagePath := song.UserID.String() + "/songs/" + song.ID.String() + "/" +
+		song.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
