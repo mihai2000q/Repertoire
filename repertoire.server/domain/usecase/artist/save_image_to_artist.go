@@ -11,6 +11,7 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -46,6 +47,14 @@ func (s SaveImageToArtist) Handle(file *multipart.FileHeader, id uuid.UUID) *wra
 		return wrapper.NotFoundError(errors.New("artist not found"))
 	}
 
+	if artist.ImageURL != nil {
+		errCode := s.storageService.DeleteFile(*artist.ImageURL)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
+	artist.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetArtistImagePath(file, artist)
 
 	err = s.storageService.Upload(file, imagePath)

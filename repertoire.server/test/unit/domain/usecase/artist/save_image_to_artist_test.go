@@ -5,12 +5,15 @@ import (
 	"mime/multipart"
 	"net/http"
 	"repertoire/server/domain/usecase/artist"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
+	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"repertoire/server/test/unit/domain/provider"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -62,6 +65,33 @@ func TestSaveImageToArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testin
 	artistRepository.AssertExpectations(t)
 }
 
+func TestSaveImageToArtist_WhenStorageDeleteFileFails_ShouldReturnError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	storageService := new(service.StorageServiceMock)
+	_uut := artist.NewSaveImageToArtist(artistRepository, nil, storageService, nil)
+
+	file := new(multipart.FileHeader)
+	id := uuid.New()
+
+	// given - mocking
+	mockArtist := &model.Artist{ID: id, ImageURL: &[]internal.FilePath{"file_path"}[0]}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
+
+	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	storageService.On("DeleteFile", *mockArtist.ImageURL).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(file, id)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, internalError, errCode)
+
+	artistRepository.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+}
+
 func TestSaveImageToArtist_WhenStorageUploadFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
@@ -77,7 +107,9 @@ func TestSaveImageToArtist_WhenStorageUploadFails_ShouldReturnInternalServerErro
 	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
 
 	imagePath := "artists file path"
-	storageFilePathProvider.On("GetArtistImagePath", file, *mockArtist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetArtistImagePath", file, mock.IsType(*mockArtist)).
+		Return(imagePath).
+		Once()
 
 	internalError := errors.New("internal error")
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
@@ -110,7 +142,9 @@ func TestSaveImageToArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError
 	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
 
 	imagePath := "artists file path"
-	storageFilePathProvider.On("GetArtistImagePath", file, *mockArtist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetArtistImagePath", file, mock.IsType(*mockArtist)).
+		Return(imagePath).
+		Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
@@ -153,7 +187,9 @@ func TestSaveImageToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
 
 	imagePath := "artists file path"
-	storageFilePathProvider.On("GetArtistImagePath", file, *mockArtist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetArtistImagePath", file, mock.IsType(*mockArtist)).
+		Return(imagePath).
+		Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
@@ -180,7 +216,65 @@ func TestSaveImageToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestSaveImageToArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestSaveImageToArtist_WhenWithoutOldImage_ShouldSaveNewOneAndNotReturnAnyError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	storageService := new(service.StorageServiceMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewSaveImageToArtist(
+		artistRepository,
+		storageFilePathProvider,
+		storageService,
+		messagePublisherService,
+	)
+
+	file := new(multipart.FileHeader)
+	id := uuid.New()
+
+	// given - mocking
+	mockArtist := &model.Artist{ID: id, ImageURL: &[]internal.FilePath{"file_path"}[0]}
+	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
+
+	storageService.On("DeleteFile", *mockArtist.ImageURL).Return(nil).Once()
+
+	imagePath := "artists file path"
+	storageFilePathProvider.On("GetArtistImagePath", file, mock.IsType(*mockArtist)).
+		Run(func(args mock.Arguments) {
+			newArtist := args.Get(1).(model.Artist)
+			assert.Equal(t, newArtist.ID, mockArtist.ID)
+			assert.WithinDuration(t, newArtist.UpdatedAt, time.Now(), time.Minute)
+		}).
+		Return(imagePath).
+		Once()
+
+	storageService.On("Upload", file, imagePath).Return(nil).Once()
+
+	artistRepository.On("Update", mock.IsType(new(model.Artist))).
+		Run(func(args mock.Arguments) {
+			newArtist := args.Get(0).(*model.Artist)
+			assert.Equal(t, imagePath, string(*newArtist.ImageURL))
+		}).
+		Return(nil).
+		Once()
+
+	messagePublisherService.On("Publish", topics.ArtistUpdatedTopic, mockArtist.ID).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(file, id)
+
+	// then
+	assert.Nil(t, errCode)
+
+	artistRepository.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+	storageService.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestSaveImageToArtist_WhenWithOldImage_ShouldDeleteOldImageSaveNewOneAndNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
@@ -201,7 +295,14 @@ func TestSaveImageToArtist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
 
 	imagePath := "artists file path"
-	storageFilePathProvider.On("GetArtistImagePath", file, *mockArtist).Return(imagePath).Once()
+	storageFilePathProvider.On("GetArtistImagePath", file, mock.IsType(*mockArtist)).
+		Run(func(args mock.Arguments) {
+			newArtist := args.Get(1).(model.Artist)
+			assert.Equal(t, newArtist.ID, mockArtist.ID)
+			assert.WithinDuration(t, newArtist.UpdatedAt, time.Now(), time.Minute)
+		}).
+		Return(imagePath).
+		Once()
 
 	storageService.On("Upload", file, imagePath).Return(nil).Once()
 
