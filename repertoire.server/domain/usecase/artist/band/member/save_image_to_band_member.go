@@ -10,6 +10,7 @@ import (
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -42,6 +43,14 @@ func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) 
 		return wrapper.NotFoundError(errors.New("band member not found"))
 	}
 
+	if member.ImageURL != nil {
+		errCode := s.storageService.DeleteFile(*member.ImageURL)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
+	member.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetBandMemberImagePath(file, member)
 
 	err = s.storageService.Upload(file, imagePath)
