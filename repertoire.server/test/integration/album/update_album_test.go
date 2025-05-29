@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
@@ -42,7 +43,7 @@ func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 	request := requests.UpdateAlbumRequest{
 		ID:          album.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		ArtistID:    album.ArtistID,
 	}
 
@@ -75,7 +76,7 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 	request := requests.UpdateAlbumRequest{
 		ID:          album.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		ArtistID:    &albumData.Artists[1].ID,
 	}
 
@@ -106,6 +107,6 @@ func TestUpdateAlbum_WhenUpdatingArtist_ShouldUpdateAlbumAndSongs(t *testing.T) 
 func assertUpdatedAlbum(t *testing.T, request requests.UpdateAlbumRequest, album model.Album) {
 	assert.Equal(t, request.ID, album.ID)
 	assert.Equal(t, request.Title, album.Title)
-	assertion.Time(t, request.ReleaseDate, album.ReleaseDate)
+	assertion.Date(t, request.ReleaseDate, album.ReleaseDate)
 	assert.Equal(t, request.ArtistID, album.ArtistID)
 }

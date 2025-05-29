@@ -45,7 +45,7 @@ type AlbumSearch struct {
 	ImageUrl    *internal.FilePath `json:"imageUrl"`
 	Title       string             `json:"title"`
 	Artist      *AlbumArtistSearch `json:"artist"`
-	ReleaseDate *time.Time         `json:"releaseDate"`
+	ReleaseDate *string            `json:"releaseDate"`
 	SearchBase
 }
 
@@ -57,9 +57,9 @@ type AlbumArtistSearch struct {
 }
 
 func (a *Album) ToSearch() AlbumSearch {
-	var releaseDate *time.Time
+	var releaseDate *string
 	if a.ReleaseDate != nil {
-		rd := (*a.ReleaseDate).UTC()
+		rd := (*time.Time)(a.ReleaseDate).Format("2006-01-02")
 		releaseDate = &rd
 	}
 	search := AlbumSearch{
@@ -99,7 +99,7 @@ func (a *Artist) ToAlbumSearch() *AlbumArtistSearch {
 type SongSearch struct {
 	ImageUrl    *internal.FilePath `json:"imageUrl"`
 	Title       string             `json:"title"`
-	ReleaseDate *time.Time         `json:"releaseDate"`
+	ReleaseDate *string            `json:"releaseDate"`
 	Artist      *SongArtistSearch  `json:"artist"`
 	Album       *SongAlbumSearch   `json:"album"`
 	SearchBase
@@ -109,7 +109,7 @@ type SongAlbumSearch struct {
 	ID          uuid.UUID          `json:"id"`
 	ImageUrl    *internal.FilePath `json:"imageUrl"`
 	Title       string             `json:"title"`
-	ReleaseDate *time.Time         `json:"releaseDate"`
+	ReleaseDate *string            `json:"releaseDate"`
 	UpdatedAt   time.Time          `json:"updatedAt"`
 }
 
@@ -121,9 +121,9 @@ type SongArtistSearch struct {
 }
 
 func (s *Song) ToSearch() SongSearch {
-	var releaseDate *time.Time
+	var releaseDate *string
 	if s.ReleaseDate != nil {
-		rd := (*s.ReleaseDate).UTC()
+		rd := (*time.Time)(s.ReleaseDate).Format("2006-01-02")
 		releaseDate = &rd
 	}
 	search := SongSearch{
@@ -166,9 +166,9 @@ func (a *Album) ToSongSearch() *SongAlbumSearch {
 	if a == nil {
 		return nil
 	}
-	var releaseDate *time.Time
+	var releaseDate *string
 	if a.ReleaseDate != nil {
-		rd := (*a.ReleaseDate).UTC()
+		rd := (*time.Time)(a.ReleaseDate).Format("2006-01-02")
 		releaseDate = &rd
 	}
 	return &SongAlbumSearch{

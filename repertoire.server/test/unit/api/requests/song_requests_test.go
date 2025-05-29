@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"strings"
 	"testing"
@@ -211,7 +212,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"https://songsterr.com/some-other"}[0],
 				YoutubeLink:    &[]string{"https://youtu.be/9DyxtUCW84o?si=2pNX8eaV4KwKfOaF"}[0],
-				ReleaseDate:    &[]time.Time{time.Now()}[0],
+				ReleaseDate:    &[]internal.Date{internal.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle:     &[]string{"New Album Title"}[0],
@@ -441,7 +442,7 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Bpm:            &[]uint{120}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=IHgFJEJgUrg"}[0],
-				ReleaseDate:    &[]time.Time{time.Now()}[0],
+				ReleaseDate:    &[]internal.Date{internal.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				ArtistID:       &[]uuid.UUID{uuid.New()}[0],

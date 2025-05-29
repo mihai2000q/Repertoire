@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
@@ -43,7 +44,7 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	request := requests.UpdateSongRequest{
 		ID:          song.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		AlbumID:     song.AlbumID,
 		ArtistID:    song.ArtistID,
 	}
@@ -78,7 +79,7 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *te
 	request := requests.UpdateSongRequest{
 		ID:          song.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		AlbumID:     &album.ID,
 		ArtistID:    album.ArtistID,
 	}
@@ -132,7 +133,7 @@ func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song mo
 	assert.Equal(t, request.Bpm, song.Bpm)
 	assert.Equal(t, request.SongsterrLink, song.SongsterrLink)
 	assert.Equal(t, request.YoutubeLink, song.YoutubeLink)
-	assertion.Time(t, request.ReleaseDate, song.ReleaseDate)
+	assertion.Date(t, request.ReleaseDate, song.ReleaseDate)
 	assert.Equal(t, request.Difficulty, song.Difficulty)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, request.ArtistID, song.ArtistID)

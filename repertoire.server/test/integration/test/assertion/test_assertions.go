@@ -3,6 +3,7 @@ package assertion
 import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
+	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"slices"
@@ -33,6 +34,19 @@ func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	}
 }
 
+func Date(t *testing.T, expected *internal.Date, actual *internal.Date) {
+	if expected != nil {
+		assert.NotNil(t, actual)
+		assert.Equal(
+			t,
+			(time.Time)(*expected).Format("2006-01-02"),
+			(time.Time)(*actual).Format("2006-01-02"),
+		)
+	} else {
+		assert.Nil(t, actual)
+	}
+}
+
 func AssertMessage[T any](
 	t *testing.T,
 	message utils.SubscribedToTopic,
@@ -56,7 +70,7 @@ func AssertMessage[T any](
 func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.EnhancedAlbum) {
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
-	Time(t, album.ReleaseDate, response.ReleaseDate)
+	Date(t, album.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, album.ImageURL, response.ImageURL)
 
 	if album.Artist != nil {
@@ -76,7 +90,7 @@ func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.Enhan
 func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withArtist bool, withSongs bool) {
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
-	Time(t, album.ReleaseDate, response.ReleaseDate)
+	Date(t, album.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, album.ImageURL, response.ImageURL)
 
 	if withArtist {
@@ -160,7 +174,7 @@ func ResponseEnhancedSong(
 	assert.Equal(t, song.ID, response.ID)
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
-	Time(t, song.ReleaseDate, response.ReleaseDate)
+	Date(t, song.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, song.ImageURL, response.ImageURL)
 	assert.Equal(t, song.IsRecorded, response.IsRecorded)
 	assert.Equal(t, song.Bpm, response.Bpm)
@@ -223,7 +237,7 @@ func ResponseSong(
 	assert.Equal(t, song.ID, response.ID)
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
-	Time(t, song.ReleaseDate, response.ReleaseDate)
+	Date(t, song.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, song.ImageURL, response.ImageURL)
 	assert.Equal(t, song.IsRecorded, response.IsRecorded)
 	assert.Equal(t, song.Bpm, response.Bpm)

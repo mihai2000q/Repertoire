@@ -21,7 +21,7 @@ type Song struct {
 	ID             uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title          string             `gorm:"size:100; not null" json:"title"`
 	Description    string             `gorm:"not null" json:"description"`
-	ReleaseDate    *time.Time         `json:"releaseDate"`
+	ReleaseDate    *internal.Date     `json:"releaseDate"`
 	ImageURL       *internal.FilePath `json:"imageUrl"`
 	IsRecorded     bool               `json:"isRecorded"`
 	Bpm            *uint              `json:"bpm"`

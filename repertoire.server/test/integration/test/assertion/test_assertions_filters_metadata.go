@@ -3,6 +3,7 @@ package assertion
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
@@ -12,8 +13,8 @@ import (
 func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, albums []model.Album) {
 	artistIDsMap := make(map[uuid.UUID]bool)
 
-	var minReleaseDate *time.Time
-	var maxReleaseDate *time.Time
+	var minReleaseDate *internal.Date
+	var maxReleaseDate *internal.Date
 
 	var minSongsCount *int64
 	var maxSongsCount int64 = 0
@@ -35,11 +36,11 @@ func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, alb
 			artistIDsMap[*album.ArtistID] = true
 		}
 
-		if album.ReleaseDate != nil && minReleaseDate != nil && album.ReleaseDate.Before(*minReleaseDate) ||
+		if album.ReleaseDate != nil && minReleaseDate != nil && (*time.Time)(album.ReleaseDate).Before(time.Time(*minReleaseDate)) ||
 			album.ReleaseDate != nil && minReleaseDate == nil {
 			minReleaseDate = album.ReleaseDate
 		}
-		if album.ReleaseDate != nil && maxReleaseDate != nil && album.ReleaseDate.After(*maxReleaseDate) ||
+		if album.ReleaseDate != nil && maxReleaseDate != nil && (*time.Time)(album.ReleaseDate).After(time.Time(*maxReleaseDate)) ||
 			album.ReleaseDate != nil && maxReleaseDate == nil {
 			maxReleaseDate = album.ReleaseDate
 		}
@@ -107,8 +108,8 @@ func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, alb
 
 	assert.ElementsMatch(t, artistIDs, metadata.ArtistIDs)
 
-	Time(t, minReleaseDate, metadata.MinReleaseDate)
-	Time(t, maxReleaseDate, metadata.MaxReleaseDate)
+	assert.Equal(t, minReleaseDate, metadata.MinReleaseDate)
+	assert.Equal(t, maxReleaseDate, metadata.MaxReleaseDate)
 
 	if minSongsCount == nil {
 		assert.Zero(t, metadata.MinSongsCount)
@@ -312,8 +313,8 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	guitarTuningIDsMap := make(map[uuid.UUID]bool)
 	instrumentIDsMap := make(map[uuid.UUID]bool)
 
-	var minReleaseDate *time.Time
-	var maxReleaseDate *time.Time
+	var minReleaseDate *internal.Date
+	var maxReleaseDate *internal.Date
 
 	var minBpm *uint
 	var maxBpm *uint
@@ -353,11 +354,11 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 			guitarTuningIDsMap[*song.GuitarTuningID] = true
 		}
 
-		if song.ReleaseDate != nil && minReleaseDate != nil && song.ReleaseDate.Before(*minReleaseDate) ||
+		if song.ReleaseDate != nil && minReleaseDate != nil && (*time.Time)(song.ReleaseDate).Before(time.Time(*minReleaseDate)) ||
 			song.ReleaseDate != nil && minReleaseDate == nil {
 			minReleaseDate = song.ReleaseDate
 		}
-		if song.ReleaseDate != nil && maxReleaseDate != nil && song.ReleaseDate.After(*maxReleaseDate) ||
+		if song.ReleaseDate != nil && maxReleaseDate != nil && (*time.Time)(song.ReleaseDate).After(time.Time(*maxReleaseDate)) ||
 			song.ReleaseDate != nil && maxReleaseDate == nil {
 			maxReleaseDate = song.ReleaseDate
 		}
@@ -464,8 +465,8 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	assert.ElementsMatch(t, guitarTuningIDs, metadata.GuitarTuningIDs)
 	assert.ElementsMatch(t, instrumentIDs, metadata.InstrumentIDs)
 
-	Time(t, minReleaseDate, metadata.MinReleaseDate)
-	Time(t, maxReleaseDate, metadata.MaxReleaseDate)
+	Date(t, minReleaseDate, metadata.MinReleaseDate)
+	Date(t, maxReleaseDate, metadata.MaxReleaseDate)
 
 	assert.Equal(t, minBpm, metadata.MinBpm)
 	assert.Equal(t, maxBpm, metadata.MaxBpm)
