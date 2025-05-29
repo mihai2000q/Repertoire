@@ -241,7 +241,7 @@ func TestSaveImageToAlbum_WhenWithoutOldImage_ShouldSaveNewOneAndNotReturnAnyErr
 		Run(func(args mock.Arguments) {
 			newAlbum := args.Get(1).(model.Album)
 			assert.Equal(t, newAlbum.ID, mockAlbum.ID)
-			assert.WithinDuration(t, newAlbum.UpdatedAt, time.Now(), time.Minute)
+			assert.WithinDuration(t, time.Now(), newAlbum.UpdatedAt, time.Minute)
 		}).
 		Return(imagePath).
 		Once()
@@ -299,7 +299,7 @@ func TestSaveImageToAlbum_WhenWithOldImage_ShouldDeleteOldImageSaveNewOneAndNotR
 		Run(func(args mock.Arguments) {
 			newAlbum := args.Get(1).(model.Album)
 			assert.Equal(t, newAlbum.ID, mockAlbum.ID)
-			assert.WithinDuration(t, newAlbum.UpdatedAt, time.Now(), time.Minute)
+			assert.WithinDuration(t, time.Now(), newAlbum.UpdatedAt, time.Minute)
 		}).
 		Return(imagePath).
 		Once()

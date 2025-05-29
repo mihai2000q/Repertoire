@@ -243,7 +243,7 @@ func TestSaveImageToArtist_WhenWithoutOldImage_ShouldSaveNewOneAndNotReturnAnyEr
 		Run(func(args mock.Arguments) {
 			newArtist := args.Get(1).(model.Artist)
 			assert.Equal(t, newArtist.ID, mockArtist.ID)
-			assert.WithinDuration(t, newArtist.UpdatedAt, time.Now(), time.Minute)
+			assert.WithinDuration(t, time.Now(), newArtist.UpdatedAt, time.Minute)
 		}).
 		Return(imagePath).
 		Once()
@@ -299,7 +299,7 @@ func TestSaveImageToArtist_WhenWithOldImage_ShouldDeleteOldImageSaveNewOneAndNot
 		Run(func(args mock.Arguments) {
 			newArtist := args.Get(1).(model.Artist)
 			assert.Equal(t, newArtist.ID, mockArtist.ID)
-			assert.WithinDuration(t, newArtist.UpdatedAt, time.Now(), time.Minute)
+			assert.WithinDuration(t, time.Now(), newArtist.UpdatedAt, time.Minute)
 		}).
 		Return(imagePath).
 		Once()
