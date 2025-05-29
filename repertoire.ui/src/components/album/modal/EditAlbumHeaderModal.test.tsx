@@ -16,7 +16,7 @@ describe('Edit Album Header Modal', () => {
     ...emptyAlbum,
     id: '1',
     title: 'Album 1',
-    releaseDate: '2024-12-12T00:00:00Z',
+    releaseDate: '2024-12-12',
     imageUrl: 'some-image.png'
   }
 
@@ -92,7 +92,8 @@ describe('Edit Album Header Modal', () => {
     const user = userEvent.setup()
 
     const newTitle = 'New Album'
-    const newReleaseDate = dayjs('2024-12-24')
+    const newDay = 24
+    const newReleaseDate = '2024-12-' + newDay
     const newArtist = artists[1]
     const onClose = vitest.fn()
 
@@ -115,7 +116,7 @@ describe('Edit Album Header Modal', () => {
     await user.type(titleField, newTitle)
 
     await user.click(screen.getByRole('button', { name: /release date/i }))
-    await user.click(screen.getByText(newReleaseDate.date().toString()))
+    await user.click(screen.getByText(newDay.toString()))
 
     await user.click(screen.getByRole('textbox', { name: /artist/i }))
     await user.click(screen.getByRole('option', { name: newArtist.name }))
@@ -129,7 +130,7 @@ describe('Edit Album Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       id: album.id,
       title: newTitle,
-      releaseDate: newReleaseDate.toISOString(),
+      releaseDate: newReleaseDate,
       artistId: newArtist.id
     })
   })
@@ -267,7 +268,7 @@ describe('Edit Album Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       id: album.id,
       title: newTitle,
-      releaseDate: dayjs(album.releaseDate).toISOString()
+      releaseDate: album.releaseDate
     })
     expect(capturedSaveImageFormData.get('id')).toBe(album.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)

@@ -27,7 +27,6 @@ import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import { ArtistSearch } from '../../../types/models/Search.ts'
-import dayjs from 'dayjs'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -61,8 +60,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     onValuesChange: (values) => {
       setAlbumHasChanged(
         values.title !== album.title ||
-          (values.releaseDate ? new Date(values.releaseDate).getTime() : undefined) !==
-            (album.releaseDate ? new Date(album.releaseDate).getTime() : undefined) ||
+          values.releaseDate !== album.releaseDate ||
           values.artistId !== album.artist?.id
       )
       setImageHasChanged(values.image !== album.imageUrl)
@@ -81,7 +79,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
       await updateAlbumMutation({
         id: album.id,
         title: title.trim(),
-        releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
+        releaseDate: releaseDate,
         artistId: artistId
       }).unwrap()
 

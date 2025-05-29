@@ -4,7 +4,7 @@ import { FileWithPath } from '@mantine/dropzone'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { toast } from 'react-toastify'
-import { addNewAlbumSchema, AddNewAlbumForm } from '../../../validation/albumsForm.ts'
+import { AddNewAlbumForm, addNewAlbumSchema } from '../../../validation/albumsForm.ts'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
@@ -14,7 +14,6 @@ import { DatePickerInput } from '@mantine/dates'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
 import { IconCalendarRepeat } from '@tabler/icons-react'
 import { ArtistSearch } from '../../../types/models/Search.ts'
-import dayjs from 'dayjs'
 
 interface AddNewAlbumModalProps {
   opened: boolean
@@ -52,7 +51,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
 
     const res = await createAlbumMutation({
       title: title,
-      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
+      releaseDate: releaseDate,
       artistId: artist?.id,
       artistName: artist ? undefined : artistName
     }).unwrap()

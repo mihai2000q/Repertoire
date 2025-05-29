@@ -29,7 +29,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
   const isLoading = isCreateAlbumLoading || isSaveImageLoading
 
   const [image, setImage] = useState<FileWithPath>(null)
-  const [releaseDate, setReleaseDate] = useState<string>(null)
+  const [releaseDate, setReleaseDate] = useState<string>()
 
   const onCloseWithImage = () => {
     onClose()
@@ -52,7 +52,7 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
 
     const res = await createAlbumMutation({
       title,
-      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
+      releaseDate,
       artistId
     }).unwrap()
 

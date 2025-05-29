@@ -42,7 +42,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
 
   const [image, setImage] = useState<FileWithPath>(null)
   const [album, setAlbum] = useState<AlbumSearch>(null)
-  const [releaseDate, setReleaseDate] = useState<string>(null)
+  const [releaseDate, setReleaseDate] = useState<string>()
   const [guitarTuning, setGuitarTuning] = useState<GuitarTuning>(null)
   const [difficulty, setDifficulty] = useState<Difficulty>(null)
   const [bpm, setBpm] = useState<string | number>()
@@ -86,7 +86,7 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
       description: '',
       artistId: album ? undefined : artistId,
       albumId: album?.id,
-      releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
+      releaseDate: releaseDate,
       guitarTuningId: guitarTuning?.id,
       difficulty: difficulty ?? undefined,
       bpm: typeof bpm === 'number' ? bpm : undefined,

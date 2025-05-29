@@ -741,8 +741,7 @@ describe('Add New Song Modal', () => {
       const newGuitarTuning = guitarTunings[0]
       const newDifficulty = Difficulty.Easy
       const newBpm = 123
-      const now = new Date()
-      const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const newReleaseDate = dayjs()
 
       // sections
       const newSectionType = songSectionTypes[0]
@@ -778,9 +777,7 @@ describe('Add New Song Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /bpm/i }), newBpm.toString())
 
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(
-        screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
-      )
+      await user.click(screen.getByRole('button', { name: newReleaseDate.format('D MMMM YYYY') }))
 
       // sections
       await user.click(screen.getByRole('button', { name: /add section/i }))
@@ -809,7 +806,7 @@ describe('Add New Song Modal', () => {
         guitarTuningId: newGuitarTuning.id,
         difficulty: newDifficulty,
         bpm: newBpm,
-        releaseDate: newReleaseDate.toISOString(),
+        releaseDate: newReleaseDate.format('YYYY-MM-DD'),
         sections: [
           {
             typeId: newSectionType.id,
