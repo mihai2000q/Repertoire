@@ -10,6 +10,7 @@ import (
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"time"
 )
 
 type SaveProfilePictureToUser struct {
@@ -48,6 +49,14 @@ func (s SaveProfilePictureToUser) Handle(file *multipart.FileHeader, token strin
 		return wrapper.NotFoundError(errors.New("user not found"))
 	}
 
+	if user.ProfilePictureURL != nil {
+		errCode = s.storageService.DeleteFile(*user.ProfilePictureURL)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
+	user.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetUserProfilePicturePath(file, user)
 
 	err = s.storageService.Upload(file, imagePath)

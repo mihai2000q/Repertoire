@@ -52,7 +52,7 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 }
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
-	p.ImageURL = p.ImageURL.ToFullURL(p.UpdatedAt)
+	p.ImageURL = p.ImageURL.ToFullURL()
 
 	if len(p.PlaylistSongs) == 0 {
 		return nil

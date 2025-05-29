@@ -34,6 +34,6 @@ func (u *User) BeforeSave(*gorm.DB) error {
 }
 
 func (u *User) AfterFind(*gorm.DB) error {
-	u.ProfilePictureURL = u.ProfilePictureURL.ToFullURL(u.UpdatedAt)
+	u.ProfilePictureURL = u.ProfilePictureURL.ToFullURL()
 	return nil
 }

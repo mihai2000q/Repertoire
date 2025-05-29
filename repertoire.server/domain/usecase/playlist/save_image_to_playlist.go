@@ -11,6 +11,7 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -46,6 +47,14 @@ func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *w
 		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 
+	if playlist.ImageURL != nil {
+		errCode := s.storageService.DeleteFile(*playlist.ImageURL)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
+	playlist.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetPlaylistImagePath(file, playlist)
 
 	err = s.storageService.Upload(file, imagePath)

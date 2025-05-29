@@ -11,6 +11,7 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -46,6 +47,14 @@ func (s SaveImageToAlbum) Handle(file *multipart.FileHeader, id uuid.UUID) *wrap
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
+	if album.ImageURL != nil {
+		errCode := s.storageService.DeleteFile(*album.ImageURL)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
+	album.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetAlbumImagePath(file, album)
 
 	err = s.storageService.Upload(file, imagePath)
