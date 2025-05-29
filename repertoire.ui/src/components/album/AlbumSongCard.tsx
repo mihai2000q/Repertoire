@@ -34,6 +34,8 @@ import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenu
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 
 interface AlbumSongCardProps {
   song: Song
@@ -67,6 +69,7 @@ function AlbumSongCard({
 
   const isSelected = hovered || isMenuOpened || isDragging || openedMenu
 
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -104,6 +107,7 @@ function AlbumSongCard({
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownAlbum && (
@@ -264,6 +268,12 @@ function AlbumSongCard({
 
       <MenuDropdown {...menuDropdownProps}>{menuDropdown}</MenuDropdown>
 
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
