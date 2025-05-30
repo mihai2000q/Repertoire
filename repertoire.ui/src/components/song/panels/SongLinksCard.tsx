@@ -16,7 +16,7 @@ function SongLinksCard({ song }: SongLinksCardProps) {
 
   return (
     <EditPanelCard p={'md'} ariaLabel={'song-links-card'} onEditClick={openEdit}>
-      <Stack>
+      <Stack gap={'xs'}>
         <Text fw={600}>Links</Text>
         <Stack gap={'xs'} align={'center'}>
           {!song.youtubeLink && !song.songsterrLink && (
