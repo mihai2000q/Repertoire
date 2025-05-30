@@ -1,26 +1,29 @@
 package requests
 
 import (
-	"time"
-
 	"github.com/google/uuid"
+	"repertoire/server/internal"
 )
 
 type GetAlbumRequest struct {
 	ID           uuid.UUID `validate:"required"`
-	SongsOrderBy []string  `form:"songsOrderBy"`
+	SongsOrderBy []string  `form:"songsOrderBy" validate:"order_by"`
 }
 
 type GetAlbumsRequest struct {
 	CurrentPage *int     `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
-	OrderBy     []string `form:"orderBy"`
-	SearchBy    []string `form:"searchBy"`
+	OrderBy     []string `form:"orderBy" validate:"order_by"`
+	SearchBy    []string `form:"searchBy" validate:"search_by"`
+}
+
+type GetAlbumFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy" validate:"search_by"`
 }
 
 type CreateAlbumRequest struct {
 	Title       string `validate:"required,max=100"`
-	ReleaseDate *time.Time
+	ReleaseDate *internal.Date
 	ArtistID    *uuid.UUID `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName  *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
@@ -33,7 +36,7 @@ type AddSongsToAlbumRequest struct {
 type UpdateAlbumRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`
-	ReleaseDate *time.Time
+	ReleaseDate *internal.Date
 	ArtistID    *uuid.UUID
 }
 

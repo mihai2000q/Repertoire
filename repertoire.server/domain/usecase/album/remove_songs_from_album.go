@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
@@ -14,15 +15,18 @@ import (
 
 type RemoveSongsFromAlbum struct {
 	repository              repository.AlbumRepository
+	transaction             transaction.Manager
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewRemoveSongsFromAlbum(
 	repository repository.AlbumRepository,
+	transaction transaction.Manager,
 	messagePublisherService service.MessagePublisherService,
 ) RemoveSongsFromAlbum {
 	return RemoveSongsFromAlbum{
 		repository:              repository,
+		transaction:             transaction,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -55,14 +59,20 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 	if len(songsToDelete) != len(request.SongIDs) {
 		return wrapper.NotFoundError(errors.New("could not find all songs"))
 	}
-	// TODO: TRANSACTION!!!
-	err = r.repository.RemoveSongs(&album, &songsToDelete)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
 
-	album.Songs = songsToPreserve
-	err = r.repository.UpdateWithAssociations(&album)
+	err = r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
+		albumRepo := factory.NewAlbumRepository()
+
+		if err := albumRepo.RemoveSongs(&album, &songsToDelete); err != nil {
+			return err
+		}
+
+		album.Songs = songsToPreserve
+		if err := albumRepo.UpdateWithAssociations(&album); err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

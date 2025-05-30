@@ -68,14 +68,26 @@ describe('Song Sections Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    vi.mock('../../../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+    server.listen()
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it('should render', () => {
-    const [{ rerender }] = reduxRender(<SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />)
+    const [{ rerender }] = reduxRender(
+      <SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />
+    )
 
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
@@ -95,9 +107,7 @@ describe('Song Sections Card', () => {
     }
     screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
 
-    rerender(
-      <SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />
-    )
+    rerender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
 
     expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
@@ -171,7 +181,9 @@ describe('Song Sections Card', () => {
       await user.click(screen.getByRole('button', { name: 'add-partial-rehearsal' }))
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
-      expect(screen.getByText(/increase sections' rehearsals .* partial occurrences/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/increase sections' rehearsals .* partial occurrences/i)
+      ).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: 'confirm' }))
 

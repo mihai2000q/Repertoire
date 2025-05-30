@@ -34,13 +34,13 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
-import DifficultyBar from '../../@ui/misc/DifficultyBar.tsx'
+import DifficultyBar from '../../@ui/bar/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
-import SongConfidenceBar from '../../@ui/misc/SongConfidenceBar.tsx'
-import SongProgressBar from '../../@ui/misc/SongProgressBar.tsx'
-import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
+import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
@@ -195,7 +195,7 @@ function SongDrawer() {
                     cursor: 'pointer',
                     '&:hover': { textDecoration: 'underline' }
                   }}
-                  inline
+                  lh={'xxs'}
                   lineClamp={1}
                 >
                   {song.artist.name}
@@ -206,15 +206,15 @@ function SongDrawer() {
             {song.album && (
               <Group gap={0} wrap={'nowrap'}>
                 {song.artist && (
-                  <Text fw={500} c={'dimmed'} inline pr={4}>
+                  <Text fw={500} c={'dimmed'} lh={'xxs'} pr={4}>
                     on
                   </Text>
                 )}
-                <HoverCard shadow={'lg'} withArrow>
+                <HoverCard>
                   <HoverCard.Target>
                     <Text
                       fw={600}
-                      inline
+                      lh={'xxs'}
                       c={'dark'}
                       sx={{
                         cursor: 'pointer',
@@ -245,7 +245,7 @@ function SongDrawer() {
                         <Text fw={500} fz={'xs'} inline>
                           Album
                         </Text>
-                        <Text fw={600} fz={'md'} inline lineClamp={2}>
+                        <Text fw={600} fz={'md'} lh={'xxs'} lineClamp={2}>
                           {song.album.title}
                         </Text>
                         {song.album.releaseDate && (
@@ -361,7 +361,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMM YYYY')}</Text>
+                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMMM YYYY')}</Text>
                 </Grid.Col>
               </>
             )}
@@ -389,7 +389,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <SongConfidenceBar confidence={song.confidence} size={7} />
+                  <ConfidenceBar confidence={song.confidence} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -402,7 +402,7 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <SongProgressBar progress={song.progress} size={7} />
+                  <ProgressBar progress={song.progress} size={7} />
                 </Grid.Col>
               </>
             )}
@@ -415,6 +415,7 @@ function SongDrawer() {
               {song.songsterrLink && (
                 <Tooltip label={'Open Songsterr'}>
                   <Anchor
+                    aria-label={'songsterr'}
                     underline={'never'}
                     href={song.songsterrLink}
                     target="_blank"

@@ -1,12 +1,16 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Playlists from './Playlists.tsx'
-import { emptyPlaylist, reduxRouterRender } from '../test-utils.tsx'
+import { defaultPlaylistFiltersMetadata, emptyPlaylist, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Playlist from '../types/models/Playlist.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
+import playlistsOrders from '../data/playlists/playlistsOrders.ts'
+import PlaylistProperty from '../types/enums/PlaylistProperty.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -55,19 +59,32 @@ describe('Playlists', () => {
         totalCount: totalCount
       }
       return HttpResponse.json(response)
+    }),
+    http.get('/playlists/filters-metadata', async () => {
+      return HttpResponse.json(defaultPlaylistFiltersMetadata)
     })
   ]
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+  })
 
   afterEach(() => {
     window.location.search = ''
     server.resetHandlers()
   })
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it('should render and display relevant info when there are playlists', async () => {
     const [_, store] = reduxRouterRender(<Playlists />)
@@ -174,5 +191,78 @@ describe('Playlists', () => {
 
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-playlist-card')).toBeInTheDocument()
+  })
+
+  it('should order the playlists', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = playlistsOrders[1]
+    const newOrder = playlistsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/playlists', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Playlist> = {
+          models: playlists,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Playlists />)
+
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
+    )
+
+    await user.click(screen.getByRole('button', { name: 'order-playlists' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([
+        newOrder.property + ' ' + OrderType.Ascending,
+        initialOrder.property + ' ' + initialOrder.type
+      ])
+    )
+  })
+
+  it('should filter the playlists by min Songs', async () => {
+    const user = userEvent.setup()
+
+    const newMinSongsValue = 1
+
+    let searchBy: string[]
+    server.use(
+      http.get('/playlists', (req) => {
+        searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+        const response: WithTotalCountResponse<Playlist> = {
+          models: playlists,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Playlists />)
+
+    await waitFor(() => expect(searchBy).toStrictEqual([]))
+
+    await user.click(screen.getByRole('button', { name: 'filter-playlists' }))
+
+    await user.clear(screen.getByRole('textbox', { name: /min songs/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /min songs/i }),
+      newMinSongsValue.toString()
+    )
+    await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+    await waitFor(() => {
+      expect(searchBy).toStrictEqual([
+        `${PlaylistProperty.Songs} ${FilterOperator.GreaterThanOrEqual} ${newMinSongsValue}`
+      ])
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })

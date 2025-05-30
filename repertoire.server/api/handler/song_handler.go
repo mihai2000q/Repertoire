@@ -35,13 +35,13 @@ func (s SongHandler) Get(c *gin.Context) {
 		return
 	}
 
-	user, errorCode := s.service.Get(id)
+	song, errorCode := s.service.Get(id)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, song)
 }
 
 func (s SongHandler) GetAll(c *gin.Context) {
@@ -61,6 +61,31 @@ func (s SongHandler) GetAll(c *gin.Context) {
 	token := s.GetTokenFromContext(c)
 
 	result, errorCode := s.service.GetAll(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (s SongHandler) GetFiltersMetadata(c *gin.Context) {
+	var request requests.GetSongFiltersMetadataRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := s.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := s.GetTokenFromContext(c)
+
+	result, errorCode := s.service.GetFiltersMetadata(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

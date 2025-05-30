@@ -1,8 +1,9 @@
 import { Button, Group, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditBandMemberForm, editBandMemberValidation } from '../../../validation/artistsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditBandMemberForm, editBandMemberSchema } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
 import {
@@ -11,10 +12,10 @@ import {
   useUpdateBandMemberMutation
 } from '../../../state/api/artistsApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
-import BandMemberRoleMultiSelect from '../../@ui/form/select/BandMemberRoleMultiSelect.tsx'
+import BandMemberRoleMultiSelect from '../../@ui/form/select/multi/BandMemberRoleMultiSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { BandMember } from '../../../types/models/Artist.ts'
-import ColorInputButton from '../../@ui/form/input/ColorInputButton.tsx'
+import ColorInputButton from '../../@ui/form/input/button/ColorInputButton.tsx'
 import bandMemberColorSwatches from '../../../data/artist/bandMemberColorSwatches.ts'
 
 interface EditBandMemberModalProps {
@@ -30,7 +31,9 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
     useDeleteImageFromBandMemberMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [memberHasChanged, setMemberHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = memberHasChanged || imageHasChanged
 
   function areRolesEqual() {
     if (roleIds.length !== bandMember.roles.length) return false
@@ -42,25 +45,23 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
     return true
   }
 
-  const form = useForm({
+  const form = useForm<EditBandMemberForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: bandMember.name,
       color: bandMember.color,
       image: bandMember.imageUrl,
-      roleIds: bandMember.roles.map(role => role.id)
-    } as EditBandMemberForm,
+      roleIds: bandMember.roles.map((role) => role.id)
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editBandMemberValidation),
+    validate: zod4Resolver(editBandMemberSchema),
     onValuesChange: (values) => {
-      setHasChanged(
-        values.name !== bandMember.name ||
-          values.image !== bandMember.imageUrl ||
-          values.color !== bandMember.color ||
-          !areRolesEqual()
+      setMemberHasChanged(
+        values.name !== bandMember.name || values.color !== bandMember.color || !areRolesEqual()
       )
+      setImageHasChanged(values.image !== bandMember.imageUrl)
     }
   })
 
@@ -68,44 +69,35 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
   useEffect(() => form.setFieldValue('color', color), [color])
 
   const [roleIds, setRoleIds] = useState<string[]>(bandMember.roles.map((r) => r.id))
-  const [rolesError, setRolesError] = useState<boolean>(false)
   useDidUpdate(() => {
     form.setFieldValue('roleIds', roleIds)
-    setRolesError(roleIds.length === 0)
+    form.validateField('roleIds')
   }, [roleIds])
 
   const [image, setImage] = useState<FileWithPath | string>(bandMember.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
   useDidUpdate(() => setImage(bandMember.imageUrl), [bandMember])
 
-  async function addBandMember({ name, color, image }: EditBandMemberForm) {
-    if (roleIds.length === 0) {
-      setRolesError(true)
-      return
-    }
+  async function addBandMember({ name, color, image, roleIds }: EditBandMemberForm) {
+    if (memberHasChanged)
+      await updateBandMemberMutation({
+        id: bandMember.id,
+        name: name.trim(),
+        color: color,
+        roleIds: roleIds
+      }).unwrap()
 
-    name = name.trim()
-
-    await updateBandMemberMutation({
-      id: bandMember.id,
-      name: name,
-      color: color,
-      roleIds: roleIds
-    }).unwrap()
-
-    if (image && typeof image !== 'string') {
+    if (image && typeof image !== 'string')
       await saveImageMutation({
         id: bandMember.id,
-        image: image
+        image: image as FileWithPath
       })
-    } else if (!image && bandMember.imageUrl) {
-      await deleteImageMutation(bandMember.id)
-    }
+    else if (!image && bandMember.imageUrl) await deleteImageMutation(bandMember.id)
 
     toast.info(`${name} updated!`)
     onClose()
-    setHasChanged(false)
-    setRolesError(false)
+    setMemberHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (
@@ -152,7 +144,7 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
                   placeholder={'Select roles'}
                   withAsterisk
                   pr={'lg'}
-                  error={rolesError && 'Please select at least one role'}
+                  error={form.getInputProps('roleIds').error}
                 />
               </Stack>
             </Group>

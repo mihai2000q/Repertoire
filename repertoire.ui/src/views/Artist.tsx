@@ -1,4 +1,4 @@
-import { Divider, Grid, Stack } from '@mantine/core'
+import { Divider, Flex, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { useGetArtistQuery } from '../state/api/artistsApi.ts'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
@@ -12,8 +12,13 @@ import ArtistSongsCard from '../components/artist/panels/ArtistSongsCard.tsx'
 import ArtistHeaderCard from '../components/artist/panels/ArtistHeaderCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import BandMembersCard from '../components/artist/panels/BandMembersCard.tsx'
-import { useLocalStorage } from '@mantine/hooks'
-import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import AlbumProperty from '../types/enums/AlbumProperty.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
 
 function Artist() {
   const params = useParams()
@@ -32,32 +37,45 @@ function Artist() {
     key: LocalStorageKeys.ArtistAlbumsOrder,
     defaultValue: artistAlbumsOrders[0]
   })
+  const albumsOrderBy = useOrderBy([albumsOrder])
+  const albumsSearchBy = useSearchBy(
+    isUnknownArtist
+      ? [{ property: AlbumProperty.ArtistId, operator: FilterOperator.IsNull }]
+      : [{ property: AlbumProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }]
+  )
+
   const [songsOrder, setSongsOrder] = useLocalStorage({
     key: LocalStorageKeys.ArtistSongsOrder,
     defaultValue: artistSongsOrders[0]
   })
+  const songsOrderBy = useOrderBy([songsOrder])
+  const songsSearchBy = useSearchBy(
+    isUnknownArtist
+      ? [{ property: SongProperty.ArtistId, operator: FilterOperator.IsNull }]
+      : [{ property: SongProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }]
+  )
 
   const {
     data: albums,
     isLoading: isAlbumsLoading,
     isFetching: isAlbumsFetching
   } = useGetAlbumsQuery({
-    orderBy: [albumsOrder.value],
-    searchBy: [isUnknownArtist ? 'artist_id IS NULL' : `artist_id = '${artistId}'`]
+    orderBy: albumsOrderBy,
+    searchBy: albumsSearchBy
   })
   const {
     data: songs,
     isLoading: isSongsLoading,
     isFetching: isSongsFetching
   } = useGetSongsQuery({
-    orderBy: [songsOrder.value],
-    searchBy: [isUnknownArtist ? 'songs.artist_id IS NULL' : `songs.artist_id = '${artistId}'`]
+    orderBy: songsOrderBy,
+    searchBy: songsSearchBy
   })
 
   if (isLoading || (!artist && !isUnknownArtist)) return <ArtistLoader />
 
   return (
-    <Stack px={'xl'}>
+    <Stack h={'100%'} px={'xl'} gap={'16px'}>
       <ArtistHeaderCard
         artist={artist}
         albumsTotalCount={albums?.totalCount}
@@ -67,9 +85,9 @@ function Artist() {
 
       <Divider />
 
-      <Grid align={'flex-start'}>
-        <Grid.Col span={{ sm: 12, md: 6.5 }}>
-          <Stack>
+      <Grid align={'start'} mih={340} mb={8} styles={{ inner: { height: `100%` } }}>
+        <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
+          <Stack h={'100%'}>
             {!isUnknownArtist && artist.isBand && (
               <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
             )}
@@ -86,16 +104,18 @@ function Artist() {
           </Stack>
         </Grid.Col>
 
-        <Grid.Col span={{ sm: 12, md: 5.5 }}>
-          <ArtistSongsCard
-            songs={songs}
-            isLoading={isSongsLoading}
-            isFetching={isSongsFetching}
-            isUnknownArtist={isUnknownArtist}
-            order={songsOrder}
-            setOrder={setSongsOrder}
-            artistId={artist?.id}
-          />
+        <Grid.Col span={{ sm: 12, md: 5.5 }} h={'100%'}>
+          <Flex mah={'100%'}>
+            <ArtistSongsCard
+              songs={songs}
+              isLoading={isSongsLoading}
+              isFetching={isSongsFetching}
+              isUnknownArtist={isUnknownArtist}
+              order={songsOrder}
+              setOrder={setSongsOrder}
+              artistId={artist?.id}
+            />
+          </Flex>
         </Grid.Col>
       </Grid>
     </Stack>

@@ -14,40 +14,30 @@ import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import Playlist from '../../types/models/Playlist.ts'
-import {
-  useMoveSongFromPlaylistMutation,
-  useRemoveSongsFromPlaylistMutation
-} from '../../state/api/playlistsApi.ts'
-import { useDidUpdate, useDisclosure, useListState, useLocalStorage } from '@mantine/hooks'
+import { useMoveSongFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
+import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
 import Song from '../../types/models/Song.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import LocalStorageKeys from '../../utils/enums/LocalStorageKeys.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import Order from '../../types/Order.ts'
+import { Dispatch, SetStateAction } from 'react'
 
 interface PlaylistSongsCardProps {
   playlist: Playlist
+  order: Order
+  setOrder: Dispatch<SetStateAction<Order>>
   isFetching?: boolean
 }
 
-function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
+function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSongsCardProps) {
   const [moveSongFromPlaylist, { isLoading: isMoveLoading }] = useMoveSongFromPlaylistMutation()
-  const [removeSongsFromPlaylist] = useRemoveSongsFromPlaylistMutation()
-
-  const [order, setOrder] = useLocalStorage({
-    key: LocalStorageKeys.PlaylistSongsOrder,
-    defaultValue: playlistSongsOrders[0]
-  })
 
   const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 
   const [internalSongs, { reorder, setState }] = useListState<Song>(playlist.songs)
   useDidUpdate(() => setState(playlist.songs), [playlist])
-
-  function handleRemoveSongsFromPlaylist(songIds: string[]) {
-    removeSongsFromPlaylist({ id: playlist.id, songIds })
-  }
 
   function onSongsDragEnd({ source, destination }) {
     reorder({ from: source.index, to: destination?.index || 0 })
@@ -109,7 +99,8 @@ function PlaylistSongsCard({ playlist, isFetching }: PlaylistSongsCardProps) {
                         <PlaylistSongCard
                           key={song.id}
                           song={song}
-                          handleRemove={() => handleRemoveSongsFromPlaylist([song.id])}
+                          playlistId={playlist.id}
+                          order={order}
                           isDragging={snapshot.isDragging}
                           draggableProvided={provided}
                         />

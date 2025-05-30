@@ -8,10 +8,19 @@ import (
 	"github.com/google/uuid"
 )
 
+type EnhancedAlbum struct {
+	Album
+	SongsCount     float64    `gorm:"->" json:"songsCount"`
+	Rehearsals     float64    `gorm:"->" json:"rehearsals"`
+	Confidence     float64    `gorm:"->" json:"confidence"`
+	Progress       float64    `gorm:"->" json:"progress"`
+	LastTimePlayed *time.Time `gorm:"->" json:"lastTimePlayed"`
+}
+
 type Album struct {
 	ID          uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title       string             `gorm:"size:100; not null" json:"title"`
-	ReleaseDate *time.Time         `json:"releaseDate"`
+	ReleaseDate *internal.Date     `json:"releaseDate"`
 	ImageURL    *internal.FilePath `json:"imageUrl"`
 	ArtistID    *uuid.UUID         `json:"artistId"`
 	Artist      *Artist            `json:"artist"`
@@ -28,10 +37,10 @@ func (a *Album) BeforeSave(*gorm.DB) error {
 }
 
 func (a *Album) AfterFind(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.ToFullURL(a.UpdatedAt)
+	a.ImageURL = a.ImageURL.ToFullURL()
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if a.Artist != nil {
-		a.Artist.ImageURL = a.Artist.ImageURL.ToFullURL(a.Artist.UpdatedAt)
+		a.Artist.ImageURL = a.Artist.ImageURL.ToFullURL()
 	}
 	return nil
 }

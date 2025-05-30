@@ -1,21 +1,48 @@
 import Order from '../../types/Order.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
 
 const albumSongsOrders: Order[] = [
-  { value: 'album_track_no asc', label: 'Track Number', property: SongProperty.AlbumTrackNo },
-  { value: 'title asc', label: 'Alphabetically', property: SongProperty.Title },
   {
-    value: 'difficulty desc nulls last, album_track_no asc',
-    label: 'Difficulty',
-    property: SongProperty.Difficulty
+    label: 'Track Number',
+    property: SongProperty.AlbumTrackNo,
+    type: OrderType.Ascending
   },
-  { value: 'rehearsals desc, album_track_no asc', label: 'Rehearsals', property: SongProperty.Rehearsals },
-  { value: 'confidence desc, album_track_no asc', label: 'Confidence', property: SongProperty.Confidence },
-  { value: 'progress desc, album_track_no asc', label: 'Progress', property: SongProperty.Progress },
+  { label: 'Alphabetically', property: SongProperty.Title },
   {
-    value: 'last_time_played desc nulls last, album_track_no asc',
-    label: 'Last Time Played',
-    property: SongProperty.LastTimePlayed
+    label: 'Difficulty',
+    property: SongProperty.Difficulty,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.AlbumTrackNo }]
+  },
+  {
+    label: 'Rehearsals',
+    property: SongProperty.Rehearsals,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.AlbumTrackNo }]
+  },
+  {
+    label: 'Confidence',
+    property: SongProperty.Confidence,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.AlbumTrackNo }]
+  },
+  {
+    label: 'Progress',
+    property: SongProperty.Progress,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.AlbumTrackNo }]
+  },
+  {
+    label: 'Last Played',
+    property: SongProperty.LastPlayed,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: SongProperty.AlbumTrackNo }]
   }
 ]
 

@@ -8,6 +8,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type EnhancedArtist struct {
+	Artist
+	BandMembersCount float64    `gorm:"->" json:"bandMembersCount"`
+	AlbumsCount      float64    `gorm:"->" json:"albumsCount"`
+	SongsCount       float64    `gorm:"->" json:"songsCount"`
+	Rehearsals       float64    `gorm:"->" json:"rehearsals"`
+	Confidence       float64    `gorm:"->" json:"confidence"`
+	Progress         float64    `gorm:"->" json:"progress"`
+	LastTimePlayed   *time.Time `gorm:"->" json:"lastTimePlayed"`
+}
+
 type Artist struct {
 	ID       uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Name     string             `gorm:"size:100; not null" json:"name"`
@@ -29,7 +40,7 @@ func (a *Artist) BeforeSave(*gorm.DB) error {
 }
 
 func (a *Artist) AfterFind(*gorm.DB) error {
-	a.ImageURL = a.ImageURL.ToFullURL(a.UpdatedAt)
+	a.ImageURL = a.ImageURL.ToFullURL()
 	return nil
 }
 
@@ -58,6 +69,6 @@ func (b *BandMember) BeforeSave(*gorm.DB) error {
 }
 
 func (b *BandMember) AfterFind(*gorm.DB) error {
-	b.ImageURL = b.ImageURL.ToFullURL(b.UpdatedAt)
+	b.ImageURL = b.ImageURL.ToFullURL()
 	return nil
 }

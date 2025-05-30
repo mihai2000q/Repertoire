@@ -144,7 +144,7 @@ func TestUpdateSongSection_WhenSuccessfulWithRehearsals_ShouldUpdateSectionUpdat
 
 	var newSection model.SongSection
 	db.Preload("Song").
-		Preload("History", func(*gorm.DB) *gorm.DB {
+		Preload("History", func(db *gorm.DB) *gorm.DB {
 			return db.Order("created_at")
 		}).
 		Find(&newSection, &model.SongSection{ID: request.ID})
@@ -192,7 +192,7 @@ func TestUpdateSongSection_WhenSuccessfulWithConfidenceIncreasing_ShouldUpdateSe
 
 	var newSection model.SongSection
 	db.Preload("Song").
-		Preload("History", func(*gorm.DB) *gorm.DB {
+		Preload("History", func(db *gorm.DB) *gorm.DB {
 			return db.Order("created_at")
 		}).
 		Find(&newSection, &model.SongSection{ID: request.ID})

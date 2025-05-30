@@ -51,6 +51,20 @@ func (s *SongRepositoryMock) GetWithAssociations(song *model.Song, id uuid.UUID)
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetFiltersMetadata(
+	metadata *model.SongFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	args := s.Called(metadata, userID, searchBy)
+
+	if len(args) > 1 {
+		*metadata = *args.Get(1).(*model.SongFiltersMetadata)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
 	args := s.Called(songs, albumID)
 
@@ -102,7 +116,7 @@ func (s *SongRepositoryMock) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, 
 }
 
 func (s *SongRepositoryMock) GetAllByUser(
-	songs *[]model.Song,
+	songs *[]model.EnhancedSong,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -112,7 +126,7 @@ func (s *SongRepositoryMock) GetAllByUser(
 	args := s.Called(songs, userID, currentPage, pageSize, orderBy, searchBy)
 
 	if len(args) > 1 {
-		*songs = *args.Get(1).(*[]model.Song)
+		*songs = *args.Get(1).(*[]model.EnhancedSong)
 	}
 
 	return args.Error(0)

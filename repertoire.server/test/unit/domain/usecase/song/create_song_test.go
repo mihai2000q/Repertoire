@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -207,7 +208,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"Create song with new album and artist",
 			requests.CreateSongRequest{
 				Title:       "Some Song",
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				AlbumTitle:  &[]string{"New Album Title"}[0],
 				ArtistName:  &[]string{"New Artist Name"}[0],
 			},
@@ -221,7 +222,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			},
 			&model.Album{
 				ID:          requestAlbumID,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				Songs:       []model.Song{{}, {}, {}, {}, {}},
 			},
 		},

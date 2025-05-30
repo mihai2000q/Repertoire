@@ -86,9 +86,8 @@ func TestGetAll_WhenGetArtistsCountFails_ShouldReturnInternalServerError(t *test
 	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
-	expectedArtists := &[]model.Artist{
-		{Name: "Some Artist"},
-		{Name: "Some other Artist"},
+	expectedArtists := &[]model.EnhancedArtist{
+		{Artist: model.Artist{Name: "Some Artist"}},
 	}
 
 	userID := uuid.New()
@@ -141,9 +140,9 @@ func TestGetAll_WhenSuccessful_ShouldReturnArtistsWithTotalCount(t *testing.T) {
 	request := requests.GetArtistsRequest{}
 	token := "This is a token"
 
-	expectedArtists := &[]model.Artist{
-		{Name: "Some Artist"},
-		{Name: "Some other Artist"},
+	expectedArtists := &[]model.EnhancedArtist{
+		{Artist: model.Artist{Name: "Some Artist"}},
+		{Artist: model.Artist{Name: "Some Other Artist"}},
 	}
 	expectedTotalCount := &[]int64{20}[0]
 

@@ -1,5 +1,5 @@
 import { render, renderHook, RenderHookResult, RenderResult } from '@testing-library/react'
-import { MantineProvider } from '@mantine/core'
+import { Combobox, MantineProvider, Modal, Popover, Tooltip } from '@mantine/core'
 import { theme } from './theme/theme'
 import { ReactNode } from 'react'
 import { Provider } from 'react-redux'
@@ -14,6 +14,12 @@ import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
 import User from './types/models/User.ts'
 import Playlist from './types/models/Playlist.ts'
+import {
+  AlbumFiltersMetadata,
+  ArtistFiltersMetadata,
+  PlaylistFiltersMetadata,
+  SongFiltersMetadata
+} from './types/models/FiltersMetadata.ts'
 
 // Custom Matchers
 
@@ -47,13 +53,74 @@ expect.extend({
       pass: equalType && equalName && equalContent,
       message: () => `received form data image is${isNot ? ' not' : ''} the expected image`
     }
+  },
+
+  async toBeExternalLink(received: HTMLElement, link: string) {
+    if (!received) {
+      return {
+        pass: false,
+        message: () => `Expected element to exist but received ${received}`
+      }
+    }
+
+    const hrefCheck = received.getAttribute('href') === link
+    const targetCheck = received.getAttribute('target') === '_blank'
+    const relCheck = received.getAttribute('rel')?.includes('noreferrer')
+
+    if (hrefCheck && targetCheck && relCheck) {
+      return {
+        pass: true,
+        message: () => `Expected element not to be an external link to ${link}`
+      }
+    }
+
+    const errors = []
+    if (!hrefCheck) errors.push(`href to be "${link}" (got "${received.getAttribute('href')}")`)
+    if (!targetCheck)
+      errors.push(`target to be "_blank" (got "${received.getAttribute('target')}")`)
+    if (!relCheck)
+      errors.push(`rel to include "noreferrer" (got "${received.getAttribute('rel')}")`)
+
+    return {
+      pass: false,
+      message: () => `Expected element to be an external link, but:\n${errors.join('\n')}`
+    }
   }
 })
 
 // Custom Renders
 
 const MantineProviderComponent = ({ children }: { children: ReactNode }) => (
-  <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+  <MantineProvider
+    theme={{
+      ...theme,
+      components: {
+        ...theme.components,
+        Combobox: Combobox.extend({
+          defaultProps: {
+            transitionProps: { duration: 0 }
+          }
+        }),
+        Modal: Modal.extend({
+          defaultProps: {
+            transitionProps: { duration: 0 }
+          }
+        }),
+        Popover: Popover.extend({
+          defaultProps: {
+            hideDetached: false, // otherwise hidden in the unit tests,
+            transitionProps: { duration: 0 }
+          }
+        }),
+        Tooltip: Tooltip.extend({
+          defaultProps: {
+            transitionProps: { duration: 0 }
+          }
+        })
+      }
+    }}
+    stylesTransform={emotionTransform}
+  >
     <MantineEmotionProvider>{children}</MantineEmotionProvider>
   </MantineProvider>
 )
@@ -225,7 +292,10 @@ export const emptyAlbum: Album = {
   id: '',
   songs: [],
   title: '',
-  updatedAt: ''
+  updatedAt: '',
+  rehearsals: 0,
+  confidence: 0,
+  progress: 0
 }
 
 export const emptySong: Song = {
@@ -242,7 +312,9 @@ export const emptySong: Song = {
   releaseDate: null,
   settings: {
     id: ''
-  }
+  },
+  solosCount: 0,
+  riffsCount: 0
 }
 
 export const emptyPlaylist: Playlist = {
@@ -274,5 +346,73 @@ export const emptySongSection: SongSection = {
 
 export const emptyOrder: Order = {
   label: '',
-  value: ''
+  property: ''
+}
+
+export const defaultArtistFiltersMetadata: ArtistFiltersMetadata = {
+  minBandMembersCount: 0,
+  maxBandMembersCount: 5,
+
+  minAlbumsCount: 0,
+  maxAlbumsCount: 5,
+
+  minSongsCount: 0,
+  maxSongsCount: 12,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
+
+export const defaultAlbumFiltersMetadata: AlbumFiltersMetadata = {
+  artistIds: [],
+
+  minSongsCount: 0,
+  maxSongsCount: 12,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
+
+export const defaultSongFiltersMetadata: SongFiltersMetadata = {
+  artistIds: [],
+  albumIds: [],
+
+  difficulties: [],
+  guitarTuningIds: [],
+  instrumentIds: [],
+
+  minSectionsCount: 0,
+  maxSectionsCount: 15,
+
+  minSolosCount: 0,
+  maxSolosCount: 5,
+
+  minRiffsCount: 1,
+  maxRiffsCount: 5,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
+
+export const defaultPlaylistFiltersMetadata: PlaylistFiltersMetadata = {
+  minSongsCount: 0,
+  maxSongsCount: 12
 }

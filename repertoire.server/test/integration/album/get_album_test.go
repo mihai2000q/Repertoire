@@ -46,8 +46,7 @@ func TestGetAlbum_WhenSuccessful_ShouldReturnAlbumWithSongsOrderedByTrackNo(t *t
 	db := utils.GetDatabase(t)
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
 		return db.Order("album_track_no")
-	}).
-		Joins("Artist").
+	}).Joins("Artist").
 		Find(&album, album.ID)
 
 	assertion.ResponseAlbum(t, album, responseAlbum, true, true)
@@ -58,11 +57,11 @@ func TestGetAlbum_WhenRequestHasSongsOrderBy_ShouldReturnAlbumAndSongsOrderedByQ
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 	album := albumData.Albums[0]
-	songsOder := "title desc"
+	songsOrder := "title desc"
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().GET(w, "/api/albums/"+album.ID.String()+"?songsOrderBy="+songsOder)
+	core.NewTestHandler().GET(w, "/api/albums/"+album.ID.String()+"?songsOrderBy="+songsOrder)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -72,7 +71,7 @@ func TestGetAlbum_WhenRequestHasSongsOrderBy_ShouldReturnAlbumAndSongsOrderedByQ
 
 	db := utils.GetDatabase(t)
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB {
-		return db.Order(songsOder)
+		return db.Order(songsOrder)
 	}).
 		Joins("Artist").
 		Find(&album, album.ID)

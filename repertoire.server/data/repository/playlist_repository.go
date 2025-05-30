@@ -1,19 +1,19 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
-	GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error
+	GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOrderBy []string) error
+	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByUser(
-		playlists *[]model.Playlist,
+		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
 		currentPage *int,
 		pageSize *int,
@@ -50,20 +50,43 @@ func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong
 		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
 }
 
-func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
+func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOrderBy []string) error {
 	return p.client.
 		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
-			return db.
+			tx := db.
+				Joins("JOIN songs ON songs.id = playlist_songs.song_id").
 				Preload("Song").
 				Preload("Song.Artist").
-				Preload("Song.Album").
-				Order("song_track_no")
+				Preload("Song.Album")
+			return database.OrderBy(tx, songsOrderBy)
 		}).
 		Find(&playlist, model.Playlist{ID: id}).Error
 }
 
+func (p playlistRepository) GetFiltersMetadata(
+	metadata *model.PlaylistFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	tx := p.client.
+		Select(
+			"MIN(COALESCE(ss.songs_count, 0)) AS min_songs_count",
+			"MAX(COALESCE(ss.songs_count, 0)) AS max_songs_count",
+		).
+		Table("playlists").
+		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
+		Where("user_id = ?", userID)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+
+	database.SearchBy(tx, searchBy)
+	return tx.Scan(&metadata).Error
+}
+
+var compoundPlaylistsFields = []string{"songs_count"}
+
 func (p playlistRepository) GetAllByUser(
-	playlists *[]model.Playlist,
+	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -71,18 +94,31 @@ func (p playlistRepository) GetAllByUser(
 	searchBy []string,
 ) error {
 	tx := p.client.Model(&model.Playlist{}).
-		Preload("Songs").
+		Select(
+			"playlists.*",
+			"COALESCE(ss.songs_count, 0) AS songs_count",
+			" ss.song_ids as song_ids",
+		).
+		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
-	tx = database.SearchBy(tx, searchBy)
-	tx = database.OrderBy(tx, orderBy)
-	tx = database.Paginate(tx, currentPage, pageSize)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+	orderBy = database.AddCoalesceToCompoundFields(orderBy, compoundPlaylistsFields)
+
+	database.SearchBy(tx, searchBy)
+	database.OrderBy(tx, orderBy)
+	database.Paginate(tx, currentPage, pageSize)
 	return tx.Find(&playlists).Error
 }
 
 func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
 	tx := p.client.Model(&model.Playlist{}).
+		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
-	tx = database.SearchBy(tx, searchBy)
+
+	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundPlaylistsFields)
+
+	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
 }
 
@@ -122,4 +158,12 @@ func (p playlistRepository) Delete(id uuid.UUID) error {
 
 func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {
 	return p.client.Delete(&playlistSongs).Error
+}
+
+func (p playlistRepository) getSongsByPlaylistSubQuery(userID uuid.UUID) *gorm.DB {
+	return p.client.Model(&model.PlaylistSong{}).
+		Select("playlist_id, COUNT(*) as songs_count, JSON_AGG(song_id) as song_ids").
+		Joins("JOIN playlists ON playlists.id = playlist_songs.playlist_id").
+		Where("playlists.user_id = ?", userID).
+		Group("playlist_id")
 }

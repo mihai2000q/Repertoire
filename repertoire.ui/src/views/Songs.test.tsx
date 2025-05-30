@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Songs from './Songs.tsx'
-import { emptySong, reduxRouterRender } from '../test-utils.tsx'
+import { defaultSongFiltersMetadata, emptySong, reduxRouterRender } from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Song, { GuitarTuning, SongSectionType } from '../types/models/Song.ts'
@@ -8,6 +8,10 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import songsOrders from '../data/songs/songsOrders.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -68,19 +72,32 @@ describe('Songs', () => {
     http.get('/songs/sections/types', async () => {
       const response: SongSectionType[] = []
       return HttpResponse.json(response)
+    }),
+    http.get('/songs/filters-metadata', async () => {
+      return HttpResponse.json(defaultSongFiltersMetadata)
     })
   ]
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+  })
 
   afterEach(() => {
     window.location.search = ''
     server.resetHandlers()
   })
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it('should render and display relevant info when there are songs', async () => {
     const [_, store] = reduxRouterRender(<Songs />)
@@ -187,5 +204,78 @@ describe('Songs', () => {
 
     expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-song-card')).toBeInTheDocument()
+  })
+
+  it('should order the songs', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = songsOrders[1]
+    const newOrder = songsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/songs', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Song> = {
+          models: songs,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Songs />)
+
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
+    )
+
+    await user.click(screen.getByRole('button', { name: 'order-songs' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([
+        newOrder.property + ' ' + OrderType.Ascending,
+        initialOrder.property + ' ' + initialOrder.type
+      ])
+    )
+  })
+
+  it('should filter the songs by min Solos', async () => {
+    const user = userEvent.setup()
+
+    const newMinSolosValue = 1
+
+    let searchBy: string[]
+    server.use(
+      http.get('/songs', (req) => {
+        searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+        const response: WithTotalCountResponse<Song> = {
+          models: songs,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Songs />)
+
+    await waitFor(() => expect(searchBy).toStrictEqual([]))
+
+    await user.click(screen.getByRole('button', { name: 'filter-songs' }))
+
+    await user.clear(screen.getByRole('textbox', { name: /min solos/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /min solos/i }),
+      newMinSolosValue.toString()
+    )
+    await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+    await waitFor(() => {
+      expect(searchBy).toStrictEqual([
+        `${SongProperty.Solos} ${FilterOperator.GreaterThanOrEqual} ${newMinSolosValue}`
+      ])
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })

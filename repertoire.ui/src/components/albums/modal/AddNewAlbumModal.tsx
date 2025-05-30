@@ -1,9 +1,10 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { toast } from 'react-toastify'
-import { AddNewAlbumForm, addNewAlbumValidation } from '../../../validation/albumsForm.ts'
+import { AddNewAlbumForm, addNewAlbumSchema } from '../../../validation/albumsForm.ts'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
@@ -11,7 +12,7 @@ import {
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { DatePickerInput } from '@mantine/dates'
 import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
-import { IconCalendarFilled } from '@tabler/icons-react'
+import { IconCalendarRepeat } from '@tabler/icons-react'
 import { ArtistSearch } from '../../../types/models/Search.ts'
 
 interface AddNewAlbumModalProps {
@@ -33,15 +34,15 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
     setImage(null)
   }
 
-  const form = useForm({
+  const form = useForm<AddNewAlbumForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: ''
-    } as AddNewAlbumForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(addNewAlbumValidation)
+    validate: zod4Resolver(addNewAlbumSchema)
   })
 
   async function addAlbum({ title, artistName, releaseDate }: AddNewAlbumForm) {
@@ -90,7 +91,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
               <DatePickerInput
                 flex={1}
                 label={'Release Date'}
-                leftSection={<IconCalendarFilled size={20} />}
+                leftSection={<IconCalendarRepeat size={20} />}
                 placeholder={'Choose the release date'}
                 key={form.key('releaseDate')}
                 {...form.getInputProps('releaseDate')}

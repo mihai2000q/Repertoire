@@ -9,7 +9,8 @@ import {
   DeleteSongSectionRequest,
   GetSongsRequest,
   MoveSongSectionRequest,
-  SaveImageToSongRequest, UpdateAllSongSectionsRequest,
+  SaveImageToSongRequest,
+  UpdateAllSongSectionsRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
   UpdateSongSectionsOccurrencesRequest,
@@ -19,18 +20,17 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
+import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
-      query: (arg) => ({
-        url: `songs${createQueryParams(arg)}`
-      }),
-      providesTags: ['Songs']
+      query: (arg) => `songs${createQueryParams(arg)}`,
+      providesTags: ['Songs', 'Artists', 'Albums']
     }),
     getSong: build.query<Song, string>({
       query: (arg) => `songs/${arg}`,
-      providesTags: ['Songs'],
+      providesTags: ['Songs', 'Artists', 'Albums'],
       transformResponse: (response: Song) => ({
         ...response,
         artist: response.artist
@@ -39,6 +39,15 @@ const songsApi = api.injectEndpoints({
               bandMembers: response.artist.bandMembers === null ? [] : response.artist.bandMembers
             }
           : response.artist
+      })
+    }),
+    getSongFiltersMetadata: build.query<SongFiltersMetadata, { searchBy?: string[] }>({
+      query: (arg) => `songs/filters-metadata${createQueryParams(arg)}`,
+      providesTags: ['Songs', 'Artists', 'Albums'],
+      transformResponse: (response: SongFiltersMetadata) => ({
+        ...response,
+        artistIds: response.artistIds === null ? [] : response.artistIds,
+        albumIds: response.albumIds === null ? [] : response.albumIds
       })
     }),
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
@@ -71,7 +80,7 @@ const songsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
     updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
       query: (body) => ({
@@ -88,21 +97,21 @@ const songsApi = api.injectEndpoints({
         body: createFormData(request),
         formData: true
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
     deleteImageFromSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/images/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
     deleteSong: build.mutation<HttpMessageResponse, string>({
       query: (arg) => ({
         url: `songs/${arg}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['Songs', 'Albums']
+      invalidatesTags: ['Songs']
     }),
 
     // sections
@@ -191,6 +200,8 @@ const songsApi = api.injectEndpoints({
 export const {
   useGetSongsQuery,
   useGetSongQuery,
+  useGetSongFiltersMetadataQuery,
+  useLazyGetSongFiltersMetadataQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPartialSongRehearsalMutation,

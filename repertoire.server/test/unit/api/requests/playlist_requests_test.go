@@ -11,6 +11,78 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestValidateGetPlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetPlaylistRequest
+	}{
+		{
+			"Minimal",
+			requests.GetPlaylistRequest{ID: uuid.New()},
+		},
+		{
+			"Maximal",
+			requests.GetPlaylistRequest{
+				ID:           uuid.New(),
+				SongsOrderBy: []string{"title", "created_at desc"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetPlaylistRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Cases
+		{
+			"ID is invalid because it is required",
+			requests.GetPlaylistRequest{ID: uuid.Nil},
+			"ID",
+			"required",
+		},
+		// Songs Order By Cases
+		{
+			"Songs Order By is invalid because it has invalid order type",
+			requests.GetPlaylistRequest{ID: uuid.New(), SongsOrderBy: []string{"title ascending"}},
+			"SongsOrderBy",
+			"order_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetPlaylistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -26,7 +98,7 @@ func TestValidateGetPlaylistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc"},
-				SearchBy:    []string{"title = something"},
+				SearchBy:    []string{"title = something", "title is not null"},
 			},
 		},
 	}
@@ -78,6 +150,20 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			"PageSize",
 			"required_with",
 		},
+		// Order By Cases
+		{
+			"Order By is invalid because it has invalid order type",
+			requests.GetPlaylistsRequest{OrderBy: []string{"title ascending"}},
+			"OrderBy",
+			"order_by",
+		},
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetPlaylistsRequest{SearchBy: []string{"title = okay", "songs is nullish"}},
+			"SearchBy",
+			"search_by",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -91,6 +177,70 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetPlaylistsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateGetPlaylistFiltersMetadataRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetPlaylistFiltersMetadataRequest
+	}{
+		{
+			"All Null",
+			requests.GetPlaylistFiltersMetadataRequest{},
+		},
+		{
+			"Nothing Null",
+			requests.GetPlaylistFiltersMetadataRequest{
+				SearchBy: []string{"title = something", "title is not null"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetPlaylistFiltersMetadataRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetPlaylistFiltersMetadataRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Search By Test Cases
+		{
+			"Search By is invalid because it is incomplete, missing operator and value",
+			requests.GetPlaylistFiltersMetadataRequest{SearchBy: []string{"title = okay", "songs"}},
+			"SearchBy",
+			"search_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetPlaylistFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})

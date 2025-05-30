@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 
 describe('Album Autocomplete', () => {
   const albums: AlbumSearch[] = [

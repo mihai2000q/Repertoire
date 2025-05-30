@@ -2,16 +2,19 @@ import Song from '../../types/models/Song'
 import { Anchor, Avatar, Box, Card, Center, Group, Menu, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
+import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, ReactElement } from 'react'
 import {
   IconBoltFilled,
   IconBombFilled,
   IconBrandYoutubeFilled,
+  IconDisc,
   IconGuitarPickFilled,
+  IconLayoutSidebarLeftExpand,
   IconMicrophoneFilled,
   IconStarFilled,
-  IconTrash
+  IconTrash,
+  IconUser
 } from '@tabler/icons-react'
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
@@ -22,23 +25,11 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
 const iconSize = 18
-const LocalAnchor = ({ link, children }: { link: string; children: ReactElement }) => (
-  <Anchor
-    underline={'never'}
-    href={link}
-    target="_blank"
-    rel="noreferrer"
-    c={'inherit'}
-    onClick={(e) => e.stopPropagation()}
-  >
-    {children}
-  </Anchor>
-)
 
 const LocalTooltip = ({ label, children }: { label: string; children: ReactElement }) => (
   <Tooltip label={label} position="bottom">
@@ -57,8 +48,6 @@ function SongCard({ song }: SongCardProps) {
   const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   const { color: difficultyColor } = useDifficultyInfo(song?.difficulty)
-  const solos = song.sections.filter((s) => s.songSectionType.name === 'Solo').length
-  const riffs = song.sections.filter((s) => s.songSectionType.name === 'Riff').length
 
   const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
 
@@ -78,6 +67,18 @@ function SongCard({ song }: SongCardProps) {
   function handleOpenYoutube(e: MouseEvent<HTMLElement>) {
     e.stopPropagation()
     openYoutube()
+  }
+
+  function handleOpenDrawer() {
+    dispatch(openSongDrawer(song.id))
+  }
+
+  function handleViewArtist() {
+    navigate(`/artist/${song.artist.id}`)
+  }
+
+  function handleViewAlbum() {
+    navigate(`/album/${song.album.id}`)
   }
 
   async function handleDelete() {
@@ -101,7 +102,11 @@ function SongCard({ song }: SongCardProps) {
             '&:hover': {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
-            }
+            },
+            ...(openedMenu && {
+              boxShadow: theme.shadows.xxl,
+              transform: 'scale(1.1)'
+            })
           })}
         >
           <Stack gap={0}>
@@ -159,17 +164,21 @@ function SongCard({ song }: SongCardProps) {
                       <CustomIconGuitarHead size={iconSize} aria-label={'guitar-tuning-icon'} />
                     </LocalTooltip>
                   )}
-                  {riffs > 1 && (
-                    <LocalTooltip label={`This song has ${riffs} riff${riffs > 0 ? 's' : ''}`}>
+                  {song.riffsCount > 1 && (
+                    <LocalTooltip label={`This song has ${song.riffsCount} riffs`}>
                       <IconBombFilled size={iconSize} aria-label={'riffs-icon'} />
                     </LocalTooltip>
                   )}
-                  {solos > 0 && (
+                  {song.solosCount > 0 && (
                     <LocalTooltip
-                      label={solos === 1 ? 'This song has a solo' : `This song has ${solos} solos`}
+                      label={
+                        song.solosCount === 1
+                          ? 'This song has a solo'
+                          : `This song has ${song.solosCount} solos`
+                      }
                     >
-                      <Center c={solos === 1 ? 'yellow.4' : 'yellow.5'}>
-                        {solos > 1 ? (
+                      <Center c={song.solosCount === 1 ? 'yellow.4' : 'yellow.5'}>
+                        {song.solosCount > 1 ? (
                           <CustomIconLightningTrio size={iconSize} aria-label={'solos-icon'} />
                         ) : (
                           <IconBoltFilled size={iconSize} aria-label={'solo-icon'} />
@@ -185,18 +194,34 @@ function SongCard({ song }: SongCardProps) {
                     </LocalTooltip>
                   )}
                   {song.songsterrLink && (
-                    <LocalAnchor link={song.songsterrLink}>
+                    <Anchor
+                      underline={'never'}
+                      aria-label={'songsterr'}
+                      href={song.songsterrLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      c={'inherit'}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <LocalTooltip label={'Open Songsterr'}>
                         <Center c={'blue.7'}>
-                          <IconGuitarPickFilled size={iconSize} aria-label={'songsterr-icon'} />
+                          <IconGuitarPickFilled
+                            role={'button'}
+                            size={iconSize}
+                            aria-label={'songsterr'}
+                          />
                         </Center>
                       </LocalTooltip>
-                    </LocalAnchor>
+                    </Anchor>
                   )}
                   {song.youtubeLink && (
                     <LocalTooltip label={'Open Youtube'}>
                       <Center c={'red.7'} onClick={handleOpenYoutube}>
-                        <IconBrandYoutubeFilled size={iconSize} aria-label={'youtube-icon'} />
+                        <IconBrandYoutubeFilled
+                          role={'button'}
+                          size={iconSize}
+                          aria-label={'youtube'}
+                        />
                       </Center>
                     </LocalTooltip>
                   )}
@@ -208,6 +233,26 @@ function SongCard({ song }: SongCardProps) {
       </Menu.Target>
 
       <Menu.Dropdown {...menuDropdownProps}>
+        <Menu.Item
+          leftSection={<IconLayoutSidebarLeftExpand size={14} />}
+          onClick={handleOpenDrawer}
+        >
+          Open Drawer
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconUser size={14} />}
+          disabled={!song.artist}
+          onClick={handleViewArtist}
+        >
+          View Artist
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconDisc size={14} />}
+          disabled={!song.album}
+          onClick={handleViewAlbum}
+        >
+          View Album
+        </Menu.Item>
         <PartialRehearsalMenuItem songId={song.id} />
         <PerfectRehearsalMenuItem songId={song.id} />
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>

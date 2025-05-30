@@ -6,6 +6,7 @@ import {
   Center,
   Checkbox,
   Group,
+  Highlight,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -21,7 +22,7 @@ import { useAddSongsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 
@@ -129,8 +130,8 @@ function AddExistingArtistSongsModal({
             </Group>
           )}
 
-          <ScrollArea w={'100%'} scrollbars={'y'} scrollbarSize={7}>
-            <Stack gap={0} style={{ maxHeight: '50vh' }}>
+          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+            <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
                 visible={!songsIsLoading && songsIsFetching}
@@ -176,24 +177,32 @@ function AddExistingArtistSongsModal({
                       bg={'gray.5'}
                     >
                       <Center c={'white'}>
-                        <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
+                        <CustomIconMusicNoteEighth
+                          aria-label={`default-icon-${song.title}`}
+                          size={18}
+                        />
                       </Center>
                     </Avatar>
                     <Stack gap={0}>
-                      <Text fw={500} lineClamp={2}>
+                      <Highlight
+                        highlight={search}
+                        highlightStyles={{ fontWeight: 800 }}
+                        fw={500}
+                        lineClamp={2}
+                      >
                         {song.title}
-                      </Text>
+                      </Highlight>
                       {song.album && (
-                        <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
+                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
                           {song.album.title}
-                        </Text>
+                        </Highlight>
                       )}
                     </Stack>
                   </Group>
                 ))
               )}
             </Stack>
-          </ScrollArea>
+          </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={songIds.length > 0} label="Select songs">

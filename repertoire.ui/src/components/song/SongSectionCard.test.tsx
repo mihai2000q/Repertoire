@@ -45,6 +45,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={false}
         isDragging={false}
       />
@@ -82,6 +83,7 @@ describe('Song Section Card', () => {
         }}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={false}
         isDragging={false}
         isArtistBand={true}
@@ -110,6 +112,7 @@ describe('Song Section Card', () => {
         }}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={false}
         isDragging={false}
         isArtistBand={false}
@@ -128,14 +131,14 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={maxSectionProgress}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
     )
 
     expect(screen.getAllByText(section.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
-    expect(screen.getAllByText(section.rehearsals)[0]).toBeVisible()
-    expect(screen.getAllByText(section.rehearsals)[1]).not.toBeVisible()
+    expect(screen.getByTestId('rehearsals')).toHaveTextContent(section.rehearsals.toString())
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(section.confidence)
     expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
@@ -143,7 +146,7 @@ describe('Song Section Card', () => {
       (section.progress / maxSectionProgress) * 100
     )
 
-    await user.hover(screen.getAllByText(section.rehearsals)[0])
+    await user.hover(screen.getByTestId('rehearsals'))
     expect(
       screen.getByRole('tooltip', { name: new RegExp(section.rehearsals.toString()) })
     ).toBeInTheDocument()
@@ -167,6 +170,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
@@ -189,6 +193,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />
@@ -209,6 +214,7 @@ describe('Song Section Card', () => {
           section={section}
           songId={''}
           maxSectionProgress={0}
+          maxSectionRehearsals={0}
           showDetails={true}
           isDragging={false}
         />
@@ -237,6 +243,7 @@ describe('Song Section Card', () => {
             section={section}
             songId={songId}
             maxSectionProgress={0}
+            maxSectionRehearsals={0}
             showDetails={true}
             isDragging={false}
           />
@@ -270,6 +277,7 @@ describe('Song Section Card', () => {
         section={section}
         songId={''}
         maxSectionProgress={0}
+        maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
       />

@@ -25,15 +25,22 @@ func TestGetAllArtists_WhenSuccessful_ShouldReturnArtists(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var responseArtists []model.Artist
+	var responseArtists []model.EnhancedArtist
 	_ = json.Unmarshal(w.Body.Bytes(), &responseArtists)
 
 	db := utils.GetDatabase(t)
 
 	var artists []model.Artist
-	db.Find(&artists)
+	db.Preload("BandMembers").
+		Preload("Albums").
+		Preload("Songs").
+		Find(&artists)
 
 	for i := range responseArtists {
-		assertion.ResponseArtist(t, artists[i], responseArtists[i], false)
+		assertion.ResponseEnhancedArtist(
+			t,
+			artists[i],
+			responseArtists[i],
+		)
 	}
 }

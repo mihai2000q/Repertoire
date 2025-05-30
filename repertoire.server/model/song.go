@@ -10,11 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type EnhancedSong struct {
+	Song
+	SectionsCount float64 `gorm:"->" json:"sectionsCount"`
+	SolosCount    float64 `gorm:"->" json:"solosCount"`
+	RiffsCount    float64 `gorm:"->" json:"riffsCount"`
+}
+
 type Song struct {
 	ID             uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title          string             `gorm:"size:100; not null" json:"title"`
 	Description    string             `gorm:"not null" json:"description"`
-	ReleaseDate    *time.Time         `json:"releaseDate"`
+	ReleaseDate    *internal.Date     `json:"releaseDate"`
 	ImageURL       *internal.FilePath `json:"imageUrl"`
 	IsRecorded     bool               `json:"isRecorded"`
 	Bpm            *uint              `json:"bpm"`
@@ -55,13 +62,17 @@ func (s *Song) BeforeSave(*gorm.DB) error {
 }
 
 func (s *Song) AfterFind(*gorm.DB) error {
-	s.ImageURL = s.ImageURL.ToFullURL(s.UpdatedAt)
+	s.ImageURL = s.ImageURL.ToFullURL()
 	// When Joins instead of Preload, AfterFind Hook is not used
 	if s.Artist != nil {
-		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL(s.Artist.UpdatedAt)
+		s.Artist.ImageURL = s.Artist.ImageURL.ToFullURL()
 	}
 	if s.Album != nil {
-		s.Album.ImageURL = s.Album.ImageURL.ToFullURL(s.Album.UpdatedAt)
+		s.Album.ImageURL = s.Album.ImageURL.ToFullURL()
+	}
+	if s.Settings.DefaultBandMember != nil {
+		s.Settings.DefaultBandMember.ImageURL =
+			s.Settings.DefaultBandMember.ImageURL.ToFullURL()
 	}
 
 	return nil

@@ -1,48 +1,61 @@
 import useSearchParamsState, { SearchParamsState } from './useSearchParamsState.ts'
 import { act } from '@testing-library/react'
 import { routerRenderHook } from '../test-utils.tsx'
+import { afterEach } from 'vitest'
 
 describe('use Search Params State', () => {
-  it('should render hook', () => {
-    // setup
-    const initialTestValue = 1
+  interface TestSearchParamsState {
+    testValue: number
+  }
 
-    interface TestSearchParamsState {
-      testValue: number
+  const testSearchParamsInitialState: TestSearchParamsState = {
+    testValue: 1
+  }
+
+  const testSearchParamsSerializer = (state: TestSearchParamsState) => {
+    const params = new URLSearchParams()
+    params.set('testValue', state.testValue.toString())
+    return params
+  }
+
+  const testSearchParamsDeserializer = (params: URLSearchParams): TestSearchParamsState => {
+    return {
+      testValue: Number(params.get('testValue') ?? testSearchParamsInitialState.testValue)
     }
+  }
 
-    const testSearchParamsInitialState: TestSearchParamsState = {
-      testValue: initialTestValue
-    }
+  const testProps: SearchParamsState<TestSearchParamsState> = {
+    initialState: testSearchParamsInitialState,
+    serialize: testSearchParamsSerializer,
+    deserialize: testSearchParamsDeserializer
+  }
 
-    const testSearchParamsSerializer = (state: TestSearchParamsState) => {
-      const params = new URLSearchParams()
-      params.set('testValue', state.testValue.toString())
-      return params
-    }
+  afterEach(() => window.location.search = '')
 
-    const testSearchParamsDeserializer = (params: URLSearchParams): TestSearchParamsState => {
-      return {
-        testValue: Number(params.get('testValue') ?? 1)
-      }
-    }
-
-    const songsSearchParamsState: SearchParamsState<TestSearchParamsState> = {
-      initialState: testSearchParamsInitialState,
-      serialize: testSearchParamsSerializer,
-      deserialize: testSearchParamsDeserializer
-    }
-
-    const { result } = routerRenderHook(() => useSearchParamsState(songsSearchParamsState))
+  it('should update state with value', () => {
+    const { result } = routerRenderHook(() => useSearchParamsState(testProps))
     const [state, setState] = result.current
 
-    expect(state).toEqual(testSearchParamsInitialState)
+    expect(state).toStrictEqual(testSearchParamsInitialState)
 
-    const newTestValue = 23
+    const newValue = 23
+    act(() => setState({ testValue: newValue }))
 
-    act(() => setState({ testValue: newTestValue }))
+    expect(result.current[0].testValue).toBe(newValue)
+    expect(window.location.search).toBe(`?testValue=${newValue}`)
+  })
 
-    expect(result.current[0].testValue).toBe(newTestValue)
-    expect(window.location.search).toBe('?testValue=' + newTestValue)
+  it('should update state with function', () => {
+    const { result } = routerRenderHook(() => useSearchParamsState(testProps))
+    const [state, setState] = result.current
+
+    expect(state).toStrictEqual(testSearchParamsInitialState)
+
+    const increment = 5
+    act(() => setState((prev) => ({ testValue: prev.testValue + increment })))
+
+    const expectedValue = testSearchParamsInitialState.testValue + increment
+    expect(result.current[0].testValue).toBe(expectedValue)
+    expect(window.location.search).toBe(`?testValue=${expectedValue}`)
   })
 })

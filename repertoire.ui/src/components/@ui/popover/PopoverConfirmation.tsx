@@ -23,8 +23,8 @@ function PopoverConfirmation({
     <Popover
       transitionProps={{ transition: 'fade-up' }}
       position={'top'}
-      withArrow
       shadow={'sm'}
+      withArrow
       {...popoverProps}
     >
       <Popover.Target>{children}</Popover.Target>

@@ -15,6 +15,7 @@ func (p PlaylistRouter) RegisterRoutes() {
 	{
 		api.GET("/:id", p.handler.Get)
 		api.GET("", p.handler.GetAll)
+		api.GET("/filters-metadata", p.handler.GetFiltersMetadata)
 		api.POST("", p.handler.Create)
 		api.POST("/add-albums", p.handler.AddAlbums)
 		api.POST("/add-artists", p.handler.AddArtists)

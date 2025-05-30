@@ -34,6 +34,24 @@ func (g Get) Handle(
 		return wrapper.WithTotalCount[any]{}, errCode
 	}
 
+	if len(request.IDs) > 0 {
+		filter := "id IN ["
+		for _, id := range request.IDs {
+			filter = filter + string(*request.Type) + "-" + id + ", "
+		}
+		filter = strings.TrimSuffix(filter, ", ") + "]"
+		request.Filter = append(request.Filter, filter)
+	}
+
+	if len(request.NotIDs) > 0 {
+		filter := "id NOT IN ["
+		for _, id := range request.NotIDs {
+			filter = filter + string(*request.Type) + "-" + id + ", "
+		}
+		filter = strings.TrimSuffix(filter, ", ") + "]"
+		request.Filter = append(request.Filter, filter)
+	}
+
 	searchResult, errCode := g.meiliSearchService.Search(
 		request.Query,
 		request.CurrentPage,
@@ -57,7 +75,7 @@ func (g Get) Handle(
 			_ = json.Unmarshal(jsonRes, &artist)
 
 			artist.ID = strings.Replace(artist.ID, "artist-", "", 1)
-			artist.ImageUrl = artist.ImageUrl.ToFullURL(artist.UpdatedAt)
+			artist.ImageUrl = artist.ImageUrl.ToFullURL()
 
 			results = append(results, artist)
 
@@ -67,9 +85,9 @@ func (g Get) Handle(
 			_ = json.Unmarshal(jsonRes, &album)
 
 			album.ID = strings.Replace(album.ID, "album-", "", 1)
-			album.ImageUrl = album.ImageUrl.ToFullURL(album.UpdatedAt)
+			album.ImageUrl = album.ImageUrl.ToFullURL()
 			if album.Artist != nil {
-				album.Artist.ImageUrl = album.Artist.ImageUrl.ToFullURL(album.Artist.UpdatedAt)
+				album.Artist.ImageUrl = album.Artist.ImageUrl.ToFullURL()
 			}
 
 			results = append(results, album)
@@ -80,12 +98,12 @@ func (g Get) Handle(
 			_ = json.Unmarshal(jsonRes, &song)
 
 			song.ID = strings.Replace(song.ID, "song-", "", 1)
-			song.ImageUrl = song.ImageUrl.ToFullURL(song.UpdatedAt)
+			song.ImageUrl = song.ImageUrl.ToFullURL()
 			if song.Artist != nil {
-				song.Artist.ImageUrl = song.Artist.ImageUrl.ToFullURL(song.Artist.UpdatedAt)
+				song.Artist.ImageUrl = song.Artist.ImageUrl.ToFullURL()
 			}
 			if song.Album != nil {
-				song.Album.ImageUrl = song.Album.ImageUrl.ToFullURL(song.Album.UpdatedAt)
+				song.Album.ImageUrl = song.Album.ImageUrl.ToFullURL()
 			}
 
 			results = append(results, song)
@@ -96,7 +114,7 @@ func (g Get) Handle(
 			_ = json.Unmarshal(jsonRes, &playlist)
 
 			playlist.ID = strings.Replace(playlist.ID, "playlist-", "", 1)
-			playlist.ImageUrl = playlist.ImageUrl.ToFullURL(playlist.UpdatedAt)
+			playlist.ImageUrl = playlist.ImageUrl.ToFullURL()
 
 			results = append(results, playlist)
 		}

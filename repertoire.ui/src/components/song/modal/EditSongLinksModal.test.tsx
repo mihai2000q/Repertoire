@@ -70,9 +70,12 @@ describe('Edit Song Links Modal', () => {
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     await user.clear(youtubeTextBox)
-    await user.type(youtubeTextBox, newYoutubeLink)
+    await user.click(youtubeTextBox)
+    await user.paste(newYoutubeLink)
+
     await user.clear(songsterrTextBox)
-    await user.type(songsterrTextBox, newSongsterrLink)
+    await user.click(songsterrTextBox)
+    await user.paste(newSongsterrLink)
     expect(saveButton).not.toHaveAttribute('data-disabled')
     await user.click(saveButton)
 
@@ -129,22 +132,26 @@ describe('Edit Song Links Modal', () => {
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     await user.clear(youtubeTextBox)
-    await user.type(youtubeTextBox, newYoutubeLink)
+    await user.click(youtubeTextBox)
+    await user.paste(newYoutubeLink)
 
     expect(saveButton).not.toHaveAttribute('data-disabled')
     await user.hover(saveButton)
     expect(screen.queryByText(/need to make a change/i)).not.toBeInTheDocument()
 
     await user.clear(songsterrTextBox)
-    await user.type(songsterrTextBox, newSongsterrLink)
+    await user.click(songsterrTextBox)
+    await user.paste(newSongsterrLink)
     expect(saveButton).not.toHaveAttribute('data-disabled')
 
     await user.clear(youtubeTextBox)
-    await user.type(youtubeTextBox, song.youtubeLink)
+    await user.click(youtubeTextBox)
+    await user.paste(song.youtubeLink)
     expect(saveButton).not.toHaveAttribute('data-disabled')
 
     await user.clear(songsterrTextBox)
-    await user.type(songsterrTextBox, song.songsterrLink)
+    await user.click(songsterrTextBox)
+    await user.paste(song.songsterrLink)
 
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
   })

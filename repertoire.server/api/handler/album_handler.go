@@ -49,13 +49,13 @@ func (a AlbumHandler) Get(c *gin.Context) {
 		return
 	}
 
-	user, errorCode := a.service.Get(request)
+	album, errorCode := a.service.Get(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, album)
 }
 
 func (a AlbumHandler) GetAll(c *gin.Context) {
@@ -75,6 +75,31 @@ func (a AlbumHandler) GetAll(c *gin.Context) {
 	token := a.GetTokenFromContext(c)
 
 	result, errorCode := a.service.GetAll(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (a AlbumHandler) GetFiltersMetadata(c *gin.Context) {
+	var request requests.GetAlbumFiltersMetadataRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := a.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := a.GetTokenFromContext(c)
+
+	result, errorCode := a.service.GetFiltersMetadata(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

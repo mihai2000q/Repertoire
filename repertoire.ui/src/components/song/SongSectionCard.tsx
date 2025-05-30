@@ -23,7 +23,7 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import { useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import {
   useDeleteSongSectionMutation,
@@ -34,6 +34,23 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { BandMember } from '../../types/models/Artist.ts'
 import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
+import { useState } from 'react'
+
+function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
+  return rehearsalsMaxLength > 4
+    ? 'xs'
+    : rehearsalsMaxLength > 3
+      ? 'md'
+      : rehearsalsMaxLength > 2
+        ? 20
+        : rehearsalsMaxLength > 1
+          ? 23
+          : 27
+}
+
+function getRehearsalsWidth(rehearsalsMaxLength: number) {
+  return (rehearsalsMaxLength > 2 ? 9 : rehearsalsMaxLength > 1 ? 10 : 12) * rehearsalsMaxLength
+}
 
 interface SongSectionCardProps {
   section: SongSectionModel
@@ -41,6 +58,7 @@ interface SongSectionCardProps {
   isDragging: boolean
   showDetails: boolean
   maxSectionProgress: number
+  maxSectionRehearsals: number
   draggableProvided?: DraggableProvided
   bandMembers?: BandMember[]
   isArtistBand?: boolean
@@ -52,10 +70,23 @@ function SongSectionCard({
   isDragging,
   showDetails,
   maxSectionProgress,
+  maxSectionRehearsals,
   draggableProvided,
   bandMembers,
   isArtistBand
 }: SongSectionCardProps) {
+  const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
+    getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
+  )
+  const [rehearsalsWidth, setRehearsalsWidth] = useState(
+    getRehearsalsWidth(maxSectionRehearsals.toString().length)
+  )
+  useDidUpdate(() => {
+    const rehearsalsMaxLength = maxSectionRehearsals.toString().length
+    setRehearsalsMarginLeft(getRehearsalsMarginLeft(rehearsalsMaxLength))
+    setRehearsalsWidth(getRehearsalsWidth(rehearsalsMaxLength))
+  }, [maxSectionRehearsals])
+
   const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation, { isLoading: isDeleteLoading }] = useDeleteSongSectionMutation()
 
@@ -99,26 +130,31 @@ function SongSectionCard({
       <Menu.Target>
         <Stack
           py={'xs'}
-          px={'md'}
           aria-label={`song-section-${section.name}`}
+          gap={0}
           sx={(theme) => ({
             cursor: 'default',
             transition: '0.25s',
-            borderRadius: isDragging ? '16px' : '0px',
-            border: isDragging
-              ? `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
-              : '1px solid transparent',
+            borderRadius: 0,
+            border: '1px solid transparent',
 
             '&:hover': {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            },
+
+            ...isDragging && {
+              boxShadow: theme.shadows.xl,
+              borderRadius: '16px',
+              backgroundColor: alpha(theme.white, 0.33),
+              border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
             }
           })}
           ref={draggableProvided?.innerRef}
           {...draggableProvided?.draggableProps}
           onContextMenu={openMenu}
         >
-          <Group gap={'xs'}>
+          <Group gap={'xs'} px={'md'}>
             <ActionIcon
               aria-label={'drag-handle'}
               variant={'subtle'}
@@ -129,13 +165,13 @@ function SongSectionCard({
             </ActionIcon>
 
             {isArtistBand && section.bandMember && (
-              <HoverCard withArrow={true} openDelay={200} position="top" shadow={'md'}>
+              <HoverCard openDelay={200} position="top">
                 <HoverCard.Target>
                   <Avatar
                     size={25}
                     color={section.bandMember.color}
                     src={section.bandMember.imageUrl}
-                    alt={section.bandMember.name}
+                    alt={section.bandMember.imageUrl && section.bandMember.name}
                   >
                     <IconUser size={15} />
                   </Avatar>
@@ -146,7 +182,7 @@ function SongSectionCard({
                       size={60}
                       color={section.bandMember.color}
                       src={section.bandMember.imageUrl}
-                      alt={section.bandMember.name}
+                      alt={section.bandMember.imageUrl && section.bandMember.name}
                       style={(theme) => ({ boxShadow: theme.shadows.sm })}
                     >
                       <IconUser size={30} />
@@ -175,10 +211,10 @@ function SongSectionCard({
               </Box>
             )}
 
-            <Text inline fw={600}>
+            <Text lh={'xxs'} fw={600}>
               {section.songSectionType.name}
             </Text>
-            <Text flex={1} inline truncate={'end'}>
+            <Text flex={1} lh={'xs'} truncate={'end'}>
               {section.name}
             </Text>
 
@@ -207,7 +243,7 @@ function SongSectionCard({
           </Group>
 
           <Collapse in={showDetails}>
-            <Group aria-label={`song-section-details-${section.name}`} gap={'xl'} px={'md'}>
+            <Group aria-label={`song-section-details-${section.name}`} pt={'md'} gap={'lg'} pr={'lg'}>
               <Tooltip.Floating
                 role={'tooltip'}
                 label={
@@ -216,7 +252,16 @@ function SongSectionCard({
                   </>
                 }
               >
-                <Text fw={500} c={'dimmed'} fz={'md'} inline>
+                <Text
+                  ml={rehearsalsMarginLeft}
+                  w={rehearsalsWidth}
+                  fz={12}
+                  ta={'center'}
+                  fw={500}
+                  c={'dimmed'}
+                  inline
+                  data-testid={'rehearsals'}
+                >
                   <NumberFormatter value={section.rehearsals} />
                 </Text>
               </Tooltip.Floating>

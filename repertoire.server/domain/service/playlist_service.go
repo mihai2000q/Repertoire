@@ -17,8 +17,12 @@ type PlaylistService interface {
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
-	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode)
-	Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode)
+	GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.EnhancedPlaylist], *wrapper.ErrorCode)
+	Get(request requests.GetPlaylistRequest) (model.Playlist, *wrapper.ErrorCode)
+	GetFiltersMetadata(
+		request requests.GetPlaylistFiltersMetadataRequest,
+		token string,
+	) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
@@ -26,18 +30,19 @@ type PlaylistService interface {
 }
 
 type playlistService struct {
-	addAlbumsToPlaylist     playlist.AddAlbumsToPlaylist
-	addArtistsToPlaylist    playlist.AddArtistsToPlaylist
-	addSongsToPlaylist      playlist.AddSongsToPlaylist
-	createPlaylist          playlist.CreatePlaylist
-	deletePlaylist          playlist.DeletePlaylist
-	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist
-	getAllPlaylists         playlist.GetAllPlaylists
-	getPlaylist             playlist.GetPlaylist
-	moveSongFromPlaylist    playlist.MoveSongFromPlaylist
-	removeSongsFromPlaylist playlist.RemoveSongsFromPlaylist
-	saveImageToPlaylist     playlist.SaveImageToPlaylist
-	updatePlaylist          playlist.UpdatePlaylist
+	addAlbumsToPlaylist        playlist.AddAlbumsToPlaylist
+	addArtistsToPlaylist       playlist.AddArtistsToPlaylist
+	addSongsToPlaylist         playlist.AddSongsToPlaylist
+	createPlaylist             playlist.CreatePlaylist
+	deletePlaylist             playlist.DeletePlaylist
+	deleteImageFromPlaylist    playlist.DeleteImageFromPlaylist
+	getAllPlaylists            playlist.GetAllPlaylists
+	getPlaylist                playlist.GetPlaylist
+	getPlaylistFiltersMetadata playlist.GetPlaylistFiltersMetadata
+	moveSongFromPlaylist       playlist.MoveSongFromPlaylist
+	removeSongsFromPlaylist    playlist.RemoveSongsFromPlaylist
+	saveImageToPlaylist        playlist.SaveImageToPlaylist
+	updatePlaylist             playlist.UpdatePlaylist
 }
 
 func NewPlaylistService(
@@ -49,24 +54,26 @@ func NewPlaylistService(
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist,
 	getAllPlaylists playlist.GetAllPlaylists,
 	getPlaylist playlist.GetPlaylist,
+	getPlaylistFiltersMetadata playlist.GetPlaylistFiltersMetadata,
 	moveSongFromPlaylist playlist.MoveSongFromPlaylist,
 	removeSongFromPlaylist playlist.RemoveSongsFromPlaylist,
 	saveImageToPlaylist playlist.SaveImageToPlaylist,
 	updatePlaylist playlist.UpdatePlaylist,
 ) PlaylistService {
 	return &playlistService{
-		addAlbumsToPlaylist:     addAlbumsToPlaylist,
-		addArtistsToPlaylist:    addArtistsToPlaylist,
-		addSongsToPlaylist:      addSongsToPlaylist,
-		createPlaylist:          createPlaylist,
-		deletePlaylist:          deletePlaylist,
-		deleteImageFromPlaylist: deleteImageFromPlaylist,
-		getAllPlaylists:         getAllPlaylists,
-		getPlaylist:             getPlaylist,
-		moveSongFromPlaylist:    moveSongFromPlaylist,
-		removeSongsFromPlaylist: removeSongFromPlaylist,
-		saveImageToPlaylist:     saveImageToPlaylist,
-		updatePlaylist:          updatePlaylist,
+		addAlbumsToPlaylist:        addAlbumsToPlaylist,
+		addArtistsToPlaylist:       addArtistsToPlaylist,
+		addSongsToPlaylist:         addSongsToPlaylist,
+		createPlaylist:             createPlaylist,
+		deletePlaylist:             deletePlaylist,
+		deleteImageFromPlaylist:    deleteImageFromPlaylist,
+		getAllPlaylists:            getAllPlaylists,
+		getPlaylist:                getPlaylist,
+		getPlaylistFiltersMetadata: getPlaylistFiltersMetadata,
+		moveSongFromPlaylist:       moveSongFromPlaylist,
+		removeSongsFromPlaylist:    removeSongFromPlaylist,
+		saveImageToPlaylist:        saveImageToPlaylist,
+		updatePlaylist:             updatePlaylist,
 	}
 }
 
@@ -94,12 +101,19 @@ func (p *playlistService) DeleteImage(id uuid.UUID) *wrapper.ErrorCode {
 	return p.deleteImageFromPlaylist.Handle(id)
 }
 
-func (p *playlistService) GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.Playlist], *wrapper.ErrorCode) {
+func (p *playlistService) GetAll(request requests.GetPlaylistsRequest, token string) (wrapper.WithTotalCount[model.EnhancedPlaylist], *wrapper.ErrorCode) {
 	return p.getAllPlaylists.Handle(request, token)
 }
 
-func (p *playlistService) Get(id uuid.UUID) (model.Playlist, *wrapper.ErrorCode) {
-	return p.getPlaylist.Handle(id)
+func (p *playlistService) Get(request requests.GetPlaylistRequest) (model.Playlist, *wrapper.ErrorCode) {
+	return p.getPlaylist.Handle(request)
+}
+
+func (p *playlistService) GetFiltersMetadata(
+	request requests.GetPlaylistFiltersMetadataRequest,
+	token string,
+) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode) {
+	return p.getPlaylistFiltersMetadata.Handle(request, token)
 }
 
 func (p *playlistService) MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode {

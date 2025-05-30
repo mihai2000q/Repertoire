@@ -12,7 +12,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
 import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
@@ -64,6 +64,8 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
 
     await updateSongMutation({
       ...song,
+      albumId: song.album?.id,
+      artistId: song.artist?.id,
       id: song.id,
       difficulty: difficulty ? (difficulty.value as Difficulty) : null,
       guitarTuningId: guitarTuning?.value,

@@ -32,8 +32,8 @@ func (p *PlaylistRepositoryMock) GetPlaylistSongs(playlistSongs *[]model.Playlis
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID) error {
-	args := p.Called(playlist, id)
+func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOderBy []string) error {
+	args := p.Called(playlist, id, songsOderBy)
 
 	if len(args) > 1 {
 		*playlist = *args.Get(1).(*model.Playlist)
@@ -42,8 +42,22 @@ func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, i
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetFiltersMetadata(
+	metadata *model.PlaylistFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	args := p.Called(metadata, userID, searchBy)
+
+	if len(args) > 1 {
+		*metadata = *args.Get(1).(*model.PlaylistFiltersMetadata)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetAllByUser(
-	playlists *[]model.Playlist,
+	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -53,7 +67,7 @@ func (p *PlaylistRepositoryMock) GetAllByUser(
 	args := p.Called(playlists, userID, currentPage, pageSize, orderBy, searchBy)
 
 	if len(args) > 1 {
-		*playlists = *args.Get(1).(*[]model.Playlist)
+		*playlists = *args.Get(1).(*[]model.EnhancedPlaylist)
 	}
 
 	return args.Error(0)

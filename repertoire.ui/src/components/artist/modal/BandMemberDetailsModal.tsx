@@ -27,15 +27,15 @@ function BandMemberDetailsModal({ opened, onClose, bandMember }: AddNewBandMembe
                 radius={'22px'}
                 color={bandMember.color}
                 src={bandMember.imageUrl}
-                alt={bandMember.name}
+                alt={bandMember.imageUrl && bandMember.name}
                 style={(theme) => ({ boxShadow: theme.shadows.lg })}
               >
                 <IconUser size={60} />
               </Avatar>
 
-              <Stack align={'center'} gap={'xs'}>
+              <Stack align={'center'} gap={8}>
                 {bandMember.roles.map((role) => (
-                  <Text key={role.id} c={'dimmed'} fw={600} inline>
+                  <Text key={role.id} c={'dimmed'} fw={600} lh={'xs'}>
                     {role.name}
                   </Text>
                 ))}

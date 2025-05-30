@@ -6,6 +6,7 @@ import {
   Center,
   Checkbox,
   Group,
+  Highlight,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -21,7 +22,7 @@ import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 
@@ -112,9 +113,9 @@ function AddExistingArtistAlbumsModal({
               ta={'center'}
               label={'All songs related to the added album will be added to the artist too'}
             >
-              <Box c={'primary.8'}>
+              <Center c={'primary.8'}>
                 <IconInfoCircleFilled size={15} aria-label={'info-icon'} />
-              </Box>
+              </Center>
             </Tooltip>
           </Group>
 
@@ -141,8 +142,8 @@ function AddExistingArtistAlbumsModal({
             </Group>
           )}
 
-          <ScrollArea w={'100%'} scrollbars={'y'} scrollbarSize={7}>
-            <Stack gap={0} style={{ maxHeight: '50vh' }}>
+          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+            <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
                 visible={!albumsIsLoading && albumsIsFetching}
@@ -194,14 +195,19 @@ function AddExistingArtistAlbumsModal({
                         />
                       </Center>
                     </Avatar>
-                    <Text fw={500} lineClamp={2}>
+                    <Highlight
+                      highlight={search}
+                      highlightStyles={{ fontWeight: 800 }}
+                      fw={500}
+                      lineClamp={2}
+                    >
                       {album.title}
-                    </Text>
+                    </Highlight>
                   </Group>
                 ))
               )}
             </Stack>
-          </ScrollArea>
+          </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={albumIds.length > 0} label="Select albums">

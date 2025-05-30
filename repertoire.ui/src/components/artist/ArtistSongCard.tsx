@@ -4,6 +4,7 @@ import {
   alpha,
   Avatar,
   Center,
+  Flex,
   Group,
   Menu,
   NumberFormatter,
@@ -15,21 +16,23 @@ import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent, useState } from 'react'
-import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
+import { IconCircleMinus, IconDisc, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import DifficultyBar from '../@ui/misc/DifficultyBar.tsx'
-import SongConfidenceBar from '../@ui/misc/SongConfidenceBar.tsx'
-import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
+import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useRemoveSongsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -51,6 +54,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
 
   const isSelected = hovered || isMenuOpened || openedMenu
 
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -68,6 +72,10 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   function handleViewDetails(e: MouseEvent) {
     e.stopPropagation()
     navigate(`/song/${song.id}`)
+  }
+
+  function handleViewAlbum() {
+    navigate(`/album/${song.album.id}`)
   }
 
   function handleOpenRemoveWarning(e: MouseEvent) {
@@ -93,11 +101,19 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <Menu.Item
+        leftSection={<IconDisc size={14} />}
+        disabled={!song.album}
+        onClick={handleViewAlbum}
+      >
+        View Album
+      </Menu.Item>
+      <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
-          Remove from artist
+          Remove from Artist
         </Menu.Item>
       )}
       <Menu.Item
@@ -156,22 +172,22 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                     sx={{ '&:hover': { textDecoration: 'underline' } }}
                     style={{ cursor: 'pointer' }}
                     onClick={handleAlbumClick}
-                    inline
+                    lh={'xxs'}
                   >
                     {song.album.title}
                   </Text>
                 </>
               )}
             </Group>
-            <Group>
+            <Flex>
               {order.property === SongProperty.ReleaseDate && (
                 <Tooltip
-                  label={`Song was released on ${dayjs(song.releaseDate).format('DD MMMM YYYY')}`}
+                  label={`Song was released on ${dayjs(song.releaseDate).format('D MMMM YYYY')}`}
                   openDelay={400}
                   disabled={!song.releaseDate}
                 >
                   <Text fz={'xs'} c={'dimmed'}>
-                    {song.releaseDate && dayjs(song.releaseDate).format('D MMM YYYY')}
+                    {song.releaseDate && dayjs(song.releaseDate).format('DD MMM YYYY')}
                   </Text>
                 </Tooltip>
               )}
@@ -193,12 +209,12 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                 </Tooltip.Floating>
               )}
               {order.property === SongProperty.Confidence && (
-                <SongConfidenceBar confidence={song.confidence} w={100} mt={4} />
+                <ConfidenceBar confidence={song.confidence} w={100} mt={4} />
               )}
               {order.property === SongProperty.Progress && (
-                <SongProgressBar progress={song.progress} w={100} mt={4} />
+                <ProgressBar progress={song.progress} w={100} mt={4} />
               )}
-              {order.property === SongProperty.LastTimePlayed && (
+              {order.property === SongProperty.LastPlayed && (
                 <Tooltip
                   label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
                   openDelay={400}
@@ -206,12 +222,12 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                 >
                   <Text fz={'xs'} c={'dimmed'}>
                     {song.lastTimePlayed
-                      ? dayjs(song.lastTimePlayed).format('D MMM YYYY')
+                      ? dayjs(song.lastTimePlayed).format('DD MMM YYYY')
                       : 'never'}
                   </Text>
                 </Tooltip>
               )}
-            </Group>
+            </Flex>
           </Stack>
 
           <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
@@ -236,6 +252,12 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
 
       <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
 
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}

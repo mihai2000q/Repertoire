@@ -13,9 +13,9 @@ import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
-import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import titleFontSize from '../../../utils/titleFontSize.ts'
-import PartialRehearsalMenuItem from '../../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import titleFontSize from '../../../utils/style/titleFontSize.ts'
+import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
@@ -74,10 +74,10 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           radius={'10%'}
           src={song.imageUrl ?? song.album?.imageUrl}
           alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           bg={'gray.5'}
           style={(theme) => ({
+            aspectRatio: 1,
             boxShadow: theme.shadows.lg,
             ...((song.imageUrl || song.album?.imageUrl) && { cursor: 'pointer' })
           })}
@@ -136,11 +136,11 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                     on
                   </Text>
                 )}
-                <HoverCard shadow={'lg'} withArrow>
+                <HoverCard>
                   <HoverCard.Target>
                     <Text
                       fw={600}
-                      inline
+                      lh={'xxs'}
                       lineClamp={1}
                       c={'dark'}
                       sx={{
@@ -172,7 +172,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
                         <Text fw={500} fz={'xs'} inline>
                           Album
                         </Text>
-                        <Text fw={600} fz={'md'} inline lineClamp={2}>
+                        <Text fw={600} fz={'md'} lh={'xxs'} lineClamp={2}>
                           {song.album.title}
                         </Text>
                         {song.album.releaseDate && (

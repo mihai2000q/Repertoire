@@ -20,7 +20,7 @@ func NewGetAllSongs(repository repository.SongRepository, jwtService service.Jwt
 	}
 }
 
-func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (result wrapper.WithTotalCount[model.Song], e *wrapper.ErrorCode) {
+func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (result wrapper.WithTotalCount[model.EnhancedSong], e *wrapper.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode

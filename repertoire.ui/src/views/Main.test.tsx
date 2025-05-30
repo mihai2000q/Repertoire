@@ -27,7 +27,14 @@ describe('Main', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+  })
 
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'
@@ -40,6 +47,7 @@ describe('Main', () => {
 
   afterAll(() => {
     vi.unstubAllEnvs()
+    vi.clearAllMocks()
     server.close()
   })
 
@@ -50,7 +58,7 @@ describe('Main', () => {
           <Route path={'/'} element={<div data-testid={'outlet'}>Outlet</div>} />
         </Route>
       </Routes>,
-      { auth: { token } }
+      { auth: { token, historyOnSignIn: { index: 0, justSignedIn: false } } }
     )
 
   it('should render and display just the outlet when user is not authenticated', () => {

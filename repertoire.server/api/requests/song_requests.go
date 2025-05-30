@@ -1,17 +1,20 @@
 package requests
 
 import (
-	"repertoire/server/internal/enums"
-	"time"
-
 	"github.com/google/uuid"
+	"repertoire/server/internal"
+	"repertoire/server/internal/enums"
 )
 
 type GetSongsRequest struct {
 	CurrentPage *int     `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
-	OrderBy     []string `form:"orderBy"`
-	SearchBy    []string `form:"searchBy"`
+	OrderBy     []string `form:"orderBy" validate:"order_by"`
+	SearchBy    []string `form:"searchBy" validate:"search_by"`
+}
+
+type GetSongFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy" validate:"search_by"`
 }
 
 type CreateSongRequest struct {
@@ -20,7 +23,7 @@ type CreateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
-	ReleaseDate    *time.Time
+	ReleaseDate    *internal.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
@@ -46,7 +49,7 @@ type UpdateSongRequest struct {
 	Bpm            *uint
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
-	ReleaseDate    *time.Time
+	ReleaseDate    *internal.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	ArtistID       *uuid.UUID

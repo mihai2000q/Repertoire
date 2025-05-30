@@ -1,6 +1,11 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import Albums from './Albums.tsx'
-import { emptySong, reduxRouterRender } from '../test-utils.tsx'
+import {
+  defaultAlbumFiltersMetadata,
+  emptyAlbum,
+  emptySong,
+  reduxRouterRender
+} from '../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
@@ -9,22 +14,23 @@ import Album from '../types/models/Album.ts'
 import Song from '../types/models/Song.ts'
 import { RootState } from '../state/store.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import albumsOrders from '../data/albums/albumsOrders.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
+import AlbumProperty from '../types/enums/AlbumProperty.ts'
+import { expect } from 'vitest'
+import OrderType from '../types/enums/OrderType.ts'
 
 describe('Albums', () => {
   const albums: Album[] = [
     {
+      ...emptyAlbum,
       id: '1',
-      title: 'Album 1',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      title: 'Album 1'
     },
     {
+      ...emptyAlbum,
       id: '2',
-      title: 'Album 2',
-      songs: [],
-      createdAt: '',
-      updatedAt: ''
+      title: 'Album 2'
     }
   ]
   const totalCount = 2
@@ -89,19 +95,32 @@ describe('Albums', () => {
     http.get('/songs', async () => {
       const response: WithTotalCountResponse<Song> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
+    }),
+    http.get('/albums/filters-metadata', async () => {
+      return HttpResponse.json(defaultAlbumFiltersMetadata)
     })
   ]
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../hooks/useMainScroll.ts', () => ({
+      default: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+  })
 
   afterEach(() => {
     window.location.search = ''
     server.resetHandlers()
   })
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it('should render and display relevant info when there are albums', async () => {
     const [_, store] = reduxRouterRender(<Albums />)
@@ -257,5 +276,78 @@ describe('Albums', () => {
     expect(
       screen.getByText(`${pageSize + 1} - ${totalCount + 1} albums out of ${totalCount + 1}`)
     ).toBeInTheDocument()
+  })
+
+  it('should order the albums', async () => {
+    const user = userEvent.setup()
+
+    const initialOrder = albumsOrders[1]
+    const newOrder = albumsOrders[0]
+
+    let orderBy: string[]
+    server.use(
+      http.get('/albums', (req) => {
+        orderBy = new URL(req.request.url).searchParams.getAll('orderBy')
+        const response: WithTotalCountResponse<Album> = {
+          models: albums,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Albums />)
+
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
+    )
+
+    await user.click(screen.getByRole('button', { name: 'order-albums' }))
+    await user.click(screen.getByRole('button', { name: newOrder.label }))
+
+    await waitFor(() =>
+      expect(orderBy).toStrictEqual([
+        newOrder.property + ' ' + OrderType.Ascending,
+        initialOrder.property + ' ' + initialOrder.type
+      ])
+    )
+  })
+
+  it('should filter the albums by min Songs', async () => {
+    const user = userEvent.setup()
+
+    const newMinSongsValue = 1
+
+    let searchBy: string[]
+    server.use(
+      http.get('/albums', (req) => {
+        searchBy = new URL(req.request.url).searchParams.getAll('searchBy')
+        const response: WithTotalCountResponse<Album> = {
+          models: albums,
+          totalCount: totalCount
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRouterRender(<Albums />)
+
+    await waitFor(() => expect(searchBy).toStrictEqual([]))
+
+    await user.click(screen.getByRole('button', { name: 'filter-albums' }))
+
+    await user.clear(screen.getByRole('textbox', { name: /min songs/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /min songs/i }),
+      newMinSongsValue.toString()
+    )
+    await user.click(screen.getByRole('button', { name: 'apply-filters' }))
+
+    await waitFor(() => {
+      expect(searchBy).toStrictEqual([
+        `${AlbumProperty.Songs} ${FilterOperator.GreaterThanOrEqual} ${newMinSongsValue}`
+      ])
+      expect(window.location.search).toMatch(/&f=/)
+    })
   })
 })

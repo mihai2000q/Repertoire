@@ -8,8 +8,12 @@ import { setupServer } from 'msw/node'
 import { default as ArtistType } from './../types/models/Artist.ts'
 import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
-import Album from "../types/models/Album.ts";
-import {SearchBase} from "../types/models/Search.ts";
+import Album from '../types/models/Album.ts'
+import { SearchBase } from '../types/models/Search.ts'
+import AlbumProperty from '../types/enums/AlbumProperty.ts'
+import OrderType from '../types/enums/OrderType.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
 
 describe('Artist', () => {
   const artist: ArtistType = {
@@ -53,6 +57,9 @@ describe('Artist', () => {
         totalCount: 0
       }
       return HttpResponse.json(response)
+    }),
+    http.get(`/songs/guitar-tunings`, () => {
+      return HttpResponse.json([])
     })
   ]
 
@@ -92,8 +99,20 @@ describe('Artist', () => {
     expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(artist.name)
 
-    expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id = '${artist.id}'`])
-    expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id = '${artist.id}'`])
+    expect(albumsParams.getAll('orderBy')).toStrictEqual([
+      AlbumProperty.ReleaseDate + ' ' + OrderType.Descending + ' nulls last',
+      AlbumProperty.Title + ' ' + OrderType.Ascending
+    ])
+    expect(albumsParams.getAll('searchBy')).toStrictEqual([
+      `${AlbumProperty.ArtistId} ${FilterOperator.Equal} ${artist.id}`
+    ])
+    expect(songsParams.getAll('orderBy')).toStrictEqual([
+      SongProperty.ReleaseDate + ' ' + OrderType.Descending + ' nulls last',
+      SongProperty.Title + ' ' + OrderType.Ascending
+    ])
+    expect(songsParams.getAll('searchBy')).toStrictEqual([
+      `${SongProperty.ArtistId} ${FilterOperator.Equal} ${artist.id}`
+    ])
   })
 
   it('should render and display only songs and albums when the artist is unknown', async () => {
@@ -122,8 +141,20 @@ describe('Artist', () => {
     expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()
     expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
 
-    expect(albumsParams.getAll('searchBy')).toStrictEqual([`artist_id IS NULL`])
-    expect(songsParams.getAll('searchBy')).toStrictEqual([`songs.artist_id IS NULL`])
+    expect(albumsParams.getAll('orderBy')).toStrictEqual([
+      AlbumProperty.ReleaseDate + ' ' + OrderType.Descending + ' nulls last',
+      AlbumProperty.Title + ' ' + OrderType.Ascending
+    ])
+    expect(albumsParams.getAll('searchBy')).toStrictEqual([
+      `${AlbumProperty.ArtistId} ${FilterOperator.IsNull}`
+    ])
+    expect(songsParams.getAll('orderBy')).toStrictEqual([
+      SongProperty.ReleaseDate + ' ' + OrderType.Descending + ' nulls last',
+      SongProperty.Title + ' ' + OrderType.Ascending
+    ])
+    expect(songsParams.getAll('searchBy')).toStrictEqual([
+      `${SongProperty.ArtistId} ${FilterOperator.IsNull}`
+    ])
   })
 
   it('should render and display band members when the artist is a band', async () => {

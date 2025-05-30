@@ -72,6 +72,20 @@ func (a *ArtistRepositoryMock) GetWithAlbumsAndSongs(artist *model.Artist, id uu
 	return args.Error(0)
 }
 
+func (a *ArtistRepositoryMock) GetFiltersMetadata(
+	metadata *model.ArtistFiltersMetadata,
+	userID uuid.UUID,
+	searchBy []string,
+) error {
+	args := a.Called(metadata, userID, searchBy)
+
+	if len(args) > 1 {
+		*metadata = *args.Get(1).(*model.ArtistFiltersMetadata)
+	}
+
+	return args.Error(0)
+}
+
 func (a *ArtistRepositoryMock) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
 	args := a.Called(artists, ids)
 
@@ -83,7 +97,7 @@ func (a *ArtistRepositoryMock) GetAllByIDsWithSongs(artists *[]model.Artist, ids
 }
 
 func (a *ArtistRepositoryMock) GetAllByUser(
-	artists *[]model.Artist,
+	artists *[]model.EnhancedArtist,
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
@@ -93,7 +107,7 @@ func (a *ArtistRepositoryMock) GetAllByUser(
 	args := a.Called(artists, userID, currentPage, pageSize, orderBy, searchBy)
 
 	if len(args) > 1 {
-		*artists = *args.Get(1).(*[]model.Artist)
+		*artists = *args.Get(1).(*[]model.EnhancedArtist)
 	}
 
 	return args.Error(0)

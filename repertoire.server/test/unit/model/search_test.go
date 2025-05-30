@@ -56,7 +56,7 @@ func TestAlbumSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T)
 				ID:          uuid.New(),
 				Title:       "Some Album",
 				ImageURL:    &[]internal.FilePath{"some_file_path"}[0],
-				ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Some Artist",
@@ -79,7 +79,12 @@ func TestAlbumSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T)
 			// then
 			assert.Equal(t, tt.album.ImageURL.StripURL(), result.ImageUrl)
 			assert.Equal(t, tt.album.Title, result.Title)
-			assert.Equal(t, tt.album.ReleaseDate, result.ReleaseDate)
+			if tt.album.ReleaseDate != nil {
+				assert.NotNil(t, result.ReleaseDate)
+				assert.Equal(t, (*time.Time)(tt.album.ReleaseDate).Format("2006-01-02"), *result.ReleaseDate)
+			} else {
+				assert.Nil(t, result.ReleaseDate)
+			}
 
 			if tt.album.Artist != nil {
 				assert.Equal(t, tt.album.Artist.ID, result.Artist.ID)
@@ -139,7 +144,7 @@ func TestSongSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T) 
 				ID:          uuid.New(),
 				Title:       "Some Song",
 				ImageURL:    &[]internal.FilePath{"some_file_path"}[0],
-				ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Some Artist",
@@ -168,7 +173,12 @@ func TestSongSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T) 
 			// then
 			assert.Equal(t, tt.song.ImageURL.StripURL(), result.ImageUrl)
 			assert.Equal(t, tt.song.Title, result.Title)
-			assert.Equal(t, tt.song.ReleaseDate, result.ReleaseDate)
+			if tt.song.ReleaseDate != nil {
+				assert.NotNil(t, result.ReleaseDate)
+				assert.Equal(t, (*time.Time)(tt.song.ReleaseDate).Format("2006-01-02"), *result.ReleaseDate)
+			} else {
+				assert.Nil(t, result.ReleaseDate)
+			}
 
 			if tt.song.Artist != nil {
 				assert.Equal(t, tt.song.Artist.ID, result.Artist.ID)
@@ -182,6 +192,16 @@ func TestSongSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T) 
 			if tt.song.Album != nil {
 				assert.Equal(t, tt.song.Album.ID, result.Album.ID)
 				assert.Equal(t, tt.song.Album.Title, result.Album.Title)
+				if tt.song.Album.ReleaseDate != nil {
+					assert.NotNil(t, result.Album.ReleaseDate)
+					assert.Equal(
+						t,
+						(*time.Time)(tt.song.Album.ReleaseDate).Format("2006-01-02"),
+						*result.Album.ReleaseDate,
+					)
+				} else {
+					assert.Nil(t, result.Album.ReleaseDate)
+				}
 				assert.Equal(t, tt.song.Album.UpdatedAt, result.Album.UpdatedAt)
 				assert.Equal(t, tt.song.Album.ImageURL.StripURL(), result.Album.ImageUrl)
 			} else {

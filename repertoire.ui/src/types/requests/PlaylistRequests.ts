@@ -7,6 +7,11 @@ export interface GetPlaylistsRequest {
   searchBy?: string[]
 }
 
+export interface GetPlaylistRequest {
+  id: string
+  songsOrderBy?: string[]
+}
+
 export interface CreatePlaylistRequest {
   title: string
   description: string

@@ -4,6 +4,7 @@ import {
   alpha,
   Avatar,
   Center,
+  Flex,
   Grid,
   Group,
   Menu,
@@ -20,19 +21,21 @@ import { MouseEvent, useState } from 'react'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
-import SongProperty from '../../utils/enums/SongProperty.ts'
-import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
-import SongConfidenceBar from '../@ui/misc/SongConfidenceBar.tsx'
-import DifficultyBar from '../@ui/misc/DifficultyBar.tsx'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
+import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
+import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/PartialRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 
 interface AlbumSongCardProps {
   song: Song
@@ -66,6 +69,7 @@ function AlbumSongCard({
 
   const isSelected = hovered || isMenuOpened || isDragging || openedMenu
 
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -103,11 +107,12 @@ function AlbumSongCard({
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
       {!isUnknownAlbum && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
-          Remove from album
+          Remove from Album
         </Menu.Item>
       )}
       <Menu.Item
@@ -135,14 +140,19 @@ function AlbumSongCard({
           }}
           sx={(theme) => ({
             transition: '0.3s',
+            borderRadius: 0,
             border: '1px solid transparent',
             ...(isSelected && {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             }),
 
-            borderRadius: isDragging ? '16px' : '0px',
-            borderColor: isDragging ? alpha(theme.colors.primary[9], 0.33) : 'transparent'
+            ...(isDragging && {
+              boxShadow: theme.shadows.xl,
+              borderRadius: '16px',
+              backgroundColor: alpha(theme.white, 0.33),
+              border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
+            })
           })}
           px={'md'}
           py={'xs'}
@@ -171,7 +181,10 @@ function AlbumSongCard({
                   bg={'gray.5'}
                 >
                   <Center c={'white'}>
-                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+                    <CustomIconMusicNoteEighth
+                      aria-label={`default-icon-${song.title}`}
+                      size={20}
+                    />
                   </Center>
                 </Avatar>
 
@@ -189,7 +202,7 @@ function AlbumSongCard({
                   : 'auto'
               }
             >
-              <Group px={'10%'}>
+              <Flex px={'10%'}>
                 {order.property === SongProperty.Difficulty && (
                   <DifficultyBar difficulty={song.difficulty} miw={'max(15vw, 120px)'} />
                 )}
@@ -208,12 +221,12 @@ function AlbumSongCard({
                   </Tooltip.Floating>
                 )}
                 {order.property === SongProperty.Confidence && (
-                  <SongConfidenceBar confidence={song.confidence} flex={1} />
+                  <ConfidenceBar confidence={song.confidence} flex={1} />
                 )}
                 {order.property === SongProperty.Progress && (
-                  <SongProgressBar progress={song.progress} flex={1} />
+                  <ProgressBar progress={song.progress} flex={1} />
                 )}
-                {order.property === SongProperty.LastTimePlayed && (
+                {order.property === SongProperty.LastPlayed && (
                   <Tooltip
                     label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
                     openDelay={400}
@@ -221,12 +234,12 @@ function AlbumSongCard({
                   >
                     <Text fw={500} c={'dimmed'} inline>
                       {song.lastTimePlayed
-                        ? dayjs(song.lastTimePlayed).format('D MMM YYYY')
+                        ? dayjs(song.lastTimePlayed).format('DD MMM YYYY')
                         : 'never'}
                     </Text>
                   </Tooltip>
                 )}
-              </Group>
+              </Flex>
             </Grid.Col>
 
             <Grid.Col span={'content'}>
@@ -255,6 +268,12 @@ function AlbumSongCard({
 
       <MenuDropdown {...menuDropdownProps}>{menuDropdown}</MenuDropdown>
 
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
       <WarningModal
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}

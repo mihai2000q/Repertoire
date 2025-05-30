@@ -28,12 +28,12 @@ function HomeSongCard({ song }: HomeSongCardProps) {
       align={'center'}
       gap={0}
       style={{ transition: '0.25s', ...(isImageHovered && { transform: 'scale(1.05)' }) }}
-      w={150}
+      w={'max(10vw, 150px)'}
     >
       <Avatar
         onMouseEnter={() => setIsImageHovered(true)}
         onMouseLeave={() => setIsImageHovered(false)}
-        radius={'lg'}
+        radius={'10%'}
         w={'100%'}
         h={'unset'}
         src={song.imageUrl ?? song.album?.imageUrl}

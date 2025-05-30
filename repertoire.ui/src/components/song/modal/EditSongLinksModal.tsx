@@ -1,7 +1,8 @@
 import Song from '../../../types/models/Song.ts'
 import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditSongLinksForm, editSongLinksValidation } from '../../../validation/songsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditSongLinksForm, editSongLinksSchema } from '../../../validation/songsForm.ts'
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import { useState } from 'react'
@@ -18,16 +19,16 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
 
   const [hasChanged, setHasChanged] = useState(false)
 
-  const form = useForm({
+  const form = useForm<EditSongLinksForm>({
     mode: 'uncontrolled',
     initialValues: {
       songsterrLink: song.songsterrLink,
       youtubeLink: song.youtubeLink
-    } as EditSongLinksForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editSongLinksValidation),
+    validate: zod4Resolver(editSongLinksSchema),
     onValuesChange: (values) => {
       setHasChanged(
         song.songsterrLink !== values.songsterrLink || song.youtubeLink !== values.youtubeLink
@@ -43,7 +44,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
       ...song,
       guitarTuningId: song.guitarTuning?.id,
       albumId: song.album?.id,
-      artistId: song.album?.id,
+      artistId: song.artist?.id,
       id: song.id,
       songsterrLink: songsterrLink,
       youtubeLink: youtubeLink

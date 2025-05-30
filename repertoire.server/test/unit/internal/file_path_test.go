@@ -5,7 +5,6 @@ import (
 	"os"
 	"repertoire/server/internal"
 	"testing"
-	"time"
 )
 
 func TestToFullURL_WhenIsNil_ShouldReturnNil(t *testing.T) {
@@ -13,7 +12,7 @@ func TestToFullURL_WhenIsNil_ShouldReturnNil(t *testing.T) {
 	var _uut *internal.FilePath
 
 	// when
-	result := _uut.ToFullURL(time.Now())
+	result := _uut.ToFullURL()
 
 	// then
 	assert.Nil(t, result)
@@ -26,8 +25,7 @@ func TestToFullURL_WhenURLIsAlreadyFull_ShouldReturnTheFilePathAsItIs(t *testing
 	_uut := internal.FilePath(storageUrl + "some_file_path")
 
 	// when
-	lastModifiedAt := time.Now()
-	result := _uut.ToFullURL(lastModifiedAt)
+	result := _uut.ToFullURL()
 
 	// then
 	assert.Equal(t, _uut, *result)
@@ -40,11 +38,10 @@ func TestToFullURL_WhenSuccessful_ShouldReturnFilePathPrefixedByStorageUrlAndSuf
 	_uut := internal.FilePath("some_file_path")
 
 	// when
-	lastModifiedAt := time.Now()
-	result := _uut.ToFullURL(lastModifiedAt)
+	result := _uut.ToFullURL()
 
 	// then
-	assert.Equal(t, storageUrl+string(_uut)+"?lastModifiedAt="+lastModifiedAt.String(), string(*result))
+	assert.Equal(t, storageUrl+string(_uut), string(*result))
 }
 
 func TestStripURL_WhenIsNil_ShouldReturnNil(t *testing.T) {
@@ -63,7 +60,7 @@ func TestStripURL_WhenSuccessful_ShouldReturnTheFilePathWithoutTheStorageUrlOrTr
 	storageUrl := "the_storage_url"
 	_ = os.Setenv("STORAGE_FETCH_URL", storageUrl)
 	filePath := "some_file_path"
-	_uut := internal.FilePath(storageUrl + filePath + "?lastModifiedAt=" + time.Now().String())
+	_uut := internal.FilePath(storageUrl + filePath)
 
 	// when
 	result := _uut.StripURL()

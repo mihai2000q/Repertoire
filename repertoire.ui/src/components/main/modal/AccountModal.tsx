@@ -10,9 +10,10 @@ import {
 } from '@mantine/core'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import User from '../../../types/models/User.ts'
-import { AccountForm, accountValidation } from '../../../validation/mainForm.ts'
+import { AccountForm, accountSchema } from '../../../validation/mainForm.ts'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
@@ -37,20 +38,23 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     useDeleteProfilePictureMutation()
   const isLoading = isUpdateLoading || isSaveProfilePictureLoading || isDeleteProfilePictureLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [userHasChanged, setUserHasChanged] = useState(false)
+  const [pictureHasChanged, setPictureHasChanged] = useState(false)
+  const hasChanged = userHasChanged || pictureHasChanged
 
-  const form = useForm({
+  const form = useForm<AccountForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: user.name,
       profilePicture: user.profilePictureUrl
-    } as AccountForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(accountValidation),
+    validate: zod4Resolver(accountSchema),
     onValuesChange: (values) => {
-      setHasChanged(values.name !== user.name || values.profilePicture !== user.profilePictureUrl)
+      setUserHasChanged(values.name !== user.name)
+      setPictureHasChanged(values.profilePicture !== user.profilePictureUrl)
     }
   })
 
@@ -61,23 +65,21 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
   useDidUpdate(() => setProfilePicture(user.profilePictureUrl), [user])
 
   async function updateUser({ name, profilePicture }: AccountForm) {
-    name = name.trim()
+    if (userHasChanged)
+      await updateUserMutation({
+        name: name.trim()
+      }).unwrap()
 
-    await updateUserMutation({
-      name: name
-    }).unwrap()
-
-    if (profilePicture !== null && typeof profilePicture !== 'string') {
+    if (profilePicture !== null && typeof profilePicture !== 'string')
       await saveProfilePictureMutation({
-        profile_pic: profilePicture
+        profile_pic: profilePicture as FileWithPath,
       })
-    } else if (profilePicture === null && user.profilePictureUrl) {
-      await deleteProfilePictureMutation()
-    }
+    else if (profilePicture === null && user.profilePictureUrl) await deleteProfilePictureMutation()
 
     toast.info('Account updated!')
     onClose()
-    setHasChanged(false)
+    setUserHasChanged(false)
+    setPictureHasChanged(false)
   }
 
   return (

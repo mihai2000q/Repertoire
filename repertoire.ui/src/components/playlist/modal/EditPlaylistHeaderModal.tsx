@@ -6,10 +6,11 @@ import {
   useUpdatePlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
 import {
   EditPlaylistHeaderForm,
-  editPlaylistHeaderValidation
+  editPlaylistHeaderSchema
 } from '../../../validation/playlistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useDidUpdate } from '@mantine/hooks'
@@ -29,25 +30,26 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     useDeleteImageFromPlaylistMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [playlistHasChanged, setPlaylistHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = playlistHasChanged || imageHasChanged
 
-  const form = useForm({
+  const form = useForm<EditPlaylistHeaderForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: playlist.title,
       description: playlist.description,
       image: playlist.imageUrl
-    } as EditPlaylistHeaderForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editPlaylistHeaderValidation),
+    validate: zod4Resolver(editPlaylistHeaderSchema),
     onValuesChange: (values) => {
-      setHasChanged(
-        values.title !== playlist.title ||
-          values.description !== playlist.description ||
-          values.image !== playlist.imageUrl
+      setPlaylistHasChanged(
+        values.title !== playlist.title || values.description !== playlist.description
       )
+      setImageHasChanged(values.image !== playlist.imageUrl)
     }
   })
 
@@ -56,26 +58,24 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
   useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
-    title = title.trim()
+    if (playlistHasChanged)
+      await updatePlaylistMutation({
+        id: playlist.id,
+        title: title.trim(),
+        description: description
+      }).unwrap()
 
-    await updatePlaylistMutation({
-      id: playlist.id,
-      title: title,
-      description: description
-    }).unwrap()
-
-    if (image !== null && typeof image !== 'string') {
+    if (image !== null && typeof image !== 'string')
       await saveImageMutation({
         id: playlist.id,
-        image: image
+        image: image as FileWithPath
       })
-    } else if (image === null && playlist.imageUrl) {
-      await deleteImageMutation(playlist.id)
-    }
+    else if (image === null && playlist.imageUrl) await deleteImageMutation(playlist.id)
 
     toast.info('Playlist updated!')
     onClose()
-    setHasChanged(false)
+    setPlaylistHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (

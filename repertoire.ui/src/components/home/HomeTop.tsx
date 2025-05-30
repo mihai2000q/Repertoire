@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { forwardRef, useRef, useState } from 'react'
 import { ActionIcon, Button, Center, Group, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useDidUpdate, useViewportSize } from '@mantine/hooks'
@@ -11,6 +11,13 @@ import HomeSongCard from './top/HomeSongCard.tsx'
 import HomeSongsLoader from './top/loader/HomeSongsLoader.tsx'
 import HomeArtistsLoader from './top/loader/HomeArtistsLoader.tsx'
 import HomeArtistCard from './top/HomeArtistCard.tsx'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import useLocalStorage from '../../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
 
 enum TopEntity {
   Songs,
@@ -62,30 +69,45 @@ const TabButton = ({
   </Button>
 )
 
-function HomeTop() {
+const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
+  const songsOrderBy = useOrderBy([
+    { property: SongProperty.Progress, type: OrderType.Descending },
+    { property: SongProperty.Title }
+  ])
   const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['progress desc', 'title asc']
+    orderBy: songsOrderBy
   })
 
+  const albumsOrderBy = useOrderBy([
+    { property: AlbumProperty.Progress, type: OrderType.Descending },
+    { property: AlbumProperty.Title }
+  ])
   const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['updated_at desc', 'title asc']
+    orderBy: albumsOrderBy
   })
 
+  const artistsOrderBy = useOrderBy([
+    { property: ArtistProperty.Progress, type: OrderType.Descending },
+    { property: ArtistProperty.Name }
+  ])
   const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['updated_at desc', 'name asc']
+    orderBy: artistsOrderBy
   })
 
   const topRef = useRef<HTMLDivElement>(null)
 
   const { width } = useViewportSize()
 
-  const [topEntity, setTopEntity] = useState(TopEntity.Albums)
+  const [topEntity, setTopEntity] = useLocalStorage({
+    key: LocalStorageKeys.HomeTopEntity,
+    defaultValue: TopEntity.Albums
+  })
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
@@ -106,7 +128,7 @@ function HomeTop() {
   }
 
   return (
-    <Stack gap={0} aria-label={'top'}>
+    <Stack ref={ref} gap={0} aria-label={'top'}>
       <Title px={'xl'} order={2} fw={800} lh={1} mb={'xs'} fz={'max(3vw, 36px)'}>
         Welcome Back
       </Title>
@@ -180,44 +202,71 @@ function HomeTop() {
         </Center>
       )}
 
-      <ScrollArea
+      <ScrollArea.Autosize
         viewportRef={topRef}
         viewportProps={{ onScroll: handleOnScroll }}
         scrollbars={'x'}
         offsetScrollbars={'x'}
         scrollbarSize={7}
+        styles={{
+          viewport: {
+            '> div': {
+              display: 'flex !important',
+              minWidth: '100%',
+              width: 0
+            }
+          }
+        }}
       >
         <Group
           wrap={'nowrap'}
           align={'start'}
-          px={'xl'}
+          pl={'xl'}
+          pr={'5vw'}
           pt={'lg'}
           pb={topEntity === TopEntity.Artists && 'md'}
           gap={topEntity === TopEntity.Artists ? 'sm' : 'lg'}
           style={{ transition: 'padding-bottom 0.3s' }}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to right, transparent 85%, ${theme.white}),
+                linear-gradient(to left, transparent 97%, ${theme.white})
+              `
+            }
+          })}
         >
           {topEntity === TopEntity.Songs &&
-            ((isSongsLoading || !songs) ? (
+            (isSongsLoading || !songs ? (
               <HomeSongsLoader />
             ) : (
               songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
             ))}
           {topEntity === TopEntity.Albums &&
-            ((isAlbumsLoading || !albums) ? (
+            (isAlbumsLoading || !albums ? (
               <HomeAlbumsLoader />
             ) : (
               albums.models.map((album) => <HomeAlbumCard key={album.id} album={album} />)
             ))}
           {topEntity === TopEntity.Artists &&
-            ((isArtistsLoading || !artists) ? (
+            (isArtistsLoading || !artists ? (
               <HomeArtistsLoader />
             ) : (
               artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
             ))}
         </Group>
-      </ScrollArea>
+      </ScrollArea.Autosize>
     </Stack>
   )
-}
+})
+
+HomeTop.displayName = 'HomeTop'
 
 export default HomeTop

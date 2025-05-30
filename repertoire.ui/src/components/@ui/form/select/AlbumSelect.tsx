@@ -18,15 +18,16 @@ import { useDebouncedValue } from '@mantine/hooks'
 import dayjs from 'dayjs'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 
 interface AlbumSelectProps extends TextInputProps {
   album: AlbumSearch | null
   setAlbum: (album: AlbumSearch | null) => void
+  ids?: string[]
 }
 
-function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
+function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption()
   })
@@ -45,13 +46,20 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
     currentPage: 1,
     pageSize: 10,
     type: SearchType.Album,
-    order: ['updatedAt:desc']
+    order: ['updatedAt:desc'],
+    ids: ids
   })
 
   const AlbumHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
-        <Avatar radius={'md'} size={23} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+        <Avatar
+          radius={'md'}
+          size={23}
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          bg={'gray.5'}
+        >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={11} />
           </Center>
@@ -59,13 +67,19 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar radius={'md'} size={'lg'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+          <Avatar
+            radius={'md'}
+            size={'lg'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+          >
             <Center c={'white'}>
               <CustomIconAlbumVinyl size={25} />
             </Center>
           </Avatar>
           <Stack gap={'xxs'}>
-            <Text inline fw={500} lineClamp={2}>
+            <Text lh={'xxs'} fw={500} lineClamp={2}>
               {album.title}
             </Text>
             {album.artist && (
@@ -96,7 +110,7 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
           radius={'md'}
           size={'sm'}
           src={localAlbum.imageUrl}
-          alt={localAlbum.title}
+          alt={localAlbum.imageUrl && localAlbum.title}
           bg={'gray.5'}
         >
           <Center c={'white'}>
@@ -104,7 +118,7 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
           </Center>
         </Avatar>
         <Stack gap={0}>
-          <Text inline fw={500} lineClamp={2}>
+          <Text lh={'xxs'} fw={500} lineClamp={localAlbum.artist ? 1 : 2}>
             {localAlbum.title}
           </Text>
           {localAlbum.artist && (
@@ -157,20 +171,22 @@ function AlbumSelect({ album, setAlbum, ...others }: AlbumSelectProps) {
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {albums?.totalCount === 0 && search.trim() === '' ? (
-              <Combobox.Empty>There are no albums</Combobox.Empty>
-            ) : albums?.totalCount === 0 ? (
-              <Combobox.Empty>No albums found</Combobox.Empty>
-            ) : (
-              albums?.models.map((album) => (
-                <AlbumOption key={album.id} localAlbum={album as AlbumSearch} />
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {albums?.totalCount === 0 && search.trim() === '' ? (
+                <Combobox.Empty>There are no albums</Combobox.Empty>
+              ) : albums?.totalCount === 0 ? (
+                <Combobox.Empty>No albums found</Combobox.Empty>
+              ) : (
+                albums?.models.map((album) => (
+                  <AlbumOption key={album.id} localAlbum={album as AlbumSearch} />
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

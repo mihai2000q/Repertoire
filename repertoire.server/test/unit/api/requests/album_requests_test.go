@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
+	"repertoire/server/internal"
 	"strings"
 	"testing"
 	"time"
@@ -25,7 +26,7 @@ func TestValidateGetAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"Maximal",
 			requests.GetAlbumRequest{
 				ID:           uuid.New(),
-				SongsOrderBy: []string{"title asc", "created_at desc"},
+				SongsOrderBy: []string{"title", "created_at desc"},
 			},
 		},
 	}
@@ -57,6 +58,13 @@ func TestValidateGetAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			requests.GetAlbumRequest{ID: uuid.Nil},
 			"ID",
 			"required",
+		},
+		// Songs Order By Cases
+		{
+			"Songs Order By is invalid because it has invalid order type",
+			requests.GetAlbumRequest{ID: uuid.New(), SongsOrderBy: []string{"title ascending"}},
+			"SongsOrderBy",
+			"order_by",
 		},
 	}
 	for _, tt := range tests {
@@ -91,7 +99,7 @@ func TestValidateGetAlbumsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			requests.GetAlbumsRequest{
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
-				OrderBy:     []string{"title asc", "created_at desc"},
+				OrderBy:     []string{"title nulls first", "created_at desc nulls last"},
 				SearchBy:    []string{"title = something", "is_recorded <> false"},
 			},
 		},
@@ -144,6 +152,20 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			"PageSize",
 			"required_with",
 		},
+		// Order By Test Cases
+		{
+			"Order By is invalid because of the missing first or last",
+			requests.GetAlbumsRequest{OrderBy: []string{"songs asc nulls"}},
+			"OrderBy",
+			"order_by",
+		},
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetAlbumsRequest{SearchBy: []string{"songs not_equal to something that doesn't matter"}},
+			"SearchBy",
+			"search_by",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -157,6 +179,70 @@ func TestValidateGetAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReques
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetAlbumsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateGetAlbumFiltersMetadataRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetAlbumFiltersMetadataRequest
+	}{
+		{
+			"All Null",
+			requests.GetAlbumFiltersMetadataRequest{},
+		},
+		{
+			"Nothing Null",
+			requests.GetAlbumFiltersMetadataRequest{
+				SearchBy: []string{"title = something", "is_recorded <> false"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetAlbumFiltersMetadataRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetAlbumFiltersMetadataRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Search By Test Cases
+		{
+			"Search By is invalid because the operator is not supported",
+			requests.GetAlbumFiltersMetadataRequest{SearchBy: []string{"songs not_equal to something that doesn't matter"}},
+			"SearchBy",
+			"search_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetAlbumFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
@@ -180,7 +266,7 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"All Filled With Existing Arist",
 			requests.CreateAlbumRequest{
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
@@ -188,7 +274,7 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"All Filled With New Arist",
 			requests.CreateAlbumRequest{
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				ArtistName:  &[]string{"New Name"}[0],
 			},
 		},
@@ -345,7 +431,7 @@ func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			requests.UpdateAlbumRequest{
 				ID:          uuid.New(),
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]time.Time{time.Now()}[0],
+				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},

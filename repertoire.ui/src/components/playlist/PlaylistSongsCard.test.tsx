@@ -1,13 +1,12 @@
-import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
-import { screen, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 
 describe('Playlist Songs Card', () => {
   const playlist: Playlist = {
@@ -86,7 +85,9 @@ describe('Playlist Songs Card', () => {
   afterAll(() => server.close())
 
   it("should render and display playlist's songs", () => {
-    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(
+      <PlaylistSongsCard playlist={playlist} order={emptyOrder} setOrder={vi.fn()} />
+    )
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -100,7 +101,9 @@ describe('Playlist Songs Card', () => {
   it('should display menu', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
+    reduxRouterRender(
+      <PlaylistSongsCard playlist={playlist} order={emptyOrder} setOrder={vi.fn()} />
+    )
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
@@ -111,7 +114,9 @@ describe('Playlist Songs Card', () => {
     it('should open add playlist songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
+      reduxRouterRender(
+        <PlaylistSongsCard playlist={playlist} order={emptyOrder} setOrder={vi.fn()} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add songs/i }))
@@ -123,38 +128,19 @@ describe('Playlist Songs Card', () => {
   it('should display new song card when there are no playlist songs and open Add playlist songs modal', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistSongsCard playlist={{ ...playlist, songs: [] }} />)
+    reduxRouterRender(
+      <PlaylistSongsCard
+        playlist={{ ...playlist, songs: [] }}
+        order={emptyOrder}
+        setOrder={vi.fn()}
+      />
+    )
 
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
     await user.click(screen.getByLabelText('new-song-card'))
 
     expect(await screen.findByRole('dialog', { name: /add playlist songs/i })).toBeInTheDocument()
-  })
-
-  it("should send 'remove songs from playlist request' when clicking on the more menu of a song card", async () => {
-    const user = userEvent.setup()
-
-    const song = playlist.songs[0]
-
-    let capturedRequest: RemoveSongsFromPlaylistRequest
-    server.use(
-      http.put('/playlists/remove-songs', async (req) => {
-        capturedRequest = (await req.request.json()) as RemoveSongsFromPlaylistRequest
-        return HttpResponse.json()
-      })
-    )
-
-    reduxRouterRender(<PlaylistSongsCard playlist={playlist} />)
-
-    const songCard1 = screen.getByLabelText(`song-card-${song.title}`)
-
-    await user.click(within(songCard1).getByRole('button', { name: 'more-menu' }))
-    await user.click(screen.getByRole('menuitem', { name: /remove/i }))
-    await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
-
-    expect(capturedRequest.id).toBe(playlist.id)
-    expect(capturedRequest.songIds).toStrictEqual([song.id])
   })
 
   it.skip('should be able to reorder', () => {})

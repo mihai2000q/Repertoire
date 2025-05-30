@@ -1,84 +1,45 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { FileWithPath } from '@mantine/dropzone'
+import {
+  songsterrLinkValidator,
+  youtubeLinkValidator
+} from './custom/validators.ts'
 
-const youtubeRegex =
-  /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%?]{11})$/
-
-export interface AddNewSongForm {
-  title: string
-  description: string
-  artistName?: string
-  albumTitle?: string
-
-  releaseDate?: Date
-  bpm?: number | string
-  songsterrLink?: string
-  youtubeLink?: string
-}
-
-export const addNewSongValidation = z.object({
+export const addNewSongSchema = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank'),
-  songsterrLink: z
-    .string()
-    .includes('songsterr.com', { message: 'This is not a valid Songsterr URL' })
-    .url('This is not a valid URL')
-    .nullish(),
-  youtubeLink: z
-    .string()
-    .url('This is not a valid URL')
-    .regex(youtubeRegex, { message: 'This is not a valid Youtube URL' })
-    .nullish()
+  description: z.string(),
+  artistName: z.string().optional(),
+  albumTitle: z.string().optional(),
+
+  releaseDate: z.string().optional(),
+  bpm: z.number().or(z.string()).optional(),
+
+  songsterrLink: songsterrLinkValidator,
+  youtubeLink: youtubeLinkValidator
 })
+export type AddNewSongForm = z.infer<typeof addNewSongSchema>
 
-export interface EditSongHeaderForm {
-  title: string
-  releaseDate: Date
-  image: string | FileWithPath | null
-  artistId?: string
-  albumId?: string
-}
-
-export const editSongHeaderValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank')
+export const editSongHeaderSchema = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+  releaseDate: z.string().nullish(),
+  image: z.string().or(z.object<FileWithPath>()).nullish(),
+  artistId: z.string().optional(),
+  albumId: z.string().optional()
 })
+export type EditSongHeaderForm = z.infer<typeof editSongHeaderSchema>
 
-export interface EditSongLinksForm {
-  songsterrLink?: string
-  youtubeLink?: string
-}
-
-export const editSongLinksValidation = z.object({
-  songsterrLink: z
-    .preprocess(
-      (input) => (input === '' ? null : input),
-      z
-        .string()
-        .includes('songsterr.com', { message: 'This is not a valid Songsterr URL' })
-        .url('This is not a valid URL')
-        .nullish()
-    )
-    .nullish(),
-  youtubeLink: z
-    .preprocess(
-      (input) => (input === '' ? null : input),
-      z
-        .string()
-        .url('This is not a valid URL')
-        .regex(youtubeRegex, { message: 'This is not a valid Youtube URL' })
-        .nullish()
-    )
-    .nullish()
+export const editSongLinksSchema = z.object({
+  songsterrLink: songsterrLinkValidator,
+  youtubeLink: youtubeLinkValidator
 })
+export type EditSongLinksForm = z.infer<typeof editSongLinksSchema>
 
-export interface EditSongSectionForm {
-  name: string
-  rehearsals: number | string
-  confidence: number
-  typeId: string
-  bandMemberId?: string
-  instrumentId?: string
-}
-
-export const editSongSectionValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank')
+export const editSongSectionSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+  rehearsals: z.number().or(z.string()),
+  confidence: z.number(),
+  typeId: z.string(),
+  bandMemberId: z.string().optional(),
+  instrumentId: z.string().optional()
 })
+export type EditSongSectionForm = z.infer<typeof editSongSectionSchema>

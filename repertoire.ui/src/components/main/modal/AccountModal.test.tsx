@@ -2,12 +2,11 @@ import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import { reduxRender, withToastify } from '../../../test-utils.tsx'
 import { act, screen } from '@testing-library/react'
-import { UpdateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
 import { http, HttpResponse } from 'msw'
 import AccountModal from './AccountModal.tsx'
 import User from '../../../types/models/User.ts'
 import { UpdateUserRequest } from '../../../types/requests/UserRequests.ts'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 describe('Account Modal', () => {
   const user: User = {
@@ -36,7 +35,10 @@ describe('Account Modal', () => {
     expect(screen.getByRole('heading', { name: /account/i })).toBeInTheDocument()
 
     expect(screen.getByRole('img', { name: 'profile-picture-preview' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'profile-picture-preview' })).toHaveAttribute('src', user.profilePictureUrl)
+    expect(screen.getByRole('img', { name: 'profile-picture-preview' })).toHaveAttribute(
+      'src',
+      user.profilePictureUrl
+    )
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
@@ -47,9 +49,13 @@ describe('Account Modal', () => {
     expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue(user.email)
 
     expect(screen.getByText(/created on/i)).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(dayjs(user.createdAt).format('DD MMM YYYY')))).toBeInTheDocument()
+    expect(
+      screen.getByText(new RegExp(dayjs(user.createdAt).format('DD MMM YYYY')))
+    ).toBeInTheDocument()
     expect(screen.getByText(/last modified on/i)).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(dayjs(user.updatedAt).format('DD MMM YYYY')))).toBeInTheDocument()
+    expect(
+      screen.getByText(new RegExp(dayjs(user.updatedAt).format('DD MMM YYYY')))
+    ).toBeInTheDocument()
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
@@ -65,7 +71,9 @@ describe('Account Modal', () => {
 
     reduxRender(<AccountModal opened={true} onClose={() => {}} user={localUser} />)
 
-    expect(screen.getAllByText(new RegExp(dayjs(localUser.createdAt).format('DD MMM YYYY')))).toHaveLength(1)
+    expect(
+      screen.getAllByText(new RegExp(dayjs(localUser.createdAt).format('DD MMM YYYY')))
+    ).toHaveLength(1)
     expect(screen.queryByText(/last modified on/i)).not.toBeInTheDocument()
   })
 
@@ -101,19 +109,14 @@ describe('Account Modal', () => {
     })
   })
 
-  it('should send edit request and save profile picture request when the profile picture is replaced', async () => {
+  it('should send only save profile picture request when the profile picture is replaced', async () => {
     const userEventDispatcher = userEvent.setup()
 
     const newImage = new File(['something'], 'profile-picture.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateUserRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/users', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateUserRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/users/pictures', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -131,25 +134,17 @@ describe('Account Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      name: user.name
-    })
     expect(capturedSaveImageFormData.get('profile_pic')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and save profile picture request when the profile picture is first added', async () => {
+  it('should send only save profile picture request when the profile picture is first added', async () => {
     const userEventDispatcher = userEvent.setup()
 
     const newImage = new File(['something'], 'profile-picture.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateUserRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/users', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateUserRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/users/pictures', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -175,23 +170,15 @@ describe('Account Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      name: user.name
-    })
     expect(capturedSaveImageFormData.get('profile_pic')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete profile picture request', async () => {
+  it('should send only delete profile picture request when the profile pictures is removed', async () => {
     const userEventDispatcher = userEvent.setup()
 
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateAlbumRequest
     server.use(
-      http.put('/users', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateAlbumRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.delete(`/users/pictures`, () => {
         return HttpResponse.json({ message: 'it worked' })
       })
@@ -208,9 +195,46 @@ describe('Account Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('should send edit request and save profile picture request when both have changed', async () => {
+    const userEventDispatcher = userEvent.setup()
+
+    const newImage = new File(['something'], 'profile-picture.png', { type: 'image/png' })
+    const newName = 'New User'
+    const onClose = vitest.fn()
+
+    let capturedRequest: UpdateUserRequest
+    let capturedSaveImageFormData: FormData
+    server.use(
+      http.put('/users', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateUserRequest
+        return HttpResponse.json({ message: 'it worked' })
+      }),
+      http.put('/users/pictures', async (req) => {
+        capturedSaveImageFormData = await req.request.formData()
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(withToastify(<AccountModal opened={true} onClose={onClose} user={user} />))
+
+    const nameField = screen.getByRole('textbox', { name: /name/i })
+    const saveButton = screen.getByRole('button', { name: /save/i })
+
+    await userEventDispatcher.clear(nameField)
+    await userEventDispatcher.type(nameField, newName)
+    await userEventDispatcher.upload(screen.getByTestId('upload-profile-picture-input'), newImage)
+    await userEventDispatcher.click(saveButton)
+
+    expect(await screen.findByText(/account updated/i)).toBeInTheDocument()
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
-      name: user.name
+      name: newName
     })
+    expect(capturedSaveImageFormData.get('profile_pic')).toBeFormDataImage(newImage)
   })
 
   it('should disable the save button when no changes are made', async () => {

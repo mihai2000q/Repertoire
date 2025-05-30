@@ -1,0 +1,30 @@
+enum SongProperty {
+  AlbumTrackNo = 'album_track_no',
+  AlbumId = 'album_id',
+  AlbumTitle = '"Album".title',
+  ArtistId = 'songs.artist_id',
+  ArtistName = '"Artist".name',
+  BPM = 'bpm',
+  CreationDate = 'songs.created_at',
+  Confidence = 'songs.confidence',
+  Difficulty = 'difficulty',
+  GuitarTuningId = 'guitar_tuning_id',
+  GuitarTuningOrder = '"GuitarTuning"."order"',
+  InstrumentId = 'instrument_id',
+  IsRecorded = 'is_recorded',
+  LastModified = 'songs.updated_at',
+  LastPlayed = 'last_time_played',
+  PlaylistId = 'playlist_id',
+  PlaylistTrackNo = 'song_track_no',
+  Progress = 'songs.progress',
+  Rehearsals = 'songs.rehearsals',
+  ReleaseDate = 'songs.release_date',
+  Riffs = 'riffs_count',
+  Sections = 'sections_count',
+  Solos = 'solos_count',
+  SongsterrLink = 'songsterr_link',
+  Title = 'songs.title',
+  YoutubeLink = 'youtube_link'
+}
+
+export default SongProperty

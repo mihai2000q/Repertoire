@@ -16,7 +16,7 @@ import dayjs from 'dayjs'
 import { IconDiscFilled } from '@tabler/icons-react'
 import { useDebouncedState } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 
@@ -54,9 +54,15 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
   }
 
   const AlbumHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
-        <Avatar radius={'md'} size={23} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+        <Avatar
+          radius={'md'}
+          size={23}
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          bg={'gray.5'}
+        >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={11} />
           </Center>
@@ -64,13 +70,19 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
       </HoverCard.Target>
       <HoverCard.Dropdown>
         <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar radius={'md'} size={'lg'} src={album.imageUrl} alt={album.title} bg={'gray.5'}>
+          <Avatar
+            radius={'md'}
+            size={'lg'}
+            src={album.imageUrl}
+            alt={album.imageUrl && album.title}
+            bg={'gray.5'}
+          >
             <Center c={'white'}>
               <CustomIconAlbumVinyl size={25} />
             </Center>
           </Avatar>
           <Stack gap={'xxs'}>
-            <Text inline fw={500} lineClamp={2}>
+            <Text lh={'xxs'} fw={500} lineClamp={2}>
               {album.title}
             </Text>
             {album.artist && (
@@ -128,47 +140,49 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {totalCount === 0 ? (
-              <Combobox.Empty>No album found</Combobox.Empty>
-            ) : (
-              albums?.map((album) => (
-                <Combobox.Option
-                  key={album.id}
-                  value={album.title}
-                  aria-label={album.title}
-                  onClick={() => setAlbum(album)}
-                >
-                  <Group gap={'xs'} wrap={'nowrap'}>
-                    <Avatar
-                      radius={'md'}
-                      size={'sm'}
-                      src={album.imageUrl}
-                      alt={album.title}
-                      bg={'gray.5'}
-                    >
-                      <Center c={'white'}>
-                        <CustomIconAlbumVinyl size={12} />
-                      </Center>
-                    </Avatar>
-                    <Stack gap={0}>
-                      <Text inline fw={500} lineClamp={2}>
-                        {album.title}
-                      </Text>
-                      {album.artist && (
-                        <Text inline c={'dimmed'} fz={'xs'} fw={500} lineClamp={1}>
-                          {album.artist.name}
+            <Stack gap={0} pb={'xxs'}>
+              {totalCount === 0 ? (
+                <Combobox.Empty>No album found</Combobox.Empty>
+              ) : (
+                albums?.map((album) => (
+                  <Combobox.Option
+                    key={album.id}
+                    value={album.title}
+                    aria-label={album.title}
+                    onClick={() => setAlbum(album)}
+                  >
+                    <Group gap={'xs'} wrap={'nowrap'}>
+                      <Avatar
+                        radius={'md'}
+                        size={'sm'}
+                        src={album.imageUrl}
+                        alt={album.imageUrl && album.title}
+                        bg={'gray.5'}
+                      >
+                        <Center c={'white'}>
+                          <CustomIconAlbumVinyl size={12} />
+                        </Center>
+                      </Avatar>
+                      <Stack gap={0}>
+                        <Text lh={'xxs'} fw={500} lineClamp={album.artist ? 1 : 2}>
+                          {album.title}
                         </Text>
-                      )}
-                    </Stack>
-                  </Group>
-                </Combobox.Option>
-              ))
-            )}
+                        {album.artist && (
+                          <Text inline c={'dimmed'} fz={'xs'} fw={500} lineClamp={1}>
+                            {album.artist.name}
+                          </Text>
+                        )}
+                      </Stack>
+                    </Group>
+                  </Combobox.Option>
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

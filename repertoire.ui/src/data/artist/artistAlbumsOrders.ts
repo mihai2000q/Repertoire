@@ -1,13 +1,48 @@
 import Order from '../../types/Order.ts'
-import AlbumProperty from '../../utils/enums/AlbumProperty.ts'
+import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
 
 const artistAlbumsOrders: Order[] = [
   {
-    value: 'release_date desc nulls last, title asc',
     label: 'Latest Releases',
-    property: AlbumProperty.ReleaseDate
+    property: AlbumProperty.ReleaseDate,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
   },
-  { value: 'title asc', label: 'Alphabetically', property: AlbumProperty.Title }
+  {
+    label: 'Alphabetically',
+    property: AlbumProperty.Title,
+    type: OrderType.Ascending
+  },
+  {
+    label: 'Rehearsals',
+    property: AlbumProperty.Rehearsals,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  },
+  {
+    label: 'Confidence',
+    property: AlbumProperty.Confidence,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  },
+  {
+    label: 'Progress',
+    property: AlbumProperty.Progress,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  },
+  {
+    label: 'Last Played',
+    property: AlbumProperty.LastPlayed,
+    type: OrderType.Descending,
+    nullable: true,
+    thenBy: [{ property: AlbumProperty.Title }]
+  }
 ]
 
 export default artistAlbumsOrders

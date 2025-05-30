@@ -1,11 +1,12 @@
 import {
   ActionIcon,
   alpha,
-  Box,
   Button,
+  Center,
   ComboboxItem,
   Group,
   NumberInput,
+  ScrollArea,
   Stack,
   Text,
   TextInput,
@@ -13,7 +14,7 @@ import {
 } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import {
-  IconCalendarFilled,
+  IconCalendarRepeat,
   IconGripVertical,
   IconInfoCircleFilled,
   IconMinus
@@ -28,7 +29,7 @@ import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
-import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
+import SongSectionTypeSelect from '../../@ui/form/select/compact/SongSectionTypeSelect.tsx'
 import { AlbumSearch } from '../../../types/models/Search.ts'
 
 interface AddNewSongModalSecondStepProps {
@@ -83,14 +84,14 @@ function AddNewSongModalSecondStep({
         <Group flex={1} gap={'xxs'}>
           <DatePickerInput
             flex={1}
-            leftSection={<IconCalendarFilled size={20} />}
+            leftSection={<IconCalendarRepeat size={20} />}
             label={'Release Date'}
             placeholder={'Choose the release date'}
             key={form.key('releaseDate')}
             {...form.getInputProps('releaseDate')}
           />
           {album?.releaseDate && (
-            <Box c={'primary.8'} mt={'lg'} ml={4}>
+            <Center c={'primary.8'} mt={'lg'} ml={4}>
               <Tooltip
                 multiline
                 w={210}
@@ -99,7 +100,7 @@ function AddNewSongModalSecondStep({
               >
                 <IconInfoCircleFilled aria-label={'release-date-info'} size={18} />
               </Tooltip>
-            </Box>
+            </Center>
           )}
         </Group>
       </Group>
@@ -108,99 +109,102 @@ function AddNewSongModalSecondStep({
         <Text fw={500} fz={'sm'}>
           Sections
         </Text>
-        <DragDropContext onDragEnd={onSectionsDragEnd}>
-          <Droppable droppableId="dnd-list" direction="vertical">
-            {(provided) => (
-              <Stack gap={0} ref={provided.innerRef} {...provided.droppableProps}>
-                {sections.map((section, index) => (
-                  <Draggable key={section.id} index={index} draggableId={section.id}>
-                    {(provided, snapshot) => {
-                      if (snapshot.isDragging) {
-                        if ('left' in provided.draggableProps.style) {
-                          provided.draggableProps.style.left = 24
+        <ScrollArea.Autosize mah={'35vh'} scrollbars={'y'} scrollbarSize={7}>
+          <DragDropContext onDragEnd={onSectionsDragEnd}>
+            <Droppable droppableId="dnd-list" direction="vertical">
+              {(provided) => (
+                <Stack gap={0} ref={provided.innerRef} {...provided.droppableProps}>
+                  {sections.map((section, index) => (
+                    <Draggable key={section.id} index={index} draggableId={section.id}>
+                      {(provided, snapshot) => {
+                        if (snapshot.isDragging) {
+                          if ('left' in provided.draggableProps.style) {
+                            provided.draggableProps.style.left = 24
+                          }
+                          if ('top' in provided.draggableProps.style) {
+                            provided.draggableProps.style.top -= 36
+                          }
                         }
-                        if ('top' in provided.draggableProps.style) {
-                          provided.draggableProps.style.top = provided.draggableProps.style.top - 36
-                        }
-                      }
-                      return (
-                        <Group
-                          key={section.id}
-                          gap={'xs'}
-                          py={'xs'}
-                          sx={(theme) => ({
-                            transition: '0.25s',
-                            borderRadius: '16px',
-                            border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`,
-                            borderWidth: snapshot.isDragging ? '1px' : '0px'
-                          })}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                        >
-                          <ActionIcon
-                            aria-label={'drag-handle'}
-                            variant={'subtle'}
-                            size={'lg'}
-                            {...provided.dragHandleProps}
+                        return (
+                          <Group
+                            key={section.id}
+                            gap={'xs'}
+                            py={'xs'}
+                            sx={(theme) => ({
+                              transition: '0.25s',
+                              borderRadius: '16px',
+                              border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`,
+                              borderWidth: snapshot.isDragging ? '1px' : '0px'
+                            })}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
                           >
-                            <IconGripVertical size={20} />
-                          </ActionIcon>
+                            <ActionIcon
+                              aria-label={'drag-handle'}
+                              variant={'subtle'}
+                              size={'lg'}
+                              {...provided.dragHandleProps}
+                            >
+                              <IconGripVertical size={20} />
+                            </ActionIcon>
 
-                          <SongSectionTypeSelect
-                            w={100}
-                            comboboxProps={{ position: 'bottom-start', width: 125 }}
-                            placeholder={'Type'}
-                            option={section.type}
-                            onOptionChange={(option) =>
-                              sectionsHandlers.setItem(index, {
-                                ...section,
-                                type: option,
-                                errors: [
-                                  ...section.errors.filter((e) => e.property !== 'type'),
-                                  ...(!option ? [{ property: 'type' }] : [])
-                                ]
-                              })
-                            }
-                            error={section.errors.some((e) => e.property === 'type')}
-                          />
+                            <SongSectionTypeSelect
+                              w={100}
+                              comboboxProps={{ position: 'bottom-start', width: 125 }}
+                              placeholder={'Type'}
+                              option={section.type}
+                              onOptionChange={(option) =>
+                                sectionsHandlers.setItem(index, {
+                                  ...section,
+                                  type: option,
+                                  errors: [
+                                    ...section.errors.filter((e) => e.property !== 'type'),
+                                    ...(!option ? [{ property: 'type' }] : [])
+                                  ]
+                                })
+                              }
+                              error={section.errors.some((e) => e.property === 'type')}
+                            />
 
-                          <TextInput
-                            flex={1}
-                            maxLength={30}
-                            aria-label={'name'}
-                            placeholder={'Name of Section'}
-                            value={section.name}
-                            onChange={(e) =>
-                              sectionsHandlers.setItem(index, {
-                                ...section,
-                                name: e.target.value,
-                                errors: [
-                                  ...section.errors.filter((e) => e.property !== 'name'),
-                                  ...(e.target.value.trim() === '' ? [{ property: 'name' }] : [])
-                                ]
-                              })
-                            }
-                            error={section.errors.some((e) => e.property === 'name')}
-                          />
+                            <TextInput
+                              flex={1}
+                              maxLength={30}
+                              aria-label={'name'}
+                              placeholder={'Name of Section'}
+                              value={section.name}
+                              onChange={(e) =>
+                                sectionsHandlers.setItem(index, {
+                                  ...section,
+                                  name: e.target.value,
+                                  errors: [
+                                    ...section.errors.filter((e) => e.property !== 'name'),
+                                    ...(e.target.value.trim() === '' ? [{ property: 'name' }] : [])
+                                  ]
+                                })
+                              }
+                              error={section.errors.some((e) => e.property === 'name')}
+                            />
 
-                          <ActionIcon
-                            variant={'subtle'}
-                            size={'lg'}
-                            aria-label={'remove-section'}
-                            onClick={() => sectionsHandlers.remove(index)}
-                          >
-                            <IconMinus size={20} />
-                          </ActionIcon>
-                        </Group>
-                      )
-                    }}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </Stack>
-            )}
-          </Droppable>
-        </DragDropContext>
+                            <ActionIcon
+                              variant={'subtle'}
+                              size={'lg'}
+                              aria-label={'remove-section'}
+                              onClick={() => sectionsHandlers.remove(index)}
+                            >
+                              <IconMinus size={20} />
+                            </ActionIcon>
+                          </Group>
+                        )
+                      }}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Stack>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </ScrollArea.Autosize>
+
         <Button style={{ alignSelf: 'start' }} variant={'subtle'} onClick={handleAddSection}>
           Add Section
         </Button>

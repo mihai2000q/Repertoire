@@ -30,6 +30,12 @@ import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import OrderType from '../../../types/enums/OrderType.ts'
+import AlbumProperty from '../../../types/enums/AlbumProperty.ts'
+import SongProperty from '../../../types/enums/SongProperty.ts'
+import useOrderBy from '../../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../../hooks/api/useSearchBy.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -46,19 +52,43 @@ function ArtistDrawer() {
   const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
+
+  const albumsOrderBy = useOrderBy([
+    {
+      property: AlbumProperty.ReleaseDate,
+      type: OrderType.Descending,
+      nullable: true
+    },
+    { property: AlbumProperty.Title }
+  ])
+  const albumsSearchBy = useSearchBy([
+    { property: AlbumProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }
+  ])
   const { data: albums, isFetching: isAlbumsFetching } = useGetAlbumsQuery(
     {
-      orderBy: ['release_date desc nulls last', 'title asc'],
-      searchBy: [`artist_id = '${artistId}'`]
+      orderBy: albumsOrderBy,
+      searchBy: albumsSearchBy
     },
-    { skip: !artistId }
+    { skip: !artistId || albumsSearchBy[0].includes('undefined') }
   )
+
+  const songsOrderBy = useOrderBy([
+    {
+      property: SongProperty.ReleaseDate,
+      type: OrderType.Descending,
+      nullable: true
+    },
+    { property: SongProperty.Title }
+  ])
+  const songsSearchBy = useSearchBy([
+    { property: SongProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }
+  ])
   const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
     {
-      orderBy: ['release_date desc nulls last', 'title asc'],
-      searchBy: [`songs.artist_id = '${artistId}'`]
+      orderBy: songsOrderBy,
+      searchBy: songsSearchBy
     },
-    { skip: !artistId }
+    { skip: !artistId || songsSearchBy[0].includes('undefined') }
   )
 
   useEffect(() => {
@@ -269,7 +299,7 @@ function ArtistDrawer() {
                     {song.title}
                   </Text>
                   {song.album && (
-                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} inline>
+                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} lh={'xxs'}>
                       {song.album.title}
                     </Text>
                   )}

@@ -14,9 +14,10 @@ import {
   Tooltip
 } from '@mantine/core'
 import { SongSection } from '../../../types/models/Song.ts'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditSongSectionForm, editSongSectionValidation } from '../../../validation/songsForm.ts'
-import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditSongSectionForm, editSongSectionSchema } from '../../../validation/songsForm.ts'
+import SongSectionTypeSelect from '../../@ui/form/select/compact/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
@@ -42,7 +43,7 @@ function EditSongSectionModal({
 
   const [rehearsalsError, setRehearsalsError] = useState<string | null>()
 
-  const form = useForm({
+  const form = useForm<EditSongSectionForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: section.name,
@@ -51,11 +52,11 @@ function EditSongSectionModal({
       typeId: section.songSectionType.id,
       bandMemberId: section.bandMember?.id,
       instrumentId: section.instrument?.id
-    } as EditSongSectionForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editSongSectionValidation),
+    validate: zod4Resolver(editSongSectionSchema),
     onValuesChange: (values) => {
       setHasChanged(
         values.name !== section.name ||
@@ -73,7 +74,7 @@ function EditSongSectionModal({
     }
   })
   useDidUpdate(() => {
-    form.setFieldValue('rehearsals', section.rehearsals) // only rehearsals can be updated from outside
+    form.setFieldValue('rehearsals', section.rehearsals)
   }, [section])
 
   const [type, setType] = useState<ComboboxItem>({
@@ -84,6 +85,7 @@ function EditSongSectionModal({
 
   const [bandMember, setBandMember] = useState<BandMember>(section.bandMember)
   useEffect(() => form.setFieldValue('bandMemberId', bandMember?.id), [bandMember])
+  useDidUpdate(() => setBandMember(section.bandMember), [section.bandMember])
 
   const [instrument, setInstrument] = useState<ComboboxItem>(
     section.instrument
@@ -94,8 +96,26 @@ function EditSongSectionModal({
       : undefined
   )
   useEffect(() => form.setFieldValue('instrumentId', instrument?.value), [instrument])
+  useDidUpdate(
+    () =>
+      setInstrument(
+        section.instrument
+          ? {
+              value: section.instrument.id,
+              label: section.instrument.name
+            }
+          : undefined
+      ),
+    [section.instrument]
+  )
 
-  async function updateSongSection({ name, rehearsals, confidence, bandMemberId, instrumentId }: EditSongSectionForm) {
+  async function updateSongSection({
+    name,
+    rehearsals,
+    confidence,
+    bandMemberId,
+    instrumentId
+  }: EditSongSectionForm) {
     name = name.trim()
 
     if (rehearsalsError) return

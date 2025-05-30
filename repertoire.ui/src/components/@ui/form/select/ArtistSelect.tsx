@@ -1,10 +1,12 @@
 import {
-  Avatar, Center,
+  Avatar,
+  Center,
   Combobox,
   Group,
   HoverCard,
   LoadingOverlay,
   ScrollArea,
+  Stack,
   Text,
   TextInput,
   TextInputProps,
@@ -14,16 +16,17 @@ import { IconUserFilled } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
-import SearchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
-import CustomIconUserAlt from "../../icons/CustomIconUserAlt.tsx";
+import CustomIconUserAlt from '../../icons/CustomIconUserAlt.tsx'
 
 interface ArtistSelectProps extends TextInputProps {
   artist: ArtistSearch | null
   setArtist: (artist: ArtistSearch | null) => void
+  ids?: string[]
 }
 
-function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
+function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) {
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption()
   })
@@ -42,16 +45,17 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
     currentPage: 1,
     pageSize: 10,
     type: SearchType.Artist,
-    order: ['updatedAt:desc']
+    order: ['updatedAt:desc'],
+    ids: ids
   })
 
   const ArtistHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} position="bottom" shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
         <Avatar
           size={23}
           src={artist.imageUrl}
-          alt={artist.name}
+          alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
         >
@@ -65,7 +69,7 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
           <Avatar
             size={'md'}
             src={artist.imageUrl}
-            alt={artist.name}
+            alt={artist.imageUrl && artist.name}
             style={(theme) => ({ boxShadow: theme.shadows.sm })}
             bg={'gray.0'}
           >
@@ -73,7 +77,7 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
               <CustomIconUserAlt size={18} />
             </Center>
           </Avatar>
-          <Text inline fw={500} lineClamp={2}>
+          <Text lh={'xxs'} fw={500} lineClamp={2}>
             {artist.name}
           </Text>
         </Group>
@@ -92,7 +96,7 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
         <Avatar
           size={'sm'}
           src={localArtist.imageUrl}
-          alt={localArtist.name}
+          alt={localArtist.imageUrl && localArtist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
         >
@@ -100,7 +104,7 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
             <CustomIconUserAlt size={13} />
           </Center>
         </Avatar>
-        <Text inline fw={500} lineClamp={2}>
+        <Text lh={'xxs'} fw={500} lineClamp={2}>
           {localArtist.name}
         </Text>
       </Group>
@@ -151,20 +155,22 @@ function ArtistSelect({ artist, setArtist, ...others }: ArtistSelectProps) {
         />
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <LoadingOverlay visible={isFetching} />
 
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {artists?.totalCount === 0 && search.trim() === '' ? (
-              <Combobox.Empty>There are no artists</Combobox.Empty>
-            ) : artists?.totalCount === 0 ? (
-              <Combobox.Empty>No artists found</Combobox.Empty>
-            ) : (
-              artists?.models.map((artist) => (
-                <ArtistOption key={artist.id} localArtist={artist as ArtistSearch} />
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {artists?.totalCount === 0 && search.trim() === '' ? (
+                <Combobox.Empty>There are no artists</Combobox.Empty>
+              ) : artists?.totalCount === 0 ? (
+                <Combobox.Empty>No artists found</Combobox.Empty>
+              ) : (
+                artists?.models.map((artist) => (
+                  <ArtistOption key={artist.id} localArtist={artist as ArtistSearch} />
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

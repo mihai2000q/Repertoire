@@ -6,6 +6,7 @@ import {
   Center,
   Checkbox,
   Group,
+  Highlight,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -15,13 +16,20 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
+import { useDebouncedValue, useDidUpdate, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddSongsToPlaylistMutation } from '../../../state/api/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect } from 'react'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import OrderType from '../../../types/enums/OrderType.ts'
+import SongProperty from '../../../types/enums/SongProperty.ts'
+import useOrderBy from '../../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../../hooks/api/useSearchBy.ts'
+import useFilters from '../../../hooks/filter/useFilters.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import useFiltersHandlers from '../../../hooks/filter/useFiltersHandlers.ts'
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -33,6 +41,25 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
 
+  const orderBy = useOrderBy([{ property: SongProperty.LastModified, type: OrderType.Descending }])
+  const [filters, setFilters] = useFilters([
+    {
+      property: SongProperty.PlaylistId,
+      operator: FilterOperator.NotEqualVariant,
+      value: playlistId,
+      isSet: true
+    },
+    { property: SongProperty.Title, operator: FilterOperator.PatternMatching, isSet: false }
+  ])
+  const { handleValueChange } = useFiltersHandlers(filters, setFilters)
+  const searchBy = useSearchBy(filters)
+
+  useDidUpdate(
+    () =>
+      handleValueChange(SongProperty.Title + FilterOperator.PatternMatching, searchValue.trim()),
+    [searchValue]
+  )
+
   const {
     data: songs,
     isLoading: songsIsLoading,
@@ -40,11 +67,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   } = useGetSongsQuery({
     currentPage: 1,
     pageSize: 20,
-    orderBy: ['updated_at desc'],
-    searchBy: [
-      `playlist_songs.song_id IS NULL OR playlist_songs.playlist_id <> '${playlistId}'`,
-      ...(searchValue.trim() === '' ? [] : [`songs.title ~* '${searchValue}'`])
-    ]
+    orderBy: orderBy,
+    searchBy: searchBy
   })
 
   const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToPlaylistMutation()
@@ -122,8 +146,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
             </Group>
           )}
 
-          <ScrollArea w={'100%'} scrollbars={'y'} scrollbarSize={7}>
-            <Stack gap={0} style={{ maxHeight: '50vh' }}>
+          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+            <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
                 visible={!songsIsLoading && songsIsFetching}
@@ -177,31 +201,36 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     </Avatar>
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={'xxs'} wrap={'nowrap'}>
-                        <Text fw={500} truncate={'end'}>
+                        <Highlight
+                          highlight={search}
+                          highlightStyles={{ fontWeight: 800 }}
+                          fw={500}
+                          lineClamp={1}
+                        >
                           {song.title}
-                        </Text>
+                        </Highlight>
                         {song.album && (
                           <Group gap={'xxs'} wrap={'nowrap'}>
                             <Text fz={'sm'} c={'dimmed'}>
                               -
                             </Text>
-                            <Text fz={'sm'} c={'dimmed'} lineClamp={1}>
+                            <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
                               {song.album.title}
-                            </Text>
+                            </Highlight>
                           </Group>
                         )}
                       </Group>
                       {song.artist && (
-                        <Text fz={'sm'} c={'dimmed'} truncate={'end'}>
+                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} truncate={'end'}>
                           {song.artist.name}
-                        </Text>
+                        </Highlight>
                       )}
                     </Stack>
                   </Group>
                 ))
               )}
             </Stack>
-          </ScrollArea>
+          </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={songIds.length > 0} label="Select songs">

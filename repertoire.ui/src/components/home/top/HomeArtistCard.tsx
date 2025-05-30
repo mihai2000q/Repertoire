@@ -24,14 +24,14 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
       align={'center'}
       gap={0}
       style={{ transition: '0.25s', ...(isImageHovered && { transform: 'scale(1.05)' }) }}
-      w={150}
+      w={'max(9vw, 150px)'}
     >
       <Avatar
         onMouseEnter={() => setIsImageHovered(true)}
         onMouseLeave={() => setIsImageHovered(false)}
-        size={125}
+        size={'max(calc(9vw - 25px), 125px)'}
         src={artist.imageUrl}
-        alt={artist.name}
+        alt={artist.imageUrl && artist.name}
         bg={'gray.0'}
         onClick={handleClick}
         sx={(theme) => ({

@@ -6,25 +6,25 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import AlbumSelect from './AlbumSelect.tsx'
-import searchType from '../../../../utils/enums/SearchType.ts'
+import SearchType from '../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 
-describe('Band Member Select', () => {
+describe('Album Select', () => {
   const albums: AlbumSearch[] = [
     {
       id: '1',
       title: 'Justice',
-      type: searchType.Album
+      type: SearchType.Album
     },
     {
       id: '2',
       title: 'Vengeance',
-      type: searchType.Album
+      type: SearchType.Album
     },
     {
       id: '3',
       title: 'Glory',
-      type: searchType.Album
+      type: SearchType.Album
     }
   ]
 

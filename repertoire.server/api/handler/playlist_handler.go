@@ -29,19 +29,33 @@ func NewPlaylistHandler(
 }
 
 func (p PlaylistHandler) Get(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
+	var request requests.GetPlaylistRequest
+	err := c.BindQuery(&request)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	user, errorCode := p.service.Get(id)
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := p.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	playlist, errorCode := p.service.Get(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, playlist)
 }
 
 func (p PlaylistHandler) GetAll(c *gin.Context) {
@@ -61,6 +75,31 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 	token := p.GetTokenFromContext(c)
 
 	result, errorCode := p.service.GetAll(request, token)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (p PlaylistHandler) GetFiltersMetadata(c *gin.Context) {
+	var request requests.GetPlaylistFiltersMetadataRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	errorCode := p.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	token := p.GetTokenFromContext(c)
+
+	result, errorCode := p.service.GetFiltersMetadata(request, token)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

@@ -117,7 +117,10 @@ describe('Home Top', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    localStorage.clear()
+  })
 
   afterAll(() => server.close())
 
@@ -146,7 +149,7 @@ describe('Home Top', () => {
     const albumsTab = screen.getByRole('button', { name: /albums/i })
     const artistsTab = screen.getByRole('button', { name: /artists/i })
 
-    // songs tab
+    // songs' tab
     await user.click(songsTab)
     expect(songsTab).toHaveAttribute('aria-selected', 'true')
 
@@ -154,7 +157,7 @@ describe('Home Top', () => {
       expect(await screen.findByLabelText(`song-card-${song.title}`)).toBeInTheDocument()
     }
 
-    // albums tab
+    // albums' tab
     await user.click(albumsTab)
     expect(albumsTab).toHaveAttribute('aria-selected', 'true')
 
@@ -162,7 +165,7 @@ describe('Home Top', () => {
       expect(await screen.findByLabelText(`album-card-${album.title}`)).toBeInTheDocument()
     }
 
-    // artists tab
+    // artists' tab
     await user.click(artistsTab)
     expect(artistsTab).toHaveAttribute('aria-selected', 'true')
 

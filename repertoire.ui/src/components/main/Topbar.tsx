@@ -1,31 +1,24 @@
 import { ReactElement } from 'react'
-import { ActionIcon, AppShell, Group, Space, useMantineTheme } from '@mantine/core'
-import { IconBellFilled, IconChevronLeft, IconChevronRight, IconMenu2 } from '@tabler/icons-react'
-import { useMediaQuery, useWindowScroll } from '@mantine/hooks'
-import { useNavigate } from 'react-router-dom'
+import { ActionIcon, AppShell, Flex, Group, Space, useMantineTheme } from '@mantine/core'
+import { IconBellFilled, IconMenu2 } from '@tabler/icons-react'
+import { useMediaQuery } from '@mantine/hooks'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
-import TopbarSearch from './TopbarSearch.tsx'
-import TopbarUser from './TopbarUser.tsx'
+import TopbarSearch from './topbar/TopbarSearch.tsx'
+import TopbarUser from './topbar/TopbarUser.tsx'
+import useMainScroll from '../../hooks/useMainScroll.ts'
+import TopbarNavigation from './topbar/TopbarNavigation.tsx'
 
 interface TopbarProps {
   toggleSidebar: () => void
 }
 
 function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
-  const navigate = useNavigate()
   const isDesktop = useIsDesktop()
-  const [scrollPosition] = useWindowScroll()
+  const { isTopScrollPositionOver0 } = useMainScroll()
+  const shiftOrder = isDesktop ? 0 : 1
 
   const theme = useMantineTheme()
   const isSmallScreen = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
-
-  function handleGoBack() {
-    navigate(-1)
-  }
-
-  function handleGoForward() {
-    navigate(1)
-  }
 
   return (
     <AppShell.Header
@@ -34,7 +27,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
       top={'unset'}
       style={(theme) => ({
         transition: '0.35s',
-        ...(scrollPosition.y !== 0 && { boxShadow: theme.shadows.md })
+        ...(isTopScrollPositionOver0 && { boxShadow: theme.shadows.md })
       })}
     >
       <Group h={'100%'} gap={0}>
@@ -56,38 +49,18 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
             position: isSmallScreen ? 'bottom' : 'bottom-start'
           }}
           dropdownMinHeight={'max(26vh, 200px)'}
-          style={{ order: isSmallScreen ? 3 : 1 }}
+          style={{ order: isSmallScreen ? 3 - shiftOrder : 1 }}
         />
 
         <Space hiddenFrom={'sm'} flex={1} style={{ order: 2 }} />
 
         {isDesktop && (
-          <Group gap={0} ml={'xs'} style={{ order: isSmallScreen ? 1 : 3 }}>
-            <ActionIcon
-              aria-label={'back'}
-              size={'lg'}
-              variant={'grey'}
-              radius={'50%'}
-              disabled={window.history.state?.idx < 1}
-              onClick={handleGoBack}
-            >
-              <IconChevronLeft size={20} />
-            </ActionIcon>
-
-            <ActionIcon
-              aria-label={'forward'}
-              size={'lg'}
-              variant={'grey'}
-              radius={'50%'}
-              disabled={window.history.state?.idx >= window.history.length - 1}
-              onClick={handleGoForward}
-            >
-              <IconChevronRight size={20} />
-            </ActionIcon>
-          </Group>
+          <Flex style={{ order: isSmallScreen ? 1 : 3 }}>
+            <TopbarNavigation />
+          </Flex>
         )}
 
-        <Space flex={1} style={{ order: 4 }} />
+        <Space flex={1} style={{ order: 4 - shiftOrder }} />
 
         <ActionIcon
           variant={'subtle'}
@@ -101,12 +74,12 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
               color: theme.colors.primary[6]
             }
           })}
-          style={{ order: 5 }}
+          style={{ order: 5 - shiftOrder }}
         >
           <IconBellFilled size={18} />
         </ActionIcon>
 
-        <TopbarUser style={{ order: 6 }} />
+        <TopbarUser style={{ order: 6 - shiftOrder }} />
       </Group>
     </AppShell.Header>
   )

@@ -45,7 +45,7 @@ describe('Band Member Card', () => {
 
     await user.click(screen.getByRole('img', { name: bandMember.name }))
 
-    expect(await screen.findByRole('dialog')).toBeInTheDocument() // dialog has no "official" title
+    expect(await screen.findByRole('dialog')).toBeInTheDocument() // the dialog has no "official" title
     expect(await screen.findByRole('heading', { name: bandMember.name })).toBeInTheDocument()
   })
 

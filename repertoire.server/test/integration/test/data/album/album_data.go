@@ -41,7 +41,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]time.Time{time.Now()}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 		UserID:      Users[0].ID,
 		ArtistID:    &[]uuid.UUID{Artists[0].ID}[0],
 		Songs: []model.Song{

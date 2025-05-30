@@ -3,13 +3,13 @@ package assertion
 import (
 	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
-	"repertoire/server/internal/enums"
+	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
+	"slices"
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,6 +29,19 @@ func Token(t *testing.T, actual string) {
 func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	if expected != nil {
 		assert.WithinDuration(t, *expected, *actual, 1*time.Minute)
+	} else {
+		assert.Nil(t, actual)
+	}
+}
+
+func Date(t *testing.T, expected *internal.Date, actual *internal.Date) {
+	if expected != nil {
+		assert.NotNil(t, actual)
+		assert.Equal(
+			t,
+			(time.Time)(*expected).Format("2006-01-02"),
+			(time.Time)(*actual).Format("2006-01-02"),
+		)
 	} else {
 		assert.Nil(t, actual)
 	}
@@ -54,10 +67,30 @@ func AssertMessage[T any](
 
 // models
 
+func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.EnhancedAlbum) {
+	assert.Equal(t, album.ID, response.ID)
+	assert.Equal(t, album.Title, response.Title)
+	Date(t, album.ReleaseDate, response.ReleaseDate)
+	assert.Equal(t, album.ImageURL, response.ImageURL)
+
+	if album.Artist != nil {
+		ResponseArtist(t, *album.Artist, *response.Artist, false)
+	} else {
+		assert.Nil(t, response.Artist)
+	}
+
+	assert.Equal(t, len(album.Songs), response.SongsCount)
+	rehearsals, confidence, progress, lastTimePlayed := getAverageSongsStats(album.Songs)
+	assert.Equal(t, rehearsals, response.Rehearsals)
+	assert.Equal(t, confidence, response.Confidence)
+	assert.Equal(t, progress, response.Progress)
+	assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
+}
+
 func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withArtist bool, withSongs bool) {
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
-	Time(t, album.ReleaseDate, response.ReleaseDate)
+	Date(t, album.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, album.ImageURL, response.ImageURL)
 
 	if withArtist {
@@ -83,9 +116,30 @@ func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withAr
 	}
 }
 
+func ResponseEnhancedArtist(
+	t *testing.T,
+	artist model.Artist,
+	response model.EnhancedArtist,
+) {
+	assert.Equal(t, artist.ID, response.ID)
+	assert.Equal(t, artist.Name, response.Name)
+	assert.Equal(t, artist.IsBand, response.IsBand)
+	assert.Equal(t, artist.ImageURL, response.ImageURL)
+
+	assert.Equal(t, len(artist.BandMembers), response.BandMembersCount)
+	assert.Equal(t, len(artist.Albums), response.AlbumsCount)
+	assert.Equal(t, len(artist.Songs), response.SongsCount)
+	rehearsals, confidence, progress, lastTimePlayed := getAverageSongsStats(artist.Songs)
+	assert.Equal(t, rehearsals, response.Rehearsals)
+	assert.Equal(t, confidence, response.Confidence)
+	assert.Equal(t, progress, response.Progress)
+	assert.Equal(t, lastTimePlayed, response.LastTimePlayed)
+}
+
 func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist, withBandMembers bool) {
 	assert.Equal(t, artist.ID, response.ID)
 	assert.Equal(t, artist.Name, response.Name)
+	assert.Equal(t, artist.IsBand, response.IsBand)
 	assert.Equal(t, artist.ImageURL, response.ImageURL)
 
 	if withBandMembers {
@@ -112,6 +166,65 @@ func ResponseBandMemberRole(t *testing.T, bandMemberRole model.BandMemberRole, r
 	assert.Equal(t, bandMemberRole.Name, response.Name)
 }
 
+func ResponseEnhancedSong(
+	t *testing.T,
+	song model.Song,
+	response model.EnhancedSong,
+) {
+	assert.Equal(t, song.ID, response.ID)
+	assert.Equal(t, song.Title, response.Title)
+	assert.Equal(t, song.Description, response.Description)
+	Date(t, song.ReleaseDate, response.ReleaseDate)
+	assert.Equal(t, song.ImageURL, response.ImageURL)
+	assert.Equal(t, song.IsRecorded, response.IsRecorded)
+	assert.Equal(t, song.Bpm, response.Bpm)
+	assert.Equal(t, song.Difficulty, response.Difficulty)
+	assert.Equal(t, song.SongsterrLink, response.SongsterrLink)
+	assert.Equal(t, song.YoutubeLink, response.YoutubeLink)
+	assert.Equal(t, song.AlbumTrackNo, response.AlbumTrackNo)
+	assert.Equal(t, song.Rehearsals, response.Rehearsals)
+	assert.Equal(t, song.Confidence, response.Confidence)
+	assert.Equal(t, song.Progress, response.Progress)
+
+	if song.Album != nil {
+		ResponseAlbum(t, *song.Album, *response.Album, false, false)
+	} else {
+		assert.Nil(t, response.Album)
+	}
+
+	if song.Artist != nil {
+		ResponseArtist(t, *song.Artist, *response.Artist, true)
+	} else {
+		assert.Nil(t, response.Artist)
+	}
+
+	ResponseSongSettings(t, song.Settings, response.Settings)
+
+	if song.GuitarTuning != nil {
+		ResponseGuitarTuning(t, *song.GuitarTuning, *response.GuitarTuning)
+	} else {
+		assert.Nil(t, response.GuitarTuning)
+	}
+
+	for i := range song.Sections {
+		ResponseSongSection(t, song.Sections[i], response.Sections[i], false)
+	}
+
+	for i := range song.Playlists {
+		ResponsePlaylist(t, song.Playlists[i], response.Playlists[i], false)
+	}
+
+	solos := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
+		return section.SongSectionType.Name != "Solo"
+	}))
+	riffs := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
+		return section.SongSectionType.Name != "Riff"
+	}))
+	assert.Equal(t, len(song.Sections), response.SectionsCount)
+	assert.Equal(t, solos, response.SolosCount)
+	assert.Equal(t, riffs, response.RiffsCount)
+}
+
 func ResponseSong(
 	t *testing.T,
 	song model.Song,
@@ -124,7 +237,7 @@ func ResponseSong(
 	assert.Equal(t, song.ID, response.ID)
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
-	Time(t, song.ReleaseDate, response.ReleaseDate)
+	Date(t, song.ReleaseDate, response.ReleaseDate)
 	assert.Equal(t, song.ImageURL, response.ImageURL)
 	assert.Equal(t, song.IsRecorded, response.IsRecorded)
 	assert.Equal(t, song.Bpm, response.Bpm)
@@ -230,6 +343,19 @@ func ResponseSongSectionType(t *testing.T, songSectionType model.SongSectionType
 	assert.Equal(t, songSectionType.Name, response.Name)
 }
 
+func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response model.EnhancedPlaylist) {
+	assert.Equal(t, playlist.ID, response.ID)
+	assert.Equal(t, playlist.Title, response.Title)
+	assert.Equal(t, playlist.Description, response.Description)
+	assert.Equal(t, playlist.ImageURL, response.ImageURL)
+
+	assert.Len(t, response.SongIDs, len(playlist.Songs))
+	assert.Equal(t, response.SongsCount, len(playlist.Songs))
+	for i := range playlist.Songs {
+		assert.Equal(t, playlist.Songs[i].ID, response.SongIDs[i])
+	}
+}
+
 func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongsMetadata bool) {
 	assert.Equal(t, playlist.ID, response.ID)
 	assert.Equal(t, playlist.Title, response.Title)
@@ -261,98 +387,29 @@ func ResponseUser(t *testing.T, user model.User, response model.User) {
 	assert.Equal(t, user.ProfilePictureURL, response.ProfilePictureURL)
 }
 
-// Search
-
-func ArtistSearchID(t *testing.T, id uuid.UUID, searchID string) {
-	assert.Equal(t, "artist-"+id.String(), searchID)
-}
-
-func AlbumSearchID(t *testing.T, id uuid.UUID, searchID string) {
-	assert.Equal(t, "album-"+id.String(), searchID)
-}
-
-func SongSearchID(t *testing.T, id uuid.UUID, searchID string) {
-	assert.Equal(t, "song-"+id.String(), searchID)
-}
-
-func PlaylistSearchID(t *testing.T, id uuid.UUID, searchID string) {
-	assert.Equal(t, "playlist-"+id.String(), searchID)
-}
-
-func ArtistSearch(t *testing.T, artistSearch model.ArtistSearch, artist model.Artist) {
-	ArtistSearchID(t, artist.ID, artistSearch.ID)
-	assert.Equal(t, artist.Name, artistSearch.Name)
-	assert.Equal(t, artist.ImageURL.StripURL(), artistSearch.ImageUrl)
-	Time(t, &artist.UpdatedAt, &artistSearch.UpdatedAt)
-	Time(t, &artist.CreatedAt, &artistSearch.CreatedAt)
-	assert.Equal(t, enums.Artist, artistSearch.Type)
-}
-
-func AlbumSearch(t *testing.T, albumSearch model.AlbumSearch, album model.Album) {
-	AlbumSearchID(t, album.ID, albumSearch.ID)
-	assert.Equal(t, album.Title, albumSearch.Title)
-	if album.ReleaseDate != nil {
-		Time(t, album.ReleaseDate, albumSearch.ReleaseDate)
-	} else {
-		assert.Nil(t, albumSearch.ReleaseDate)
-	}
-	assert.Equal(t, album.ImageURL.StripURL(), albumSearch.ImageUrl)
-	Time(t, &album.UpdatedAt, &albumSearch.UpdatedAt)
-	Time(t, &album.CreatedAt, &albumSearch.CreatedAt)
-	assert.Equal(t, enums.Album, albumSearch.Type)
-
-	if album.Artist != nil {
-		assert.Equal(t, album.Artist.ID, albumSearch.Artist.ID)
-		assert.Equal(t, album.Artist.Name, albumSearch.Artist.Name)
-		Time(t, &album.Artist.UpdatedAt, &albumSearch.Artist.UpdatedAt)
-		assert.Equal(t, album.Artist.ImageURL.StripURL(), albumSearch.Artist.ImageUrl)
-	} else {
-		assert.Nil(t, albumSearch.Artist)
-	}
-}
-
-func SongSearch(t *testing.T, songSearch model.SongSearch, song model.Song) {
-	SongSearchID(t, song.ID, songSearch.ID)
-	assert.Equal(t, song.Title, songSearch.Title)
-	if song.ReleaseDate != nil {
-		Time(t, song.ReleaseDate, songSearch.ReleaseDate)
-	} else {
-		assert.Nil(t, songSearch.ReleaseDate)
-	}
-	assert.Equal(t, song.ImageURL.StripURL(), songSearch.ImageUrl)
-	Time(t, &song.UpdatedAt, &songSearch.UpdatedAt)
-	Time(t, &song.CreatedAt, &songSearch.CreatedAt)
-	assert.Equal(t, enums.Song, songSearch.Type)
-
-	if song.Artist != nil {
-		assert.Equal(t, song.Artist.ID, songSearch.Artist.ID)
-		assert.Equal(t, song.Artist.Name, songSearch.Artist.Name)
-		Time(t, &song.Artist.UpdatedAt, &songSearch.Artist.UpdatedAt)
-		assert.Equal(t, song.Artist.ImageURL.StripURL(), songSearch.Artist.ImageUrl)
-	} else {
-		assert.Nil(t, songSearch.Artist)
-	}
-
-	if song.Album != nil {
-		assert.Equal(t, song.Album.ID, songSearch.Album.ID)
-		assert.Equal(t, song.Album.Title, songSearch.Album.Title)
-		if song.Album.ReleaseDate != nil {
-			Time(t, song.Album.ReleaseDate, songSearch.Album.ReleaseDate)
-		} else {
-			assert.Nil(t, songSearch.Album.ReleaseDate)
+func getAverageSongsStats(songs []model.Song) (float64, float64, float64, *time.Time) {
+	var rehearsals float64 = 0
+	var confidence float64 = 0
+	var progress float64 = 0
+	var lastTimePlayed *time.Time
+	for _, song := range songs {
+		rehearsals = rehearsals + song.Rehearsals
+		confidence = confidence + song.Confidence
+		progress = progress + song.Progress
+		if song.LastTimePlayed != nil && lastTimePlayed == nil ||
+			song.LastTimePlayed != nil && lastTimePlayed != nil && lastTimePlayed.Before(*song.LastTimePlayed) {
+			lastTimePlayed = song.LastTimePlayed
 		}
-		Time(t, &song.Album.UpdatedAt, &songSearch.Album.UpdatedAt)
-		assert.Equal(t, song.Album.ImageURL.StripURL(), songSearch.Album.ImageUrl)
-	} else {
-		assert.Nil(t, songSearch.Album)
 	}
-}
+	if rehearsals > 0 {
+		rehearsals = rehearsals / float64(len(songs))
+	}
+	if confidence > 0 {
+		confidence = confidence / float64(len(songs))
+	}
+	if progress > 0 {
+		progress = progress / float64(len(songs))
+	}
 
-func PlaylistSearch(t *testing.T, playlistSearch model.PlaylistSearch, playlist model.Playlist) {
-	PlaylistSearchID(t, playlist.ID, playlistSearch.ID)
-	assert.Equal(t, playlist.Title, playlistSearch.Title)
-	assert.Equal(t, playlist.ImageURL.StripURL(), playlistSearch.ImageUrl)
-	Time(t, &playlist.UpdatedAt, &playlist.UpdatedAt)
-	Time(t, &playlist.CreatedAt, &playlist.CreatedAt)
-	assert.Equal(t, enums.Playlist, playlistSearch.Type)
+	return rehearsals, confidence, progress, lastTimePlayed
 }

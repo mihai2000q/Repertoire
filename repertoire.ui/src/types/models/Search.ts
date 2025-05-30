@@ -1,4 +1,4 @@
-import SearchType from "../../utils/enums/SearchType.ts";
+import SearchType from "../enums/SearchType.ts";
 
 export interface SearchBase {
   id: string

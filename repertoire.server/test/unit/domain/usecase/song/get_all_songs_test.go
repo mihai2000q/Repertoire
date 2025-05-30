@@ -88,9 +88,8 @@ func TestGetAll_WhenGetSongsCountFails_ShouldReturnInternalServerError(t *testin
 	token := "this is the token"
 
 	userID := uuid.New()
-	expectedSongs := &[]model.Song{
-		{Title: "Some Song"},
-		{Title: "Some other Song"},
+	expectedSongs := &[]model.EnhancedSong{
+		{Song: model.Song{Title: "Some Song"}},
 	}
 
 	// given - mocking
@@ -144,9 +143,9 @@ func TestGetAll_WhenSuccessful_ShouldReturnSongsWithTotalCount(t *testing.T) {
 	token := "this is the token"
 
 	userID := uuid.New()
-	expectedSongs := &[]model.Song{
-		{Title: "Some Song"},
-		{Title: "Some other Song"},
+	expectedSongs := &[]model.EnhancedSong{
+		{Song: model.Song{Title: "Some Song"}},
+		{Song: model.Song{Title: "Some Other Song"}},
 	}
 	expectedTotalCount := &[]int64{20}[0]
 

@@ -1,7 +1,7 @@
 import Song from '../../../types/models/Song.ts'
 import {
-  Box,
   Button,
+  Center,
   Group,
   LoadingOverlay,
   Modal,
@@ -16,10 +16,11 @@ import {
   useUpdateSongMutation
 } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, zodResolver } from '@mantine/form'
-import { EditSongHeaderForm, editSongHeaderValidation } from '../../../validation/songsForm.ts'
+import { useForm } from '@mantine/form'
+import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { EditSongHeaderForm, editSongHeaderSchema } from '../../../validation/songsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
-import { IconCalendarFilled, IconInfoCircleFilled } from '@tabler/icons-react'
+import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
@@ -27,6 +28,7 @@ import { useDidUpdate } from '@mantine/hooks'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import dayjs from 'dayjs'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -41,30 +43,32 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     useDeleteImageFromSongMutation()
   const isLoading = isUpdateLoading || isSaveImageLoading || isDeleteImageLoading
 
-  const [hasChanged, setHasChanged] = useState(false)
+  const [songHasChanged, setSongHasChanged] = useState(false)
+  const [imageHasChanged, setImageHasChanged] = useState(false)
+  const hasChanged = songHasChanged || imageHasChanged
 
-  const form = useForm({
+  const form = useForm<EditSongHeaderForm>({
     mode: 'uncontrolled',
     initialValues: {
       title: song.title,
-      releaseDate: song.releaseDate && new Date(song.releaseDate),
+      releaseDate: song.releaseDate,
       image: song.imageUrl,
       artistId: song.artist?.id,
       albumId: song.album?.id
-    } as EditSongHeaderForm,
+    },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zodResolver(editSongHeaderValidation),
+    validate: zod4Resolver(editSongHeaderSchema),
     onValuesChange: (values) => {
-      setHasChanged(
+      setSongHasChanged(
         values.title !== song.title ||
-          values.releaseDate?.getTime() !==
+          (values.releaseDate ? new Date(values.releaseDate).getTime() : undefined) !==
             (song.releaseDate ? new Date(song.releaseDate).getTime() : undefined) ||
-          values.image !== song.imageUrl ||
           values.artistId !== song.artist?.id ||
           values.albumId !== song.album?.id
       )
+      setImageHasChanged(values.image !== song.imageUrl)
     }
   })
 
@@ -82,22 +86,21 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   }, [album])
 
   async function updateSong({ title, releaseDate, image, albumId, artistId }: EditSongHeaderForm) {
-    title = title.trim()
-
-    await updateSongMutation({
-      ...song,
-      guitarTuningId: song.guitarTuning?.id,
-      id: song.id,
-      title: title,
-      releaseDate: releaseDate,
-      albumId: albumId,
-      artistId: artistId
-    }).unwrap()
+    if (songHasChanged)
+      await updateSongMutation({
+        ...song,
+        guitarTuningId: song.guitarTuning?.id,
+        id: song.id,
+        title: title.trim(),
+        releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
+        albumId: albumId,
+        artistId: artistId
+      }).unwrap()
 
     if (image !== null && typeof image !== 'string') {
       await saveImageMutation({
         id: song.id,
-        image: image
+        image: image as FileWithPath
       })
     } else if (image === null && song.imageUrl) {
       await deleteImageMutation(song.id)
@@ -105,7 +108,8 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
     toast.info('Song header updated!')
     onClose()
-    setHasChanged(false)
+    setSongHasChanged(false)
+    setImageHasChanged(false)
   }
 
   return (
@@ -123,9 +127,9 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
             {!image && song.album?.imageUrl && (
               <Group gap={6}>
-                <Box c={'primary.8'} mt={3}>
+                <Center c={'primary.8'} mt={3}>
                   <IconInfoCircleFilled size={15} />
-                </Box>
+                </Center>
 
                 <Text inline fw={500} c={'dimmed'} fz={'xs'}>
                   The song image is inherited from the album
@@ -144,7 +148,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
             <DatePickerInput
               label={'Release Date'}
-              leftSection={<IconCalendarFilled size={20} />}
+              leftSection={<IconCalendarRepeat size={20} />}
               placeholder={'Choose the release date'}
               key={form.key('releaseDate')}
               {...form.getInputProps('releaseDate')}
@@ -155,7 +159,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
               <Group gap={'xxs'} flex={1}>
                 <ArtistSelect artist={artist} setArtist={setArtist} disabled={!!album} />
                 {album && (
-                  <Box c={'primary.8'} mt={'lg'} ml={4}>
+                  <Center c={'primary.8'} mt={'lg'} ml={4}>
                     <Tooltip
                       multiline
                       w={210}
@@ -164,7 +168,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
                     >
                       <IconInfoCircleFilled aria-label={'artist-info'} size={18} />
                     </Tooltip>
-                  </Box>
+                  </Center>
                 )}
               </Group>
             </Group>

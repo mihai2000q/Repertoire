@@ -97,8 +97,27 @@ function HomeGenres({ ...others }: CardProps) {
           </Anchor>
         </Group>
 
-        <ScrollArea h={'100%'} scrollbars={'y'} scrollbarSize={7}>
-          <Grid columns={10} px={'md'} pt={'sm'} gutter={'sm'}>
+        <ScrollArea
+          h={'100%'}
+          scrollbars={'y'}
+          scrollbarSize={7}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to top, transparent 98%, ${theme.white}),
+                linear-gradient(to bottom, transparent 95%, ${theme.white})
+              `
+            }
+          })}
+        >
+          <Grid columns={10} px={'md'} pt={'sm'} pb={'md'} gutter={'sm'}>
             {mockGenres.map((genre) => (
               <Grid.Col span={genre.isSmall ? 4 : 6} key={genre.genre}>
                 <Card

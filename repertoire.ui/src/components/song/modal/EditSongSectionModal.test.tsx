@@ -1,7 +1,7 @@
 import { emptySongSection, reduxRender, withToastify } from '../../../test-utils.tsx'
 import { Instrument, SongSection, SongSectionType } from '../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { UpdateSongSectionRequest } from '../../../types/requests/SongRequests.ts'
@@ -164,7 +164,7 @@ describe('Edit Song Description Modal', () => {
     await user.type(rehearsalsField, newRehearsals.toString())
 
     for (let i = section.confidence; i < newConfidence; i++) {
-      fireEvent.keyDown(confidenceField, { key: 'ArrowRight', code: 'ArrowRight' })
+      fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
     }
 
     expect(saveButton).not.toHaveAttribute('data-disabled')
@@ -325,7 +325,7 @@ describe('Edit Song Description Modal', () => {
     await user.click(await screen.findByText(section.bandMember?.name ?? bandMembers[0].name))
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
-    // change instrument
+    // change an instrument
     await user.click(instrumentField)
     await user.click(await screen.findByText(instruments[0].name))
     expect(saveButton).not.toHaveAttribute('data-disabled')
@@ -336,11 +336,11 @@ describe('Edit Song Description Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     // change confidence
-    fireEvent.keyDown(confidenceField, { key: 'ArrowRight', code: 'ArrowRight' })
+    fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
     expect(saveButton).not.toHaveAttribute('data-disabled')
 
     // reset confidence
-    fireEvent.keyDown(confidenceField, { key: 'ArrowLeft', code: 'ArrowLeft' })
+    fireEvent.keyDown(confidenceField, { key: 'ArrowLeft' })
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
   })
 
@@ -377,7 +377,7 @@ describe('Edit Song Description Modal', () => {
     expect(rehearsalsField).toBeInvalid()
   })
 
-  it('should keep the rehearsals updated', async () => {
+  it('should keep fields updated', async () => {
     const [{ rerender }] = reduxRender(
       <EditSongSectionModal
         opened={true}
@@ -390,18 +390,37 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
       section.rehearsals.toString()
     )
+    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(section.bandMember?.name ?? '')
+    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(section.instrument?.name ?? '')
+
+    const newSection = {
+      ...section,
+      rehearsals: section.rehearsals + 1,
+      instrument: instruments[0],
+      bandMember: bandMembers[1]
+    }
 
     rerender(
       <EditSongSectionModal
         opened={true}
         onClose={() => {}}
-        section={{ ...section, rehearsals: section.rehearsals + 1 }}
+        section={newSection}
         bandMembers={bandMembers}
       />
     )
 
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
-      (section.rehearsals + 1).toString()
+      newSection.rehearsals.toString()
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(
+        newSection.instrument.name
+      )
+    )
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(
+        newSection.bandMember.name
+      )
     )
   })
 })

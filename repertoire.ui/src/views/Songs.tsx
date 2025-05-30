@@ -5,7 +5,7 @@ import {
   Card,
   Center,
   Group,
-  Loader,
+  Indicator,
   Pagination,
   SimpleGrid,
   Space,
@@ -23,11 +23,36 @@ import usePaginationInfo from '../hooks/usePaginationInfo.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import useSearchParamsState from '../hooks/useSearchParamsState.ts'
 import songsSearchParamsState from '../state/searchParams/SongsSearchParamsState.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
+import songsOrders from '../data/songs/songsOrders.ts'
+import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
+import { songPropertyIcons } from '../data/icons/songPropertyIcons.tsx'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import SongsFilters from '../components/songs/SongsFilters.tsx'
+import songsFilters from '../data/songs/songsFilters.ts'
+import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
+import useMainScroll from '../hooks/useMainScroll.ts'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
   const [searchParams, setSearchParams] = useSearchParamsState(songsSearchParamsState)
-  const { currentPage } = searchParams
+  const { currentPage, activeFilters } = searchParams
+
+  const [orders, setOrders] = useLocalStorage({
+    key: LocalStorageKeys.SongsOrders,
+    defaultValue: songsOrders
+  })
+  const orderBy = useOrderBy(orders)
+
+  const [filters, setFilters] = useSearchParamFilters({
+    initialFilters: songsFilters,
+    activeFilters: activeFilters,
+    setSearchParams: setSearchParams
+  })
+  const filtersSize = activeFilters.size
+  const searchBy = useSearchBy(filters)
 
   const pageSize = 40
   const {
@@ -37,8 +62,11 @@ function Songs(): ReactElement {
   } = useGetSongsQuery({
     pageSize: pageSize,
     currentPage: currentPage,
-    orderBy: ['created_at DESC']
+    orderBy: orderBy,
+    searchBy: searchBy
   })
+
+  const [filtersOpened, { toggle: toggleFilters, close: closeFilters }] = useDisclosure(false)
 
   const { startCount, endCount, totalPages } = usePaginationInfo(
     songs?.totalCount,
@@ -49,7 +77,11 @@ function Songs(): ReactElement {
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
 
-  const handleCurrentPageChange = (p: number) => {
+  const { ref: mainScrollRef } = useMainScroll()
+
+  function handleCurrentPageChange (p: number) {
+    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 
@@ -68,20 +100,42 @@ function Songs(): ReactElement {
           <IconPlus />
         </ActionIcon>
         <Space flex={1} />
-        <ActionIcon aria-label={'order-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconArrowsSort size={17} />
-        </ActionIcon>
-        <ActionIcon aria-label={'filter-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
-          <IconFilterFilled size={17} />
-        </ActionIcon>
+        <AdvancedOrderMenu orders={orders} setOrders={setOrders} propertyIcons={songPropertyIcons}>
+          <ActionIcon aria-label={'order-songs'} variant={'grey'} size={'lg'} disabled={isLoading}>
+            <IconArrowsSort size={17} />
+          </ActionIcon>
+        </AdvancedOrderMenu>
+        <Indicator
+          color={'primary'}
+          size={15}
+          offset={3}
+          label={filtersSize}
+          disabled={filtersSize === 0}
+          zIndex={2}
+        >
+          <ActionIcon
+            aria-label={'filter-songs'}
+            variant={'grey'}
+            size={'lg'}
+            disabled={isLoading}
+            onClick={toggleFilters}
+          >
+            <IconFilterFilled size={17} />
+          </ActionIcon>
+        </Indicator>
       </Group>
       {!isLoading && (
-        <Text inline mb={'xs'}>
+        <Text lh={'xxs'} mb={'xs'}>
           {startCount} - {endCount} songs out of {songs?.totalCount ?? 0}
         </Text>
       )}
 
-      {songs?.totalCount === 0 && <Text mt={'sm'}>There are no songs yet. Try to add one</Text>}
+      {songs?.totalCount === 0 && filtersSize === 0 && (
+        <Text mt={'sm'}>There are no songs yet. Try to add one</Text>
+      )}
+      {songs?.totalCount === 0 && filtersSize > 0 && (
+        <Text mt={'sm'}>There are no songs with these filter properties</Text>
+      )}
       <SimpleGrid
         cols={{ base: 2, xs: 3, sm: 2, betweenSmMd: 3, betweenMdLg: 4, lg: 5, xl: 6, xxl: 7 }}
         spacing={'lg'}
@@ -89,7 +143,7 @@ function Songs(): ReactElement {
       >
         {(isLoading || !songs) && <SongsLoader />}
         {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
-        {songs?.totalCount > 0 && currentPage == totalPages && (
+        {!isFetching && songs?.totalCount > 0 && currentPage == totalPages && (
           <Card
             variant={'add-new'}
             aria-label={'new-song-card'}
@@ -106,17 +160,22 @@ function Songs(): ReactElement {
       <Space flex={1} />
 
       <Box style={{ alignSelf: 'center' }} pb={'md'}>
-        {!isFetching ? (
-          <Pagination
-            data-testid={'songs-pagination'}
-            value={currentPage}
-            onChange={handleCurrentPageChange}
-            total={totalPages}
-          />
-        ) : (
-          <Loader size={25} />
-        )}
+        <Pagination
+          data-testid={'songs-pagination'}
+          value={currentPage}
+          onChange={handleCurrentPageChange}
+          total={totalPages}
+          disabled={isFetching}
+        />
       </Box>
+
+      <SongsFilters
+        opened={filtersOpened}
+        onClose={closeFilters}
+        filters={filters}
+        setFilters={setFilters}
+        isSongsLoading={isLoading}
+      />
 
       <AddNewSongModal opened={openedAddNewSongModal} onClose={closeAddNewSongModal} />
     </Stack>

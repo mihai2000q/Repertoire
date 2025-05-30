@@ -1,16 +1,16 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import SongCard from './SongCard'
 import Song from '../../types/models/Song'
 import {
+  emptyAlbum,
   emptyArtist,
   emptySong,
-  emptySongSection,
   reduxRouterRender,
   withToastify
 } from '../../test-utils'
 import Artist from '../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
-import Difficulty from '../../utils/enums/Difficulty.ts'
+import Difficulty from '../../types/enums/Difficulty.ts'
 import { RootState } from '../../state/store.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -32,7 +32,10 @@ describe('Song Card', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
@@ -60,11 +63,7 @@ describe('Song Card', () => {
     const localSongWithAlbum: Song = {
       ...song,
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something-album.png'
       }
     }
@@ -100,8 +99,8 @@ describe('Song Card', () => {
     expect(screen.getByLabelText('recorded-icon')).toBeInTheDocument()
     expect(screen.getByLabelText('guitar-tuning-icon')).toBeInTheDocument()
     expect(screen.getByLabelText('difficulty-icon')).toBeInTheDocument()
-    expect(screen.getByLabelText('songsterr-icon')).toBeInTheDocument()
-    expect(screen.getByLabelText('youtube-icon')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'songsterr' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'youtube' })).toBeInTheDocument()
 
     await user.hover(screen.getByLabelText('recorded-icon'))
     expect(await screen.findByText(/is recorded/i)).toBeInTheDocument()
@@ -112,10 +111,10 @@ describe('Song Card', () => {
     await user.hover(screen.getByLabelText('difficulty-icon'))
     expect(await screen.findByText(new RegExp(localSong.difficulty))).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('songsterr-icon'))
+    await user.hover(screen.getByRole('button', { name: 'songsterr' }))
     expect(await screen.findByText(/songsterr/i)).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('youtube-icon'))
+    await user.hover(screen.getByRole('button', { name: 'youtube' }))
     expect(await screen.findByText(/youtube/i)).toBeInTheDocument()
   })
 
@@ -124,16 +123,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      sections: [
-        {
-          ...emptySongSection,
-          name: 'Solo 1',
-          songSectionType: {
-            id: '',
-            name: 'Solo'
-          },
-        }
-      ]
+      solosCount: 1
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -149,24 +139,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      sections: [
-        {
-          ...emptySongSection,
-          name: 'Solo 1',
-          songSectionType: {
-            id: '',
-            name: 'Solo'
-          }
-        },
-        {
-          ...emptySongSection,
-          name: 'Solo 2',
-          songSectionType: {
-            id: '',
-            name: 'Solo'
-          }
-        }
-      ]
+      solosCount: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -182,24 +155,7 @@ describe('Song Card', () => {
 
     const localSong: Song = {
       ...song,
-      sections: [
-        {
-          ...emptySongSection,
-          name: 'Riff 1',
-          songSectionType: {
-            id: '',
-            name: 'Riff'
-          }
-        },
-        {
-          ...emptySongSection,
-          name: 'Riff 2',
-          songSectionType: {
-            id: '',
-            name: 'Riff'
-          }
-        }
-      ]
+      riffsCount: 2
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
@@ -213,19 +169,74 @@ describe('Song Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<SongCard song={song} />)
+    const [{ rerender }] = reduxRouterRender(<SongCard song={song} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByLabelText(`default-icon-${song.title}`)
     })
 
+    expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+
+    rerender(<SongCard song={{ ...song, artist: emptyArtist, album: emptyAlbum }} />)
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
   })
 
   describe('on menu', () => {
+    it('should open song drawer when clicking on open drawer', async () => {
+      const user = userEvent.setup()
+
+      const [_, store] = reduxRouterRender(withToastify(<SongCard song={song} />))
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${song.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
+
+      expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
+      expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
+    })
+
+    it('should navigate to artist when clicking on view artist', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, artist: { ...emptyArtist, id: '1' } }
+
+      reduxRouterRender(<SongCard song={localSong} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${localSong.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view artist/i }))
+      expect(window.location.pathname).toBe(`/artist/${localSong.artist.id}`)
+    })
+
+    it('should navigate to album when clicking on view album', async () => {
+      const user = userEvent.setup()
+
+      const localSong = { ...song, album: { ...emptyAlbum, id: '1' } }
+
+      reduxRouterRender(<SongCard song={localSong} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${localSong.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view album/i }))
+      expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
+    })
+
     it('should display warning modal when clicking on delete', async () => {
       const user = userEvent.setup()
 
@@ -285,15 +296,37 @@ describe('Song Card', () => {
     }
 
     server.use(
-      http.get(localSong.youtubeLink.replace('watch?v=', 'embed/'), () => {
-        return HttpResponse.json({ message: 'it worked' })
-      })
+      http.get(
+        localSong.youtubeLink.replace('youtube', 'youtube-nocookie').replace('watch?v=', 'embed/'),
+        () => {
+          return HttpResponse.json({ message: 'it worked' })
+        }
+      )
     )
 
     reduxRouterRender(<SongCard song={localSong} />)
 
-    await user.click(screen.getByLabelText('youtube-icon'))
+    await user.click(screen.getByRole('button', { name: 'youtube' }))
 
     expect(await screen.findByRole('dialog', { name: song.title })).toBeInTheDocument()
+  })
+
+  it('should be able to open songsterr in browser on songsterr click', () => {
+    const localSong = {
+      ...song,
+      songsterrLink: 'some-link'
+    }
+
+    reduxRouterRender(<SongCard song={localSong} />)
+
+    expect(
+      within(screen.getByRole('link', { name: /songsterr/i })).getByRole('button', {
+        name: /songsterr/i
+      })
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(
+      localSong.songsterrLink
+    )
   })
 })

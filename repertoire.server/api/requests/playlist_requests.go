@@ -2,11 +2,20 @@ package requests
 
 import "github.com/google/uuid"
 
+type GetPlaylistRequest struct {
+	ID           uuid.UUID `validate:"required"`
+	SongsOrderBy []string  `form:"songsOrderBy" validate:"order_by"`
+}
+
 type GetPlaylistsRequest struct {
 	CurrentPage *int     `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
-	OrderBy     []string `form:"orderBy"`
-	SearchBy    []string `form:"searchBy"`
+	OrderBy     []string `form:"orderBy" validate:"order_by"`
+	SearchBy    []string `form:"searchBy" validate:"search_by"`
+}
+
+type GetPlaylistFiltersMetadataRequest struct {
+	SearchBy []string `form:"searchBy" validate:"search_by"`
 }
 
 type CreatePlaylistRequest struct {

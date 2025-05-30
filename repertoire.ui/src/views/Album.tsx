@@ -8,8 +8,12 @@ import AlbumSongsCard from '../components/album/AlbumSongsCard.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
-import { useLocalStorage } from '@mantine/hooks'
-import LocalStorageKeys from '../utils/enums/LocalStorageKeys.ts'
+import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
+import useOrderBy from '../hooks/api/useOrderBy.ts'
+import useLocalStorage from '../hooks/useLocalStorage.ts'
+import useSearchBy from '../hooks/api/useSearchBy.ts'
+import SongProperty from '../types/enums/SongProperty.ts'
+import FilterOperator from '../types/enums/FilterOperator.ts'
 
 function Album() {
   const params = useParams()
@@ -24,6 +28,7 @@ function Album() {
       : LocalStorageKeys.AlbumSongsOrder,
     defaultValue: isUnknownAlbum ? albumSongsOrders[1] : albumSongsOrders[0]
   })
+  const orderBy = useOrderBy([order])
 
   const {
     data: album,
@@ -32,7 +37,7 @@ function Album() {
   } = useGetAlbumQuery(
     {
       id: albumId,
-      songsOrderBy: [order.value]
+      songsOrderBy: orderBy
     },
     { skip: isUnknownAlbum }
   )
@@ -42,19 +47,23 @@ function Album() {
     else if (album) setDocumentTitle(album.title)
   }, [album, isUnknownAlbum])
 
+  const songsSearchBy = useSearchBy([
+    { property: SongProperty.AlbumId, operator: FilterOperator.IsNull }
+  ])
   const {
     data: songs,
     isLoading: isSongsLoading,
     isFetching: isSongsFetching
   } = useGetSongsQuery(
     {
-      orderBy: [order.value],
-      searchBy: ['album_id IS NULL']
+      orderBy: orderBy,
+      searchBy: songsSearchBy
     },
     { skip: !isUnknownAlbum }
   )
 
-  if (isLoading || isSongsLoading || (!album && !isUnknownAlbum) || (!songs && isUnknownAlbum)) return <AlbumLoader />
+  if (isLoading || isSongsLoading || (!album && !isUnknownAlbum) || (!songs && isUnknownAlbum))
+    return <AlbumLoader />
 
   return (
     <Stack px={'xl'}>

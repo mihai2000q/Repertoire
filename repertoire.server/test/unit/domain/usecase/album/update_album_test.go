@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
+	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -218,7 +219,7 @@ func TestUpdateAlbum_WhenArtistHasNotChanged_ShouldUpdateOnlyAlbumAndNotReturnAn
 	request := requests.UpdateAlbumRequest{
 		ID:          uuid.New(),
 		Title:       "New Album",
-		ReleaseDate: &[]time.Time{time.Now().UTC()}[0],
+		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
 	}
 
 	mockAlbum := &model.Album{

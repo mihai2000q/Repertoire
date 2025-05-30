@@ -12,7 +12,7 @@ import {
 } from '@mantine/core'
 import { BandMember } from '../../../../types/models/Artist.ts'
 import { IconUser } from '@tabler/icons-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface BandMemberSelectProps {
   bandMember: BandMember | null
@@ -29,6 +29,10 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
 
   const [value, setValue] = useState<string>(bandMember?.name ?? '')
   const [search, setSearch] = useState(bandMember?.name ?? '')
+  useEffect(() => {
+    setValue(bandMember?.name ?? '')
+    setSearch(bandMember?.name ?? '')
+  }, [bandMember])
 
   const filteredMembers =
     search.trim() !== ''
@@ -38,13 +42,13 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
       : bandMembers
 
   const BandMemberHoverCard = () => (
-    <HoverCard withArrow={true} openDelay={200} shadow={'md'}>
+    <HoverCard openDelay={200}>
       <HoverCard.Target>
         <Avatar
           size={24}
           color={bandMember.color}
           src={bandMember.imageUrl}
-          alt={bandMember.name}
+          alt={bandMember.imageUrl && bandMember.name}
         >
           <IconUser size={15} />
         </Avatar>
@@ -55,7 +59,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
             size={'lg'}
             color={bandMember.color}
             src={bandMember.imageUrl}
-            alt={bandMember.name}
+            alt={bandMember.imageUrl && bandMember.name}
           >
             <IconUser size={30} />
           </Avatar>
@@ -86,11 +90,11 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
           variant={'light'}
           color={member.color}
           src={member.imageUrl}
-          alt={member.name}
+          alt={member.imageUrl && member.name}
         >
           <IconUser size={14} />
         </Avatar>
-        <Text inline fw={500} lineClamp={2}>
+        <Text lh={'xxs'} fw={500} lineClamp={2}>
           {member.name}
         </Text>
       </Group>
@@ -122,7 +126,6 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         >
           <TextInput
             flex={1}
-            maxLength={100}
             label={'Band Member'}
             placeholder={'Choose a member'}
             disabled={bandMembers === undefined}
@@ -146,18 +149,20 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         </Tooltip>
       </Combobox.Target>
 
-      <Combobox.Dropdown>
+      <Combobox.Dropdown pb={0}>
         <Combobox.Options>
           <ScrollArea.Autosize mah={200} scrollbarSize={5}>
-            {bandMembers?.length === 0 ? (
-              <Combobox.Empty>Artist has no members</Combobox.Empty>
-            ) : filteredMembers?.length === 0 ? (
-              <Combobox.Empty>No members found</Combobox.Empty>
-            ) : (
-              filteredMembers?.map((bandMember) => (
-                <BandMemberOption key={bandMember.id} member={bandMember} />
-              ))
-            )}
+            <Stack gap={0} pb={'xxs'}>
+              {bandMembers?.length === 0 ? (
+                <Combobox.Empty>Artist has no members</Combobox.Empty>
+              ) : filteredMembers?.length === 0 ? (
+                <Combobox.Empty>No members found</Combobox.Empty>
+              ) : (
+                filteredMembers?.map((bandMember) => (
+                  <BandMemberOption key={bandMember.id} member={bandMember} />
+                ))
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Combobox.Options>
       </Combobox.Dropdown>

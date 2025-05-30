@@ -15,14 +15,14 @@ import { http, HttpResponse } from 'msw'
 import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 
 describe('Edit Song Header Modal', () => {
   const song: Song = {
     ...emptySong,
     id: '1',
     title: 'Song 1',
-    releaseDate: '2024-12-12T00:00:00',
+    releaseDate: '2024-12-12T00:00:00.000Z',
     imageUrl: 'some-image.png'
   }
 
@@ -177,7 +177,6 @@ describe('Edit Song Header Modal', () => {
     const user = userEvent.setup()
 
     const newArtist = artists[0]
-    const newReleaseDate = dayjs('2024-12-24')
     const onClose = vitest.fn()
 
     let capturedRequest: UpdateSongRequest
@@ -192,9 +191,6 @@ describe('Edit Song Header Modal', () => {
 
     const saveButton = screen.getByRole('button', { name: /save/i })
 
-    await user.click(screen.getByRole('button', { name: /release date/i }))
-    await user.click(screen.getByText(newReleaseDate.date()))
-
     await user.click(screen.getByRole('textbox', { name: /artist/i }))
     await user.click(await screen.getByRole('option', { name: newArtist.name }))
 
@@ -207,24 +203,18 @@ describe('Edit Song Header Modal', () => {
     expect(capturedRequest).toStrictEqual({
       ...song,
       id: song.id,
-      releaseDate: newReleaseDate.toISOString(),
       artistId: newArtist.id
     })
   })
 
-  it('should send edit request and save image request when the image is replaced', async () => {
+  it('should send only save image request when the image is replaced', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateSongRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/songs', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/songs/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -242,29 +232,18 @@ describe('Edit Song Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toStrictEqual({
-      ...song,
-      id: song.id,
-      title: song.title,
-      releaseDate: dayjs(song.releaseDate).toISOString()
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(song.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and save image request when the image is first added', async () => {
+  it('should send only save image request when the image is first added', async () => {
     const user = userEvent.setup()
 
     const newImage = new File(['something'], 'image.png', { type: 'image/png' })
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateSongRequest
     let capturedSaveImageFormData: FormData
     server.use(
-      http.put('/songs', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.put('/songs/images', async (req) => {
         capturedSaveImageFormData = await req.request.formData()
         return HttpResponse.json({ message: 'it worked' })
@@ -290,27 +269,16 @@ describe('Edit Song Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
-    expect(capturedRequest).toEqual({
-      ...{ ...song, imageUrl: undefined },
-      id: song.id,
-      title: song.title,
-      releaseDate: dayjs(song.releaseDate).toISOString()
-    })
     expect(capturedSaveImageFormData.get('id')).toBe(song.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
-  it('should send edit request and delete image request', async () => {
+  it('should send only delete image request when the image is removed', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateSongRequest
     server.use(
-      http.put('/songs', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongRequest
-        return HttpResponse.json({ message: 'it worked' })
-      }),
       http.delete(`/songs/images/${song.id}`, () => {
         return HttpResponse.json({ message: 'it worked' })
       })
@@ -327,12 +295,49 @@ describe('Edit Song Header Modal', () => {
     expect(saveButton).toHaveAttribute('data-disabled', 'true')
 
     expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('should send edit request and save image request when both have changed', async () => {
+    const user = userEvent.setup()
+
+    const newImage = new File(['something'], 'image.png', { type: 'image/png' })
+    const newTitle = 'New Title'
+    const onClose = vitest.fn()
+
+    let capturedRequest: UpdateSongRequest
+    let capturedSaveImageFormData: FormData
+    server.use(
+      http.put('/songs', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateSongRequest
+        return HttpResponse.json({ message: 'it worked' })
+      }),
+      http.put('/songs/images', async (req) => {
+        capturedSaveImageFormData = await req.request.formData()
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    reduxRender(withToastify(<EditSongHeaderModal opened={true} onClose={onClose} song={song} />))
+
+    const titleField = screen.getByRole('textbox', { name: /title/i })
+    const saveButton = screen.getByRole('button', { name: /save/i })
+
+    await user.clear(titleField)
+    await user.type(titleField, newTitle)
+    await user.upload(screen.getByTestId('upload-image-input'), newImage)
+    await user.click(saveButton)
+
+    expect(await screen.findByText(/song header updated/i)).toBeInTheDocument()
+    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+
+    expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
       ...song,
       id: song.id,
-      title: song.title,
-      releaseDate: dayjs(song.releaseDate).toISOString()
+      title: newTitle
     })
+    expect(capturedSaveImageFormData.get('id')).toBe(song.id)
+    expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)
   })
 
   it('should mention that the image will be inherited from the album, if any image is there', async () => {
@@ -340,11 +345,7 @@ describe('Edit Song Header Modal', () => {
       ...song,
       imageUrl: undefined,
       album: {
-        id: '',
-        title: '',
-        songs: [],
-        createdAt: '',
-        updatedAt: '',
+        ...emptyAlbum,
         imageUrl: 'something.png'
       }
     }

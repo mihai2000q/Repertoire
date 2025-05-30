@@ -23,9 +23,8 @@ describe('create Query Params', () => {
     expect(result).toBe(expected)
   })
 
-  it('should return empty array when the object was empty', () => {
+  it('should return empty string when the object was empty', () => {
     const result = createQueryParams({})
-
     expect(result).toBe('')
   })
 })

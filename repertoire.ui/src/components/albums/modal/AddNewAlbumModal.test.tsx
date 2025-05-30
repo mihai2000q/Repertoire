@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw'
 import { CreateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import dayjs from "dayjs";
 
 describe('Add New Album Modal', () => {
@@ -96,8 +96,6 @@ describe('Add New Album Modal', () => {
 
       const newTitle = 'New Album'
       const newArtistName = 'New Artist Name'
-      const now = new Date()
-      const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
 
       const onClose = vitest.fn()
 
@@ -114,14 +112,14 @@ describe('Add New Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getByRole('button', { name : dayjs(newReleaseDate).format('D MMMM YYYY') }))
+      await user.click(screen.getByRole('button', { name : dayjs().format('D MMMM YYYY') }))
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
       await waitFor(() =>
         expect(capturedRequest).toEqual({
           title: newTitle,
           artistName: newArtistName,
-          releaseDate: newReleaseDate.toISOString()
+          releaseDate: dayjs().format('YYYY-MM-DD')
         })
       )
       expect(onClose).toHaveBeenCalledOnce()

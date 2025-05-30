@@ -2,7 +2,7 @@ import { Skeleton, Stack } from '@mantine/core'
 
 function ArtistsLoader() {
   return Array.from(Array(40)).map((_, i) => (
-    <Stack key={i} gap={'xs'} align={'center'}>
+    <Stack key={i} gap={'xs'} align={'center'} pb={'md'}>
       <Skeleton
         radius={'50%'}
         pb={'100%'}

@@ -52,10 +52,9 @@ describe('Album Songs Card', () => {
   ]
 
   const album: Album = {
+    ...emptyAlbum,
     id: '1',
     title: 'Song 1',
-    createdAt: '',
-    updatedAt: '',
     songs: [
       ...songs,
       {

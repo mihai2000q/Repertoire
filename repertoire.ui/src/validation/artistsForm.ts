@@ -1,61 +1,43 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { FileWithPath } from '@mantine/dropzone'
+import { songsterrLinkValidator, youtubeLinkValidator } from './custom/validators.ts'
 
-export interface AddNewArtistForm {
-  name: string
-  isBand: boolean
-}
-
-export const addNewArtistValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank')
+export const addNewArtistSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+  isBand: z.boolean()
 })
+export type AddNewArtistForm = z.infer<typeof addNewArtistSchema>
 
-export interface EditArtistHeaderForm {
-  name: string
-  image: string | FileWithPath | null
-  isBand: boolean
-}
-
-export const editArtistHeaderValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank')
+export const editArtistHeaderSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+  image: z.string().or(z.object<FileWithPath>()).nullish(),
+  isBand: z.boolean()
 })
+export type EditArtistHeaderForm = z.infer<typeof editArtistHeaderSchema>
 
-export interface AddNewBandMemberForm {
-  name: string
-  image: string | FileWithPath | null
-}
-
-export const addNewBandMemberValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank')
+export const addNewBandMemberSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+  image: z.string().or(z.object<FileWithPath>()).nullish(),
+  roleIds: z.array(z.string()).min(1, 'Select at least one role')
 })
+export type AddNewBandMemberForm = z.infer<typeof addNewBandMemberSchema>
 
-export interface AddNewArtistAlbumForm {
-  title: string
-}
-
-export interface EditBandMemberForm {
-  name: string
-  color?: string
-  image: string | FileWithPath | null
-  roleIds: string[]
-}
-
-export const editBandMemberValidation = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank')
+export const editBandMemberSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+  image: z.string().or(z.object<FileWithPath>()).nullish(),
+  color: z.string().optional(),
+  roleIds: z.array(z.string()).min(1, 'Select at least one role')
 })
+export type EditBandMemberForm = z.infer<typeof editBandMemberSchema>
 
-export interface AddNewArtistAlbumForm {
-  title: string
-}
-
-export const addNewArtistAlbumValidation = z.object({
+export const addNewArtistAlbumSchema = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank')
 })
+export type AddNewArtistAlbumForm = z.infer<typeof addNewArtistAlbumSchema>
 
-export interface AddNewArtistSongForm {
-  title: string
-}
-
-export const addNewArtistSongValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank')
+export const addNewArtistSongSchema = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+  songsterrLink: songsterrLinkValidator,
+  youtubeLink: youtubeLinkValidator
 })
+export type AddNewArtistSongForm = z.infer<typeof addNewArtistSongSchema>

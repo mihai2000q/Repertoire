@@ -1,5 +1,5 @@
 import useDifficultyInfo from './useDifficultyInfo.ts'
-import Difficulty from '../utils/enums/Difficulty.ts'
+import Difficulty from '../types/enums/Difficulty.ts'
 import { MantineTheme, useMantineTheme } from '@mantine/core'
 import { mantineRenderHook } from '../test-utils.tsx'
 

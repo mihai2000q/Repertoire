@@ -17,10 +17,15 @@ import { useAppDispatch } from '../../state/store.ts'
 import { useHover } from '@mantine/hooks'
 import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent } from 'react'
-import SongProgressBar from '../@ui/misc/SongProgressBar.tsx'
+import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
 import Song from '../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import SongProperty from '../../types/enums/SongProperty.ts'
+import OrderType from '../../types/enums/OrderType.ts'
+import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import useSearchBy from '../../hooks/api/useSearchBy.ts'
+import FilterOperator from '../../types/enums/FilterOperator.ts'
 
 function Loader() {
   return (
@@ -125,7 +130,7 @@ function LocalSongCard({ song }: { song: Song }) {
           </Stack>
         </Grid.Col>
         <Grid.Col span={4} display={{ base: 'block', md: 'none', xxl: 'block' }}>
-          <SongProgressBar progress={song.progress} mx={'xs'} />
+          <ProgressBar progress={song.progress} mx={'xs'} />
         </Grid.Col>
         <Grid.Col span={{ base: 3, md: 4, xxl: 3 }} px={'md'}>
           <Tooltip
@@ -144,11 +149,20 @@ function LocalSongCard({ song }: { song: Song }) {
 }
 
 function HomeRecentlyPlayedSongs() {
+  const orderBy = useOrderBy([
+    { property: SongProperty.LastPlayed, type: OrderType.Descending },
+    { property: SongProperty.Progress, type: OrderType.Descending },
+    { property: SongProperty.Title }
+  ])
+  const searchBy = useSearchBy([
+    { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull }
+  ])
+
   const { data: songs, isLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: ['last_time_played desc', 'progress desc', 'title desc'],
-    searchBy: ['last_time_played IS NOT NULL']
+    orderBy: orderBy,
+    searchBy: searchBy
   })
 
   return (
@@ -182,8 +196,26 @@ function HomeRecentlyPlayedSongs() {
           </Text>
         )}
 
-        <ScrollArea scrollbars={'y'} scrollbarSize={7}>
-          <Stack gap={'xxs'} h={'100%'}>
+        <ScrollArea
+          scrollbars={'y'}
+          scrollbarSize={7}
+          sx={(theme) => ({
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              background: `
+                linear-gradient(to top, transparent 98%, ${theme.white}),
+                linear-gradient(to bottom, transparent 96%, ${theme.white})
+              `
+            }
+          })}
+        >
+          <Stack gap={'xxs'}>
             {isLoading || !songs ? (
               <Loader />
             ) : (

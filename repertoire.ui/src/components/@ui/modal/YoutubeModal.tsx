@@ -1,4 +1,4 @@
-import { Box, Modal } from '@mantine/core'
+import { AspectRatio, Modal, useMatches } from '@mantine/core'
 
 interface YoutubeModalProps {
   opened: boolean
@@ -8,8 +8,24 @@ interface YoutubeModalProps {
 }
 
 function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
+  const ratio = useMatches({
+    base: 1,
+    xs: 4 / 3,
+    sm: 16 / 9
+  })
+  const src = link
+    ?.replace('watch?v=', 'embed/')
+    .replace('youtube', 'youtube-nocookie')
+    .replace(/(www\.)?youtu.be/, 'www.youtube-nocookie.com/embed')
+
   return (
-    <Modal.Root opened={opened} onClose={onClose} size={'min(80vw, 1000px)'} centered>
+    <Modal.Root
+      opened={opened}
+      onClose={onClose}
+      size={'min(80vw, 1000px)'}
+      trapFocus={false}
+      centered
+    >
       <Modal.Overlay />
       <Modal.Content>
         <Modal.Header>
@@ -19,26 +35,20 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
           <Modal.CloseButton />
         </Modal.Header>
         <Modal.Body>
-          <Box
-            style={{
-              position: 'relative',
-              paddingBottom: '56%'
-            }}
-          >
+          <AspectRatio ratio={ratio}>
             <iframe
               width={'100%'}
               height={'100%'}
-              src={link?.replace('watch?v=', 'embed/')}
-              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+              src={src}
               allowFullScreen
-              title='Embedded Youtube'
+              title="Embedded Youtube"
+              nonce={'youtube-modal'}
               style={{
                 borderRadius: '16px',
-                position: 'absolute',
                 border: 'none'
               }}
             />
-          </Box>
+          </AspectRatio>
         </Modal.Body>
       </Modal.Content>
     </Modal.Root>

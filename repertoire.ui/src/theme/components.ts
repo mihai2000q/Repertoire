@@ -8,15 +8,19 @@ import {
   Chip,
   Combobox,
   Highlight,
+  HoverCard,
+  Indicator,
   LoadingOverlay,
   Menu,
   Modal,
   NavLink,
   NumberFormatter,
   NumberInput,
+  RangeSlider,
   ScrollArea,
   ScrollAreaAutosize,
   Select,
+  Stepper,
   StylesApiProps,
   Tabs,
   Text,
@@ -56,6 +60,42 @@ export const components = {
             color: theme.white,
             backgroundColor: alpha(theme.colors.gray[4], 0.3),
             shadows: theme.shadows.lg
+          }
+        },
+
+        '&[data-variant="form"]': {
+          color: theme.colors.gray[5],
+          backgroundColor: theme.colors.gray[0],
+
+          '&:hover': {
+            color: theme.colors.gray[6],
+            backgroundColor: theme.colors.gray[2]
+          },
+
+          '&[data-disabled="true"]': {
+            color: theme.colors.gray[3],
+            backgroundColor: 'transparent'
+          },
+
+          '&[aria-selected="true"]': {
+            color: theme.colors.green[5],
+            backgroundColor: alpha(theme.colors.green[1], 0.5),
+
+            '&:hover': {
+              color: theme.colors.green[6],
+              backgroundColor: theme.colors.green[1]
+            }
+          },
+
+          '&[aria-invalid="true"]': {
+            border: `2px solid ${theme.colors.red[5]}`,
+            color: theme.colors.red[7],
+            backgroundColor: alpha(theme.colors.red[2], 0.75),
+
+            '&:hover': {
+              color: theme.colors.red[8],
+              backgroundColor: theme.colors.red[2]
+            }
           }
         }
       }
@@ -136,6 +176,17 @@ export const components = {
       highlightStyles: { fontWeight: 700 }
     }
   }),
+  HoverCard: HoverCard.extend({
+    defaultProps: {
+      shadow: 'md',
+      withArrow: true
+    }
+  }),
+  Indicator: Indicator.extend({
+    defaultProps: {
+      fw: 500
+    }
+  }),
   LoadingOverlay: LoadingOverlay.extend({
     defaultProps: {
       overlayProps: { radius: 'md', blur: 2 },
@@ -159,6 +210,9 @@ export const components = {
       }
     },
     styles: (theme) => ({
+      content: {
+        overflow: 'hidden'
+      },
       title: {
         fontSize: theme.fontSizes.lg,
         fontWeight: 600,
@@ -232,6 +286,11 @@ export const components = {
       clampBehavior: 'strict'
     }
   }),
+  RangeSlider: RangeSlider.extend({
+    defaultProps: {
+      minRange: 1
+    }
+  }),
   ScrollArea: ScrollArea.extend({
     defaultProps: {
       type: 'hover'
@@ -255,6 +314,13 @@ export const components = {
         type: 'hover'
       }
     }
+  }),
+  Stepper: Stepper.extend({
+    styles: (theme) => ({
+      step: {
+        borderRadius: theme.radius.md
+      }
+    })
   }),
   Tabs: Tabs.extend({
     defaultProps: {
@@ -299,7 +365,7 @@ export const components = {
 declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
-    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle'
+    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle' | 'form'
   }
 
   // noinspection JSUnusedGlobalSymbols

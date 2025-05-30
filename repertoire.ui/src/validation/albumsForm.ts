@@ -1,31 +1,25 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { FileWithPath } from '@mantine/dropzone'
+import { songsterrLinkValidator, youtubeLinkValidator } from './custom/validators.ts'
 
-export interface AddNewAlbumForm {
-  title: string
-  releaseDate?: Date
-  artistName?: string
-}
-
-export const addNewAlbumValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank')
+export const addNewAlbumSchema = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank').default(''),
+  releaseDate: z.string().nullish(),
+  artistName: z.string().optional()
 })
+export type AddNewAlbumForm = z.infer<typeof addNewAlbumSchema>
 
-export interface AddNewAlbumSongForm {
-  title: string
-}
-
-export const addNewAlbumSongValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank')
+export const addNewAlbumSongSchema = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+  songsterrLink: songsterrLinkValidator,
+  youtubeLink: youtubeLinkValidator
 })
+export type AddNewAlbumSongForm = z.infer<typeof addNewAlbumSongSchema>
 
-export interface EditAlbumHeaderForm {
-  title: string
-  releaseDate: Date | null
-  image: string | FileWithPath | null
-  artistId?: string
-}
-
-export const editAlbumHeaderValidation = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank')
+export const editAlbumHeaderSchema = z.object({
+  title: z.string().trim().min(1, 'Title cannot be blank'),
+  releaseDate: z.string().nullish(),
+  image: z.string().or(z.object<FileWithPath>()).nullish(),
+  artistId: z.string().optional()
 })
+export type EditAlbumHeaderForm = z.infer<typeof editAlbumHeaderSchema>

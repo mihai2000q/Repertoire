@@ -11,7 +11,7 @@ import EditPlaylistHeaderModal from './modal/EditPlaylistHeaderModal.tsx'
 import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
-import titleFontSize from '../../utils/titleFontSize.ts'
+import titleFontSize from '../../utils/style/titleFontSize.ts'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -55,8 +55,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
         <Avatar
           src={playlist.imageUrl}
           alt={playlist.imageUrl && playlist.title}
-          w={'max(12vw, 150px)'}
-          h={'unset'}
+          size={'max(12vw, 150px)'}
           radius={'10%'}
           bg={'gray.5'}
           style={(theme) => ({
@@ -83,11 +82,11 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             {playlist.title}
           </Title>
 
-          <Text fw={500} fz={'sm'} c={'dimmed'} inline>
+          <Text fw={500} fz={'sm'} c={'dimmed'} lh={'xxs'}>
             {playlist.songs.length} song{plural(playlist.songs)}
           </Text>
 
-          <Text fz={'sm'} c={'dimmed'} lineClamp={3}>
+          <Text fz={'sm'} c={'dimmed'} lineClamp={2} lh={'xs'}>
             {playlist.description}
           </Text>
         </Stack>

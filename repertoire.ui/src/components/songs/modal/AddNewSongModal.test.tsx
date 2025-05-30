@@ -8,9 +8,9 @@ import { userEvent } from '@testing-library/user-event'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { CreateSongRequest } from '../../../types/requests/SongRequests.ts'
 import { GuitarTuning, SongSectionType } from '../../../types/models/Song.ts'
-import Difficulty from '../../../utils/enums/Difficulty.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../utils/enums/SearchType.ts'
+import SearchType from '../../../types/enums/SearchType.ts'
 import dayjs from 'dayjs'
 
 describe('Add New Song Modal', () => {
@@ -152,7 +152,8 @@ describe('Add New Song Modal', () => {
 
       reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something') // to validate and go to next step
+      // to validate and go to the next step
+      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something')
       await user.click(screen.getByRole('button', { name: /second step/i }))
 
       shouldRender()
@@ -182,7 +183,8 @@ describe('Add New Song Modal', () => {
 
       reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something') // to validate and go to next step
+      // to validate and go to the next step
+      await user.type(screen.getByRole('textbox', { name: /title/i }), 'something')
       await user.click(screen.getByRole('button', { name: /final step/i }))
 
       shouldRender()
@@ -287,14 +289,14 @@ describe('Add New Song Modal', () => {
 
       expect(screen.getByRole('button', { name: 'remove-section' })).toBeInTheDocument()
 
-      // add second section
+      // add the second section
       await user.click(screen.getByRole('button', { name: /add section/i }))
       expect(screen.queryAllByRole('textbox', { name: /name/i })).toHaveLength(2)
 
-      // populate first section's name
+      // populate the first section's name
       await user.type(screen.queryAllByRole('textbox', { name: /name/i })[0], 'something')
 
-      // remove first section
+      // remove the first section
       await user.click(screen.queryAllByRole('button', { name: 'remove-section' })[0])
       expect(screen.queryAllByRole('textbox', { name: /name/i })).toHaveLength(1)
       expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('') // not the one from above
@@ -739,8 +741,7 @@ describe('Add New Song Modal', () => {
       const newGuitarTuning = guitarTunings[0]
       const newDifficulty = Difficulty.Easy
       const newBpm = 123
-      const now = new Date()
-      const newReleaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const newReleaseDate = dayjs()
 
       // sections
       const newSectionType = songSectionTypes[0]
@@ -776,9 +777,7 @@ describe('Add New Song Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /bpm/i }), newBpm.toString())
 
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(
-        screen.getByRole('button', { name: dayjs(newReleaseDate).format('D MMMM YYYY') })
-      )
+      await user.click(screen.getByRole('button', { name: newReleaseDate.format('D MMMM YYYY') }))
 
       // sections
       await user.click(screen.getByRole('button', { name: /add section/i }))
@@ -807,7 +806,7 @@ describe('Add New Song Modal', () => {
         guitarTuningId: newGuitarTuning.id,
         difficulty: newDifficulty,
         bpm: newBpm,
-        releaseDate: newReleaseDate.toISOString(),
+        releaseDate: newReleaseDate.format('YYYY-MM-DD'),
         sections: [
           {
             typeId: newSectionType.id,
