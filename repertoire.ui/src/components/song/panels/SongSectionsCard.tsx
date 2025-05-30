@@ -110,7 +110,7 @@ function SongSectionsCard({
   return (
     <Card variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
-        <Group p={'md'} gap={'xxs'}>
+        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xxs'}>
           <Text fw={600} inline>
             Sections
           </Text>
