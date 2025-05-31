@@ -110,7 +110,7 @@ function SongSectionsCard({
   return (
     <Card variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xxs'}>
+        <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
           <Text fw={600} inline>
             Sections
           </Text>
@@ -246,7 +246,7 @@ function SongSectionsCard({
 
         <ScrollArea.Autosize
           viewportRef={scrollableRef}
-          mah={391.4}
+          mah={383.35}
           scrollbars={'y'}
           scrollbarSize={7}
         >
