@@ -37,7 +37,7 @@ function DatePickerButton({
         <Tooltip
           disabled={opened}
           label={
-            value !== null
+            value
               ? tooltipLabels?.selected
                 ? tooltipLabels?.selected(value)
                 : `${dayjs(value).format('D MMMM YYYY')} is selected`
@@ -47,15 +47,13 @@ function DatePickerButton({
         >
           <ActionIcon
             variant={'form'}
-            aria-selected={value !== null}
+            aria-selected={!!value}
             onClick={() => setOpened(!opened)}
             {...others}
           >
-            {value !== null ? (
-              (successIcon ?? <IconCalendarCheck size={18} />)
-            ) : (
-              (icon ?? <IconCalendar size={18} />)
-            )}
+            {value
+              ? (successIcon ?? <IconCalendarCheck size={18} />)
+              : (icon ?? <IconCalendar size={18} />)}
           </ActionIcon>
         </Tooltip>
       </Popover.Target>
