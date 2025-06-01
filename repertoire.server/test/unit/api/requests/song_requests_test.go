@@ -29,7 +29,7 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc nulls first", "created_at desc"},
-				SearchBy:    []string{"title = something entirely different", "is_recorded <> false"},
+				SearchBy:    []string{"title ~* something entirely different", "is_recorded <> false"},
 			},
 		},
 	}
