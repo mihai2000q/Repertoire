@@ -93,6 +93,7 @@ func TestAddSongsToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		Run(func(args mock.Arguments) {
 			playlistSongs := args.Get(0).(*[]model.PlaylistSong)
 			for i, playlistSong := range *playlistSongs {
+				assert.NotEmpty(t, playlistSong.ID)
 				assert.Equal(t, request.ID, playlistSong.PlaylistID)
 				assert.Equal(t, request.SongIDs[i], playlistSong.SongID)
 				assert.Equal(t, uint(int(*count+1)+i), playlistSong.SongTrackNo)

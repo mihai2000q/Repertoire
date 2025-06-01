@@ -176,6 +176,7 @@ func TestAddArtistToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 					newPlaylistSongs := args.Get(0).(*[]model.PlaylistSong)
 					assert.Len(t, *newPlaylistSongs, len(newSongs))
 					for i, playlistSong := range *newPlaylistSongs {
+						assert.NotEmpty(t, playlistSong.ID)
 						assert.Equal(t, uint(oldPlaylistSongsLength+i), playlistSong.SongTrackNo)
 						assert.Equal(t, request.ID, playlistSong.PlaylistID)
 						assert.Equal(t, newSongs[i].ID, playlistSong.SongID)

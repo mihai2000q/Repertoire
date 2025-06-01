@@ -1,6 +1,7 @@
 package playlist
 
 import (
+	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -26,6 +27,7 @@ func (a AddSongsToPlaylist) Handle(request requests.AddSongsToPlaylistRequest) *
 	var playlistSongs []model.PlaylistSong
 	for i, songID := range request.SongIDs {
 		playlistSong := model.PlaylistSong{
+			ID:          uuid.New(),
 			PlaylistID:  request.ID,
 			SongID:      songID,
 			SongTrackNo: uint(songsLength + i),

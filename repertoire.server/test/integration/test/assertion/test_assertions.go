@@ -370,6 +370,7 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 		)
 		if withSongsMetadata {
 			// making sure the After Find hook works
+			assert.Equal(t, playlist.PlaylistSongs[i].ID, response.Songs[i].PlaylistSongID)
 			assert.Equal(t, playlist.PlaylistSongs[i].SongID, response.Songs[i].ID)
 			assert.Equal(t, playlist.PlaylistSongs[i].SongTrackNo, response.Songs[i].PlaylistTrackNo)
 			Time(t, &playlist.PlaylistSongs[i].CreatedAt, &response.Songs[i].PlaylistCreatedAt)

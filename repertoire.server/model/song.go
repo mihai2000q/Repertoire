@@ -52,6 +52,7 @@ type Song struct {
 }
 
 type playlistSongMetadata struct {
+	PlaylistSongID    uuid.UUID `gorm:"-" json:"playlistSongId"`
 	PlaylistTrackNo   uint      `gorm:"-" json:"playlistTrackNo"`
 	PlaylistCreatedAt time.Time `gorm:"-" json:"playlistCreatedAt"`
 }

@@ -27,8 +27,9 @@ type Playlist struct {
 }
 
 type PlaylistSong struct {
-	PlaylistID  uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
-	SongID      uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
+	ID          uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
+	PlaylistID  uuid.UUID `gorm:"type:uuid; not null; <-:create"`
+	SongID      uuid.UUID `gorm:"type:uuid; not null; <-:create"`
 	SongTrackNo uint      `gorm:"not null"`
 	CreatedAt   time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 
@@ -50,6 +51,7 @@ func (p *Playlist) AfterFind(*gorm.DB) error {
 
 	for _, playlistSong := range p.PlaylistSongs {
 		newSong := playlistSong.Song
+		newSong.PlaylistSongID = playlistSong.ID
 		newSong.PlaylistTrackNo = playlistSong.SongTrackNo
 		newSong.PlaylistCreatedAt = playlistSong.CreatedAt
 		p.Songs = append(p.Songs, newSong)

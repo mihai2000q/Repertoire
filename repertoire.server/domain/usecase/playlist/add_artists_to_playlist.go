@@ -1,6 +1,7 @@
 package playlist
 
 import (
+	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -48,6 +49,7 @@ func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistReques
 			}
 
 			playlistSong := model.PlaylistSong{
+				ID:          uuid.New(),
 				PlaylistID:  request.ID,
 				SongID:      song.ID,
 				SongTrackNo: currentTrackNo,

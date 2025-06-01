@@ -112,21 +112,25 @@ var Songs = []model.Song{
 var PlaylistsSongs = []model.PlaylistSong{
 	// Playlist 1
 	{
+		ID:          uuid.New(),
 		PlaylistID:  Playlists[0].ID,
 		SongID:      Songs[0].ID,
 		SongTrackNo: 1,
 	},
 	{
+		ID:          uuid.New(),
 		PlaylistID:  Playlists[0].ID,
 		SongID:      Songs[1].ID,
 		SongTrackNo: 2,
 	},
 	{
+		ID:          uuid.New(),
 		PlaylistID:  Playlists[0].ID,
 		SongID:      Songs[2].ID,
 		SongTrackNo: 3,
 	},
 	{
+		ID:          uuid.New(),
 		PlaylistID:  Playlists[0].ID,
 		SongID:      Songs[3].ID,
 		SongTrackNo: 4,
@@ -134,11 +138,13 @@ var PlaylistsSongs = []model.PlaylistSong{
 
 	// Playlist 2
 	{
+		ID:          uuid.New(),
 		PlaylistID:  Playlists[1].ID,
 		SongID:      Songs[0].ID,
 		SongTrackNo: 1,
 	},
 	{
+		ID:          uuid.New(),
 		PlaylistID:  Playlists[1].ID,
 		SongID:      Songs[4].ID,
 		SongTrackNo: 2,
