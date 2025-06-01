@@ -26,6 +26,7 @@ type CreatePlaylistRequest struct {
 type AddAlbumsToPlaylistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
 	AlbumIDs []uuid.UUID `validate:"min=1"`
+	ForceAdd *bool
 }
 
 type AddArtistsToPlaylistRequest struct {
@@ -34,8 +35,9 @@ type AddArtistsToPlaylistRequest struct {
 }
 
 type AddSongsToPlaylistRequest struct {
-	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	ID       uuid.UUID   `validate:"required"`
+	SongIDs  []uuid.UUID `validate:"min=1"`
+	ForceAdd *bool
 }
 
 type UpdatePlaylistRequest struct {

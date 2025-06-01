@@ -3,6 +3,7 @@ package service
 import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
+	"repertoire/server/api/responses"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -13,7 +14,7 @@ import (
 type PlaylistService interface {
 	AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode
 	AddArtists(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode
-	AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode
+	AddSongs(request requests.AddSongsToPlaylistRequest) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode)
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -85,7 +86,9 @@ func (p *playlistService) AddArtists(request requests.AddArtistsToPlaylistReques
 	return p.addArtistsToPlaylist.Handle(request)
 }
 
-func (p *playlistService) AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) AddSongs(
+	request requests.AddSongsToPlaylistRequest,
+) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addSongsToPlaylist.Handle(request)
 }
 
