@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"time"
@@ -11,16 +10,7 @@ import (
 
 type EnhancedPlaylist struct {
 	Playlist
-	SongsCount float64     `gorm:"->" json:"songsCount"`
-	SongIDsAgg string      `gorm:"->; column:song_ids" json:"-"`
-	SongIDs    []uuid.UUID `gorm:"-" json:"songIds"`
-}
-
-func (p *EnhancedPlaylist) AfterFind(*gorm.DB) error {
-	if p.SongIDsAgg != "" {
-		return json.Unmarshal([]byte(p.SongIDsAgg), &p.SongIDs)
-	}
-	return nil
+	SongsCount float64 `gorm:"->" json:"songsCount"`
 }
 
 type Playlist struct {
