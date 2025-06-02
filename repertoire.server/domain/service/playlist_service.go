@@ -12,7 +12,7 @@ import (
 )
 
 type PlaylistService interface {
-	AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode
+	AddAlbums(request requests.AddAlbumsToPlaylistRequest) (*responses.AddAlbumsToPlaylistResponse, *wrapper.ErrorCode)
 	AddArtists(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode
 	AddSongs(request requests.AddSongsToPlaylistRequest) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode)
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
@@ -78,7 +78,7 @@ func NewPlaylistService(
 	}
 }
 
-func (p *playlistService) AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) AddAlbums(request requests.AddAlbumsToPlaylistRequest) (*responses.AddAlbumsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addAlbumsToPlaylist.Handle(request)
 }
 
