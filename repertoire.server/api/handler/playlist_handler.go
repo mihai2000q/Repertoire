@@ -154,13 +154,13 @@ func (p PlaylistHandler) AddArtists(c *gin.Context) {
 		return
 	}
 
-	errorCode = p.service.AddArtists(request)
+	res, errorCode := p.service.AddArtists(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	p.SendMessage(c, "artists have been added to playlist successfully")
+	c.JSON(http.StatusOK, res)
 }
 
 func (p PlaylistHandler) AddSongs(c *gin.Context) {

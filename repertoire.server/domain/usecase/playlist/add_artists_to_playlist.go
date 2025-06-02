@@ -1,8 +1,10 @@
 package playlist
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"repertoire/server/api/requests"
+	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -24,28 +26,36 @@ func NewAddArtistsToPlaylist(
 	}
 }
 
-func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode {
-	var oldPlaylistSongs []model.PlaylistSong
-	err := a.repository.GetPlaylistSongs(&oldPlaylistSongs, request.ID)
+func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode) {
+	var playlistSongs []model.PlaylistSong
+	err := a.repository.GetPlaylistSongs(&playlistSongs, request.ID)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return nil, wrapper.InternalServerError(err)
 	}
 
 	var artists []model.Artist
 	err = a.artistRepository.GetAllByIDsWithSongs(&artists, request.ArtistIDs)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return nil, wrapper.InternalServerError(err)
 	}
 
-	songsLength := len(oldPlaylistSongs) + 1
+	var duplicateSongIDs []uuid.UUID
+	var duplicateArtistIDs []uuid.UUID
+
+	songsLength := len(playlistSongs) + 1
 	currentTrackNo := uint(songsLength)
-	var playlistSongs []model.PlaylistSong
+	var newPlaylistSongs []model.PlaylistSong
 	for _, artist := range artists {
+		var currentSongIDs []uuid.UUID
+
 		for _, song := range artist.Songs {
-			if slices.ContainsFunc(oldPlaylistSongs, func(p model.PlaylistSong) bool {
+			if slices.ContainsFunc(playlistSongs, func(p model.PlaylistSong) bool {
 				return p.SongID == song.ID
 			}) {
-				continue
+				currentSongIDs = append(currentSongIDs, song.ID)
+				if request.ForceAdd != nil && !(*request.ForceAdd) {
+					continue
+				}
 			}
 
 			playlistSong := model.PlaylistSong{
@@ -54,15 +64,41 @@ func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistReques
 				SongID:      song.ID,
 				SongTrackNo: currentTrackNo,
 			}
-			playlistSongs = append(playlistSongs, playlistSong)
+			newPlaylistSongs = append(newPlaylistSongs, playlistSong)
 			currentTrackNo++
 		}
+
+		if len(currentSongIDs) == len(artist.Songs) {
+			duplicateArtistIDs = append(duplicateArtistIDs, artist.ID)
+		}
+		duplicateSongIDs = append(duplicateSongIDs, currentSongIDs...)
 	}
 
-	err = a.repository.AddSongs(&playlistSongs)
+	if len(duplicateSongIDs) == 0 && request.ForceAdd != nil {
+		return nil, wrapper.BadRequestError(errors.New("force adding when there are no duplicates"))
+	}
+	if len(duplicateSongIDs) > 0 && request.ForceAdd == nil {
+		return &responses.AddArtistsToPlaylistResponse{
+			Success:            false,
+			DuplicateArtistIDs: duplicateArtistIDs,
+			DuplicateSongIDs:   duplicateSongIDs,
+		}, nil
+	}
+
+	err = a.repository.AddSongs(&newPlaylistSongs)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return nil, wrapper.InternalServerError(err)
 	}
 
-	return nil
+	var addedSongIDs []uuid.UUID
+	for _, ps := range newPlaylistSongs {
+		addedSongIDs = append(addedSongIDs, ps.SongID)
+	}
+
+	return &responses.AddArtistsToPlaylistResponse{
+		Success:            true,
+		DuplicateArtistIDs: duplicateArtistIDs,
+		DuplicateSongIDs:   duplicateSongIDs,
+		AddedSongIDs:       addedSongIDs,
+	}, nil
 }
