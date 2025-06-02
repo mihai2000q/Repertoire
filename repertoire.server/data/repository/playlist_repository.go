@@ -21,7 +21,6 @@ type PlaylistRepository interface {
 		searchBy []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
-	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
 	AddSongs(playlistSongs *[]model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
@@ -119,13 +118,6 @@ func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, se
 
 	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
-}
-
-func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {
-	return p.client.Model(&model.PlaylistSong{}).
-		Where("playlist_id = ?", id).
-		Count(count).
-		Error
 }
 
 func (p playlistRepository) Create(playlist *model.Playlist) error {

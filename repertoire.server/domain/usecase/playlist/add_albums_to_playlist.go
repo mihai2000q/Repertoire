@@ -48,13 +48,13 @@ func (a AddAlbumsToPlaylist) Handle(
 	currentTrackNo := uint(songsLength)
 	var newPlaylistSongs []model.PlaylistSong
 	for _, album := range albums {
-		var duplicateAlbumSongIDs []uuid.UUID
+		var currentSongIDs []uuid.UUID
 
 		for _, song := range album.Songs {
 			if slices.ContainsFunc(playlistSongs, func(p model.PlaylistSong) bool {
 				return p.SongID == song.ID
 			}) {
-				duplicateAlbumSongIDs = append(duplicateAlbumSongIDs, song.ID)
+				currentSongIDs = append(currentSongIDs, song.ID)
 				if request.ForceAdd != nil && !(*request.ForceAdd) {
 					continue
 				}
@@ -70,10 +70,10 @@ func (a AddAlbumsToPlaylist) Handle(
 			currentTrackNo++
 		}
 
-		if len(duplicateAlbumSongIDs) == len(album.Songs) {
+		if len(currentSongIDs) == len(album.Songs) {
 			duplicateAlbumIDs = append(duplicateAlbumIDs, album.ID)
 		}
-		duplicateSongIDs = append(duplicateSongIDs, duplicateAlbumSongIDs...)
+		duplicateSongIDs = append(duplicateSongIDs, currentSongIDs...)
 	}
 
 	if len(duplicateSongIDs) == 0 && request.ForceAdd != nil {
@@ -92,15 +92,15 @@ func (a AddAlbumsToPlaylist) Handle(
 		return nil, wrapper.InternalServerError(err)
 	}
 
-	var addedSongs []uuid.UUID
+	var addedSongIDs []uuid.UUID
 	for _, ps := range newPlaylistSongs {
-		addedSongs = append(addedSongs, ps.SongID)
+		addedSongIDs = append(addedSongIDs, ps.SongID)
 	}
 
 	return &responses.AddAlbumsToPlaylistResponse{
 		Success:           true,
 		DuplicateAlbumIDs: duplicateAlbumIDs,
 		DuplicateSongIDs:  duplicateSongIDs,
-		AddedSongIDs:      addedSongs,
+		AddedSongIDs:      addedSongIDs,
 	}, nil
 }

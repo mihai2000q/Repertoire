@@ -37,7 +37,7 @@ func TestAddAlbumsToPlaylist_WhenWithoutDuplicatesButWithForceAdd_ShouldReturnBa
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
-func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldAddAlbumSongsOnPlaylist(t *testing.T) {
+func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
@@ -63,7 +63,7 @@ func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldAddAlbum
 	assert.Empty(t, response.AddedSongIDs)
 }
 
-func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_AndOneWholeAlbumIsAlreadyOnPlaylist_ShouldAddAlbumSongsOnPlaylist(t *testing.T) {
+func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_AndOneWholeAlbumIsAlreadyOnPlaylist_ShouldReturnNoSuccess(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
@@ -138,7 +138,7 @@ func TestAddAlbumsToPlaylist_WhenWithoutDuplicatesNorWithoutForceAdd_ShouldAddAl
 	assertAlbumsAddedToPlaylist(t, request, albumSongs)
 }
 
-func TestAddAlbumsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddDuplicatesAlbumSongsOnPlaylist(t *testing.T) {
+func TestAddAlbumsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddDuplicateSongsTooOnPlaylist(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
@@ -175,7 +175,7 @@ func TestAddAlbumsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddDuplicat
 	assertAlbumsAddedToPlaylist(t, request, albumSongs)
 }
 
-func TestAddAlbumsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldSkipDuplicatesAlbumSongsOnPlaylist(t *testing.T) {
+func TestAddAlbumsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldSkipDuplicateSongsWhenAddingToPlaylist(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
