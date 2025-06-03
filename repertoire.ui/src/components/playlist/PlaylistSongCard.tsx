@@ -99,7 +99,7 @@ function PlaylistSongCard({
   }
 
   function handleRemoveFromPlaylist() {
-    removeSongsFromPlaylist({ songIds: [song.id], id: playlistId })
+    removeSongsFromPlaylist({ playlistSongIds: [song.playlistSongId], id: playlistId })
   }
 
   const menuDropdown = (

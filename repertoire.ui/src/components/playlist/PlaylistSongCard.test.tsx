@@ -453,7 +453,7 @@ describe('Playlist Song Card', () => {
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
       expect(capturedRequest.id).toBe(playlistId)
-      expect(capturedRequest.songIds).toStrictEqual([song.id])
+      expect(capturedRequest.playlistSongIds).toStrictEqual([song.playlistSongId])
     })
   })
 

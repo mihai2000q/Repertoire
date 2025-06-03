@@ -35,11 +35,11 @@ export interface AddSongsToPlaylistRequest {
 
 export interface MoveSongFromPlaylistRequest {
   id: string
-  songId: string
-  overSongId: string
+  playlistSongId: string
+  overPlaylistSongId: string
 }
 
 export interface RemoveSongsFromPlaylistRequest {
   id: string
-  songIds: string[]
+  playlistSongIds: string[]
 }
