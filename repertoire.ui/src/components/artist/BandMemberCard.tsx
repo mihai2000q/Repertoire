@@ -70,13 +70,13 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
             alt={bandMember.imageUrl && bandMember.name}
             sx={(theme) => ({
               transition: '0.3s',
-              cursor: 'pointer',
               boxShadow: theme.shadows.md,
               '&:hover': { boxShadow: theme.shadows.lg }
             })}
             onClick={handleClick}
             onContextMenu={openMenu}
             {...draggableProvided?.dragHandleProps}
+            style={{ cursor: 'pointer' }} // to override the drag handle
           >
             <IconUser aria-label={`icon-${bandMember.name}`} size={25} />
           </Avatar>
