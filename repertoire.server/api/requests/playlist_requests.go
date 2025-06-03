@@ -54,6 +54,6 @@ type MoveSongFromPlaylistRequest struct {
 }
 
 type RemoveSongsFromPlaylistRequest struct {
-	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	ID              uuid.UUID   `validate:"required"`
+	PlaylistSongIDs []uuid.UUID `validate:"min=1"`
 }

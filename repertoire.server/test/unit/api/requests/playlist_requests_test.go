@@ -614,8 +614,8 @@ func TestValidateRemoveSongsFromPlaylistRequest_WhenIsValid_ShouldReturnNil(t *t
 	_uut := validation.NewValidator(nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when
@@ -635,15 +635,15 @@ func TestValidateRemoveSongsFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldR
 		// ID Test Cases
 		{
 			"ID is invalid because it's required",
-			requests.RemoveSongsFromPlaylistRequest{ID: uuid.Nil, SongIDs: []uuid.UUID{uuid.New()}},
+			requests.RemoveSongsFromPlaylistRequest{ID: uuid.Nil, PlaylistSongIDs: []uuid.UUID{uuid.New()}},
 			"ID",
 			"required",
 		},
 		// Song IDs Test Cases
 		{
 			"Song IDs is invalid because it requires at least 1 ID",
-			requests.RemoveSongsFromPlaylistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
-			"SongIDs",
+			requests.RemoveSongsFromPlaylistRequest{ID: uuid.New(), PlaylistSongIDs: []uuid.UUID{}},
+			"PlaylistSongIDs",
 			"min",
 		},
 	}
