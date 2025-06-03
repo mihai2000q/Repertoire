@@ -2,6 +2,8 @@ import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import {
+  AddAlbumsToPlaylistRequest,
+  AddArtistsToPlaylistRequest,
   AddSongsToPlaylistRequest,
   CreatePlaylistRequest,
   GetPlaylistRequest,
@@ -15,6 +17,11 @@ import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
 import { PlaylistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
+import {
+  AddAlbumsToPlaylistResponse,
+  AddArtistsToPlaylistResponse,
+  AddSongsToPlaylistResponse
+} from '../../types/responses/PlaylistResponses.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -32,7 +39,7 @@ const playlistsApi = api.injectEndpoints({
     }),
     getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
       query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Playlists', 'Songs']
+      providesTags: ['Playlists']
     }),
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
       query: (body) => ({
@@ -74,13 +81,31 @@ const playlistsApi = api.injectEndpoints({
       invalidatesTags: ['Playlists']
     }),
 
-    addSongsToPlaylist: build.mutation<HttpMessageResponse, AddSongsToPlaylistRequest>({
+    addArtistsToPlaylist: build.mutation<AddArtistsToPlaylistResponse, AddArtistsToPlaylistRequest>(
+      {
+        query: (body) => ({
+          url: `playlists/add-artists`,
+          method: 'POST',
+          body: body
+        }),
+        invalidatesTags: ['Playlists']
+      }
+    ),
+    addAlbumsToPlaylist: build.mutation<AddAlbumsToPlaylistResponse, AddAlbumsToPlaylistRequest>({
+      query: (body) => ({
+        url: `playlists/add-albums`,
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Playlists']
+    }),
+    addSongsToPlaylist: build.mutation<AddSongsToPlaylistResponse, AddSongsToPlaylistRequest>({
       query: (body) => ({
         url: `playlists/add-songs`,
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Songs', 'Playlists']
+      invalidatesTags: ['Playlists']
     }),
     moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
       query: (body) => ({
@@ -96,7 +121,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Songs', 'Playlists']
+      invalidatesTags: ['Playlists']
     })
   })
 })
@@ -111,6 +136,8 @@ export const {
   useSaveImageToPlaylistMutation,
   useDeleteImageFromPlaylistMutation,
   useDeletePlaylistMutation,
+  useAddArtistsToPlaylistMutation,
+  useAddAlbumsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
   useMoveSongFromPlaylistMutation,
   useRemoveSongsFromPlaylistMutation
