@@ -6,6 +6,7 @@ export default interface Playlist {
   description: string
   imageUrl?: string
   songs: Song[]
+  songsCount: number
 
   createdAt: string
   updatedAt: string
