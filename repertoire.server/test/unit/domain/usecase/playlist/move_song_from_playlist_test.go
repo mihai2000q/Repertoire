@@ -22,9 +22,9 @@ func TestMoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServ
 	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         uuid.New(),
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// given - mocking
@@ -50,14 +50,14 @@ func TestMoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *te
 	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         uuid.New(),
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: uuid.New()},
+		{ID: uuid.New()},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -80,14 +80,14 @@ func TestMoveSongFromPlaylist_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t
 	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         uuid.New(),
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: request.SongID},
+		{ID: request.PlaylistSongID},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -110,15 +110,15 @@ func TestMoveSongFromPlaylist_WhenUpdateAllFails_ShouldReturnInternalServerError
 	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         uuid.New(),
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: request.SongID},
-		{SongID: request.OverSongID},
+		{ID: request.PlaylistSongID},
+		{ID: request.OverPlaylistSongID},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -150,11 +150,11 @@ func TestMoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 		{
 			"Use case 1",
 			&[]model.PlaylistSong{
-				{SongID: uuid.New(), SongTrackNo: 1},
-				{SongID: uuid.New(), SongTrackNo: 2},
-				{SongID: uuid.New(), SongTrackNo: 3},
-				{SongID: uuid.New(), SongTrackNo: 4},
-				{SongID: uuid.New(), SongTrackNo: 5},
+				{ID: uuid.New(), SongTrackNo: 1},
+				{ID: uuid.New(), SongTrackNo: 2},
+				{ID: uuid.New(), SongTrackNo: 3},
+				{ID: uuid.New(), SongTrackNo: 4},
+				{ID: uuid.New(), SongTrackNo: 5},
 			},
 			1,
 			3,
@@ -162,11 +162,11 @@ func TestMoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 		{
 			"Use case 2",
 			&[]model.PlaylistSong{
-				{SongID: uuid.New(), SongTrackNo: 1},
-				{SongID: uuid.New(), SongTrackNo: 2},
-				{SongID: uuid.New(), SongTrackNo: 3},
-				{SongID: uuid.New(), SongTrackNo: 4},
-				{SongID: uuid.New(), SongTrackNo: 5},
+				{ID: uuid.New(), SongTrackNo: 1},
+				{ID: uuid.New(), SongTrackNo: 2},
+				{ID: uuid.New(), SongTrackNo: 3},
+				{ID: uuid.New(), SongTrackNo: 4},
+				{ID: uuid.New(), SongTrackNo: 5},
 			},
 			3,
 			1,
@@ -180,9 +180,9 @@ func TestMoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 			_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
 
 			request := requests.MoveSongFromPlaylistRequest{
-				ID:         uuid.New(),
-				SongID:     (*tt.playlistSongs)[tt.index].SongID,
-				OverSongID: (*tt.playlistSongs)[tt.overIndex].SongID,
+				ID:                 uuid.New(),
+				PlaylistSongID:     (*tt.playlistSongs)[tt.index].ID,
+				OverPlaylistSongID: (*tt.playlistSongs)[tt.overIndex].ID,
 			}
 
 			// given - mocking
@@ -198,11 +198,11 @@ func TestMoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 						return cmp.Compare(a.SongTrackNo, b.SongTrackNo)
 					})
 					if tt.index < tt.overIndex {
-						assert.Equal(t, playlistSongs[tt.overIndex-1].SongID, request.OverSongID)
+						assert.Equal(t, playlistSongs[tt.overIndex-1].ID, request.OverPlaylistSongID)
 					} else if tt.index > tt.overIndex {
-						assert.Equal(t, playlistSongs[tt.overIndex+1].SongID, request.OverSongID)
+						assert.Equal(t, playlistSongs[tt.overIndex+1].ID, request.OverPlaylistSongID)
 					}
-					assert.Equal(t, playlistSongs[tt.overIndex].SongID, request.SongID)
+					assert.Equal(t, playlistSongs[tt.overIndex].ID, request.PlaylistSongID)
 					for i, song := range playlistSongs {
 						assert.Equal(t, uint(i)+1, song.SongTrackNo)
 					}

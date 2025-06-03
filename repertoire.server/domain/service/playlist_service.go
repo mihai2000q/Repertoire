@@ -3,6 +3,7 @@ package service
 import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
+	"repertoire/server/api/responses"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -11,9 +12,9 @@ import (
 )
 
 type PlaylistService interface {
-	AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode
-	AddArtists(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode
-	AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode
+	AddAlbums(request requests.AddAlbumsToPlaylistRequest) (*responses.AddAlbumsToPlaylistResponse, *wrapper.ErrorCode)
+	AddArtists(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode)
+	AddSongs(request requests.AddSongsToPlaylistRequest) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode)
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -77,15 +78,19 @@ func NewPlaylistService(
 	}
 }
 
-func (p *playlistService) AddAlbums(request requests.AddAlbumsToPlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) AddAlbums(request requests.AddAlbumsToPlaylistRequest) (*responses.AddAlbumsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addAlbumsToPlaylist.Handle(request)
 }
 
-func (p *playlistService) AddArtists(request requests.AddArtistsToPlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) AddArtists(
+	request requests.AddArtistsToPlaylistRequest,
+) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addArtistsToPlaylist.Handle(request)
 }
 
-func (p *playlistService) AddSongs(request requests.AddSongsToPlaylistRequest) *wrapper.ErrorCode {
+func (p *playlistService) AddSongs(
+	request requests.AddSongsToPlaylistRequest,
+) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addSongsToPlaylist.Handle(request)
 }
 

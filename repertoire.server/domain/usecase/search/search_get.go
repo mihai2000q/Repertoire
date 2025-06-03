@@ -120,13 +120,6 @@ func (g Get) Handle(
 		}
 	}
 
-	if len(results) == 0 {
-		return wrapper.WithTotalCount[any]{
-			Models:     []any{}, // otherwise it would be nil by default
-			TotalCount: searchResult.TotalCount,
-		}, nil
-	}
-
 	return wrapper.WithTotalCount[any]{
 		Models:     results,
 		TotalCount: searchResult.TotalCount,

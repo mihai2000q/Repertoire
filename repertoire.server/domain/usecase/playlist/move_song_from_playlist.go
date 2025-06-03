@@ -24,7 +24,7 @@ func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistReques
 		return wrapper.InternalServerError(err)
 	}
 
-	index, overIndex, err := m.getIndexes(playlistSongs, request.SongID, request.OverSongID)
+	index, overIndex, err := m.getIndexes(playlistSongs, request.PlaylistSongID, request.OverPlaylistSongID)
 	if err != nil {
 		return wrapper.NotFoundError(err)
 	}
@@ -46,9 +46,9 @@ func (MoveSongFromPlaylist) getIndexes(
 	var index *int
 	var overIndex *int
 	for i := 0; i < len(playlistSongs); i++ {
-		if playlistSongs[i].SongID == id {
+		if playlistSongs[i].ID == id {
 			index = &i
-		} else if playlistSongs[i].SongID == overID {
+		} else if playlistSongs[i].ID == overID {
 			overIndex = &i
 		}
 	}

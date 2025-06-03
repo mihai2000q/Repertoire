@@ -37,7 +37,7 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 
 	songTrackNo := uint(1)
 	for _, playlistSong := range playlistSongs {
-		if slices.Contains(request.SongIDs, playlistSong.SongID) {
+		if slices.Contains(request.PlaylistSongIDs, playlistSong.ID) {
 			songsToDelete = append(songsToDelete, playlistSong)
 		} else {
 			// reorder preserved songs
@@ -47,7 +47,7 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 		}
 	}
 
-	if len(songsToDelete) != len(request.SongIDs) {
+	if len(songsToDelete) != len(request.PlaylistSongIDs) {
 		return wrapper.NotFoundError(errors.New("could not find all songs"))
 	}
 
@@ -59,7 +59,7 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 		}
 		if err := playlistRepo.UpdateAllPlaylistSongs(&songsToPreserve); err != nil {
 			return err
-		}
+		} // preserver order
 		return nil
 	})
 	if err != nil {

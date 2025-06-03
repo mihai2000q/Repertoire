@@ -137,13 +137,13 @@ func (p PlaylistHandler) AddAlbums(c *gin.Context) {
 		return
 	}
 
-	errorCode = p.service.AddAlbums(request)
+	res, errorCode := p.service.AddAlbums(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	p.SendMessage(c, "albums have been added to playlist successfully")
+	c.JSON(http.StatusOK, res)
 }
 
 func (p PlaylistHandler) AddArtists(c *gin.Context) {
@@ -154,13 +154,13 @@ func (p PlaylistHandler) AddArtists(c *gin.Context) {
 		return
 	}
 
-	errorCode = p.service.AddArtists(request)
+	res, errorCode := p.service.AddArtists(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	p.SendMessage(c, "artists have been added to playlist successfully")
+	c.JSON(http.StatusOK, res)
 }
 
 func (p PlaylistHandler) AddSongs(c *gin.Context) {
@@ -171,13 +171,13 @@ func (p PlaylistHandler) AddSongs(c *gin.Context) {
 		return
 	}
 
-	errorCode = p.service.AddSongs(request)
+	res, errorCode := p.service.AddSongs(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	p.SendMessage(c, "songs have been added to playlist successfully")
+	c.JSON(http.StatusOK, res)
 }
 
 func (p PlaylistHandler) Update(c *gin.Context) {

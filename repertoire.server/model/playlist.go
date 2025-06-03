@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"time"
@@ -11,16 +10,7 @@ import (
 
 type EnhancedPlaylist struct {
 	Playlist
-	SongsCount float64     `gorm:"->" json:"songsCount"`
-	SongIDsAgg string      `gorm:"->; column:song_ids" json:"-"`
-	SongIDs    []uuid.UUID `gorm:"-" json:"songIds"`
-}
-
-func (p *EnhancedPlaylist) AfterFind(*gorm.DB) error {
-	if p.SongIDsAgg != "" {
-		return json.Unmarshal([]byte(p.SongIDsAgg), &p.SongIDs)
-	}
-	return nil
+	SongsCount float64 `gorm:"->" json:"songsCount"`
 }
 
 type Playlist struct {
@@ -37,8 +27,9 @@ type Playlist struct {
 }
 
 type PlaylistSong struct {
-	PlaylistID  uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
-	SongID      uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
+	ID          uuid.UUID `gorm:"primaryKey; type:uuid; <-:create"`
+	PlaylistID  uuid.UUID `gorm:"type:uuid; not null; <-:create"`
+	SongID      uuid.UUID `gorm:"type:uuid; not null; <-:create"`
 	SongTrackNo uint      `gorm:"not null"`
 	CreatedAt   time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 
@@ -60,6 +51,7 @@ func (p *Playlist) AfterFind(*gorm.DB) error {
 
 	for _, playlistSong := range p.PlaylistSongs {
 		newSong := playlistSong.Song
+		newSong.PlaylistSongID = playlistSong.ID
 		newSong.PlaylistTrackNo = playlistSong.SongTrackNo
 		newSong.PlaylistCreatedAt = playlistSong.CreatedAt
 		p.Songs = append(p.Songs, newSong)

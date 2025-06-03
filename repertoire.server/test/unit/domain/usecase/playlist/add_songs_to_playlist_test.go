@@ -7,6 +7,7 @@ import (
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
+	"slices"
 	"testing"
 
 	"github.com/google/uuid"
@@ -14,7 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestAddSongsToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
@@ -26,19 +27,69 @@ func TestAddSongsToPlaylist_WhenCountSongsFails_ShouldReturnInternalServerError(
 
 	// given - mocking
 	internalError := errors.New("internal error")
-	playlistRepository.On("CountSongs", mock.Anything, request.ID).
+	playlistRepository.On("GetPlaylistSongs", mock.Anything, request.ID).
 		Return(internalError).
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	res, errCode := _uut.Handle(request)
 
 	// then
+	assert.Nil(t, res)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	playlistRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToPlaylist_WhenWithoutDuplicatesButWithForceAdd_ShouldReturnBadRequestError(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.AddSongsToPlaylistRequest
+	}{
+		{
+			"with force add true",
+			requests.AddSongsToPlaylistRequest{
+				ID:       uuid.New(),
+				SongIDs:  []uuid.UUID{uuid.New()},
+				ForceAdd: &[]bool{true}[0],
+			},
+		},
+		{
+			"with force add false",
+			requests.AddSongsToPlaylistRequest{
+				ID:       uuid.New(),
+				SongIDs:  []uuid.UUID{uuid.New()},
+				ForceAdd: &[]bool{false}[0],
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			playlistRepository := new(repository.PlaylistRepositoryMock)
+			_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+
+			// given - mocking
+			playlistSongs := &[]model.PlaylistSong{}
+			playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), tt.request.ID).
+				Return(nil, playlistSongs).
+				Once()
+
+			// when
+			res, errCode := _uut.Handle(tt.request)
+
+			// then
+			assert.Nil(t, res)
+			assert.NotNil(t, errCode)
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+			assert.Equal(t, "force adding when there are no duplicates", errCode.Error.Error())
+
+			playlistRepository.AssertExpectations(t)
+		})
+	}
 }
 
 func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -52,9 +103,9 @@ func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServ
 	}
 
 	// given - mocking
-	count := &[]int64{12}[0]
-	playlistRepository.On("CountSongs", mock.IsType(count), request.ID).
-		Return(nil, count).
+	playlistSongs := &[]model.PlaylistSong{}
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil, playlistSongs).
 		Once()
 
 	internalError := errors.New("internal error")
@@ -63,9 +114,10 @@ func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServ
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	res, errCode := _uut.Handle(request)
 
 	// then
+	assert.Nil(t, res)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -73,7 +125,42 @@ func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServ
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
+func TestAddSongsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+
+	request := requests.AddSongsToPlaylistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New(), uuid.New(), uuid.New()},
+	}
+
+	// given - mocking
+	playlistSongs := []model.PlaylistSong{
+		{SongID: uuid.New()},
+		{SongID: request.SongIDs[0]},
+		{SongID: uuid.New()},
+	}
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil, &playlistSongs).
+		Once()
+
+	duplicateSongIDs := getDuplicateSongIDs(playlistSongs, request.SongIDs)
+
+	// when
+	res, errCode := _uut.Handle(request)
+
+	// then
+	assert.Nil(t, errCode)
+	assert.NotNil(t, res)
+	assert.False(t, res.Success)
+	assert.ElementsMatch(t, res.Duplicates, duplicateSongIDs)
+	assert.Empty(t, res.Added)
+
+	playlistRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToPlaylist_WhenWithoutDuplicatesNorForceAdd_ShouldReturnSuccess(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
@@ -84,28 +171,155 @@ func TestAddSongsToPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	}
 
 	// given - mocking
-	count := &[]int64{12}[0]
-	playlistRepository.On("CountSongs", mock.IsType(count), request.ID).
-		Return(nil, count).
+	playlistSongs := &[]model.PlaylistSong{
+		{SongID: uuid.New()},
+	}
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil, playlistSongs).
 		Once()
 
 	playlistRepository.On("AddSongs", mock.IsType(new([]model.PlaylistSong))).
 		Run(func(args mock.Arguments) {
-			playlistSongs := args.Get(0).(*[]model.PlaylistSong)
-			for i, playlistSong := range *playlistSongs {
+			newPlaylistSongs := args.Get(0).(*[]model.PlaylistSong)
+			assert.Len(t, *newPlaylistSongs, len(request.SongIDs))
+			for i, playlistSong := range *newPlaylistSongs {
+				assert.NotEmpty(t, playlistSong.ID)
 				assert.Equal(t, request.ID, playlistSong.PlaylistID)
 				assert.Equal(t, request.SongIDs[i], playlistSong.SongID)
-				assert.Equal(t, uint(int(*count+1)+i), playlistSong.SongTrackNo)
+				assert.Equal(t, uint(len(*playlistSongs)+1+i), playlistSong.SongTrackNo)
 			}
 		}).
 		Return(nil).
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	res, errCode := _uut.Handle(request)
 
 	// then
 	assert.Nil(t, errCode)
+	assert.NotNil(t, res)
+	assert.True(t, res.Success)
+	assert.Empty(t, res.Duplicates)
+	assert.ElementsMatch(t, res.Added, request.SongIDs)
 
 	playlistRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddDuplicatesTooAndReturnSuccess(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+
+	request := requests.AddSongsToPlaylistRequest{
+		ID:       uuid.New(),
+		SongIDs:  []uuid.UUID{uuid.New(), uuid.New(), uuid.New()},
+		ForceAdd: &[]bool{true}[0],
+	}
+	playlistSongs := []model.PlaylistSong{
+		{SongID: request.SongIDs[0]},
+		{SongID: uuid.New()},
+	}
+
+	duplicateSongIDs := getDuplicateSongIDs(playlistSongs, request.SongIDs)
+
+	// given - mocking
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil, &playlistSongs).
+		Once()
+
+	playlistRepository.On("AddSongs", mock.IsType(new([]model.PlaylistSong))).
+		Run(func(args mock.Arguments) {
+			newPlaylistSongs := args.Get(0).(*[]model.PlaylistSong)
+			assert.Len(t, *newPlaylistSongs, len(request.SongIDs))
+			for i, playlistSong := range *newPlaylistSongs {
+				assert.NotEmpty(t, playlistSong.ID)
+				assert.Equal(t, request.ID, playlistSong.PlaylistID)
+				assert.Equal(t, request.SongIDs[i], playlistSong.SongID)
+				assert.Equal(t, uint(len(playlistSongs)+1+i), playlistSong.SongTrackNo)
+			}
+		}).
+		Return(nil).
+		Once()
+
+	// when
+	res, errCode := _uut.Handle(request)
+
+	// then
+	assert.Nil(t, errCode)
+	assert.NotNil(t, res)
+	assert.True(t, res.Success)
+	assert.ElementsMatch(t, res.Duplicates, duplicateSongIDs)
+	assert.ElementsMatch(t, res.Added, request.SongIDs)
+
+	playlistRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldSkipDuplicatesAndReturnSuccess(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+
+	request := requests.AddSongsToPlaylistRequest{
+		ID:       uuid.New(),
+		SongIDs:  []uuid.UUID{uuid.New(), uuid.New(), uuid.New()},
+		ForceAdd: &[]bool{false}[0],
+	}
+	playlistSongs := []model.PlaylistSong{
+		{SongID: uuid.New()},
+		{SongID: request.SongIDs[1]},
+		{SongID: uuid.New()},
+	}
+
+	duplicateSongIDs := getDuplicateSongIDs(playlistSongs, request.SongIDs)
+
+	var expectedSongIDs []uuid.UUID
+	for _, songID := range request.SongIDs {
+		if slices.Contains(duplicateSongIDs, songID) {
+			continue
+		}
+		expectedSongIDs = append(expectedSongIDs, songID)
+	}
+
+	// given - mocking
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil, &playlistSongs).
+		Once()
+
+	playlistRepository.On("AddSongs", mock.IsType(new([]model.PlaylistSong))).
+		Run(func(args mock.Arguments) {
+			newPlaylistSongs := args.Get(0).(*[]model.PlaylistSong)
+			assert.Len(t, *newPlaylistSongs, len(request.SongIDs)-len(duplicateSongIDs))
+			assert.Len(t, *newPlaylistSongs, len(expectedSongIDs))
+			for i, playlistSong := range *newPlaylistSongs {
+				assert.NotEmpty(t, playlistSong.ID)
+				assert.Equal(t, request.ID, playlistSong.PlaylistID)
+				assert.Equal(t, expectedSongIDs[i], playlistSong.SongID)
+				assert.Equal(t, uint(len(playlistSongs)+1+i), playlistSong.SongTrackNo)
+			}
+		}).
+		Return(nil).
+		Once()
+
+	// when
+	res, errCode := _uut.Handle(request)
+
+	// then
+	assert.Nil(t, errCode)
+	assert.NotNil(t, res)
+	assert.True(t, res.Success)
+	assert.NotNil(t, res.Duplicates)
+	assert.ElementsMatch(t, res.Duplicates, duplicateSongIDs)
+	assert.ElementsMatch(t, res.Added, expectedSongIDs)
+
+	playlistRepository.AssertExpectations(t)
+}
+
+func getDuplicateSongIDs(playlistSongs []model.PlaylistSong, requestSongIDs []uuid.UUID) []uuid.UUID {
+	var duplicateSongIDs []uuid.UUID
+	for _, playlistSong := range playlistSongs {
+		if slices.Contains(requestSongIDs, playlistSong.SongID) {
+			duplicateSongIDs = append(duplicateSongIDs, playlistSong.SongID)
+		}
+	}
+	return duplicateSongIDs
 }
