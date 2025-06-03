@@ -538,9 +538,9 @@ func TestValidateMoveSongFromPlaylistRequest_WhenIsValid_ShouldReturnNil(t *test
 	_uut := validation.NewValidator(nil)
 
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         uuid.New(),
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// when
@@ -561,9 +561,9 @@ func TestValidateMoveSongFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldRetu
 		{
 			"ID is invalid because it's required",
 			requests.MoveSongFromPlaylistRequest{
-				ID:         uuid.Nil,
-				SongID:     uuid.New(),
-				OverSongID: uuid.New(),
+				ID:                 uuid.Nil,
+				PlaylistSongID:     uuid.New(),
+				OverPlaylistSongID: uuid.New(),
 			},
 			"ID",
 			"required",
@@ -572,22 +572,22 @@ func TestValidateMoveSongFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldRetu
 		{
 			"Song ID is invalid because it's required",
 			requests.MoveSongFromPlaylistRequest{
-				ID:         uuid.New(),
-				SongID:     uuid.Nil,
-				OverSongID: uuid.New(),
+				ID:                 uuid.New(),
+				PlaylistSongID:     uuid.Nil,
+				OverPlaylistSongID: uuid.New(),
 			},
-			"SongID",
+			"PlaylistSongID",
 			"required",
 		},
 		// Over Song ID Test Cases
 		{
 			"Over Song ID is invalid because it's required",
 			requests.MoveSongFromPlaylistRequest{
-				ID:         uuid.New(),
-				SongID:     uuid.New(),
-				OverSongID: uuid.Nil,
+				ID:                 uuid.New(),
+				PlaylistSongID:     uuid.New(),
+				OverPlaylistSongID: uuid.Nil,
 			},
-			"OverSongID",
+			"OverPlaylistSongID",
 			"required",
 		},
 	}
