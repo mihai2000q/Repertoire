@@ -29,6 +29,7 @@ import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 function AlbumDrawer() {
   const navigate = useNavigate()
@@ -52,7 +53,7 @@ function AlbumDrawer() {
   }, [album, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -78,6 +79,8 @@ function AlbumDrawer() {
         loader={<AlbumDrawerLoader />}
       />
     )
+
+  console.log('plaaa', album.songs.length)
 
   return (
     <RightSideEntityDrawer
@@ -111,7 +114,7 @@ function AlbumDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -126,6 +129,12 @@ function AlbumDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <AddToPlaylistMenuItem
+                  ids={[album.id]}
+                  type={'album'}
+                  closeMenu={closeMenu}
+                  disabled={album.songs.length === 0}
+                />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}

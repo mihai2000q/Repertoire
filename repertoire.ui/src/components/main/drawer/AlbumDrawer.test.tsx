@@ -17,6 +17,8 @@ import { RootState } from '../../../state/store.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
 import { openAlbumDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Album Drawer', () => {
   const songs: Song[] = [
@@ -60,7 +62,13 @@ describe('Album Drawer', () => {
       return HttpResponse.json(album)
     })
 
-  const handlers = [getAlbum(album)]
+  const handlers = [
+    getAlbum(album),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
 
   const server = setupServer(...handlers)
 
@@ -206,6 +214,7 @@ describe('Album Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

@@ -22,6 +22,8 @@ import {
   openSongDrawer,
   setDocumentTitle
 } from '../../../state/slice/globalSlice.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Song Drawer', () => {
   const song: Song = {
@@ -50,7 +52,13 @@ describe('Song Drawer', () => {
       return HttpResponse.json(song)
     })
 
-  const handlers = [getSong(song)]
+  const handlers = [
+    getSong(song),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
 
   const server = setupServer(...handlers)
 
@@ -279,6 +287,7 @@ describe('Song Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()

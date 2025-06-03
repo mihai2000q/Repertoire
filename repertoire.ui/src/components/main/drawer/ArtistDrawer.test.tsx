@@ -18,6 +18,7 @@ import WithTotalCountResponse from '../../../types/responses/WithTotalCountRespo
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
 import { openArtistDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Artist Drawer', () => {
   const songs: Song[] = [
@@ -133,6 +134,10 @@ describe('Artist Drawer', () => {
         models: songs,
         totalCount: songs.length
       }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     })
   ]
@@ -262,6 +267,7 @@ describe('Artist Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
