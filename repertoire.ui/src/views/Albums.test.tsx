@@ -19,6 +19,7 @@ import FilterOperator from '../types/enums/FilterOperator.ts'
 import AlbumProperty from '../types/enums/AlbumProperty.ts'
 import { expect } from 'vitest'
 import OrderType from '../types/enums/OrderType.ts'
+import Playlist from '../types/models/Playlist.ts'
 
 describe('Albums', () => {
   const albums: Album[] = [
@@ -90,6 +91,10 @@ describe('Albums', () => {
     }),
     http.get('/search', async () => {
       const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/songs', async () => {
