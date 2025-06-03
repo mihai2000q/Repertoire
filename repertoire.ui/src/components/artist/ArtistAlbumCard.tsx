@@ -139,7 +139,10 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             </Center>
           </Avatar>
 
-          <Space ml={'md'} />
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'xs', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
             <Text fw={500} lineClamp={order.property === AlbumProperty.Title ? 2 : 1}>

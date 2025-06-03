@@ -8,6 +8,7 @@ import {
   Group,
   Menu,
   NumberFormatter,
+  Space,
   Stack,
   Text,
   Tooltip
@@ -143,6 +144,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
           })}
           px={'md'}
           py={'xs'}
+          gap={0}
           onClick={handleClick}
           onContextMenu={openMenu}
         >
@@ -156,6 +158,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
               <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
             </Center>
           </Avatar>
+
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
             <Group gap={'0px 4px'}>
@@ -229,6 +236,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
               )}
             </Flex>
           </Stack>
+
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
             <Menu.Target>
