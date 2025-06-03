@@ -1,5 +1,5 @@
 import Playlist from './Playlist.tsx'
-import { emptySong, reduxMemoryRouterRender } from '../test-utils.tsx'
+import { emptyPlaylist, emptySong, reduxMemoryRouterRender } from '../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import Song from '../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
@@ -23,11 +23,9 @@ describe('Playlist', () => {
   ]
 
   const playlist: PlaylistType = {
+    ...emptyPlaylist,
     id: '1',
     title: 'Playlist 1',
-    description: '',
-    createdAt: '',
-    updatedAt: '',
     songs: songs
   }
 
@@ -37,6 +35,10 @@ describe('Playlist', () => {
         models: songs,
         totalCount: songs.length
       }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<PlaylistType> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get(`/playlists/${playlist.id}`, async () => {

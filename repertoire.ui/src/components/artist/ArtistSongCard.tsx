@@ -34,6 +34,7 @@ import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -110,8 +111,13 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         View Album
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
+      <Menu.Divider />
+
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Artist

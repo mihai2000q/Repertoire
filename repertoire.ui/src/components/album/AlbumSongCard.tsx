@@ -36,6 +36,7 @@ import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface AlbumSongCardProps {
   song: Song
@@ -108,8 +109,13 @@ function AlbumSongCard({
         View Details
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
+      <Menu.Divider />
+
       {!isUnknownAlbum && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Album

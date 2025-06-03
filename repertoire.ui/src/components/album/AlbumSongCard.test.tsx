@@ -10,6 +10,8 @@ import { expect } from 'vitest'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RemoveSongsFromAlbumRequest } from '../../types/requests/AlbumRequests.ts'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
 
 describe('Album Song Card', () => {
   const song: Song = {
@@ -19,7 +21,14 @@ describe('Album Song Card', () => {
     albumTrackNo: 1
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -297,6 +306,7 @@ describe('Album Song Card', () => {
   function expectDefaultMenu() {
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /open links/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from album/i })).toBeInTheDocument()

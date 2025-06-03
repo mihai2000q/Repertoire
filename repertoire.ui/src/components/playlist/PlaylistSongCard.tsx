@@ -3,7 +3,8 @@ import {
   ActionIcon,
   alpha,
   Avatar,
-  Center, Flex,
+  Center,
+  Flex,
   Grid,
   Group,
   Menu,
@@ -33,6 +34,7 @@ import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -122,8 +124,13 @@ function PlaylistSongCard({
         View Album
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
+      <Menu.Divider />
+
       <Menu.Item
         leftSection={<IconCircleMinus size={14} />}
         c={'red.5'}
@@ -189,7 +196,10 @@ function PlaylistSongCard({
                   bg={'gray.5'}
                 >
                   <Center c={'white'}>
-                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+                    <CustomIconMusicNoteEighth
+                      aria-label={`default-icon-${song.title}`}
+                      size={20}
+                    />
                   </Center>
                 </Avatar>
 
@@ -246,9 +256,7 @@ function PlaylistSongCard({
                     disabled={!song.releaseDate}
                   >
                     <Text fw={500} c={'dimmed'} inline>
-                      {song.releaseDate
-                        ? dayjs(song.releaseDate).format('DD MMM YYYY')
-                        : 'unknown'}
+                      {song.releaseDate ? dayjs(song.releaseDate).format('DD MMM YYYY') : 'unknown'}
                     </Text>
                   </Tooltip>
                 )}

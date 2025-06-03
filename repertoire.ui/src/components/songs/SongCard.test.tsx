@@ -14,6 +14,9 @@ import Difficulty from '../../types/enums/Difficulty.ts'
 import { RootState } from '../../state/store.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
+import { expect } from 'vitest'
 
 describe('Song Card', () => {
   const song: Song = {
@@ -28,7 +31,14 @@ describe('Song Card', () => {
     name: 'Artist 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -179,6 +189,7 @@ describe('Song Card', () => {
     expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()

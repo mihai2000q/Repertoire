@@ -28,6 +28,7 @@ import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 const iconSize = 18
 
@@ -253,8 +254,13 @@ function SongCard({ song }: SongCardProps) {
         >
           View Album
         </Menu.Item>
+
+        <Menu.Divider />
+        <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
         <PartialRehearsalMenuItem songId={song.id} />
         <PerfectRehearsalMenuItem songId={song.id} />
+        <Menu.Divider />
+
         <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
           Delete
         </Menu.Item>
