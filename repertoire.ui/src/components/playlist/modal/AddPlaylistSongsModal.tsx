@@ -202,7 +202,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={'xxs'} wrap={'nowrap'}>
                         <Highlight
-                          highlight={search}
+                          highlight={searchValue}
                           highlightStyles={{ fontWeight: 800 }}
                           fw={500}
                           lineClamp={1}
@@ -214,14 +214,14 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                             <Text fz={'sm'} c={'dimmed'}>
                               -
                             </Text>
-                            <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
+                            <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
                               {song.album.title}
                             </Highlight>
                           </Group>
                         )}
                       </Group>
                       {song.artist && (
-                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} truncate={'end'}>
+                        <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} truncate={'end'}>
                           {song.artist.name}
                         </Highlight>
                       )}

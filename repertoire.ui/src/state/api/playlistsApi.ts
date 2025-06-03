@@ -34,7 +34,7 @@ const playlistsApi = api.injectEndpoints({
       providesTags: ['Playlists', 'Songs', 'Albums', 'Artists'],
       transformResponse: (response: Playlist) => ({
         ...response,
-        songs: response.songs === null ? [] : response.songs
+        songs: response.songs ?? []
       })
     }),
     getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({

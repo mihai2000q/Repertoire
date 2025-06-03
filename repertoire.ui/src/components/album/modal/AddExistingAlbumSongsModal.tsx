@@ -194,7 +194,7 @@ function AddExistingAlbumSongsModal({
                     </Avatar>
                     <Stack gap={0}>
                       <Highlight
-                        highlight={search}
+                        highlight={searchValue}
                         highlightStyles={{ fontWeight: 800 }}
                         fw={500}
                         lineClamp={2}
@@ -202,7 +202,7 @@ function AddExistingAlbumSongsModal({
                         {song.title}
                       </Highlight>
                       {song.artist && (
-                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
+                        <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
                           {song.artist.name}
                         </Highlight>
                       )}

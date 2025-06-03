@@ -196,7 +196,7 @@ function AddExistingArtistAlbumsModal({
                       </Center>
                     </Avatar>
                     <Highlight
-                      highlight={search}
+                      highlight={searchValue}
                       highlightStyles={{ fontWeight: 800 }}
                       fw={500}
                       lineClamp={2}

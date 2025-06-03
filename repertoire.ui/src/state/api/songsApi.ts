@@ -36,7 +36,7 @@ const songsApi = api.injectEndpoints({
         artist: response.artist
           ? {
               ...response.artist,
-              bandMembers: response.artist.bandMembers === null ? [] : response.artist.bandMembers
+              bandMembers: response.artist.bandMembers ?? []
             }
           : response.artist
       })
@@ -46,8 +46,8 @@ const songsApi = api.injectEndpoints({
       providesTags: ['Songs', 'Artists', 'Albums'],
       transformResponse: (response: SongFiltersMetadata) => ({
         ...response,
-        artistIds: response.artistIds === null ? [] : response.artistIds,
-        albumIds: response.albumIds === null ? [] : response.albumIds
+        artistIds: response.artistIds ?? [],
+        albumIds: response.albumIds ?? []
       })
     }),
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
