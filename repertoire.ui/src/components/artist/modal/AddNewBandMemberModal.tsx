@@ -32,7 +32,7 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
   const [roleIds, setRoleIds] = useState<string[]>([])
   useDidUpdate(() => {
     form.setFieldValue('roleIds', roleIds)
-    form.validateField('roleIds')
+    if (opened) form.validateField('roleIds')
   }, [roleIds])
 
   const onCloseWithImage = () => {

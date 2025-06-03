@@ -71,7 +71,7 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
   const [roleIds, setRoleIds] = useState<string[]>(bandMember.roles.map((r) => r.id))
   useDidUpdate(() => {
     form.setFieldValue('roleIds', roleIds)
-    form.validateField('roleIds')
+    if (opened) form.validateField('roleIds')
   }, [roleIds])
 
   const [image, setImage] = useState<FileWithPath | string>(bandMember.imageUrl)
