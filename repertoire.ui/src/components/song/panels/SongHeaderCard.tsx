@@ -19,6 +19,7 @@ import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalM
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -66,8 +67,13 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+
+          <Menu.Divider />
+          <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
           <PartialRehearsalMenuItem songId={song.id} />
           <PerfectRehearsalMenuItem songId={song.id} />
+          <Menu.Divider />
+
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

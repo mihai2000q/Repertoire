@@ -18,6 +18,7 @@ import { useState } from 'react'
 import titleFontSize from '../../utils/style/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -65,6 +66,13 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <AddToPlaylistMenuItem
+            ids={[album.id]}
+            type={'album'}
+            closeMenu={closeMenu}
+            disabled={album.songsCount === 0}
+          />
+          <Menu.Divider />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

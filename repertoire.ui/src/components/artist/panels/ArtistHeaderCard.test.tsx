@@ -36,9 +36,7 @@ describe('Artist Header Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display minimal info when the artist is not unknown', async () => {
-    const user = userEvent.setup()
-
+  it('should render and display minimal info when the artist is not unknown', () => {
     reduxRouterRender(
       <ArtistHeaderCard
         artist={artist}
@@ -55,16 +53,9 @@ describe('Artist Header Card', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
-  it('should render and display maximal info when the artist is not unknown', async () => {
-    const user = userEvent.setup()
-
+  it('should render and display maximal info when the artist is not unknown', () => {
     const localArtist: Artist = {
       ...artist,
       isBand: true,
@@ -105,11 +96,6 @@ describe('Artist Header Card', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should render and display info when the artist is unknown', async () => {
@@ -146,6 +132,25 @@ describe('Artist Header Card', () => {
 
     await user.click(screen.getByRole('img', { name: artist.name }))
     expect(await screen.findByRole('dialog', { name: artist.name + '-image' })).toBeInTheDocument()
+  })
+
+  it('should display menu on click', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(
+      <ArtistHeaderCard
+        artist={artist}
+        albumsTotalCount={albumsTotalCount}
+        songsTotalCount={songsTotalCount}
+        isUnknownArtist={false}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'more-menu' }))
+    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
