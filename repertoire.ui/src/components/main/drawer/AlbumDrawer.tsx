@@ -80,8 +80,6 @@ function AlbumDrawer() {
       />
     )
 
-  console.log('plaaa', album.songs.length)
-
   return (
     <RightSideEntityDrawer
       opened={opened}

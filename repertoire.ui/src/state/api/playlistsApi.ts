@@ -88,7 +88,11 @@ const playlistsApi = api.injectEndpoints({
           method: 'POST',
           body: body
         }),
-        invalidatesTags: ['Playlists']
+        invalidatesTags: ['Playlists'],
+        transformResponse: (response: AddArtistsToPlaylistResponse) => ({
+          ...response,
+          duplicateArtistIds: response.duplicateArtistIds ?? []
+        })
       }
     ),
     addAlbumsToPlaylist: build.mutation<AddAlbumsToPlaylistResponse, AddAlbumsToPlaylistRequest>({
@@ -97,7 +101,11 @@ const playlistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Playlists'],
+      transformResponse: (response: AddAlbumsToPlaylistResponse) => ({
+        ...response,
+        duplicateAlbumIds: response.duplicateAlbumIds ?? []
+      })
     }),
     addSongsToPlaylist: build.mutation<AddSongsToPlaylistResponse, AddSongsToPlaylistRequest>({
       query: (body) => ({
