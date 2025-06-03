@@ -1,20 +1,17 @@
 import Playlist from 'src/types/models/Playlist.ts'
-import { reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import { emptyPlaylist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import PlaylistCard from './PlaylistCard.tsx'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import {expect} from "vitest";
+import { expect } from 'vitest'
 
 describe('Playlist Card', () => {
   const playlist: Playlist = {
+    ...emptyPlaylist,
     id: '1',
-    title: 'Playlist 1',
-    description: '',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
+    title: 'Playlist 1'
   }
 
   const server = setupServer()
@@ -41,7 +38,10 @@ describe('Playlist Card', () => {
     reduxRouterRender(<PlaylistCard playlist={localPlaylist} />)
 
     expect(screen.getByRole('img', { name: localPlaylist.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localPlaylist.title })).toHaveAttribute('src', localPlaylist.imageUrl)
+    expect(screen.getByRole('img', { name: localPlaylist.title })).toHaveAttribute(
+      'src',
+      localPlaylist.imageUrl
+    )
     expect(screen.getByText(localPlaylist.title)).toBeInTheDocument()
   })
 

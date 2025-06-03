@@ -1,4 +1,4 @@
-import { mantineRender } from '../../../test-utils.tsx'
+import { emptyPlaylist, mantineRender } from '../../../test-utils.tsx'
 import PlaylistInfoModal from './PlaylistInfoModal.tsx'
 import Playlist from '../../../types/models/Playlist.ts'
 import { screen } from '@testing-library/react'
@@ -6,10 +6,8 @@ import dayjs from 'dayjs'
 
 describe('Playlist Info Modal', () => {
   const playlist: Playlist = {
+    ...emptyPlaylist,
     id: '1',
-    title: '',
-    description: '',
-    songs: [],
     createdAt: '2024-11-25T22:00:00',
     updatedAt: '2024-12-12T05:00:00'
   }

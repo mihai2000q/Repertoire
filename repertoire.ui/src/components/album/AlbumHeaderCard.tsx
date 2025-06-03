@@ -67,10 +67,10 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
             Edit
           </Menu.Item>
           <AddToPlaylistMenuItem
-            ids={[album.id]}
+            ids={[album?.id]}
             type={'album'}
             closeMenu={closeMenu}
-            disabled={album.songsCount === 0}
+            disabled={album?.songsCount === 0}
           />
           <Menu.Divider />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>

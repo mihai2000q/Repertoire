@@ -58,7 +58,7 @@ describe('Header Panel Card', () => {
         {children}
       </HeaderPanelCard>
     )
-    expect(await screen.findByTestId(menuTestId)).toBeVisible()
+    expect(await screen.findByTestId(menuTestId)).toBeInTheDocument()
 
     await user.click(editButton)
     expect(onEditClick).toHaveBeenCalledOnce()

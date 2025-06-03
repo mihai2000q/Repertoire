@@ -1,4 +1,4 @@
-import { reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyPlaylist, reduxRender, withToastify } from '../../../test-utils.tsx'
 import EditPlaylistHeaderModal from './EditPlaylistHeaderModal.tsx'
 import Playlist from '../../../types/models/Playlist.ts'
 import { act, screen } from '@testing-library/react'
@@ -9,13 +9,11 @@ import { UpdatePlaylistRequest } from '../../../types/requests/PlaylistRequests.
 
 describe('Edit Playlist Header Modal', () => {
   const playlist: Playlist = {
+    ...emptyPlaylist,
     id: '1',
     title: 'Playlist 1',
     description: 'This is a description',
-    imageUrl: 'some-image.png',
-    createdAt: '',
-    updatedAt: '',
-    songs: []
+    imageUrl: 'some-image.png'
   }
 
   const server = setupServer()

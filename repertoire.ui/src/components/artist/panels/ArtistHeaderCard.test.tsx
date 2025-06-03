@@ -5,6 +5,8 @@ import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Artist Header Card', () => {
   const artist: Artist = {
@@ -28,7 +30,14 @@ describe('Artist Header Card', () => {
   const albumsTotalCount = 10
   const songsTotalCount = 20
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 

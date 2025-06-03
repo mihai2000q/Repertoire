@@ -66,10 +66,10 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
               Edit
             </Menu.Item>
             <AddToPlaylistMenuItem
-              ids={[artist.id]}
+              ids={[artist?.id]}
               type={'artist'}
               closeMenu={closeMenu}
-              disabled={artist.songsCount === 0}
+              disabled={artist?.songsCount === 0}
             />
             <Menu.Divider />
             <Menu.Item

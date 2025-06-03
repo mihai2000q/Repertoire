@@ -15,6 +15,7 @@ import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
 import dayjs from 'dayjs'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
 
 describe('Album Header Card', () => {
   const album: Album = {
@@ -33,10 +34,11 @@ describe('Album Header Card', () => {
 
   const handlers = [
     http.get('/search', async () => {
-      const response: WithTotalCountResponse<Artist> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     })
   ]
