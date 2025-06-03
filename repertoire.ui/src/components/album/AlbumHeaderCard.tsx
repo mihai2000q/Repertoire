@@ -39,6 +39,8 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
+
   function handleArtistClick() {
     dispatch(openArtistDrawer(album.artist.id))
   }
@@ -52,6 +54,9 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   return (
     <HeaderPanelCard
       onEditClick={openEdit}
+      menuOpened={openedMenu}
+      openMenu={openMenu}
+      closeMenu={closeMenu}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openAlbumInfo}>
@@ -125,7 +130,10 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                     bg={'gray.0'}
                   >
                     <Center c={'gray.7'}>
-                      <CustomIconUserAlt size={15} aria-label={`default-icon-${album.artist.name}`} />
+                      <CustomIconUserAlt
+                        size={15}
+                        aria-label={`default-icon-${album.artist.name}`}
+                      />
                     </Center>
                   </Avatar>
                   <Text

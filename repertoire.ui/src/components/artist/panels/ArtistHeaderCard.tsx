@@ -37,6 +37,8 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
     const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
       useDisclosure(false)
 
+    const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
+
     async function handleDelete() {
       await deleteArtistMutation({
         id: artist.id,
@@ -51,6 +53,9 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
       <HeaderPanelCard
         ref={ref}
         onEditClick={openEdit}
+        menuOpened={openedMenu}
+        openMenu={openMenu}
+        closeMenu={closeMenu}
         menuDropdown={
           <>
             <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openArtistInfo}>

@@ -36,6 +36,8 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
+
   function handleAlbumClick() {
     dispatch(openAlbumDrawer(song.album.id))
   }
@@ -53,6 +55,9 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   return (
     <HeaderPanelCard
       onEditClick={openEdit}
+      menuOpened={openedMenu}
+      openMenu={openMenu}
+      closeMenu={closeMenu}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openInfo}>

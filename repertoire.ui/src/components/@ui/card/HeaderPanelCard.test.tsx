@@ -8,6 +8,7 @@ describe('Header Panel Card', () => {
   it('should render, display content and buttons on hover', async () => {
     const user = userEvent.setup()
 
+    const openMenu = vi.fn()
     const onEditClick = vitest.fn()
 
     const childrenTestId = 'children-mock'
@@ -16,8 +17,14 @@ describe('Header Panel Card', () => {
     const menuTestId = 'menu-mock'
     const menuDropdown = <div data-testid={menuTestId}>This is the menu</div>
 
-    mantineRender(
-      <HeaderPanelCard menuDropdown={menuDropdown} onEditClick={onEditClick}>
+    const { rerender } = mantineRender(
+      <HeaderPanelCard
+        menuOpened={false}
+        openMenu={openMenu}
+        closeMenu={vi.fn()}
+        menuDropdown={menuDropdown}
+        onEditClick={onEditClick}
+      >
         {children}
       </HeaderPanelCard>
     )
@@ -38,6 +45,19 @@ describe('Header Panel Card', () => {
     expect(editButton).toBeVisible()
 
     await user.click(moreButton)
+    expect(openMenu).toHaveBeenCalledOnce()
+
+    rerender(
+      <HeaderPanelCard
+        menuOpened={true}
+        openMenu={openMenu}
+        closeMenu={vi.fn()}
+        menuDropdown={menuDropdown}
+        onEditClick={onEditClick}
+      >
+        {children}
+      </HeaderPanelCard>
+    )
     expect(await screen.findByTestId(menuTestId)).toBeVisible()
 
     await user.click(editButton)
@@ -46,7 +66,14 @@ describe('Header Panel Card', () => {
 
   it('should hide icons', async () => {
     mantineRender(
-      <HeaderPanelCard menuDropdown={<></>} onEditClick={() => {}} hideIcons={true}>
+      <HeaderPanelCard
+        menuOpened={false}
+        openMenu={vi.fn()}
+        closeMenu={vi.fn()}
+        menuDropdown={<></>}
+        onEditClick={vi.fn()}
+        hideIcons={true}
+      >
         Children
       </HeaderPanelCard>
     )
