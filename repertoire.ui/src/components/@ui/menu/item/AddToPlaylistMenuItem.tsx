@@ -65,8 +65,8 @@ const AlreadyAddedModal = ({
     <Stack px={'xs'} align={'center'} maw={'max(min(40vw, 720px), 350px)'}>
       <Text lineClamp={1}>{text}</Text>
       <Group wrap={'nowrap'} gap={'xxs'}>
-        <Button variant={'transparent'} onClick={withCancel ? onClose : () => onRetry(false)}>
-          {withCancel ? 'Cancel' : 'Add Anyway'}
+        <Button variant={'transparent'} onClick={withCancel ? onClose : () => onRetry(true)}>
+          {withCancel ? 'Cancel' : 'Add All'}
         </Button>
         <Button variant={'filled'} onClick={() => onRetry(withCancel)}>
           {withCancel ? 'Add Anyway' : 'Just New Ones'}
@@ -83,11 +83,12 @@ function PlaylistOption({
 }: {
   playlist: Playlist
   searchValue: string
-  onClick: (playlistId: string) => void
+  onClick: () => void
 }) {
   return (
     <Group
       wrap={'nowrap'}
+      role={'menuitem'}
       aria-label={playlist.title}
       py={6}
       px={8}
@@ -101,7 +102,7 @@ function PlaylistOption({
           backgroundColor: alpha(theme.colors.gray[1], 0.7)
         }
       })}
-      onClick={() => onClick(playlist.id)}
+      onClick={onClick}
     >
       <Avatar
         size={'sm'}
@@ -135,12 +136,7 @@ interface AddToPlaylistMenuItemProps {
   disabled?: boolean
 }
 
-function AddToPlaylistMenuItem({
-  ids,
-  type,
-  closeMenu,
-  disabled
-}: AddToPlaylistMenuItemProps) {
+function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylistMenuItemProps) {
   const [search, setSearch] = useSessionStorage({
     key: SessionStorageKeys.AddToPlaylist,
     defaultValue: ''
@@ -335,10 +331,11 @@ function AddToPlaylistMenuItem({
 
         <Menu.Sub.Dropdown miw={150} maw={200} p={0}>
           <TextInput
+            aria-label={'search'}
             variant={'unstyled'}
             size={'xs'}
             maxLength={100}
-            placeholder={'Search by title'}
+            placeholder={'Search'}
             leftSection={<IconSearch size={12} />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
