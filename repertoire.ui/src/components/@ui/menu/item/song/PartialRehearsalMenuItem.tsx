@@ -5,14 +5,16 @@ import { IconCheck } from '@tabler/icons-react'
 
 interface PartialRehearsalMenuItemProps {
   songId: string
+  closeMenu: () => void
 }
 
-function PartialRehearsalMenuItem({ songId }: PartialRehearsalMenuItemProps) {
+function PartialRehearsalMenuItem({ songId, closeMenu }: PartialRehearsalMenuItemProps) {
   const [addPartialRehearsal, { isLoading }] = useAddPartialSongRehearsalMutation()
 
   async function handleAddPartialRehearsal() {
     await addPartialRehearsal({ id: songId }).unwrap()
     toast.success(`Partial rehearsal added!`)
+    closeMenu()
   }
 
   return (
