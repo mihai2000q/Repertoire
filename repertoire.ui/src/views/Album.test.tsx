@@ -12,6 +12,7 @@ import { SearchBase } from '../types/models/Search.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
+import Playlist from '../types/models/Playlist.ts'
 
 describe('Album', () => {
   const songs: Song[] = [
@@ -45,6 +46,10 @@ describe('Album', () => {
   const handlers = [
     http.get('/search', () => {
       const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/songs', async () => {

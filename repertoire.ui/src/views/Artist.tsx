@@ -85,7 +85,7 @@ function Artist() {
 
       <Divider />
 
-      <Grid align={'start'} mih={340} mb={8} styles={{ inner: { height: `100%` } }}>
+      <Grid align={'start'} mih={340} mb={8} h={'100%'} styles={{ inner: { height: `100%` } }}>
         <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
           <Stack h={'100%'}>
             {!isUnknownArtist && artist.isBand && (

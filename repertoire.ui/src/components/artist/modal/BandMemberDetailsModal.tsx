@@ -11,39 +11,37 @@ interface AddNewBandMemberModalProps {
 function BandMemberDetailsModal({ opened, onClose, bandMember }: AddNewBandMemberModalProps) {
   return (
     <Modal opened={opened} onClose={onClose} size={'xs'} withCloseButton={false} trapFocus={false}>
-      <Modal.Body p={0}>
-        <Box pos={'relative'}>
-          <Modal.CloseButton pos={'absolute'} top={0} right={0} onClick={onClose} />
+      <Box pos={'relative'}>
+        <Modal.CloseButton pos={'absolute'} top={0} right={0} onClick={onClose} />
 
-          <Stack gap={'xs'} align={'center'}>
-            <Title ta={'center'} fw={800} order={5} lineClamp={3} px={'lg'}>
-              {bandMember.name}
-            </Title>
+        <Stack gap={'xs'} align={'center'}>
+          <Title ta={'center'} fw={800} order={5} lineClamp={3} px={'lg'}>
+            {bandMember.name}
+          </Title>
 
-            <Stack align={'center'}>
-              <Avatar
-                variant={'light'}
-                size={175}
-                radius={'22px'}
-                color={bandMember.color}
-                src={bandMember.imageUrl}
-                alt={bandMember.imageUrl && bandMember.name}
-                style={(theme) => ({ boxShadow: theme.shadows.lg })}
-              >
-                <IconUser size={60} />
-              </Avatar>
+          <Stack align={'center'}>
+            <Avatar
+              variant={'light'}
+              size={175}
+              radius={'22px'}
+              color={bandMember.color}
+              src={bandMember.imageUrl}
+              alt={bandMember.imageUrl && bandMember.name}
+              style={(theme) => ({ boxShadow: theme.shadows.lg })}
+            >
+              <IconUser size={60} />
+            </Avatar>
 
-              <Stack align={'center'} gap={8}>
-                {bandMember.roles.map((role) => (
-                  <Text key={role.id} c={'dimmed'} fw={600} lh={'xs'}>
-                    {role.name}
-                  </Text>
-                ))}
-              </Stack>
+            <Stack align={'center'} gap={8}>
+              {bandMember.roles.map((role) => (
+                <Text key={role.id} c={'dimmed'} fw={600} lh={'xs'}>
+                  {role.name}
+                </Text>
+              ))}
             </Stack>
           </Stack>
-        </Box>
-      </Modal.Body>
+        </Stack>
+      </Box>
     </Modal>
   )
 }

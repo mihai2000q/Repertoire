@@ -1,4 +1,4 @@
-import { emptyAlbum, emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyOrder, emptyPlaylist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
@@ -10,11 +10,9 @@ import { setupServer } from 'msw/node'
 
 describe('Playlist Songs Card', () => {
   const playlist: Playlist = {
+    ...emptyPlaylist,
     id: '1',
     title: 'Song 1',
-    description: '',
-    createdAt: '',
-    updatedAt: '',
     songs: [
       {
         ...emptySong,

@@ -28,26 +28,17 @@ func (a AddSongsToPlaylist) Handle(
 		return nil, wrapper.InternalServerError(err)
 	}
 
-	var duplicateSongs []uuid.UUID
-	for _, song := range playlistSongs {
-		if slices.Contains(request.SongIDs, song.SongID) {
-			duplicateSongs = append(duplicateSongs, song.SongID)
-		}
-	}
-
-	if len(duplicateSongs) == 0 && request.ForceAdd != nil {
-		return nil, wrapper.BadRequestError(errors.New("force adding when there are no duplicates"))
-	}
-	if len(duplicateSongs) > 0 && request.ForceAdd == nil {
-		return &responses.AddSongsToPlaylistResponse{Success: false, Duplicates: duplicateSongs}, nil
-	}
-
+	var duplicates []uuid.UUID
 	var newPlaylistSongs []model.PlaylistSong
 	currentTrackNo := uint(len(playlistSongs)) + 1
 	for _, songID := range request.SongIDs {
-		if request.ForceAdd != nil && !(*request.ForceAdd) &&
-			slices.Contains(duplicateSongs, songID) {
-			continue
+		if slices.ContainsFunc(playlistSongs, func(p model.PlaylistSong) bool {
+			return p.SongID == songID
+		}) {
+			duplicates = append(duplicates, songID)
+			if request.ForceAdd != nil && !(*request.ForceAdd) {
+				continue
+			}
 		}
 
 		playlistSong := model.PlaylistSong{
@@ -58,6 +49,13 @@ func (a AddSongsToPlaylist) Handle(
 		}
 		newPlaylistSongs = append(newPlaylistSongs, playlistSong)
 		currentTrackNo++
+	}
+
+	if len(duplicates) == 0 && request.ForceAdd != nil {
+		return nil, wrapper.BadRequestError(errors.New("force adding when there are no duplicates"))
+	}
+	if len(duplicates) > 0 && request.ForceAdd == nil {
+		return &responses.AddSongsToPlaylistResponse{Success: false, Duplicates: duplicates}, nil
 	}
 
 	err = a.repository.AddSongs(&newPlaylistSongs)
@@ -72,7 +70,7 @@ func (a AddSongsToPlaylist) Handle(
 
 	return &responses.AddSongsToPlaylistResponse{
 		Success:    true,
-		Duplicates: duplicateSongs,
+		Duplicates: duplicates,
 		Added:      addedSongs,
 	}, nil
 }

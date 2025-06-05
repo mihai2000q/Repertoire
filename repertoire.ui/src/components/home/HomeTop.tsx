@@ -224,7 +224,7 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
           pl={'xl'}
           pr={'5vw'}
           pt={'lg'}
-          pb={topEntity === TopEntity.Artists && 'md'}
+          pb={topEntity === TopEntity.Artists ? 'md' : 'xxs'}
           gap={topEntity === TopEntity.Artists ? 'sm' : 'lg'}
           style={{ transition: 'padding-bottom 0.3s' }}
           sx={(theme) => ({

@@ -7,6 +7,7 @@ import {
   ScrollArea,
   SimpleGrid,
   Skeleton,
+  Space,
   Stack,
   Text
 } from '@mantine/core'
@@ -40,7 +41,7 @@ function Loader() {
 
 function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
   return (
-    <Group wrap={'nowrap'}>
+    <Group wrap={'nowrap'} gap={0}>
       <Avatar
         radius={'28%'}
         size={60}
@@ -66,6 +67,8 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
           />
         </Center>
       </Avatar>
+
+      <Space ml={{ base: 'xs', xl: 'sm', xxl: 'md' }} style={{ transition: '0.16s' }} />
 
       <Text fw={500} lineClamp={2}>
         {playlist.title}
@@ -110,7 +113,6 @@ function HomeRecentPlaylists({ ...others }: CardProps) {
               '> div': {
                 height: 0,
                 minHeight: '100%',
-                display: 'block !important',
                 minWidth: '100%',
                 width: 0
               }

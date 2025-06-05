@@ -106,10 +106,10 @@ describe('Topbar Search', () => {
     // chips
     await user.click(screen.getByRole('searchbox', { name: /search/i }))
 
-    expect(screen.getByText(/artists/i)).toBeInTheDocument()
-    expect(screen.getByText(/albums/i)).toBeInTheDocument()
-    expect(screen.getByText(/songs/i)).toBeInTheDocument()
-    expect(screen.getByText(/playlists/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /artists/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /albums/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /songs/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /playlists/i })).toBeInTheDocument()
 
     expect(screen.getByText(/recently added/i)).toBeInTheDocument()
 
@@ -177,16 +177,16 @@ describe('Topbar Search', () => {
 
     await user.click(screen.getByRole('searchbox', { name: /search/i }))
 
-    await user.click(screen.getByText(/artists/i))
+    await user.click(screen.getByRole('button', { name: /artists/i }))
     await waitFor(() => expect(capturedType).toBe(SearchType.Artist))
 
-    await user.click(screen.getByText(/albums/i))
+    await user.click(screen.getByRole('button', { name: /albums/i }))
     await waitFor(() => expect(capturedType).toBe(SearchType.Album))
 
-    await user.click(screen.getByText(/songs/i))
+    await user.click(screen.getByRole('button', { name: /songs/i }))
     await waitFor(() => expect(capturedType).toBe(SearchType.Song))
 
-    await user.click(screen.getByText(/playlists/i))
+    await user.click(screen.getByRole('button', { name: /playlists/i }))
     await waitFor(() => expect(capturedType).toBe(SearchType.Playlist))
   })
 

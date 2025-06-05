@@ -30,6 +30,7 @@ import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -91,6 +92,13 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <AddToPlaylistMenuItem
+        ids={[album.id]}
+        type={'album'}
+        closeMenu={closeMenu}
+        disabled={album.songsCount === 0}
+      />
+      <Menu.Divider />
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Artist
@@ -139,7 +147,10 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             </Center>
           </Avatar>
 
-          <Space ml={'md'} />
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'xs', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
             <Text fw={500} lineClamp={order.property === AlbumProperty.Title ? 2 : 1}>

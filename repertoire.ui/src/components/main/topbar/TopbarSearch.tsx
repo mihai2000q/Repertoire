@@ -21,7 +21,12 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
-import { AlbumSearch, ArtistSearch, PlaylistSearch, SongSearch } from '../../../types/models/Search.ts'
+import {
+  AlbumSearch,
+  ArtistSearch,
+  PlaylistSearch,
+  SongSearch
+} from '../../../types/models/Search.ts'
 import { useNavigate } from 'react-router-dom'
 import SearchType from '../../../types/enums/SearchType.ts'
 import { MouseEvent, ReactNode, useRef, useState } from 'react'
@@ -89,7 +94,13 @@ const TypeChip = ({
   children: string
   onClick: (e: MouseEvent) => void
 }) => (
-  <Chip variant={'light'} size={'xs'} value={type} onClick={onClick}>
+  <Chip
+    variant={'light'}
+    size={'xs'}
+    value={type}
+    onClick={onClick}
+    styles={{ label: { transition: '0.16s' } }}
+  >
     {children}
   </Chip>
 )

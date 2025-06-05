@@ -50,7 +50,9 @@ export const theme = createTheme({
     md: '62em',
     betweenMdLg: '68em',
     lg: '75em',
+    betweenLgXl: '80em',
     xl: '88em',
+    betweenXlXxl: '95em',
     xxl: '105em',
   },
   spacing: {

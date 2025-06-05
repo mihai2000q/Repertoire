@@ -109,7 +109,7 @@ function AddNewSongModalSecondStep({
         <Text fw={500} fz={'sm'}>
           Sections
         </Text>
-        <ScrollArea.Autosize mah={'35vh'} scrollbars={'y'} scrollbarSize={7}>
+        <ScrollArea.Autosize mah={'35vh'} offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7}>
           <DragDropContext onDragEnd={onSectionsDragEnd}>
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (

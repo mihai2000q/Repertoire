@@ -28,18 +28,31 @@ export interface SaveImageToPlaylistRequest {
   id: string
 }
 
+export interface AddArtistsToPlaylistRequest {
+  id: string
+  artistIds: string[]
+  forceAdd?: boolean
+}
+
+export interface AddAlbumsToPlaylistRequest {
+  id: string
+  albumIds: string[]
+  forceAdd?: boolean
+}
+
 export interface AddSongsToPlaylistRequest {
   id: string
   songIds: string[]
+  forceAdd?: boolean
 }
 
 export interface MoveSongFromPlaylistRequest {
   id: string
-  songId: string
-  overSongId: string
+  playlistSongId: string
+  overPlaylistSongId: string
 }
 
 export interface RemoveSongsFromPlaylistRequest {
   id: string
-  songIds: string[]
+  playlistSongIds: string[]
 }

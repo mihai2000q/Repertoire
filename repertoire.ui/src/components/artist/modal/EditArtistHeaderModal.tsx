@@ -17,10 +17,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
-import {
-  editArtistHeaderSchema,
-  EditArtistHeaderForm
-} from '../../../validation/artistsForm.ts'
+import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { useDidUpdate } from '@mantine/hooks'
@@ -87,54 +84,52 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Artist Header'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <form onSubmit={form.onSubmit(updateArtist)}>
-          <Stack>
-            <LargeImageDropzoneWithPreview
-              image={image}
-              setImage={setImage}
-              defaultValue={artist.imageUrl}
-            />
+      <form onSubmit={form.onSubmit(updateArtist)}>
+        <Stack px={'xs'} py={0}>
+          <LargeImageDropzoneWithPreview
+            image={image}
+            setImage={setImage}
+            defaultValue={artist.imageUrl}
+          />
 
-            <TextInput
-              withAsterisk={true}
-              maxLength={100}
-              label="Name"
-              placeholder="The name of the artist"
-              key={form.key('name')}
-              {...form.getInputProps('name')}
-            />
+          <TextInput
+            withAsterisk={true}
+            maxLength={100}
+            label="Name"
+            placeholder="The name of the artist"
+            key={form.key('name')}
+            {...form.getInputProps('name')}
+          />
 
-            <Checkbox
-              aria-label={'is-band'}
-              label={
-                <Text inline fz={'sm'}>
-                  The artist is a <b>band</b>
-                </Text>
-              }
-              styles={{ label: { paddingLeft: 8 }, labelWrapper: { justifyContent: 'center' } }}
-              key={form.key('isBand')}
-              {...form.getInputProps('isBand', { type: 'checkbox' })}
-            />
+          <Checkbox
+            aria-label={'is-band'}
+            label={
+              <Text inline fz={'sm'}>
+                The artist is a <b>band</b>
+              </Text>
+            }
+            styles={{ label: { paddingLeft: 8 }, labelWrapper: { justifyContent: 'center' } }}
+            key={form.key('isBand')}
+            {...form.getInputProps('isBand', { type: 'checkbox' })}
+          />
 
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
             >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
-          </Stack>
-        </form>
-      </Modal.Body>
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }

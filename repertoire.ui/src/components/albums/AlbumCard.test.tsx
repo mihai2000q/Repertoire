@@ -70,6 +70,7 @@ describe('Album Card', () => {
 
     expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
 
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()

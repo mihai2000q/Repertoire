@@ -14,31 +14,19 @@ import Playlist from '../types/models/Playlist.ts'
 describe('Home', () => {
   const handlers = [
     http.get('/songs', async () => {
-      const response: WithTotalCountResponse<Song> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Song> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Album> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/playlists', async () => {
-      const response: WithTotalCountResponse<Playlist> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     })
   ]

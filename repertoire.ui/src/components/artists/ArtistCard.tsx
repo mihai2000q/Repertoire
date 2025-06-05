@@ -11,6 +11,7 @@ import { useDisclosure } from '@mantine/hooks'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface ArtistCardProps {
   artist: Artist
@@ -94,6 +95,13 @@ function ArtistCard({ artist }: ArtistCardProps) {
           >
             Open Drawer
           </Menu.Item>
+          <AddToPlaylistMenuItem
+            ids={[artist.id]}
+            type={'artist'}
+            closeMenu={closeMenu}
+            disabled={artist.songsCount === 0}
+          />
+          <Menu.Divider />
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

@@ -4,7 +4,7 @@ function HomeArtistsLoader() {
   return (
     <>
       {Array.from(Array(20)).map((_, i) => (
-        <Stack key={i} gap={'xs'} align={'center'}>
+        <Stack key={i} gap={'sm'} align={'center'} w={140}>
           <Skeleton
             radius={'50%'}
             h={125}

@@ -10,7 +10,8 @@ import {
   Skeleton,
   Stack,
   Text,
-  Tooltip
+  Tooltip,
+  useMatches
 } from '@mantine/core'
 import { IconClock } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
@@ -74,6 +75,13 @@ function LocalSongCard({ song }: { song: Song }) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
+  // Not Recommended usage
+  const groupGap = useMatches({
+    base: 'md',
+    lg: 'xs',
+    xl: 'md'
+  })
+
   return (
     <Group
       ref={ref}
@@ -89,6 +97,7 @@ function LocalSongCard({ song }: { song: Song }) {
       pl={'lg'}
       pr={'xxs'}
       py={'xs'}
+      gap={groupGap}
       onClick={handleClick}
     >
       <Avatar

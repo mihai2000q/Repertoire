@@ -24,6 +24,7 @@ import {
   StylesApiProps,
   Tabs,
   Text,
+  Textarea,
   Title,
   Tooltip,
   TooltipFloating
@@ -140,9 +141,12 @@ export const components = {
     })
   }),
   Chip: Chip.extend({
+    defaultProps: {
+      role: 'button',
+    },
     styles: () => ({
       label: {
-        transition: '0.15s',
+        transition: 'background-color 0.16s, color 0.16s, padding-left 0.16s',
         fontWeight: 500
       }
     })
@@ -344,6 +348,32 @@ export const components = {
     defaultProps: {
       c: 'dark'
     }
+  }),
+  Textarea: Textarea.extend({
+    styles: (theme) => ({
+      input: {
+        '&::-webkit-scrollbar': {
+          width: 7
+        },
+
+        '&::-webkit-scrollbar-track-piece': {
+          backgroundColor: 'transparent',
+          '&:hover': {
+            backgroundColor: theme.colors.gray[2]
+          }
+        },
+
+        '&::-webkit-scrollbar-thumb': {
+          borderRadius: theme.radius.md,
+          backgroundColor: alpha(theme.colors.gray[6], 0.9),
+          cursor: 'default',
+
+          '&:hover': {
+            backgroundColor: alpha(theme.colors.gray[7], 0.75)
+          }
+        }
+      }
+    })
   }),
   Title: Title.extend({
     defaultProps: {

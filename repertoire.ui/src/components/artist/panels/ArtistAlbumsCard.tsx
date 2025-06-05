@@ -87,7 +87,7 @@ function ArtistAlbumsCard({
         </Group>
 
         <ScrollArea.Autosize scrollbars={'y'} scrollbarSize={7}>
-          <SimpleGrid cols={{ sm: 1, md: 2, xl: 3 }} spacing={0} verticalSpacing={0}>
+          <SimpleGrid cols={{ base: 1, xs: 2, betweenXlXxl: 3 }} spacing={0} verticalSpacing={0}>
             {albums.models.map((album) => (
               <ArtistAlbumCard
                 key={album.id}

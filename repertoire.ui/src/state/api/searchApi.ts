@@ -8,7 +8,11 @@ const searchApi = api.injectEndpoints({
   endpoints: (build) => ({
     getSearch: build.query<WithTotalCountResponse<SearchBase>, GetSearchRequest>({
       query: (arg) => `search${createQueryParams(arg)}`,
-      providesTags: ['Search']
+      providesTags: ['Search'],
+      transformResponse: (response: WithTotalCountResponse<SearchBase>) => ({
+        ...response,
+        models: response.models ?? []
+      })
     })
   })
 })

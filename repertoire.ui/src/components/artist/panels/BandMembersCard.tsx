@@ -123,40 +123,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
           viewportRef={viewportRef}
           viewportProps={{ onScroll: handleOnScroll }}
         >
-          <Group gap={'xs'} wrap={'nowrap'} align={'start'} px={'lg'} pb={'lg'} pt={'xs'}>
-            <DragDropContext onDragEnd={onMembersDragEnd}>
-              <Droppable droppableId="dnd-list" direction={'horizontal'}>
-                {(provided) => (
-                  <Group
-                    gap={'xs'}
-                    wrap={'nowrap'}
-                    align={'start'}
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    {internalMembers.map((bandMember, index) => (
-                      <Draggable
-                        key={bandMember.id}
-                        index={index}
-                        draggableId={bandMember.id}
-                        isDragDisabled={isMoveLoading}
-                      >
-                        {(provided) => (
-                          <BandMemberCard
-                            key={bandMember.id}
-                            bandMember={bandMember}
-                            artistId={artistId}
-                            draggableProvided={provided}
-                          />
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </Group>
-                )}
-              </Droppable>
-            </DragDropContext>
-
+          <Group wrap={'nowrap'} align={'start'} pl={'lg'} pb={'lg'} pt={'xs'}>
             {bandMembers.length === 0 && (
               <Stack
                 aria-label={`add-new-band-member-card`}
@@ -184,6 +151,40 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
                 </Text>
               </Stack>
             )}
+
+            <DragDropContext onDragEnd={onMembersDragEnd}>
+              <Droppable droppableId="dnd-list" direction={'horizontal'}>
+                {(provided) => (
+                  <Group
+                    gap={'xs'}
+                    wrap={'nowrap'}
+                    align={'start'}
+                    pr={'lg'}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {internalMembers.map((bandMember, index) => (
+                      <Draggable
+                        key={bandMember.id}
+                        index={index}
+                        draggableId={bandMember.id}
+                        isDragDisabled={isMoveLoading}
+                      >
+                        {(provided) => (
+                          <BandMemberCard
+                            key={bandMember.id}
+                            bandMember={bandMember}
+                            artistId={artistId}
+                            draggableProvided={provided}
+                          />
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </Group>
+                )}
+              </Droppable>
+            </DragDropContext>
           </Group>
         </ScrollArea>
       </Stack>

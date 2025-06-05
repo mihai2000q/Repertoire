@@ -44,6 +44,7 @@ import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalM
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -69,7 +70,7 @@ function SongDrawer() {
   }, [song, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const showInfo =
     song &&
@@ -140,7 +141,7 @@ function SongDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -155,8 +156,13 @@ function SongDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+
+                <Menu.Divider />
+                <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
                 <PartialRehearsalMenuItem songId={song.id} />
                 <PerfectRehearsalMenuItem songId={song.id} />
+                <Menu.Divider />
+
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}

@@ -284,7 +284,8 @@ export const emptyArtist: Artist = {
   updatedAt: '',
   albums: [],
   songs: [],
-  bandMembers: []
+  bandMembers: [],
+  songsCount: 0
 }
 
 export const emptyAlbum: Album = {
@@ -295,7 +296,8 @@ export const emptyAlbum: Album = {
   updatedAt: '',
   rehearsals: 0,
   confidence: 0,
-  progress: 0
+  progress: 0,
+  songsCount: 0
 }
 
 export const emptySong: Song = {
@@ -323,7 +325,8 @@ export const emptyPlaylist: Playlist = {
   description: '',
   songs: [],
   createdAt: '',
-  updatedAt: ''
+  updatedAt: '',
+  songsCount: 0
 }
 
 export const emptySongSettings: SongSettings = {

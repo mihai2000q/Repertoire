@@ -14,7 +14,8 @@ import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
 import { RootState } from 'src/state/store.ts'
 import dayjs from 'dayjs'
-import WithTotalCountResponse from "../../types/responses/WithTotalCountResponse.ts";
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
 
 describe('Album Header Card', () => {
   const album: Album = {
@@ -33,10 +34,11 @@ describe('Album Header Card', () => {
 
   const handlers = [
     http.get('/search', async () => {
-      const response: WithTotalCountResponse<Artist> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     })
   ]
@@ -49,9 +51,7 @@ describe('Album Header Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display minimal info when the album is not unknown', async () => {
-    const user = userEvent.setup()
-
+  it('should render and display minimal info when the album is not unknown', () => {
     reduxRouterRender(
       <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
     )
@@ -61,11 +61,6 @@ describe('Album Header Card', () => {
     expect(screen.getByText('0 songs')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should render and display maximal info when the album is not unknown', async () => {
@@ -95,7 +90,10 @@ describe('Album Header Card', () => {
     )
 
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute('src', localAlbum.imageUrl)
+    expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
+      'src',
+      localAlbum.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.artist.name })).toHaveAttribute(
@@ -112,11 +110,6 @@ describe('Album Header Card', () => {
     expect(
       await screen.findByText(new RegExp(dayjs(localAlbum.releaseDate).format('D MMMM YYYY')))
     ).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should render and display info when the album is unknown', async () => {
@@ -146,6 +139,20 @@ describe('Album Header Card', () => {
 
     await user.click(screen.getByRole('img', { name: album.title }))
     expect(await screen.findByRole('dialog', { name: album.title + '-image' })).toBeInTheDocument()
+  })
+
+  it('should display menu on click', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(
+      <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'more-menu' }))
+    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {

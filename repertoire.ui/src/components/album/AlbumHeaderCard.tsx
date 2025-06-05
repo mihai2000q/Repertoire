@@ -18,6 +18,7 @@ import { useState } from 'react'
 import titleFontSize from '../../utils/style/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -39,6 +40,8 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
+
   function handleArtistClick() {
     dispatch(openArtistDrawer(album.artist.id))
   }
@@ -52,6 +55,9 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
   return (
     <HeaderPanelCard
       onEditClick={openEdit}
+      menuOpened={openedMenu}
+      openMenu={openMenu}
+      closeMenu={closeMenu}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openAlbumInfo}>
@@ -60,6 +66,13 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <AddToPlaylistMenuItem
+            ids={[album?.id]}
+            type={'album'}
+            closeMenu={closeMenu}
+            disabled={album?.songsCount === 0}
+          />
+          <Menu.Divider />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
@@ -125,7 +138,10 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
                     bg={'gray.0'}
                   >
                     <Center c={'gray.7'}>
-                      <CustomIconUserAlt size={15} aria-label={`default-icon-${album.artist.name}`} />
+                      <CustomIconUserAlt
+                        size={15}
+                        aria-label={`default-icon-${album.artist.name}`}
+                      />
                     </Center>
                   </Avatar>
                   <Text

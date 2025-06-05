@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
+import { Button, Group, Modal, ScrollArea, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm } from '@mantine/form'
@@ -66,10 +66,15 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
   }
 
   return (
-    <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Album'}>
-      <Modal.Body p={'xs'}>
+    <Modal
+      opened={opened}
+      onClose={onCloseWithImage}
+      title={'Add New Album'}
+      styles={{ body: { padding: 0 } }}
+    >
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <form onSubmit={form.onSubmit(addAlbum)}>
-          <Stack>
+          <Stack pt={'xs'} pb={'md'} px={'md'}>
             <TextInput
               withAsterisk={true}
               maxLength={100}
@@ -105,7 +110,7 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
             </Button>
           </Stack>
         </form>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

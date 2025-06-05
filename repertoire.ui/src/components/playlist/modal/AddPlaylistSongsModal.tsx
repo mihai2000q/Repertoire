@@ -5,6 +5,7 @@ import {
   Button,
   Center,
   Checkbox,
+  Chip,
   Group,
   Highlight,
   LoadingOverlay,
@@ -51,7 +52,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     },
     { property: SongProperty.Title, operator: FilterOperator.PatternMatching, isSet: false }
   ])
-  const { handleValueChange } = useFiltersHandlers(filters, setFilters)
+  const { handleValueChange, handleIsSetChange } = useFiltersHandlers(filters, setFilters)
   const searchBy = useSearchBy(filters)
 
   useDidUpdate(
@@ -115,7 +116,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
       title={'Add Playlist Songs'}
       styles={{ body: { padding: 0 } }}
     >
-      <Modal.Body p={0} pos={'relative'}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addSongIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
@@ -136,17 +137,44 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
 
           {songs?.totalCount === 0 && <Text>There are no songs without playlist</Text>}
           {songs?.totalCount > 0 && (
-            <Group w={'100%'} px={'xl'}>
+            <Group w={'100%'} pl={'xl'} pr={'md'} justify={'space-between'}>
               <Checkbox
-                aria-label={songIds.length === songs.models.length ? 'deselect-all' : 'select-all'}
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
                 checked={songIds.length === songs.models.length}
+                label={songIds.length === songs.models.length ? 'Deselect all' : 'Select all'}
               />
-              <Text>{songIds.length === songs.models.length ? 'Deselect' : 'Select'} All</Text>
+              <Chip
+                checked={
+                  !filters.get(SongProperty.PlaylistId + FilterOperator.NotEqualVariant).isSet
+                }
+                onChange={(checked) =>
+                  handleIsSetChange(
+                    SongProperty.PlaylistId + FilterOperator.NotEqualVariant,
+                    !checked
+                  )
+                }
+                variant={'filled'}
+                size={'xs'}
+              >
+                Show All
+              </Chip>
             </Group>
           )}
 
-          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+          <ScrollArea.Autosize
+            mah={'50vh'}
+            w={'100%'}
+            scrollbars={'y'}
+            scrollbarSize={7}
+            styles={{
+              viewport: {
+                '> div': {
+                  width: 0,
+                  minWidth: '100%'
+                }
+              }
+            }}
+          >
             <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
@@ -202,10 +230,10 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                     <Stack gap={0} style={{ overflow: 'hidden' }}>
                       <Group gap={'xxs'} wrap={'nowrap'}>
                         <Highlight
-                          highlight={search}
+                          highlight={searchValue}
                           highlightStyles={{ fontWeight: 800 }}
                           fw={500}
-                          lineClamp={1}
+                          truncate={'end'}
                         >
                           {song.title}
                         </Highlight>
@@ -214,14 +242,14 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                             <Text fz={'sm'} c={'dimmed'}>
                               -
                             </Text>
-                            <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
+                            <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
                               {song.album.title}
                             </Highlight>
                           </Group>
                         )}
                       </Group>
                       {song.artist && (
-                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} truncate={'end'}>
+                        <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} truncate={'end'}>
                           {song.artist.name}
                         </Highlight>
                       )}
@@ -240,7 +268,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
             </Tooltip>
           </Box>
         </Stack>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

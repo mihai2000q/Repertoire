@@ -8,6 +8,7 @@ import {
   Group,
   Menu,
   NumberFormatter,
+  Space,
   Stack,
   Text,
   Tooltip
@@ -33,6 +34,7 @@ import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -109,8 +111,13 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         View Album
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
       <PartialRehearsalMenuItem songId={song.id} />
       <PerfectRehearsalMenuItem songId={song.id} />
+      <Menu.Divider />
+
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Artist
@@ -143,6 +150,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
           })}
           px={'md'}
           py={'xs'}
+          gap={0}
           onClick={handleClick}
           onContextMenu={openMenu}
         >
@@ -156,6 +164,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
               <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
             </Center>
           </Avatar>
+
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
             <Group gap={'0px 4px'}>
@@ -229,6 +242,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
               )}
             </Flex>
           </Stack>
+
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
             <Menu.Target>

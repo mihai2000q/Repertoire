@@ -19,6 +19,7 @@ import artistsOrders from '../data/artists/artistsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import ArtistProperty from '../types/enums/ArtistProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
+import Playlist from '../types/models/Playlist.ts'
 
 describe('Artists', () => {
   const artists: Artist[] = [
@@ -102,8 +103,8 @@ describe('Artists', () => {
       }
       return HttpResponse.json(response)
     }),
-    http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/songs', async () => {

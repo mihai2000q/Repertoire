@@ -90,7 +90,6 @@ function ArtistSongsCard({
           styles={{
             viewport: {
               '> div': {
-                display: 'block !important',
                 width: 0,
                 minWidth: '100%'
               }

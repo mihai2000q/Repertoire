@@ -1,8 +1,8 @@
-import { Modal, Tabs } from '@mantine/core'
+import { Modal, ScrollArea, Tabs } from '@mantine/core'
 import { useState } from 'react'
 import SettingsModalAccountTab from './SettingsModalAccountTab.tsx'
 import SettingsModalCustomizationTab from './SettingsModalCustomizationTab.tsx'
-import User from "../../../types/models/User.ts";
+import User from '../../../types/models/User.ts'
 
 enum SettingsTabs {
   Account = 'account',
@@ -19,9 +19,15 @@ function SettingsModal({ opened, onClose, user }: SettingsModalProps) {
   const [activeTab, setActiveTab] = useState<string>(SettingsTabs.Account)
 
   return (
-    <Modal opened={opened} onClose={onClose} title={'Settings'} size={'lg'}>
-      <Modal.Body p={0}>
-        <Tabs variant={'default'} value={activeTab} onChange={setActiveTab}>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={'Settings'}
+      size={'lg'}
+      styles={{ body: { padding: 0 } }}
+    >
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
+        <Tabs variant={'default'} value={activeTab} onChange={setActiveTab} pb={'md'} px={'md'}>
           <Tabs.List>
             <Tabs.Tab value={SettingsTabs.Account}>Account</Tabs.Tab>
             <Tabs.Tab value={SettingsTabs.Customization}>Customization</Tabs.Tab>
@@ -34,7 +40,7 @@ function SettingsModal({ opened, onClose, user }: SettingsModalProps) {
             <SettingsModalCustomizationTab />
           </Tabs.Panel>
         </Tabs>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

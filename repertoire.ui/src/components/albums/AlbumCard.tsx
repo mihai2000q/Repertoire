@@ -11,6 +11,7 @@ import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface AlbumCardProps {
   album: Album
@@ -107,6 +108,13 @@ function AlbumCard({ album }: AlbumCardProps) {
           >
             View Artist
           </Menu.Item>
+          <AddToPlaylistMenuItem
+            ids={[album.id]}
+            type={'album'}
+            closeMenu={closeMenu}
+            disabled={album.songsCount === 0}
+          />
+          <Menu.Divider />
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

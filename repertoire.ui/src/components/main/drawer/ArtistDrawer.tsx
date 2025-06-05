@@ -36,6 +36,7 @@ import SongProperty from '../../../types/enums/SongProperty.ts'
 import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 import useSearchBy from '../../../hooks/api/useSearchBy.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -97,7 +98,7 @@ function ArtistDrawer() {
   }, [artist, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -156,7 +157,7 @@ function ArtistDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -171,6 +172,13 @@ function ArtistDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <AddToPlaylistMenuItem
+                  ids={[artist.id]}
+                  type={'artist'}
+                  closeMenu={closeMenu}
+                  disabled={songs.totalCount === 0}
+                />
+                <Menu.Divider />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}

@@ -10,14 +10,14 @@ type AddSongsToPlaylistResponse struct {
 
 type AddAlbumsToPlaylistResponse struct {
 	Success           bool        `json:"success"`
-	DuplicateSongIDs  []uuid.UUID `json:"duplicateSongIDs"`
-	DuplicateAlbumIDs []uuid.UUID `json:"duplicateAlbumIDs"`
-	AddedSongIDs      []uuid.UUID `json:"addedSongIDs"`
+	DuplicateSongIDs  []uuid.UUID `json:"duplicateSongIds"`
+	DuplicateAlbumIDs []uuid.UUID `json:"duplicateAlbumIds"`
+	AddedSongIDs      []uuid.UUID `json:"addedSongIds"`
 }
 
 type AddArtistsToPlaylistResponse struct {
 	Success            bool        `json:"success"`
-	DuplicateSongIDs   []uuid.UUID `json:"duplicateSongIDs"`
-	DuplicateArtistIDs []uuid.UUID `json:"duplicateArtistIDs"`
-	AddedSongIDs       []uuid.UUID `json:"addedSongIDs"`
+	DuplicateSongIDs   []uuid.UUID `json:"duplicateSongIds"`
+	DuplicateArtistIDs []uuid.UUID `json:"duplicateArtistIds"`
+	AddedSongIDs       []uuid.UUID `json:"addedSongIds"`
 }

@@ -9,7 +9,7 @@ interface OpenLinksMenuItemProps {
 
 function OpenLinksMenuItem({ song, openYoutube }: OpenLinksMenuItemProps) {
   return (
-    <Menu.Sub>
+    <Menu.Sub position={'right'}>
       <Menu.Sub.Target>
         <Menu.Sub.Item
           leftSection={<IconLocation size={14} />}

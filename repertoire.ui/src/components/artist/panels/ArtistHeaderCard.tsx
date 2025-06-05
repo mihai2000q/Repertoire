@@ -14,6 +14,7 @@ import ImageModal from '../../@ui/modal/ImageModal.tsx'
 import { forwardRef, useState } from 'react'
 import lowerTitleFontSize from '../../../utils/style/lowerTitleFontSize.ts'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -37,6 +38,8 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
     const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
       useDisclosure(false)
 
+    const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
+
     async function handleDelete() {
       await deleteArtistMutation({
         id: artist.id,
@@ -51,6 +54,9 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
       <HeaderPanelCard
         ref={ref}
         onEditClick={openEdit}
+        menuOpened={openedMenu}
+        openMenu={openMenu}
+        closeMenu={closeMenu}
         menuDropdown={
           <>
             <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openArtistInfo}>
@@ -59,6 +65,13 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
             <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
               Edit
             </Menu.Item>
+            <AddToPlaylistMenuItem
+              ids={[artist?.id]}
+              type={'artist'}
+              closeMenu={closeMenu}
+              disabled={artist?.songsCount === 0}
+            />
+            <Menu.Divider />
             <Menu.Item
               leftSection={<IconTrash size={14} />}
               c={'red.5'}

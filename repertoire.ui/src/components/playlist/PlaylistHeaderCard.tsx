@@ -28,6 +28,8 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
+
   async function handleDelete() {
     await deletePlaylistMutation(playlist.id).unwrap()
     navigate(`/playlists`, { replace: true })
@@ -37,6 +39,9 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
   return (
     <HeaderPanelCard
       onEditClick={openEdit}
+      menuOpened={openedMenu}
+      openMenu={openMenu}
+      closeMenu={closeMenu}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openInfo}>
@@ -45,6 +50,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
+          <Menu.Divider />
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
