@@ -29,12 +29,13 @@ describe('Partial Rehearsal Menu Item', () => {
     )
 
     const songId = 'some-id'
+    const closeMenu = vi.fn()
 
     reduxRender(
       withToastify(
         <Menu opened={true}>
           <Menu.Dropdown>
-            <PartialRehearsalMenuItem songId={songId} />
+            <PartialRehearsalMenuItem songId={songId} closeMenu={closeMenu} />
           </Menu.Dropdown>
         </Menu>
       )
@@ -45,5 +46,6 @@ describe('Partial Rehearsal Menu Item', () => {
 
     expect(await screen.findByText(/partial rehearsal added/i)).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({ id: songId })
+    expect(closeMenu).toHaveBeenCalledOnce()
   })
 })

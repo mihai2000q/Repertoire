@@ -127,8 +127,8 @@ function PlaylistSongCard({
 
       <Menu.Divider />
       <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
-      <PartialRehearsalMenuItem songId={song.id} />
-      <PerfectRehearsalMenuItem songId={song.id} />
+      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
       <Menu.Divider />
 
       <Menu.Item

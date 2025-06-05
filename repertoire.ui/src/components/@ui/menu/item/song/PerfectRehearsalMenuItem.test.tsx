@@ -29,12 +29,13 @@ describe('Perfect Rehearsal Menu Item', () => {
     )
 
     const songId = 'some-id'
+    const closeMenu = vi.fn()
 
     reduxRender(
       withToastify(
         <Menu opened={true}>
           <Menu.Dropdown>
-            <PerfectRehearsalMenuItem songId={songId} />
+            <PerfectRehearsalMenuItem songId={songId} closeMenu={closeMenu} />
           </Menu.Dropdown>
         </Menu>
       )
@@ -45,5 +46,6 @@ describe('Perfect Rehearsal Menu Item', () => {
 
     expect(await screen.findByText(/perfect rehearsal added/i)).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({ id: songId })
+    expect(closeMenu).toHaveBeenCalledOnce()
   })
 })
