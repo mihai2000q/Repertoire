@@ -23,7 +23,8 @@ import {
   Stepper,
   StylesApiProps,
   Tabs,
-  Text, Textarea,
+  Text,
+  Textarea,
   Title,
   Tooltip,
   TooltipFloating
@@ -140,9 +141,12 @@ export const components = {
     })
   }),
   Chip: Chip.extend({
+    defaultProps: {
+      role: 'button',
+    },
     styles: () => ({
       label: {
-        transition: '0.15s',
+        transition: 'background-color 0.16s, color 0.16s, padding-left 0.16s',
         fontWeight: 500
       }
     })
