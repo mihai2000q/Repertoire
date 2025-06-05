@@ -133,6 +133,7 @@ function AlbumDrawer() {
                   closeMenu={closeMenu}
                   disabled={album.songs.length === 0}
                 />
+                <Menu.Divider />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}

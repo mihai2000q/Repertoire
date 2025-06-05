@@ -178,6 +178,7 @@ function ArtistDrawer() {
                   closeMenu={closeMenu}
                   disabled={songs.totalCount === 0}
                 />
+                <Menu.Divider />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
