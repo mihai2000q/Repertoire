@@ -79,50 +79,48 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Information'}>
-      <Modal.Body p={'xs'}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <Stack>
-          <Group>
-            <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
+      <Stack p={'xs'}>
+        <Group>
+          <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
-            <DifficultySelect option={difficulty} onChange={setDifficulty} />
-          </Group>
+          <DifficultySelect option={difficulty} onChange={setDifficulty} />
+        </Group>
 
-          <Group>
-            <NumberInput
-              min={1}
-              allowNegative={false}
-              allowDecimal={false}
-              leftSection={<CustomIconMetronome size={20} />}
-              label="Bpm"
-              placeholder="Enter Bpm"
-              value={bpm}
-              onChange={setBpm}
-            />
+        <Group>
+          <NumberInput
+            min={1}
+            allowNegative={false}
+            allowDecimal={false}
+            leftSection={<CustomIconMetronome size={20} />}
+            label="Bpm"
+            placeholder="Enter Bpm"
+            value={bpm}
+            onChange={setBpm}
+          />
 
-            <Space flex={0.4} />
+          <Space flex={0.4} />
 
-            <Checkbox
-              mt={'18px'}
-              label={'Recorded'}
-              checked={isRecorded}
-              onChange={setIsRecorded}
-              size={'md'}
-            />
-          </Group>
+          <Checkbox
+            mt={'18px'}
+            label={'Recorded'}
+            checked={isRecorded}
+            onChange={setIsRecorded}
+            size={'md'}
+          />
+        </Group>
 
-          <Tooltip
-            disabled={hasChanged}
-            label={'You need to make a change before saving'}
-            position="bottom"
-          >
-            <Button data-disabled={!hasChanged} onClick={updateSong}>
-              Save
-            </Button>
-          </Tooltip>
-        </Stack>
-      </Modal.Body>
+        <Tooltip
+          disabled={hasChanged}
+          label={'You need to make a change before saving'}
+          position="bottom"
+        >
+          <Button data-disabled={!hasChanged} onClick={updateSong}>
+            Save
+          </Button>
+        </Tooltip>
+      </Stack>
     </Modal>
   )
 }

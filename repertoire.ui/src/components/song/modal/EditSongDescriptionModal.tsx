@@ -40,30 +40,28 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Description'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <Stack>
-          <Textarea
-            label={'Description'}
-            placeholder={'Enter a description'}
-            value={description}
-            onChange={setDescription}
-            minRows={4}
-            maxRows={10}
-          />
+      <Stack px={'xs'} py={0}>
+        <Textarea
+          label={'Description'}
+          placeholder={'Enter a description'}
+          value={description}
+          onChange={setDescription}
+          minRows={4}
+          maxRows={10}
+        />
 
-          <Tooltip
-            disabled={hasChanged}
-            label={'You need to make a change before saving'}
-            position="bottom"
-          >
-            <Button data-disabled={!hasChanged} onClick={updateSong}>
-              Save
-            </Button>
-          </Tooltip>
-        </Stack>
-      </Modal.Body>
+        <Tooltip
+          disabled={hasChanged}
+          label={'You need to make a change before saving'}
+          position="bottom"
+        >
+          <Button data-disabled={!hasChanged} onClick={updateSong}>
+            Save
+          </Button>
+        </Tooltip>
+      </Stack>
     </Modal>
   )
 }

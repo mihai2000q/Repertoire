@@ -1,4 +1,4 @@
-import { Button, ComboboxItem, Group, Modal, Space, Stepper, Text } from '@mantine/core'
+import { Button, ComboboxItem, Group, Modal, Space, Stack, Stepper, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
@@ -127,7 +127,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
 
   return (
     <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Song'} size={500}>
-      <Modal.Body p={'xs'}>
+      <Stack p={'xs'} gap={0}>
         <form onSubmit={form.onSubmit(addSong)}>
           <Stepper iconSize={35} active={activeStep} onStepClick={handleActiveStepChange}>
             <Stepper.Step
@@ -188,7 +188,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
             )}
           </Group>
         </form>
-      </Modal.Body>
+      </Stack>
     </Modal>
   )
 }

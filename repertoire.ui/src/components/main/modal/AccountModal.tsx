@@ -72,7 +72,7 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
 
     if (profilePicture !== null && typeof profilePicture !== 'string')
       await saveProfilePictureMutation({
-        profile_pic: profilePicture as FileWithPath,
+        profile_pic: profilePicture as FileWithPath
       })
     else if (profilePicture === null && user.profilePictureUrl) await deleteProfilePictureMutation()
 
@@ -84,58 +84,56 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Account'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} />
+      <LoadingOverlay visible={isLoading} />
 
-        <form onSubmit={form.onSubmit(updateUser)}>
-          <Stack>
-            <LargeImageDropzoneWithPreview
-              image={profilePicture}
-              setImage={setProfilePicture}
-              defaultValue={user.profilePictureUrl}
-              label={'Picture'}
-              ariaLabel={'profile-picture'}
-            />
+      <form onSubmit={form.onSubmit(updateUser)}>
+        <Stack px={'xs'} py={0}>
+          <LargeImageDropzoneWithPreview
+            image={profilePicture}
+            setImage={setProfilePicture}
+            defaultValue={user.profilePictureUrl}
+            label={'Picture'}
+            ariaLabel={'profile-picture'}
+          />
 
-            <TextInput
-              withAsterisk={true}
-              maxLength={100}
-              label="Name"
-              placeholder="Your name"
-              key={form.key('name')}
-              {...form.getInputProps('name')}
-            />
+          <TextInput
+            withAsterisk={true}
+            maxLength={100}
+            label="Name"
+            placeholder="Your name"
+            key={form.key('name')}
+            {...form.getInputProps('name')}
+          />
 
-            <TextInput label="Email" disabled={true} defaultValue={user.email} />
+          <TextInput label="Email" disabled={true} defaultValue={user.email} />
 
-            <Group justify={'space-between'}>
+          <Group justify={'space-between'}>
+            <Text fz={'sm'} fw={500} c={'dimmed'} inline>
+              Created on <b>{dayjs(user.createdAt).format('DD MMM YYYY')}</b>
+            </Text>
+
+            {user.createdAt !== user.updatedAt && (
               <Text fz={'sm'} fw={500} c={'dimmed'} inline>
-                Created on <b>{dayjs(user.createdAt).format('DD MMM YYYY')}</b>
+                Last Modified on <b>{dayjs(user.updatedAt).format('DD MMM YYYY')}</b>
               </Text>
+            )}
+          </Group>
 
-              {user.createdAt !== user.updatedAt && (
-                <Text fz={'sm'} fw={500} c={'dimmed'} inline>
-                  Last Modified on <b>{dayjs(user.updatedAt).format('DD MMM YYYY')}</b>
-                </Text>
-              )}
-            </Group>
-
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
             >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
-          </Stack>
-        </form>
-      </Modal.Body>
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }

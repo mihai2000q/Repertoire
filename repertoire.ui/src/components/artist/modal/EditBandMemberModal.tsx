@@ -102,69 +102,67 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Band Member'}>
-      <Modal.Body py={'xs'} pl={'xs'} pr={0}>
-        <form onSubmit={form.onSubmit(addBandMember)}>
-          <Stack>
-            <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <form onSubmit={form.onSubmit(addBandMember)}>
+        <Stack py={'xs'} pl={'xs'} pr={0}>
+          <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-            <Group>
-              <ImageDropzoneWithPreview
-                image={image}
-                setImage={setImage}
-                defaultValue={bandMember.imageUrl}
-                radius={'50%'}
-                w={100}
-                h={100}
-                icon={<IconUserFilled size={45} />}
-              />
+          <Group>
+            <ImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              defaultValue={bandMember.imageUrl}
+              radius={'50%'}
+              w={100}
+              h={100}
+              icon={<IconUserFilled size={45} />}
+            />
 
-              <Stack flex={1}>
-                <Group align={'start'}>
-                  <TextInput
-                    flex={1}
-                    withAsterisk={true}
-                    maxLength={100}
-                    label="Name"
-                    placeholder="Name of band member"
-                    key={form.key('name')}
-                    {...form.getInputProps('name')}
-                  />
-
-                  <ColorInputButton
-                    color={color}
-                    setColor={setColor}
-                    swatches={bandMemberColorSwatches}
-                  />
-                </Group>
-
-                <BandMemberRoleMultiSelect
-                  ids={roleIds}
-                  setIds={setRoleIds}
-                  label={'Roles'}
-                  placeholder={'Select roles'}
-                  withAsterisk
-                  pr={'lg'}
-                  error={form.getInputProps('roleIds').error}
+            <Stack flex={1}>
+              <Group align={'start'}>
+                <TextInput
+                  flex={1}
+                  withAsterisk={true}
+                  maxLength={100}
+                  label="Name"
+                  placeholder="Name of band member"
+                  key={form.key('name')}
+                  {...form.getInputProps('name')}
                 />
-              </Stack>
-            </Group>
 
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
+                <ColorInputButton
+                  color={color}
+                  setColor={setColor}
+                  swatches={bandMemberColorSwatches}
+                />
+              </Group>
+
+              <BandMemberRoleMultiSelect
+                ids={roleIds}
+                setIds={setRoleIds}
+                label={'Roles'}
+                placeholder={'Select roles'}
+                withAsterisk
+                pr={'lg'}
+                error={form.getInputProps('roleIds').error}
+              />
+            </Stack>
+          </Group>
+
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
             >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
-          </Stack>
-        </form>
-      </Modal.Body>
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }

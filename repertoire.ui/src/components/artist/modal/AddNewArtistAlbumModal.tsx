@@ -3,10 +3,7 @@ import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
-import {
-  AddNewArtistAlbumForm,
-  addNewArtistAlbumSchema
-} from '../../../validation/artistsForm.ts'
+import { AddNewArtistAlbumForm, addNewArtistAlbumSchema } from '../../../validation/artistsForm.ts'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
@@ -66,47 +63,45 @@ function AddNewArtistAlbumModal({ opened, onClose, artistId }: AddNewArtistAlbum
 
   return (
     <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Album'}>
-      <Modal.Body p={'xs'}>
-        <form onSubmit={form.onSubmit(addAlbum)}>
-          <Stack>
-            <Group>
-              <ImageDropzoneWithPreview
-                image={image}
-                setImage={setImage}
-                icon={<IconDisc size={45} />}
+      <form onSubmit={form.onSubmit(addAlbum)}>
+        <Stack p={'xs'}>
+          <Group>
+            <ImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              icon={<IconDisc size={45} />}
+            />
+            <Group gap={'xxs'} flex={1}>
+              <TextInput
+                flex={1}
+                withAsterisk={true}
+                maxLength={100}
+                label="Title"
+                placeholder="The title of the album"
+                key={form.key('title')}
+                {...form.getInputProps('title')}
               />
-              <Group gap={'xxs'} flex={1}>
-                <TextInput
-                  flex={1}
-                  withAsterisk={true}
-                  maxLength={100}
-                  label="Title"
-                  placeholder="The title of the album"
-                  key={form.key('title')}
-                  {...form.getInputProps('title')}
-                />
-                <DatePickerButton
-                  mt={form.getInputProps('title').error ? 3 : 19}
-                  aria-label={'release-date'}
-                  size={'lg'}
-                  icon={<IconCalendarRepeat size={20} />}
-                  successIcon={<IconCalendarCheck size={20} />}
-                  value={releaseDate}
-                  onChange={setReleaseDate}
-                  tooltipLabels={{
-                    default: 'Select a release date',
-                    selected: (val) => `Released on ${dayjs(val).format('D MMMM YYYY')}`
-                  }}
-                />
-              </Group>
+              <DatePickerButton
+                mt={form.getInputProps('title').error ? 3 : 19}
+                aria-label={'release-date'}
+                size={'lg'}
+                icon={<IconCalendarRepeat size={20} />}
+                successIcon={<IconCalendarCheck size={20} />}
+                value={releaseDate}
+                onChange={setReleaseDate}
+                tooltipLabels={{
+                  default: 'Select a release date',
+                  selected: (val) => `Released on ${dayjs(val).format('D MMMM YYYY')}`
+                }}
+              />
             </Group>
+          </Group>
 
-            <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
-              Submit
-            </Button>
-          </Stack>
-        </form>
-      </Modal.Body>
+          <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
+            Submit
+          </Button>
+        </Stack>
+      </form>
     </Modal>
   )
 }

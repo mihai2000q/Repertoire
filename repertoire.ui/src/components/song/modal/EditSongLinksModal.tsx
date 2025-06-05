@@ -57,42 +57,40 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Links'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <form onSubmit={form.onSubmit(updateSong)}>
-          <Stack>
-            <TextInput
-              leftSection={<IconGuitarPickFilled size={20} />}
-              label="Songsterr"
-              placeholder="Songsterr link"
-              key={form.key('songsterrLink')}
-              {...form.getInputProps('songsterrLink')}
-            />
-            <TextInput
-              leftSection={<IconBrandYoutubeFilled size={20} />}
-              label="Youtube"
-              placeholder="Youtube link"
-              key={form.key('youtubeLink')}
-              {...form.getInputProps('youtubeLink')}
-            />
+      <form onSubmit={form.onSubmit(updateSong)}>
+        <Stack px={'xs'} py={0}>
+          <TextInput
+            leftSection={<IconGuitarPickFilled size={20} />}
+            label="Songsterr"
+            placeholder="Songsterr link"
+            key={form.key('songsterrLink')}
+            {...form.getInputProps('songsterrLink')}
+          />
+          <TextInput
+            leftSection={<IconBrandYoutubeFilled size={20} />}
+            label="Youtube"
+            placeholder="Youtube link"
+            key={form.key('youtubeLink')}
+            {...form.getInputProps('youtubeLink')}
+          />
 
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
             >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
-          </Stack>
-        </form>
-      </Modal.Body>
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }

@@ -6,7 +6,7 @@ import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
-import { addNewAlbumSongSchema, AddNewAlbumSongForm } from '../../../validation/albumsForm.ts'
+import { AddNewAlbumSongForm, addNewAlbumSongSchema } from '../../../validation/albumsForm.ts'
 import Album from '../../../types/models/Album.ts'
 import {
   IconBrandYoutubeFilled,
@@ -102,145 +102,143 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
 
   return (
     <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Song'}>
-      <Modal.Body p={'xs'}>
-        <form onSubmit={form.onSubmit(addSong)}>
-          <Stack>
-            <Group align={'start'}>
-              <ImageDropzoneWithPreview image={image} setImage={setImage} />
+      <form onSubmit={form.onSubmit(addSong)}>
+        <Stack p={'xs'}>
+          <Group align={'start'}>
+            <ImageDropzoneWithPreview image={image} setImage={setImage} />
 
-              <Stack flex={1} gap={'xxs'}>
-                <TextInput
-                  withAsterisk={true}
-                  maxLength={100}
-                  label="Title"
-                  placeholder="The title of the song"
-                  key={form.key('title')}
-                  {...form.getInputProps('title')}
-                />
+            <Stack flex={1} gap={'xxs'}>
+              <TextInput
+                withAsterisk={true}
+                maxLength={100}
+                label="Title"
+                placeholder="The title of the song"
+                key={form.key('title')}
+                {...form.getInputProps('title')}
+              />
 
-                <Group gap={2}>
-                  <Tooltip.Group openDelay={500}>
-                    <GuitarTuningSelectButton
-                      guitarTuning={guitarTuning}
-                      setGuitarTuning={setGuitarTuning}
-                    />
-                    <DifficultySelectButton difficulty={difficulty} setDifficulty={setDifficulty} />
-                    <NumberInputButton
-                      icon={<CustomIconMetronome size={16} />}
-                      aria-label={'bpm'}
-                      inputProps={{
-                        'aria-label': 'bpm',
-                        placeholder: 'Enter bpm',
-                        leftSection: <CustomIconMetronome size={15} />,
-                        value: bpm,
-                        onChange: setBpm
-                      }}
-                      tooltipLabels={{
-                        selected: `Bpm is ${bpm}`,
-                        default: 'Enter a bpm'
-                      }}
-                    />
-                    <TextInputButton
-                      icon={<IconGuitarPickFilled size={16} />}
-                      inputKey={form.key('songsterrLink')}
-                      aria-label={'songsterr'}
-                      inputProps={{
-                        'aria-label': 'songsterr',
-                        placeholder: 'Enter Songsterr Link',
-                        leftSection: <IconGuitarPickFilled size={15} />,
-                        w: 370,
-                        ...form.getInputProps('songsterrLink')
-                      }}
-                      isSelected={isSongsterrLinkSelected}
-                      tooltipLabels={{
-                        default: 'Enter Songsterr Link',
-                        selected: 'Songsterr Link entered!'
-                      }}
-                      variant={'transparent'}
-                      sx={(theme) => ({
-                        ...(Object.entries(theme.components.ActionIcon.styles(theme).root).find(
-                          (s) => s[0] === '&[data-variant="form"]'
-                        )[1] as object),
+              <Group gap={2}>
+                <Tooltip.Group openDelay={500}>
+                  <GuitarTuningSelectButton
+                    guitarTuning={guitarTuning}
+                    setGuitarTuning={setGuitarTuning}
+                  />
+                  <DifficultySelectButton difficulty={difficulty} setDifficulty={setDifficulty} />
+                  <NumberInputButton
+                    icon={<CustomIconMetronome size={16} />}
+                    aria-label={'bpm'}
+                    inputProps={{
+                      'aria-label': 'bpm',
+                      placeholder: 'Enter bpm',
+                      leftSection: <CustomIconMetronome size={15} />,
+                      value: bpm,
+                      onChange: setBpm
+                    }}
+                    tooltipLabels={{
+                      selected: `Bpm is ${bpm}`,
+                      default: 'Enter a bpm'
+                    }}
+                  />
+                  <TextInputButton
+                    icon={<IconGuitarPickFilled size={16} />}
+                    inputKey={form.key('songsterrLink')}
+                    aria-label={'songsterr'}
+                    inputProps={{
+                      'aria-label': 'songsterr',
+                      placeholder: 'Enter Songsterr Link',
+                      leftSection: <IconGuitarPickFilled size={15} />,
+                      w: 370,
+                      ...form.getInputProps('songsterrLink')
+                    }}
+                    isSelected={isSongsterrLinkSelected}
+                    tooltipLabels={{
+                      default: 'Enter Songsterr Link',
+                      selected: 'Songsterr Link entered!'
+                    }}
+                    variant={'transparent'}
+                    sx={(theme) => ({
+                      ...(Object.entries(theme.components.ActionIcon.styles(theme).root).find(
+                        (s) => s[0] === '&[data-variant="form"]'
+                      )[1] as object),
 
-                        '&[aria-selected="true"]': {
-                          color: theme.colors.blue[5],
-                          backgroundColor: alpha(theme.colors.blue[1], 0.5),
+                      '&[aria-selected="true"]': {
+                        color: theme.colors.blue[5],
+                        backgroundColor: alpha(theme.colors.blue[1], 0.5),
 
-                          '&:hover': {
-                            color: theme.colors.blue[6],
-                            backgroundColor: theme.colors.blue[1]
-                          }
+                        '&:hover': {
+                          color: theme.colors.blue[6],
+                          backgroundColor: theme.colors.blue[1]
                         }
-                      })}
-                    />
-                    <TextInputButton
-                      icon={<IconBrandYoutubeFilled size={16} />}
-                      inputKey={form.key('youtubeLink')}
-                      aria-label={'youtube'}
-                      inputProps={{
-                        'aria-label': 'youtube',
-                        placeholder: 'Enter Youtube Link',
-                        leftSection: <IconBrandYoutubeFilled size={15} />,
-                        w: 300,
-                        ...form.getInputProps('youtubeLink')
-                      }}
-                      isSelected={isYoutubeLinkSelected}
-                      tooltipLabels={{
-                        default: 'Enter Youtube Link',
-                        selected: 'Youtube Link entered!'
-                      }}
-                      variant={'transparent'}
-                      sx={(theme) => ({
-                        ...(Object.entries(theme.components.ActionIcon.styles(theme).root).find(
-                          (s) => s[0] === '&[data-variant="form"]'
-                        )[1] as object),
-                        '&[aria-selected="true"]': {
-                          color: theme.colors.red[5],
-                          backgroundColor: alpha(theme.colors.red[1], 0.5),
+                      }
+                    })}
+                  />
+                  <TextInputButton
+                    icon={<IconBrandYoutubeFilled size={16} />}
+                    inputKey={form.key('youtubeLink')}
+                    aria-label={'youtube'}
+                    inputProps={{
+                      'aria-label': 'youtube',
+                      placeholder: 'Enter Youtube Link',
+                      leftSection: <IconBrandYoutubeFilled size={15} />,
+                      w: 300,
+                      ...form.getInputProps('youtubeLink')
+                    }}
+                    isSelected={isYoutubeLinkSelected}
+                    tooltipLabels={{
+                      default: 'Enter Youtube Link',
+                      selected: 'Youtube Link entered!'
+                    }}
+                    variant={'transparent'}
+                    sx={(theme) => ({
+                      ...(Object.entries(theme.components.ActionIcon.styles(theme).root).find(
+                        (s) => s[0] === '&[data-variant="form"]'
+                      )[1] as object),
+                      '&[aria-selected="true"]': {
+                        color: theme.colors.red[5],
+                        backgroundColor: alpha(theme.colors.red[1], 0.5),
 
-                          '&:hover': {
-                            color: theme.colors.red[6],
-                            backgroundColor: theme.colors.red[1]
-                          }
+                        '&:hover': {
+                          color: theme.colors.red[6],
+                          backgroundColor: theme.colors.red[1]
                         }
-                      })}
-                    />
-                  </Tooltip.Group>
-                </Group>
+                      }
+                    })}
+                  />
+                </Tooltip.Group>
+              </Group>
 
-                <Stack gap={0}>
-                  {!image && album?.imageUrl && (
-                    <Group gap={'xxs'}>
-                      <Center c={'primary.8'} mb={1}>
-                        <IconInfoCircleFilled size={13} />
-                      </Center>
+              <Stack gap={0}>
+                {!image && album?.imageUrl && (
+                  <Group gap={'xxs'}>
+                    <Center c={'primary.8'} mb={1}>
+                      <IconInfoCircleFilled size={13} />
+                    </Center>
 
-                      <Text fw={500} c={'dimmed'} fz={'xs'}>
-                        If no image is uploaded, it will be inherited.
-                      </Text>
-                    </Group>
-                  )}
-                  {inheritedValues.length > 0 && (
-                    <Group gap={'xxs'} wrap={'nowrap'}>
-                      <Center c={'primary.8'}>
-                        <IconInfoCircleFilled size={13} />
-                      </Center>
+                    <Text fw={500} c={'dimmed'} fz={'xs'}>
+                      If no image is uploaded, it will be inherited.
+                    </Text>
+                  </Group>
+                )}
+                {inheritedValues.length > 0 && (
+                  <Group gap={'xxs'} wrap={'nowrap'}>
+                    <Center c={'primary.8'}>
+                      <IconInfoCircleFilled size={13} />
+                    </Center>
 
-                      <Text fw={500} c={'dimmed'} fz={'xs'}>
-                        The new song will inherit the <b>{inheritedValues.join(', ')}</b>.
-                      </Text>
-                    </Group>
-                  )}
-                </Stack>
+                    <Text fw={500} c={'dimmed'} fz={'xs'}>
+                      The new song will inherit the <b>{inheritedValues.join(', ')}</b>.
+                    </Text>
+                  </Group>
+                )}
               </Stack>
-            </Group>
+            </Stack>
+          </Group>
 
-            <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
-              Submit
-            </Button>
-          </Stack>
-        </form>
-      </Modal.Body>
+          <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
+            Submit
+          </Button>
+        </Stack>
+      </form>
     </Modal>
   )
 }

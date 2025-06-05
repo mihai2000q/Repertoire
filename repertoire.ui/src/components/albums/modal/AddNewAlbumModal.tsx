@@ -67,45 +67,43 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
 
   return (
     <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Album'}>
-      <Modal.Body p={'xs'}>
-        <form onSubmit={form.onSubmit(addAlbum)}>
-          <Stack>
-            <TextInput
-              withAsterisk={true}
-              maxLength={100}
-              label="Title"
-              placeholder="The title of the album"
-              key={form.key('title')}
-              {...form.getInputProps('title')}
+      <form onSubmit={form.onSubmit(addAlbum)}>
+        <Stack p={'xs'}>
+          <TextInput
+            withAsterisk={true}
+            maxLength={100}
+            label="Title"
+            placeholder="The title of the album"
+            key={form.key('title')}
+            {...form.getInputProps('title')}
+          />
+
+          <Group>
+            <ArtistAutocomplete
+              artist={artist}
+              setArtist={setArtist}
+              key={form.key('artistName')}
+              setValue={(v) => form.setFieldValue('artistName', v)}
+              {...form.getInputProps('artistName')}
             />
 
-            <Group>
-              <ArtistAutocomplete
-                artist={artist}
-                setArtist={setArtist}
-                key={form.key('artistName')}
-                setValue={(v) => form.setFieldValue('artistName', v)}
-                {...form.getInputProps('artistName')}
-              />
+            <DatePickerInput
+              flex={1}
+              label={'Release Date'}
+              leftSection={<IconCalendarRepeat size={20} />}
+              placeholder={'Choose the release date'}
+              key={form.key('releaseDate')}
+              {...form.getInputProps('releaseDate')}
+            />
+          </Group>
 
-              <DatePickerInput
-                flex={1}
-                label={'Release Date'}
-                leftSection={<IconCalendarRepeat size={20} />}
-                placeholder={'Choose the release date'}
-                key={form.key('releaseDate')}
-                {...form.getInputProps('releaseDate')}
-              />
-            </Group>
+          <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
 
-            <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
-
-            <Button style={{ alignSelf: 'end' }} type={'submit'} loading={isLoading}>
-              Submit
-            </Button>
-          </Stack>
-        </form>
-      </Modal.Body>
+          <Button style={{ alignSelf: 'end' }} type={'submit'} loading={isLoading}>
+            Submit
+          </Button>
+        </Stack>
+      </form>
     </Modal>
   )
 }

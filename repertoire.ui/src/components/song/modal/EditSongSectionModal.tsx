@@ -137,77 +137,75 @@ function EditSongSectionModal({
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Section'}>
-      <Modal.Body px={'xs'} py={0}>
-        <form onSubmit={form.onSubmit(updateSongSection)}>
-          <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <form onSubmit={form.onSubmit(updateSongSection)}>
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-          <Stack>
-            <TextInput
-              maxLength={30}
-              label="Name"
-              placeholder="The name of the song"
-              key={form.key('name')}
-              {...form.getInputProps('name')}
+        <Stack px={'xs'} py={0}>
+          <TextInput
+            maxLength={30}
+            label="Name"
+            placeholder="The name of the song"
+            key={form.key('name')}
+            {...form.getInputProps('name')}
+          />
+
+          <Group>
+            <SongSectionTypeSelect
+              flex={1}
+              label={'Type'}
+              placeholder={'Enter Type'}
+              option={type}
+              onOptionChange={setType}
             />
 
-            <Group>
-              <SongSectionTypeSelect
-                flex={1}
-                label={'Type'}
-                placeholder={'Enter Type'}
-                option={type}
-                onOptionChange={setType}
-              />
+            <NumberInput
+              allowNegative={false}
+              allowDecimal={false}
+              flex={1}
+              label="Rehearsals"
+              placeholder="Enter Rehearsals"
+              key={form.key('rehearsals')}
+              {...form.getInputProps('rehearsals')}
+              error={rehearsalsError}
+            />
+          </Group>
 
-              <NumberInput
-                allowNegative={false}
-                allowDecimal={false}
-                flex={1}
-                label="Rehearsals"
-                placeholder="Enter Rehearsals"
-                key={form.key('rehearsals')}
-                {...form.getInputProps('rehearsals')}
-                error={rehearsalsError}
-              />
-            </Group>
+          <Group>
+            <BandMemberSelect
+              bandMember={bandMember}
+              setBandMember={setBandMember}
+              bandMembers={bandMembers}
+            />
+            <InstrumentSelect option={instrument} onOptionChange={setInstrument} flex={1} />
+          </Group>
 
-            <Group>
-              <BandMemberSelect
-                bandMember={bandMember}
-                setBandMember={setBandMember}
-                bandMembers={bandMembers}
-              />
-              <InstrumentSelect option={instrument} onOptionChange={setInstrument} flex={1} />
-            </Group>
-
-            <Stack gap={0}>
-              <Text fw={500} fz={'sm'} c={'black'}>
-                Confidence
-              </Text>
-              <Slider
-                thumbLabel={'confidence'}
-                label={(value) => `${value}%`}
-                key={form.key('confidence')}
-                {...form.getInputProps('confidence')}
-              />
-            </Stack>
-
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
-            >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
+          <Stack gap={0}>
+            <Text fw={500} fz={'sm'} c={'black'}>
+              Confidence
+            </Text>
+            <Slider
+              thumbLabel={'confidence'}
+              label={(value) => `${value}%`}
+              key={form.key('confidence')}
+              {...form.getInputProps('confidence')}
+            />
           </Stack>
-        </form>
-      </Modal.Body>
+
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
+            >
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }
