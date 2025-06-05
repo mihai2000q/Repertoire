@@ -22,9 +22,9 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
     <Stack
       aria-label={`artist-card-${artist.name}`}
       align={'center'}
-      gap={0}
+      gap={'xs'}
       style={{ transition: '0.25s', ...(isImageHovered && { transform: 'scale(1.05)' }) }}
-      w={'max(9vw, 150px)'}
+      w={'max(9vw, 140px)'}
     >
       <Avatar
         onMouseEnter={() => setIsImageHovered(true)}
@@ -46,7 +46,7 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
         </Center>
       </Avatar>
 
-      <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
+      <Stack w={'100%'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>
           {artist.name}
         </Text>
