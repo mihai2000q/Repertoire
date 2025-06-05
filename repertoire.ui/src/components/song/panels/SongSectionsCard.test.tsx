@@ -85,7 +85,7 @@ describe('Song Sections Card', () => {
   })
 
   it('should render', () => {
-    const [{ rerender }] = reduxRender(
+    reduxRender(
       <SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />
     )
 
@@ -106,19 +106,14 @@ describe('Song Sections Card', () => {
       expect(renderedSections[i]).toHaveAccessibleName(`song-section-${sections[i].name}`)
     }
     screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
-
-    rerender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
-
-    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
   it('should disable a few options when there are no sections', () => {
     reduxRender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
 
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
