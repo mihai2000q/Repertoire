@@ -141,7 +141,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
               <Checkbox
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
                 checked={songIds.length === songs.models.length}
-                label={songIds.length === songs.models.length ? 'Deselect All' : 'Select All'}
+                label={songIds.length === songs.models.length ? 'Deselect all' : 'Select all'}
               />
               <Chip
                 checked={

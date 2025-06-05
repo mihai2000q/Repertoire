@@ -135,7 +135,7 @@ function AddExistingArtistAlbumsModal({
             <Checkbox
               checked={albumIds.length === albums?.length}
               onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
-              label={albums.length === albums?.length ? 'Deselect All' : 'Select All'}
+              label={albumIds.length === albums?.length ? 'Deselect all' : 'Select all'}
               px={'xl'}
               style={{ alignSelf: 'flex-start' }}
             />

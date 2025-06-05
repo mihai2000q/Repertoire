@@ -122,7 +122,7 @@ describe('Add Playlist Songs Modal', () => {
     await user.hover(screen.getByRole('button', { name: /add/i }))
     expect(await screen.findByText(/select songs/i)).toBeInTheDocument()
 
-    expect(await screen.findByRole('checkbox', { name: /select all/i })).toBeInTheDocument()
+    expect(await screen.findByRole('checkbox', { name: 'Select all' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /show all/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /show all/i })).not.toBeChecked()
     expect(screen.queryByText(/no songs/i)).not.toBeInTheDocument()
@@ -166,7 +166,7 @@ describe('Add Playlist Songs Modal', () => {
     reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
   })
 
   it('should send updated query when the search box is filled', async () => {
@@ -265,13 +265,13 @@ describe('Add Playlist Songs Modal', () => {
 
     reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
-    await user.click(await screen.findByRole('checkbox', { name: /select all/i }))
+    await user.click(await screen.findByRole('checkbox', { name: 'Select all' }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).toBeChecked())
 
-    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: /deselect all/i })).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Deselect all' })).toBeInTheDocument()
 
-    await user.click(await screen.findByRole('checkbox', { name: /deselect all/i }))
+    await user.click(await screen.findByRole('checkbox', { name: 'Deselect all' }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).not.toBeChecked())
   })
 
@@ -299,7 +299,7 @@ describe('Add Playlist Songs Modal', () => {
     await user.type(searchBox, 'gibberish')
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
     expect(screen.queryAllByLabelText(/song-/i)).toHaveLength(0)
   })
 
