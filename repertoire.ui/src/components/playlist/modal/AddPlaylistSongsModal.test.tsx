@@ -122,7 +122,9 @@ describe('Add Playlist Songs Modal', () => {
     await user.hover(screen.getByRole('button', { name: /add/i }))
     expect(await screen.findByText(/select songs/i)).toBeInTheDocument()
 
-    expect(await screen.findByRole('checkbox', { name: 'select-all' })).toBeInTheDocument()
+    expect(await screen.findByRole('checkbox', { name: /select all/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /show all/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /show all/i })).not.toBeChecked()
     expect(screen.queryByText(/no songs/i)).not.toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).not.toBeDisabled()
 
@@ -164,7 +166,7 @@ describe('Add Playlist Songs Modal', () => {
     reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
   })
 
   it('should send updated query when the search box is filled', async () => {
@@ -172,10 +174,10 @@ describe('Add Playlist Songs Modal', () => {
 
     const playlistId = 'some-playlist-id'
 
-    let capturedSearchBy: URLSearchParams
+    let capturedSearchParams: URLSearchParams
     server.use(
       http.get('/songs', (req) => {
-        capturedSearchBy = new URL(req.request.url).searchParams
+        capturedSearchParams = new URL(req.request.url).searchParams
         const response: WithTotalCountResponse<Song> = {
           models: [],
           totalCount: 0
@@ -188,13 +190,13 @@ describe('Add Playlist Songs Modal', () => {
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
 
-    expect(capturedSearchBy.get('currentPage')).toBe('1')
-    expect(capturedSearchBy.get('pageSize')).toBe('20')
-    expect(capturedSearchBy.get('orderBy')).toBe(
+    expect(capturedSearchParams.get('currentPage')).toBe('1')
+    expect(capturedSearchParams.get('pageSize')).toBe('20')
+    expect(capturedSearchParams.get('orderBy')).toBe(
       `${SongProperty.LastModified} ${OrderType.Descending}`
     )
-    expect(capturedSearchBy.getAll('searchBy')).toHaveLength(1)
-    expect(capturedSearchBy.getAll('searchBy')[0]).toBe(
+    expect(capturedSearchParams.getAll('searchBy')).toHaveLength(1)
+    expect(capturedSearchParams.getAll('searchBy')[0]).toBe(
       `${SongProperty.PlaylistId} ${FilterOperator.NotEqualVariant} ${playlistId}`
     )
 
@@ -203,11 +205,11 @@ describe('Add Playlist Songs Modal', () => {
     await user.type(screen.getByRole('searchbox', { name: /search/i }), searchValue)
 
     await waitFor(() => {
-      expect(capturedSearchBy.getAll('searchBy')).toHaveLength(2)
-      expect(capturedSearchBy.getAll('searchBy')[0]).toBe(
+      expect(capturedSearchParams.getAll('searchBy')).toHaveLength(2)
+      expect(capturedSearchParams.getAll('searchBy')[0]).toBe(
         `${SongProperty.PlaylistId} ${FilterOperator.NotEqualVariant} ${playlistId}`
       )
-      expect(capturedSearchBy.getAll('searchBy')[1]).toBe(
+      expect(capturedSearchParams.getAll('searchBy')[1]).toBe(
         `${SongProperty.Title} ${FilterOperator.PatternMatching} ${searchValue}`
       )
     })
@@ -263,13 +265,13 @@ describe('Add Playlist Songs Modal', () => {
 
     reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
 
-    await user.click(await screen.findByRole('checkbox', { name: 'select-all' }))
+    await user.click(await screen.findByRole('checkbox', { name: /select all/i }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).toBeChecked())
 
-    expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: 'deselect-all' })).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /deselect all/i })).toBeInTheDocument()
 
-    await user.click(await screen.findByRole('checkbox', { name: 'deselect-all' }))
+    await user.click(await screen.findByRole('checkbox', { name: /deselect all/i }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).not.toBeChecked())
   })
 
@@ -297,7 +299,7 @@ describe('Add Playlist Songs Modal', () => {
     await user.type(searchBox, 'gibberish')
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
     expect(screen.queryAllByLabelText(/song-/i)).toHaveLength(0)
   })
 
@@ -332,5 +334,37 @@ describe('Add Playlist Songs Modal', () => {
 
     expect(await screen.findByRole('checkbox', { name: songToDeselect })).not.toBeChecked()
     expect(await screen.findByRole('checkbox', { name: songToNotDeselect })).toBeChecked()
+  })
+
+  it('should send songs request with filter by playlist by default and without when showing all', async () => {
+    const user = userEvent.setup()
+
+    const playlistId = 'some-id'
+
+    let capturedSearchParams: URLSearchParams
+    server.use(
+      http.get('/songs', (req) => {
+        capturedSearchParams = new URL(req.request.url).searchParams
+        const response: WithTotalCountResponse<Song> = {
+          models: songs,
+          totalCount: songs.length
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={playlistId} />)
+
+    await waitFor(() => {
+      expect(capturedSearchParams.getAll('searchBy')).toHaveLength(1)
+      expect(capturedSearchParams.getAll('searchBy')[0]).toBe(
+        `${SongProperty.PlaylistId} ${FilterOperator.NotEqualVariant} ${playlistId}`
+      )
+    })
+
+    await user.click(await screen.findByRole('button', { name: /show all/i }))
+    expect(screen.getByRole('button', { name: /show all/i })).toBeChecked()
+
+    await waitFor(() => expect(capturedSearchParams.getAll('searchBy')).toHaveLength(0))
   })
 })

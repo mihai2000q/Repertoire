@@ -5,6 +5,7 @@ import {
   Button,
   Center,
   Checkbox,
+  Chip,
   Group,
   Highlight,
   LoadingOverlay,
@@ -51,7 +52,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     },
     { property: SongProperty.Title, operator: FilterOperator.PatternMatching, isSet: false }
   ])
-  const { handleValueChange } = useFiltersHandlers(filters, setFilters)
+  const { handleValueChange, handleIsSetChange } = useFiltersHandlers(filters, setFilters)
   const searchBy = useSearchBy(filters)
 
   useDidUpdate(
@@ -136,15 +137,27 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
 
           {songs?.totalCount === 0 && <Text>There are no songs without playlist</Text>}
           {songs?.totalCount > 0 && (
-            <Group w={'100%'} px={'xl'}>
+            <Group w={'100%'} pl={'xl'} pr={'md'} justify={'space-between'}>
               <Checkbox
-                aria-label={
-                  songIds.length === songs.models.length ? 'deselect-all' : 'select-all'
-                }
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
                 checked={songIds.length === songs.models.length}
+                label={songIds.length === songs.models.length ? 'Deselect All' : 'Select All'}
               />
-              <Text>{songIds.length === songs.models.length ? 'Deselect' : 'Select'} All</Text>
+              <Chip
+                checked={
+                  !filters.get(SongProperty.PlaylistId + FilterOperator.NotEqualVariant).isSet
+                }
+                onChange={(checked) =>
+                  handleIsSetChange(
+                    SongProperty.PlaylistId + FilterOperator.NotEqualVariant,
+                    !checked
+                  )
+                }
+                variant={'filled'}
+                size={'xs'}
+              >
+                Show All
+              </Chip>
             </Group>
           )}
 
@@ -229,24 +242,14 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                             <Text fz={'sm'} c={'dimmed'}>
                               -
                             </Text>
-                            <Highlight
-                              highlight={searchValue}
-                              fz={'sm'}
-                              c={'dimmed'}
-                              lineClamp={1}
-                            >
+                            <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
                               {song.album.title}
                             </Highlight>
                           </Group>
                         )}
                       </Group>
                       {song.artist && (
-                        <Highlight
-                          highlight={searchValue}
-                          fz={'sm'}
-                          c={'dimmed'}
-                          truncate={'end'}
-                        >
+                        <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} truncate={'end'}>
                           {song.artist.name}
                         </Highlight>
                       )}
