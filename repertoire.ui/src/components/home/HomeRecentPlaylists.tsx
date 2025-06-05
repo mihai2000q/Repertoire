@@ -113,7 +113,6 @@ function HomeRecentPlaylists({ ...others }: CardProps) {
               '> div': {
                 height: 0,
                 minHeight: '100%',
-                display: 'block !important',
                 minWidth: '100%',
                 width: 0
               }

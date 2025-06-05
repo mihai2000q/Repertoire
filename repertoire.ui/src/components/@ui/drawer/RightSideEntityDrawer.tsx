@@ -51,7 +51,6 @@ function RightSideEntityDrawer({
             styles={{
               viewport: {
                 '> div': {
-                  display: 'block !important',
                   minWidth: '100%',
                   width: 0
                 }
