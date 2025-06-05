@@ -54,10 +54,11 @@ function SongSectionsCard({
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
+  const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
   const { ref: mainScrollRef } = useMainScroll()
 
-  const scrollIntoView = () => {
+  const scrollAddIntoView = () => {
     scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
     mainScrollRef.current.scrollTo({ top: mainScrollRef.current.scrollHeight, behavior: 'smooth' })
   }
@@ -81,6 +82,7 @@ function SongSectionsCard({
 
   function handleShowDetails() {
     setShowDetails(!showDetails)
+    if (!showDetails) setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 250)
   }
 
   async function handleAddPartialRehearsal() {
@@ -108,7 +110,7 @@ function SongSectionsCard({
   }
 
   return (
-    <Card variant={'panel'} aria-label={'song-sections'} p={0}>
+    <Card ref={ref} variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
         <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
           <Text fw={600} inline>
@@ -246,9 +248,10 @@ function SongSectionsCard({
 
         <ScrollArea.Autosize
           viewportRef={scrollableRef}
-          mah={383.35}
           scrollbars={'y'}
           scrollbarSize={7}
+          mah={(showDetails ? 2 : 1) * 383.35}
+          style={{ transition: 'max-height 0.25s' }}
         >
           <Stack gap={0}>
             <DragDropContext onDragEnd={onSectionsDragEnd}>
@@ -298,7 +301,7 @@ function SongSectionsCard({
               onClose={closeAdd}
               settings={settings}
               bandMembers={bandMembers}
-              scrollIntoView={scrollIntoView}
+              scrollIntoView={scrollAddIntoView}
             />
           </Stack>
         </ScrollArea.Autosize>
