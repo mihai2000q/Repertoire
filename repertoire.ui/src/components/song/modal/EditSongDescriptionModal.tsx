@@ -39,17 +39,28 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={'Edit Song Description'}>
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={'Edit Song Description'}
+      styles={{ body: { padding: 0 } }}
+    >
       <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-      <Stack px={'xs'} py={0}>
+      <Stack px={26} pb={'md'}>
         <Textarea
           label={'Description'}
           placeholder={'Enter a description'}
           value={description}
           onChange={setDescription}
+          autosize
           minRows={4}
-          maxRows={10}
+          styles={{
+            input: {
+              overflow: 'auto',
+              maxHeight: '55vh'
+            }
+          }}
         />
 
         <Tooltip

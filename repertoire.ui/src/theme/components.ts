@@ -23,7 +23,7 @@ import {
   Stepper,
   StylesApiProps,
   Tabs,
-  Text,
+  Text, Textarea,
   Title,
   Tooltip,
   TooltipFloating
@@ -344,6 +344,32 @@ export const components = {
     defaultProps: {
       c: 'dark'
     }
+  }),
+  Textarea: Textarea.extend({
+    styles: (theme) => ({
+      input: {
+        '&::-webkit-scrollbar': {
+          width: 7
+        },
+
+        '&::-webkit-scrollbar-track-piece': {
+          backgroundColor: 'transparent',
+          '&:hover': {
+            backgroundColor: theme.colors.gray[2]
+          }
+        },
+
+        '&::-webkit-scrollbar-thumb': {
+          borderRadius: theme.radius.md,
+          backgroundColor: alpha(theme.colors.gray[6], 0.9),
+          cursor: 'default',
+
+          '&:hover': {
+            backgroundColor: alpha(theme.colors.gray[7], 0.75)
+          }
+        }
+      }
+    })
   }),
   Title: Title.extend({
     defaultProps: {
