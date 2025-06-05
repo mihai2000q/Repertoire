@@ -99,7 +99,7 @@ function AddExistingArtistAlbumsModal({
       title={'Add Existing Albums'}
       styles={{ body: { padding: 0 } }}
     >
-      <Modal.Body p={0} pos={'relative'}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addAlbumIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
@@ -217,7 +217,7 @@ function AddExistingArtistAlbumsModal({
             </Tooltip>
           </Box>
         </Stack>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

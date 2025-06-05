@@ -115,7 +115,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
       title={'Add Playlist Songs'}
       styles={{ body: { padding: 0 } }}
     >
-      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'75vh'}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addSongIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>

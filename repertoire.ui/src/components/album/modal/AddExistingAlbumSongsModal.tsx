@@ -101,7 +101,7 @@ function AddExistingAlbumSongsModal({
       title={'Add Existing Songs'}
       styles={{ body: { padding: 0 } }}
     >
-      <Modal.Body p={0} pos={'relative'}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addSongIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
@@ -221,7 +221,7 @@ function AddExistingAlbumSongsModal({
             </Tooltip>
           </Box>
         </Stack>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }
