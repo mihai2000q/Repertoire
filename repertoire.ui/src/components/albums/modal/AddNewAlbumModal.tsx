@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
+import { Button, Group, Modal, ScrollArea, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm } from '@mantine/form'
@@ -66,44 +66,51 @@ function AddNewAlbumModal({ opened, onClose }: AddNewAlbumModalProps) {
   }
 
   return (
-    <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Album'}>
-      <form onSubmit={form.onSubmit(addAlbum)}>
-        <Stack p={'xs'}>
-          <TextInput
-            withAsterisk={true}
-            maxLength={100}
-            label="Title"
-            placeholder="The title of the album"
-            key={form.key('title')}
-            {...form.getInputProps('title')}
-          />
-
-          <Group>
-            <ArtistAutocomplete
-              artist={artist}
-              setArtist={setArtist}
-              key={form.key('artistName')}
-              setValue={(v) => form.setFieldValue('artistName', v)}
-              {...form.getInputProps('artistName')}
+    <Modal
+      opened={opened}
+      onClose={onCloseWithImage}
+      title={'Add New Album'}
+      styles={{ body: { padding: 0 } }}
+    >
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
+        <form onSubmit={form.onSubmit(addAlbum)}>
+          <Stack pt={'xs'} pb={'md'} px={'md'}>
+            <TextInput
+              withAsterisk={true}
+              maxLength={100}
+              label="Title"
+              placeholder="The title of the album"
+              key={form.key('title')}
+              {...form.getInputProps('title')}
             />
 
-            <DatePickerInput
-              flex={1}
-              label={'Release Date'}
-              leftSection={<IconCalendarRepeat size={20} />}
-              placeholder={'Choose the release date'}
-              key={form.key('releaseDate')}
-              {...form.getInputProps('releaseDate')}
-            />
-          </Group>
+            <Group>
+              <ArtistAutocomplete
+                artist={artist}
+                setArtist={setArtist}
+                key={form.key('artistName')}
+                setValue={(v) => form.setFieldValue('artistName', v)}
+                {...form.getInputProps('artistName')}
+              />
 
-          <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
+              <DatePickerInput
+                flex={1}
+                label={'Release Date'}
+                leftSection={<IconCalendarRepeat size={20} />}
+                placeholder={'Choose the release date'}
+                key={form.key('releaseDate')}
+                {...form.getInputProps('releaseDate')}
+              />
+            </Group>
 
-          <Button style={{ alignSelf: 'end' }} type={'submit'} loading={isLoading}>
-            Submit
-          </Button>
-        </Stack>
-      </form>
+            <LargeImageDropzoneWithPreview image={image} setImage={setImage} />
+
+            <Button style={{ alignSelf: 'end' }} type={'submit'} loading={isLoading}>
+              Submit
+            </Button>
+          </Stack>
+        </form>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

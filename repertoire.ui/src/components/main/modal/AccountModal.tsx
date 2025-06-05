@@ -3,6 +3,7 @@ import {
   Group,
   LoadingOverlay,
   Modal,
+  ScrollArea,
   Stack,
   Text,
   TextInput,
@@ -83,57 +84,59 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={'Account'}>
-      <LoadingOverlay visible={isLoading} />
+    <Modal opened={opened} onClose={onClose} title={'Account'} styles={{ body: { padding: 0 } }}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
+        <LoadingOverlay visible={isLoading} />
 
-      <form onSubmit={form.onSubmit(updateUser)}>
-        <Stack px={'xs'} py={0}>
-          <LargeImageDropzoneWithPreview
-            image={profilePicture}
-            setImage={setProfilePicture}
-            defaultValue={user.profilePictureUrl}
-            label={'Picture'}
-            ariaLabel={'profile-picture'}
-          />
+        <form onSubmit={form.onSubmit(updateUser)}>
+          <Stack px={26} pb={'md'}>
+            <LargeImageDropzoneWithPreview
+              image={profilePicture}
+              setImage={setProfilePicture}
+              defaultValue={user.profilePictureUrl}
+              label={'Picture'}
+              ariaLabel={'profile-picture'}
+            />
 
-          <TextInput
-            withAsterisk={true}
-            maxLength={100}
-            label="Name"
-            placeholder="Your name"
-            key={form.key('name')}
-            {...form.getInputProps('name')}
-          />
+            <TextInput
+              withAsterisk={true}
+              maxLength={100}
+              label="Name"
+              placeholder="Your name"
+              key={form.key('name')}
+              {...form.getInputProps('name')}
+            />
 
-          <TextInput label="Email" disabled={true} defaultValue={user.email} />
+            <TextInput label="Email" disabled={true} defaultValue={user.email} />
 
-          <Group justify={'space-between'}>
-            <Text fz={'sm'} fw={500} c={'dimmed'} inline>
-              Created on <b>{dayjs(user.createdAt).format('DD MMM YYYY')}</b>
-            </Text>
-
-            {user.createdAt !== user.updatedAt && (
+            <Group justify={'space-between'}>
               <Text fz={'sm'} fw={500} c={'dimmed'} inline>
-                Last Modified on <b>{dayjs(user.updatedAt).format('DD MMM YYYY')}</b>
+                Created on <b>{dayjs(user.createdAt).format('DD MMM YYYY')}</b>
               </Text>
-            )}
-          </Group>
 
-          <Tooltip
-            disabled={hasChanged}
-            label={'You need to make a change before saving'}
-            position="bottom"
-          >
-            <Button
-              type={'submit'}
-              data-disabled={!hasChanged}
-              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
+              {user.createdAt !== user.updatedAt && (
+                <Text fz={'sm'} fw={500} c={'dimmed'} inline>
+                  Last Modified on <b>{dayjs(user.updatedAt).format('DD MMM YYYY')}</b>
+                </Text>
+              )}
+            </Group>
+
+            <Tooltip
+              disabled={hasChanged}
+              label={'You need to make a change before saving'}
+              position="bottom"
             >
-              Save
-            </Button>
-          </Tooltip>
-        </Stack>
-      </form>
+              <Button
+                type={'submit'}
+                data-disabled={!hasChanged}
+                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
+              >
+                Save
+              </Button>
+            </Tooltip>
+          </Stack>
+        </form>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }
