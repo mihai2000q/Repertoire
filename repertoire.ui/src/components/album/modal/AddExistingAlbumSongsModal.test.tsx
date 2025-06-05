@@ -94,7 +94,7 @@ describe('Add Existing Album Songs Modal', () => {
     await user.hover(screen.getByRole('button', { name: /add/i }))
     expect(await screen.findByText(/select songs/i)).toBeInTheDocument()
 
-    expect(await screen.findByRole('checkbox', { name: 'select-all' })).toBeInTheDocument()
+    expect(await screen.findByRole('checkbox', { name: /select all/i })).toBeInTheDocument()
     expect(screen.queryByText(/no songs/i)).not.toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).not.toBeDisabled()
 
@@ -137,7 +137,7 @@ describe('Add Existing Album Songs Modal', () => {
     )
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
   })
 
   it('should send updated query when the search box is filled', async () => {
@@ -254,13 +254,13 @@ describe('Add Existing Album Songs Modal', () => {
       <AddExistingAlbumSongsModal opened={true} onClose={() => {}} albumId={''} artistId={''} />
     )
 
-    await user.click(await screen.findByRole('checkbox', { name: 'select-all' }))
+    await user.click(await screen.findByRole('checkbox', { name: /select all/i }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).toBeChecked())
 
-    expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: 'deselect-all' })).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /deselect all/i })).toBeInTheDocument()
 
-    await user.click(await screen.findByRole('checkbox', { name: 'deselect-all' }))
+    await user.click(await screen.findByRole('checkbox', { name: /deselect all/i }))
     screen.getAllByRole('checkbox').forEach((c) => expect(c).not.toBeChecked())
   })
 
@@ -290,7 +290,7 @@ describe('Add Existing Album Songs Modal', () => {
     await user.type(searchBox, 'gibberish')
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
-    expect(screen.queryByRole('checkbox', { name: 'select-all' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /select all/i })).not.toBeInTheDocument()
     expect(screen.queryAllByLabelText(/song-/i)).toHaveLength(0)
   })
 

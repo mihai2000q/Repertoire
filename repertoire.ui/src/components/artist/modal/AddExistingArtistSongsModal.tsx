@@ -120,14 +120,13 @@ function AddExistingArtistSongsModal({
 
           {totalCount === 0 && <Text>There are no songs without artist</Text>}
           {totalCount > 0 && (
-            <Group w={'100%'} px={'xl'}>
-              <Checkbox
-                aria-label={songIds.length === songs?.length ? 'deselect-all' : 'select-all'}
-                checked={songIds.length === songs?.length}
-                onChange={(e) => checkAllSongs(e.currentTarget.checked)}
-              />
-              <Text>{songIds.length === songs?.length ? 'Deselect' : 'Select'} All</Text>
-            </Group>
+            <Checkbox
+              checked={songIds.length === songs?.length}
+              onChange={(e) => checkAllSongs(e.currentTarget.checked)}
+              label={songs.length === songs?.length ? 'Deselect All' : 'Select All'}
+              px={'xl'}
+              style={{ alignSelf: 'flex-start' }}
+            />
           )}
 
           <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>

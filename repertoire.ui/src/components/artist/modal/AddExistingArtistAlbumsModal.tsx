@@ -132,14 +132,13 @@ function AddExistingArtistAlbumsModal({
 
           {totalCount === 0 && <Text>There are no albums without artist</Text>}
           {totalCount > 0 && (
-            <Group w={'100%'} px={'xl'}>
-              <Checkbox
-                aria-label={albumIds.length === albums?.length ? 'deselect-all' : 'select-all'}
-                checked={albumIds.length === albums?.length}
-                onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
-              />
-              <Text>{albumIds.length === albums?.length ? 'Deselect' : 'Select'} All</Text>
-            </Group>
+            <Checkbox
+              checked={albumIds.length === albums?.length}
+              onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
+              label={albums.length === albums?.length ? 'Deselect All' : 'Select All'}
+              px={'xl'}
+              style={{ alignSelf: 'flex-start' }}
+            />
           )}
 
           <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
