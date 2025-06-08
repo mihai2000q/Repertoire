@@ -301,7 +301,7 @@ describe('Song Drawer', () => {
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
-      expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+      expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
       expect(window.location.pathname).toBe(`/song/${song.id}`)
     })
 

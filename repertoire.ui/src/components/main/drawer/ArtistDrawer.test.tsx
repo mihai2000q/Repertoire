@@ -321,7 +321,7 @@ describe('Artist Drawer', () => {
   it('should navigate to album on album image click', async () => {
     const user = userEvent.setup()
 
-    const album = albums[0]
+    const album = albums[1]
 
     const [_, store] = render()
 
