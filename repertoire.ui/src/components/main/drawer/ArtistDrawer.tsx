@@ -37,6 +37,98 @@ import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 import useSearchBy from '../../../hooks/api/useSearchBy.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import Song from '../../../types/models/Song.ts'
+import Album from '../../../types/models/Album.ts'
+
+function ArtistDrawerAlbum({ album, onClose }: { album: Album; onClose: () => void }) {
+  const navigate = useNavigate()
+
+  function onClick() {
+    onClose()
+    navigate(`/album/${album.id}`)
+  }
+
+  return (
+    <Group wrap={'nowrap'} gap={'xs'}>
+      <Avatar
+        radius={'md'}
+        size={28}
+        src={album.imageUrl}
+        alt={album.imageUrl && album.title}
+        bg={'gray.5'}
+        sx={(theme) => ({
+          transition: '0.18s',
+          cursor: 'pointer',
+          boxShadow: theme.shadows.sm,
+          '&:hover': {
+            transform: 'scale(1.2)'
+          }
+        })}
+        onClick={onClick}
+      >
+        <Center c={'white'}>
+          <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={13} />
+        </Center>
+      </Avatar>
+
+      <Stack gap={1} style={{ overflow: 'hidden' }}>
+        <Text fw={500} truncate={'end'} lh={'xxs'}>
+          {album.title}
+        </Text>
+        {album.releaseDate && (
+          <Text fw={500} fz={'xs'} c={'dimmed'} inline>
+            {dayjs(album.releaseDate).format('D MMM YYYY')}
+          </Text>
+        )}
+      </Stack>
+    </Group>
+  )
+}
+
+function ArtistDrawerSong({ song, onClose }: { song: Song; onClose: () => void }) {
+  const navigate = useNavigate()
+
+  function onClick() {
+    onClose()
+    navigate(`/song/${song.id}`)
+  }
+
+  return (
+    <Group gap={'xs'} wrap={'nowrap'}>
+      <Avatar
+        radius={'md'}
+        size={28}
+        src={song.imageUrl ?? song.album?.imageUrl}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+        bg={'gray.5'}
+        sx={(theme) => ({
+          transition: '0.18s',
+          cursor: 'pointer',
+          boxShadow: theme.shadows.sm,
+          '&:hover': {
+            transform: 'scale(1.2)'
+          }
+        })}
+        onClick={onClick}
+      >
+        <Center c={'white'}>
+          <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={16} />
+        </Center>
+      </Avatar>
+
+      <Stack gap={1} style={{ overflow: 'hidden' }}>
+        <Text fw={500} truncate={'end'} lh={'xxs'}>
+          {song.title}
+        </Text>
+        {song.album && (
+          <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} lh={'xxs'}>
+            {song.album.title}
+          </Text>
+        )}
+      </Stack>
+    </Group>
+  )
+}
 
 function ArtistDrawer() {
   const navigate = useNavigate()
@@ -248,30 +340,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
-              <Group key={album.id} wrap={'nowrap'} gap={'xs'}>
-                <Avatar
-                  radius={'md'}
-                  size={28}
-                  src={album.imageUrl}
-                  alt={album.imageUrl && album.title}
-                  bg={'gray.5'}
-                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                >
-                  <Center c={'white'}>
-                    <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={13} />
-                  </Center>
-                </Avatar>
-                <Stack gap={1} style={{ overflow: 'hidden' }}>
-                  <Text fw={500} truncate={'end'} lh={'xxs'}>
-                    {album.title}
-                  </Text>
-                  {album.releaseDate && (
-                    <Text fw={500} fz={'xs'} c={'dimmed'} inline>
-                      {dayjs(album.releaseDate).format('D MMM YYYY')}
-                    </Text>
-                  )}
-                </Stack>
-              </Group>
+              <ArtistDrawerAlbum key={album.id} album={album} onClose={onClose} />
             ))}
           </SimpleGrid>
 
@@ -286,33 +355,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
-              <Group key={song.id} gap={'xs'} wrap={'nowrap'}>
-                <Avatar
-                  radius={'md'}
-                  size={28}
-                  src={song.imageUrl ?? song.album?.imageUrl}
-                  alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-                  bg={'gray.5'}
-                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                >
-                  <Center c={'white'}>
-                    <CustomIconMusicNoteEighth
-                      aria-label={`default-icon-${song.title}`}
-                      size={16}
-                    />
-                  </Center>
-                </Avatar>
-                <Stack gap={1} style={{ overflow: 'hidden' }}>
-                  <Text fw={500} truncate={'end'} lh={'xxs'}>
-                    {song.title}
-                  </Text>
-                  {song.album && (
-                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} lh={'xxs'}>
-                      {song.album.title}
-                    </Text>
-                  )}
-                </Stack>
-              </Group>
+              <ArtistDrawerSong key={song.id} song={song} onClose={onClose} />
             ))}
           </SimpleGrid>
         </Stack>
