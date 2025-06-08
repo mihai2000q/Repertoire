@@ -301,7 +301,7 @@ describe('Song Drawer', () => {
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
-      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
+      expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
       expect(window.location.pathname).toBe(`/song/${song.id}`)
     })
 
@@ -338,6 +338,40 @@ describe('Song Drawer', () => {
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${song.title} deleted!`)).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to artist on artist click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      artist: artist
+    }
+
+    server.use(getSong(localSong))
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByText(localSong.artist.name))
+    expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/artist/${localSong.artist.id}`)
+  })
+
+  it('should navigate to album on album click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      album: album
+    }
+
+    server.use(getSong(localSong))
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByText(localSong.album.title))
+    expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
   })
 
   it('should open youtube modal on youtube icon click', async () => {

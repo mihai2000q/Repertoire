@@ -87,6 +87,16 @@ function SongDrawer() {
     useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
+  function handleArtistClick() {
+    onClose()
+    navigate(`/artist/${song.artist.id}`)
+  }
+
+  function handleAlbumClick() {
+    onClose()
+    navigate(`/album/${song.album.id}`)
+  }
+
   function handleViewDetails() {
     onClose()
     navigate(`/song/${songId}`)
@@ -203,6 +213,7 @@ function SongDrawer() {
                   }}
                   lh={'xxs'}
                   lineClamp={1}
+                  onClick={handleArtistClick}
                 >
                   {song.artist.name}
                 </Text>
@@ -227,6 +238,7 @@ function SongDrawer() {
                         '&:hover': { textDecoration: 'underline' }
                       }}
                       lineClamp={1}
+                      onClick={handleAlbumClick}
                     >
                       {song.album.title}
                     </Text>
