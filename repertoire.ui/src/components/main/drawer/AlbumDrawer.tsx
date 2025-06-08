@@ -30,6 +30,63 @@ import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import Song from '../../../types/models/Song.ts'
+
+function AlbumDrawerSongCard({
+  song,
+  albumImageUrl,
+  onClose
+}: {
+  song: Song
+  albumImageUrl: string | undefined | null
+  onClose: () => void
+}) {
+  const navigate = useNavigate()
+
+  function onClick() {
+    onClose()
+    navigate(`/song/${song.id}`)
+  }
+
+  return (
+    <Grid align={'center'} gutter={'md'} px={'sm'}>
+      <Grid.Col span={1}>
+        <Text fw={500} ta={'center'}>
+          {song.albumTrackNo}
+        </Text>
+      </Grid.Col>
+
+      <Grid.Col span={1.4}>
+        <Avatar
+          radius={'md'}
+          size={28}
+          src={song.imageUrl ?? albumImageUrl}
+          alt={(song.imageUrl ?? albumImageUrl) && song.title}
+          bg={'gray.5'}
+          sx={(theme) => ({
+            transition: '0.18s',
+            cursor: 'pointer',
+            boxShadow: theme.shadows.sm,
+            '&:hover': {
+              transform: 'scale(1.2)'
+            }
+          })}
+          onClick={onClick}
+        >
+          <Center c={'white'}>
+            <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={16} />
+          </Center>
+        </Avatar>
+      </Grid.Col>
+
+      <Grid.Col span={9.6}>
+        <Text fw={500} truncate={'end'}>
+          {song.title}
+        </Text>
+      </Grid.Col>
+    </Grid>
+  )
+}
 
 function AlbumDrawer() {
   const navigate = useNavigate()
@@ -57,6 +114,11 @@ function AlbumDrawer() {
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+
+  function handleArtistClick() {
+    onClose()
+    navigate(`/artist/${album.artist.id}`)
+  }
 
   function handleViewDetails() {
     onClose()
@@ -169,7 +231,17 @@ function AlbumDrawer() {
                       />
                     </Center>
                   </Avatar>
-                  <Text fw={600} fz={'lg'} lineClamp={1}>
+                  <Text
+                    fw={700}
+                    fz={'lg'}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': { textDecoration: 'underline' }
+                    }}
+                    lh={'xxs'}
+                    lineClamp={1}
+                    onClick={handleArtistClick}
+                  >
                     {album.artist.name}
                   </Text>
                 </Group>
@@ -197,34 +269,12 @@ function AlbumDrawer() {
 
           <Stack gap={'md'}>
             {album.songs.map((song) => (
-              <Grid key={song.id} align={'center'} gutter={'md'} px={'sm'}>
-                <Grid.Col span={1}>
-                  <Text fw={500} ta={'center'}>
-                    {song.albumTrackNo}
-                  </Text>
-                </Grid.Col>
-                <Grid.Col span={1.4}>
-                  <Avatar
-                    radius={'md'}
-                    size={28}
-                    src={song.imageUrl ?? album.imageUrl}
-                    alt={(song.imageUrl ?? album.imageUrl) && song.title}
-                    bg={'gray.5'}
-                  >
-                    <Center c={'white'}>
-                      <CustomIconMusicNoteEighth
-                        aria-label={`default-icon-${song.title}`}
-                        size={16}
-                      />
-                    </Center>
-                  </Avatar>
-                </Grid.Col>
-                <Grid.Col span={9.6}>
-                  <Text fw={500} truncate={'end'}>
-                    {song.title}
-                  </Text>
-                </Grid.Col>
-              </Grid>
+              <AlbumDrawerSongCard
+                key={song.id}
+                song={song}
+                albumImageUrl={album.imageUrl}
+                onClose={onClose}
+              />
             ))}
           </Stack>
         </Stack>

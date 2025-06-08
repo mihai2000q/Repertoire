@@ -227,7 +227,7 @@ describe('Album Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/album/${album.id}`)
-      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
+      expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
     })
 
     it('should display warning modal and delete the album when clicking delete', async () => {
@@ -263,5 +263,34 @@ describe('Album Drawer', () => {
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to artist on artist click', async () => {
+    const user = userEvent.setup()
+
+    const localAlbum = {
+      ...album,
+      artist: artist
+    }
+
+    server.use(getAlbum(localAlbum))
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByText(localAlbum.artist.name))
+    expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/artist/${localAlbum.artist.id}`)
+  })
+
+  it('should navigate to song on song image click', async () => {
+    const user = userEvent.setup()
+
+    const song = songs[0]
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByRole('img', { name: song.title }))
+    expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 })
