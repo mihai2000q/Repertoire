@@ -25,7 +25,7 @@ func TestStorageFilePathProvider_GetUserProfilePicturePath_ShouldReturnPlaylistI
 
 	// then
 	expectedImagePath := user.ID.String() + "/" +
-		user.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
+		user.UpdatedAt.Format("2006_01_02T15_04_05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -48,7 +48,7 @@ func TestStorageFilePathProvider_GetAlbumImagePath_ShouldReturnAlbumImagePath(t 
 
 	// then
 	expectedImagePath := album.UserID.String() + "/albums/" + album.ID.String() + "/" +
-		album.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
+		album.UpdatedAt.Format("2006_01_02T15_04_05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -71,7 +71,7 @@ func TestStorageFilePathProvider_GetArtistImagePath_ShouldReturnArtistImagePath(
 
 	// then
 	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() + "/" +
-		artist.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
+		artist.UpdatedAt.Format("2006_01_02T15_04_05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -99,7 +99,7 @@ func TestStorageFilePathProvider_GetBandMemberImagePath_ShouldReturnBandMemberIm
 	// then
 	expectedImagePath := artist.UserID.String() + "/artists/" + artist.ID.String() +
 		"/members/" + bandMember.ID.String() + "/" +
-		bandMember.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
+		bandMember.UpdatedAt.Format("2006_01_02T15_04_05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -122,7 +122,7 @@ func TestStorageFilePathProvider_GetPlaylistImagePath_ShouldReturnPlaylistImageP
 
 	// then
 	expectedImagePath := playlist.UserID.String() + "/playlists/" + playlist.ID.String() + "/" +
-		playlist.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
+		playlist.UpdatedAt.Format("2006_01_02T15_04_05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
@@ -145,7 +145,7 @@ func TestStorageFilePathProvider_GetSongImagePath_ShouldReturnSongImagePath(t *t
 
 	// then
 	expectedImagePath := song.UserID.String() + "/songs/" + song.ID.String() + "/" +
-		song.UpdatedAt.Format("2006-01-02T15:04:05") + fileExtension
+		song.UpdatedAt.Format("2006_01_02T15_04_05") + fileExtension
 
 	assert.Equal(t, expectedImagePath, imagePath)
 }
