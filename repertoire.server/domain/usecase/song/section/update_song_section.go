@@ -42,7 +42,9 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 
 	hasRehearsalsChanged := section.Rehearsals != request.Rehearsals
 	hasConfidenceChanged := section.Confidence != request.Confidence
-	hasBandMemberChanged := section.BandMemberID != request.BandMemberID
+	hasBandMemberChanged := section.BandMemberID != nil && request.BandMemberID == nil ||
+		section.BandMemberID == nil && request.BandMemberID != nil ||
+		section.BandMemberID != nil && request.BandMemberID != nil && *section.BandMemberID != *request.BandMemberID
 
 	var song model.Song
 	var sectionsCount int64
