@@ -11,6 +11,7 @@ import {
 import { IconCheck, IconSearch, IconStarFilled } from '@tabler/icons-react'
 import { forwardRef, ReactNode, useEffect, useState } from 'react'
 import Difficulty from '../../../../../types/enums/Difficulty.ts'
+import { useInputState } from '@mantine/hooks'
 
 const allDifficultiesMap = new Map<Difficulty, string>([
   ...(Object.entries(Difficulty).map(([key, value]) => [value, key]) as [Difficulty, string][])
@@ -26,7 +27,7 @@ interface DifficultySelectButtonProps extends ActionIconProps {
 const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectButtonProps>(
   ({ difficulty, setDifficulty, icon, ...others }, ref) => {
     const [value, setValue] = useState<string>(allDifficultiesMap[difficulty] ?? '')
-    const [search, setSearch] = useState(allDifficultiesMap[difficulty] ?? '')
+    const [search, setSearch] = useInputState(allDifficultiesMap[difficulty] ?? '')
 
     useEffect(() => {
       setValue(allDifficultiesMap.get(difficulty) ?? '')
@@ -119,7 +120,7 @@ const DifficultySelectButton = forwardRef<HTMLButtonElement, DifficultySelectBut
             leftSection={<IconSearch size={12} />}
             rightSection={difficulty && <Combobox.ClearButton onClear={handleClear} />}
             value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
+            onChange={setSearch}
             sx={{
               '.mantine-Input-section': {
                 position: 'absolute',

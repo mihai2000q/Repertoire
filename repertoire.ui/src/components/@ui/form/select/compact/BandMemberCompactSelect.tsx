@@ -15,6 +15,7 @@ import {
 import { BandMember } from '../../../../../types/models/Artist.ts'
 import { IconSearch, IconUser } from '@tabler/icons-react'
 import { forwardRef, useEffect, useState } from 'react'
+import { useInputState } from '@mantine/hooks'
 
 interface BandMemberCompactSelectProps extends ComboboxProps {
   bandMember: BandMember | null
@@ -25,6 +26,13 @@ interface BandMemberCompactSelectProps extends ComboboxProps {
 
 const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactSelectProps>(
   ({ bandMember, setBandMember, bandMembers, tooltipLabel, ...others }, ref) => {
+    const [value, setValue] = useState<string>(bandMember?.name ?? '')
+    const [search, setSearch] = useInputState(bandMember?.name ?? '')
+    useEffect(() => {
+      setValue(bandMember?.name ?? '')
+      setSearch(bandMember?.name ?? '')
+    }, [bandMember])
+
     const combobox = useCombobox({
       onDropdownClose: () => {
         combobox.resetSelectedOption()
@@ -35,13 +43,6 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
         combobox.focusSearchInput()
       }
     })
-
-    const [value, setValue] = useState<string>(bandMember?.name ?? '')
-    const [search, setSearch] = useState(bandMember?.name ?? '')
-    useEffect(() => {
-      setValue(bandMember?.name ?? '')
-      setSearch(bandMember?.name ?? '')
-    }, [bandMember])
 
     const filteredMembers =
       search.trim() !== ''
@@ -170,7 +171,7 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
             leftSection={<IconSearch size={12} />}
             rightSection={bandMember && <Combobox.ClearButton onClear={handleClear} />}
             value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
+            onChange={setSearch}
             sx={{
               '.mantine-Input-section': {
                 position: 'absolute',

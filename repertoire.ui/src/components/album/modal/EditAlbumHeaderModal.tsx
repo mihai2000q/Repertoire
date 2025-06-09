@@ -69,10 +69,20 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
   const [image, setImage] = useState<string | FileWithPath>(album.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(album.imageUrl), [album])
 
   const [artist, setArtist] = useState(album.artist as unknown as ArtistSearch)
   useDidUpdate(() => form.setFieldValue('artistId', artist?.id), [artist])
+
+  useDidUpdate(() => {
+    form.setValues({
+      title: album.title,
+      releaseDate: album.releaseDate,
+      image: album.imageUrl,
+      artistId: album.artist?.id
+    })
+    setArtist(album.artist as unknown as ArtistSearch)
+    setImage(album.imageUrl)
+  }, [album])
 
   async function updateAlbum({ title, releaseDate, image, artistId }: EditAlbumHeaderForm) {
     if (albumHasChanged)

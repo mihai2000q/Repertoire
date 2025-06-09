@@ -17,6 +17,7 @@ import useInstrumentIcon from '../../../../../hooks/useInstrumentIcon.tsx'
 import { forwardRef, useEffect, useState } from 'react'
 import CustomIconTriangleMusic from '../../../icons/CustomIconTriangleMusic.tsx'
 import { Instrument } from '../../../../../types/models/Song.ts'
+import { useInputState } from '@mantine/hooks'
 
 interface InstrumentCompactSelectProps extends ComboboxProps {
   instrument: Instrument | null
@@ -31,7 +32,7 @@ const InstrumentCompactSelect = forwardRef<HTMLButtonElement, InstrumentCompactS
     const getInstrumentIcon = useInstrumentIcon()
 
     const [value, setValue] = useState<string>(instrument?.name ?? '')
-    const [search, setSearch] = useState(instrument?.name ?? '')
+    const [search, setSearch] = useInputState(instrument?.name ?? '')
 
     useEffect(() => {
       setValue(instrument?.name ?? '')
@@ -166,7 +167,7 @@ const InstrumentCompactSelect = forwardRef<HTMLButtonElement, InstrumentCompactS
             leftSection={<IconSearch size={12} />}
             rightSection={instrument && <Combobox.ClearButton onClear={handleClear} />}
             value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
+            onChange={setSearch}
             sx={{
               '.mantine-Input-section': {
                 position: 'absolute',

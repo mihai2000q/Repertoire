@@ -7,6 +7,7 @@ import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-reac
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditSongLinksModalProps {
   song: Song
@@ -35,6 +36,13 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
       )
     }
   })
+
+  useDidUpdate(() => {
+    form.setValues({
+      songsterrLink: song.songsterrLink,
+      youtubeLink: song.youtubeLink
+    })
+  }, [song])
 
   async function updateSong({ songsterrLink, youtubeLink }: EditSongLinksForm) {
     songsterrLink = songsterrLink?.trim() === '' ? null : songsterrLink?.trim()

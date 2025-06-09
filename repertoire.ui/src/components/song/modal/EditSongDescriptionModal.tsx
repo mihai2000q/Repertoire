@@ -1,7 +1,7 @@
 import Song from '../../../types/models/Song.ts'
 import { Button, LoadingOverlay, Modal, Stack, Textarea, Tooltip } from '@mantine/core'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import { useInputState } from '@mantine/hooks'
+import { useDidUpdate, useInputState } from '@mantine/hooks'
 import { MouseEvent } from 'react'
 import { toast } from 'react-toastify'
 
@@ -15,6 +15,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
   const [updateSongMutation, { isLoading }] = useUpdateSongMutation()
 
   const [description, setDescription] = useInputState(song.description)
+  useDidUpdate(() => setDescription(song.description), [song])
 
   const hasChanged = description !== song.description
 

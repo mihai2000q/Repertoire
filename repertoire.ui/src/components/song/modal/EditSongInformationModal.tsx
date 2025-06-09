@@ -14,7 +14,7 @@ import {
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import Difficulty from '../../../types/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
-import { useInputState } from '@mantine/hooks'
+import { useDidUpdate, useInputState } from '@mantine/hooks'
 import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
@@ -46,13 +46,34 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
       : null
   )
   const [bpm, setBpm] = useInputState<string | number>(song.bpm)
-  const [isRecorded, setIsRecorded] = useInputState<boolean>(song.isRecorded)
+  const [isRecorded, setIsRecorded] = useInputState(song.isRecorded)
 
   const hasChanged =
     (typeof bpm === 'number' && bpm !== song.bpm) ||
     (difficulty?.value !== song.difficulty && (song.difficulty !== null || difficulty !== null)) ||
     guitarTuning?.value !== song.guitarTuning?.id ||
     isRecorded !== song.isRecorded
+
+  useDidUpdate(() => {
+    setGuitarTuning(
+      song.guitarTuning
+        ? {
+          value: song.guitarTuning.id,
+          label: song.guitarTuning.name
+        }
+        : null
+    )
+    setDifficulty(
+      song.difficulty
+        ? {
+          value: song.difficulty,
+          label: Difficulty[song.difficulty]
+        }
+        : null
+    )
+    setBpm(song.bpm)
+    setIsRecorded(song.isRecorded)
+  }, [song])
 
   async function updateSong(e: MouseEvent) {
     if (!hasChanged) {

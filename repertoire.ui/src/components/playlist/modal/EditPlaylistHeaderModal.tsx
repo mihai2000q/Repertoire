@@ -55,7 +55,15 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
 
   const [image, setImage] = useState<string | FileWithPath>(playlist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
+
+  useDidUpdate(() => {
+    form.setValues({
+      title: playlist.title,
+      description: playlist.description,
+      image: playlist.imageUrl
+    })
+    setImage(playlist.imageUrl)
+  }, [playlist])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
     if (playlistHasChanged)

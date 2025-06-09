@@ -14,6 +14,7 @@ import { IconCheck, IconSearch } from '@tabler/icons-react'
 import { forwardRef, ReactNode, useEffect, useState } from 'react'
 import { GuitarTuning } from '../../../../../types/models/Song.ts'
 import CustomIconGuitarHead from '../../../icons/CustomIconGuitarHead.tsx'
+import { useInputState } from '@mantine/hooks'
 
 interface GuitarTuningSelectButtonProps extends ActionIconProps {
   guitarTuning: GuitarTuning | null
@@ -26,7 +27,7 @@ const GuitarTuningSelectButton = forwardRef<HTMLButtonElement, GuitarTuningSelec
     const { data: guitarTunings, isLoading } = useGetGuitarTuningsQuery()
 
     const [value, setValue] = useState<string>(guitarTuning?.name ?? '')
-    const [search, setSearch] = useState(guitarTuning?.name ?? '')
+    const [search, setSearch] = useInputState(guitarTuning?.name ?? '')
 
     useEffect(() => {
       setValue(guitarTuning?.name ?? '')
@@ -124,7 +125,7 @@ const GuitarTuningSelectButton = forwardRef<HTMLButtonElement, GuitarTuningSelec
             leftSection={<IconSearch size={12} />}
             rightSection={guitarTuning && <Combobox.ClearButton onClear={handleClear} />}
             value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
+            onChange={setSearch}
             sx={{
               '.mantine-Input-section': {
                 position: 'absolute',
