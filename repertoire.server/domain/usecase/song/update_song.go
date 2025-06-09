@@ -40,8 +40,12 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	artistHasChanged := song.ArtistID != request.ArtistID
-	albumHasChanged := song.AlbumID != request.AlbumID
+	artistHasChanged := song.ArtistID != nil && request.ArtistID == nil ||
+		song.ArtistID == nil && request.ArtistID != nil ||
+		song.ArtistID != nil && request.ArtistID != nil && *song.ArtistID != *request.ArtistID
+	albumHasChanged := song.AlbumID != nil && request.AlbumID == nil ||
+		song.AlbumID == nil && request.AlbumID != nil ||
+		song.AlbumID != nil && request.AlbumID != nil && *song.AlbumID != *request.AlbumID
 
 	if (albumHasChanged || artistHasChanged) && request.AlbumID != nil {
 		var album model.Album
