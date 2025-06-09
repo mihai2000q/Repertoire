@@ -80,9 +80,10 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
   const [album, setAlbum] = useState(song.album as unknown as AlbumSearch)
   useDidUpdate(() => {
-    if (artist === song.artist as unknown as ArtistSearch) return
-    setArtist(album?.artist as unknown as ArtistSearch)
     form.setFieldValue('albumId', album?.id)
+    if (album !== song.album as unknown as AlbumSearch) {
+      setArtist(album?.artist as unknown as ArtistSearch)
+    }
   }, [album])
 
   useDidUpdate(() => {
