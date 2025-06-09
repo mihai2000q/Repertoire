@@ -14,7 +14,7 @@ import {
 } from '@mantine/core'
 import { IconDisc, IconSearch } from '@tabler/icons-react'
 import { forwardRef, ReactNode, useEffect, useState } from 'react'
-import { useDebouncedValue } from '@mantine/hooks'
+import { useDebouncedValue, useInputState } from '@mantine/hooks'
 import { useGetSearchQuery } from '../../../../../state/api/searchApi.ts'
 import SearchType from '../../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../../types/models/Search.ts'
@@ -29,6 +29,10 @@ interface AlbumSelectButtonProps extends ActionIconProps {
 
 const AlbumSelectButton = forwardRef<HTMLButtonElement, AlbumSelectButtonProps>(
   ({ album, setAlbum, searchFilter, icon, ...others }, ref) => {
+    const [value, setValue] = useState<string>(album?.title ?? '')
+    const [search, setSearch] = useInputState(album?.title ?? '')
+    const [searchQuery] = useDebouncedValue(search, 200)
+
     const combobox = useCombobox({
       onDropdownClose: () => {
         combobox.resetSelectedOption()
@@ -39,10 +43,6 @@ const AlbumSelectButton = forwardRef<HTMLButtonElement, AlbumSelectButtonProps>(
         combobox.focusSearchInput()
       }
     })
-
-    const [value, setValue] = useState<string>(album?.title ?? '')
-    const [search, setSearch] = useState(album?.title ?? '')
-    const [searchQuery] = useDebouncedValue(search, 200)
 
     const {
       data: albums,
@@ -170,7 +170,7 @@ const AlbumSelectButton = forwardRef<HTMLButtonElement, AlbumSelectButtonProps>(
             leftSection={<IconSearch size={12} />}
             rightSection={album && <Combobox.ClearButton onClear={handleClear} />}
             value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
+            onChange={setSearch}
             sx={{
               '.mantine-Input-section': {
                 position: 'absolute',
