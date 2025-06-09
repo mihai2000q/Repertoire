@@ -59,7 +59,15 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
 
   const [image, setImage] = useState<string | FileWithPath>(artist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(artist.imageUrl), [artist])
+
+  useDidUpdate(() => {
+    form.setValues({
+      name: artist.name,
+      image: artist.imageUrl,
+      isBand: artist.isBand
+    })
+    setImage(artist.imageUrl)
+  }, [artist])
 
   async function updateArtist({ name, image, isBand }) {
     if (artistHasChanged)
