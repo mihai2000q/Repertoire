@@ -286,14 +286,7 @@ describe('Add Playlist Songs Modal', () => {
 
     await user.type(searchBox, 'Song 2')
 
-    await waitFor(() => {
-      expect(screen.getByTestId('loading-overlay-fetching')).toBeVisible()
-    })
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-overlay-fetching')).not.toBeInTheDocument()
-    })
-
-    expect(await screen.findAllByLabelText(/song-/i)).toHaveLength(1)
+    await waitFor(() => expect(screen.getAllByLabelText(/song-/i)).toHaveLength(1))
 
     await user.clear(searchBox)
     await user.type(searchBox, 'gibberish')

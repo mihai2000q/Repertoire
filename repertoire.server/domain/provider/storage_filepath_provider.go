@@ -31,7 +31,6 @@ func NewStorageFilePathProvider() StorageFilePathProvider {
 	return new(storageFilePathProvider)
 }
 
-var profilePicture = "profile_pic"
 var albumRootDirectory = "albums"
 var artistRootDirectory = "artists"
 var bandMemberRootDirectory = "members"
@@ -131,7 +130,7 @@ func (s storageFilePathProvider) GetSongDirectoryPath(song model.Song) string {
 }
 
 func (s storageFilePathProvider) getTimeFormat(time time.Time) string {
-	return time.Format("2006-01-02T15:04:05")
+	return time.Format("2006_01_02T15_04_05")
 }
 
 func (s storageFilePathProvider) getArtistDirectory(artist model.Artist) directoryPathBuilder {
