@@ -47,12 +47,15 @@ function SongSectionsCard({
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
 
+  const [showDetails, setShowDetails] = useState(false)
   const [openedPartialRehearsalPopover, setOpenedPartialRehearsalPopover] = useState(false)
   const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
 
   const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
+
+  useDidUpdate(() => setShowDetails(false), [songId])
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
@@ -77,8 +80,6 @@ function SongSectionsCard({
 
     return [rehearsals, progress]
   }, [sections])
-
-  const [showDetails, setShowDetails] = useState(false)
 
   function handleShowDetails() {
     setShowDetails(!showDetails)

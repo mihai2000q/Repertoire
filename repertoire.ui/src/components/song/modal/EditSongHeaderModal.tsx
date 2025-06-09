@@ -74,16 +74,29 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
 
   const [image, setImage] = useState<string | FileWithPath>(song.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(song.imageUrl), [song])
 
   const [artist, setArtist] = useState(song.artist as unknown as ArtistSearch)
   useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
 
   const [album, setAlbum] = useState(song.album as unknown as AlbumSearch)
   useDidUpdate(() => {
+    if (artist === song.artist as unknown as ArtistSearch) return
     setArtist(album?.artist as unknown as ArtistSearch)
     form.setFieldValue('albumId', album?.id)
   }, [album])
+
+  useDidUpdate(() => {
+    form.setValues({
+      title: song.title,
+      releaseDate: song.releaseDate,
+      image: song.imageUrl,
+      artistId: song.artist?.id,
+      albumId: song.album?.id
+    })
+    setArtist(song.artist as unknown as ArtistSearch)
+    setAlbum(song.album as unknown as AlbumSearch)
+    setImage(song.imageUrl)
+  }, [song])
 
   async function updateSong({ title, releaseDate, image, albumId, artistId }: EditSongHeaderForm) {
     if (songHasChanged)
