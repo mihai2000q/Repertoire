@@ -6,6 +6,7 @@ import {
   Center,
   Grid,
   Group,
+  Menu,
   ScrollArea,
   Skeleton,
   Stack,
@@ -13,9 +14,9 @@ import {
   Tooltip,
   useMatches
 } from '@mantine/core'
-import { IconClock } from '@tabler/icons-react'
+import { IconClock, IconDisc, IconEye, IconUser } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
-import { useHover } from '@mantine/hooks'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent } from 'react'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
@@ -27,6 +28,10 @@ import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import useSearchBy from '../../hooks/api/useSearchBy.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
+import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import useContextMenu from '../../hooks/useContextMenu.ts'
+import { useNavigate } from 'react-router-dom'
 
 function Loader() {
   return (
@@ -63,8 +68,13 @@ function Loader() {
 
 function LocalSongCard({ song }: { song: Song }) {
   const dispatch = useAppDispatch()
-
+  const navigate = useNavigate()
   const { ref, hovered } = useHover()
+
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
+
+  const isSelected = hovered || openedMenu
 
   function handleClick() {
     dispatch(openSongDrawer(song.id))
@@ -75,6 +85,18 @@ function LocalSongCard({ song }: { song: Song }) {
     dispatch(openArtistDrawer(song.artist.id))
   }
 
+  function handleViewDetails() {
+    navigate(`song/${song.id}`)
+  }
+
+  function handleViewArtist() {
+    navigate(`artist/${song.artist.id}`)
+  }
+
+  function handleViewAlbum() {
+    navigate(`album/${song.album.id}`)
+  }
+
   // Not Recommended usage
   const groupGap = useMatches({
     base: 'md',
@@ -83,77 +105,110 @@ function LocalSongCard({ song }: { song: Song }) {
   })
 
   return (
-    <Group
-      ref={ref}
-      wrap={'nowrap'}
-      sx={(theme) => ({
-        transition: '0.3s',
-        border: '1px solid transparent',
-        ...(hovered && {
-          boxShadow: theme.shadows.xl,
-          backgroundColor: alpha(theme.colors.primary[0], 0.15)
-        })
-      })}
-      pl={'lg'}
-      pr={'xxs'}
-      py={'xs'}
-      gap={groupGap}
-      onClick={handleClick}
-    >
-      <Avatar
-        radius={'md'}
-        src={song.imageUrl ?? song.album?.imageUrl}
-        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-        bg={'gray.5'}
-        onClick={handleClick}
-        sx={(theme) => ({
-          aspectRatio: 1,
-          boxShadow: theme.shadows.sm
-        })}
-      >
-        <Center c={'white'}>
-          <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
-        </Center>
-      </Avatar>
-
-      <Grid flex={1} columns={12} align={'center'}>
-        <Grid.Col span={{ base: 5, md: 8, xxl: 5 }}>
-          <Stack gap={0} style={{ overflow: 'hidden' }}>
-            <Text fw={600} lineClamp={1}>
-              {song.title}
-            </Text>
-            {song.artist && (
-              <Group>
-                <Text
-                  fz={'sm'}
-                  c={'dimmed'}
-                  lineClamp={1}
-                  sx={{ '&:hover': { textDecoration: 'underline' } }}
-                  style={{ cursor: 'pointer' }}
-                  onClick={handleArtistClick}
-                >
-                  {song.artist.name}
-                </Text>
-              </Group>
-            )}
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={4} display={{ base: 'block', md: 'none', xxl: 'block' }}>
-          <ProgressBar progress={song.progress} mx={'xs'} />
-        </Grid.Col>
-        <Grid.Col span={{ base: 3, md: 4, xxl: 3 }} px={'md'}>
-          <Tooltip
-            label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
-            openDelay={400}
-            disabled={!song.lastTimePlayed}
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
+      <Menu.Target>
+        <Group
+          ref={ref}
+          wrap={'nowrap'}
+          sx={(theme) => ({
+            transition: '0.3s',
+            border: '1px solid transparent',
+            ...(isSelected && {
+              boxShadow: theme.shadows.xl,
+              backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            })
+          })}
+          pl={'lg'}
+          pr={'xxs'}
+          py={'xs'}
+          gap={groupGap}
+          onClick={handleClick}
+          onContextMenu={openMenu}
+        >
+          <Avatar
+            radius={'md'}
+            src={song.imageUrl ?? song.album?.imageUrl}
+            alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+            bg={'gray.5'}
+            onClick={handleClick}
+            sx={(theme) => ({
+              aspectRatio: 1,
+              boxShadow: theme.shadows.sm
+            })}
           >
-            <Text ta={'center'} fz={'sm'} fw={500} c={'dimmed'} truncate={'end'}>
-              {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('DD MMM') : 'never'}
-            </Text>
-          </Tooltip>
-        </Grid.Col>
-      </Grid>
-    </Group>
+            <Center c={'white'}>
+              <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
+            </Center>
+          </Avatar>
+
+          <Grid flex={1} columns={12} align={'center'}>
+            <Grid.Col span={{ base: 5, md: 8, xxl: 5 }}>
+              <Stack gap={0} style={{ overflow: 'hidden' }}>
+                <Text fw={600} lineClamp={1}>
+                  {song.title}
+                </Text>
+                {song.artist && (
+                  <Group>
+                    <Text
+                      fz={'sm'}
+                      c={'dimmed'}
+                      lineClamp={1}
+                      sx={{ '&:hover': { textDecoration: 'underline' } }}
+                      style={{ cursor: 'pointer' }}
+                      onClick={handleArtistClick}
+                    >
+                      {song.artist.name}
+                    </Text>
+                  </Group>
+                )}
+              </Stack>
+            </Grid.Col>
+            <Grid.Col span={4} display={{ base: 'block', md: 'none', xxl: 'block' }}>
+              <ProgressBar progress={song.progress} mx={'xs'} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 3, md: 4, xxl: 3 }} px={'md'}>
+              <Tooltip
+                label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                openDelay={400}
+                disabled={!song.lastTimePlayed}
+              >
+                <Text ta={'center'} fz={'sm'} fw={500} c={'dimmed'} truncate={'end'}>
+                  {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('DD MMM') : 'never'}
+                </Text>
+              </Tooltip>
+            </Grid.Col>
+          </Grid>
+        </Group>
+      </Menu.Target>
+
+      <Menu.Dropdown {...menuDropdownProps}>
+        <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+          View Details
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconUser size={14} />}
+          disabled={!song.artist}
+          onClick={handleViewArtist}
+        >
+          View Artist
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<IconDisc size={14} />}
+          disabled={!song.album}
+          onClick={handleViewAlbum}
+        >
+          View Album
+        </Menu.Item>
+        <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
+      </Menu.Dropdown>
+
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
+    </Menu>
   )
 }
 

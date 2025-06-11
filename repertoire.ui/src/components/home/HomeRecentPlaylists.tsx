@@ -4,6 +4,7 @@ import {
   CardProps,
   Center,
   Group,
+  Menu,
   ScrollArea,
   SimpleGrid,
   Skeleton,
@@ -13,12 +14,15 @@ import {
 } from '@mantine/core'
 import { useGetPlaylistsQuery } from '../../state/api/playlistsApi.ts'
 import Playlist from '../../types/models/Playlist.ts'
-import { IconPlaylist } from '@tabler/icons-react'
+import { IconEye, IconPlaylist } from '@tabler/icons-react'
 import OrderType from '../../types/enums/OrderType.ts'
 import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
+import { useHover } from '@mantine/hooks'
+import useContextMenu from '../../hooks/useContextMenu.ts'
+import { useNavigate } from 'react-router-dom'
 
 function Loader() {
   return (
@@ -43,39 +47,61 @@ function Loader() {
 
 function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const { ref, hovered } = useHover()
+
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+
+  const isSelected = hovered || openedMenu
 
   function handleClick() {
     dispatch(openPlaylistDrawer(playlist.id))
   }
 
+  function handleViewDetails() {
+    navigate(`playlist/${playlist.id}`)
+  }
+
   return (
     <Group wrap={'nowrap'} gap={0}>
-      <Avatar
-        radius={'28%'}
-        size={60}
-        src={playlist.imageUrl}
-        alt={playlist.imageUrl && playlist.title}
-        bg={'gray.5'}
-        sx={(theme) => ({
-          aspectRatio: 1,
-          cursor: 'pointer',
-          transition: '0.2s',
-          boxShadow: theme.shadows.sm,
-          '&:hover': {
-            boxShadow: theme.shadows.xl,
-            transform: 'scale(1.1)'
-          }
-        })}
-        onClick={handleClick}
-      >
-        <Center c={'white'}>
-          <IconPlaylist
-            aria-label={`default-icon-${playlist.title}`}
-            size={'100%'}
-            style={{ padding: '27%' }}
-          />
-        </Center>
-      </Avatar>
+      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
+        <Menu.Target>
+          <Avatar
+            ref={ref}
+            radius={'28%'}
+            size={60}
+            src={playlist.imageUrl}
+            alt={playlist.imageUrl && playlist.title}
+            bg={'gray.5'}
+            sx={(theme) => ({
+              aspectRatio: 1,
+              cursor: 'pointer',
+              transition: '0.2s',
+              boxShadow: theme.shadows.sm,
+              ...(isSelected && {
+                boxShadow: theme.shadows.xl,
+                transform: 'scale(1.1)'
+              })
+            })}
+            onClick={handleClick}
+            onContextMenu={openMenu}
+          >
+            <Center c={'white'}>
+              <IconPlaylist
+                aria-label={`default-icon-${playlist.title}`}
+                size={'100%'}
+                style={{ padding: '27%' }}
+              />
+            </Center>
+          </Avatar>
+        </Menu.Target>
+
+        <Menu.Dropdown {...menuDropdownProps}>
+          <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+            View Details
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
 
       <Space ml={{ base: 'xs', xl: 'sm', xxl: 'md' }} style={{ transition: '0.16s' }} />
 

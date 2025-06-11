@@ -5,6 +5,7 @@ import {
   CardProps,
   Center,
   Group,
+  Menu,
   ScrollArea,
   Skeleton,
   Stack,
@@ -14,13 +15,15 @@ import Artist from '../../types/models/Artist.ts'
 import { useGetArtistsQuery } from '../../state/api/artistsApi.ts'
 import { useRef, useState } from 'react'
 import { useDidUpdate, useHover, useViewportSize } from '@mantine/hooks'
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { IconChevronLeft, IconChevronRight, IconEye } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import ArtistProperty from '../../types/enums/ArtistProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import { useNavigate } from 'react-router-dom'
+import useContextMenu from '../../hooks/useContextMenu.ts'
 
 function Loader() {
   return (
@@ -46,9 +49,18 @@ function Loader() {
 function LocalArtistCard({ artist }: { artist: Artist }) {
   const dispatch = useAppDispatch()
   const { ref, hovered } = useHover()
+  const navigate = useNavigate()
+
+  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+
+  const isSelected = hovered || openedMenu
 
   function handleClick() {
     dispatch(openArtistDrawer(artist.id))
+  }
+
+  function handleViewDetails() {
+    navigate(`artist/${artist.id}`)
   }
 
   return (
@@ -56,26 +68,37 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
       align={'center'}
       gap={'xxs'}
       w={60}
-      sx={{ transition: '0.2s', ...(hovered && { transform: 'scale(1.1)' }) }}
+      sx={{ transition: '0.2s', ...(isSelected && { transform: 'scale(1.1)' }) }}
     >
-      <Avatar
-        ref={ref}
-        size={'lg'}
-        src={artist.imageUrl}
-        alt={artist.imageUrl && artist.name}
-        bg={'gray.0'}
-        sx={(theme) => ({
-          cursor: 'pointer',
-          transition: '0.2s',
-          boxShadow: theme.shadows.sm,
-          '&:hover': { boxShadow: theme.shadows.xl }
-        })}
-        onClick={handleClick}
-      >
-        <Center c={'gray.7'}>
-          <CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={25} />
-        </Center>
-      </Avatar>
+      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
+        <Menu.Target>
+          <Avatar
+            ref={ref}
+            size={'lg'}
+            src={artist.imageUrl}
+            alt={artist.imageUrl && artist.name}
+            bg={'gray.0'}
+            sx={(theme) => ({
+              cursor: 'pointer',
+              transition: '0.2s',
+              boxShadow: theme.shadows.sm,
+              ...(isSelected && { boxShadow: theme.shadows.xl })
+            })}
+            onClick={handleClick}
+            onContextMenu={openMenu}
+          >
+            <Center c={'gray.7'}>
+              <CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={25} />
+            </Center>
+          </Avatar>
+        </Menu.Target>
+
+        <Menu.Dropdown {...menuDropdownProps}>
+          <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+            View Details
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
 
       <Text ta={'center'} fw={500} lineClamp={2}>
         {artist.name}

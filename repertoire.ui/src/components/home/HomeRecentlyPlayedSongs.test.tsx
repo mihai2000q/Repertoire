@@ -1,13 +1,14 @@
-import { emptyAlbum, emptyArtist, emptySong, reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Song from '../../types/models/Song.ts'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import HomeRecentlyPlayedSongs from './HomeRecentlyPlayedSongs.tsx'
 import dayjs from 'dayjs'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../state/store.ts'
+import { expect } from 'vitest'
 
 describe('Home Recently Played Songs', () => {
   const songs: Song[] = [
@@ -33,8 +34,15 @@ describe('Home Recently Played Songs', () => {
       progress: 500,
       album: {
         ...emptyAlbum,
+        id: '1',
         imageUrl: 'something.png'
-      }
+      },
+      artist: {
+        ...emptyArtist,
+        id: '1',
+        name: 'another-artist'
+      },
+      songsterrLink: 'some-link'
     },
     {
       ...emptySong,
@@ -69,12 +77,15 @@ describe('Home Recently Played Songs', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<HomeRecentlyPlayedSongs />)
+    reduxRouterRender(<HomeRecentlyPlayedSongs />)
 
     expect(screen.getByText(/recently played/i)).toBeInTheDocument()
 
@@ -92,8 +103,7 @@ describe('Home Recently Played Songs', () => {
           'src',
           song.album.imageUrl
         )
-      else
-        expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
+      else expect(screen.getByLabelText(`default-icon-${song.title}`)).toBeInTheDocument()
       if (song.lastTimePlayed)
         expect(screen.getByText(dayjs(song.lastTimePlayed).format('DD MMM'))).toBeInTheDocument()
     }
@@ -114,7 +124,7 @@ describe('Home Recently Played Songs', () => {
       })
     )
 
-    reduxRender(<HomeRecentlyPlayedSongs />)
+    reduxRouterRender(<HomeRecentlyPlayedSongs />)
 
     expect(screen.getByText(/recently played/i)).toBeInTheDocument()
 
@@ -130,7 +140,7 @@ describe('Home Recently Played Songs', () => {
 
     const song = songs[1]
 
-    const [_, store] = reduxRender(<HomeRecentlyPlayedSongs />)
+    const [_, store] = reduxRouterRender(<HomeRecentlyPlayedSongs />)
 
     await user.click(await screen.findByText(song.title))
 
@@ -143,11 +153,94 @@ describe('Home Recently Played Songs', () => {
 
     const song = songs.filter((s) => s.artist)[0]
 
-    const [_, store] = reduxRender(<HomeRecentlyPlayedSongs />)
+    const [_, store] = reduxRouterRender(<HomeRecentlyPlayedSongs />)
 
     await user.click(await screen.findByText(song.artist.name))
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(song.artist.id)
+  })
+
+  it('should display menu on song right click', async () => {
+    const user = userEvent.setup()
+
+    const song1 = songs[0]
+    const song2 = songs[2]
+
+    const [{ rerender }] = reduxRouterRender(<HomeRecentlyPlayedSongs />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: await screen.findByLabelText(`default-icon-${song1.title}`)
+    })
+
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /open links/i })).toBeInTheDocument()
+
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /view album/i })).toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /open links/i })).toBeDisabled()
+
+    rerender(<HomeRecentlyPlayedSongs />)
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: await screen.findByRole('img', { name: song2.title })
+    })
+    // the other menu is still opened,
+    // waiting for it to close automatically by opening another one
+    await waitFor(() =>
+      expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
+    )
+    expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
+    expect(screen.getByRole('menuitem', { name: /open links/i })).not.toBeDisabled()
+  })
+
+  describe('on menu', () => {
+    it('should navigate to song when clicking on view details', async () => {
+      const user = userEvent.setup()
+
+      const song = songs[0]
+
+      reduxRouterRender(<HomeRecentlyPlayedSongs />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: await screen.findByLabelText(`default-icon-${song.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view details/i }))
+      expect(window.location.pathname).toBe(`/song/${song.id}`)
+    })
+
+    it('should navigate to artist when clicking on view artist', async () => {
+      const user = userEvent.setup()
+
+      const song = songs[2]
+
+      reduxRouterRender(<HomeRecentlyPlayedSongs />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: await screen.findByRole('img', { name: song.title })
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view artist/i }))
+      expect(window.location.pathname).toBe(`/artist/${song.artist.id}`)
+    })
+
+    it('should navigate to album when clicking on view album', async () => {
+      const user = userEvent.setup()
+
+      const song = songs[2]
+
+      reduxRouterRender(<HomeRecentlyPlayedSongs />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: await screen.findByRole('img', { name: song.title })
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view album/i }))
+      expect(window.location.pathname).toBe(`/album/${song.album.id}`)
+    })
   })
 })
