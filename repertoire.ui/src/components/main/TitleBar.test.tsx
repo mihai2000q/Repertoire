@@ -16,7 +16,8 @@ describe('Title Bar', () => {
         documentTitle: documentTitle,
         artistDrawer: undefined,
         songDrawer: undefined,
-        albumDrawer: undefined
+        albumDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 

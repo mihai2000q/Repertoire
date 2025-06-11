@@ -11,7 +11,8 @@ describe('use Error Redirection', () => {
         errorPath: undefined,
         songDrawer: undefined,
         albumDrawer: undefined,
-        artistDrawer: undefined
+        artistDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 
@@ -26,7 +27,8 @@ describe('use Error Redirection', () => {
         errorPath: errorPath,
         songDrawer: undefined,
         albumDrawer: undefined,
-        artistDrawer: undefined
+        artistDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 

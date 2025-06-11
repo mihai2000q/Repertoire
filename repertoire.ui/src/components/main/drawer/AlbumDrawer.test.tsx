@@ -92,7 +92,8 @@ describe('Album Drawer', () => {
           albumId: id
         },
         artistDrawer: undefined,
-        songDrawer: undefined
+        songDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 
@@ -247,7 +248,8 @@ describe('Album Drawer', () => {
             albumId: album.id
           },
           artistDrawer: undefined,
-          songDrawer: undefined
+          songDrawer: undefined,
+          playlistDrawer: undefined
         }
       })
 
