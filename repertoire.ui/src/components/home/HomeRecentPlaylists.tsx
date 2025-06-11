@@ -59,7 +59,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
   }
 
   function handleViewDetails() {
-    navigate(`playlist/${playlist.id}`)
+    navigate(`/playlist/${playlist.id}`)
   }
 
   return (

@@ -38,11 +38,11 @@ function HomeSongCard({ song }: HomeSongCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`artist/${song.artist.id}`)
+    navigate(`/artist/${song.artist.id}`)
   }
 
   function handleViewAlbum() {
-    navigate(`album/${song.album.id}`)
+    navigate(`/album/${song.album.id}`)
   }
 
   return (

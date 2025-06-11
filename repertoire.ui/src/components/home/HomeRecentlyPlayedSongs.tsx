@@ -86,15 +86,15 @@ function LocalSongCard({ song }: { song: Song }) {
   }
 
   function handleViewDetails() {
-    navigate(`song/${song.id}`)
+    navigate(`/song/${song.id}`)
   }
 
   function handleViewArtist() {
-    navigate(`artist/${song.artist.id}`)
+    navigate(`/artist/${song.artist.id}`)
   }
 
   function handleViewAlbum() {
-    navigate(`album/${song.album.id}`)
+    navigate(`/album/${song.album.id}`)
   }
 
   // Not Recommended usage

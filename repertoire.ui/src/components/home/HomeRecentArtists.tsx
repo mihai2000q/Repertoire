@@ -60,7 +60,7 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
   }
 
   function handleViewDetails() {
-    navigate(`artist/${artist.id}`)
+    navigate(`/artist/${artist.id}`)
   }
 
   return (

@@ -30,11 +30,11 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
   }
 
   function handleViewDetails() {
-    navigate(`album/${album.id}`)
+    navigate(`/album/${album.id}`)
   }
 
   function handleViewArtist() {
-    navigate(`artist/${album.artist.id}`)
+    navigate(`/artist/${album.artist.id}`)
   }
 
   return (

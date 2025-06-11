@@ -26,7 +26,7 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
   }
 
   function handleViewDetails() {
-    navigate(`artist/${artist.id}`)
+    navigate(`/artist/${artist.id}`)
   }
 
   return (
