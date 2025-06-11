@@ -16,6 +16,7 @@ import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
 import useTopbarHeight from '../hooks/useTopbarHeight.ts'
 import useMainScroll from '../hooks/useMainScroll.ts'
 import { createStyles } from '@mantine/emotion'
+import PlaylistDrawer from '../components/main/drawer/PlaylistDrawer.tsx'
 
 const useStyles = createStyles((theme) => ({
   scrollbar: {
@@ -86,6 +87,7 @@ function Main(): ReactElement {
       <ArtistDrawer />
       <AlbumDrawer />
       <SongDrawer />
+      <PlaylistDrawer />
     </Box>
   )
 }

@@ -5,6 +5,9 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { screen } from '@testing-library/react'
+import { expect } from 'vitest'
+import { RootState } from '../../state/store.ts'
+import { userEvent } from '@testing-library/user-event'
 
 describe('Home Recent Playlists', () => {
   const playlists: Playlist[] = [
@@ -50,8 +53,7 @@ describe('Home Recent Playlists', () => {
           'src',
           playlist.imageUrl
         )
-      else
-        expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
+      else expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     }
   })
 
@@ -69,5 +71,18 @@ describe('Home Recent Playlists', () => {
     reduxRender(<HomeRecentPlaylists />)
 
     expect(await screen.findByText(/no playlists/i)).toBeInTheDocument()
+  })
+
+  it('should open drawer on playlist click', async () => {
+    const user = userEvent.setup()
+
+    const playlist = playlists[1]
+
+    const [, store] = reduxRender(<HomeRecentPlaylists />)
+
+    await user.click(await screen.findByRole('img', { name: playlist.title }))
+
+    expect((store.getState() as RootState).global.playlistDrawer.open).toBeTruthy()
+    expect((store.getState() as RootState).global.playlistDrawer.playlistId).toBe(playlist.id)
   })
 })

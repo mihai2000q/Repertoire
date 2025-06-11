@@ -49,14 +49,14 @@ function AlbumDrawerSongCard({
   }
 
   return (
-    <Grid align={'center'} gutter={'md'} px={'sm'}>
+    <Grid align={'center'} gutter={'xs'} px={'xs'}>
       <Grid.Col span={1}>
         <Text fw={500} ta={'center'}>
           {song.albumTrackNo}
         </Text>
       </Grid.Col>
 
-      <Grid.Col span={1.4}>
+      <Grid.Col span={1.2}>
         <Avatar
           radius={'md'}
           size={28}
@@ -93,8 +93,7 @@ function AlbumDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
-  const opened = useAppSelector((state) => state.global.albumDrawer.open)
-  const albumId = useAppSelector((state) => state.global.albumDrawer.albumId)
+  const { albumId, open: opened } = useAppSelector((state) => state.global.albumDrawer)
   const onClose = () => {
     dispatch(closeAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
@@ -265,7 +264,7 @@ function AlbumDrawer() {
             </Text>
           </Group>
 
-          <Divider my={6} />
+          {album.songs.length > 0 && <Divider my={'xs'} />}
 
           <Stack gap={'md'}>
             {album.songs.map((song) => (

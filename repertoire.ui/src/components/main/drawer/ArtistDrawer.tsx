@@ -40,7 +40,7 @@ import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx
 import Song from '../../../types/models/Song.ts'
 import Album from '../../../types/models/Album.ts'
 
-function ArtistDrawerAlbum({ album, onClose }: { album: Album; onClose: () => void }) {
+function ArtistDrawerAlbumCard({ album, onClose }: { album: Album; onClose: () => void }) {
   const navigate = useNavigate()
 
   function onClick() {
@@ -85,7 +85,7 @@ function ArtistDrawerAlbum({ album, onClose }: { album: Album; onClose: () => vo
   )
 }
 
-function ArtistDrawerSong({ song, onClose }: { song: Song; onClose: () => void }) {
+function ArtistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
   const navigate = useNavigate()
 
   function onClick() {
@@ -135,8 +135,7 @@ function ArtistDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
-  const opened = useAppSelector((state) => state.global.artistDrawer.open)
-  const artistId = useAppSelector((state) => state.global.artistDrawer.artistId)
+  const { artistId, open: opened } = useAppSelector((state) => state.global.artistDrawer)
   const onClose = () => {
     dispatch(closeArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
@@ -340,7 +339,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
-              <ArtistDrawerAlbum key={album.id} album={album} onClose={onClose} />
+              <ArtistDrawerAlbumCard key={album.id} album={album} onClose={onClose} />
             ))}
           </SimpleGrid>
 
@@ -355,7 +354,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
-              <ArtistDrawerSong key={song.id} song={song} onClose={onClose} />
+              <ArtistDrawerSongCard key={song.id} song={song} onClose={onClose} />
             ))}
           </SimpleGrid>
         </Stack>

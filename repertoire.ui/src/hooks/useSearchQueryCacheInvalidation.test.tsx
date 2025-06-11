@@ -48,7 +48,8 @@ describe('use Search Query Cache Invalidation', () => {
         userId: userId,
         artistDrawer: undefined,
         albumDrawer: undefined,
-        songDrawer: undefined
+        songDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
     await waitFor(() => expect(connected).toBeTruthy())

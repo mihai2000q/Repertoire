@@ -17,6 +17,8 @@ import { IconPlaylist } from '@tabler/icons-react'
 import OrderType from '../../types/enums/OrderType.ts'
 import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
+import { useAppDispatch } from '../../state/store.ts'
 
 function Loader() {
   return (
@@ -40,6 +42,12 @@ function Loader() {
 }
 
 function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
+  const dispatch = useAppDispatch()
+
+  function handleClick() {
+    dispatch(openPlaylistDrawer(playlist.id))
+  }
+
   return (
     <Group wrap={'nowrap'} gap={0}>
       <Avatar
@@ -58,6 +66,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
             transform: 'scale(1.1)'
           }
         })}
+        onClick={handleClick}
       >
         <Center c={'white'}>
           <IconPlaylist
