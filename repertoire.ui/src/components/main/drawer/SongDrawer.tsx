@@ -54,8 +54,7 @@ function SongDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
-  const opened = useAppSelector((state) => state.global.songDrawer.open)
-  const songId = useAppSelector((state) => state.global.songDrawer.songId)
+  const { songId, open: opened } = useAppSelector((state) => state.global.songDrawer)
   const onClose = () => {
     dispatch(closeSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
@@ -298,7 +297,7 @@ function SongDrawer() {
             )}
           </Group>
 
-          {song.description.trim() !== '' && (
+          {song.description !== '' && (
             <Text size="sm" c="dimmed" my={'xs'} px={'xs'} lineClamp={3}>
               {song.description}
             </Text>

@@ -8,7 +8,7 @@ function SongDrawerLoader() {
       <Stack px={'md'} pb={'xs'} gap={'xxs'}>
         <Skeleton w={'max(20vw, 220px)'} h={'max(2.5vw, 25px)'} />
         <Group gap={'xxs'}>
-          <Skeleton radius={'50%'} w={35} h={35} />
+          <Skeleton radius={'50%'} w={28} h={28} />
           <Skeleton w={80} h={15} />
           <Skeleton w={110} h={15} />
           <Skeleton w={45} h={15} />
