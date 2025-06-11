@@ -1,4 +1,4 @@
-import { emptyArtist, reduxRender, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyArtist, reduxRouterRender } from '../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
@@ -46,7 +46,7 @@ describe('Home Recent Artists', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<HomeRecentArtists />)
+    reduxRouterRender(<HomeRecentArtists />)
 
     expect(screen.getByText(/recent artists/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'forward' })).toBeInTheDocument()
@@ -74,7 +74,7 @@ describe('Home Recent Artists', () => {
       })
     )
 
-    reduxRender(<HomeRecentArtists />)
+    reduxRouterRender(<HomeRecentArtists />)
 
     expect(await screen.findByText(/no artists/i)).toBeInTheDocument()
   })
@@ -84,7 +84,7 @@ describe('Home Recent Artists', () => {
 
     const artist = artists[1]
 
-    const [_, store] = reduxRender(<HomeRecentArtists />)
+    const [_, store] = reduxRouterRender(<HomeRecentArtists />)
 
     await user.click(await screen.findByRole('img', { name: artist.name }))
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
