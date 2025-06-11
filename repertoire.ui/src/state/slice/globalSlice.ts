@@ -15,6 +15,11 @@ interface SongDrawer {
   open: boolean
 }
 
+interface PlaylistDrawer {
+  playlistId?: string
+  open: boolean
+}
+
 export interface GlobalState {
   userId?: string | undefined
   documentTitle?: string | undefined
@@ -22,6 +27,7 @@ export interface GlobalState {
   artistDrawer: ArtistDrawer
   albumDrawer: AlbumDrawer
   songDrawer: SongDrawer
+  playlistDrawer: PlaylistDrawer
 }
 
 const initialState: GlobalState = {
@@ -33,6 +39,9 @@ const initialState: GlobalState = {
     open: false
   },
   artistDrawer: {
+    open: false
+  },
+  playlistDrawer: {
     open: false
   }
 }
@@ -84,6 +93,18 @@ export const globalSlice = createSlice({
     deleteSongDrawer: (state) => {
       state.songDrawer.open = false
       state.songDrawer.songId = undefined
+    },
+
+    openPlaylistDrawer: (state, action: PayloadAction<string>) => {
+      state.playlistDrawer.playlistId = action.payload
+      state.playlistDrawer.open = true
+    },
+    closePlaylistDrawer: (state) => {
+      state.playlistDrawer.open = false
+    },
+    deletePlaylistDrawer: (state) => {
+      state.playlistDrawer.open = false
+      state.playlistDrawer.playlistId = undefined
     }
   }
 })
@@ -100,7 +121,10 @@ export const {
   deleteAlbumDrawer,
   openSongDrawer,
   closeSongDrawer,
-  deleteSongDrawer
+  deleteSongDrawer,
+  openPlaylistDrawer,
+  closePlaylistDrawer,
+  deletePlaylistDrawer,
 } = globalSlice.actions
 
 export default globalSlice.reducer
