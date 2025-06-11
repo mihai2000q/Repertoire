@@ -1,19 +1,22 @@
 import Playlist from '../../types/models/Playlist'
 import { Avatar, Center, Group, Menu, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
-import { IconPlaylist, IconTrash } from '@tabler/icons-react'
+import { IconLayoutSidebarLeftExpand, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/api/playlistsApi.ts'
 import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useState } from 'react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
+import { useAppDispatch } from '../../state/store.ts'
 
 interface PlaylistCardProps {
   playlist: Playlist
 }
 
 function PlaylistCard({ playlist }: PlaylistCardProps) {
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
@@ -26,6 +29,10 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
 
   function handleClick() {
     navigate(`/playlist/${playlist.id}`)
+  }
+
+  function handleOpenDrawer() {
+    dispatch(openPlaylistDrawer(playlist.id))
   }
 
   async function handleDelete() {
@@ -76,6 +83,12 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
         </Menu.Target>
 
         <Menu.Dropdown {...menuDropdownProps}>
+          <Menu.Item
+            leftSection={<IconLayoutSidebarLeftExpand size={14} />}
+            onClick={handleOpenDrawer}
+          >
+            Open Drawer
+          </Menu.Item>
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
