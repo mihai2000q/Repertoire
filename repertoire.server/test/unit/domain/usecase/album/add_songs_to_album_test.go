@@ -104,7 +104,7 @@ func TestAddSongsToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t 
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnConflictError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -131,14 +131,14 @@ func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnBadReque
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" and album do not share the same artist", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -165,14 +165,14 @@ func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturn
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" and album do not share the same artist", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnConflictError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
@@ -199,7 +199,7 @@ func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnBadRequestError(t *test
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" already has an album", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
