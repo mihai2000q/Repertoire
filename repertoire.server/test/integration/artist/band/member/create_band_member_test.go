@@ -32,7 +32,7 @@ func TestCreateBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *test
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnBadRequestError(t *testing.T) {
+func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -48,7 +48,7 @@ func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnBadRequestError(t *tes
 	core.NewTestHandler().POST(w, "/api/artists/band-members", request)
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestCreateBandMember_WhenSuccessful_ShouldCreateMember(t *testing.T) {

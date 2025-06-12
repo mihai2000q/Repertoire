@@ -17,7 +17,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestAddSongsToArtist_WhenSongAlreadyHasArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToArtist_WhenSongAlreadyHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -36,7 +36,7 @@ func TestAddSongsToArtist_WhenSongAlreadyHasArtist_ShouldReturnBadRequestError(t
 	core.NewTestHandler().POST(w, "/api/artists/add-songs", request)
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestAddSongsToArtist_WhenSuccessful_ShouldAddSongsToArtist(t *testing.T) {
