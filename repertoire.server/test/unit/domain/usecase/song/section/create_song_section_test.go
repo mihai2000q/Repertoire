@@ -142,7 +142,7 @@ func TestCreateSongSection_WhenIsBandMemberAssociatedWithSongFails_ShouldReturnI
 	songRepository.AssertExpectations(t)
 }
 
-func TestCreateSongSection_WhenBandMemberIsNotAssociatedWithTheSong_ShouldReturnBadRequestError(t *testing.T) {
+func TestCreateSongSection_WhenBandMemberIsNotAssociatedWithTheSong_ShouldReturnConflictError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := section.NewCreateSongSection(songRepository)
@@ -173,7 +173,7 @@ func TestCreateSongSection_WhenBandMemberIsNotAssociatedWithTheSong_ShouldReturn
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)

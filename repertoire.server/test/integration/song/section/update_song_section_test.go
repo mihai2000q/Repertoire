@@ -33,7 +33,7 @@ func TestUpdateSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *te
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestUpdateSongSection_WhenRehearsalsAreDecreasing_ShouldReturnBadRequestError(t *testing.T) {
+func TestUpdateSongSection_WhenRehearsalsAreDecreasing_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
@@ -51,10 +51,10 @@ func TestUpdateSongSection_WhenRehearsalsAreDecreasing_ShouldReturnBadRequestErr
 	core.NewTestHandler().PUT(w, "/api/songs/sections", request)
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
-func TestUpdateSongSection_WhenRequestChangesBandMemberIDButItIsNotAssociated_ShouldReturnBadRequestError(t *testing.T) {
+func TestUpdateSongSection_WhenRequestChangesBandMemberIDButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
 	tests := []struct {
 		name string
 		song model.Song
@@ -89,7 +89,7 @@ func TestUpdateSongSection_WhenRequestChangesBandMemberIDButItIsNotAssociated_Sh
 			core.NewTestHandler().PUT(w, "/api/songs/sections", request)
 
 			// then
-			assert.Equal(t, http.StatusBadRequest, w.Code)
+			assert.Equal(t, http.StatusConflict, w.Code)
 		})
 	}
 }
