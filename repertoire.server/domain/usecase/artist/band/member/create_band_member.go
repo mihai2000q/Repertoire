@@ -30,7 +30,7 @@ func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid
 		return uuid.Nil, wrapper.NotFoundError(errors.New("artist not found"))
 	}
 	if !artist.IsBand {
-		return uuid.Nil, wrapper.BadRequestError(errors.New("artist is not band"))
+		return uuid.Nil, wrapper.ConflictError(errors.New("artist is not band"))
 	}
 
 	var roles []model.BandMemberRole

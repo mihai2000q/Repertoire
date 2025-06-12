@@ -31,7 +31,7 @@ func TestCreateSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testi
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCreateSongSection_WhenRequestHasBandMemberIDButItIsNotAssociated_ShouldReturnBadRequestError(t *testing.T) {
+func TestCreateSongSection_WhenRequestHasBandMemberIDButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
 	tests := []struct {
 		name string
 		song model.Song
@@ -63,7 +63,7 @@ func TestCreateSongSection_WhenRequestHasBandMemberIDButItIsNotAssociated_Should
 			core.NewTestHandler().POST(w, "/api/songs/sections", request)
 
 			// then
-			assert.Equal(t, http.StatusBadRequest, w.Code)
+			assert.Equal(t, http.StatusConflict, w.Code)
 		})
 	}
 }

@@ -37,7 +37,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 		return wrapper.NotFoundError(errors.New("song section not found"))
 	}
 	if section.Rehearsals > request.Rehearsals {
-		return wrapper.BadRequestError(errors.New("rehearsals can only be increased"))
+		return wrapper.ConflictError(errors.New("rehearsals can only be increased"))
 	}
 
 	hasRehearsalsChanged := section.Rehearsals != request.Rehearsals
@@ -65,7 +65,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 			return wrapper.InternalServerError(err)
 		}
 		if !res {
-			return wrapper.BadRequestError(errors.New("band member is not part of the artist associated with this song"))
+			return wrapper.ConflictError(errors.New("band member is not part of the artist associated with this song"))
 		}
 	}
 

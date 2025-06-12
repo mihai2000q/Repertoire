@@ -60,7 +60,7 @@ func TestDeleteImageFromPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
+func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnConflictError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewDeleteImageFromPlaylist(playlistRepository, nil, nil)
@@ -76,7 +76,7 @@ func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnBadRequestEr
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "playlist does not have an image", errCode.Error.Error())
 
 	playlistRepository.AssertExpectations(t)

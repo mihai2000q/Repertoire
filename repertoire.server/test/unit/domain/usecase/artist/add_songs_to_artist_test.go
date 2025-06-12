@@ -41,7 +41,7 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := artist.NewAddSongsToArtist(songRepository, nil)
@@ -66,7 +66,7 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnBadRequestError(t *te
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+songs[0].ID.String()+"already has an artist", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)

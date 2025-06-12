@@ -59,7 +59,7 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 		if request.ArtistID == nil && album.ArtistID != nil ||
 			request.ArtistID != nil && album.ArtistID == nil ||
 			request.ArtistID != nil && album.ArtistID != nil && *request.ArtistID != *album.ArtistID {
-			return wrapper.BadRequestError(errors.New("album's artist does not match the request's artist"))
+			return wrapper.ConflictError(errors.New("album's artist does not match the request's artist"))
 		}
 	}
 

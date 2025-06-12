@@ -34,7 +34,7 @@ func TestAddSongsToAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testin
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestAddSongsToAlbum_WhenSongAlreadyHasAnAlbum_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenSongAlreadyHasAnAlbum_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -51,10 +51,10 @@ func TestAddSongsToAlbum_WhenSongAlreadyHasAnAlbum_ShouldReturnBadRequestError(t
 	core.NewTestHandler().POST(w, "/api/albums/add-songs", request)
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
-func TestAddSongsToAlbum_WhenSongHasDifferentArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddSongsToAlbum_WhenSongHasDifferentArtist_ShouldReturnConflictError(t *testing.T) {
 	tests := []struct {
 		name    string
 		request requests.AddSongsToAlbumRequest
@@ -91,7 +91,7 @@ func TestAddSongsToAlbum_WhenSongHasDifferentArtist_ShouldReturnBadRequestError(
 			core.NewTestHandler().POST(w, "/api/albums/add-songs", test.request)
 
 			// then
-			assert.Equal(t, http.StatusBadRequest, w.Code)
+			assert.Equal(t, http.StatusConflict, w.Code)
 		})
 	}
 }

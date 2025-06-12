@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRemoveAlbumsFromArtist_WhenAlbumArtistIsDifferent_ShouldReturnBadRequestError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenAlbumArtistIsDifferent_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -35,7 +35,7 @@ func TestRemoveAlbumsFromArtist_WhenAlbumArtistIsDifferent_ShouldReturnBadReques
 	core.NewTestHandler().PUT(w, "/api/artists/remove-albums", request)
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestRemoveAlbumsFromArtist_WhenSuccessful_ShouldDeleteAlbumsFromArtist(t *testing.T) {
