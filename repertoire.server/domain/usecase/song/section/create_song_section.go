@@ -41,7 +41,7 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 			return wrapper.InternalServerError(err)
 		}
 		if !res {
-			return wrapper.BadRequestError(errors.New("band member is not part of the artist associated with this song"))
+			return wrapper.ConflictError(errors.New("band member is not part of the artist associated with this song"))
 		}
 	}
 

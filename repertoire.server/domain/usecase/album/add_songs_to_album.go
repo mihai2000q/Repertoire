@@ -50,10 +50,10 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		// if their artists don't match, or the song has an artist but the album doesn't, it results in failure
 		// on the other hand, if the album has an artist and the song doesn't, it will inherit it (pass)
 		if song.ArtistID != nil && (album.ArtistID == nil || *album.ArtistID != *song.ArtistID) {
-			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + song.Title + " and album do not share the same artist"))
+			return wrapper.ConflictError(errors.New("song " + song.ID.String() + song.Title + " and album do not share the same artist"))
 		}
 		if song.AlbumID != nil {
-			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " already has an album"))
+			return wrapper.ConflictError(errors.New("song " + song.ID.String() + " already has an album"))
 		}
 
 		songs[i].AlbumID = &request.ID

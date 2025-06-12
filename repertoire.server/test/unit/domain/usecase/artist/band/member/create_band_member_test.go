@@ -68,7 +68,7 @@ func TestCreateBandMember_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing
 	artistRepository.AssertExpectations(t)
 }
 
-func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnBadRequestError(t *testing.T) {
+func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnConflictError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := member.NewCreateBandMember(artistRepository)
@@ -90,7 +90,7 @@ func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnBadRequestError(t *tes
 	// then
 	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "artist is not band", errCode.Error.Error())
 
 	artistRepository.AssertExpectations(t)

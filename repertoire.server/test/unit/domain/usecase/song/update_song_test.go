@@ -136,7 +136,7 @@ func TestUpdateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	albumRepository.AssertExpectations(t)
 }
 
-func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnBadRequestError(t *testing.T) {
+func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnConflictError(t *testing.T) {
 	albumID := uuid.New()
 	artistID := uuid.New()
 
@@ -190,7 +190,7 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnBadReq
 
 			// then
 			assert.NotNil(t, errCode)
-			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+			assert.Equal(t, http.StatusConflict, errCode.Code)
 			assert.Equal(t, "album's artist does not match the request's artist", errCode.Error.Error())
 
 			songRepository.AssertExpectations(t)

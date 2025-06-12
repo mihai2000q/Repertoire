@@ -41,7 +41,7 @@ func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerErro
 	albumRepository.AssertExpectations(t)
 }
 
-func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnBadRequestError(t *testing.T) {
+func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnConflictError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository, nil)
@@ -61,7 +61,7 @@ func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnBadRe
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "album "+request.AlbumIDs[0].String()+" is not owned by this artist", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)

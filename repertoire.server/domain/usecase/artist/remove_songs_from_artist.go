@@ -34,7 +34,7 @@ func (r RemoveSongsFromArtist) Handle(request requests.RemoveSongsFromArtistRequ
 
 	for i, song := range songs {
 		if song.ArtistID == nil || *song.ArtistID != request.ID {
-			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + " is not owned by this artist"))
+			return wrapper.ConflictError(errors.New("song " + song.ID.String() + " is not owned by this artist"))
 		}
 
 		songs[i].ArtistID = nil
