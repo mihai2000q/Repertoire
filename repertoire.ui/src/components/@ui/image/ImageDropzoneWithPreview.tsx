@@ -3,11 +3,11 @@ import {
   ActionIcon,
   AspectRatio,
   Box,
+  Center,
   FileButton,
   Group,
   Image,
   Menu,
-  Stack,
   Tooltip
 } from '@mantine/core'
 import {
@@ -69,78 +69,85 @@ function ImageDropzoneWithPreview({
             alt={'image-preview'}
             sx={{
               transition: '0.3s',
-              ...(isOptionsHovered && { filter: 'brightness(0.5)' })
+              ...((isMenuOpened || isOptionsHovered) && { filter: 'brightness(0.5)' })
             }}
           />
         </AspectRatio>
 
-        <Box pos={'absolute'} top={0} right={0} h={h} w={h}>
-          <Stack gap={0} align={'center'} h={'100%'} justify={'center'}>
-            <Menu
-              opened={isMenuOpened}
-              onChange={setIsMenuOpened}
-              withArrow
-              offset={-iconSizes / 2}
-              transitionProps={{ transition: 'fade-up', duration: 150 }}
+        <Menu
+          opened={isMenuOpened}
+          onChange={setIsMenuOpened}
+          offset={-(h / 2) + iconSizes / 2}
+          withArrow
+          transitionProps={{ transition: 'fade-up', duration: 150 }}
+        >
+          <Menu.Target>
+            <Tooltip
+              label={'Open image options menu'}
+              openDelay={500}
+              offset={-(h / 2) + iconSizes / 2}
+              disabled={isMenuOpened}
             >
-              <Menu.Target>
-                <Tooltip label={'Open image options menu'} openDelay={500}>
-                  <ActionIcon
-                    onMouseEnter={() => setIsOptionsHovered(true)}
-                    onMouseLeave={() => setIsOptionsHovered(false)}
-                    aria-label={'image-options'}
-                    h={'100%'}
-                    w={'100%'}
-                    radius={radius}
-                    bg={'transparent'}
-                    sx={{
-                      transition: '0.3s',
-                      opacity: isMenuOpened || isOptionsHovered ? 1 : 0
-                    }}
-                  >
-                    <IconPhotoFilled size={iconSizes / 1.2} />
-                  </ActionIcon>
-                </Tooltip>
-              </Menu.Target>
+              <ActionIcon
+                aria-label={'image-options'}
+                pos={'absolute'}
+                top={0}
+                right={0}
+                w={w}
+                h={h}
+                bg={'transparent'}
+                onMouseEnter={() => setIsOptionsHovered(true)}
+                onMouseLeave={() => setIsOptionsHovered(false)}
+              >
+                <Center
+                  c={'white'}
+                  style={{
+                    transition: '0.3s',
+                    opacity: isMenuOpened || isOptionsHovered ? 1 : 0
+                  }}
+                >
+                  <IconPhotoFilled size={iconSizes / 1.2} />
+                </Center>
+              </ActionIcon>
+            </Tooltip>
+          </Menu.Target>
 
-              <Menu.Dropdown>
-                <FileButton
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                  inputProps={{ 'data-testid': 'upload-image-input' }}
-                  onChange={handleImageChange}
-                  accept={IMAGE_MIME_TYPE.join(',')}
-                >
-                  {(props) => (
-                    <Menu.Item
-                      leftSection={<IconUpload size={18} />}
-                      closeMenuOnClick={false}
-                      {...props}
-                    >
-                      Upload Image
-                    </Menu.Item>
-                  )}
-                </FileButton>
-                {defaultValue && (
-                  <Menu.Item
-                    disabled={defaultValue === image}
-                    leftSection={<IconRestore size={18} />}
-                    onClick={handleResetImage}
-                  >
-                    Reset Image
-                  </Menu.Item>
-                )}
+          <Menu.Dropdown>
+            <FileButton
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              inputProps={{ 'data-testid': 'upload-image-input' }}
+              onChange={handleImageChange}
+              accept={IMAGE_MIME_TYPE.join(',')}
+            >
+              {(props) => (
                 <Menu.Item
-                  c={'red'}
-                  leftSection={<IconTrashFilled size={18} />}
-                  onClick={handleRemoveImage}
+                  leftSection={<IconUpload size={18} />}
+                  closeMenuOnClick={false}
+                  {...props}
                 >
-                  Remove Image
+                  Upload Image
                 </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Stack>
-        </Box>
+              )}
+            </FileButton>
+            {defaultValue && (
+              <Menu.Item
+                disabled={defaultValue === image}
+                leftSection={<IconRestore size={18} />}
+                onClick={handleResetImage}
+              >
+                Reset Image
+              </Menu.Item>
+            )}
+            <Menu.Item
+              c={'red'}
+              leftSection={<IconTrashFilled size={18} />}
+              onClick={handleRemoveImage}
+            >
+              Remove Image
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </Box>
     )
   }

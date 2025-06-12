@@ -28,22 +28,22 @@
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@mantine/core": "^8.0.2",
-    "@mantine/emotion": "^8.0.2",
-    "@types/node": "^22.15.21",
+    "@mantine/core": "^8.1.0",
+    "@mantine/emotion": "^8.1.0",
+    "@types/node": "^24.0.1",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.5.0",
-    "electron": "^36.3.1",
+    "@vitejs/plugin-react": "^4.5.2",
+    "electron": "^36.4.0",
     "electron-builder": "^26.0.12",
     "electron-vite": "^3.1.0",
-    "eslint": "^9.27.0",
+    "eslint": "^9.28.0",
     "eslint-plugin-react": "^7.37.5",
     "prettier": "^3.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "repertoire.ui": "file:../repertoire.ui",
     "typescript": "^5.8.3",
-    "vite": "6.3.4"
+    "vite": "6.3.5"
   }
 }

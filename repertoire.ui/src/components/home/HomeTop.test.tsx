@@ -1,4 +1,4 @@
-import { emptyAlbum, emptyArtist, emptySong, reduxRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import HomeTop from './HomeTop.tsx'
 import { screen } from '@testing-library/react'
 import Album from '../../types/models/Album.ts'
@@ -125,7 +125,7 @@ describe('Home Top', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<HomeTop />)
+    reduxRouterRender(<HomeTop />)
 
     expect(screen.getByText(/welcome back/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument()
@@ -143,7 +143,7 @@ describe('Home Top', () => {
   it('should display songs, artists and albums when switching tabs', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<HomeTop />)
+    reduxRouterRender(<HomeTop />)
 
     const songsTab = screen.getByRole('button', { name: /songs/i })
     const albumsTab = screen.getByRole('button', { name: /albums/i })
@@ -201,7 +201,7 @@ describe('Home Top', () => {
       })
     )
 
-    reduxRender(<HomeTop />)
+    reduxRouterRender(<HomeTop />)
 
     expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
 
