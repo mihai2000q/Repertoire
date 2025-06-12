@@ -24,7 +24,7 @@ func TestDeleteProfilePictureFromUser_WhenUserIsNotFound_ShouldReturnNotFoundErr
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnBadRequestError(t *testing.T) {
+func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, userData.Users, userData.SeedData)
 
@@ -37,7 +37,7 @@ func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnBa
 		DELETE(w, "/api/users/pictures")
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestDeleteProfilePictureFromUser_WhenSuccessful_ShouldUpdateUserAndDeleteProfilePicture(t *testing.T) {
