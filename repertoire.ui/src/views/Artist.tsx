@@ -89,7 +89,9 @@ function Artist() {
         <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
           <Stack h={'100%'}>
             {!isUnknownArtist && artist.isBand && (
-              <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
+              <Flex>
+                <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
+              </Flex>
             )}
 
             <ArtistAlbumsCard
