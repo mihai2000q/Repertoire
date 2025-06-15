@@ -128,6 +128,13 @@ function HomeRecentArtists({ ...others }: CardProps) {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
   }, [viewportRef.current, width])
+  useDidUpdate(() => {
+    const frame = requestAnimationFrame(() => {
+      setDisableBack(viewportRef.current?.scrollLeft === 0)
+      setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [artists])
 
   const handleTopNav = (direction: 'left' | 'right') => {
     if (!viewportRef.current) return
@@ -198,8 +205,9 @@ function HomeRecentArtists({ ...others }: CardProps) {
               `
             }
           })}
+          styles={{ viewport: { '> div': { display: 'flex' } } }}
         >
-          <Group wrap={'nowrap'} h={'100%'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
+          <Group wrap={'nowrap'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
             {isLoading || !artists ? (
               <Loader />
             ) : (

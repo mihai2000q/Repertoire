@@ -115,6 +115,13 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
     setDisableBack(topRef.current?.scrollLeft === 0)
     setDisableForward(topRef.current?.scrollWidth === topRef.current?.clientWidth)
   }, [topRef.current, width, topEntity])
+  useDidUpdate(() => {
+    const frame = requestAnimationFrame(() => {
+      setDisableBack(topRef.current?.scrollLeft === 0)
+      setDisableForward(topRef.current?.scrollWidth === topRef.current?.clientWidth)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [albums, songs, artists])
 
   const handleTopNav = (direction: 'left' | 'right') => {
     if (!topRef.current) return
