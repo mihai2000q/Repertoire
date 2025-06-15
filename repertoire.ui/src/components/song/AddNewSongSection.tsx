@@ -46,8 +46,10 @@ function AddNewSongSection({
   const [bandMember, setBandMember] = useState<BandMember>(null)
   const [instrument, setInstrument] = useState<Instrument>(null)
   useEffect(() => {
-    setBandMember(settings.defaultBandMember)
-    setInstrument(settings.defaultInstrument)
+    if (!bandMember || bandMember?.id === settings.defaultBandMember?.id)
+      setBandMember(settings.defaultBandMember)
+    if (!instrument || instrument?.id === settings.defaultInstrument?.id)
+      setInstrument(settings.defaultInstrument)
   }, [settings])
 
   function handleOnTransitionEnd() {

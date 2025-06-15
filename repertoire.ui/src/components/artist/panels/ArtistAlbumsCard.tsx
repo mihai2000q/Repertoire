@@ -51,7 +51,7 @@ function ArtistAlbumsCard({
   if (isLoading || !albums) return <ArtistAlbumsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'albums-card'} p={0} mah={'100%'}>
+    <Card aria-label={'albums-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
         <LoadingOverlay visible={isFetching} />
 

@@ -49,7 +49,7 @@ function ArtistSongsCard({
   if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'songs-card'} flex={1} p={0} mah={'100%'}>
+    <Card aria-label={'songs-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
         <LoadingOverlay visible={isFetching} />
 

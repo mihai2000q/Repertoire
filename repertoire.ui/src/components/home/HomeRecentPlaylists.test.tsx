@@ -1,4 +1,4 @@
-import { emptyPlaylist, reduxRender } from '../../test-utils.tsx'
+import { emptyPlaylist, reduxRouterRender } from '../../test-utils.tsx'
 import HomeRecentPlaylists from './HomeRecentPlaylists.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
@@ -38,12 +38,15 @@ describe('Home Recent Playlists', () => {
 
   beforeAll(() => server.listen())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
 
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<HomeRecentPlaylists />)
+    reduxRouterRender(<HomeRecentPlaylists />)
 
     expect(screen.getByText(/recent playlists/i)).toBeInTheDocument()
     for (const playlist of playlists) {
@@ -68,7 +71,7 @@ describe('Home Recent Playlists', () => {
       })
     )
 
-    reduxRender(<HomeRecentPlaylists />)
+    reduxRouterRender(<HomeRecentPlaylists />)
 
     expect(await screen.findByText(/no playlists/i)).toBeInTheDocument()
   })
@@ -78,11 +81,43 @@ describe('Home Recent Playlists', () => {
 
     const playlist = playlists[1]
 
-    const [, store] = reduxRender(<HomeRecentPlaylists />)
+    const [, store] = reduxRouterRender(<HomeRecentPlaylists />)
 
     await user.click(await screen.findByRole('img', { name: playlist.title }))
 
     expect((store.getState() as RootState).global.playlistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.playlistDrawer.playlistId).toBe(playlist.id)
+  })
+
+  it('should display menu on playlist right click', async () => {
+    const user = userEvent.setup()
+
+    const playlist = playlists[0]
+
+    reduxRouterRender(<HomeRecentPlaylists />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: await screen.findByLabelText(`default-icon-${playlist.title}`)
+    })
+
+    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+  })
+
+  describe('on menu', () => {
+    it('should navigate to playlist when clicking on view details', async () => {
+      const user = userEvent.setup()
+
+      const playlist = playlists[0]
+
+      reduxRouterRender(<HomeRecentPlaylists />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: await screen.findByLabelText(`default-icon-${playlist.title}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /view details/i }))
+      expect(window.location.pathname).toBe(`/playlist/${playlist.id}`)
+    })
   })
 })

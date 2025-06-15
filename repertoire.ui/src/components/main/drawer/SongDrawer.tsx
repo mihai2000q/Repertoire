@@ -298,12 +298,12 @@ function SongDrawer() {
           </Group>
 
           {song.description !== '' && (
-            <Text size="sm" c="dimmed" my={'xs'} px={'xs'} lineClamp={3}>
+            <Text size="sm" c="dimmed" mt={'xs'} px={'xs'} lineClamp={3}>
               {song.description}
             </Text>
           )}
 
-          {showInfo && <Divider />}
+          {showInfo && <Divider mt={'xs'} />}
 
           <Grid align={'center'} gutter={'sm'} p={showInfo ? 'xs' : 0}>
             {song.difficulty && (
