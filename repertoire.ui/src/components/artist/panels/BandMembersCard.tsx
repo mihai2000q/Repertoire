@@ -74,7 +74,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
   }
 
   return (
-    <Card aria-label={'band-members-card'} variant={'panel'} p={0} flex={1}>
+    <Card aria-label={'band-members-card'} variant={'panel'} p={0}>
       <Stack gap={0}>
         <Group px={'md'} pt={'xs'} gap={'xs'}>
           <Text fw={600}>Band Members</Text>

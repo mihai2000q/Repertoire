@@ -92,9 +92,9 @@ function Artist() {
           mah={{ base: !isUnknownArtist && artist.isBand ? '60vh' : '37vh', md: 'unset' }}
         >
           {!isUnknownArtist && artist.isBand && (
-            <Flex>
+            <Stack>
               <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
-            </Flex>
+            </Stack>
           )}
 
           <ArtistAlbumsCard
