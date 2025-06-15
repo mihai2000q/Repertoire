@@ -36,6 +36,13 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
   }, [viewportRef.current, width])
+  useDidUpdate(() => {
+    const frame = requestAnimationFrame(() => {
+      setDisableBack(viewportRef.current?.scrollLeft === 0)
+      setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [bandMembers])
 
   const [internalMembers, { reorder, setState }] = useListState<BandMember>(bandMembers)
   useDidUpdate(() => setState(bandMembers), [bandMembers])
@@ -122,8 +129,9 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
           scrollbarSize={5}
           viewportRef={viewportRef}
           viewportProps={{ onScroll: handleOnScroll }}
+          styles={{ viewport: { '> div': { display: 'flex' } } }}
         >
-          <Group wrap={'nowrap'} align={'start'} pl={'lg'} pb={'lg'} pt={'xs'}>
+          <Group wrap={'nowrap'} align={'start'} px={'lg'} pb={'md'} pt={'xs'}>
             {bandMembers.length === 0 && (
               <Stack
                 aria-label={`add-new-band-member-card`}
@@ -159,7 +167,6 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
                     gap={'xs'}
                     wrap={'nowrap'}
                     align={'start'}
-                    pr={'lg'}
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
