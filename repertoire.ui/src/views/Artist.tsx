@@ -1,4 +1,4 @@
-import { Divider, Flex, Grid, Stack } from '@mantine/core'
+import { Divider, Flex, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { useGetArtistQuery } from '../state/api/artistsApi.ts'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
@@ -85,41 +85,41 @@ function Artist() {
 
       <Divider />
 
-      <Grid align={'start'} mih={340} mb={8} h={'100%'} styles={{ inner: { height: `100%` } }}>
-        <Grid.Col span={{ sm: 12, md: 6.5 }} h={'100%'}>
-          <Stack h={'100%'}>
-            {!isUnknownArtist && artist.isBand && (
-              <Flex>
-                <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
-              </Flex>
-            )}
+      <Flex direction={{ base: 'column', md: 'row' }} mih={360} pb={'lg'} gap={'md'}>
+        <Stack
+          w={{ base: '100%', md: '55%' }}
+          h={{ base: 'unset', md: '100%' }}
+          mah={{ base: !isUnknownArtist && artist.isBand ? '60vh' : '37vh', md: 'unset' }}
+        >
+          {!isUnknownArtist && artist.isBand && (
+            <Flex>
+              <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
+            </Flex>
+          )}
 
-            <ArtistAlbumsCard
-              albums={albums}
-              isLoading={isAlbumsLoading}
-              isFetching={isAlbumsFetching}
-              isUnknownArtist={isUnknownArtist}
-              order={albumsOrder}
-              setOrder={setAlbumsOrder}
-              artistId={artist?.id}
-            />
-          </Stack>
-        </Grid.Col>
+          <ArtistAlbumsCard
+            albums={albums}
+            isLoading={isAlbumsLoading}
+            isFetching={isAlbumsFetching}
+            isUnknownArtist={isUnknownArtist}
+            order={albumsOrder}
+            setOrder={setAlbumsOrder}
+            artistId={artist?.id}
+          />
+        </Stack>
 
-        <Grid.Col span={{ sm: 12, md: 5.5 }} h={'100%'}>
-          <Flex mah={'100%'}>
-            <ArtistSongsCard
-              songs={songs}
-              isLoading={isSongsLoading}
-              isFetching={isSongsFetching}
-              isUnknownArtist={isUnknownArtist}
-              order={songsOrder}
-              setOrder={setSongsOrder}
-              artistId={artist?.id}
-            />
-          </Flex>
-        </Grid.Col>
-      </Grid>
+        <Stack flex={1} h={'100%'} pb={{ base: 'lg', md: 0 }}>
+          <ArtistSongsCard
+            songs={songs}
+            isLoading={isSongsLoading}
+            isFetching={isSongsFetching}
+            isUnknownArtist={isUnknownArtist}
+            order={songsOrder}
+            setOrder={setSongsOrder}
+            artistId={artist?.id}
+          />
+        </Stack>
+      </Flex>
     </Stack>
   )
 }
