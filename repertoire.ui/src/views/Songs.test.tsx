@@ -74,6 +74,9 @@ describe('Songs', () => {
       const response: GuitarTuning[] = []
       return HttpResponse.json(response)
     }),
+    http.get(`/songs/instruments`, () => {
+      return HttpResponse.json([])
+    }),
     http.get('/songs/sections/types', async () => {
       const response: SongSectionType[] = []
       return HttpResponse.json(response)

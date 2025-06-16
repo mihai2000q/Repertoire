@@ -1,4 +1,9 @@
-import { emptyAlbum, emptyOrder, reduxRouterRender } from '../../test-utils.tsx'
+import {
+  defaultSongFiltersMetadata,
+  emptyAlbum,
+  emptyOrder,
+  reduxRouterRender
+} from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
@@ -17,7 +22,13 @@ describe('Artist Album Card', () => {
     title: 'Album 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      return HttpResponse.json(defaultSongFiltersMetadata)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 

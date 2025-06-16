@@ -135,7 +135,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   )
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleContextMenu}>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
       <ContextMenu.Target>
         <Group
           ref={ref}
