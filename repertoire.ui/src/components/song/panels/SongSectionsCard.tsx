@@ -81,6 +81,13 @@ function SongSectionsCard({
     return [rehearsals, progress]
   }, [sections])
 
+  const rehearsalsToastId = useRef<number | string>(null)
+
+  function showRehearsalsToast(sectionName: string) {
+    if (rehearsalsToastId.current) toast.dismiss(rehearsalsToastId.current)
+    rehearsalsToastId.current = toast.info(`${sectionName} rehearsals' have been increased by 1!`)
+  }
+
   function handleShowDetails() {
     setShowDetails(!showDetails)
     if (!showDetails) setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 250)
@@ -270,13 +277,14 @@ function SongSectionsCard({
                           <SongSectionCard
                             section={section}
                             songId={songId}
-                            draggableProvided={provided}
                             isDragging={snapshot.isDragging}
                             showDetails={showDetails}
                             maxSectionProgress={maxSectionProgress}
                             maxSectionRehearsals={maxSectionRehearsals}
+                            draggableProvided={provided}
                             bandMembers={bandMembers}
                             isArtistBand={isArtistBand}
+                            showRehearsalsToast={showRehearsalsToast}
                           />
                         )}
                       </Draggable>

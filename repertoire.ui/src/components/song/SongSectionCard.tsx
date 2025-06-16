@@ -63,6 +63,7 @@ interface SongSectionCardProps {
   draggableProvided?: DraggableProvided
   bandMembers?: BandMember[]
   isArtistBand?: boolean
+  showRehearsalsToast?: (name: string) => void
 }
 
 function SongSectionCard({
@@ -74,7 +75,8 @@ function SongSectionCard({
   maxSectionRehearsals,
   draggableProvided,
   bandMembers,
-  isArtistBand
+  isArtistBand,
+  showRehearsalsToast
 }: SongSectionCardProps) {
   const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
     getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
@@ -100,14 +102,15 @@ function SongSectionCard({
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleAddRehearsal() {
-    updateSongSectionMutation({
+  async function handleAddRehearsal() {
+    await updateSongSectionMutation({
       ...section,
       typeId: section.songSectionType.id,
       bandMemberId: section.bandMember?.id,
       instrumentId: section.instrument?.id,
       rehearsals: section.rehearsals + 1
-    })
+    }).unwrap()
+    showRehearsalsToast?.(section.name)
   }
 
   async function handleDelete() {
