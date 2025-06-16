@@ -99,7 +99,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         artist={artist}
-        withName={true}
+        withName
       />
     </Stack>
   )

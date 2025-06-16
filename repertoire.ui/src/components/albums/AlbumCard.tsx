@@ -144,7 +144,7 @@ function AlbumCard({ album }: AlbumCardProps) {
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         album={album}
-        withName={true}
+        withName
       />
     </Stack>
   )

@@ -238,7 +238,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         album={album}
-        withName={true}
+        withName
       />
     </ContextMenu>
   )
