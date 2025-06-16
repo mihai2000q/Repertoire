@@ -22,6 +22,7 @@ import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { DeleteAccountForm, deleteAccountSchema } from '../../../validation/mainForm.ts'
 import { useSignInMutation } from '../../../state/authApi.ts'
 import { useDeleteUserMutation } from '../../../state/api/usersApi.ts'
+import { toast } from 'react-toastify'
 
 interface DeleteAccountModalProps {
   opened: boolean
@@ -77,6 +78,7 @@ function DeleteAccountModal({
     onCloseSettingsModal()
     dispatch(signOut())
     navigate('sign-in')
+    toast(`We are sorry to let you down. Goodbye! :(`)
   }
 
   return (
