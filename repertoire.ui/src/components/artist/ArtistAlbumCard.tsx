@@ -204,7 +204,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             </Flex>
           </Stack>
 
-          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+          <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
             <Menu.Target>
               <ActionIcon
                 size={'md'}

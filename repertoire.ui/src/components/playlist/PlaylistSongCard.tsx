@@ -300,7 +300,7 @@ function PlaylistSongCard({
             </Grid.Col>
 
             <Grid.Col span={'content'}>
-              <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+              <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
                 <Menu.Target>
                   <ActionIcon
                     size={'md'}

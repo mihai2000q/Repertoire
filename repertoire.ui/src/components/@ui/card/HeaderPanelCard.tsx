@@ -24,13 +24,7 @@ const HeaderPanelCard = forwardRef<HTMLDivElement, HeaderPanelCardProps>(
 
         {hideIcons !== true && (
           <Box pos={'absolute'} right={0} top={0} p={0}>
-            <Menu
-              opened={menuOpened}
-              onOpen={openMenu}
-              onClose={closeMenu}
-              position={'bottom-end'}
-              shadow={'md'}
-            >
+            <Menu shadow={'lg'} opened={menuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   aria-label={'more-menu'}

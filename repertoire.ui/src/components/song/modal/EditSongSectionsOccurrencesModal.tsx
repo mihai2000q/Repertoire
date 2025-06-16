@@ -115,7 +115,7 @@ function EditSongSectionsOccurrencesModal({
         <Modal.Header>
           <Modal.Title>Edit Sections&#39; Occurrences</Modal.Title>
           <Group gap={'xxs'} wrap={'nowrap'}>
-            <Menu position={'bottom-end'}>
+            <Menu>
               <Menu.Target>
                 <Button
                   variant={'subtle'}

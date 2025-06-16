@@ -109,7 +109,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'band-members-more-menu'}>
                 <IconDots size={15} />

@@ -126,7 +126,7 @@ function SongSectionCard({
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
+    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu} position={'bottom'}>
       <Menu.Target>
         <Stack
           py={'xs'}
