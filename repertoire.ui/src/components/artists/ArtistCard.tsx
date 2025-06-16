@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDeleteArtistMutation } from '../../state/api/artistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -12,6 +11,7 @@ import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 interface ArtistCardProps {
   artist: Artist
@@ -27,7 +27,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
   const [isAvatarHovered, setIsAvatarHovered] = useState(false)
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -59,8 +59,8 @@ function ArtistCard({ artist }: ArtistCardProps) {
         ...((openedMenu || isAvatarHovered) && { transform: 'scale(1.1)' })
       }}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
+        <ContextMenu.Target>
           <Avatar
             onMouseEnter={() => setIsAvatarHovered(true)}
             onMouseLeave={() => setIsAvatarHovered(false)}
@@ -76,7 +76,6 @@ function ArtistCard({ artist }: ArtistCardProps) {
               boxShadow: openedMenu || isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
             })}
             onClick={handleClick}
-            onContextMenu={openMenu}
           >
             <Center c={'gray.7'}>
               <CustomIconUserAlt
@@ -86,9 +85,9 @@ function ArtistCard({ artist }: ArtistCardProps) {
               />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
+        <ContextMenu.Dropdown>
           <Menu.Item
             leftSection={<IconLayoutSidebarLeftExpand size={14} />}
             onClick={handleOpenDrawer}
@@ -105,8 +104,8 @@ function ArtistCard({ artist }: ArtistCardProps) {
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
       <Text px={'xs'} fw={600} ta={'center'} lineClamp={2}>
         {artist.name}
       </Text>

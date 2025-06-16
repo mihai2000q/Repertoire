@@ -199,6 +199,8 @@ export const components = {
   }),
   Menu: Menu.extend({
     defaultProps: {
+      shadow: 'sm',
+      position: 'bottom-end',
       styles: {
         item: {
           transition: '0.25s'

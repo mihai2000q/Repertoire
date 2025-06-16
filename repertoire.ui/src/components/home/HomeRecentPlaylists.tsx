@@ -4,7 +4,6 @@ import {
   CardProps,
   Center,
   Group,
-  Menu,
   ScrollArea,
   SimpleGrid,
   Skeleton,
@@ -20,9 +19,9 @@ import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
-import { useHover } from '@mantine/hooks'
-import useContextMenu from '../../hooks/useContextMenu.ts'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 function Loader() {
   return (
@@ -50,7 +49,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
   const isSelected = hovered || openedMenu
 
@@ -64,8 +63,8 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
 
   return (
     <Group wrap={'nowrap'} gap={0}>
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
           <Avatar
             ref={ref}
             radius={'28%'}
@@ -84,7 +83,6 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
               })
             })}
             onClick={handleClick}
-            onContextMenu={openMenu}
           >
             <Center c={'white'}>
               <IconPlaylist
@@ -94,14 +92,14 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
               />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
             View Details
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Space ml={{ base: 'xs', xl: 'sm', xxl: 'md' }} style={{ transition: '0.16s' }} />
 

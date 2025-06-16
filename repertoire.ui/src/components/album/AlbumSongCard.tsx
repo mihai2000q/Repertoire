@@ -8,7 +8,6 @@ import {
   Grid,
   Group,
   Menu,
-  MenuDropdown,
   NumberFormatter,
   Stack,
   Text,
@@ -17,7 +16,7 @@ import {
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
@@ -27,7 +26,6 @@ import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
@@ -37,6 +35,8 @@ import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.ts
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 
 interface AlbumSongCardProps {
   song: Song
@@ -65,10 +65,10 @@ function AlbumSongCard({
   const [removeSongsFromAlbum, { isLoading: isRemoveLoading }] = useRemoveSongsFromAlbumMutation()
   const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
+    useDoubleMenu()
 
-  const isSelected = hovered || isMenuOpened || isDragging || openedMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isDragging
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -111,9 +111,9 @@ function AlbumSongCard({
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
 
       <Menu.Divider />
-      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
-      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
       <Menu.Divider />
 
       {!isUnknownAlbum && (
@@ -132,8 +132,8 @@ function AlbumSongCard({
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu.Target>
         <Group
           aria-label={`song-card-${song.title}`}
           wrap={'nowrap'}
@@ -163,7 +163,6 @@ function AlbumSongCard({
           px={'md'}
           py={'xs'}
           onClick={handleClick}
-          onContextMenu={openMenu}
         >
           <Grid columns={12} align={'center'} w={'100%'}>
             <Grid.Col
@@ -249,7 +248,7 @@ function AlbumSongCard({
             </Grid.Col>
 
             <Grid.Col span={'content'}>
-              <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+              <Menu opened={openedMenu} onChange={toggleMenu}>
                 <Menu.Target>
                   <ActionIcon
                     aria-label={'more-menu'}
@@ -270,9 +269,9 @@ function AlbumSongCard({
             </Grid.Col>
           </Grid>
         </Group>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <MenuDropdown {...menuDropdownProps}>{menuDropdown}</MenuDropdown>
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
       <YoutubeModal
         title={song.title}
@@ -312,7 +311,7 @@ function AlbumSongCard({
         isLoading={isDeleteLoading}
         onYes={handleDelete}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

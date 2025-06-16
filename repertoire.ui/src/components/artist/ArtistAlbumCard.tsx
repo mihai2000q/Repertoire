@@ -22,7 +22,6 @@ import { useDisclosure, useHover } from '@mantine/hooks'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import Order from '../../types/Order.ts'
 import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import { useRemoveAlbumsFromArtistMutation } from '../../state/api/artistsApi.ts'
@@ -31,6 +30,8 @@ import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -50,10 +51,10 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
 
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
+    useDoubleMenu()
 
-  const isSelected = hovered || isMenuOpened || openedMenu
+  const isSelected = hovered || openedMenu || openedContextMenu
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -95,7 +96,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
       <AddToPlaylistMenuItem
         ids={[album.id]}
         type={'album'}
-        closeMenu={closeMenu}
+        closeMenu={closeMenus}
         disabled={album.songsCount === 0}
       />
       <Menu.Divider />
@@ -115,8 +116,8 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu.Target>
         <Group
           ref={ref}
           wrap={'nowrap'}
@@ -134,7 +135,6 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
           py={'xs'}
           gap={0}
           onClick={handleClick}
-          onContextMenu={openMenu}
         >
           <Avatar
             radius={'md'}
@@ -204,7 +204,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             </Flex>
           </Stack>
 
-          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+          <Menu opened={openedMenu} onChange={toggleMenu}>
             <Menu.Target>
               <ActionIcon
                 size={'md'}
@@ -222,9 +222,9 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
           </Menu>
         </Group>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
       <WarningModal
         opened={openedRemoveWarning}
@@ -263,7 +263,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
         isLoading={isDeleteLoading}
         onYes={handleDelete}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

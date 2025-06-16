@@ -1,5 +1,5 @@
 import Song from '../../types/models/Song'
-import { Anchor, Avatar, Box, Card, Center, Group, Menu, Stack, Text, Tooltip } from '@mantine/core'
+import { Anchor, Avatar, Box, Card, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
@@ -19,7 +19,6 @@ import {
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useDisclosure } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
@@ -29,6 +28,7 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenu
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 const iconSize = 18
 
@@ -50,7 +50,7 @@ function SongCard({ song }: SongCardProps) {
 
   const { color: difficultyColor } = useDifficultyInfo(song?.difficulty)
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -88,14 +88,12 @@ function SongCard({ song }: SongCardProps) {
   }
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
+      <ContextMenu.Target>
         <Card
           aria-label={`song-card-${song.title}`}
           p={0}
           radius={'10%'}
-          onClick={handleClick}
-          onContextMenu={openMenu}
           sx={(theme) => ({
             cursor: 'pointer',
             transition: '0.3s',
@@ -109,6 +107,7 @@ function SongCard({ song }: SongCardProps) {
               transform: 'scale(1.1)'
             })
           })}
+          onClick={handleClick}
         >
           <Stack gap={0}>
             <Avatar
@@ -231,40 +230,44 @@ function SongCard({ song }: SongCardProps) {
             </Stack>
           </Stack>
         </Card>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <Menu.Dropdown {...menuDropdownProps}>
-        <Menu.Item
+      <ContextMenu.Dropdown>
+        <ContextMenu.Item
           leftSection={<IconLayoutSidebarLeftExpand size={14} />}
           onClick={handleOpenDrawer}
         >
           Open Drawer
-        </Menu.Item>
-        <Menu.Item
+        </ContextMenu.Item>
+        <ContextMenu.Item
           leftSection={<IconUser size={14} />}
           disabled={!song.artist}
           onClick={handleViewArtist}
         >
           View Artist
-        </Menu.Item>
-        <Menu.Item
+        </ContextMenu.Item>
+        <ContextMenu.Item
           leftSection={<IconDisc size={14} />}
           disabled={!song.album}
           onClick={handleViewAlbum}
         >
           View Album
-        </Menu.Item>
+        </ContextMenu.Item>
 
-        <Menu.Divider />
+        <ContextMenu.Divider />
         <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
         <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
         <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-        <Menu.Divider />
+        <ContextMenu.Divider />
 
-        <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+        <ContextMenu.Item
+          c={'red'}
+          leftSection={<IconTrash size={14} />}
+          onClick={openDeleteWarning}
+        >
           Delete
-        </Menu.Item>
-      </Menu.Dropdown>
+        </ContextMenu.Item>
+      </ContextMenu.Dropdown>
 
       <WarningModal
         opened={openedDeleteWarning}
@@ -286,7 +289,7 @@ function SongCard({ song }: SongCardProps) {
         opened={openedYoutube}
         onClose={closeYoutube}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

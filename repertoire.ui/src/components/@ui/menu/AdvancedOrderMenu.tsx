@@ -59,7 +59,7 @@ function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: Advan
   }
 
   return (
-    <Menu opened={menuOpened} onChange={setMenuOpened}>
+    <Menu opened={menuOpened} onChange={setMenuOpened} position={'bottom'}>
       <Menu.Target>{children}</Menu.Target>
 
       <Menu.Dropdown>

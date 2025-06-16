@@ -14,6 +14,7 @@ function OpenLinksMenuItem({ song, openYoutube }: OpenLinksMenuItemProps) {
         <Menu.Sub.Item
           leftSection={<IconLocation size={14} />}
           disabled={!song.songsterrLink && !song.youtubeLink}
+          onClick={(e) => e.stopPropagation()} // TODO: Remove when Mantine updates
         >
           Open Links
         </Menu.Sub.Item>

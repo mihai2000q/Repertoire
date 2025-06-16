@@ -1,4 +1,4 @@
-import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { defaultSongFiltersMetadata, emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import AlbumSongsCard from './AlbumSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Album from '../../types/models/Album.ts'
@@ -74,6 +74,9 @@ describe('Album Songs Card', () => {
         totalCount: 0
       }
       return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      return HttpResponse.json(defaultSongFiltersMetadata)
     })
   ]
 

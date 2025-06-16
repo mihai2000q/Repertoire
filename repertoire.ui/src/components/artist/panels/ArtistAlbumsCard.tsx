@@ -66,7 +66,7 @@ function ArtistAlbumsCard({
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'albums-more-menu'}>
                 <IconDots size={15} />

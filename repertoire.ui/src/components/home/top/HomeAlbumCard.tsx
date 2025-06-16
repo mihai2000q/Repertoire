@@ -1,12 +1,13 @@
 import Album from '../../../types/models/Album.ts'
-import { Avatar, Center, Menu, Stack, Text } from '@mantine/core'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { openAlbumDrawer, openArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
-import useContextMenu from '../../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
 import { IconEye, IconUser } from '@tabler/icons-react'
+import { useDisclosure } from '@mantine/hooks'
+import { ContextMenu } from '../../@ui/menu/ContextMenu.tsx'
 
 interface HomeAlbumCardProps {
   album: Album
@@ -17,7 +18,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
   const navigate = useNavigate()
 
   const [isImageHovered, setIsImageHovered] = useState(false)
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
   const isSelected = isImageHovered || openedMenu
 
@@ -45,19 +46,15 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
       style={{ transition: '0.25s', ...(isSelected && { transform: 'scale(1.05)' }) }}
       w={'max(10vw, 150px)'}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
           <Avatar
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
             radius={'10%'}
             w={'100%'}
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
             bg={'gray.5'}
-            onClick={handleClick}
-            onContextMenu={openMenu}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',
@@ -65,26 +62,29 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
               boxShadow: theme.shadows.xl,
               ...(isSelected && { boxShadow: theme.shadows.xxl })
             })}
+            onMouseEnter={() => setIsImageHovered(true)}
+            onMouseLeave={() => setIsImageHovered(false)}
+            onClick={handleClick}
           >
             <Center c={'white'}>
               <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={40} />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
             View Details
-          </Menu.Item>
-          <Menu.Item
+          </ContextMenu.Item>
+          <ContextMenu.Item
             leftSection={<IconUser size={14} />}
             disabled={!album.artist}
             onClick={handleViewArtist}
           >
             View Artist
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>

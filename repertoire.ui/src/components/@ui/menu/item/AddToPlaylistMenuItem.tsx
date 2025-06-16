@@ -324,6 +324,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
             disabled={
               disabled === true || isLoading || (playlists.totalCount === 0 && activeFilters === 0)
             }
+            onClick={(e) => e.stopPropagation()} // TODO: Remove when mantine updates
           >
             Add To Playlist
           </Menu.Sub.Item>

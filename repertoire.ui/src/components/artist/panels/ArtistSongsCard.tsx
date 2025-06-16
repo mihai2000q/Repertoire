@@ -64,7 +64,7 @@ function ArtistSongsCard({
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
                 <IconDots size={15} />
