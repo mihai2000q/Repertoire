@@ -1,15 +1,15 @@
 import Song from '../../../types/models/Song.ts'
-import { Avatar, Center, Menu, Stack, Text } from '@mantine/core'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { openArtistDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import { IconDisc, IconEye, IconUser } from '@tabler/icons-react'
-import useContextMenu from '../../../hooks/useContextMenu.ts'
 import OpenLinksMenuItem from '../../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import { useNavigate } from 'react-router-dom'
+import { ContextMenu } from '../../@ui/menu/ContextMenu.tsx'
 
 interface HomeSongCardProps {
   song: Song
@@ -20,7 +20,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
   const navigate = useNavigate()
 
   const [isImageHovered, setIsImageHovered] = useState(false)
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
   const isSelected = isImageHovered || openedMenu
@@ -56,19 +56,15 @@ function HomeSongCard({ song }: HomeSongCardProps) {
       }}
       w={'max(10vw, 150px)'}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
           <Avatar
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
             radius={'10%'}
             w={'100%'}
             h={'unset'}
             src={song.imageUrl ?? song.album?.imageUrl}
             alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
             bg={'gray.5'}
-            onClick={handleClick}
-            onContextMenu={openMenu}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',
@@ -76,34 +72,37 @@ function HomeSongCard({ song }: HomeSongCardProps) {
               boxShadow: theme.shadows.xl,
               ...(isSelected && { boxShadow: theme.shadows.xxl })
             })}
+            onMouseEnter={() => setIsImageHovered(true)}
+            onMouseLeave={() => setIsImageHovered(false)}
+            onClick={handleClick}
           >
             <Center c={'white'}>
               <CustomIconMusicNote aria-label={`default-icon-${song.title}`} size={50} />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
             View Details
-          </Menu.Item>
-          <Menu.Item
+          </ContextMenu.Item>
+          <ContextMenu.Item
             leftSection={<IconUser size={14} />}
             disabled={!song.artist}
             onClick={handleViewArtist}
           >
             View Artist
-          </Menu.Item>
-          <Menu.Item
+          </ContextMenu.Item>
+          <ContextMenu.Item
             leftSection={<IconDisc size={14} />}
             disabled={!song.album}
             onClick={handleViewAlbum}
           >
             View Album
-          </Menu.Item>
+          </ContextMenu.Item>
           <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
-        </Menu.Dropdown>
-      </Menu>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>

@@ -5,7 +5,6 @@ import {
   CardProps,
   Center,
   Group,
-  Menu,
   ScrollArea,
   Skeleton,
   Stack,
@@ -14,7 +13,7 @@ import {
 import Artist from '../../types/models/Artist.ts'
 import { useGetArtistsQuery } from '../../state/api/artistsApi.ts'
 import { useRef, useState } from 'react'
-import { useDidUpdate, useHover, useViewportSize } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure, useHover, useViewportSize } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconEye } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
@@ -23,7 +22,7 @@ import ArtistProperty from '../../types/enums/ArtistProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from '../../hooks/useContextMenu.ts'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 function Loader() {
   return (
@@ -51,7 +50,7 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
   const { ref, hovered } = useHover()
   const navigate = useNavigate()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
   const isSelected = hovered || openedMenu
 
@@ -70,8 +69,8 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
       w={60}
       sx={{ transition: '0.2s', ...(isSelected && { transform: 'scale(1.1)' }) }}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
           <Avatar
             ref={ref}
             size={'lg'}
@@ -85,20 +84,19 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
               ...(isSelected && { boxShadow: theme.shadows.xl })
             })}
             onClick={handleClick}
-            onContextMenu={openMenu}
           >
             <Center c={'gray.7'}>
               <CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={25} />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
             View Details
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Text ta={'center'} fw={500} lineClamp={2}>
         {artist.name}

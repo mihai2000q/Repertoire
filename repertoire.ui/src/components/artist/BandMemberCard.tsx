@@ -1,15 +1,15 @@
-import { Avatar, Group, Menu, Stack, Text } from '@mantine/core'
+import { Avatar, Group, Stack, Text } from '@mantine/core'
 import { MouseEvent } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { IconPencil, IconTrash, IconUser } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { BandMember } from '../../types/models/Artist.ts'
 import { useDeleteBandMemberMutation } from '../../state/api/artistsApi.ts'
 import { toast } from 'react-toastify'
 import BandMemberDetailsModal from './modal/BandMemberDetailsModal.tsx'
 import EditBandMemberModal from './modal/EditBandMemberModal.tsx'
 import { DraggableProvided } from '@hello-pangea/dnd'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 interface BandMemberCardProps {
   bandMember: BandMember
@@ -21,7 +21,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
   const [deleteBandMember, { isLoading: isDeleteLoading }] = useDeleteBandMemberMutation()
   const { ref, hovered } = useHover()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
   const isSelected = openedMenu || hovered
 
@@ -59,8 +59,8 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
       sx={{ transition: '0.3s', ...(isSelected && { transform: 'scale(1.1)' }) }}
       {...draggableProvided?.draggableProps}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
           <Avatar
             ref={ref}
             variant={'light'}
@@ -74,27 +74,26 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
               '&:hover': { boxShadow: theme.shadows.lg }
             })}
             onClick={handleClick}
-            onContextMenu={openMenu}
             {...draggableProvided?.dragHandleProps}
             style={{ cursor: 'pointer' }} // to override the drag handle
           >
             <IconUser aria-label={`icon-${bandMember.name}`} size={25} />
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item leftSection={<IconPencil size={14} />} onClick={handleOpenEdit}>
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item leftSection={<IconPencil size={14} />} onClick={handleOpenEdit}>
             Edit
-          </Menu.Item>
-          <Menu.Item
+          </ContextMenu.Item>
+          <ContextMenu.Item
             leftSection={<IconTrash size={14} />}
             c={'red.5'}
             onClick={handleOpenDeleteWarning}
           >
             Delete
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Text ta={'center'} fw={500} lh={'xs'} lineClamp={2}>
         {bandMember.name}

@@ -6,7 +6,6 @@ import {
   Center,
   Grid,
   Group,
-  Menu,
   ScrollArea,
   Skeleton,
   Stack,
@@ -30,8 +29,8 @@ import useSearchBy from '../../hooks/api/useSearchBy.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 function Loader() {
   return (
@@ -71,7 +70,7 @@ function LocalSongCard({ song }: { song: Song }) {
   const navigate = useNavigate()
   const { ref, hovered } = useHover()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
   const isSelected = hovered || openedMenu
@@ -105,8 +104,8 @@ function LocalSongCard({ song }: { song: Song }) {
   })
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu.Target>
         <Group
           ref={ref}
           wrap={'nowrap'}
@@ -123,7 +122,6 @@ function LocalSongCard({ song }: { song: Song }) {
           py={'xs'}
           gap={groupGap}
           onClick={handleClick}
-          onContextMenu={openMenu}
         >
           <Avatar
             radius={'md'}
@@ -179,28 +177,28 @@ function LocalSongCard({ song }: { song: Song }) {
             </Grid.Col>
           </Grid>
         </Group>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <Menu.Dropdown {...menuDropdownProps}>
-        <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+      <ContextMenu.Dropdown>
+        <ContextMenu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
           View Details
-        </Menu.Item>
-        <Menu.Item
+        </ContextMenu.Item>
+        <ContextMenu.Item
           leftSection={<IconUser size={14} />}
           disabled={!song.artist}
           onClick={handleViewArtist}
         >
           View Artist
-        </Menu.Item>
-        <Menu.Item
+        </ContextMenu.Item>
+        <ContextMenu.Item
           leftSection={<IconDisc size={14} />}
           disabled={!song.album}
           onClick={handleViewAlbum}
         >
           View Album
-        </Menu.Item>
+        </ContextMenu.Item>
         <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
-      </Menu.Dropdown>
+      </ContextMenu.Dropdown>
 
       <YoutubeModal
         title={song.title}
@@ -208,7 +206,7 @@ function LocalSongCard({ song }: { song: Song }) {
         opened={openedYoutube}
         onClose={closeYoutube}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 
