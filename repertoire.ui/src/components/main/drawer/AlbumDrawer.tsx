@@ -12,16 +12,14 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteAlbumMutation, useGetAlbumQuery } from '../../../state/api/albumsApi.ts'
+import { useGetAlbumQuery } from '../../../state/api/albumsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
 import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
@@ -31,6 +29,7 @@ import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import Song from '../../../types/models/Song.ts'
+import DeleteAlbumModal from '../../@ui/modal/DeleteAlbumModal.tsx'
 
 function AlbumDrawerSongCard({
   song,
@@ -99,8 +98,6 @@ function AlbumDrawer() {
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
-  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
-
   const { data: album, isFetching } = useGetAlbumQuery({ id: albumId }, { skip: !albumId })
 
   useEffect(() => {
@@ -124,11 +121,9 @@ function AlbumDrawer() {
     navigate(`/album/${album.id}`)
   }
 
-  async function handleDelete() {
-    await deleteAlbumMutation({ id: album.id }).unwrap()
+  function onDelete() {
     dispatch(deleteAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
-    toast.success(`${album.title} deleted!`)
   }
 
   if (!album)
@@ -279,13 +274,11 @@ function AlbumDrawer() {
         </Stack>
       </Stack>
 
-      <WarningModal
+      <DeleteAlbumModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={'Delete Album'}
-        description={`Are you sure you want to delete this album?`}
-        onYes={handleDelete}
-        isLoading={isDeleteLoading}
+        album={album}
+        onDelete={onDelete}
       />
     </RightSideEntityDrawer>
   )

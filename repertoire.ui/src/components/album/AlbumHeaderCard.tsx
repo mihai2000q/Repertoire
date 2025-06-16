@@ -1,24 +1,21 @@
 import Album from '../../types/models/Album.ts'
-import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
+import { Avatar, Center, Group, Menu, Stack, Text, Title, Tooltip } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import plural from '../../utils/plural.ts'
 import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
-import { toast } from 'react-toastify'
 import { useDisclosure } from '@mantine/hooks'
-import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import AlbumInfoModal from './modal/AlbumInfoModal.tsx'
 import EditAlbumHeaderModal from './modal/EditAlbumHeaderModal.tsx'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
-import { useState } from 'react'
 import titleFontSize from '../../utils/style/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
 
 interface AlbumHeaderCardProps {
   album: Album | undefined
@@ -29,10 +26,6 @@ interface AlbumHeaderCardProps {
 function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeaderCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-
-  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
-
-  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
   const [openedAlbumInfo, { open: openAlbumInfo, close: closeAlbumInfo }] = useDisclosure(false)
@@ -46,10 +39,8 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
     dispatch(openArtistDrawer(album.artist.id))
   }
 
-  async function handleDelete() {
-    await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
+  function onDelete() {
     navigate(`/albums`, { replace: true })
-    toast.success(`${album.title} deleted!`)
   }
 
   return (
@@ -197,24 +188,11 @@ function AlbumHeaderCard({ album, isUnknownAlbum, songsTotalCount }: AlbumHeader
 
           <EditAlbumHeaderModal album={album} opened={openedEdit} onClose={closeEdit} />
 
-          <WarningModal
+          <DeleteAlbumModal
             opened={openedDeleteWarning}
             onClose={closeDeleteWarning}
-            title={'Delete Album'}
-            description={
-              <Stack gap={5}>
-                <Text fw={500}>Are you sure you want to delete this album?</Text>
-                <Checkbox
-                  checked={deleteWithSongs}
-                  onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
-                  label={'Delete all associated songs'}
-                  c={'dimmed'}
-                  styles={{ label: { paddingLeft: 8 } }}
-                />
-              </Stack>
-            }
-            onYes={handleDelete}
-            isLoading={isDeleteLoading}
+            album={album}
+            onDelete={onDelete}
           />
         </>
       )}
