@@ -1,20 +1,18 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Avatar, Center, Checkbox, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { Avatar, Center, Group, Menu, Stack, Text, Title } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import HeaderPanelCard from '../../@ui/card/HeaderPanelCard.tsx'
 import ArtistInfoModal from '../modal/ArtistInfoModal.tsx'
 import EditArtistHeaderModal from '../modal/EditArtistHeaderModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { toast } from 'react-toastify'
-import { useDeleteArtistMutation } from '../../../state/api/artistsApi.ts'
 import { useNavigate } from 'react-router-dom'
-import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
-import { forwardRef, useState } from 'react'
+import { forwardRef } from 'react'
 import lowerTitleFontSize from '../../../utils/style/lowerTitleFontSize.ts'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import DeleteArtistModal from '../../@ui/modal/DeleteArtistModal.tsx'
 
 interface ArtistHeaderCardProps {
   artist: Artist | undefined
@@ -27,10 +25,6 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
   ({ artist, songsTotalCount, albumsTotalCount, isUnknownArtist }, ref) => {
     const navigate = useNavigate()
 
-    const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
-
-    const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
-
     const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
     const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] =
       useDisclosure(false)
@@ -40,14 +34,8 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
 
     const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
-    async function handleDelete() {
-      await deleteArtistMutation({
-        id: artist.id,
-        withAlbums: deleteWithAssociations,
-        withSongs: deleteWithAssociations
-      }).unwrap()
+    function onDelete() {
       navigate(`/artists`, { replace: true })
-      toast.success(`${artist.name} deleted!`)
     }
 
     return (
@@ -150,27 +138,11 @@ const ArtistHeaderCard = forwardRef<HTMLDivElement, ArtistHeaderCardProps>(
 
             <EditArtistHeaderModal artist={artist} opened={openedEdit} onClose={closeEdit} />
 
-            <WarningModal
+            <DeleteArtistModal
               opened={openedDeleteWarning}
               onClose={closeDeleteWarning}
-              title={'Delete Artist'}
-              description={
-                <Stack gap={'xs'}>
-                  <Text fw={500}>Are you sure you want to delete this artist?</Text>
-                  <Checkbox
-                    checked={deleteWithAssociations}
-                    onChange={(event) => setDeleteWithAssociations(event.currentTarget.checked)}
-                    label={
-                      <Text c={'dimmed'}>
-                        Delete all associated <b>albums</b> and <b>songs</b>
-                      </Text>
-                    }
-                    styles={{ label: { paddingLeft: 8 } }}
-                  />
-                </Stack>
-              }
-              onYes={handleDelete}
-              isLoading={isDeleteLoading}
+              artist={artist}
+              onDelete={onDelete}
             />
           </>
         )}

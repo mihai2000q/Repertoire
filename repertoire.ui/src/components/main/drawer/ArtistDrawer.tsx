@@ -11,17 +11,15 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/api/artistsApi.ts'
+import { useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash, IconUser } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
-import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
@@ -39,6 +37,7 @@ import FilterOperator from '../../../types/enums/FilterOperator.ts'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import Song from '../../../types/models/Song.ts'
 import Album from '../../../types/models/Album.ts'
+import DeleteArtistModal from '../../@ui/modal/DeleteArtistModal.tsx'
 
 function ArtistDrawerAlbumCard({ album, onClose }: { album: Album; onClose: () => void }) {
   const navigate = useNavigate()
@@ -141,8 +140,6 @@ function ArtistDrawer() {
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
-  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
-
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
 
   const albumsOrderBy = useOrderBy([
@@ -199,11 +196,9 @@ function ArtistDrawer() {
     navigate(`/artist/${artist.id}`)
   }
 
-  async function handleDelete() {
-    await deleteArtistMutation({ id: artist.id }).unwrap()
+  function onDelete() {
     dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
-    toast.success(`${artist.name} deleted!`)
   }
 
   if (!artist || !songs || !albums)
@@ -360,13 +355,11 @@ function ArtistDrawer() {
         </Stack>
       </Stack>
 
-      <WarningModal
+      <DeleteArtistModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={'Delete Artist'}
-        description={`Are you sure you want to delete this artist?`}
-        onYes={handleDelete}
-        isLoading={isDeleteLoading}
+        artist={artist}
+        onDelete={onDelete}
       />
     </RightSideEntityDrawer>
   )

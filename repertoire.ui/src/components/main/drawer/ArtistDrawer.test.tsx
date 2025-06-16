@@ -1,10 +1,4 @@
-import {
-  emptyAlbum,
-  emptyArtist,
-  emptySong,
-  reduxRouterRender,
-  withToastify
-} from '../../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistDrawer from './ArtistDrawer.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { setupServer } from 'msw/node'
@@ -293,7 +287,7 @@ describe('Artist Drawer', () => {
         })
       )
 
-      const [_, store] = reduxRouterRender(withToastify(<ArtistDrawer />), {
+      const [_, store] = reduxRouterRender(<ArtistDrawer />, {
         global: {
           documentTitle: prevDocumentTitle,
           artistDrawer: {
@@ -310,13 +304,11 @@ describe('Artist Drawer', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
       expect((store.getState() as RootState).global.artistDrawer.open).toBeFalsy()
       expect((store.getState() as RootState).global.artistDrawer.artistId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
-      expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
     })
   })
 
