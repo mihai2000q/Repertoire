@@ -31,6 +31,7 @@ import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import { toast } from 'react-toastify'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -76,10 +77,9 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
     openDeleteWarning()
   }
 
-  function handleRemoveFromArtist() {
-    removeAlbumsFromArtist({ albumIds: [album.id], id: artistId })
-  }
-
+  async function handleRemoveFromArtist() {
+    await removeAlbumsFromArtist({ albumIds: [album.id], id: artistId }).unwrap()
+    toast.success(`${album.title} removed from artist!`)
   }
 
   const menuDropdown = (

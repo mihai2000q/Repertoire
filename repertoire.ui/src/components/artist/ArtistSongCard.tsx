@@ -36,6 +36,7 @@ import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import { toast } from 'react-toastify'
 
 interface ArtistSongCardProps {
   song: Song
@@ -91,12 +92,14 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     openDeleteWarning()
   }
 
-  function handleRemoveFromArtist() {
-    removeSongsFromArtist({ songIds: [song.id], id: artistId })
+  async function handleRemoveFromArtist() {
+    await removeSongsFromArtist({ songIds: [song.id], id: artistId }).unwrap()
+    toast.success(`${song.title} removed from artist!`)
   }
 
   async function handleDelete() {
     await deleteSong(song.id).unwrap()
+    toast.success(`${song.title} deleted!`)
   }
 
   const menuDropdown = (

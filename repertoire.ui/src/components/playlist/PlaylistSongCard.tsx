@@ -36,6 +36,7 @@ import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import { toast } from 'react-toastify'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -102,8 +103,12 @@ function PlaylistSongCard({
     openRemoveWarning()
   }
 
-  function handleRemoveFromPlaylist() {
-    removeSongsFromPlaylist({ playlistSongIds: [song.playlistSongId], id: playlistId })
+  async function handleRemoveFromPlaylist() {
+    await removeSongsFromPlaylist({
+      playlistSongIds: [song.playlistSongId],
+      id: playlistId
+    }).unwrap()
+    toast.success(`${song.title} removed from playlist!`)
   }
 
   const menuDropdown = (

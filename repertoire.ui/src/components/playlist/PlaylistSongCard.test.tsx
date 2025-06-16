@@ -465,6 +465,7 @@ describe('Playlist Song Card', () => {
 
       expect(capturedRequest.id).toBe(playlistId)
       expect(capturedRequest.playlistSongIds).toStrictEqual([song.playlistSongId])
+      expect(await screen.findByText(new RegExp(`${song.title} removed`, 'i'))).toBeInTheDocument()
     })
   })
 
