@@ -9,7 +9,6 @@ import {
   Group,
   Menu,
   NumberFormatter,
-  Stack,
   Text,
   Tooltip
 } from '@mantine/core'
@@ -284,13 +283,11 @@ function AlbumSongCard({
         onClose={closeRemoveWarning}
         title={`Remove Song From Album`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this album?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this album?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromAlbum}
@@ -300,13 +297,11 @@ function AlbumSongCard({
         onClose={closeDeleteWarning}
         title={`Delete Song`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
         }
         isLoading={isDeleteLoading}
         onYes={handleDelete}

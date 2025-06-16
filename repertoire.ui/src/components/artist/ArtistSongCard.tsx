@@ -95,8 +95,8 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     removeSongsFromArtist({ songIds: [song.id], id: artistId })
   }
 
-  function handleDeleteSong() {
-    deleteSong(song.id)
+  async function handleDelete() {
+    await deleteSong(song.id).unwrap()
   }
 
   const menuDropdown = (
@@ -281,13 +281,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         onClose={closeRemoveWarning}
         title={`Remove Song From Artist`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this artist?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this artist?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromArtist}
@@ -297,16 +295,14 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         onClose={closeDeleteWarning}
         title={`Delete Song`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
         }
         isLoading={isDeleteLoading}
-        onYes={handleDeleteSong}
+        onYes={handleDelete}
       />
     </ContextMenu>
   )

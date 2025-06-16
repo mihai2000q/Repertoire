@@ -337,13 +337,11 @@ function PlaylistSongCard({
         onClose={closeRemoveWarning}
         title={`Remove Song From Playlist`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this playlist?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this playlist?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromPlaylist}
