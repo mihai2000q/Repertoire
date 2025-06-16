@@ -50,13 +50,13 @@ describe('use Double Menu', () => {
 
     // Test opening via onChange
     act(() => {
-      result.current.onChangeMenu(true)
+      result.current.toggleMenu(true)
     })
     expect(result.current.openedMenu).toBe(true)
 
     // Test closing via onChange
     act(() => {
-      result.current.onChangeMenu(false)
+      result.current.toggleMenu(false)
     })
     expect(result.current.openedMenu).toBe(false)
   })
@@ -66,13 +66,13 @@ describe('use Double Menu', () => {
 
     // Test opening via onChange
     act(() => {
-      result.current.onChangeContextMenu(true)
+      result.current.toggleContextMenu(true)
     })
     expect(result.current.openedContextMenu).toBe(true)
 
     // Test closing via onChange
     act(() => {
-      result.current.onChangeContextMenu(false)
+      result.current.toggleContextMenu(false)
     })
     expect(result.current.openedContextMenu).toBe(false)
   })

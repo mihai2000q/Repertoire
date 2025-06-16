@@ -15,12 +15,12 @@ export default function useDoubleMenu() {
     openContextMenu()
   }
 
-  function handleMenuOnChange(opened: boolean) {
+  function handleToggleMenu(opened: boolean) {
     if (opened) handleOpenMenu()
     else closeMenu()
   }
 
-  function handleContextMenuOnChange(opened: boolean) {
+  function handleToggleContextMenu(opened: boolean) {
     if (opened) handleOpenContextMenu()
     else closeContextMenu()
   }
@@ -34,11 +34,11 @@ export default function useDoubleMenu() {
     openedMenu,
     openMenu: handleOpenMenu,
     closeMenu,
-    onChangeMenu: handleMenuOnChange,
+    toggleMenu: handleToggleMenu,
     openedContextMenu,
     openContextMenu: handleOpenContextMenu,
     closeContextMenu,
-    onChangeContextMenu: handleContextMenuOnChange,
+    toggleContextMenu: handleToggleContextMenu,
     closeMenus
   }
 }
