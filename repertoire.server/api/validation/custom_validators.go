@@ -58,7 +58,7 @@ func SearchTypeEnum(fl validator.FieldLevel) bool {
 }
 
 func YoutubeLink(fl validator.FieldLevel) bool {
-	regex := regexp.MustCompile(`^(https?://)?(www\.)?(youtube\.com|youtu\.be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%?]{11})`)
+	regex := regexp.MustCompile(`^(https?://)?(www\.)?(youtube\.com|youtu\.be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%?]{11})([%&=?].*)?$`)
 	return regex.MatchString(fl.Field().String())
 }
 

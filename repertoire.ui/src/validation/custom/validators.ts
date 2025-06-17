@@ -1,7 +1,7 @@
 import { z } from 'zod/v4'
 
 export const youtubeRegex =
-  /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%?]{11})/
+  /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&=%?]{11})([%&=?].*)?$/
 
 export const youtubeLinkValidator = z
   .preprocess(
