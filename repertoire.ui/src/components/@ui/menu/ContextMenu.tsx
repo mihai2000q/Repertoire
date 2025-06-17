@@ -1,7 +1,9 @@
-import type { MenuProps, MenuTargetProps, PopoverStylesNames } from '@mantine/core'
+import type { MenuProps, MenuTargetProps } from '@mantine/core'
 import { createEventHandler, createSafeContext, isElement, Menu } from '@mantine/core'
 import React, { cloneElement, forwardRef, useRef } from 'react'
 import { useUncontrolled } from '@mantine/hooks'
+
+// Credits to: https://gist.github.com/minosss/f26fae6170d62df26103a0c589bf6da6
 
 type TriggerEvent = 'click' | 'context'
 
@@ -21,7 +23,7 @@ type RefWrapperProps = React.PropsWithChildren<{ refProp: string }>
 
 /** ref wrapper, append custom floating middleware to move dropdown follow mouse click */
 const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
-  const { children, refProp, ...others } = props
+  const { children, refProp } = props
 
   if (!isElement(children)) {
     throw new Error(
@@ -60,15 +62,7 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
     }
   })
 
-  const onClick = createEventHandler(children.props.onClick, (e) => {
-    if (ctx.trigger === 'click') {
-      toggleDropdown(e as React.MouseEvent)
-    }
-  })
-
   return cloneElement(children, {
-    ...others,
-    onClick,
     onContextMenu,
     [refProp]: ref
   })
@@ -86,8 +80,6 @@ const ContextMenuTarget = forwardRef<HTMLElement, MenuTargetProps>((props, ref) 
 })
 
 ContextMenuTarget.displayName = 'ContextMenuTarget'
-
-export type ContextMenuStylesNames = PopoverStylesNames
 
 export interface ContextMenuProps extends Omit<MenuProps, 'trigger'> {
   trigger?: TriggerEvent
