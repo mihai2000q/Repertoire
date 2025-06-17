@@ -8,7 +8,6 @@ describe('Context Menu', () => {
     const user = userEvent.setup()
 
     const buttonName = 'click me'
-    const dropdownTestId = 'dropdownTestId'
     const menuItem = 'contextMenuItem'
 
     mantineRender(
@@ -17,20 +16,20 @@ describe('Context Menu', () => {
           <button>{buttonName}</button>
         </ContextMenu.Target>
 
-        <ContextMenu.Dropdown datatest-id={dropdownTestId}>
+        <ContextMenu.Dropdown>
           <ContextMenu.Item>{menuItem}</ContextMenu.Item>
         </ContextMenu.Dropdown>
       </ContextMenu>
     )
 
-    expect(screen.queryByTestId(dropdownTestId)).not.toBeInTheDocument()
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByRole('button', { name: buttonName })
     })
 
-    expect(await screen.findByTestId(dropdownTestId)).toBeInTheDocument()
+    expect(await screen.findByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: menuItem })).toBeInTheDocument()
   })
 })
