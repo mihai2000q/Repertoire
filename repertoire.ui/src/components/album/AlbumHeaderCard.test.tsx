@@ -1,11 +1,5 @@
 import Album from 'src/types/models/Album.ts'
-import {
-  emptyAlbum,
-  emptyArtist,
-  emptySong,
-  reduxRouterRender,
-  withToastify
-} from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import AlbumHeaderCard from './AlbumHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
@@ -185,63 +179,23 @@ describe('Album Header Card', () => {
     it('should display warning modal and delete album', async () => {
       const user = userEvent.setup()
 
-      let withSongs: string | null
       server.use(
-        http.delete(`/albums/${album.id}`, (req) => {
-          withSongs = new URL(req.request.url).searchParams.get('withSongs')
+        http.delete(`/albums/${album.id}`, () => {
           return HttpResponse.json({ message: 'it worked' })
         })
       )
 
       reduxRouterRender(
-        withToastify(
-          <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
-        )
+        <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
-      expect(withSongs).toBe('false')
-
       expect(window.location.pathname).toBe('/albums')
-      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
-    })
-
-    it('should display warning modal and delete album with songs', async () => {
-      const user = userEvent.setup()
-
-      let withSongs: string | null
-      server.use(
-        http.delete(`/albums/${album.id}`, (req) => {
-          withSongs = new URL(req.request.url).searchParams.get('withSongs')
-          return HttpResponse.json({ message: 'it worked' })
-        })
-      )
-
-      reduxRouterRender(
-        withToastify(
-          <AlbumHeaderCard album={album} isUnknownAlbum={false} songsTotalCount={undefined} />
-        )
-      )
-
-      await user.click(screen.getByRole('button', { name: 'more-menu' }))
-      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
-
-      expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
-      expect(screen.getByRole('checkbox', { name: /songs/i })).toBeInTheDocument()
-      await user.click(screen.getByRole('checkbox', { name: /songs/i }))
-      await user.click(screen.getByRole('button', { name: /yes/i }))
-
-      expect(withSongs).toBe('true')
-
-      expect(window.location.pathname).toBe('/albums')
-      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
   })
 

@@ -1,4 +1,4 @@
-import { emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyOrder, emptySong, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import AlbumSongCard from './AlbumSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
@@ -421,13 +421,15 @@ describe('Album Song Card', () => {
       const albumId = 'some-album-id'
 
       reduxRouterRender(
-        <AlbumSongCard
-          song={song}
-          albumId={albumId}
-          isUnknownAlbum={false}
-          order={emptyOrder}
-          isDragging={false}
-        />
+        withToastify(
+          <AlbumSongCard
+            song={song}
+            albumId={albumId}
+            isUnknownAlbum={false}
+            order={emptyOrder}
+            isDragging={false}
+          />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -443,6 +445,7 @@ describe('Album Song Card', () => {
         id: albumId,
         songIds: [song.id]
       })
+      expect(await screen.findByText(new RegExp(`${song.title} removed`, 'i'))).toBeInTheDocument()
     })
 
     it('should display warning modal and delete album, when clicking on delete', async () => {

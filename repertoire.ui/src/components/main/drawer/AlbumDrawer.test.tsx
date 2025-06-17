@@ -1,10 +1,4 @@
-import {
-  emptyAlbum,
-  emptyArtist,
-  emptySong,
-  reduxRouterRender,
-  withToastify
-} from '../../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import AlbumDrawer from './AlbumDrawer.tsx'
 import Album from '../../../types/models/Album.ts'
 import { setupServer } from 'msw/node'
@@ -27,20 +21,20 @@ describe('Album Drawer', () => {
       id: '1',
       title: 'Song 1',
       albumTrackNo: 1,
-      imageUrl: 'something.png',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
-      albumTrackNo: 2,
+      albumTrackNo: 2
     },
     {
       ...emptySong,
       id: '3',
       title: 'Song 3',
-      albumTrackNo: 3,
-    },
+      albumTrackNo: 3
+    }
   ]
 
   const album: Album = {
@@ -54,7 +48,7 @@ describe('Album Drawer', () => {
     ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    imageUrl: 'something.png',
+    imageUrl: 'something.png'
   }
 
   const getAlbum = (album: Album) =>
@@ -166,10 +160,7 @@ describe('Album Drawer', () => {
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (album?.imageUrl) {
-        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
-          'src',
-          album.imageUrl
-        )
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', album.imageUrl)
       }
     })
   })
@@ -240,7 +231,7 @@ describe('Album Drawer', () => {
         })
       )
 
-      const [_, store] = reduxRouterRender(withToastify(<AlbumDrawer />), {
+      const [_, store] = reduxRouterRender(<AlbumDrawer />, {
         global: {
           documentTitle: prevDocumentTitle,
           albumDrawer: {
@@ -257,13 +248,11 @@ describe('Album Drawer', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
       expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
       expect((store.getState() as RootState).global.albumDrawer.albumId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
-      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
   })
 

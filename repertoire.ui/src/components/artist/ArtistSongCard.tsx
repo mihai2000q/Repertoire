@@ -36,6 +36,7 @@ import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import { toast } from 'react-toastify'
 
 interface ArtistSongCardProps {
   song: Song
@@ -91,12 +92,14 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     openDeleteWarning()
   }
 
-  function handleRemoveFromArtist() {
-    removeSongsFromArtist({ songIds: [song.id], id: artistId })
+  async function handleRemoveFromArtist() {
+    await removeSongsFromArtist({ songIds: [song.id], id: artistId }).unwrap()
+    toast.success(`${song.title} removed from artist!`)
   }
 
-  function handleDeleteSong() {
-    deleteSong(song.id)
+  async function handleDelete() {
+    await deleteSong(song.id).unwrap()
+    toast.success(`${song.title} deleted!`)
   }
 
   const menuDropdown = (
@@ -281,13 +284,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         onClose={closeRemoveWarning}
         title={`Remove Song From Artist`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this artist?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this artist?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromArtist}
@@ -297,16 +298,14 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         onClose={closeDeleteWarning}
         title={`Delete Song`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
         }
         isLoading={isDeleteLoading}
-        onYes={handleDeleteSong}
+        onYes={handleDelete}
       />
     </ContextMenu>
   )

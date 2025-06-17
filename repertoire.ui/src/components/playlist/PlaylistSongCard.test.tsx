@@ -3,7 +3,8 @@ import {
   emptyArtist,
   emptyOrder,
   emptySong,
-  reduxRouterRender
+  reduxRouterRender,
+  withToastify
 } from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
@@ -446,12 +447,14 @@ describe('Playlist Song Card', () => {
       const playlistId = 'some-id'
 
       reduxRouterRender(
-        <PlaylistSongCard
-          song={song}
-          playlistId={playlistId}
-          order={emptyOrder}
-          isDragging={false}
-        />
+        withToastify(
+          <PlaylistSongCard
+            song={song}
+            playlistId={playlistId}
+            order={emptyOrder}
+            isDragging={false}
+          />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -465,6 +468,7 @@ describe('Playlist Song Card', () => {
 
       expect(capturedRequest.id).toBe(playlistId)
       expect(capturedRequest.playlistSongIds).toStrictEqual([song.playlistSongId])
+      expect(await screen.findByText(new RegExp(`${song.title} removed`, 'i'))).toBeInTheDocument()
     })
   })
 

@@ -3,8 +3,7 @@ import {
   defaultSongFiltersMetadata,
   emptyAlbum,
   emptyArtist,
-  reduxRouterRender,
-  withToastify
+  reduxRouterRender
 } from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
@@ -131,7 +130,7 @@ describe('Album Card', () => {
         })
       )
 
-      reduxRouterRender(withToastify(<AlbumCard album={album} />))
+      reduxRouterRender(<AlbumCard album={album} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -140,10 +139,7 @@ describe('Album Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
-
-      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
   })
 

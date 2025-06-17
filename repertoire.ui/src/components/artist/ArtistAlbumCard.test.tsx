@@ -2,7 +2,8 @@ import {
   defaultSongFiltersMetadata,
   emptyAlbum,
   emptyOrder,
-  reduxRouterRender
+  reduxRouterRender,
+  withToastify
 } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -248,12 +249,14 @@ describe('Artist Album Card', () => {
       const artistId = 'some-artist-id'
 
       reduxRouterRender(
-        <ArtistAlbumCard
-          album={album}
-          artistId={artistId}
-          isUnknownArtist={false}
-          order={emptyOrder}
-        />
+        withToastify(
+          <ArtistAlbumCard
+            album={album}
+            artistId={artistId}
+            isUnknownArtist={false}
+            order={emptyOrder}
+          />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -269,6 +272,7 @@ describe('Artist Album Card', () => {
         id: artistId,
         albumIds: [album.id]
       })
+      expect(await screen.findByText(new RegExp(`${album.title} removed`, 'i'))).toBeInTheDocument()
     })
 
     it('should display warning modal and delete album, when clicking on delete', async () => {

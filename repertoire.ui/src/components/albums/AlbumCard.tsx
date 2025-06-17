@@ -1,17 +1,15 @@
 import Album from '../../types/models/Album.ts'
-import { Avatar, Center, Checkbox, Group, Stack, Text } from '@mantine/core'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
-import { toast } from 'react-toastify'
-import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
 
 interface AlbumCardProps {
   album: Album
@@ -20,10 +18,6 @@ interface AlbumCardProps {
 function AlbumCard({ album }: AlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-
-  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
-
-  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   const [isImageHovered, setIsImageHovered] = useState(false)
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
@@ -45,11 +39,6 @@ function AlbumCard({ album }: AlbumCardProps) {
 
   function handleViewArtist() {
     navigate(`/artist/${album.artist.id}`)
-  }
-
-  async function handleDelete() {
-    await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
-    toast.success(`${album.title} deleted!`)
   }
 
   return (
@@ -151,28 +140,11 @@ function AlbumCard({ album }: AlbumCardProps) {
         )}
       </Stack>
 
-      <WarningModal
+      <DeleteAlbumModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete Album`}
-        description={
-          <Stack gap={5}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{album.title}</Text>
-              <Text>?</Text>
-            </Group>
-            <Checkbox
-              checked={deleteWithSongs}
-              onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
-              label={'Delete all associated songs'}
-              c={'dimmed'}
-              styles={{ label: { paddingLeft: 8 } }}
-            />
-          </Stack>
-        }
-        onYes={handleDelete}
-        isLoading={isDeleteLoading}
+        album={album}
+        withName
       />
     </Stack>
   )

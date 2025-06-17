@@ -4,7 +4,6 @@ import {
   alpha,
   Avatar,
   Center,
-  Checkbox,
   Flex,
   Group,
   Menu,
@@ -17,7 +16,7 @@ import {
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer } from '../../state/slice/globalSlice.ts'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -25,13 +24,14 @@ import { useNavigate } from 'react-router-dom'
 import Order from '../../types/Order.ts'
 import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import { useRemoveAlbumsFromArtistMutation } from '../../state/api/artistsApi.ts'
-import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import { toast } from 'react-toastify'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -47,9 +47,6 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
 
   const [removeAlbumsFromArtist, { isLoading: isRemoveLoading }] =
     useRemoveAlbumsFromArtistMutation()
-  const [deleteAlbum, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
-
-  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
@@ -80,12 +77,9 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
     openDeleteWarning()
   }
 
-  function handleRemoveFromArtist() {
-    removeAlbumsFromArtist({ albumIds: [album.id], id: artistId })
-  }
-
-  function handleDelete() {
-    deleteAlbum({ id: album.id })
+  async function handleRemoveFromArtist() {
+    await removeAlbumsFromArtist({ albumIds: [album.id], id: artistId }).unwrap()
+    toast.success(`${album.title} removed from artist!`)
   }
 
   const menuDropdown = (
@@ -231,37 +225,20 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
         onClose={closeRemoveWarning}
         title={`Remove Album From Artist`}
         description={
-          <Stack gap={5}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{album.title}</Text>
-              <Text>?</Text>
-            </Group>
-            <Checkbox
-              checked={deleteWithSongs}
-              onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
-              label={'Delete all associated songs'}
-              c={'dimmed'}
-              styles={{ label: { paddingLeft: 8 } }}
-            />
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{album.title}</Text>
+            <Text>from this artist?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromArtist}
       />
-      <WarningModal
+      <DeleteAlbumModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete Album`}
-        description={
-          <Group gap={'xxs'}>
-            <Text>Are you sure you want to delete</Text>
-            <Text fw={600}>{album.title}</Text>
-            <Text>?</Text>
-          </Group>
-        }
-        isLoading={isDeleteLoading}
-        onYes={handleDelete}
+        album={album}
+        withName
       />
     </ContextMenu>
   )
