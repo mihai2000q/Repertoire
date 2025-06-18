@@ -1,4 +1,4 @@
-import { reduxRender } from '../test-utils.tsx'
+import { reduxRouterRender } from '../test-utils.tsx'
 import Home from './Home.tsx'
 import { screen } from '@testing-library/react'
 import { expect } from 'vitest'
@@ -14,31 +14,19 @@ import Playlist from '../types/models/Playlist.ts'
 describe('Home', () => {
   const handlers = [
     http.get('/songs', async () => {
-      const response: WithTotalCountResponse<Song> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Song> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/albums', async () => {
-      const response: WithTotalCountResponse<Album> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Album> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/artists', async () => {
-      const response: WithTotalCountResponse<Artist> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Artist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
     http.get('/playlists', async () => {
-      const response: WithTotalCountResponse<Playlist> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     })
   ]
@@ -52,7 +40,7 @@ describe('Home', () => {
   afterAll(() => server.close())
 
   it('should render', () => {
-    const [_, store] = reduxRender(<Home />)
+    const [_, store] = reduxRouterRender(<Home />)
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/home/i)
     expect(screen.getByLabelText('top')).toBeInTheDocument()

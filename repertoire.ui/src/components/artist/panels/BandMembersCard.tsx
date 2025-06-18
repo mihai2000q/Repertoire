@@ -36,6 +36,13 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
   }, [viewportRef.current, width])
+  useDidUpdate(() => {
+    const frame = requestAnimationFrame(() => {
+      setDisableBack(viewportRef.current?.scrollLeft === 0)
+      setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [bandMembers])
 
   const [internalMembers, { reorder, setState }] = useListState<BandMember>(bandMembers)
   useDidUpdate(() => setState(bandMembers), [bandMembers])
@@ -67,7 +74,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
   }
 
   return (
-    <Card variant={'panel'} aria-label={'band-members-card'} p={0} mih={140}>
+    <Card aria-label={'band-members-card'} variant={'panel'} p={0}>
       <Stack gap={0}>
         <Group px={'md'} pt={'xs'} gap={'xs'}>
           <Text fw={600}>Band Members</Text>
@@ -102,7 +109,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'band-members-more-menu'}>
                 <IconDots size={15} />
@@ -122,8 +129,37 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
           scrollbarSize={5}
           viewportRef={viewportRef}
           viewportProps={{ onScroll: handleOnScroll }}
+          styles={{ viewport: { '> div': { display: 'flex' } } }}
         >
-          <Group gap={'xs'} wrap={'nowrap'} align={'start'} px={'lg'} pb={'lg'} pt={'xs'}>
+          <Group wrap={'nowrap'} align={'start'} px={'lg'} pb={'md'} pt={'xs'}>
+            {bandMembers.length === 0 && (
+              <Stack
+                aria-label={`add-new-band-member-card`}
+                align={'center'}
+                w={75}
+                gap={'xxs'}
+                sx={{
+                  cursor: 'pointer',
+                  transition: '0.3s',
+                  '&:hover': { transform: 'scale(1.1)' }
+                }}
+                onClick={openAddNewBandMember}
+              >
+                <Avatar
+                  size={'lg'}
+                  sx={(theme) => ({
+                    boxShadow: theme.shadows.md,
+                    '&:hover': { boxShadow: theme.shadows.lg }
+                  })}
+                >
+                  <IconUserPlus size={25} />
+                </Avatar>
+                <Text c={'dimmed'} ta={'center'} fw={500} lh={'xs'}>
+                  Add New Member
+                </Text>
+              </Stack>
+            )}
+
             <DragDropContext onDragEnd={onMembersDragEnd}>
               <Droppable droppableId="dnd-list" direction={'horizontal'}>
                 {(provided) => (
@@ -156,34 +192,6 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
                 )}
               </Droppable>
             </DragDropContext>
-
-            {bandMembers.length === 0 && (
-              <Stack
-                aria-label={`add-new-band-member-card`}
-                align={'center'}
-                w={75}
-                gap={'xxs'}
-                sx={{
-                  cursor: 'pointer',
-                  transition: '0.3s',
-                  '&:hover': { transform: 'scale(1.1)' }
-                }}
-                onClick={openAddNewBandMember}
-              >
-                <Avatar
-                  size={'lg'}
-                  sx={(theme) => ({
-                    boxShadow: theme.shadows.md,
-                    '&:hover': { boxShadow: theme.shadows.lg }
-                  })}
-                >
-                  <IconUserPlus size={25} />
-                </Avatar>
-                <Text c={'dimmed'} ta={'center'} fw={500} lh={'xs'}>
-                  Add New Member
-                </Text>
-              </Stack>
-            )}
           </Group>
         </ScrollArea>
       </Stack>

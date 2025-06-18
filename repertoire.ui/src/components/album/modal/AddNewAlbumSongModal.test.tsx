@@ -46,7 +46,7 @@ describe('Add New Album Song Modal', () => {
 
   const validSongsterrLink =
     'https://www.songsterr.com/a/wsa/metallica-master-of-puppets-tab-s455118'
-  const validYoutubeLink = 'https://www.youtube.com/watch?v=E0ozmU9cJDg'
+  const validYoutubeLink = 'https://www.youtube.com/watch?v=E0ozmU9cJDg&t=12s'
 
   it('should render', () => {
     reduxRender(<AddNewAlbumSongModal opened={true} onClose={() => {}} album={undefined} />)

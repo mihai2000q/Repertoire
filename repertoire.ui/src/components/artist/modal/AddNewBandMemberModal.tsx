@@ -32,7 +32,7 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
   const [roleIds, setRoleIds] = useState<string[]>([])
   useDidUpdate(() => {
     form.setFieldValue('roleIds', roleIds)
-    form.validateField('roleIds')
+    if (opened) form.validateField('roleIds')
   }, [roleIds])
 
   const onCloseWithImage = () => {
@@ -73,56 +73,54 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
 
   return (
     <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Band Member'}>
-      <Modal.Body py={'xs'} pl={'xs'} pr={0}>
-        <form onSubmit={form.onSubmit(addBandMember)}>
-          <Stack>
-            <Group>
-              <ImageDropzoneWithPreview
-                image={image}
-                setImage={setImage}
-                radius={'50%'}
-                w={100}
-                h={100}
-                icon={<IconUserFilled size={45} />}
-              />
+      <form onSubmit={form.onSubmit(addBandMember)}>
+        <Stack py={'xs'} pl={'xs'} pr={0}>
+          <Group>
+            <ImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              radius={'50%'}
+              w={100}
+              h={100}
+              icon={<IconUserFilled size={45} />}
+            />
 
-              <Stack flex={1}>
-                <Group align={'start'}>
-                  <TextInput
-                    flex={1}
-                    withAsterisk={true}
-                    maxLength={100}
-                    label="Name"
-                    placeholder="Name of band member"
-                    key={form.key('name')}
-                    {...form.getInputProps('name')}
-                  />
-
-                  <ColorInputButton
-                    color={color}
-                    setColor={setColor}
-                    swatches={bandMemberColorSwatches}
-                  />
-                </Group>
-
-                <BandMemberRoleMultiSelect
-                  ids={roleIds}
-                  setIds={setRoleIds}
-                  label={'Roles'}
-                  placeholder={'Select roles'}
-                  withAsterisk
-                  pr={'lg'}
-                  error={form.getInputProps('roleIds').error}
+            <Stack flex={1}>
+              <Group align={'start'}>
+                <TextInput
+                  flex={1}
+                  withAsterisk={true}
+                  maxLength={100}
+                  label="Name"
+                  placeholder="Name of band member"
+                  key={form.key('name')}
+                  {...form.getInputProps('name')}
                 />
-              </Stack>
-            </Group>
 
-            <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
-              Submit
-            </Button>
-          </Stack>
-        </form>
-      </Modal.Body>
+                <ColorInputButton
+                  color={color}
+                  setColor={setColor}
+                  swatches={bandMemberColorSwatches}
+                />
+              </Group>
+
+              <BandMemberRoleMultiSelect
+                ids={roleIds}
+                setIds={setRoleIds}
+                label={'Roles'}
+                placeholder={'Select roles'}
+                withAsterisk
+                pr={'lg'}
+                error={form.getInputProps('roleIds').error}
+              />
+            </Stack>
+          </Group>
+
+          <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
+            Submit
+          </Button>
+        </Stack>
+      </form>
     </Modal>
   )
 }

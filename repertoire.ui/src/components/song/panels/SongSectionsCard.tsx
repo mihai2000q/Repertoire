@@ -47,6 +47,7 @@ function SongSectionsCard({
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
 
+  const [showDetails, setShowDetails] = useState(false)
   const [openedPartialRehearsalPopover, setOpenedPartialRehearsalPopover] = useState(false)
   const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
 
@@ -54,10 +55,13 @@ function SongSectionsCard({
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
+  useDidUpdate(() => setShowDetails(false), [songId])
+
+  const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
   const { ref: mainScrollRef } = useMainScroll()
 
-  const scrollIntoView = () => {
+  const scrollAddIntoView = () => {
     scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
     mainScrollRef.current.scrollTo({ top: mainScrollRef.current.scrollHeight, behavior: 'smooth' })
   }
@@ -77,10 +81,16 @@ function SongSectionsCard({
     return [rehearsals, progress]
   }, [sections])
 
-  const [showDetails, setShowDetails] = useState(false)
+  const rehearsalsToastId = useRef<number | string>(null)
+
+  function showRehearsalsToast(sectionName: string) {
+    if (rehearsalsToastId.current) toast.dismiss(rehearsalsToastId.current)
+    rehearsalsToastId.current = toast.info(`${sectionName} rehearsals' have been increased by 1!`)
+  }
 
   function handleShowDetails() {
     setShowDetails(!showDetails)
+    if (!showDetails) setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 250)
   }
 
   async function handleAddPartialRehearsal() {
@@ -108,9 +118,9 @@ function SongSectionsCard({
   }
 
   return (
-    <Card variant={'panel'} aria-label={'song-sections'} p={0}>
+    <Card ref={ref} variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
-        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xxs'}>
+        <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
           <Text fw={600} inline>
             Sections
           </Text>
@@ -246,9 +256,10 @@ function SongSectionsCard({
 
         <ScrollArea.Autosize
           viewportRef={scrollableRef}
-          mah={391.4}
           scrollbars={'y'}
           scrollbarSize={7}
+          mah={(showDetails ? 2 : 1) * 383.35}
+          style={{ transition: 'max-height 0.25s' }}
         >
           <Stack gap={0}>
             <DragDropContext onDragEnd={onSectionsDragEnd}>
@@ -266,13 +277,14 @@ function SongSectionsCard({
                           <SongSectionCard
                             section={section}
                             songId={songId}
-                            draggableProvided={provided}
                             isDragging={snapshot.isDragging}
                             showDetails={showDetails}
                             maxSectionProgress={maxSectionProgress}
                             maxSectionRehearsals={maxSectionRehearsals}
+                            draggableProvided={provided}
                             bandMembers={bandMembers}
                             isArtistBand={isArtistBand}
+                            showRehearsalsToast={showRehearsalsToast}
                           />
                         )}
                       </Draggable>
@@ -298,7 +310,7 @@ function SongSectionsCard({
               onClose={closeAdd}
               settings={settings}
               bandMembers={bandMembers}
-              scrollIntoView={scrollIntoView}
+              scrollIntoView={scrollAddIntoView}
             />
           </Stack>
         </ScrollArea.Autosize>

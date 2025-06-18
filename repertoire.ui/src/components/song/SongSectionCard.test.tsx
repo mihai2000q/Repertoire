@@ -272,6 +272,8 @@ describe('Song Section Card', () => {
       })
     )
 
+    const showToast = vi.fn()
+
     reduxRender(
       <SongSectionCard
         section={section}
@@ -280,6 +282,7 @@ describe('Song Section Card', () => {
         maxSectionRehearsals={0}
         showDetails={true}
         isDragging={false}
+        showRehearsalsToast={showToast}
       />
     )
 
@@ -290,5 +293,6 @@ describe('Song Section Card', () => {
       typeId: section.songSectionType.id,
       rehearsals: section.rehearsals + 1
     })
+    expect(showToast).toHaveBeenCalledOnce()
   })
 })

@@ -57,45 +57,43 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
 
   return (
     <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Playlist'} size={475}>
-      <Modal.Body p={'xs'}>
-        <form onSubmit={form.onSubmit(addPlaylist)}>
-          <Stack>
-            <Group>
-              <ImageDropzoneWithPreview
-                image={image}
-                setImage={setImage}
-                w={170}
-                h={200}
-                iconSizes={55}
-                icon={<IconPlaylist size={55} />}
+      <form onSubmit={form.onSubmit(addPlaylist)}>
+        <Stack p={'xs'}>
+          <Group>
+            <ImageDropzoneWithPreview
+              image={image}
+              setImage={setImage}
+              w={170}
+              h={200}
+              iconSizes={55}
+              icon={<IconPlaylist size={55} />}
+            />
+
+            <Stack flex={1}>
+              <TextInput
+                withAsterisk={true}
+                maxLength={100}
+                label="Title"
+                placeholder="The title of the playlist"
+                key={form.key('title')}
+                {...form.getInputProps('title')}
               />
 
-              <Stack flex={1}>
-                <TextInput
-                  withAsterisk={true}
-                  maxLength={100}
-                  label="Title"
-                  placeholder="The title of the playlist"
-                  key={form.key('title')}
-                  {...form.getInputProps('title')}
-                />
+              <Textarea
+                label="Description"
+                placeholder="The description of the playlist"
+                key={form.key('description')}
+                {...form.getInputProps('description')}
+                rows={6}
+              />
+            </Stack>
+          </Group>
 
-                <Textarea
-                  label="Description"
-                  placeholder="The description of the playlist"
-                  key={form.key('description')}
-                  {...form.getInputProps('description')}
-                  rows={6}
-                />
-              </Stack>
-            </Group>
-
-            <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
-              Submit
-            </Button>
-          </Stack>
-        </form>
-      </Modal.Body>
+          <Button style={{ alignSelf: 'center' }} type={'submit'} loading={isLoading}>
+            Submit
+          </Button>
+        </Stack>
+      </form>
     </Modal>
   )
 }

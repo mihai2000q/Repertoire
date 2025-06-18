@@ -1,10 +1,4 @@
-import {
-  emptyAlbum,
-  emptyArtist,
-  emptySong,
-  reduxRouterRender,
-  withToastify
-} from '../../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import AlbumDrawer from './AlbumDrawer.tsx'
 import Album from '../../../types/models/Album.ts'
 import { setupServer } from 'msw/node'
@@ -17,6 +11,8 @@ import { RootState } from '../../../state/store.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
 import { openAlbumDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Album Drawer', () => {
   const songs: Song[] = [
@@ -25,20 +21,20 @@ describe('Album Drawer', () => {
       id: '1',
       title: 'Song 1',
       albumTrackNo: 1,
-      imageUrl: 'something.png',
+      imageUrl: 'something.png'
     },
     {
       ...emptySong,
       id: '2',
       title: 'Song 2',
-      albumTrackNo: 2,
+      albumTrackNo: 2
     },
     {
       ...emptySong,
       id: '3',
       title: 'Song 3',
-      albumTrackNo: 3,
-    },
+      albumTrackNo: 3
+    }
   ]
 
   const album: Album = {
@@ -52,7 +48,7 @@ describe('Album Drawer', () => {
     ...emptyArtist,
     id: '1',
     name: 'Artist 1',
-    imageUrl: 'something.png',
+    imageUrl: 'something.png'
   }
 
   const getAlbum = (album: Album) =>
@@ -60,7 +56,13 @@ describe('Album Drawer', () => {
       return HttpResponse.json(album)
     })
 
-  const handlers = [getAlbum(album)]
+  const handlers = [
+    getAlbum(album),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
 
   const server = setupServer(...handlers)
 
@@ -84,7 +86,8 @@ describe('Album Drawer', () => {
           albumId: id
         },
         artistDrawer: undefined,
-        songDrawer: undefined
+        songDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 
@@ -157,10 +160,7 @@ describe('Album Drawer', () => {
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
       } else if (album?.imageUrl) {
-        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
-          'src',
-          album.imageUrl
-        )
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', album.imageUrl)
       }
     })
   })
@@ -206,6 +206,7 @@ describe('Album Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -218,7 +219,7 @@ describe('Album Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/album/${album.id}`)
-      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
+      expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
     })
 
     it('should display warning modal and delete the album when clicking delete', async () => {
@@ -230,7 +231,7 @@ describe('Album Drawer', () => {
         })
       )
 
-      const [_, store] = reduxRouterRender(withToastify(<AlbumDrawer />), {
+      const [_, store] = reduxRouterRender(<AlbumDrawer />, {
         global: {
           documentTitle: prevDocumentTitle,
           albumDrawer: {
@@ -238,7 +239,8 @@ describe('Album Drawer', () => {
             albumId: album.id
           },
           artistDrawer: undefined,
-          songDrawer: undefined
+          songDrawer: undefined,
+          playlistDrawer: undefined
         }
       })
 
@@ -246,13 +248,40 @@ describe('Album Drawer', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
       expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
       expect((store.getState() as RootState).global.albumDrawer.albumId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
-      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to artist on artist click', async () => {
+    const user = userEvent.setup()
+
+    const localAlbum = {
+      ...album,
+      artist: artist
+    }
+
+    server.use(getAlbum(localAlbum))
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByText(localAlbum.artist.name))
+    expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/artist/${localAlbum.artist.id}`)
+  })
+
+  it('should navigate to song on song image click', async () => {
+    const user = userEvent.setup()
+
+    const song = songs[0]
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByRole('img', { name: song.title }))
+    expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 })

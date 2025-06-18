@@ -13,14 +13,16 @@ import {
 import Artist from '../../types/models/Artist.ts'
 import { useGetArtistsQuery } from '../../state/api/artistsApi.ts'
 import { useRef, useState } from 'react'
-import { useDidUpdate, useHover, useViewportSize } from '@mantine/hooks'
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { useDidUpdate, useDisclosure, useHover, useViewportSize } from '@mantine/hooks'
+import { IconChevronLeft, IconChevronRight, IconEye } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import ArtistProperty from '../../types/enums/ArtistProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import { useNavigate } from 'react-router-dom'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 function Loader() {
   return (
@@ -46,9 +48,18 @@ function Loader() {
 function LocalArtistCard({ artist }: { artist: Artist }) {
   const dispatch = useAppDispatch()
   const { ref, hovered } = useHover()
+  const navigate = useNavigate()
+
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
+
+  const isSelected = hovered || openedMenu
 
   function handleClick() {
     dispatch(openArtistDrawer(artist.id))
+  }
+
+  function handleViewDetails() {
+    navigate(`/artist/${artist.id}`)
   }
 
   return (
@@ -56,26 +67,36 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
       align={'center'}
       gap={'xxs'}
       w={60}
-      sx={{ transition: '0.2s', ...(hovered && { transform: 'scale(1.1)' }) }}
+      sx={{ transition: '0.2s', ...(isSelected && { transform: 'scale(1.1)' }) }}
     >
-      <Avatar
-        ref={ref}
-        size={'lg'}
-        src={artist.imageUrl}
-        alt={artist.imageUrl && artist.name}
-        bg={'gray.0'}
-        sx={(theme) => ({
-          cursor: 'pointer',
-          transition: '0.2s',
-          boxShadow: theme.shadows.sm,
-          '&:hover': { boxShadow: theme.shadows.xl }
-        })}
-        onClick={handleClick}
-      >
-        <Center c={'gray.7'}>
-          <CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={25} />
-        </Center>
-      </Avatar>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
+          <Avatar
+            ref={ref}
+            size={'lg'}
+            src={artist.imageUrl}
+            alt={artist.imageUrl && artist.name}
+            bg={'gray.0'}
+            sx={(theme) => ({
+              cursor: 'pointer',
+              transition: '0.2s',
+              boxShadow: theme.shadows.sm,
+              ...(isSelected && { boxShadow: theme.shadows.xl })
+            })}
+            onClick={handleClick}
+          >
+            <Center c={'gray.7'}>
+              <CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={25} />
+            </Center>
+          </Avatar>
+        </ContextMenu.Target>
+
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+            View Details
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Text ta={'center'} fw={500} lineClamp={2}>
         {artist.name}
@@ -105,6 +126,13 @@ function HomeRecentArtists({ ...others }: CardProps) {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
   }, [viewportRef.current, width])
+  useDidUpdate(() => {
+    const frame = requestAnimationFrame(() => {
+      setDisableBack(viewportRef.current?.scrollLeft === 0)
+      setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [artists])
 
   const handleTopNav = (direction: 'left' | 'right') => {
     if (!viewportRef.current) return
@@ -175,8 +203,9 @@ function HomeRecentArtists({ ...others }: CardProps) {
               `
             }
           })}
+          styles={{ viewport: { '> div': { display: 'flex' } } }}
         >
-          <Group wrap={'nowrap'} h={'100%'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
+          <Group wrap={'nowrap'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
             {isLoading || !artists ? (
               <Loader />
             ) : (

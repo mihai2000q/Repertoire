@@ -1,10 +1,4 @@
-import {
-  emptyAlbum,
-  emptyArtist,
-  emptySong,
-  reduxRouterRender,
-  withToastify
-} from '../../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistDrawer from './ArtistDrawer.tsx'
 import Artist from '../../../types/models/Artist.ts'
 import { setupServer } from 'msw/node'
@@ -18,6 +12,7 @@ import WithTotalCountResponse from '../../../types/responses/WithTotalCountRespo
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
 import { openArtistDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Artist Drawer', () => {
   const songs: Song[] = [
@@ -134,6 +129,10 @@ describe('Artist Drawer', () => {
         totalCount: songs.length
       }
       return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
     })
   ]
 
@@ -159,7 +158,8 @@ describe('Artist Drawer', () => {
           artistId: id
         },
         albumDrawer: undefined,
-        songDrawer: undefined
+        songDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 
@@ -262,6 +262,7 @@ describe('Artist Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -274,7 +275,7 @@ describe('Artist Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/artist/${artist.id}`)
-      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
+      expect((store.getState() as RootState).global.artistDrawer.open).toBeFalsy()
     })
 
     it('should display warning modal and delete the artist when clicking delete', async () => {
@@ -286,7 +287,7 @@ describe('Artist Drawer', () => {
         })
       )
 
-      const [_, store] = reduxRouterRender(withToastify(<ArtistDrawer />), {
+      const [_, store] = reduxRouterRender(<ArtistDrawer />, {
         global: {
           documentTitle: prevDocumentTitle,
           artistDrawer: {
@@ -294,7 +295,8 @@ describe('Artist Drawer', () => {
             artistId: artist.id
           },
           albumDrawer: undefined,
-          songDrawer: undefined
+          songDrawer: undefined,
+          playlistDrawer: undefined
         }
       })
 
@@ -302,13 +304,35 @@ describe('Artist Drawer', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
       expect((store.getState() as RootState).global.artistDrawer.open).toBeFalsy()
       expect((store.getState() as RootState).global.artistDrawer.artistId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
-      expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to album on album image click', async () => {
+    const user = userEvent.setup()
+
+    const album = albums[1]
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByRole('img', { name: album.title }))
+    expect((store.getState() as RootState).global.artistDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/album/${album.id}`)
+  })
+
+  it('should navigate to song on song image click', async () => {
+    const user = userEvent.setup()
+
+    const song = songs[0]
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByRole('img', { name: song.title }))
+    expect((store.getState() as RootState).global.artistDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 })

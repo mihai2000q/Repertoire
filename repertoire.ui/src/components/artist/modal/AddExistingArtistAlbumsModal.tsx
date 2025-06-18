@@ -99,7 +99,7 @@ function AddExistingArtistAlbumsModal({
       title={'Add Existing Albums'}
       styles={{ body: { padding: 0 } }}
     >
-      <Modal.Body p={0} pos={'relative'}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addAlbumIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
@@ -132,14 +132,13 @@ function AddExistingArtistAlbumsModal({
 
           {totalCount === 0 && <Text>There are no albums without artist</Text>}
           {totalCount > 0 && (
-            <Group w={'100%'} px={'xl'}>
-              <Checkbox
-                aria-label={albumIds.length === albums?.length ? 'deselect-all' : 'select-all'}
-                checked={albumIds.length === albums?.length}
-                onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
-              />
-              <Text>{albumIds.length === albums?.length ? 'Deselect' : 'Select'} All</Text>
-            </Group>
+            <Checkbox
+              checked={albumIds.length === albums?.length}
+              onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
+              label={albumIds.length === albums?.length ? 'Deselect all' : 'Select all'}
+              px={'xl'}
+              style={{ alignSelf: 'flex-start' }}
+            />
           )}
 
           <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
@@ -196,7 +195,7 @@ function AddExistingArtistAlbumsModal({
                       </Center>
                     </Avatar>
                     <Highlight
-                      highlight={search}
+                      highlight={searchValue}
                       highlightStyles={{ fontWeight: 800 }}
                       fw={500}
                       lineClamp={2}
@@ -217,7 +216,7 @@ function AddExistingArtistAlbumsModal({
             </Tooltip>
           </Box>
         </Stack>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

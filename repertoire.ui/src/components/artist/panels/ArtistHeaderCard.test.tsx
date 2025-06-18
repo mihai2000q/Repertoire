@@ -1,10 +1,12 @@
-import { emptyArtist, emptySong, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
+import { emptyArtist, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
 import ArtistHeaderCard from './ArtistHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Artist from 'src/types/models/Artist.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Artist Header Card', () => {
   const artist: Artist = {
@@ -28,7 +30,14 @@ describe('Artist Header Card', () => {
   const albumsTotalCount = 10
   const songsTotalCount = 20
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -36,9 +45,7 @@ describe('Artist Header Card', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display minimal info when the artist is not unknown', async () => {
-    const user = userEvent.setup()
-
+  it('should render and display minimal info when the artist is not unknown', () => {
     reduxRouterRender(
       <ArtistHeaderCard
         artist={artist}
@@ -55,16 +62,9 @@ describe('Artist Header Card', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
-  it('should render and display maximal info when the artist is not unknown', async () => {
-    const user = userEvent.setup()
-
+  it('should render and display maximal info when the artist is not unknown', () => {
     const localArtist: Artist = {
       ...artist,
       isBand: true,
@@ -105,11 +105,6 @@ describe('Artist Header Card', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should render and display info when the artist is unknown', async () => {
@@ -146,6 +141,25 @@ describe('Artist Header Card', () => {
 
     await user.click(screen.getByRole('img', { name: artist.name }))
     expect(await screen.findByRole('dialog', { name: artist.name + '-image' })).toBeInTheDocument()
+  })
+
+  it('should display menu on click', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(
+      <ArtistHeaderCard
+        artist={artist}
+        albumsTotalCount={albumsTotalCount}
+        songsTotalCount={songsTotalCount}
+        isUnknownArtist={false}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'more-menu' }))
+    expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
@@ -189,81 +203,27 @@ describe('Artist Header Card', () => {
     it('should display warning modal and delete artist', async () => {
       const user = userEvent.setup()
 
-      let withAlbums: string | null
-      let withSongs: string | null
       server.use(
-        http.delete(`/artists/${artist.id}`, (req) => {
-          const params = new URL(req.request.url).searchParams
-          withAlbums = params.get('withAlbums')
-          withSongs = params.get('withSongs')
+        http.delete(`/artists/${artist.id}`, () => {
           return HttpResponse.json({ message: 'it worked' })
         })
       )
 
       reduxRouterRender(
-        withToastify(
-          <ArtistHeaderCard
-            artist={artist}
-            albumsTotalCount={undefined}
-            songsTotalCount={undefined}
-            isUnknownArtist={false}
-          />
-        )
+        <ArtistHeaderCard
+          artist={artist}
+          albumsTotalCount={undefined}
+          songsTotalCount={undefined}
+          isUnknownArtist={false}
+        />
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
-
-      expect(withAlbums).toBe('false')
-      expect(withSongs).toBe('false')
-
       expect(window.location.pathname).toBe('/artists')
-      expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
-    })
-
-    it('should display warning modal and delete artist with associations', async () => {
-      const user = userEvent.setup()
-
-      let withAlbums: string | null
-      let withSongs: string | null
-      server.use(
-        http.delete(`/artists/${artist.id}`, (req) => {
-          const params = new URL(req.request.url).searchParams
-          withAlbums = params.get('withAlbums')
-          withSongs = params.get('withSongs')
-          return HttpResponse.json({ message: 'it worked' })
-        })
-      )
-
-      reduxRouterRender(
-        withToastify(
-          <ArtistHeaderCard
-            artist={artist}
-            albumsTotalCount={undefined}
-            songsTotalCount={undefined}
-            isUnknownArtist={false}
-          />
-        )
-      )
-
-      await user.click(screen.getByRole('button', { name: 'more-menu' }))
-      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
-
-      expect(await screen.findByRole('dialog', { name: /delete artist/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete artist/i })).toBeInTheDocument()
-      expect(screen.getByRole('checkbox', { name: /albums and songs/i })).toBeInTheDocument()
-      await user.click(screen.getByRole('checkbox', { name: /albums and songs/i }))
-      await user.click(screen.getByRole('button', { name: /yes/i }))
-
-      expect(withAlbums).toBe('true')
-      expect(withSongs).toBe('true')
-
-      expect(window.location.pathname).toBe('/artists')
-      expect(screen.getByText(`${artist.name} deleted!`)).toBeInTheDocument()
     })
   })
 

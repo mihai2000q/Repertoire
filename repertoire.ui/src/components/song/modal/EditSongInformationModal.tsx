@@ -14,7 +14,7 @@ import {
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
 import Difficulty from '../../../types/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
-import { useInputState } from '@mantine/hooks'
+import { useDidUpdate, useInputState } from '@mantine/hooks'
 import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
 import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
 import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
@@ -46,13 +46,34 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
       : null
   )
   const [bpm, setBpm] = useInputState<string | number>(song.bpm)
-  const [isRecorded, setIsRecorded] = useInputState<boolean>(song.isRecorded)
+  const [isRecorded, setIsRecorded] = useInputState(song.isRecorded)
 
   const hasChanged =
     (typeof bpm === 'number' && bpm !== song.bpm) ||
     (difficulty?.value !== song.difficulty && (song.difficulty !== null || difficulty !== null)) ||
     guitarTuning?.value !== song.guitarTuning?.id ||
     isRecorded !== song.isRecorded
+
+  useDidUpdate(() => {
+    setGuitarTuning(
+      song.guitarTuning
+        ? {
+          value: song.guitarTuning.id,
+          label: song.guitarTuning.name
+        }
+        : null
+    )
+    setDifficulty(
+      song.difficulty
+        ? {
+          value: song.difficulty,
+          label: Difficulty[song.difficulty]
+        }
+        : null
+    )
+    setBpm(song.bpm)
+    setIsRecorded(song.isRecorded)
+  }, [song])
 
   async function updateSong(e: MouseEvent) {
     if (!hasChanged) {
@@ -79,50 +100,48 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Song Information'}>
-      <Modal.Body p={'xs'}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <Stack>
-          <Group>
-            <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
+      <Stack p={'xs'}>
+        <Group>
+          <GuitarTuningSelect option={guitarTuning} onChange={setGuitarTuning} />
 
-            <DifficultySelect option={difficulty} onChange={setDifficulty} />
-          </Group>
+          <DifficultySelect option={difficulty} onChange={setDifficulty} />
+        </Group>
 
-          <Group>
-            <NumberInput
-              min={1}
-              allowNegative={false}
-              allowDecimal={false}
-              leftSection={<CustomIconMetronome size={20} />}
-              label="Bpm"
-              placeholder="Enter Bpm"
-              value={bpm}
-              onChange={setBpm}
-            />
+        <Group>
+          <NumberInput
+            min={1}
+            allowNegative={false}
+            allowDecimal={false}
+            leftSection={<CustomIconMetronome size={20} />}
+            label="Bpm"
+            placeholder="Enter Bpm"
+            value={bpm}
+            onChange={setBpm}
+          />
 
-            <Space flex={0.4} />
+          <Space flex={0.4} />
 
-            <Checkbox
-              mt={'18px'}
-              label={'Recorded'}
-              checked={isRecorded}
-              onChange={setIsRecorded}
-              size={'md'}
-            />
-          </Group>
+          <Checkbox
+            mt={'18px'}
+            label={'Recorded'}
+            checked={isRecorded}
+            onChange={setIsRecorded}
+            size={'md'}
+          />
+        </Group>
 
-          <Tooltip
-            disabled={hasChanged}
-            label={'You need to make a change before saving'}
-            position="bottom"
-          >
-            <Button data-disabled={!hasChanged} onClick={updateSong}>
-              Save
-            </Button>
-          </Tooltip>
-        </Stack>
-      </Modal.Body>
+        <Tooltip
+          disabled={hasChanged}
+          label={'You need to make a change before saving'}
+          position="bottom"
+        >
+          <Button data-disabled={!hasChanged} onClick={updateSong}>
+            Save
+          </Button>
+        </Tooltip>
+      </Stack>
     </Modal>
   )
 }

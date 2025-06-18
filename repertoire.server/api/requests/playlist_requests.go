@@ -26,16 +26,19 @@ type CreatePlaylistRequest struct {
 type AddAlbumsToPlaylistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
 	AlbumIDs []uuid.UUID `validate:"min=1"`
+	ForceAdd *bool
 }
 
 type AddArtistsToPlaylistRequest struct {
 	ID        uuid.UUID   `validate:"required"`
 	ArtistIDs []uuid.UUID `validate:"min=1"`
+	ForceAdd  *bool
 }
 
 type AddSongsToPlaylistRequest struct {
-	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	ID       uuid.UUID   `validate:"required"`
+	SongIDs  []uuid.UUID `validate:"min=1"`
+	ForceAdd *bool
 }
 
 type UpdatePlaylistRequest struct {
@@ -45,12 +48,12 @@ type UpdatePlaylistRequest struct {
 }
 
 type MoveSongFromPlaylistRequest struct {
-	ID         uuid.UUID `validate:"required"`
-	SongID     uuid.UUID `validate:"required"`
-	OverSongID uuid.UUID `validate:"required"`
+	ID                 uuid.UUID `validate:"required"`
+	PlaylistSongID     uuid.UUID `validate:"required"`
+	OverPlaylistSongID uuid.UUID `validate:"required"`
 }
 
 type RemoveSongsFromPlaylistRequest struct {
-	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	ID              uuid.UUID   `validate:"required"`
+	PlaylistSongIDs []uuid.UUID `validate:"min=1"`
 }

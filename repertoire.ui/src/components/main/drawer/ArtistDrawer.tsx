@@ -11,17 +11,15 @@ import {
   Text,
   Title
 } from '@mantine/core'
-import { useDeleteArtistMutation, useGetArtistQuery } from '../../../state/api/artistsApi.ts'
+import { useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
-import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash, IconUser } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
-import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
@@ -36,20 +34,111 @@ import SongProperty from '../../../types/enums/SongProperty.ts'
 import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 import useSearchBy from '../../../hooks/api/useSearchBy.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import Song from '../../../types/models/Song.ts'
+import Album from '../../../types/models/Album.ts'
+import DeleteArtistModal from '../../@ui/modal/DeleteArtistModal.tsx'
+
+function ArtistDrawerAlbumCard({ album, onClose }: { album: Album; onClose: () => void }) {
+  const navigate = useNavigate()
+
+  function onClick() {
+    onClose()
+    navigate(`/album/${album.id}`)
+  }
+
+  return (
+    <Group wrap={'nowrap'} gap={'xs'}>
+      <Avatar
+        radius={'md'}
+        size={28}
+        src={album.imageUrl}
+        alt={album.imageUrl && album.title}
+        bg={'gray.5'}
+        sx={(theme) => ({
+          transition: '0.18s',
+          cursor: 'pointer',
+          boxShadow: theme.shadows.sm,
+          '&:hover': {
+            transform: 'scale(1.2)'
+          }
+        })}
+        onClick={onClick}
+      >
+        <Center c={'white'}>
+          <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={13} />
+        </Center>
+      </Avatar>
+
+      <Stack gap={1} style={{ overflow: 'hidden' }}>
+        <Text fw={500} truncate={'end'} lh={'xxs'}>
+          {album.title}
+        </Text>
+        {album.releaseDate && (
+          <Text fw={500} fz={'xs'} c={'dimmed'} inline>
+            {dayjs(album.releaseDate).format('D MMM YYYY')}
+          </Text>
+        )}
+      </Stack>
+    </Group>
+  )
+}
+
+function ArtistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
+  const navigate = useNavigate()
+
+  function onClick() {
+    onClose()
+    navigate(`/song/${song.id}`)
+  }
+
+  return (
+    <Group gap={'xs'} wrap={'nowrap'}>
+      <Avatar
+        radius={'md'}
+        size={28}
+        src={song.imageUrl ?? song.album?.imageUrl}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+        bg={'gray.5'}
+        sx={(theme) => ({
+          transition: '0.18s',
+          cursor: 'pointer',
+          boxShadow: theme.shadows.sm,
+          '&:hover': {
+            transform: 'scale(1.2)'
+          }
+        })}
+        onClick={onClick}
+      >
+        <Center c={'white'}>
+          <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={16} />
+        </Center>
+      </Avatar>
+
+      <Stack gap={1} style={{ overflow: 'hidden' }}>
+        <Text fw={500} truncate={'end'} lh={'xxs'}>
+          {song.title}
+        </Text>
+        {song.album && (
+          <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} lh={'xxs'}>
+            {song.album.title}
+          </Text>
+        )}
+      </Stack>
+    </Group>
+  )
+}
 
 function ArtistDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
-  const opened = useAppSelector((state) => state.global.artistDrawer.open)
-  const artistId = useAppSelector((state) => state.global.artistDrawer.artistId)
+  const { artistId, open: opened } = useAppSelector((state) => state.global.artistDrawer)
   const onClose = () => {
     dispatch(closeArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
-
-  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
 
   const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
 
@@ -97,7 +186,7 @@ function ArtistDrawer() {
   }, [artist, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -107,11 +196,9 @@ function ArtistDrawer() {
     navigate(`/artist/${artist.id}`)
   }
 
-  async function handleDelete() {
-    await deleteArtistMutation({ id: artist.id }).unwrap()
+  function onDelete() {
     dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
-    toast.success(`${artist.name} deleted!`)
   }
 
   if (!artist || !songs || !albums)
@@ -156,7 +243,7 @@ function ArtistDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -171,6 +258,13 @@ function ArtistDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <AddToPlaylistMenuItem
+                  ids={[artist.id]}
+                  type={'artist'}
+                  closeMenu={closeMenu}
+                  disabled={songs.totalCount === 0}
+                />
+                <Menu.Divider />
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
@@ -240,30 +334,7 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {albums.models.map((album) => (
-              <Group key={album.id} wrap={'nowrap'} gap={'xs'}>
-                <Avatar
-                  radius={'md'}
-                  size={28}
-                  src={album.imageUrl}
-                  alt={album.imageUrl && album.title}
-                  bg={'gray.5'}
-                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                >
-                  <Center c={'white'}>
-                    <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={13} />
-                  </Center>
-                </Avatar>
-                <Stack gap={1} style={{ overflow: 'hidden' }}>
-                  <Text fw={500} truncate={'end'} lh={'xxs'}>
-                    {album.title}
-                  </Text>
-                  {album.releaseDate && (
-                    <Text fw={500} fz={'xs'} c={'dimmed'} inline>
-                      {dayjs(album.releaseDate).format('D MMM YYYY')}
-                    </Text>
-                  )}
-                </Stack>
-              </Group>
+              <ArtistDrawerAlbumCard key={album.id} album={album} onClose={onClose} />
             ))}
           </SimpleGrid>
 
@@ -278,45 +349,17 @@ function ArtistDrawer() {
 
           <SimpleGrid cols={2} px={'xs'}>
             {songs.models.map((song) => (
-              <Group key={song.id} gap={'xs'} wrap={'nowrap'}>
-                <Avatar
-                  radius={'md'}
-                  size={28}
-                  src={song.imageUrl ?? song.album?.imageUrl}
-                  alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-                  bg={'gray.5'}
-                  style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                >
-                  <Center c={'white'}>
-                    <CustomIconMusicNoteEighth
-                      aria-label={`default-icon-${song.title}`}
-                      size={16}
-                    />
-                  </Center>
-                </Avatar>
-                <Stack gap={1} style={{ overflow: 'hidden' }}>
-                  <Text fw={500} truncate={'end'} lh={'xxs'}>
-                    {song.title}
-                  </Text>
-                  {song.album && (
-                    <Text fz={'xxs'} c={'dimmed'} fw={500} truncate={'end'} lh={'xxs'}>
-                      {song.album.title}
-                    </Text>
-                  )}
-                </Stack>
-              </Group>
+              <ArtistDrawerSongCard key={song.id} song={song} onClose={onClose} />
             ))}
           </SimpleGrid>
         </Stack>
       </Stack>
 
-      <WarningModal
+      <DeleteArtistModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={'Delete Artist'}
-        description={`Are you sure you want to delete this artist?`}
-        onYes={handleDelete}
-        isLoading={isDeleteLoading}
+        artist={artist}
+        onDelete={onDelete}
       />
     </RightSideEntityDrawer>
   )

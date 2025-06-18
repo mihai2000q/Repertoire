@@ -21,8 +21,8 @@ func TestRemoveSongsFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalS
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// given - mocking
@@ -48,14 +48,14 @@ func TestRemoveSongsFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: request.SongIDs[0], SongTrackNo: 1},
-		{SongID: uuid.New(), SongTrackNo: 2},
+		{ID: request.PlaylistSongIDs[0], SongTrackNo: 1},
+		{ID: uuid.New(), SongTrackNo: 2},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -79,13 +79,13 @@ func TestRemoveSongsFromPlaylist_WhenTransactionFails_ShouldReturnInternalServer
 	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: request.SongIDs[0], SongTrackNo: 1},
+		{ID: request.PlaylistSongIDs[0], SongTrackNo: 1},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -116,13 +116,13 @@ func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServer
 	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: request.SongIDs[0], SongTrackNo: 1},
+		{ID: request.PlaylistSongIDs[0], SongTrackNo: 1},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -159,13 +159,13 @@ func TestRemoveSongsFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInt
 	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: request.SongIDs[0], SongTrackNo: 1},
+		{ID: request.PlaylistSongIDs[0], SongTrackNo: 1},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -206,17 +206,17 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
 	// given - mocking
 	playlistSongs := &[]model.PlaylistSong{
-		{SongID: uuid.New(), SongTrackNo: 1},
-		{SongID: request.SongIDs[0], SongTrackNo: 2},
-		{SongID: uuid.New(), SongTrackNo: 3},
-		{SongID: uuid.New(), SongTrackNo: 4},
-		{SongID: request.SongIDs[1], SongTrackNo: 5},
+		{ID: uuid.New(), SongTrackNo: 1},
+		{ID: request.PlaylistSongIDs[0], SongTrackNo: 2},
+		{ID: uuid.New(), SongTrackNo: 3},
+		{ID: request.PlaylistSongIDs[1], SongTrackNo: 4},
+		{ID: uuid.New(), SongTrackNo: 5},
 	}
 	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
 		Return(nil, playlistSongs).
@@ -228,9 +228,9 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 	transactionPlaylistRepository.On("RemoveSongs", mock.IsType(playlistSongs)).
 		Run(func(args mock.Arguments) {
 			songs := args.Get(0).(*[]model.PlaylistSong)
-			assert.Len(t, *songs, len(request.SongIDs))
+			assert.Len(t, *songs, len(request.PlaylistSongIDs))
 			for _, song := range *songs {
-				assert.Contains(t, request.SongIDs, song.SongID)
+				assert.Contains(t, request.PlaylistSongIDs, song.ID)
 			}
 		}).
 		Return(nil).
@@ -239,9 +239,9 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 	transactionPlaylistRepository.On("UpdateAllPlaylistSongs", mock.IsType(playlistSongs)).
 		Run(func(args mock.Arguments) {
 			newSongs := args.Get(0).(*[]model.PlaylistSong)
-			assert.Len(t, *newSongs, len(*playlistSongs)-len(request.SongIDs))
+			assert.Len(t, *newSongs, len(*playlistSongs)-len(request.PlaylistSongIDs))
 			for i, song := range *newSongs {
-				assert.NotContains(t, request.SongIDs, song.SongID)
+				assert.NotContains(t, request.PlaylistSongIDs, song.ID)
 				assert.Equal(t, uint(i)+1, song.SongTrackNo)
 			}
 		}).

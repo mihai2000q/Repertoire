@@ -22,6 +22,8 @@ import {
   openSongDrawer,
   setDocumentTitle
 } from '../../../state/slice/globalSlice.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Song Drawer', () => {
   const song: Song = {
@@ -50,7 +52,13 @@ describe('Song Drawer', () => {
       return HttpResponse.json(song)
     })
 
-  const handlers = [getSong(song)]
+  const handlers = [
+    getSong(song),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
 
   const server = setupServer(...handlers)
 
@@ -74,7 +82,8 @@ describe('Song Drawer', () => {
           songId: id
         },
         artistDrawer: undefined,
-        albumDrawer: undefined
+        albumDrawer: undefined,
+        playlistDrawer: undefined
       }
     })
 
@@ -279,6 +288,7 @@ describe('Song Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
@@ -292,7 +302,7 @@ describe('Song Drawer', () => {
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
-      expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
+      expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
       expect(window.location.pathname).toBe(`/song/${song.id}`)
     })
 
@@ -313,7 +323,8 @@ describe('Song Drawer', () => {
             songId: song.id
           },
           artistDrawer: undefined,
-          albumDrawer: undefined
+          albumDrawer: undefined,
+          playlistDrawer: undefined
         }
       })
 
@@ -329,6 +340,40 @@ describe('Song Drawer', () => {
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${song.title} deleted!`)).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to artist on artist click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      artist: artist
+    }
+
+    server.use(getSong(localSong))
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByText(localSong.artist.name))
+    expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/artist/${localSong.artist.id}`)
+  })
+
+  it('should navigate to album on album click', async () => {
+    const user = userEvent.setup()
+
+    const localSong = {
+      ...song,
+      album: album
+    }
+
+    server.use(getSong(localSong))
+
+    const [_, store] = render()
+
+    await user.click(await screen.findByText(localSong.album.title))
+    expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+    expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
   })
 
   it('should open youtube modal on youtube icon click', async () => {

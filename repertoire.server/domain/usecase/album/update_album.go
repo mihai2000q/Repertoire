@@ -40,7 +40,9 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *wrapper.ErrorC
 		return wrapper.NotFoundError(errors.New("album not found"))
 	}
 
-	artistHasChanged := album.ArtistID != request.ArtistID
+	artistHasChanged := album.ArtistID != nil && request.ArtistID == nil ||
+		album.ArtistID == nil && request.ArtistID != nil ||
+		album.ArtistID != nil && request.ArtistID != nil && *album.ArtistID != *request.ArtistID
 
 	album.Title = request.Title
 	album.ReleaseDate = request.ReleaseDate

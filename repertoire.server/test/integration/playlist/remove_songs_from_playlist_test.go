@@ -19,13 +19,11 @@ func TestRemoveSongsFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t 
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
-	playlist := playlistData.Playlists[0]
-
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID: playlist.ID,
-		SongIDs: []uuid.UUID{
-			playlistData.Songs[3].ID,
-			playlistData.Songs[1].ID,
+		ID: playlistData.Playlists[0].ID,
+		PlaylistSongIDs: []uuid.UUID{
+			playlistData.PlaylistsSongs[3].ID,
+			playlistData.PlaylistsSongs[1].ID,
 			uuid.New(),
 		},
 	}
@@ -49,9 +47,9 @@ func TestRemoveSongsFromPlaylist_WhenSuccessful_ShouldDeleteSongsFromPlaylist(t 
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID: playlist.ID,
-		SongIDs: []uuid.UUID{
-			playlistData.Songs[3].ID,
-			playlistData.Songs[1].ID,
+		PlaylistSongIDs: []uuid.UUID{
+			playlistData.PlaylistsSongs[3].ID,
+			playlistData.PlaylistsSongs[1].ID,
 		},
 	}
 
@@ -77,9 +75,9 @@ func assertRemoveSongsFromPlaylist(
 ) {
 	assert.Equal(t, playlist.ID, request.ID)
 
-	assert.Len(t, playlist.Songs, oldSongsLength-len(request.SongIDs))
+	assert.Len(t, playlist.Songs, oldSongsLength-len(request.PlaylistSongIDs))
 	for i, song := range playlist.Songs {
-		assert.NotContains(t, request.SongIDs, song.ID)
+		assert.NotContains(t, request.PlaylistSongIDs, song.PlaylistSongID)
 		assert.Equal(t, uint(i)+1, song.PlaylistTrackNo)
 	}
 }

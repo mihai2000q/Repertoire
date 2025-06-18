@@ -25,7 +25,7 @@ export type AddNewBandMemberForm = z.infer<typeof addNewBandMemberSchema>
 export const editBandMemberSchema = z.object({
   name: z.string().trim().min(1, 'Name cannot be blank'),
   image: z.string().or(z.object<FileWithPath>()).nullish(),
-  color: z.string().optional(),
+  color: z.string().nullish(),
   roleIds: z.array(z.string()).min(1, 'Select at least one role')
 })
 export type EditBandMemberForm = z.infer<typeof editBandMemberSchema>

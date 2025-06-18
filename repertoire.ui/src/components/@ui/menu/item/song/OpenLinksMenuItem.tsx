@@ -9,11 +9,12 @@ interface OpenLinksMenuItemProps {
 
 function OpenLinksMenuItem({ song, openYoutube }: OpenLinksMenuItemProps) {
   return (
-    <Menu.Sub>
+    <Menu.Sub position={'right'}>
       <Menu.Sub.Target>
         <Menu.Sub.Item
           leftSection={<IconLocation size={14} />}
           disabled={!song.songsterrLink && !song.youtubeLink}
+          onClick={(e) => e.stopPropagation()} // TODO: Remove when Mantine updates
         >
           Open Links
         </Menu.Sub.Item>

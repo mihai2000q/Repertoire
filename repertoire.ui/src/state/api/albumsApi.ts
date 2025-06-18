@@ -32,7 +32,7 @@ const albumsApi = api.injectEndpoints({
       providesTags: ['Albums', 'Artists', 'Songs'],
       transformResponse: (response: AlbumFiltersMetadata) => ({
         ...response,
-        artistIds: response.artistIds === null ? [] : response.artistIds
+        artistIds: response.artistIds ?? []
       })
     }),
     createAlbum: build.mutation<{ id: string }, CreateAlbumRequest>({

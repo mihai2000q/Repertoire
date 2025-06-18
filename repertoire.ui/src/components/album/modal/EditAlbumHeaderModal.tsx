@@ -69,10 +69,20 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
   const [image, setImage] = useState<string | FileWithPath>(album.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(album.imageUrl), [album])
 
   const [artist, setArtist] = useState(album.artist as unknown as ArtistSearch)
   useDidUpdate(() => form.setFieldValue('artistId', artist?.id), [artist])
+
+  useDidUpdate(() => {
+    form.setValues({
+      title: album.title,
+      releaseDate: album.releaseDate,
+      image: album.imageUrl,
+      artistId: album.artist?.id
+    })
+    setArtist(album.artist as unknown as ArtistSearch)
+    setImage(album.imageUrl)
+  }, [album])
 
   async function updateAlbum({ title, releaseDate, image, artistId }: EditAlbumHeaderForm) {
     if (albumHasChanged)
@@ -98,81 +108,79 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Album Header'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <form onSubmit={form.onSubmit(updateAlbum)}>
-          <Stack>
-            <LargeImageDropzoneWithPreview
-              image={image}
-              setImage={setImage}
-              defaultValue={album.imageUrl}
-            />
+      <form onSubmit={form.onSubmit(updateAlbum)}>
+        <Stack px={'xs'} py={0}>
+          <LargeImageDropzoneWithPreview
+            image={image}
+            setImage={setImage}
+            defaultValue={album.imageUrl}
+          />
 
-            {album.imageUrl !== image && (
+          {album.imageUrl !== image && (
+            <Group gap={'xxs'}>
+              <Center c={'primary.8'}>
+                <IconInfoCircleFilled size={13} />
+              </Center>
+
+              <Text inline fw={500} c={'dimmed'} fz={'xs'}>
+                This change will update all the associated songs
+              </Text>
+            </Group>
+          )}
+
+          <TextInput
+            withAsterisk={true}
+            maxLength={100}
+            label="Title"
+            placeholder="The title of the album"
+            key={form.key('title')}
+            {...form.getInputProps('title')}
+          />
+
+          <Stack gap={6}>
+            <Group gap={'sm'}>
+              <ArtistSelect flex={1} artist={artist} setArtist={setArtist} />
+
+              <DatePickerInput
+                flex={1}
+                label={'Release Date'}
+                leftSection={<IconCalendarRepeat size={20} />}
+                placeholder={'Choose the release date'}
+                key={form.key('releaseDate')}
+                {...form.getInputProps('releaseDate')}
+              />
+            </Group>
+
+            {album.artist?.id !== artist?.id && (
               <Group gap={'xxs'}>
                 <Center c={'primary.8'}>
                   <IconInfoCircleFilled size={13} />
                 </Center>
 
                 <Text inline fw={500} c={'dimmed'} fz={'xs'}>
-                  This change will update all the associated songs
+                  This change will update all the associated songs&#39; artist
                 </Text>
               </Group>
             )}
-
-            <TextInput
-              withAsterisk={true}
-              maxLength={100}
-              label="Title"
-              placeholder="The title of the album"
-              key={form.key('title')}
-              {...form.getInputProps('title')}
-            />
-
-            <Stack gap={6}>
-              <Group gap={'sm'}>
-                <ArtistSelect flex={1} artist={artist} setArtist={setArtist} />
-
-                <DatePickerInput
-                  flex={1}
-                  label={'Release Date'}
-                  leftSection={<IconCalendarRepeat size={20} />}
-                  placeholder={'Choose the release date'}
-                  key={form.key('releaseDate')}
-                  {...form.getInputProps('releaseDate')}
-                />
-              </Group>
-
-              {album.artist?.id !== artist?.id && (
-                <Group gap={'xxs'}>
-                  <Center c={'primary.8'}>
-                    <IconInfoCircleFilled size={13} />
-                  </Center>
-
-                  <Text inline fw={500} c={'dimmed'} fz={'xs'}>
-                    This change will update all the associated songs&#39; artist
-                  </Text>
-                </Group>
-              )}
-            </Stack>
-
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
-            >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
           </Stack>
-        </form>
-      </Modal.Body>
+
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
+            >
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }

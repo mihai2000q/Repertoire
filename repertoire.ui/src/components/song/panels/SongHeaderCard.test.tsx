@@ -17,6 +17,7 @@ import Album from '../../../types/models/Album.ts'
 import dayjs from 'dayjs'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../../../types/models/Search.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Song Header Card', () => {
   const song: Song = {
@@ -48,10 +49,11 @@ describe('Song Header Card', () => {
       return HttpResponse.json([])
     }),
     http.get('/search', async () => {
-      const response: WithTotalCountResponse<SearchBase> = {
-        models: [],
-        totalCount: 0
-      }
+      const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     })
   ]
@@ -163,6 +165,7 @@ describe('Song Header Card', () => {
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()

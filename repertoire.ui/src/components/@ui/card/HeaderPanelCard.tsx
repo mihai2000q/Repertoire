@@ -1,4 +1,4 @@
-import { forwardRef, ReactNode, useState } from 'react'
+import { forwardRef, ReactNode } from 'react'
 import { ActionIcon, Box, Menu, Tooltip } from '@mantine/core'
 import { IconDots, IconPencil } from '@tabler/icons-react'
 import { useHover, useMergedRef } from '@mantine/hooks'
@@ -6,16 +6,17 @@ import { useHover, useMergedRef } from '@mantine/hooks'
 interface HeaderPanelCardProps {
   children: ReactNode
   onEditClick: () => void
+  menuOpened: boolean
+  openMenu: () => void
+  closeMenu: () => void
   menuDropdown: ReactNode
   hideIcons?: boolean
 }
 
 const HeaderPanelCard = forwardRef<HTMLDivElement, HeaderPanelCardProps>(
-  ({ children, onEditClick, menuDropdown, hideIcons }, ref) => {
+  ({ children, onEditClick, menuOpened, openMenu, closeMenu, menuDropdown, hideIcons }, ref) => {
     const { ref: hoverRef, hovered } = useHover()
     const mergedRef = useMergedRef(ref, hoverRef)
-
-    const [isMenuOpened, setIsMenuOpened] = useState(false)
 
     return (
       <Box aria-label={'header-panel-card'} ref={mergedRef} pos={'relative'}>
@@ -23,17 +24,12 @@ const HeaderPanelCard = forwardRef<HTMLDivElement, HeaderPanelCardProps>(
 
         {hideIcons !== true && (
           <Box pos={'absolute'} right={0} top={0} p={0}>
-            <Menu
-              opened={isMenuOpened}
-              onChange={setIsMenuOpened}
-              position={'bottom-end'}
-              shadow={'md'}
-            >
+            <Menu shadow={'lg'} opened={menuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   aria-label={'more-menu'}
                   variant={'grey'}
-                  style={{ transition: '0.25s', opacity: hovered || isMenuOpened ? 1 : 0 }}
+                  style={{ transition: '0.25s', opacity: hovered || menuOpened ? 1 : 0 }}
                 >
                   <IconDots size={18} />
                 </ActionIcon>

@@ -25,7 +25,7 @@ func TestDeleteImageFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *t
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
+func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -36,7 +36,7 @@ func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnBadRequestError(t 
 	core.NewTestHandler().DELETE(w, "/api/albums/images/"+album.ID.String())
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestDeleteImageFromAlbum_WhenSuccessful_ShouldUpdateAlbumAndDeleteImage(t *testing.T) {

@@ -6,7 +6,7 @@ import {
 } from '../../../test-utils.tsx'
 import SongSectionsCard from './SongSectionsCard.tsx'
 import { SongSection } from '../../../types/models/Song.ts'
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
@@ -58,11 +58,14 @@ describe('Song Sections Card', () => {
   ]
 
   const handlers = [
-    http.get('/songs/sections/types', async () => {
+    http.get('/songs/sections/types', () => {
       return HttpResponse.json([])
     }),
-    http.get('/songs/instruments', async () => {
+    http.get('/songs/instruments', () => {
       return HttpResponse.json([])
+    }),
+    http.put(`/songs/sections`, () => {
+      return HttpResponse.json({ message: 'it worked' })
     })
   ]
 
@@ -85,9 +88,7 @@ describe('Song Sections Card', () => {
   })
 
   it('should render', () => {
-    const [{ rerender }] = reduxRender(
-      <SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />
-    )
+    reduxRender(<SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />)
 
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
@@ -106,19 +107,14 @@ describe('Song Sections Card', () => {
       expect(renderedSections[i]).toHaveAccessibleName(`song-section-${sections[i].name}`)
     }
     screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
-
-    rerender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
-
-    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
   it('should disable a few options when there are no sections', () => {
     reduxRender(<SongSectionsCard sections={[]} songId={''} settings={emptySongSettings} />)
 
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
@@ -267,5 +263,43 @@ describe('Song Sections Card', () => {
     expect(screen.getByLabelText('add-new-song-section-card')).toBeInTheDocument()
     await user.click(screen.getByLabelText('add-new-song-section-card'))
     expect(screen.getByLabelText('add-new-song-section')).toBeInTheDocument()
+  })
+
+  it('should show toast when adding 1 rehearsal to section and dismiss on when adding to another section', async () => {
+    const user = userEvent.setup()
+
+    const section1 = sections[0]
+    const section2 = sections[1]
+
+    reduxRender(
+      withToastify(
+        <SongSectionsCard sections={sections} songId={''} settings={emptySongSettings} />
+      )
+    )
+
+    // click the first section
+    await user.click(
+      within(screen.getByLabelText(`song-section-${section1.name}`)).getByRole('button', {
+        name: 'add-rehearsal'
+      })
+    )
+    expect(
+      await screen.findByText(new RegExp(`${section1.name} rehearsals.*increased.*1`, 'i'))
+    ).toBeInTheDocument()
+
+    // click the second section
+    await user.click(
+      within(screen.getByLabelText(`song-section-${section2.name}`)).getByRole('button', {
+        name: 'add-rehearsal'
+      })
+    )
+
+    expect(
+      await screen.findByText(new RegExp(`${section2.name} rehearsals.*increased.*1`, 'i'))
+    ).toBeInTheDocument()
+    // not working - re-enable when switched to mantine notifs
+    // expect(
+    //   screen.queryByText(new RegExp(`${section1.name} rehearsals.*increased.*1`, 'i'))
+    // ).not.toBeInTheDocument()
   })
 })

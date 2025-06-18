@@ -3,7 +3,8 @@ import {
   emptyArtist,
   emptyOrder,
   emptySong,
-  reduxRouterRender
+  reduxRouterRender,
+  withToastify
 } from '../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
@@ -19,13 +20,16 @@ import { setupServer } from 'msw/node'
 import SongProperty from '../../types/enums/SongProperty.ts'
 import Difficulty from '../../types/enums/Difficulty.ts'
 import dayjs from 'dayjs'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
 
 describe('Playlist Song Card', () => {
   const song: Song = {
     ...emptySong,
     id: '1',
     title: 'Song 1',
-    playlistTrackNo: 1
+    playlistTrackNo: 1,
+    playlistSongId: '1-1'
   }
 
   const album: Album = {
@@ -40,7 +44,14 @@ describe('Playlist Song Card', () => {
     name: 'Artist 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -307,6 +318,7 @@ describe('Playlist Song Card', () => {
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /open links/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from playlist/i })).toBeInTheDocument()
@@ -435,12 +447,14 @@ describe('Playlist Song Card', () => {
       const playlistId = 'some-id'
 
       reduxRouterRender(
-        <PlaylistSongCard
-          song={song}
-          playlistId={playlistId}
-          order={emptyOrder}
-          isDragging={false}
-        />
+        withToastify(
+          <PlaylistSongCard
+            song={song}
+            playlistId={playlistId}
+            order={emptyOrder}
+            isDragging={false}
+          />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -453,7 +467,8 @@ describe('Playlist Song Card', () => {
       await user.click(screen.getByRole('button', { name: /yes/i }))
 
       expect(capturedRequest.id).toBe(playlistId)
-      expect(capturedRequest.songIds).toStrictEqual([song.id])
+      expect(capturedRequest.playlistSongIds).toStrictEqual([song.playlistSongId])
+      expect(await screen.findByText(new RegExp(`${song.title} removed`, 'i'))).toBeInTheDocument()
     })
   })
 

@@ -1,4 +1,4 @@
-import { emptyAlbum, emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyAlbum, emptyOrder, emptyPlaylist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
@@ -10,15 +10,13 @@ import { setupServer } from 'msw/node'
 
 describe('Playlist Songs Card', () => {
   const playlist: Playlist = {
+    ...emptyPlaylist,
     id: '1',
     title: 'Song 1',
-    description: '',
-    createdAt: '',
-    updatedAt: '',
     songs: [
       {
         ...emptySong,
-        id: '1',
+        playlistSongId: '1',
         title: 'Song 1',
         imageUrl: 'something.png',
         album: {
@@ -28,7 +26,7 @@ describe('Playlist Songs Card', () => {
       },
       {
         ...emptySong,
-        id: '2',
+        playlistSongId: '2',
         title: 'Song 2',
         album: {
           ...emptyAlbum,
@@ -37,7 +35,7 @@ describe('Playlist Songs Card', () => {
       },
       {
         ...emptySong,
-        id: '3',
+        playlistSongId: '3',
         title: 'Song 3',
         imageUrl: 'something.png',
         album: {
@@ -46,7 +44,7 @@ describe('Playlist Songs Card', () => {
       },
       {
         ...emptySong,
-        id: '4',
+        playlistSongId: '4',
         title: 'Song 4',
         album: {
           ...emptyAlbum
@@ -54,13 +52,13 @@ describe('Playlist Songs Card', () => {
       },
       {
         ...emptySong,
-        id: '5',
+        playlistSongId: '5',
         title: 'Song 5',
         imageUrl: 'something.png'
       },
       {
         ...emptySong,
-        id: '6',
+        playlistSongId: '6',
         title: 'Song 6'
       }
     ]

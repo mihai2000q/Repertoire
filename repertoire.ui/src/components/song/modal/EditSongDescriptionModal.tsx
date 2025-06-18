@@ -1,7 +1,7 @@
 import Song from '../../../types/models/Song.ts'
 import { Button, LoadingOverlay, Modal, Stack, Textarea, Tooltip } from '@mantine/core'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import { useInputState } from '@mantine/hooks'
+import { useDidUpdate, useInputState } from '@mantine/hooks'
 import { MouseEvent } from 'react'
 import { toast } from 'react-toastify'
 
@@ -15,6 +15,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
   const [updateSongMutation, { isLoading }] = useUpdateSongMutation()
 
   const [description, setDescription] = useInputState(song.description)
+  useDidUpdate(() => setDescription(song.description), [song])
 
   const hasChanged = description !== song.description
 
@@ -39,31 +40,40 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={'Edit Song Description'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={'Edit Song Description'}
+      styles={{ body: { padding: 0 } }}
+    >
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <Stack>
-          <Textarea
-            label={'Description'}
-            placeholder={'Enter a description'}
-            value={description}
-            onChange={setDescription}
-            minRows={4}
-            maxRows={10}
-          />
+      <Stack px={26} pb={'md'}>
+        <Textarea
+          label={'Description'}
+          placeholder={'Enter a description'}
+          value={description}
+          onChange={setDescription}
+          autosize
+          minRows={4}
+          styles={{
+            input: {
+              overflow: 'auto',
+              maxHeight: '55vh'
+            }
+          }}
+        />
 
-          <Tooltip
-            disabled={hasChanged}
-            label={'You need to make a change before saving'}
-            position="bottom"
-          >
-            <Button data-disabled={!hasChanged} onClick={updateSong}>
-              Save
-            </Button>
-          </Tooltip>
-        </Stack>
-      </Modal.Body>
+        <Tooltip
+          disabled={hasChanged}
+          label={'You need to make a change before saving'}
+          position="bottom"
+        >
+          <Button data-disabled={!hasChanged} onClick={updateSong}>
+            Save
+          </Button>
+        </Tooltip>
+      </Stack>
     </Modal>
   )
 }

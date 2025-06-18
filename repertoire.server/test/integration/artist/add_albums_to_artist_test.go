@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAddAlbumsToArtist_WhenAlbumAlreadyHasArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddAlbumsToArtist_WhenAlbumAlreadyHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -35,7 +35,7 @@ func TestAddAlbumsToArtist_WhenAlbumAlreadyHasArtist_ShouldReturnBadRequestError
 	core.NewTestHandler().POST(w, "/api/artists/add-albums", request)
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestAddAlbumsToArtist_WhenSuccessful_ShouldAddAlbumsToArtist(t *testing.T) {

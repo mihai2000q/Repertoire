@@ -60,7 +60,7 @@ func TestDeleteImageFromArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *te
 	artistRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromArtist_WhenArtistHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
+func TestDeleteImageFromArtist_WhenArtistHasNoImage_ShouldReturnConflictError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewDeleteImageFromArtist(artistRepository, nil, nil)
@@ -76,7 +76,7 @@ func TestDeleteImageFromArtist_WhenArtistHasNoImage_ShouldReturnBadRequestError(
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "artist does not have an image", errCode.Error.Error())
 
 	artistRepository.AssertExpectations(t)

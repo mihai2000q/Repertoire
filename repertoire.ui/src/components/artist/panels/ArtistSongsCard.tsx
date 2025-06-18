@@ -49,7 +49,7 @@ function ArtistSongsCard({
   if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'songs-card'} flex={1} p={0} mah={'100%'}>
+    <Card aria-label={'songs-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
         <LoadingOverlay visible={isFetching} />
 
@@ -64,7 +64,7 @@ function ArtistSongsCard({
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
                 <IconDots size={15} />
@@ -90,7 +90,6 @@ function ArtistSongsCard({
           styles={{
             viewport: {
               '> div': {
-                display: 'block !important',
                 width: 0,
                 minWidth: '100%'
               }

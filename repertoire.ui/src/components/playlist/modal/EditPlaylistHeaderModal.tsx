@@ -55,7 +55,15 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
 
   const [image, setImage] = useState<string | FileWithPath>(playlist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(playlist.imageUrl), [playlist])
+
+  useDidUpdate(() => {
+    form.setValues({
+      title: playlist.title,
+      description: playlist.description,
+      image: playlist.imageUrl
+    })
+    setImage(playlist.imageUrl)
+  }, [playlist])
 
   async function updatePlaylist({ title, description, image }: EditPlaylistHeaderForm) {
     if (playlistHasChanged)
@@ -80,50 +88,48 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
 
   return (
     <Modal opened={opened} onClose={onClose} title={'Edit Playlist Header'}>
-      <Modal.Body px={'xs'} py={0}>
-        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
+      <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
-        <form onSubmit={form.onSubmit(updatePlaylist)}>
-          <Stack>
-            <LargeImageDropzoneWithPreview
-              image={image}
-              setImage={setImage}
-              defaultValue={playlist.imageUrl}
-            />
+      <form onSubmit={form.onSubmit(updatePlaylist)}>
+        <Stack px={'xs'} py={0}>
+          <LargeImageDropzoneWithPreview
+            image={image}
+            setImage={setImage}
+            defaultValue={playlist.imageUrl}
+          />
 
-            <TextInput
-              withAsterisk={true}
-              maxLength={100}
-              label="Title"
-              placeholder="The title of the playlist"
-              key={form.key('title')}
-              {...form.getInputProps('title')}
-            />
+          <TextInput
+            withAsterisk={true}
+            maxLength={100}
+            label="Title"
+            placeholder="The title of the playlist"
+            key={form.key('title')}
+            {...form.getInputProps('title')}
+          />
 
-            <Textarea
-              label="Description"
-              placeholder="The description of the playlist"
-              key={form.key('description')}
-              {...form.getInputProps('description')}
-              rows={4}
-            />
+          <Textarea
+            label="Description"
+            placeholder="The description of the playlist"
+            key={form.key('description')}
+            {...form.getInputProps('description')}
+            rows={4}
+          />
 
-            <Tooltip
-              disabled={hasChanged}
-              label={'You need to make a change before saving'}
-              position="bottom"
+          <Tooltip
+            disabled={hasChanged}
+            label={'You need to make a change before saving'}
+            position="bottom"
+          >
+            <Button
+              type={'submit'}
+              data-disabled={!hasChanged}
+              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
             >
-              <Button
-                type={'submit'}
-                data-disabled={!hasChanged}
-                onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-              >
-                Save
-              </Button>
-            </Tooltip>
-          </Stack>
-        </form>
-      </Modal.Body>
+              Save
+            </Button>
+          </Tooltip>
+        </Stack>
+      </form>
     </Modal>
   )
 }

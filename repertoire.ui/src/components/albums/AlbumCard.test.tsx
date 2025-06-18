@@ -1,5 +1,10 @@
 import Album from 'src/types/models/Album.ts'
-import { emptyAlbum, emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import {
+  defaultSongFiltersMetadata,
+  emptyAlbum,
+  emptyArtist,
+  reduxRouterRender
+} from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
 import Artist from 'src/types/models/Artist.ts'
@@ -21,7 +26,13 @@ describe('Album Card', () => {
     name: 'Artist 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      return HttpResponse.json(defaultSongFiltersMetadata)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -70,6 +81,7 @@ describe('Album Card', () => {
 
     expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
 
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()
@@ -118,7 +130,7 @@ describe('Album Card', () => {
         })
       )
 
-      reduxRouterRender(withToastify(<AlbumCard album={album} />))
+      reduxRouterRender(<AlbumCard album={album} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -127,10 +139,7 @@ describe('Album Card', () => {
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i }))
-
-      expect(screen.getByText(`${album.title} deleted!`)).toBeInTheDocument()
     })
   })
 

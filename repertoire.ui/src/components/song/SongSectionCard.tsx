@@ -31,10 +31,11 @@ import {
 } from '../../state/api/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { BandMember } from '../../types/models/Artist.ts'
 import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
 import { useState } from 'react'
+import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
   return rehearsalsMaxLength > 4
@@ -62,6 +63,7 @@ interface SongSectionCardProps {
   draggableProvided?: DraggableProvided
   bandMembers?: BandMember[]
   isArtistBand?: boolean
+  showRehearsalsToast?: (name: string) => void
 }
 
 function SongSectionCard({
@@ -73,7 +75,8 @@ function SongSectionCard({
   maxSectionRehearsals,
   draggableProvided,
   bandMembers,
-  isArtistBand
+  isArtistBand,
+  showRehearsalsToast
 }: SongSectionCardProps) {
   const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
     getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
@@ -92,21 +95,22 @@ function SongSectionCard({
 
   const getInstrumentIcon = useInstrumentIcon()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu } = useDoubleMenu()
 
   const [openedEditSongSection, { open: openEditSongSection, close: closeEditSongSection }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleAddRehearsal() {
-    updateSongSectionMutation({
+  async function handleAddRehearsal() {
+    await updateSongSectionMutation({
       ...section,
       typeId: section.songSectionType.id,
       bandMemberId: section.bandMember?.id,
       instrumentId: section.instrument?.id,
       rehearsals: section.rehearsals + 1
-    })
+    }).unwrap()
+    showRehearsalsToast?.(section.name)
   }
 
   async function handleDelete() {
@@ -126,8 +130,8 @@ function SongSectionCard({
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu.Target>
         <Stack
           py={'xs'}
           aria-label={`song-section-${section.name}`}
@@ -143,16 +147,15 @@ function SongSectionCard({
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
             },
 
-            ...isDragging && {
+            ...(isDragging && {
               boxShadow: theme.shadows.xl,
               borderRadius: '16px',
               backgroundColor: alpha(theme.white, 0.33),
               border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
-            }
+            })
           })}
           ref={draggableProvided?.innerRef}
           {...draggableProvided?.draggableProps}
-          onContextMenu={openMenu}
         >
           <Group gap={'xs'} px={'md'}>
             <ActionIcon
@@ -231,7 +234,7 @@ function SongSectionCard({
                 </ActionIcon>
               </Tooltip>
 
-              <Menu>
+              <Menu opened={openedMenu} onChange={toggleMenu}>
                 <Menu.Target>
                   <ActionIcon variant={'subtle'} size={'lg'} aria-label={'more-menu'}>
                     <IconDots size={20} />
@@ -243,7 +246,12 @@ function SongSectionCard({
           </Group>
 
           <Collapse in={showDetails}>
-            <Group aria-label={`song-section-details-${section.name}`} pt={'md'} gap={'lg'} pr={'lg'}>
+            <Group
+              aria-label={`song-section-details-${section.name}`}
+              pt={'md'}
+              gap={'lg'}
+              pr={'lg'}
+            >
               <Tooltip.Floating
                 role={'tooltip'}
                 label={
@@ -294,9 +302,9 @@ function SongSectionCard({
             </Group>
           </Collapse>
         </Stack>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
       <EditSongSectionModal
         opened={openedEditSongSection}
@@ -318,7 +326,7 @@ function SongSectionCard({
         onYes={handleDelete}
         isLoading={isDeleteLoading}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

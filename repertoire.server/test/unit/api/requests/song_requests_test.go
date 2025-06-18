@@ -29,7 +29,7 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				CurrentPage: &[]int{1}[0],
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc nulls first", "created_at desc"},
-				SearchBy:    []string{"title = something entirely different", "is_recorded <> false"},
+				SearchBy:    []string{"title ~* something entirely different", "is_recorded <> false"},
 			},
 		},
 	}
@@ -196,6 +196,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				Description:    "Something",
 				Bpm:            &[]uint{12}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
+				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=9DyxtUCW84o&t=1m3s"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
 				Sections: []requests.CreateSectionRequest{
@@ -441,7 +442,7 @@ func TestValidateUpdateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				IsRecorded:     true,
 				Bpm:            &[]uint{120}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
-				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=IHgFJEJgUrg"}[0],
+				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=IHgFJEJgUrg&t=120s"}[0],
 				ReleaseDate:    &[]internal.Date{internal.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Easy}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],

@@ -1,4 +1,14 @@
-import { Button, ComboboxItem, Group, Modal, Space, Stepper, Text } from '@mantine/core'
+import {
+  Button,
+  ComboboxItem,
+  Group,
+  Modal,
+  ScrollArea,
+  Space,
+  Stack,
+  Stepper,
+  Text
+} from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
@@ -126,69 +136,77 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   }
 
   return (
-    <Modal opened={opened} onClose={onCloseWithImage} title={'Add New Song'} size={500}>
-      <Modal.Body p={'xs'}>
-        <form onSubmit={form.onSubmit(addSong)}>
-          <Stepper iconSize={35} active={activeStep} onStepClick={handleActiveStepChange}>
-            <Stepper.Step
-              label={
-                <Group gap={0}>
-                  First Step
-                  <Text inline pl={1} c={'red'}>
-                    *
-                  </Text>
-                </Group>
-              }
-              description={'Basic Info'}
-            >
-              <AddNewSongModalFirstStep
-                form={form}
-                artist={artist}
-                setArtist={setArtist}
-                album={album}
-                setAlbum={setAlbum}
-              />
-            </Stepper.Step>
+    <Modal
+      opened={opened}
+      onClose={onCloseWithImage}
+      title={'Add New Song'}
+      size={500}
+      styles={{ body: { padding: 0 } }}
+    >
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
+        <Stack pt={'xs'} pb={'md'} gap={0} px={'lg'}>
+          <form onSubmit={form.onSubmit(addSong)}>
+            <Stepper iconSize={35} active={activeStep} onStepClick={handleActiveStepChange}>
+              <Stepper.Step
+                label={
+                  <Group gap={0}>
+                    First Step
+                    <Text inline pl={1} c={'red'}>
+                      *
+                    </Text>
+                  </Group>
+                }
+                description={'Basic Info'}
+              >
+                <AddNewSongModalFirstStep
+                  form={form}
+                  artist={artist}
+                  setArtist={setArtist}
+                  album={album}
+                  setAlbum={setAlbum}
+                />
+              </Stepper.Step>
 
-            <Stepper.Step label={'Second Step'} description={'More Info'}>
-              <AddNewSongModalSecondStep
-                form={form}
-                sections={sections}
-                sectionsHandlers={sectionsHandlers}
-                guitarTuning={guitarTuning}
-                setGuitarTuning={setGuitarTuning}
-                difficulty={difficulty}
-                setDifficulty={setDifficulty}
-                album={album}
-              />
-            </Stepper.Step>
+              <Stepper.Step label={'Second Step'} description={'More Info'}>
+                <AddNewSongModalSecondStep
+                  form={form}
+                  sections={sections}
+                  sectionsHandlers={sectionsHandlers}
+                  guitarTuning={guitarTuning}
+                  setGuitarTuning={setGuitarTuning}
+                  difficulty={difficulty}
+                  setDifficulty={setDifficulty}
+                  album={album}
+                />
+              </Stepper.Step>
 
-            <Stepper.Step label={'Final Step'} description={'Web & Media'}>
-              <AddNewSongModalFinalStep
-                form={form}
-                image={image}
-                setImage={setImage}
-                album={album}
-              />
-            </Stepper.Step>
-          </Stepper>
+              <Stepper.Step label={'Final Step'} description={'Web & Media'}>
+                <AddNewSongModalFinalStep
+                  form={form}
+                  image={image}
+                  setImage={setImage}
+                  album={album}
+                />
+              </Stepper.Step>
+            </Stepper>
 
-          <Group pt={'xs'} gap={'xs'}>
-            <Space flex={1} />
-            {activeStep !== 0 && (
-              <Button variant={'subtle'} onClick={prevStep}>
-                Previous
-              </Button>
-            )}
-            {activeStep !== 2 && <Button onClick={nextStep}>Next</Button>}
-            {activeStep === 2 && (
-              <Button type={'submit'} loading={isLoading}>
-                Submit
-              </Button>
-            )}
-          </Group>
-        </form>
-      </Modal.Body>
+            <Group pt={'xs'} gap={'xs'}>
+              <Space flex={1} />
+              {activeStep !== 0 && (
+                <Button variant={'subtle'} onClick={prevStep}>
+                  Previous
+                </Button>
+              )}
+              {activeStep !== 2 && <Button onClick={nextStep}>Next</Button>}
+              {activeStep === 2 && (
+                <Button type={'submit'} loading={isLoading}>
+                  Submit
+                </Button>
+              )}
+            </Group>
+          </form>
+        </Stack>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }

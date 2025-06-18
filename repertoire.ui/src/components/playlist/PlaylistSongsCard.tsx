@@ -46,8 +46,8 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
 
     moveSongFromPlaylist({
       id: playlist.id,
-      songId: playlist.songs[source.index].id,
-      overSongId: playlist.songs[destination.index].id
+      playlistSongId: playlist.songs[source.index].playlistSongId,
+      overPlaylistSongId: playlist.songs[destination.index].playlistSongId
     })
   }
 
@@ -67,7 +67,7 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
                 <IconDots size={15} />
@@ -88,16 +88,16 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
                 <Box ref={provided.innerRef} {...provided.droppableProps}>
                   {internalSongs.map((song, index) => (
                     <Draggable
-                      key={song.id}
+                      key={song.playlistSongId}
                       index={index}
-                      draggableId={song.id}
+                      draggableId={song.playlistSongId}
                       isDragDisabled={
                         isMoveLoading || order.property !== SongProperty.PlaylistTrackNo
                       }
                     >
                       {(provided, snapshot) => (
                         <PlaylistSongCard
-                          key={song.id}
+                          key={song.playlistSongId}
                           song={song}
                           playlistId={playlist.id}
                           order={order}

@@ -10,6 +10,8 @@ export default interface Artist {
   songs: Song[]
   bandMembers: BandMember[]
 
+  songsCount: number
+
   createdAt: string
   updatedAt: string
 }

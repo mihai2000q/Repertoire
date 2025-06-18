@@ -24,7 +24,7 @@ func TestDeleteImageFromBandMember_WhenMemberIsNotFound_ShouldReturnNotFoundErro
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteImageFromBandMember_WhenArtistHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
+func TestDeleteImageFromBandMember_WhenArtistHasNoImage_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
@@ -35,7 +35,7 @@ func TestDeleteImageFromBandMember_WhenArtistHasNoImage_ShouldReturnBadRequestEr
 	core.NewTestHandler().DELETE(w, "/api/artists/band-members/images/"+bandMember.ID.String())
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestDeleteImageFromBandMember_WhenSuccessful_ShouldUpdateArtistAndDeleteImage(t *testing.T) {

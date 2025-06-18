@@ -51,7 +51,7 @@ function ArtistAlbumsCard({
   if (isLoading || !albums) return <ArtistAlbumsLoader />
 
   return (
-    <Card variant={'panel'} aria-label={'albums-card'} p={0} mah={'100%'}>
+    <Card aria-label={'albums-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
         <LoadingOverlay visible={isFetching} />
 
@@ -66,7 +66,7 @@ function ArtistAlbumsCard({
 
           <Space flex={1} />
 
-          <Menu position={'bottom-end'}>
+          <Menu>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'albums-more-menu'}>
                 <IconDots size={15} />
@@ -87,7 +87,7 @@ function ArtistAlbumsCard({
         </Group>
 
         <ScrollArea.Autosize scrollbars={'y'} scrollbarSize={7}>
-          <SimpleGrid cols={{ sm: 1, md: 2, xl: 3 }} spacing={0} verticalSpacing={0}>
+          <SimpleGrid cols={{ base: 1, xs: 2, betweenXlXxl: 3 }} spacing={0} verticalSpacing={0}>
             {albums.models.map((album) => (
               <ArtistAlbumCard
                 key={album.id}

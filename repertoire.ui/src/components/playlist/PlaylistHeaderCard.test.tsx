@@ -1,5 +1,5 @@
 import Playlist from 'src/types/models/Playlist.ts'
-import { emptySong, reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import { emptyPlaylist, emptySong, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import PlaylistHeaderCard from './PlaylistHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
@@ -9,11 +9,10 @@ import {expect} from "vitest";
 
 describe('Playlist Header Card', () => {
   const playlist: Playlist = {
+    ...emptyPlaylist,
     id: '1',
     title: 'Playlist 1',
     description: "This is the playlist's description",
-    createdAt: '',
-    updatedAt: '',
     songs: [
       {
         ...emptySong,

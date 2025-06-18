@@ -22,6 +22,7 @@ import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { DeleteAccountForm, deleteAccountSchema } from '../../../validation/mainForm.ts'
 import { useSignInMutation } from '../../../state/authApi.ts'
 import { useDeleteUserMutation } from '../../../state/api/usersApi.ts'
+import { toast } from 'react-toastify'
 
 interface DeleteAccountModalProps {
   opened: boolean
@@ -77,6 +78,7 @@ function DeleteAccountModal({
     onCloseSettingsModal()
     dispatch(signOut())
     navigate('sign-in')
+    toast(`We are sorry to let you down. Goodbye! :(`)
   }
 
   return (
@@ -88,94 +90,92 @@ function DeleteAccountModal({
       closeOnClickOutside={false}
       centered
     >
-      <Modal.Body py={0}>
-        <LoadingOverlay
-          visible={isLoading}
-          loaderProps={{
-            children: (
-              <Stack align={'center'}>
-                <Loader />
-                {isSignInLoading && (
-                  <Text fw={500} c={'dimmed'}>
-                    Authenticating...
-                  </Text>
-                )}
-                {isDeleteLoading && (
-                  <Text fw={500} c={'dimmed'}>
-                    Deleting all resources...
-                  </Text>
-                )}
-              </Stack>
-            )
-          }}
-        />
+      <LoadingOverlay
+        visible={isLoading}
+        loaderProps={{
+          children: (
+            <Stack align={'center'}>
+              <Loader />
+              {isSignInLoading && (
+                <Text fw={500} c={'dimmed'}>
+                  Authenticating...
+                </Text>
+              )}
+              {isDeleteLoading && (
+                <Text fw={500} c={'dimmed'}>
+                  Deleting all resources...
+                </Text>
+              )}
+            </Stack>
+          )
+        }}
+      />
 
-        <Box pos={'relative'}>
-          <Transition
-            mounted={activeStep === 1}
-            transition="fade-left"
-            duration={400}
-            timingFunction="ease"
-          >
-            {(styles) => (
-              <Stack style={styles} pos={activeStep === 1 ? 'unset' : 'absolute'}>
-                <Stack gap={'xxs'}>
-                  <Text fw={500}>Are you sure you want to delete your account?</Text>
-                  <Text fz={'xs'} fw={500} c={'dimmed'}>
-                    This action will result in the immediate loss of access to Repertoire and the
-                    permanent removal of your account data. There will be no option for recovery.
-                  </Text>
-                </Stack>
+      <Box pos={'relative'} py={0}>
+        <Transition
+          mounted={activeStep === 1}
+          transition="fade-left"
+          duration={400}
+          timingFunction="ease"
+        >
+          {(styles) => (
+            <Stack style={styles} pos={activeStep === 1 ? 'unset' : 'absolute'}>
+              <Stack gap={'xxs'}>
+                <Text fw={500}>Are you sure you want to delete your account?</Text>
+                <Text fz={'xs'} fw={500} c={'dimmed'}>
+                  This action will result in the immediate loss of access to Repertoire and the
+                  permanent removal of your account data. There will be no option for recovery.
+                </Text>
+              </Stack>
+
+              <Group gap={'xxs'} style={{ alignSelf: 'end' }}>
+                <Button variant={'subtle'} onClick={onCloseWithStep}>
+                  Keep Account
+                </Button>
+                <Button onClick={handleContinue}>Continue</Button>
+              </Group>
+            </Stack>
+          )}
+        </Transition>
+
+        <Transition
+          mounted={activeStep === 2}
+          transition="fade-right"
+          duration={400}
+          timingFunction="ease"
+        >
+          {(styles) => (
+            <form onSubmit={form.onSubmit(handleDelete)}>
+              <Stack style={styles} pos={activeStep === 2 ? 'unset' : 'absolute'}>
+                <TextInput
+                  label="Email"
+                  placeholder="Your email"
+                  value={user.email}
+                  disabled={true}
+                />
+                <PasswordInput
+                  role={'textbox'}
+                  label="Password"
+                  placeholder="Your password"
+                  key={form.key('password')}
+                  {...form.getInputProps('password')}
+                  {...(signInError && { error: signInError })}
+                  disabled={isLoading}
+                />
 
                 <Group gap={'xxs'} style={{ alignSelf: 'end' }}>
                   <Button variant={'subtle'} onClick={onCloseWithStep}>
-                    Keep Account
+                    Cancel
                   </Button>
-                  <Button onClick={handleContinue}>Continue</Button>
+                  <Button bg={'red'} type={'submit'}>
+                    Delete
+                  </Button>
                 </Group>
               </Stack>
-            )}
-          </Transition>
-
-          <Transition
-            mounted={activeStep === 2}
-            transition="fade-right"
-            duration={400}
-            timingFunction="ease"
-          >
-            {(styles) => (
-              <form onSubmit={form.onSubmit(handleDelete)}>
-                <Stack style={styles} pos={activeStep === 2 ? 'unset' : 'absolute'}>
-                  <TextInput
-                    label="Email"
-                    placeholder="Your email"
-                    value={user.email}
-                    disabled={true}
-                  />
-                  <PasswordInput
-                    role={'textbox'}
-                    label="Password"
-                    placeholder="Your password"
-                    key={form.key('password')}
-                    {...form.getInputProps('password')}
-                    {...(signInError && { error: signInError })}
-                    disabled={isLoading}
-                  />
-
-                  <Group gap={'xxs'} style={{ alignSelf: 'end' }}>
-                    <Button variant={'subtle'} onClick={onCloseWithStep}>
-                      Cancel
-                    </Button>
-                    <Button bg={'red'} type={'submit'}>
-                      Delete
-                    </Button>
-                  </Group>
-                </Stack>
-              </form>
-            )}
-          </Transition>
-        </Box>
-      </Modal.Body>
+            </form>
+          )}
+        </Transition>
+      </Box>
     </Modal>
   )
 }

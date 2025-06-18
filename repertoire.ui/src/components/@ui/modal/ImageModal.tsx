@@ -21,7 +21,7 @@ function ImageModal({ opened, onClose, title, image }: ImageModalProps) {
       <Modal.Content radius={'lg'}>
         <Modal.Body p={0}>
           <Box pos={'relative'}>
-            <Image w={'100%'} h={'50vh'} src={image} alt={title} />
+            <Image w={'100%'} h={'max(50vh, 350px)'} src={image} alt={title} />
 
             <CloseButton
               c={'white'}

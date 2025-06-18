@@ -34,7 +34,7 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrap
 
 	for i, song := range songs {
 		if song.ArtistID != nil {
-			return wrapper.BadRequestError(errors.New("song " + song.ID.String() + "already has an artist"))
+			return wrapper.ConflictError(errors.New("song " + song.ID.String() + "already has an artist"))
 		}
 
 		// update the whole album's artist, including the other songs

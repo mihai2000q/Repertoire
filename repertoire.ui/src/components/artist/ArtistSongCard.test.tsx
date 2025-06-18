@@ -1,4 +1,10 @@
-import { emptyAlbum, emptyOrder, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyOrder,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils.tsx'
 import ArtistSongCard from './ArtistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
@@ -12,6 +18,8 @@ import { expect } from 'vitest'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RemoveSongsFromArtistRequest } from '../../types/requests/ArtistRequests.ts'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../types/models/Playlist.ts'
 
 describe('Artist Song Card', () => {
   const song: Song = {
@@ -26,7 +34,14 @@ describe('Artist Song Card', () => {
     title: 'Album 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -282,6 +297,7 @@ describe('Artist Song Card', () => {
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /open links/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
@@ -407,12 +423,14 @@ describe('Artist Song Card', () => {
       const artistId = 'some-artist-id'
 
       reduxRouterRender(
-        <ArtistSongCard
-          song={song}
-          artistId={artistId}
-          isUnknownArtist={false}
-          order={emptyOrder}
-        />
+        withToastify(
+          <ArtistSongCard
+            song={song}
+            artistId={artistId}
+            isUnknownArtist={false}
+            order={emptyOrder}
+          />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -428,6 +446,7 @@ describe('Artist Song Card', () => {
         id: artistId,
         songIds: [song.id]
       })
+      expect(await screen.findByText(new RegExp(`${song.title} removed`, 'i'))).toBeInTheDocument()
     })
 
     it('should display warning modal and delete song, when clicking on delete', async () => {

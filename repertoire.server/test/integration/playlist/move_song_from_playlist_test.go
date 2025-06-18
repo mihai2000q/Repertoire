@@ -19,9 +19,9 @@ func TestMoveSongFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         uuid.New(),
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// when
@@ -38,9 +38,9 @@ func TestMoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *te
 
 	playlist := playlistData.Playlists[0]
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         playlist.ID,
-		SongID:     uuid.New(),
-		OverSongID: uuid.New(),
+		ID:                 playlist.ID,
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// when
@@ -57,9 +57,9 @@ func TestMoveSongFromPlaylist_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t
 
 	playlist := playlistData.Playlists[0]
 	request := requests.MoveSongFromPlaylistRequest{
-		ID:         playlist.ID,
-		SongID:     playlistData.Songs[0].ID,
-		OverSongID: uuid.New(),
+		ID:                 playlist.ID,
+		PlaylistSongID:     playlistData.PlaylistsSongs[0].ID,
+		OverPlaylistSongID: uuid.New(),
 	}
 
 	// when
@@ -97,9 +97,9 @@ func TestMoveSongFromPlaylist_WhenSuccessful_ShouldMoveSongs(t *testing.T) {
 			utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 			request := requests.MoveSongFromPlaylistRequest{
-				ID:         test.playlist.ID,
-				SongID:     playlistData.Songs[test.index].ID,
-				OverSongID: playlistData.Songs[test.overIndex].ID,
+				ID:                 test.playlist.ID,
+				PlaylistSongID:     playlistData.PlaylistsSongs[test.index].ID,
+				OverPlaylistSongID: playlistData.PlaylistsSongs[test.overIndex].ID,
 			}
 
 			// when
@@ -130,12 +130,12 @@ func assertMovedSongs(
 	assert.Equal(t, request.ID, playlist.ID)
 
 	if index < overIndex {
-		assert.Equal(t, playlist.Songs[overIndex-1].ID, request.OverSongID)
+		assert.Equal(t, playlist.Songs[overIndex-1].PlaylistSongID, request.OverPlaylistSongID)
 	} else if index > overIndex {
-		assert.Equal(t, playlist.Songs[overIndex+1].ID, request.OverSongID)
+		assert.Equal(t, playlist.Songs[overIndex+1].PlaylistSongID, request.OverPlaylistSongID)
 	}
 
-	assert.Equal(t, playlist.Songs[overIndex].ID, request.SongID)
+	assert.Equal(t, playlist.Songs[overIndex].PlaylistSongID, request.PlaylistSongID)
 	for i, song := range playlist.Songs {
 		assert.Equal(t, uint(i)+1, song.PlaylistTrackNo)
 	}

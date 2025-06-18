@@ -21,7 +21,7 @@ function ArtistLoader() {
 
       <Divider />
 
-      <Grid align={'start'}>
+      <Grid align={'start'} mb={'lg'}>
         <Grid.Col span={{ sm: 12, md: 6.5 }}>
           <Stack>
             <BandMembersLoader />

@@ -26,7 +26,7 @@ func TestDeleteImageFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundErro
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnBadRequestError(t *testing.T) {
+func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
@@ -37,7 +37,7 @@ func TestDeleteImageFromPlaylist_WhenPlaylistHasNoImage_ShouldReturnBadRequestEr
 	core.NewTestHandler().DELETE(w, "/api/playlists/images/"+playlist.ID.String())
 
 	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestDeleteImageFromPlaylist_WhenSuccessful_ShouldUpdatePlaylistAndDeleteImage(t *testing.T) {

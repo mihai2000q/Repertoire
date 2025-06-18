@@ -11,29 +11,27 @@ interface ArtistInfoModalProps {
 function ArtistInfoModal({ opened, onClose, artist }: ArtistInfoModalProps) {
   return (
     <Modal opened={opened} onClose={onClose} title={'Artist Info'}>
-      <Modal.Body px={'xs'} py={0}>
-        <Stack>
-          <Grid>
-            <Grid.Col span={5}>
-              <Text fw={500} c={'dimmed'}>
-                Created on:
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={7}>
-              <Text fw={600}>{dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm')}</Text>
-            </Grid.Col>
+      <Stack px={'xs'} py={0}>
+        <Grid>
+          <Grid.Col span={5}>
+            <Text fw={500} c={'dimmed'}>
+              Created on:
+            </Text>
+          </Grid.Col>
+          <Grid.Col span={7}>
+            <Text fw={600}>{dayjs(artist.createdAt).format('DD MMMM YYYY, HH:mm')}</Text>
+          </Grid.Col>
 
-            <Grid.Col span={5}>
-              <Text fw={500} c={'dimmed'}>
-                Last Modified on:
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={7}>
-              <Text fw={600}>{dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm')}</Text>
-            </Grid.Col>
-          </Grid>
-        </Stack>
-      </Modal.Body>
+          <Grid.Col span={5}>
+            <Text fw={500} c={'dimmed'}>
+              Last Modified on:
+            </Text>
+          </Grid.Col>
+          <Grid.Col span={7}>
+            <Text fw={600}>{dayjs(artist.updatedAt).format('DD MMMM YYYY, HH:mm')}</Text>
+          </Grid.Col>
+        </Grid>
+      </Stack>
     </Modal>
   )
 }

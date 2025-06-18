@@ -1,16 +1,15 @@
 import Album from '../../types/models/Album.ts'
-import { Avatar, Center, Checkbox, Group, Menu, Stack, Text } from '@mantine/core'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
-import { toast } from 'react-toastify'
-import { useDeleteAlbumMutation } from '../../state/api/albumsApi.ts'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
 
 interface AlbumCardProps {
   album: Album
@@ -20,12 +19,8 @@ function AlbumCard({ album }: AlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
-
-  const [deleteWithSongs, setDeleteWithSongs] = useState(false)
-
   const [isImageHovered, setIsImageHovered] = useState(false)
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -46,11 +41,6 @@ function AlbumCard({ album }: AlbumCardProps) {
     navigate(`/artist/${album.artist.id}`)
   }
 
-  async function handleDelete() {
-    await deleteAlbumMutation({ id: album.id, withSongs: deleteWithSongs }).unwrap()
-    toast.success(`${album.title} deleted!`)
-  }
-
   return (
     <Stack
       aria-label={`album-card-${album.title}`}
@@ -61,19 +51,15 @@ function AlbumCard({ album }: AlbumCardProps) {
         ...((openedMenu || isImageHovered) && { transform: 'scale(1.1)' })
       }}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
+        <ContextMenu.Target>
           <Avatar
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
             radius={'10%'}
             w={'100%'}
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
             bg={'gray.5'}
-            onClick={handleClick}
-            onContextMenu={openMenu}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',
@@ -82,6 +68,9 @@ function AlbumCard({ album }: AlbumCardProps) {
               '&:hover': { boxShadow: theme.shadows.xxl_hover },
               ...(openedMenu && { boxShadow: theme.shadows.xxl_hover })
             })}
+            onMouseEnter={() => setIsImageHovered(true)}
+            onMouseLeave={() => setIsImageHovered(false)}
+            onClick={handleClick}
           >
             <Center c={'white'}>
               <CustomIconAlbumVinyl
@@ -91,27 +80,38 @@ function AlbumCard({ album }: AlbumCardProps) {
               />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item
             leftSection={<IconLayoutSidebarLeftExpand size={14} />}
             onClick={handleOpenDrawer}
           >
             Open Drawer
-          </Menu.Item>
-          <Menu.Item
+          </ContextMenu.Item>
+          <ContextMenu.Item
             leftSection={<IconUser size={14} />}
             disabled={!album.artist}
             onClick={handleViewArtist}
           >
             View Artist
-          </Menu.Item>
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+          </ContextMenu.Item>
+          <AddToPlaylistMenuItem
+            ids={[album.id]}
+            type={'album'}
+            closeMenu={closeMenu}
+            disabled={album.songsCount === 0}
+          />
+          <ContextMenu.Divider />
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Stack w={'100%'} pt={'xs'} gap={0} style={{ overflow: 'hidden' }}>
         <Text fw={600} lineClamp={2} ta={'center'}>
@@ -140,28 +140,11 @@ function AlbumCard({ album }: AlbumCardProps) {
         )}
       </Stack>
 
-      <WarningModal
+      <DeleteAlbumModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete Album`}
-        description={
-          <Stack gap={5}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{album.title}</Text>
-              <Text>?</Text>
-            </Group>
-            <Checkbox
-              checked={deleteWithSongs}
-              onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}
-              label={'Delete all associated songs'}
-              c={'dimmed'}
-              styles={{ label: { paddingLeft: 8 } }}
-            />
-          </Stack>
-        }
-        onYes={handleDelete}
-        isLoading={isDeleteLoading}
+        album={album}
+        withName
       />
     </Stack>
   )

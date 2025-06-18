@@ -8,6 +8,7 @@ export default interface Album {
   releaseDate?: string
   artist?: Artist
   songs: Song[]
+  songsCount: number
 
   rehearsals: number,
   confidence: number,

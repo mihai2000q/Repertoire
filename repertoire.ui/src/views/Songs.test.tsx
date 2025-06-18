@@ -12,6 +12,7 @@ import songsOrders from '../data/songs/songsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
+import Playlist from '../types/models/Playlist.ts'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -65,9 +66,16 @@ describe('Songs', () => {
       const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
     }),
+    http.get('/playlists', async () => {
+      const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    }),
     http.get('/songs/guitar-tunings', async () => {
       const response: GuitarTuning[] = []
       return HttpResponse.json(response)
+    }),
+    http.get(`/songs/instruments`, () => {
+      return HttpResponse.json([])
     }),
     http.get('/songs/sections/types', async () => {
       const response: SongSectionType[] = []

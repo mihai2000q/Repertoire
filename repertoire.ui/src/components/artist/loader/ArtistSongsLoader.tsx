@@ -2,7 +2,7 @@ import { Card, Group, Skeleton, Stack } from '@mantine/core'
 
 function ArtistSongsLoader() {
   return (
-    <Card variant={'panel'} data-testid={'songs-loader'} p={0} mb={'lg'}>
+    <Card variant={'panel'} data-testid={'songs-loader'} p={0}>
       <Stack gap={0}>
         <Group px={'md'} py={'xs'} gap={'xs'}>
           <Skeleton w={60} h={15} />

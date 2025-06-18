@@ -8,6 +8,7 @@ import {
   Group,
   Menu,
   NumberFormatter,
+  Space,
   Stack,
   Text,
   Tooltip
@@ -15,7 +16,7 @@ import {
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDisc, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
@@ -24,7 +25,6 @@ import SongProperty from '../../types/enums/SongProperty.ts'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useNavigate } from 'react-router-dom'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
@@ -33,6 +33,10 @@ import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import { toast } from 'react-toastify'
 
 interface ArtistSongCardProps {
   song: Song
@@ -49,10 +53,10 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   const [removeSongsFromArtist, { isLoading: isRemoveLoading }] = useRemoveSongsFromArtistMutation()
   const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
+    useDoubleMenu()
 
-  const isSelected = hovered || isMenuOpened || openedMenu
+  const isSelected = hovered || openedMenu || openedContextMenu
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -88,12 +92,14 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     openDeleteWarning()
   }
 
-  function handleRemoveFromArtist() {
-    removeSongsFromArtist({ songIds: [song.id], id: artistId })
+  async function handleRemoveFromArtist() {
+    await removeSongsFromArtist({ songIds: [song.id], id: artistId }).unwrap()
+    toast.success(`${song.title} removed from artist!`)
   }
 
-  function handleDeleteSong() {
-    deleteSong(song.id)
+  async function handleDelete() {
+    await deleteSong(song.id).unwrap()
+    toast.success(`${song.title} deleted!`)
   }
 
   const menuDropdown = (
@@ -109,8 +115,13 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         View Album
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
-      <PartialRehearsalMenuItem songId={song.id} />
-      <PerfectRehearsalMenuItem songId={song.id} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <Menu.Divider />
+
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Artist
@@ -127,8 +138,8 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu.Target>
         <Group
           ref={ref}
           aria-label={`song-card-${song.title}`}
@@ -143,8 +154,8 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
           })}
           px={'md'}
           py={'xs'}
+          gap={0}
           onClick={handleClick}
-          onContextMenu={openMenu}
         >
           <Avatar
             radius={'md'}
@@ -156,6 +167,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
               <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
             </Center>
           </Avatar>
+
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
 
           <Stack gap={0} flex={1} style={{ overflow: 'hidden' }}>
             <Group gap={'0px 4px'}>
@@ -230,7 +246,12 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
             </Flex>
           </Stack>
 
-          <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+          <Space
+            ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
+            style={{ transition: '0.16s' }}
+          />
+
+          <Menu opened={openedMenu} onChange={toggleMenu}>
             <Menu.Target>
               <ActionIcon
                 size={'md'}
@@ -248,9 +269,9 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
             <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
           </Menu>
         </Group>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
       <YoutubeModal
         title={song.title}
@@ -263,13 +284,11 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         onClose={closeRemoveWarning}
         title={`Remove Song From Artist`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this artist?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this artist?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromArtist}
@@ -279,18 +298,16 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         onClose={closeDeleteWarning}
         title={`Delete Song`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
         }
         isLoading={isDeleteLoading}
-        onYes={handleDeleteSong}
+        onYes={handleDelete}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

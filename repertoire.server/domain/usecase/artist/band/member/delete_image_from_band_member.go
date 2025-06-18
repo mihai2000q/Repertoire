@@ -36,7 +36,7 @@ func (d DeleteImageFromBandMember) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.NotFoundError(errors.New("band member not found"))
 	}
 	if member.ImageURL == nil {
-		return wrapper.BadRequestError(errors.New("band member does not have an image"))
+		return wrapper.ConflictError(errors.New("band member does not have an image"))
 	}
 
 	errCode := d.storageService.DeleteFile(*member.ImageURL)

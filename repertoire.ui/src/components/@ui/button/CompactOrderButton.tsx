@@ -12,7 +12,7 @@ interface CompactOrderButtonProps {
 
 function CompactOrderButton({ availableOrders, order, setOrder, disabledOrders }: CompactOrderButtonProps) {
   return (
-    <Menu shadow={'sm'}>
+    <Menu>
       <Menu.Target>
         <Button
           variant={'subtle'}

@@ -19,6 +19,7 @@ import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalM
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 interface SongHeaderCardProps {
   song: Song
@@ -35,6 +36,8 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   function handleAlbumClick() {
     dispatch(openAlbumDrawer(song.album.id))
@@ -53,6 +56,9 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
   return (
     <HeaderPanelCard
       onEditClick={openEdit}
+      menuOpened={openedMenu}
+      openMenu={openMenu}
+      closeMenu={closeMenu}
       menuDropdown={
         <>
           <Menu.Item leftSection={<IconInfoSquareRounded size={14} />} onClick={openInfo}>
@@ -61,8 +67,13 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
             Edit
           </Menu.Item>
-          <PartialRehearsalMenuItem songId={song.id} />
-          <PerfectRehearsalMenuItem songId={song.id} />
+
+          <Menu.Divider />
+          <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
+          <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+          <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+          <Menu.Divider />
+
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

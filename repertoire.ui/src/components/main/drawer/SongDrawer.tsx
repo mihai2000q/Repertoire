@@ -44,6 +44,7 @@ import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalM
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -53,8 +54,7 @@ function SongDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
-  const opened = useAppSelector((state) => state.global.songDrawer.open)
-  const songId = useAppSelector((state) => state.global.songDrawer.songId)
+  const { songId, open: opened } = useAppSelector((state) => state.global.songDrawer)
   const onClose = () => {
     dispatch(closeSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
@@ -69,7 +69,7 @@ function SongDrawer() {
   }, [song, opened, isFetching])
 
   const [isHovered, setIsHovered] = useState(false)
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const showInfo =
     song &&
@@ -85,6 +85,16 @@ function SongDrawer() {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
+
+  function handleArtistClick() {
+    onClose()
+    navigate(`/artist/${song.artist.id}`)
+  }
+
+  function handleAlbumClick() {
+    onClose()
+    navigate(`/album/${song.album.id}`)
+  }
 
   function handleViewDetails() {
     onClose()
@@ -140,7 +150,7 @@ function SongDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onChange={setIsMenuOpened}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -155,8 +165,13 @@ function SongDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
-                <PartialRehearsalMenuItem songId={song.id} />
-                <PerfectRehearsalMenuItem songId={song.id} />
+
+                <Menu.Divider />
+                <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
+                <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+                <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+                <Menu.Divider />
+
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
@@ -197,6 +212,7 @@ function SongDrawer() {
                   }}
                   lh={'xxs'}
                   lineClamp={1}
+                  onClick={handleArtistClick}
                 >
                   {song.artist.name}
                 </Text>
@@ -221,6 +237,7 @@ function SongDrawer() {
                         '&:hover': { textDecoration: 'underline' }
                       }}
                       lineClamp={1}
+                      onClick={handleAlbumClick}
                     >
                       {song.album.title}
                     </Text>
@@ -280,13 +297,13 @@ function SongDrawer() {
             )}
           </Group>
 
-          {song.description.trim() !== '' && (
-            <Text size="sm" c="dimmed" my={'xs'} px={'xs'} lineClamp={3}>
+          {song.description !== '' && (
+            <Text size="sm" c="dimmed" mt={'xs'} px={'xs'} lineClamp={3}>
               {song.description}
             </Text>
           )}
 
-          {showInfo && <Divider />}
+          {showInfo && <Divider mt={'xs'} />}
 
           <Grid align={'center'} gutter={'sm'} p={showInfo ? 'xs' : 0}>
             {song.difficulty && (

@@ -1,31 +1,38 @@
 import Playlist from '../../types/models/Playlist'
-import { Avatar, Center, Group, Menu, Stack, Text } from '@mantine/core'
+import { Avatar, Center, Group, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
-import { IconPlaylist, IconTrash } from '@tabler/icons-react'
+import { IconLayoutSidebarLeftExpand, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/api/playlistsApi.ts'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { useState } from 'react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
+import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
+import { useAppDispatch } from '../../state/store.ts'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 
 interface PlaylistCardProps {
   playlist: Playlist
 }
 
 function PlaylistCard({ playlist }: PlaylistCardProps) {
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
   const [isImageHovered, setIsImageHovered] = useState(false)
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
+  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   function handleClick() {
     navigate(`/playlist/${playlist.id}`)
+  }
+
+  function handleOpenDrawer() {
+    dispatch(openPlaylistDrawer(playlist.id))
   }
 
   async function handleDelete() {
@@ -43,8 +50,8 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
         ...((openedMenu || isImageHovered) && { transform: 'scale(1.1)' })
       }}
     >
-      <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-        <Menu.Target>
+      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+        <ContextMenu.Target>
           <Avatar
             onMouseEnter={() => setIsImageHovered(true)}
             onMouseLeave={() => setIsImageHovered(false)}
@@ -54,8 +61,6 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
             src={playlist.imageUrl}
             alt={playlist.imageUrl && playlist.title}
             bg={'gray.5'}
-            onClick={handleClick}
-            onContextMenu={openMenu}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',
@@ -64,6 +69,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
               '&:hover': { boxShadow: theme.shadows.xxl_hover },
               ...(openedMenu && { boxShadow: theme.shadows.xxl_hover })
             })}
+            onClick={handleClick}
           >
             <Center c={'white'}>
               <IconPlaylist
@@ -73,14 +79,24 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
               />
             </Center>
           </Avatar>
-        </Menu.Target>
+        </ContextMenu.Target>
 
-        <Menu.Dropdown {...menuDropdownProps}>
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+        <ContextMenu.Dropdown>
+          <ContextMenu.Item
+            leftSection={<IconLayoutSidebarLeftExpand size={14} />}
+            onClick={handleOpenDrawer}
+          >
+            Open Drawer
+          </ContextMenu.Item>
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+      </ContextMenu>
 
       <Stack w={'100%'} pt={'xs'} style={{ overflow: 'hidden' }}>
         <Text fw={500} lineClamp={2} ta={'center'}>

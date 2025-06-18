@@ -8,16 +8,14 @@ import {
   Grid,
   Group,
   Menu,
-  MenuDropdown,
   NumberFormatter,
-  Stack,
   Text,
   Tooltip
 } from '@mantine/core'
 import { useAppDispatch } from '../../state/store.ts'
 import { openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
@@ -27,7 +25,6 @@ import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
@@ -36,6 +33,10 @@ import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import { toast } from 'react-toastify'
 
 interface AlbumSongCardProps {
   song: Song
@@ -64,10 +65,10 @@ function AlbumSongCard({
   const [removeSongsFromAlbum, { isLoading: isRemoveLoading }] = useRemoveSongsFromAlbumMutation()
   const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
+    useDoubleMenu()
 
-  const isSelected = hovered || isMenuOpened || isDragging || openedMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isDragging
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -94,12 +95,14 @@ function AlbumSongCard({
     openDeleteWarning()
   }
 
-  function handleRemoveFromAlbum() {
-    removeSongsFromAlbum({ songIds: [song.id], id: albumId })
+  async function handleRemoveFromAlbum() {
+    await removeSongsFromAlbum({ songIds: [song.id], id: albumId }).unwrap()
+    toast.success(`${song.title} removed from album!`)
   }
 
-  function handleDelete() {
-    deleteSong(song.id)
+  async function handleDelete() {
+    await deleteSong(song.id).unwrap()
+    toast.success(`${song.title} deleted!`)
   }
 
   const menuDropdown = (
@@ -108,8 +111,13 @@ function AlbumSongCard({
         View Details
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
-      <PartialRehearsalMenuItem songId={song.id} />
-      <PerfectRehearsalMenuItem songId={song.id} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <Menu.Divider />
+
       {!isUnknownAlbum && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Album
@@ -126,8 +134,8 @@ function AlbumSongCard({
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu.Target>
         <Group
           aria-label={`song-card-${song.title}`}
           wrap={'nowrap'}
@@ -157,7 +165,6 @@ function AlbumSongCard({
           px={'md'}
           py={'xs'}
           onClick={handleClick}
-          onContextMenu={openMenu}
         >
           <Grid columns={12} align={'center'} w={'100%'}>
             <Grid.Col
@@ -243,7 +250,7 @@ function AlbumSongCard({
             </Grid.Col>
 
             <Grid.Col span={'content'}>
-              <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+              <Menu opened={openedMenu} onChange={toggleMenu}>
                 <Menu.Target>
                   <ActionIcon
                     aria-label={'more-menu'}
@@ -264,9 +271,9 @@ function AlbumSongCard({
             </Grid.Col>
           </Grid>
         </Group>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <MenuDropdown {...menuDropdownProps}>{menuDropdown}</MenuDropdown>
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
       <YoutubeModal
         title={song.title}
@@ -279,13 +286,11 @@ function AlbumSongCard({
         onClose={closeRemoveWarning}
         title={`Remove Song From Album`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this album?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this album?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromAlbum}
@@ -295,18 +300,16 @@ function AlbumSongCard({
         onClose={closeDeleteWarning}
         title={`Delete Song`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to delete</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
         }
         isLoading={isDeleteLoading}
         onYes={handleDelete}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

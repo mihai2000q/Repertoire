@@ -349,11 +349,7 @@ func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response mo
 	assert.Equal(t, playlist.Description, response.Description)
 	assert.Equal(t, playlist.ImageURL, response.ImageURL)
 
-	assert.Len(t, response.SongIDs, len(playlist.Songs))
 	assert.Equal(t, response.SongsCount, len(playlist.Songs))
-	for i := range playlist.Songs {
-		assert.Equal(t, playlist.Songs[i].ID, response.SongIDs[i])
-	}
 }
 
 func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongsMetadata bool) {
@@ -374,6 +370,7 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 		)
 		if withSongsMetadata {
 			// making sure the After Find hook works
+			assert.Equal(t, playlist.PlaylistSongs[i].ID, response.Songs[i].PlaylistSongID)
 			assert.Equal(t, playlist.PlaylistSongs[i].SongID, response.Songs[i].ID)
 			assert.Equal(t, playlist.PlaylistSongs[i].SongTrackNo, response.Songs[i].PlaylistTrackNo)
 			Time(t, &playlist.PlaylistSongs[i].CreatedAt, &response.Songs[i].PlaylistCreatedAt)

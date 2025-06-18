@@ -21,6 +21,7 @@ export default interface Song {
 
   albumTrackNo?: number
 
+  playlistSongId?: string
   playlistTrackNo?: number
   playlistCreatedAt?: string
 

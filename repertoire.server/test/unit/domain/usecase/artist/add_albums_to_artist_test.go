@@ -41,7 +41,7 @@ func TestAddAlbumsToArtist_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServe
 	albumRepository.AssertExpectations(t)
 }
 
-func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnBadRequestError(t *testing.T) {
+func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := artist.NewAddAlbumsToArtist(albumRepository, nil)
@@ -66,7 +66,7 @@ func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnBadRequestEr
 
 	// then
 	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusBadRequest, errCode.Code)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "album "+request.AlbumIDs[0].String()+" already has an artist", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)

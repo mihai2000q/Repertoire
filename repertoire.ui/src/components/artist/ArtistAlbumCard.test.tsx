@@ -1,4 +1,10 @@
-import { emptyAlbum, emptyOrder, reduxRouterRender } from '../../test-utils.tsx'
+import {
+  defaultSongFiltersMetadata,
+  emptyAlbum,
+  emptyOrder,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
@@ -17,7 +23,13 @@ describe('Artist Album Card', () => {
     title: 'Album 1'
   }
 
-  const server = setupServer()
+  const handlers = [
+    http.get('/playlists', async () => {
+      return HttpResponse.json(defaultSongFiltersMetadata)
+    })
+  ]
+
+  const server = setupServer(...handlers)
 
   beforeAll(() => server.listen())
 
@@ -175,10 +187,7 @@ describe('Artist Album Card', () => {
       keys: '[MouseRight>]',
       target: screen.getByLabelText(`album-card-${album.title}`)
     })
-
-    expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
+    expectMenu()
   })
 
   it('should display menu by clicking on the dots button', async () => {
@@ -189,11 +198,15 @@ describe('Artist Album Card', () => {
     )
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
+    expectMenu()
+  })
 
+  function expectMenu() {
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
-  })
+  }
 
   it('should display less information on the menu when the artist is unknown', async () => {
     const user = userEvent.setup()
@@ -236,12 +249,14 @@ describe('Artist Album Card', () => {
       const artistId = 'some-artist-id'
 
       reduxRouterRender(
-        <ArtistAlbumCard
-          album={album}
-          artistId={artistId}
-          isUnknownArtist={false}
-          order={emptyOrder}
-        />
+        withToastify(
+          <ArtistAlbumCard
+            album={album}
+            artistId={artistId}
+            isUnknownArtist={false}
+            order={emptyOrder}
+          />
+        )
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -257,6 +272,7 @@ describe('Artist Album Card', () => {
         id: artistId,
         albumIds: [album.id]
       })
+      expect(await screen.findByText(new RegExp(`${album.title} removed`, 'i'))).toBeInTheDocument()
     })
 
     it('should display warning modal and delete album, when clicking on delete', async () => {

@@ -21,7 +21,6 @@ type PlaylistRepository interface {
 		searchBy []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
-	CountSongs(count *int64, id uuid.UUID) error
 	Create(playlist *model.Playlist) error
 	AddSongs(playlistSongs *[]model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
@@ -97,7 +96,6 @@ func (p playlistRepository) GetAllByUser(
 		Select(
 			"playlists.*",
 			"COALESCE(ss.songs_count, 0) AS songs_count",
-			" ss.song_ids as song_ids",
 		).
 		Joins("LEFT JOIN (?) AS ss ON ss.playlist_id = playlists.id", p.getSongsByPlaylistSubQuery(userID)).
 		Where(model.Playlist{UserID: userID})
@@ -120,13 +118,6 @@ func (p playlistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, se
 
 	database.SearchBy(tx, searchBy)
 	return tx.Count(count).Error
-}
-
-func (p playlistRepository) CountSongs(count *int64, id uuid.UUID) error {
-	return p.client.Model(&model.PlaylistSong{}).
-		Where("playlist_id = ?", id).
-		Count(count).
-		Error
 }
 
 func (p playlistRepository) Create(playlist *model.Playlist) error {
@@ -162,7 +153,7 @@ func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) err
 
 func (p playlistRepository) getSongsByPlaylistSubQuery(userID uuid.UUID) *gorm.DB {
 	return p.client.Model(&model.PlaylistSong{}).
-		Select("playlist_id, COUNT(*) as songs_count, JSON_AGG(song_id) as song_ids").
+		Select("playlist_id, COUNT(*) as songs_count").
 		Joins("JOIN playlists ON playlists.id = playlist_songs.playlist_id").
 		Where("playlists.user_id = ?", userID).
 		Group("playlist_id")

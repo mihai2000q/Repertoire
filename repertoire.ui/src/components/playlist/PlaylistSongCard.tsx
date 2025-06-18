@@ -3,7 +3,8 @@ import {
   ActionIcon,
   alpha,
   Avatar,
-  Center, Flex,
+  Center,
+  Flex,
   Grid,
   Group,
   Menu,
@@ -15,11 +16,10 @@ import {
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
-import { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDisc, IconDots, IconEye, IconUser } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
-import useContextMenu from '../../hooks/useContextMenu.ts'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
@@ -33,6 +33,10 @@ import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
+import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import { toast } from 'react-toastify'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -58,10 +62,11 @@ function PlaylistSongCard({
     useRemoveSongsFromPlaylistMutation()
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
-  const [openedMenu, menuDropdownProps, { openMenu, closeMenu }] = useContextMenu()
-  const [isMenuOpened, setIsMenuOpened] = useState(false)
 
-  const isSelected = hovered || isMenuOpened || isDragging || openedMenu
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
+    useDoubleMenu()
+
+  const isSelected = hovered || openedContextMenu || openedMenu || isDragging
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -98,8 +103,12 @@ function PlaylistSongCard({
     openRemoveWarning()
   }
 
-  function handleRemoveFromPlaylist() {
-    removeSongsFromPlaylist({ songIds: [song.id], id: playlistId })
+  async function handleRemoveFromPlaylist() {
+    await removeSongsFromPlaylist({
+      playlistSongIds: [song.playlistSongId],
+      id: playlistId
+    }).unwrap()
+    toast.success(`${song.title} removed from playlist!`)
   }
 
   const menuDropdown = (
@@ -122,8 +131,13 @@ function PlaylistSongCard({
         View Album
       </Menu.Item>
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
-      <PartialRehearsalMenuItem songId={song.id} />
-      <PerfectRehearsalMenuItem songId={song.id} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <Menu.Divider />
+
       <Menu.Item
         leftSection={<IconCircleMinus size={14} />}
         c={'red.5'}
@@ -135,8 +149,8 @@ function PlaylistSongCard({
   )
 
   return (
-    <Menu shadow={'lg'} opened={openedMenu} onClose={closeMenu}>
-      <Menu.Target>
+    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu.Target>
         <Group
           ref={ref}
           wrap={'nowrap'}
@@ -166,7 +180,6 @@ function PlaylistSongCard({
           px={'md'}
           py={'xs'}
           onClick={handleClick}
-          onContextMenu={openMenu}
         >
           <Grid columns={12} align={'center'} w={'100%'}>
             <Grid.Col
@@ -189,7 +202,10 @@ function PlaylistSongCard({
                   bg={'gray.5'}
                 >
                   <Center c={'white'}>
-                    <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
+                    <CustomIconMusicNoteEighth
+                      aria-label={`default-icon-${song.title}`}
+                      size={20}
+                    />
                   </Center>
                 </Avatar>
 
@@ -246,9 +262,7 @@ function PlaylistSongCard({
                     disabled={!song.releaseDate}
                   >
                     <Text fw={500} c={'dimmed'} inline>
-                      {song.releaseDate
-                        ? dayjs(song.releaseDate).format('DD MMM YYYY')
-                        : 'unknown'}
+                      {song.releaseDate ? dayjs(song.releaseDate).format('DD MMM YYYY') : 'unknown'}
                     </Text>
                   </Tooltip>
                 )}
@@ -292,7 +306,7 @@ function PlaylistSongCard({
             </Grid.Col>
 
             <Grid.Col span={'content'}>
-              <Menu position={'bottom-end'} opened={isMenuOpened} onChange={setIsMenuOpened}>
+              <Menu opened={openedMenu} onChange={toggleMenu}>
                 <Menu.Target>
                   <ActionIcon
                     size={'md'}
@@ -313,9 +327,9 @@ function PlaylistSongCard({
             </Grid.Col>
           </Grid>
         </Group>
-      </Menu.Target>
+      </ContextMenu.Target>
 
-      <Menu.Dropdown {...menuDropdownProps}>{menuDropdown}</Menu.Dropdown>
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
       <YoutubeModal
         title={song.title}
@@ -328,18 +342,16 @@ function PlaylistSongCard({
         onClose={closeRemoveWarning}
         title={`Remove Song From Playlist`}
         description={
-          <Stack gap={'xxs'}>
-            <Group gap={'xxs'}>
-              <Text>Are you sure you want to remove</Text>
-              <Text fw={600}>{song.title}</Text>
-              <Text>from this playlist?</Text>
-            </Group>
-          </Stack>
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this playlist?</Text>
+          </Group>
         }
         isLoading={isRemoveLoading}
         onYes={handleRemoveFromPlaylist}
       />
-    </Menu>
+    </ContextMenu>
   )
 }
 

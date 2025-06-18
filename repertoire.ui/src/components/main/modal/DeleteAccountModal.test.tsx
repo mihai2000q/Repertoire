@@ -1,11 +1,11 @@
 import { setupServer } from 'msw/node'
-import { emptyUser, reduxRouterRender } from '../../../test-utils.tsx'
+import { emptyUser, reduxRouterRender, withToastify } from '../../../test-utils.tsx'
 import DeleteAccountModal from './DeleteAccountModal.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { SignInRequest } from '../../../types/requests/AuthRequests.ts'
-import {RootState} from "../../../state/store.ts";
+import { RootState } from '../../../state/store.ts'
 
 describe('Delete Account Modal', () => {
   const server = setupServer()
@@ -172,12 +172,14 @@ describe('Delete Account Modal', () => {
     )
 
     const [_, store] = reduxRouterRender(
-      <DeleteAccountModal
-        opened={true}
-        onClose={onClose}
-        onCloseSettingsModal={onCloseSettingsModal}
-        user={user}
-      />
+      withToastify(
+        <DeleteAccountModal
+          opened={true}
+          onClose={onClose}
+          onCloseSettingsModal={onCloseSettingsModal}
+          user={user}
+        />
+      )
     )
 
     await userEventDispatcher.click(screen.getByRole('button', { name: /continue/i }))
@@ -195,5 +197,7 @@ describe('Delete Account Modal', () => {
     expect((store.getState() as RootState).auth.token).toBeNull()
 
     expect(window.location.pathname).toBe('/sign-in')
+
+    expect(await screen.findByText(/we are sorry.*goodbye/i)).toBeInTheDocument()
   })
 })

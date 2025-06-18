@@ -101,7 +101,7 @@ function AddExistingAlbumSongsModal({
       title={'Add Existing Songs'}
       styles={{ body: { padding: 0 } }}
     >
-      <Modal.Body p={0} pos={'relative'}>
+      <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addSongIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
@@ -129,14 +129,13 @@ function AddExistingAlbumSongsModal({
 
           {totalCount === 0 && <Text>There are no songs without album</Text>}
           {totalCount > 0 && (
-            <Group w={'100%'} px={'xl'}>
-              <Checkbox
-                aria-label={songIds.length === songs?.length ? 'deselect-all' : 'select-all'}
-                checked={songIds.length === songs?.length}
-                onChange={(e) => checkAllSongs(e.currentTarget.checked)}
-              />
-              <Text>{songIds.length === songs?.length ? 'Deselect' : 'Select'} All</Text>
-            </Group>
+            <Checkbox
+              checked={songIds.length === songs?.length}
+              onChange={(e) => checkAllSongs(e.currentTarget.checked)}
+              label={songIds.length === songs?.length ? 'Deselect all' : 'Select all'}
+              px={'xl'}
+              style={{ alignSelf: 'flex-start' }}
+            />
           )}
 
           <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
@@ -194,7 +193,7 @@ function AddExistingAlbumSongsModal({
                     </Avatar>
                     <Stack gap={0}>
                       <Highlight
-                        highlight={search}
+                        highlight={searchValue}
                         highlightStyles={{ fontWeight: 800 }}
                         fw={500}
                         lineClamp={2}
@@ -202,7 +201,7 @@ function AddExistingAlbumSongsModal({
                         {song.title}
                       </Highlight>
                       {song.artist && (
-                        <Highlight highlight={search} fz={'sm'} c={'dimmed'} lineClamp={1}>
+                        <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
                           {song.artist.name}
                         </Highlight>
                       )}
@@ -221,7 +220,7 @@ function AddExistingAlbumSongsModal({
             </Tooltip>
           </Box>
         </Stack>
-      </Modal.Body>
+      </ScrollArea.Autosize>
     </Modal>
   )
 }
