@@ -32,6 +32,22 @@ func (p *PlaylistRepositoryMock) GetPlaylistSongs(playlistSongs *[]model.Playlis
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetPlaylistSongsWithSongs(
+	playlistSongs *[]model.PlaylistSong,
+	id uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+	orderBy []string,
+) error {
+	args := p.Called(playlistSongs, id, currentPage, pageSize, orderBy)
+
+	if len(args) > 1 {
+		*playlistSongs = *args.Get(1).(*[]model.PlaylistSong)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOderBy []string) error {
 	args := p.Called(playlist, id, songsOderBy)
 

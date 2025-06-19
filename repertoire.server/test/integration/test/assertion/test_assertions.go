@@ -376,6 +376,21 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 			Time(t, &playlist.PlaylistSongs[i].CreatedAt, &response.Songs[i].PlaylistCreatedAt)
 		}
 	}
+func ResponsePlaylistSong(t *testing.T, playlistSong model.PlaylistSong, responseSong model.Song) {
+	ResponseSong(
+		t,
+		playlistSong.Song,
+		responseSong,
+		true,
+		true,
+		false,
+		false,
+	)
+
+	assert.Equal(t, playlistSong.ID, responseSong.PlaylistSongID)
+	assert.Equal(t, playlistSong.SongID, responseSong.ID)
+	assert.Equal(t, playlistSong.SongTrackNo, responseSong.PlaylistTrackNo)
+	Time(t, &playlistSong.CreatedAt, &responseSong.PlaylistCreatedAt)
 }
 
 func ResponseUser(t *testing.T, user model.User, response model.User) {

@@ -83,6 +83,36 @@ func (p PlaylistHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (p PlaylistHandler) GetSongs(c *gin.Context) {
+	var request requests.GetPlaylistSongsRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := p.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	songs, errorCode := p.service.GetSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, songs)
+}
+
 func (p PlaylistHandler) GetFiltersMetadata(c *gin.Context) {
 	var request requests.GetPlaylistFiltersMetadataRequest
 	err := c.BindQuery(&request)

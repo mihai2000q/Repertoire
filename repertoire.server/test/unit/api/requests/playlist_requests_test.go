@@ -183,6 +183,106 @@ func TestValidateGetPlaylistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 	}
 }
 
+func TestValidateGetPlaylistSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	tests := []struct {
+		name    string
+		request requests.GetPlaylistSongsRequest
+	}{
+		{
+			"Minimal",
+			requests.GetPlaylistSongsRequest{ID: uuid.New()},
+		},
+		{
+			"Nothing Null",
+			requests.GetPlaylistSongsRequest{
+				ID:          uuid.New(),
+				CurrentPage: &[]int{1}[0],
+				PageSize:    &[]int{1}[0],
+				OrderBy:     []string{"title asc"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
+}
+
+func TestValidateGetPlaylistSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetPlaylistSongsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it is required",
+			requests.GetPlaylistSongsRequest{},
+			"ID",
+			"required",
+		},
+		// Current Page Test Cases
+		{
+			"Current Page is invalid because it should be greater than 0",
+			requests.GetPlaylistSongsRequest{ID: uuid.New(), CurrentPage: &[]int{0}[0], PageSize: &[]int{1}[0]},
+			"CurrentPage",
+			"gt",
+		},
+		{
+			"Current Page is invalid because page size is null",
+			requests.GetPlaylistSongsRequest{ID: uuid.New(), PageSize: &[]int{1}[0]},
+			"CurrentPage",
+			"required_with",
+		},
+		// Page Size Test Cases
+		{
+			"Page Size is invalid because it should be greater than 0",
+			requests.GetPlaylistSongsRequest{ID: uuid.New(), PageSize: &[]int{0}[0], CurrentPage: &[]int{1}[0]},
+			"PageSize",
+			"gt",
+		},
+		{
+			"Page Size is invalid because current page is null",
+			requests.GetPlaylistSongsRequest{ID: uuid.New(), CurrentPage: &[]int{1}[0]},
+			"PageSize",
+			"required_with",
+		},
+		// Order By Cases
+		{
+			"Order By is invalid because it has invalid order type",
+			requests.GetPlaylistSongsRequest{ID: uuid.New(), OrderBy: []string{"title ascending"}},
+			"OrderBy",
+			"order_by",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetPlaylistSongsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 func TestValidateGetPlaylistFiltersMetadataRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
