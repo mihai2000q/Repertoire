@@ -75,9 +75,9 @@ func assertRemoveSongsFromPlaylist(
 ) {
 	assert.Equal(t, playlist.ID, request.ID)
 
-	assert.Len(t, playlist.Songs, oldSongsLength-len(request.PlaylistSongIDs))
-	for i, song := range playlist.Songs {
-		assert.NotContains(t, request.PlaylistSongIDs, song.PlaylistSongID)
-		assert.Equal(t, uint(i)+1, song.PlaylistTrackNo)
+	assert.Len(t, playlist.PlaylistSongs, oldSongsLength-len(request.PlaylistSongIDs))
+	for i, playlistSong := range playlist.PlaylistSongs {
+		assert.NotContains(t, request.PlaylistSongIDs, playlistSong.ID)
+		assert.Equal(t, uint(i)+1, playlistSong.SongTrackNo)
 	}
 }
