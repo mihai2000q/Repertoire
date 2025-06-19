@@ -48,16 +48,6 @@ func (p *PlaylistRepositoryMock) GetPlaylistSongsWithSongs(
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOderBy []string) error {
-	args := p.Called(playlist, id, songsOderBy)
-
-	if len(args) > 1 {
-		*playlist = *args.Get(1).(*model.Playlist)
-	}
-
-	return args.Error(0)
-}
-
 func (p *PlaylistRepositoryMock) GetFiltersMetadata(
 	metadata *model.PlaylistFiltersMetadata,
 	userID uuid.UUID,

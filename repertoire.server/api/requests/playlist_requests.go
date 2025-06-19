@@ -3,8 +3,7 @@ package requests
 import "github.com/google/uuid"
 
 type GetPlaylistRequest struct {
-	ID           uuid.UUID `validate:"required"`
-	SongsOrderBy []string  `form:"songsOrderBy" validate:"order_by"`
+	ID uuid.UUID `validate:"required"`
 }
 
 type GetPlaylistsRequest struct {

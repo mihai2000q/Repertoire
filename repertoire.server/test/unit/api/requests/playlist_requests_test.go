@@ -20,13 +20,6 @@ func TestValidateGetPlaylistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"Minimal",
 			requests.GetPlaylistRequest{ID: uuid.New()},
 		},
-		{
-			"Maximal",
-			requests.GetPlaylistRequest{
-				ID:           uuid.New(),
-				SongsOrderBy: []string{"title", "created_at desc"},
-			},
-		},
 	}
 
 	for _, tt := range tests {
@@ -56,13 +49,6 @@ func TestValidateGetPlaylistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequ
 			requests.GetPlaylistRequest{ID: uuid.Nil},
 			"ID",
 			"required",
-		},
-		// Songs Order By Cases
-		{
-			"Songs Order By is invalid because it has invalid order type",
-			requests.GetPlaylistRequest{ID: uuid.New(), SongsOrderBy: []string{"title ascending"}},
-			"SongsOrderBy",
-			"order_by",
 		},
 	}
 	for _, tt := range tests {
