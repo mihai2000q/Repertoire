@@ -1,12 +1,11 @@
-import {Avatar, Center, Stack, Text} from '@mantine/core'
-import { useState } from 'react'
+import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { IconQuestionMark } from '@tabler/icons-react'
+import { useHover } from '@mantine/hooks'
 
 function UnknownArtistCard() {
   const navigate = useNavigate()
-
-  const [isAvatarHovered, setIsAvatarHovered] = useState(false)
+  const { ref, hovered } = useHover()
 
   function handleClick() {
     navigate(`/album/unknown`)
@@ -20,12 +19,11 @@ function UnknownArtistCard() {
       style={{
         alignSelf: 'start',
         transition: '0.3s',
-        ...(isAvatarHovered && { transform: 'scale(1.1)' })
+        ...(hovered && { transform: 'scale(1.1)' })
       }}
     >
       <Avatar
-        onMouseEnter={() => setIsAvatarHovered(true)}
-        onMouseLeave={() => setIsAvatarHovered(false)}
+        ref={ref}
         radius={'10%'}
         w={'100%'}
         h={'unset'}
@@ -33,7 +31,7 @@ function UnknownArtistCard() {
           aspectRatio: 1,
           cursor: 'pointer',
           transition: '0.3s',
-          boxShadow: isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
+          boxShadow: hovered ? theme.shadows.xxl_hover : theme.shadows.xxl
         })}
         onClick={handleClick}
       >
