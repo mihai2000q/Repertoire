@@ -168,15 +168,15 @@ func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldAddOnlyNonD
 		return db.Preload("Song").Order("song_track_no")
 	}).Find(&playlist, request.ID)
 
-	assert.GreaterOrEqual(t, len(playlist.Songs), len(expectedSongIDs))
+	assert.GreaterOrEqual(t, len(playlist.PlaylistSongs), len(expectedSongIDs))
 
-	sizeDiff := len(playlist.Songs) - len(expectedSongIDs)
-	for i := 0; i < len(playlist.Songs)-sizeDiff; i++ {
-		assert.Equal(t, expectedSongIDs[i], playlist.Songs[i+sizeDiff].ID)
+	sizeDiff := len(playlist.PlaylistSongs) - len(expectedSongIDs)
+	for i := 0; i < len(playlist.PlaylistSongs)-sizeDiff; i++ {
+		assert.Equal(t, expectedSongIDs[i], playlist.PlaylistSongs[i+sizeDiff].SongID)
 	}
 
-	for i, song := range playlist.Songs {
-		assert.Equal(t, uint(i+1), song.PlaylistTrackNo)
+	for i, song := range playlist.PlaylistSongs {
+		assert.Equal(t, uint(i+1), song.SongTrackNo)
 	}
 }
 
@@ -188,14 +188,14 @@ func assertAddedSongsToPlaylist(t *testing.T, request requests.AddSongsToPlaylis
 		return db.Preload("Song").Order("song_track_no")
 	}).Find(&playlist, request.ID)
 
-	assert.GreaterOrEqual(t, len(playlist.Songs), len(request.SongIDs))
+	assert.GreaterOrEqual(t, len(playlist.PlaylistSongs), len(request.SongIDs))
 
-	sizeDiff := len(playlist.Songs) - len(request.SongIDs)
-	for i := 0; i < len(playlist.Songs)-sizeDiff; i++ {
-		assert.Equal(t, request.SongIDs[i], playlist.Songs[i+sizeDiff].ID)
+	sizeDiff := len(playlist.PlaylistSongs) - len(request.SongIDs)
+	for i := 0; i < len(playlist.PlaylistSongs)-sizeDiff; i++ {
+		assert.Equal(t, request.SongIDs[i], playlist.PlaylistSongs[i+sizeDiff].SongID)
 	}
 
-	for i, song := range playlist.Songs {
-		assert.Equal(t, uint(i+1), song.PlaylistTrackNo)
+	for i, song := range playlist.PlaylistSongs {
+		assert.Equal(t, uint(i+1), song.SongTrackNo)
 	}
 }

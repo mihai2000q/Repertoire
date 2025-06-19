@@ -24,6 +24,7 @@ type PlaylistService interface {
 		request requests.GetPlaylistFiltersMetadataRequest,
 		token string,
 	) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode)
+	GetSongs(request requests.GetPlaylistSongsRequest) ([]model.Song, *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
@@ -40,6 +41,7 @@ type playlistService struct {
 	getAllPlaylists            playlist.GetAllPlaylists
 	getPlaylist                playlist.GetPlaylist
 	getPlaylistFiltersMetadata playlist.GetPlaylistFiltersMetadata
+	getPlaylistSongs           playlist.GetPlaylistSongs
 	moveSongFromPlaylist       playlist.MoveSongFromPlaylist
 	removeSongsFromPlaylist    playlist.RemoveSongsFromPlaylist
 	saveImageToPlaylist        playlist.SaveImageToPlaylist
@@ -56,6 +58,7 @@ func NewPlaylistService(
 	getAllPlaylists playlist.GetAllPlaylists,
 	getPlaylist playlist.GetPlaylist,
 	getPlaylistFiltersMetadata playlist.GetPlaylistFiltersMetadata,
+	getPlaylistSongs playlist.GetPlaylistSongs,
 	moveSongFromPlaylist playlist.MoveSongFromPlaylist,
 	removeSongFromPlaylist playlist.RemoveSongsFromPlaylist,
 	saveImageToPlaylist playlist.SaveImageToPlaylist,
@@ -71,6 +74,7 @@ func NewPlaylistService(
 		getAllPlaylists:            getAllPlaylists,
 		getPlaylist:                getPlaylist,
 		getPlaylistFiltersMetadata: getPlaylistFiltersMetadata,
+		getPlaylistSongs:           getPlaylistSongs,
 		moveSongFromPlaylist:       moveSongFromPlaylist,
 		removeSongsFromPlaylist:    removeSongFromPlaylist,
 		saveImageToPlaylist:        saveImageToPlaylist,
@@ -119,6 +123,10 @@ func (p *playlistService) GetFiltersMetadata(
 	token string,
 ) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode) {
 	return p.getPlaylistFiltersMetadata.Handle(request, token)
+}
+
+func (p *playlistService) GetSongs(request requests.GetPlaylistSongsRequest) ([]model.Song, *wrapper.ErrorCode) {
+	return p.getPlaylistSongs.Handle(request)
 }
 
 func (p *playlistService) MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode {

@@ -130,13 +130,13 @@ func assertMovedSongs(
 	assert.Equal(t, request.ID, playlist.ID)
 
 	if index < overIndex {
-		assert.Equal(t, playlist.Songs[overIndex-1].PlaylistSongID, request.OverPlaylistSongID)
+		assert.Equal(t, playlist.PlaylistSongs[overIndex-1].ID, request.OverPlaylistSongID)
 	} else if index > overIndex {
-		assert.Equal(t, playlist.Songs[overIndex+1].PlaylistSongID, request.OverPlaylistSongID)
+		assert.Equal(t, playlist.PlaylistSongs[overIndex+1].ID, request.OverPlaylistSongID)
 	}
 
-	assert.Equal(t, playlist.Songs[overIndex].PlaylistSongID, request.PlaylistSongID)
-	for i, song := range playlist.Songs {
-		assert.Equal(t, uint(i)+1, song.PlaylistTrackNo)
+	assert.Equal(t, playlist.PlaylistSongs[overIndex].ID, request.PlaylistSongID)
+	for i, song := range playlist.PlaylistSongs {
+		assert.Equal(t, uint(i)+1, song.SongTrackNo)
 	}
 }

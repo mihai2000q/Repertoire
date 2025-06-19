@@ -10,7 +10,13 @@ import (
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
-	GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOrderBy []string) error
+	GetPlaylistSongsWithSongs(
+		playlistSongs *[]model.PlaylistSong,
+		id uuid.UUID,
+		currentPage *int,
+		pageSize *int,
+		orderBy []string,
+	) error
 	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
@@ -46,20 +52,25 @@ func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
 func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error {
 	return p.client.
 		Order("song_track_no").
-		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
+		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).
+		Error
 }
 
-func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOrderBy []string) error {
-	return p.client.
-		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
-			tx := db.
-				Joins("JOIN songs ON songs.id = playlist_songs.song_id").
-				Preload("Song").
-				Preload("Song.Artist").
-				Preload("Song.Album")
-			return database.OrderBy(tx, songsOrderBy)
-		}).
-		Find(&playlist, model.Playlist{ID: id}).Error
+func (p playlistRepository) GetPlaylistSongsWithSongs(
+	playlistSongs *[]model.PlaylistSong,
+	id uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+	orderBy []string,
+) error {
+	tx := p.client.
+		Joins("Song").
+		Joins("Song.Artist").
+		Joins("Song.Album")
+
+	database.OrderBy(tx, orderBy)
+	database.Paginate(tx, currentPage, pageSize)
+	return tx.Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
 }
 
 func (p playlistRepository) GetFiltersMetadata(
