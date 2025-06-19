@@ -1,7 +1,7 @@
 import type { MenuProps, MenuTargetProps } from '@mantine/core'
 import { createEventHandler, createSafeContext, isElement, Menu } from '@mantine/core'
 import React, { cloneElement, forwardRef, useRef } from 'react'
-import { useUncontrolled } from '@mantine/hooks'
+import { mergeRefs, useUncontrolled } from '@mantine/hooks'
 
 // Credits to: https://gist.github.com/minosss/f26fae6170d62df26103a0c589bf6da6
 
@@ -64,7 +64,9 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
 
   return cloneElement(children, {
     onContextMenu,
-    [refProp]: ref
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    [refProp]: mergeRefs(ref, children.ref)
   })
 })
 
