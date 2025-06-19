@@ -1,9 +1,8 @@
 import Artist from '../../types/models/Artist.ts'
 import { Avatar, Center, Menu, Stack, Text } from '@mantine/core'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
@@ -18,8 +17,7 @@ interface ArtistCardProps {
 function ArtistCard({ artist }: ArtistCardProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-
-  const [isAvatarHovered, setIsAvatarHovered] = useState(false)
+  const { ref, hovered } = useHover()
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
@@ -41,14 +39,13 @@ function ArtistCard({ artist }: ArtistCardProps) {
       gap={'xs'}
       style={{
         transition: '0.25s',
-        ...((openedMenu || isAvatarHovered) && { transform: 'scale(1.1)' })
+        ...((openedMenu || hovered) && { transform: 'scale(1.1)' })
       }}
     >
       <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
         <ContextMenu.Target>
           <Avatar
-            onMouseEnter={() => setIsAvatarHovered(true)}
-            onMouseLeave={() => setIsAvatarHovered(false)}
+            ref={ref}
             src={artist.imageUrl}
             alt={artist.imageUrl && artist.name}
             w={'100%'}
@@ -58,7 +55,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
               aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
-              boxShadow: openedMenu || isAvatarHovered ? theme.shadows.xxl_hover : theme.shadows.xxl
+              boxShadow: openedMenu || hovered ? theme.shadows.xxl_hover : theme.shadows.xxl
             })}
             onClick={handleClick}
           >

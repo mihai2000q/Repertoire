@@ -1,12 +1,11 @@
 import Album from '../../../types/models/Album.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
-import { useState } from 'react'
 import { openAlbumDrawer, openArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../state/store.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import { useNavigate } from 'react-router-dom'
 import { IconEye, IconUser } from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import { ContextMenu } from '../../@ui/menu/ContextMenu.tsx'
 
 interface HomeAlbumCardProps {
@@ -16,11 +15,11 @@ interface HomeAlbumCardProps {
 function HomeAlbumCard({ album }: HomeAlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { ref, hovered } = useHover()
 
-  const [isImageHovered, setIsImageHovered] = useState(false)
   const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
-  const isSelected = isImageHovered || openedMenu
+  const isSelected = hovered || openedMenu
 
   function handleClick() {
     dispatch(openAlbumDrawer(album.id))
@@ -49,6 +48,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
       <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
+            ref={ref}
             radius={'10%'}
             w={'100%'}
             h={'unset'}
@@ -62,8 +62,6 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
               boxShadow: theme.shadows.xl,
               ...(isSelected && { boxShadow: theme.shadows.xxl })
             })}
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
             onClick={handleClick}
           >
             <Center c={'white'}>
