@@ -13,31 +13,53 @@ import { IconDots, IconPlus } from '@tabler/icons-react'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
-import Playlist from '../../types/models/Playlist.ts'
-import { useMoveSongFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
+import {
+  useGetPlaylistSongsQuery,
+  useMoveSongFromPlaylistMutation
+} from '../../state/api/playlistsApi.ts'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
 import Song from '../../types/models/Song.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
 import SongProperty from '../../types/enums/SongProperty.ts'
-import Order from '../../types/Order.ts'
-import { Dispatch, SetStateAction } from 'react'
+import PlaylistSongsLoader from './loader/PlaylistSongsLoader.tsx'
+import useLocalStorage from '../../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
+import useOrderBy from '../../hooks/api/useOrderBy.ts'
+import { useEffect, useRef } from 'react'
+import { useAppDispatch } from '../../state/store.ts'
+import { setSongsTotalCount } from '../../state/slice/playlistSlice.ts'
 
 interface PlaylistSongsCardProps {
-  playlist: Playlist
-  order: Order
-  setOrder: Dispatch<SetStateAction<Order>>
-  isFetching?: boolean
+  playlistId: string
 }
 
-function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSongsCardProps) {
+function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
+  const dispatch = useAppDispatch()
+
   const [moveSongFromPlaylist, { isLoading: isMoveLoading }] = useMoveSongFromPlaylistMutation()
 
   const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 
-  const [internalSongs, { reorder, setState }] = useListState<Song>(playlist.songs)
-  useDidUpdate(() => setState(playlist.songs), [playlist])
+  const [order, setOrder] = useLocalStorage({
+    key: LocalStorageKeys.PlaylistSongsOrder,
+    defaultValue: playlistSongsOrders[0]
+  })
+  const orderBy = useOrderBy([order])
+
+  const { data, isLoading, isFetching } = useGetPlaylistSongsQuery({
+    id: playlistId,
+    orderBy: orderBy
+  })
+  const songs = data?.models
+  const totalCount = data?.totalCount
+  useEffect(() => {
+    dispatch(setSongsTotalCount(totalCount))
+  }, [totalCount])
+
+  const [internalSongs, { reorder, setState }] = useListState<Song>(songs)
+  useDidUpdate(() => setState(songs), [songs])
 
   function onSongsDragEnd({ source, destination }) {
     reorder({ from: source.index, to: destination?.index || 0 })
@@ -45,11 +67,13 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
     if (!destination || source.index === destination.index) return
 
     moveSongFromPlaylist({
-      id: playlist.id,
-      playlistSongId: playlist.songs[source.index].playlistSongId,
-      overPlaylistSongId: playlist.songs[destination.index].playlistSongId
+      id: playlistId,
+      playlistSongId: internalSongs[source.index].playlistSongId,
+      overPlaylistSongId: internalSongs[destination.index].playlistSongId
     })
   }
+
+  if (isLoading) return <PlaylistSongsLoader />
 
   return (
     <Card variant={'panel'} aria-label={'songs-card'} p={0} mx={'xs'} mb={'lg'}>
@@ -81,7 +105,7 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
           </Menu>
         </Group>
 
-        <Stack gap={0}>
+        <Stack gap={0} align={'center'}>
           <DragDropContext onDragEnd={onSongsDragEnd}>
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (
@@ -99,7 +123,7 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
                         <PlaylistSongCard
                           key={song.playlistSongId}
                           song={song}
-                          playlistId={playlist.id}
+                          playlistId={playlistId}
                           order={order}
                           isDragging={snapshot.isDragging}
                           draggableProvided={provided}
@@ -113,7 +137,7 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
             </Droppable>
           </DragDropContext>
 
-          {playlist.songs.length === 0 && (
+          {internalSongs.length === 0 && (
             <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>
               Add Songs
             </NewHorizontalCard>
@@ -124,7 +148,7 @@ function PlaylistSongsCard({ playlist, order, setOrder, isFetching }: PlaylistSo
       <AddPlaylistSongsModal
         opened={openedAddSongs}
         onClose={closeAddSongs}
-        playlistId={playlist.id}
+        playlistId={playlistId}
       />
     </Card>
   )
