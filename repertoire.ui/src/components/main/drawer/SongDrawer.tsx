@@ -185,7 +185,7 @@ function SongDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'xs'} gap={'xxs'}>
-          <Title order={5} fw={700} lineClamp={2} fz={'max(1.85vw, 24px)'}>
+          <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
             {song.title}
           </Title>
 

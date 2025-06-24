@@ -192,7 +192,7 @@ function PlaylistDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'md'} gap={'xxs'}>
-          <Title order={5} fw={700} lineClamp={2} fz={'max(1.85vw, 24px)'}>
+          <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
             {playlist.title}
           </Title>
 
