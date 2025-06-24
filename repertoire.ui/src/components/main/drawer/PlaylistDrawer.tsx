@@ -23,7 +23,11 @@ import plural from '../../../utils/plural.ts'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import Song from '../../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import { useDeletePlaylistMutation, useGetPlaylistQuery } from '../../../state/api/playlistsApi.ts'
+import {
+  useDeletePlaylistMutation,
+  useGetPlaylistQuery,
+  useGetPlaylistSongsQuery
+} from '../../../state/api/playlistsApi.ts'
 import PlaylistDrawerLoader from '../loader/PlaylistDrawerLoader.tsx'
 
 function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
@@ -94,10 +98,15 @@ function PlaylistDrawer() {
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
-  const { data: playlist, isFetching } = useGetPlaylistQuery(
+  const { data: playlist, isFetching: isPlaylistFetching } = useGetPlaylistQuery(
     { id: playlistId },
     { skip: !playlistId }
   )
+  const { data: songs, isFetching: isSongsFetching } = useGetPlaylistSongsQuery(
+    { id: playlistId },
+    { skip: !playlistId }
+  )
+  const isFetching = isPlaylistFetching || isSongsFetching
 
   useEffect(() => {
     if (playlist && opened && !isFetching)
@@ -122,7 +131,7 @@ function PlaylistDrawer() {
     toast.success(`${playlist.title} deleted!`)
   }
 
-  if (!playlist)
+  if (!playlist || !songs)
     return (
       <RightSideEntityDrawer
         opened={opened}
@@ -197,7 +206,7 @@ function PlaylistDrawer() {
           </Title>
 
           <Text fw={500} c={'dimmed'} lh={'xs'} truncate={'end'}>
-            {playlist.songs.length} song{plural(playlist.songs)}
+            {songs.totalCount} song{plural(songs.totalCount)}
           </Text>
 
           {playlist.description !== '' && (
@@ -206,12 +215,12 @@ function PlaylistDrawer() {
             </Text>
           )}
 
-          {playlist.songs.length > 0 && (
+          {songs.totalCount > 0 && (
             <Divider mt={playlist.description === '' ? 'xs' : 'xxs'} mb={'xs'} />
           )}
 
           <Stack gap={'md'}>
-            {playlist.songs.map((song) => (
+            {songs.models.map((song) => (
               <PlaylistDrawerSongCard key={song.playlistSongId} song={song} onClose={onClose} />
             ))}
           </Stack>
