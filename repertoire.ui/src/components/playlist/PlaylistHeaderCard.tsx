@@ -1,4 +1,4 @@
-import { Avatar, Center, Group, Menu, Stack, Text, Title } from '@mantine/core'
+import { Avatar, Center, Group, Menu, Skeleton, Stack, Text, Title } from '@mantine/core'
 import { IconEdit, IconInfoSquareRounded, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import plural from '../../utils/plural.ts'
 import HeaderPanelCard from '../@ui/card/HeaderPanelCard.tsx'
@@ -12,6 +12,7 @@ import PlaylistInfoModal from './modal/PlaylistInfoModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import titleFontSize from '../../utils/style/titleFontSize.ts'
+import { useAppSelector } from '../../state/store.ts'
 
 interface PlaylistHeaderCardProps {
   playlist: Playlist
@@ -19,6 +20,8 @@ interface PlaylistHeaderCardProps {
 
 function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
   const navigate = useNavigate()
+
+  const songsTotalCount = useAppSelector((state) => state.playlist.songsTotalCount)
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
@@ -88,9 +91,13 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             {playlist.title}
           </Title>
 
-          <Text fw={500} fz={'sm'} c={'dimmed'} lh={'xxs'}>
-            {playlist.songs.length} song{plural(playlist.songs)}
-          </Text>
+          {songsTotalCount ? (
+            <Text fw={500} fz={'sm'} c={'dimmed'} lh={'xxs'}>
+              {songsTotalCount} song{plural(songsTotalCount)}
+            </Text>
+          ) : (
+            <Skeleton h={15} w={75} />
+          )}
 
           <Text fz={'sm'} c={'dimmed'} lineClamp={2} lh={'xs'}>
             {playlist.description}
