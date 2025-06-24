@@ -51,6 +51,45 @@ func TestGetPlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerEr
 	playlistRepository.AssertExpectations(t)
 }
 
+func TestGetPlaylistSongs_WhenGetPlaylistSongsCountFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := playlist.NewGetPlaylistSongs(playlistRepository)
+
+	request := requests.GetPlaylistSongsRequest{
+		ID:      uuid.New(),
+		OrderBy: []string{"title asc"},
+	}
+
+	playlistRepository.
+		On(
+			"GetPlaylistSongsWithSongs",
+			new([]model.PlaylistSong),
+			request.ID,
+			request.CurrentPage,
+			request.PageSize,
+			request.OrderBy,
+		).
+		Return(nil).
+		Once()
+
+	internalError := errors.New("internal error")
+	playlistRepository.On("GetPlaylistSongsCount", new(int64), request.ID).
+		Return(internalError).
+		Once()
+
+	// when
+	resultPlaylistSongs, errCode := _uut.Handle(request)
+
+	// then
+	assert.Empty(t, resultPlaylistSongs)
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	playlistRepository.AssertExpectations(t)
+}
+
 func TestGetPlaylistSongs_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 	_ = os.Setenv("STORAGE_FETCH_URL", "the_storage_url")
 
@@ -115,23 +154,29 @@ func TestGetPlaylistSongs_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 					Once()
 			}
 
+			expectedCount := &[]int64{23}[0]
+			playlistRepository.On("GetPlaylistSongsCount", new(int64), tt.request.ID).
+				Return(nil, expectedCount).
+				Once()
+
 			// when
-			resultPlaylistSongs, errCode := _uut.Handle(tt.request)
+			result, errCode := _uut.Handle(tt.request)
 
 			// then
 			assert.Nil(t, errCode)
-			assert.NotEmpty(t, resultPlaylistSongs)
+			assert.NotEmpty(t, result)
 
-			for i := range resultPlaylistSongs {
-				assert.Equal(t, expectedPlaylistSongs[i].Song.ID, resultPlaylistSongs[i].ID)
+			assert.Equal(t, *expectedCount, result.TotalCount)
+			for i := range result.Models {
+				assert.Equal(t, expectedPlaylistSongs[i].Song.ID, result.Models[i].ID)
 				if expectedPlaylistSongs[i].Song.ImageURL == nil {
-					assert.Nil(t, resultPlaylistSongs[i].ImageURL)
+					assert.Nil(t, result.Models[i].ImageURL)
 				} else {
-					assert.Equal(t, *expectedPlaylistSongs[i].Song.ImageURL.ToFullURL(), *resultPlaylistSongs[i].ImageURL)
+					assert.Equal(t, *expectedPlaylistSongs[i].Song.ImageURL.ToFullURL(), *result.Models[i].ImageURL)
 				}
-				assert.Equal(t, expectedPlaylistSongs[i].ID, resultPlaylistSongs[i].PlaylistSongID)
-				assert.Equal(t, expectedPlaylistSongs[i].SongTrackNo, resultPlaylistSongs[i].PlaylistTrackNo)
-				assert.Equal(t, expectedPlaylistSongs[i].CreatedAt, resultPlaylistSongs[i].PlaylistCreatedAt)
+				assert.Equal(t, expectedPlaylistSongs[i].ID, result.Models[i].PlaylistSongID)
+				assert.Equal(t, expectedPlaylistSongs[i].SongTrackNo, result.Models[i].PlaylistTrackNo)
+				assert.Equal(t, expectedPlaylistSongs[i].CreatedAt, result.Models[i].PlaylistCreatedAt)
 			}
 
 			playlistRepository.AssertExpectations(t)

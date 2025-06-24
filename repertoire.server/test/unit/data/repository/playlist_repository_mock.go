@@ -48,6 +48,16 @@ func (p *PlaylistRepositoryMock) GetPlaylistSongsWithSongs(
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetPlaylistSongsCount(count *int64, id uuid.UUID) error {
+	args := p.Called(count, id)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetFiltersMetadata(
 	metadata *model.PlaylistFiltersMetadata,
 	userID uuid.UUID,

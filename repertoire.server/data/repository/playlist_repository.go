@@ -17,6 +17,7 @@ type PlaylistRepository interface {
 		pageSize *int,
 		orderBy []string,
 	) error
+	GetPlaylistSongsCount(count *int64, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
@@ -71,6 +72,13 @@ func (p playlistRepository) GetPlaylistSongsWithSongs(
 	database.OrderBy(tx, orderBy)
 	database.Paginate(tx, currentPage, pageSize)
 	return tx.Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
+}
+
+func (p playlistRepository) GetPlaylistSongsCount(count *int64, id uuid.UUID) error {
+	return p.client.Model(&model.PlaylistSong{}).
+		Where(model.PlaylistSong{PlaylistID: id}).
+		Count(count).
+		Error
 }
 
 func (p playlistRepository) GetFiltersMetadata(
