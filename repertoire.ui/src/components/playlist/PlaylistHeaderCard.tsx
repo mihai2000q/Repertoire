@@ -96,7 +96,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
               {songsTotalCount} song{plural(songsTotalCount)}
             </Text>
           ) : (
-            <Skeleton h={15} w={75} />
+            <Skeleton h={13} w={48} />
           )}
 
           <Text fz={'sm'} c={'dimmed'} lineClamp={2} lh={'xs'}>
