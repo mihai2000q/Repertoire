@@ -7,6 +7,7 @@ import {
   AddSongsToPlaylistRequest,
   CreatePlaylistRequest,
   GetPlaylistRequest,
+  GetPlaylistSongsRequest,
   GetPlaylistsRequest,
   MoveSongFromPlaylistRequest,
   RemoveSongsFromPlaylistRequest,
@@ -22,6 +23,7 @@ import {
   AddArtistsToPlaylistResponse,
   AddSongsToPlaylistResponse
 } from '../../types/responses/PlaylistResponses.ts'
+import Song from '../../types/models/Song.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -31,16 +33,17 @@ const playlistsApi = api.injectEndpoints({
     }),
     getPlaylist: build.query<Playlist, GetPlaylistRequest>({
       query: (arg) => `playlists/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
-      providesTags: ['Playlists', 'Songs', 'Albums', 'Artists'],
-      transformResponse: (response: Playlist) => ({
-        ...response,
-        songs: response.songs ?? []
-      })
+      providesTags: ['Playlists']
+    }),
+    getPlaylistSongs: build.query<WithTotalCountResponse<Song>, GetPlaylistSongsRequest>({
+      query: (arg) => `playlists/songs/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
+      providesTags: ['Songs', 'Albums', 'Artists']
     }),
     getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
       query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Playlists']
+      providesTags: ['Playlists', 'Songs']
     }),
+
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
       query: (body) => ({
         url: 'playlists',
@@ -88,7 +91,7 @@ const playlistsApi = api.injectEndpoints({
           method: 'POST',
           body: body
         }),
-        invalidatesTags: ['Playlists'],
+        invalidatesTags: ['Songs'],
         transformResponse: (response: AddArtistsToPlaylistResponse) => ({
           ...response,
           duplicateArtistIds: response.duplicateArtistIds ?? []
@@ -101,7 +104,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists'],
+      invalidatesTags: ['Songs'],
       transformResponse: (response: AddAlbumsToPlaylistResponse) => ({
         ...response,
         duplicateAlbumIds: response.duplicateAlbumIds ?? []
@@ -113,7 +116,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs']
     }),
     moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
       query: (body) => ({
@@ -121,7 +124,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs']
     }),
     removeSongsFromPlaylist: build.mutation<HttpMessageResponse, RemoveSongsFromPlaylistRequest>({
       query: (body) => ({
@@ -129,7 +132,7 @@ const playlistsApi = api.injectEndpoints({
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs']
     })
   })
 })
@@ -137,6 +140,8 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
+  useGetPlaylistSongsQuery,
+  useLazyGetPlaylistSongsQuery,
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,

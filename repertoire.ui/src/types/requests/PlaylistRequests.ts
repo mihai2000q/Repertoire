@@ -9,7 +9,14 @@ export interface GetPlaylistsRequest {
 
 export interface GetPlaylistRequest {
   id: string
-  songsOrderBy?: string[]
+}
+
+export interface GetPlaylistSongsRequest {
+  id: string
+  currentPage?: number
+  pageSize?: number
+  orderBy?: string[]
+  searchBy?: string[]
 }
 
 export interface CreatePlaylistRequest {
