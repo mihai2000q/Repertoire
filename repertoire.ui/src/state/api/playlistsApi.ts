@@ -27,6 +27,7 @@ import Song from '../../types/models/Song.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    // Queries
     getPlaylists: build.query<WithTotalCountResponse<Playlist>, GetPlaylistsRequest>({
       query: (arg) => `playlists${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
@@ -35,15 +36,49 @@ const playlistsApi = api.injectEndpoints({
       query: (arg) => `playlists/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Playlists']
     }),
-    getPlaylistSongs: build.query<WithTotalCountResponse<Song>, GetPlaylistSongsRequest>({
-      query: (arg) => `playlists/songs/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
-      providesTags: ['Songs', 'Albums', 'Artists']
-    }),
     getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
       query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
     }),
 
+    // Infinite queries
+    getPlaylistSongs: build.infiniteQuery<
+      WithTotalCountResponse<Song>,
+      GetPlaylistSongsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 15
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalSongs = lastPageParam.currentPage * pageSize
+          const remainingSongs = lastPage?.totalCount - totalSongs
+
+          if (remainingSongs <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetPlaylistSongsRequest = {
+          ...queryArg,
+          id: undefined,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `playlists/songs/${queryArg.id}${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Songs', 'Albums', 'Artists']
+    }),
+
+    // Mutations
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
       query: (body) => ({
         url: 'playlists',
@@ -140,8 +175,7 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
-  useGetPlaylistSongsQuery,
-  useLazyGetPlaylistSongsQuery,
+  useGetPlaylistSongsInfiniteQuery,
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
