@@ -91,7 +91,7 @@ function PlaylistHeaderCard({ playlist }: PlaylistHeaderCardProps) {
             {playlist.title}
           </Title>
 
-          {songsTotalCount ? (
+          {songsTotalCount !== undefined ? (
             <Text fw={500} fz={'sm'} c={'dimmed'} lh={'xxs'}>
               {songsTotalCount} song{plural(songsTotalCount)}
             </Text>
