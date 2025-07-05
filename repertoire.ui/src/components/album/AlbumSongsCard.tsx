@@ -1,14 +1,4 @@
-import {
-  ActionIcon,
-  Box,
-  Card,
-  Group,
-  LoadingOverlay,
-  Menu,
-  Space,
-  Stack,
-  Text
-} from '@mantine/core'
+import { ActionIcon, Box, Card, Group, Menu, Space, Stack, Text } from '@mantine/core'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import AlbumSongCard from './AlbumSongCard.tsx'
 import NewHorizontalCard from '../@ui/card/NewHorizontalCard.tsx'
@@ -48,15 +38,20 @@ function AlbumSongsCard({
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
-  const [internalSongs, { reorder, setState }] = useListState<Song>(
+  const [internalSongs, { setState }] = useListState<Song>(
     isUnknownAlbum ? [] : album.songs
   )
   useDidUpdate(() => setState(album.songs), [album])
 
   function onSongsDragEnd({ source, destination }) {
-    reorder({ from: source.index, to: destination?.index || 0 })
-
     if (!destination || source.index === destination.index) return
+
+    // reorder and change tracking number
+    const newSongs = [...album.songs]
+    const song = album.songs[source.index]
+    newSongs.splice(source.index, 1)
+    newSongs.splice(destination.index, 0, song)
+    setState(newSongs.map((s, i) => ({ ...s, albumTrackNo: i + 1 })))
 
     moveSongFromAlbum({
       id: album.id,
@@ -67,8 +62,6 @@ function AlbumSongsCard({
 
   return (
     <Card aria-label={'songs-card'} variant={'panel'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
-      <LoadingOverlay visible={isFetching} />
-
       <Stack gap={0}>
         <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
@@ -112,6 +105,7 @@ function AlbumSongsCard({
                       index={index}
                       draggableId={song.id}
                       isDragDisabled={
+                        isFetching ||
                         isMoveLoading ||
                         isUnknownAlbum ||
                         order.property !== SongProperty.AlbumTrackNo
