@@ -21,9 +21,10 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 interface BandMembersCardProps {
   bandMembers: BandMember[]
   artistId: string
+  isFetching?: boolean
 }
 
-function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
+function BandMembersCard({ bandMembers, artistId, isFetching }: BandMembersCardProps) {
   const [moveBandMember, { isLoading: isMoveLoading }] = useMoveBandMemberMutation()
 
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -175,7 +176,7 @@ function BandMembersCard({ bandMembers, artistId }: BandMembersCardProps) {
                         key={bandMember.id}
                         index={index}
                         draggableId={bandMember.id}
-                        isDragDisabled={isMoveLoading}
+                        isDragDisabled={isFetching || isMoveLoading}
                       >
                         {(provided) => (
                           <BandMemberCard

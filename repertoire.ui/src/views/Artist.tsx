@@ -26,7 +26,11 @@ function Artist() {
   const artistId = params['id'] ?? ''
   const isUnknownArtist = artistId === 'unknown'
 
-  const { data: artist, isLoading } = useGetArtistQuery(artistId, { skip: isUnknownArtist })
+  const {
+    data: artist,
+    isLoading,
+    isFetching
+  } = useGetArtistQuery(artistId, { skip: isUnknownArtist })
 
   useEffect(() => {
     if (isUnknownArtist) setDocumentTitle('Unknown Artist')
@@ -93,7 +97,11 @@ function Artist() {
         >
           {!isUnknownArtist && artist.isBand && (
             <Stack>
-              <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
+              <BandMembersCard
+                bandMembers={artist.bandMembers}
+                artistId={artistId}
+                isFetching={isFetching}
+              />
             </Stack>
           )}
 
