@@ -50,7 +50,7 @@ const playlistsApi = api.injectEndpoints({
       infiniteQueryOptions: {
         initialPageParam: {
           currentPage: 1,
-          pageSize: 15
+          pageSize: 20
         },
         getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
           const pageSize = args.pageSize ?? lastPageParam.pageSize
