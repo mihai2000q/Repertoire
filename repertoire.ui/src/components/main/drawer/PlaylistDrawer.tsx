@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import { closePlaylistDrawer, deletePlaylistDrawer } from '../../../state/slice/globalSlice.ts'
-import { useEffect, useState } from 'react'
-import { useDisclosure } from '@mantine/hooks'
+import { useEffect, useRef, useState } from 'react'
+import { useDisclosure, useIntersection } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import {
@@ -13,7 +13,9 @@ import {
   Center,
   Divider,
   Grid,
+  Loader,
   Menu,
+  ScrollArea,
   Stack,
   Text,
   Title
@@ -26,9 +28,11 @@ import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth
 import {
   useDeletePlaylistMutation,
   useGetPlaylistQuery,
-  useGetPlaylistSongsQuery
+  useGetPlaylistSongsInfiniteQuery
 } from '../../../state/api/playlistsApi.ts'
 import PlaylistDrawerLoader from '../loader/PlaylistDrawerLoader.tsx'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
 
 function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
   const navigate = useNavigate()
@@ -89,6 +93,7 @@ function PlaylistDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
+  const titleBarHeight = useTitleBarHeight()
 
   const { playlistId, open: opened } = useAppSelector((state) => state.global.playlistDrawer)
   const onClose = () => {
@@ -102,16 +107,31 @@ function PlaylistDrawer() {
     { id: playlistId },
     { skip: !playlistId }
   )
-  const { data: songs, isFetching: isSongsFetching } = useGetPlaylistSongsQuery(
-    { id: playlistId },
-    { skip: !playlistId }
-  )
-  const isFetching = isPlaylistFetching || isSongsFetching
+  const {
+    data: dataSongs,
+    isFetching: isSongsFetching,
+    fetchNextPage,
+    isFetchingNextPage
+  } = useGetPlaylistSongsInfiniteQuery({ id: playlistId }, { skip: !playlistId })
+  const songs: WithTotalCountResponse<Song> = {
+    models: dataSongs?.pages.flatMap((x) => x.models ?? []),
+    totalCount: dataSongs?.pages[0].totalCount
+  }
+  const isFetching = (isPlaylistFetching || isSongsFetching) && !isFetchingNextPage
 
   useEffect(() => {
     if (playlist && opened && !isFetching)
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + playlist.title)
   }, [playlist, opened, isFetching])
+
+  const scrollRef = useRef()
+  const { ref: lastSongRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
@@ -147,85 +167,108 @@ function PlaylistDrawer() {
       onClose={onClose}
       isLoading={isFetching}
       loader={<PlaylistDrawerLoader />}
+      withScrollArea={false}
     >
-      <Stack gap={'xs'}>
-        <Box
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          pos={'relative'}
-        >
-          <Avatar
-            radius={0}
-            w={'100%'}
-            h={'unset'}
-            src={playlist.imageUrl}
-            alt={playlist.imageUrl && playlist.title}
-            bg={'gray.5'}
-            style={{ aspectRatio: 4 / 3 }}
+      <ScrollArea.Autosize
+        mah={`calc(100vh - ${titleBarHeight})`}
+        scrollbars={'y'}
+        scrollbarSize={10}
+        viewportRef={scrollRef}
+        styles={{
+          viewport: {
+            '> div': {
+              minWidth: '100%',
+              width: 0
+            }
+          }
+        }}
+      >
+        <Stack gap={'xs'}>
+          <Box
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            pos={'relative'}
           >
-            <Center c={'white'}>
-              <IconPlaylist
-                aria-label={`default-icon-${playlist.title}`}
-                size={'100%'}
-                style={{ padding: '35%' }}
-              />
-            </Center>
-          </Avatar>
+            <Avatar
+              radius={0}
+              w={'100%'}
+              h={'unset'}
+              src={playlist.imageUrl}
+              alt={playlist.imageUrl && playlist.title}
+              bg={'gray.5'}
+              style={{ aspectRatio: 4 / 3 }}
+            >
+              <Center c={'white'}>
+                <IconPlaylist
+                  aria-label={`default-icon-${playlist.title}`}
+                  size={'100%'}
+                  style={{ padding: '35%' }}
+                />
+              </Center>
+            </Avatar>
 
-          <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
-              <Menu.Target>
-                <ActionIcon
-                  variant={'grey-subtle'}
-                  aria-label={'more-menu'}
-                  style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
-                >
-                  <IconDotsVertical size={20} />
-                </ActionIcon>
-              </Menu.Target>
+            <Box pos={'absolute'} top={0} right={0} p={7}>
+              <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+                <Menu.Target>
+                  <ActionIcon
+                    variant={'grey-subtle'}
+                    aria-label={'more-menu'}
+                    style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
+                  >
+                    <IconDotsVertical size={20} />
+                  </ActionIcon>
+                </Menu.Target>
 
-              <Menu.Dropdown>
-                <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
-                  View Details
-                </Menu.Item>
-                <Menu.Item
-                  leftSection={<IconTrash size={14} />}
-                  c={'red.5'}
-                  onClick={openDeleteWarning}
-                >
-                  Delete
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+                <Menu.Dropdown>
+                  <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+                    View Details
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<IconTrash size={14} />}
+                    c={'red.5'}
+                    onClick={openDeleteWarning}
+                  >
+                    Delete
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Box>
           </Box>
-        </Box>
 
-        <Stack px={'md'} pb={'md'} gap={'xxs'}>
-          <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
-            {playlist.title}
-          </Title>
+          <Stack px={'md'} pb={'md'} gap={'xxs'}>
+            <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
+              {playlist.title}
+            </Title>
 
-          <Text fw={500} c={'dimmed'} lh={'xs'} truncate={'end'}>
-            {songs.totalCount} song{plural(songs.totalCount)}
-          </Text>
-
-          {playlist.description !== '' && (
-            <Text size="sm" c="dimmed" my={'xxs'} px={'xs'} lineClamp={3}>
-              {playlist.description}
+            <Text fw={500} c={'dimmed'} lh={'xs'} truncate={'end'}>
+              {songs.totalCount} song{plural(songs.totalCount)}
             </Text>
-          )}
 
-          {songs.totalCount > 0 && (
-            <Divider mt={playlist.description === '' ? 'xs' : 'xxs'} mb={'xs'} />
-          )}
+            {playlist.description !== '' && (
+              <Text size="sm" c="dimmed" my={'xxs'} px={'xs'} lineClamp={3}>
+                {playlist.description}
+              </Text>
+            )}
 
-          <Stack gap={'md'}>
-            {songs.models.map((song) => (
-              <PlaylistDrawerSongCard key={song.playlistSongId} song={song} onClose={onClose} />
-            ))}
+            {songs.totalCount > 0 && (
+              <Divider mt={playlist.description === '' ? 'xs' : 'xxs'} mb={'xs'} />
+            )}
+
+            <Stack gap={0}>
+              <Stack gap={'md'}>
+                {songs.models.map((song) => (
+                  <PlaylistDrawerSongCard key={song.playlistSongId} song={song} onClose={onClose} />
+                ))}
+              </Stack>
+
+              <Box style={{ alignSelf: 'center' }} mt={'sm'}>
+                <div ref={lastSongRef} />
+                {isFetchingNextPage && <Loader size={30} />}
+              </Box>
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
+      </ScrollArea.Autosize>
 
       <WarningModal
         opened={openedDeleteWarning}
