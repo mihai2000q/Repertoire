@@ -163,6 +163,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
         onOpen={open}
         defaultOpened={defaultOpened}
         position={position}
+        transitionProps={{ transition: 'pop-top-left', duration: 150 }}
       >
         {children}
       </Menu>
