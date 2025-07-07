@@ -4,7 +4,7 @@ import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import {
-  useGetPlaylistSongsInfiniteQuery,
+  useGetInfinitePlaylistSongsInfiniteQuery,
   useMoveSongFromPlaylistMutation
 } from '../../state/api/playlistsApi.ts'
 import { useDidUpdate, useDisclosure, useIntersection, useListState } from '@mantine/hooks'
@@ -42,7 +42,7 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
   const orderBy = useOrderBy([order])
 
   const { data, isLoading, isFetching, isFetchingNextPage, fetchNextPage } =
-    useGetPlaylistSongsInfiniteQuery({
+    useGetInfinitePlaylistSongsInfiniteQuery({
       id: playlistId,
       pageSize: 25,
       orderBy: orderBy
@@ -111,8 +111,10 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
             </NewHorizontalCard>
           )}
 
-          <div ref={lastSongRef} />
-          {isFetchingNextPage && <Loader size={30} m={'md'} style={{ alignSelf: 'center' }} />}
+          <div>
+            <div ref={lastSongRef} />
+            {isFetchingNextPage && <Loader size={30} m={'md'} style={{ alignSelf: 'center' }} />}
+          </div>
         </Stack>
       </Stack>
 

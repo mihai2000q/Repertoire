@@ -323,7 +323,6 @@ export const emptyPlaylist: Playlist = {
   id: '',
   title: '',
   description: '',
-  songs: [],
   createdAt: '',
   updatedAt: '',
   songsCount: 0

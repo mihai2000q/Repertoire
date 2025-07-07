@@ -1,7 +1,6 @@
 import {
   alpha,
   Avatar,
-  Box,
   Button,
   Center,
   Divider,
@@ -393,10 +392,12 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
                 </Text>
               )}
 
-              <Box>
+              <div>
                 <div ref={lastSongRef} />
-                {isFetchingNextPage && <Loader size={25} mt={'sm'} style={{ alignSelf: 'center' }} />}
-              </Box>
+                {isFetchingNextPage && (
+                  <Loader size={25} mt={'sm'} style={{ alignSelf: 'center' }} />
+                )}
+              </div>
             </Stack>
           </ScrollArea.Autosize>
         </Menu.Sub.Dropdown>

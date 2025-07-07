@@ -27,8 +27,8 @@ import Song from '../../../types/models/Song.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import {
   useDeletePlaylistMutation,
-  useGetPlaylistQuery,
-  useGetPlaylistSongsInfiniteQuery
+  useGetInfinitePlaylistSongsInfiniteQuery,
+  useGetPlaylistQuery
 } from '../../../state/api/playlistsApi.ts'
 import PlaylistDrawerLoader from '../loader/PlaylistDrawerLoader.tsx'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
@@ -112,7 +112,7 @@ function PlaylistDrawer() {
     isFetching: isSongsFetching,
     fetchNextPage,
     isFetchingNextPage
-  } = useGetPlaylistSongsInfiniteQuery({ id: playlistId }, { skip: !playlistId })
+  } = useGetInfinitePlaylistSongsInfiniteQuery({ id: playlistId }, { skip: !playlistId })
   const songs: WithTotalCountResponse<Song> = dataSongs
     ? {
         models: dataSongs.pages.flatMap((x) => x.models ?? []),
@@ -262,10 +262,12 @@ function PlaylistDrawer() {
                 ))}
               </Stack>
 
-              <Box style={{ alignSelf: 'center' }} mt={'sm'}>
+              <div>
                 <div ref={lastSongRef} />
-                {isFetchingNextPage && <Loader size={30} />}
-              </Box>
+                {isFetchingNextPage && (
+                  <Loader size={30} style={{ alignSelf: 'center' }} mt={'sm'} />
+                )}
+              </div>
             </Stack>
           </Stack>
         </Stack>
