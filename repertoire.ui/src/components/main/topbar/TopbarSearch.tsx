@@ -79,6 +79,7 @@ const AvatarIndicator = ({
       alt={alt}
       bg={'gray.5'}
       style={(theme) => ({ boxShadow: theme.shadows.sm })}
+      imageProps={{ loading: 'lazy' }}
     >
       <Center c={'white'}>{defaultIcon}</Center>
     </Avatar>
@@ -144,6 +145,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
           alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
           bg={'gray.0'}
+          imageProps={{ loading: 'lazy' }}
         >
           <Center c={'gray.7'}>
             <CustomIconUserAlt size={17} />

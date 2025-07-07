@@ -114,6 +114,7 @@ function PlaylistOption({
         alt={playlist.imageUrl && playlist.title}
         bg={'gray.5'}
         style={(theme) => ({ aspectRatio: 1, boxShadow: theme.shadows.sm })}
+        imageProps={{ loading: 'lazy' }}
       >
         <Center c={'white'}>
           <IconPlaylist aria-label={`default-icon-${playlist.title}`} size={12} />
