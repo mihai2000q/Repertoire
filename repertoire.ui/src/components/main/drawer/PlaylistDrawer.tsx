@@ -113,10 +113,12 @@ function PlaylistDrawer() {
     fetchNextPage,
     isFetchingNextPage
   } = useGetPlaylistSongsInfiniteQuery({ id: playlistId }, { skip: !playlistId })
-  const songs: WithTotalCountResponse<Song> = {
-    models: dataSongs?.pages.flatMap((x) => x.models ?? []),
-    totalCount: dataSongs?.pages[0].totalCount
-  }
+  const songs: WithTotalCountResponse<Song> = dataSongs
+    ? {
+        models: dataSongs.pages.flatMap((x) => x.models ?? []),
+        totalCount: dataSongs.pages[0].totalCount
+      }
+    : undefined
   const isFetching = (isPlaylistFetching || isSongsFetching) && !isFetchingNextPage
 
   useEffect(() => {
