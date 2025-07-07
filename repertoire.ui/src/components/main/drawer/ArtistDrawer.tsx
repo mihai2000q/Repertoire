@@ -139,10 +139,13 @@ function ArtistDrawer() {
   const setDocumentTitle = useDynamicDocumentTitle()
   const titleBarHeight = useTitleBarHeight()
 
+  const isDocumentTitleSet = useRef(false)
+
   const { artistId, open: opened } = useAppSelector((state) => state.global.artistDrawer)
   const onClose = () => {
     dispatch(closeArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    isDocumentTitleSet.current = false
   }
 
   const { data: artist, isFetching: isArtistFetching } = useGetArtistQuery(artistId, {
@@ -202,9 +205,9 @@ function ArtistDrawer() {
     (isArtistFetching || isSongsFetching || isAlbumsFetching) && !isFetchingNextPage
 
   useEffect(() => {
-    if (artist && opened && !isFetching)
+    if (artist && opened && artistId === artist.id && !isDocumentTitleSet.current)
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + artist.name)
-  }, [artist, opened, isFetching])
+  }, [artist, opened])
 
   const scrollRef = useRef()
   const { ref: lastSongRef, entry } = useIntersection({

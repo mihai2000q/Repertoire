@@ -28,7 +28,7 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useDisclosure } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
@@ -54,19 +54,24 @@ function SongDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
+  const isDocumentTitleSet = useRef(false)
+
   const { songId, open: opened } = useAppSelector((state) => state.global.songDrawer)
   const onClose = () => {
     dispatch(closeSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    isDocumentTitleSet.current = false
   }
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
   const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   useEffect(() => {
-    if (song && opened && !isFetching)
+    if (song && opened && songId === song.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + song.title)
-  }, [song, opened, isFetching])
+      isDocumentTitleSet.current = false
+    }
+  }, [song, opened])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
@@ -103,7 +108,7 @@ function SongDrawer() {
 
   async function handleDelete() {
     await deleteSongMutation(song.id).unwrap()
-    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    onClose()
     toast.success(`${song.title} deleted!`)
   }
 

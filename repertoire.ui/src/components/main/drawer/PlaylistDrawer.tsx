@@ -95,10 +95,13 @@ function PlaylistDrawer() {
   const setDocumentTitle = useDynamicDocumentTitle()
   const titleBarHeight = useTitleBarHeight()
 
+  const isDocumentTitleSet = useRef(false)
+
   const { playlistId, open: opened } = useAppSelector((state) => state.global.playlistDrawer)
   const onClose = () => {
     dispatch(closePlaylistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    isDocumentTitleSet.current = false
   }
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
@@ -122,9 +125,11 @@ function PlaylistDrawer() {
   const isFetching = (isPlaylistFetching || isSongsFetching) && !isFetchingNextPage
 
   useEffect(() => {
-    if (playlist && opened && !isFetching)
+    if (playlist && opened && playlistId === playlist.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + playlist.title)
-  }, [playlist, opened, isFetching])
+      isDocumentTitleSet.current = true
+    }
+  }, [playlist, opened])
 
   const scrollRef = useRef()
   const { ref: lastSongRef, entry } = useIntersection({
@@ -148,7 +153,7 @@ function PlaylistDrawer() {
 
   async function handleDelete() {
     await deletePlaylistMutation(playlist.id).unwrap()
-    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    onClose()
     toast.success(`${playlist.title} deleted!`)
   }
 
