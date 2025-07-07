@@ -2,12 +2,18 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import { queryWithRedirection, queryWithRefresh } from './api.query'
 import { BaseQueryApi, FetchArgs } from '@reduxjs/toolkit/query'
 import { RootState } from './store.ts'
-import { deleteAlbumDrawer, deleteArtistDrawer, deleteSongDrawer } from './slice/globalSlice.ts'
+import {
+  deleteAlbumDrawer,
+  deleteArtistDrawer,
+  deletePlaylistDrawer,
+  deleteSongDrawer
+} from './slice/globalSlice.ts'
 import { DeleteArtistRequest } from '../types/requests/ArtistRequests.ts'
 import { DeleteAlbumRequest } from '../types/requests/AlbumRequests.ts'
 
 function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
   if (typeof args !== 'object' || args.method !== 'DELETE') return
+  console.log('cleaning')
 
   const globalState = (api.getState() as RootState).global
 
@@ -18,6 +24,9 @@ function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
     globalState.albumDrawer?.albumId && args.url.includes(globalState.albumDrawer.albumId)
   const isSongDrawerOpenWithDeletedSong =
     globalState.songDrawer?.songId && args.url.includes(globalState.songDrawer.songId)
+  const isPlaylistDrawerOpenWithDeletedPlaylist =
+    globalState.playlistDrawer?.playlistId &&
+    args.url.includes(globalState.playlistDrawer.playlistId)
 
   if (api.endpoint === 'deleteArtist') {
     if (isArtistDrawerOpenWithDeletedArtist) api.dispatch(deleteArtistDrawer())
@@ -28,6 +37,8 @@ function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
     if ((args.params as DeleteAlbumRequest)?.withSongs === true) api.dispatch(deleteSongDrawer())
   } else if (api.endpoint === 'deleteSong' && isSongDrawerOpenWithDeletedSong) {
     api.dispatch(deleteSongDrawer())
+  } else if (api.endpoint === 'deletePlaylist' && isPlaylistDrawerOpenWithDeletedPlaylist) {
+    api.dispatch(deletePlaylistDrawer())
   }
 }
 
