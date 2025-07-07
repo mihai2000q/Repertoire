@@ -401,12 +401,10 @@ function ArtistDrawer() {
                 ))}
               </SimpleGrid>
 
-              <div>
+              <Stack gap={0} align={'center'}>
                 <div ref={lastSongRef} />
-                {isFetchingNextPage && (
-                  <Loader size={30} style={{ alignSelf: 'center' }} mt={'sm'} />
-                )}
-              </div>
+                {isFetchingNextPage && <Loader size={30} mt={'sm'} />}
+              </Stack>
             </Stack>
           </Stack>
         </Stack>

@@ -120,10 +120,10 @@ function ArtistSongsCard({
               order={order}
             />
 
-            <Box ref={lastSongRef} w={1} h={1} />
-            {isFetchingNextPage && (
-              <Loader size={30} mt={'xs'} mb={'md'} style={{ alignSelf: 'center' }} />
-            )}
+            <Stack gap={0} align={'center'}>
+              <Box ref={lastSongRef} w={1} h={1} />
+              {isFetchingNextPage && <Loader size={30} mt={'xs'} mb={'md'} />}
+            </Stack>
 
             {songs.models.length === songs.totalCount && (
               <NewHorizontalCard

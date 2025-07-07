@@ -392,12 +392,10 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
                 </Text>
               )}
 
-              <div>
+              <Stack gap={0} align={'center'}>
                 <div ref={lastSongRef} />
-                {isFetchingNextPage && (
-                  <Loader size={25} mt={'sm'} style={{ alignSelf: 'center' }} />
-                )}
-              </div>
+                {isFetchingNextPage && <Loader size={25} mt={'sm'} />}
+              </Stack>
             </Stack>
           </ScrollArea.Autosize>
         </Menu.Sub.Dropdown>

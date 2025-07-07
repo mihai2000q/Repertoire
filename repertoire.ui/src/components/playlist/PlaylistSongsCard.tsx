@@ -111,10 +111,10 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
             </NewHorizontalCard>
           )}
 
-          <div>
+          <Stack gap={0} align={'center'}>
             <div ref={lastSongRef} />
-            {isFetchingNextPage && <Loader size={30} m={'md'} style={{ alignSelf: 'center' }} />}
-          </div>
+            {isFetchingNextPage && <Loader size={30} m={'md'} />}
+          </Stack>
         </Stack>
       </Stack>
 
