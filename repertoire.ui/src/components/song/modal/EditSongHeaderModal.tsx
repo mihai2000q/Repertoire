@@ -28,7 +28,6 @@ import { useDidUpdate } from '@mantine/hooks'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
-import dayjs from 'dayjs'
 
 interface EditSongHeaderModalProps {
   song: Song
@@ -81,7 +80,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
   const [album, setAlbum] = useState(song.album as unknown as AlbumSearch)
   useDidUpdate(() => {
     form.setFieldValue('albumId', album?.id)
-    if (album !== song.album as unknown as AlbumSearch) {
+    if (album !== (song.album as unknown as AlbumSearch)) {
       setArtist(album?.artist as unknown as ArtistSearch)
     }
   }, [album])
@@ -106,7 +105,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
         guitarTuningId: song.guitarTuning?.id,
         id: song.id,
         title: title.trim(),
-        releaseDate: releaseDate ? dayjs(releaseDate).toISOString() : undefined,
+        releaseDate: releaseDate,
         albumId: albumId,
         artistId: artistId
       }).unwrap()
