@@ -1,12 +1,14 @@
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Order from '../../../types/Order.ts'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, memo, SetStateAction, useEffect, useRef } from 'react'
 import Song from '../../../types/models/Song.ts'
 import ArtistSongsLoader from '../loader/ArtistSongsLoader.tsx'
 import {
   ActionIcon,
+  Box,
   Card,
   Group,
+  Loader,
   LoadingOverlay,
   Menu,
   ScrollArea,
@@ -20,17 +22,19 @@ import ArtistSongCard from '../ArtistSongCard.tsx'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewArtistSongModal from '../modal/AddNewArtistSongModal.tsx'
 import AddExistingArtistSongsModal from '../modal/AddExistingArtistSongsModal.tsx'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useIntersection } from '@mantine/hooks'
 import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 
 interface ArtistSongsCardProps {
   songs: WithTotalCountResponse<Song>
-  isLoading: boolean
   isUnknownArtist: boolean
   order: Order
   setOrder: Dispatch<SetStateAction<Order>>
   artistId: string | undefined
+  isLoading?: boolean
   isFetching?: boolean
+  isFetchingNextPage?: boolean
+  fetchNextPage?: () => void
 }
 
 function ArtistSongsCard({
@@ -40,18 +44,29 @@ function ArtistSongsCard({
   order,
   setOrder,
   artistId,
-  isFetching
+  isFetching,
+  isFetchingNextPage,
+  fetchNextPage
 }: ArtistSongsCardProps) {
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
+
+  const scrollRef = useRef()
+  const { ref: lastSongRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
 
   if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
     <Card aria-label={'songs-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
-        <LoadingOverlay visible={isFetching} />
+        <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
 
         <Group px={'md'} py={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
@@ -87,6 +102,7 @@ function ArtistSongsCard({
           scrollbars={'y'}
           scrollbarSize={7}
           mah={'100%'}
+          viewportRef={scrollRef}
           styles={{
             viewport: {
               '> div': {
@@ -97,15 +113,18 @@ function ArtistSongsCard({
           }}
         >
           <Stack gap={0} style={{ overflow: 'hidden' }}>
-            {songs.models.map((song) => (
-              <ArtistSongCard
-                key={song.id}
-                song={song}
-                artistId={artistId}
-                isUnknownArtist={isUnknownArtist}
-                order={order}
-              />
-            ))}
+            <Songs
+              songs={songs}
+              artistId={artistId}
+              isUnknownArtist={isUnknownArtist}
+              order={order}
+            />
+
+            <Box ref={lastSongRef} w={1} h={1} />
+            {isFetchingNextPage && (
+              <Loader size={30} mt={'xs'} mb={'md'} style={{ alignSelf: 'center' }} />
+            )}
+
             {songs.models.length === songs.totalCount && (
               <NewHorizontalCard
                 ariaLabel={'new-songs-card'}
@@ -131,5 +150,43 @@ function ArtistSongsCard({
     </Card>
   )
 }
+
+const Songs = memo(
+  ({
+    songs,
+    artistId,
+    isUnknownArtist,
+    order
+  }: {
+    songs: WithTotalCountResponse<Song>
+    artistId: string
+    isUnknownArtist: boolean
+    order: Order
+  }) => {
+    return (
+      <div>
+        {songs.models.map((song) => (
+          <ArtistSongCard
+            key={song.id}
+            song={song}
+            artistId={artistId}
+            isUnknownArtist={isUnknownArtist}
+            order={order}
+          />
+        ))}
+      </div>
+    )
+  },
+  (prevProps, nextProps) => {
+    return (
+      JSON.stringify(prevProps.songs) === JSON.stringify(nextProps.songs) &&
+      JSON.stringify(prevProps.order) === JSON.stringify(nextProps.order) &&
+      prevProps.artistId === nextProps.artistId &&
+      prevProps.isUnknownArtist === nextProps.isUnknownArtist
+    )
+  }
+)
+
+Songs.displayName = 'Songs'
 
 export default ArtistSongsCard

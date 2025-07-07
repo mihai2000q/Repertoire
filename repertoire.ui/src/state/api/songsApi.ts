@@ -21,9 +21,11 @@ import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
 import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
+import { GetPlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    // Queries
     getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
       query: (arg) => `songs${createQueryParams(arg)}`,
       providesTags: ['Songs', 'Artists', 'Albums']
@@ -50,6 +52,45 @@ const songsApi = api.injectEndpoints({
         albumIds: response.albumIds ?? []
       })
     }),
+
+    // Infinite Queries
+    getInfiniteSongs: build.infiniteQuery<
+      WithTotalCountResponse<Song>,
+      GetSongsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalSongs = lastPageParam.currentPage * pageSize
+          const remainingSongs = lastPage?.totalCount - totalSongs
+
+          if (remainingSongs <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetPlaylistSongsRequest = {
+          ...queryArg,
+          id: undefined,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `/songs${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Songs', 'Albums', 'Artists']
+    }),
+
+    // Mutations
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
       query: (body) => ({
         url: 'songs',
@@ -202,6 +243,7 @@ export const {
   useGetSongQuery,
   useGetSongFiltersMetadataQuery,
   useLazyGetSongFiltersMetadataQuery,
+  useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPartialSongRehearsalMutation,
