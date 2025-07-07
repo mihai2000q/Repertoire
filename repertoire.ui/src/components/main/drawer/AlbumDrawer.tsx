@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
-import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
@@ -122,7 +122,6 @@ function AlbumDrawer() {
   }
 
   function onDelete() {
-    dispatch(deleteAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 

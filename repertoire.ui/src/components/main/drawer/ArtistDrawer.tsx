@@ -23,7 +23,7 @@ import plural from '../../../utils/plural.ts'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
-import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
@@ -197,7 +197,6 @@ function ArtistDrawer() {
   }
 
   function onDelete() {
-    dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 

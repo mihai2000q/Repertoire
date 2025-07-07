@@ -33,7 +33,7 @@ import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeSongDrawer } from '../../../state/slice/globalSlice.ts'
 import DifficultyBar from '../../@ui/bar/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
@@ -103,7 +103,6 @@ function SongDrawer() {
 
   async function handleDelete() {
     await deleteSongMutation(song.id).unwrap()
-    dispatch(deleteSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${song.title} deleted!`)
   }

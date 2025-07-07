@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
-import { closePlaylistDrawer, deletePlaylistDrawer } from '../../../state/slice/globalSlice.ts'
+import { closePlaylistDrawer } from '../../../state/slice/globalSlice.ts'
 import { useEffect, useRef, useState } from 'react'
 import { useDisclosure, useIntersection } from '@mantine/hooks'
 import { toast } from 'react-toastify'
@@ -146,7 +146,6 @@ function PlaylistDrawer() {
 
   async function handleDelete() {
     await deletePlaylistMutation(playlist.id).unwrap()
-    dispatch(deletePlaylistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
     toast.success(`${playlist.title} deleted!`)
   }
