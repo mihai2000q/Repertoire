@@ -13,8 +13,43 @@ const searchApi = api.injectEndpoints({
         ...response,
         models: response.models ?? []
       })
+    }),
+
+    getInfiniteSearch: build.infiniteQuery<
+      WithTotalCountResponse<SearchBase>,
+      GetSearchRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalItems = lastPageParam.currentPage * pageSize
+          const remainingItems = lastPage?.totalCount - totalItems
+
+          if (remainingItems <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetSearchRequest = {
+          ...queryArg,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `search${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Search']
     })
   })
 })
 
-export const { useGetSearchQuery } = searchApi
+export const { useGetSearchQuery, useGetInfiniteSearchInfiniteQuery } = searchApi

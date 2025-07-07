@@ -9,6 +9,7 @@ import {
   Group,
   Highlight,
   Indicator,
+  Loader,
   LoadingOverlay,
   MantineStyleProps,
   MantineTheme,
@@ -19,22 +20,24 @@ import {
   TextInputProps,
   useCombobox
 } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
-import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
+import { useDebouncedValue, useIntersection } from '@mantine/hooks'
+import { useGetInfiniteSearchInfiniteQuery } from '../../../state/api/searchApi.ts'
 import {
   AlbumSearch,
   ArtistSearch,
   PlaylistSearch,
+  SearchBase,
   SongSearch
 } from '../../../types/models/Search.ts'
 import { useNavigate } from 'react-router-dom'
 import SearchType from '../../../types/enums/SearchType.ts'
-import { MouseEvent, ReactNode, useRef, useState } from 'react'
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../../@ui/icons/CustomIconPlaylist2.tsx'
 import useSearchQueryCacheInvalidation from '../../../hooks/useSearchQueryCacheInvalidation.ts'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',
@@ -123,13 +126,29 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
   const [search] = useDebouncedValue(value, 200)
   const [type, setType] = useState<SearchType | null>(null)
 
-  const { data: searchResults, isFetching } = useGetSearchQuery({
+  const {
+    data: dataSearchResults,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useGetInfiniteSearchInfiniteQuery({
     query: search,
-    currentPage: 1,
-    pageSize: 20,
     type: type === null ? undefined : type,
     order: search.trim() !== '' ? [] : ['createdAt:desc']
   })
+  const searchResults: WithTotalCountResponse<SearchBase> = {
+    models: dataSearchResults?.pages.flatMap((x) => x.models ?? []),
+    totalCount: dataSearchResults?.pages[0].totalCount
+  }
+
+  const scrollRef = useRef<HTMLDivElement>()
+  const { ref: lastRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
 
   const ArtistOption = ({ artist }: { artist: ArtistSearch }) => (
     <Combobox.Option
@@ -286,6 +305,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
   }
 
   function handleChipClick(event: MouseEvent<HTMLInputElement>) {
+    scrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
     if (event.currentTarget.value === type) {
       setType(null)
     }
@@ -358,32 +378,42 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
             )}
 
             <Combobox.Options pt={'xxs'}>
-              <ScrollArea.Autosize mah={dropdownMinHeight} scrollbarSize={5}>
-                {searchResults?.totalCount === 0 && search.trim() === '' ? (
+              <ScrollArea.Autosize
+                mah={dropdownMinHeight}
+                scrollbarSize={5}
+                viewportRef={scrollRef}
+              >
+                <Stack gap={0} py={'xxs'}>
+                  {searchResults?.models?.map((result) =>
+                    result.type === SearchType.Artist ? (
+                      <ArtistOption key={result.id} artist={result as ArtistSearch} />
+                    ) : result.type === SearchType.Album ? (
+                      <AlbumOption key={result.id} album={result as AlbumSearch} />
+                    ) : result.type === SearchType.Song ? (
+                      <SongOption key={result.id} song={result as SongSearch} />
+                    ) : result.type === SearchType.Playlist ? (
+                      <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
+                    ) : (
+                      <></>
+                    )
+                  )}
+                </Stack>
+
+                {searchResults?.totalCount === 0 && search.trim() === '' && (
                   <Combobox.Empty pb={'md'} fw={500}>
                     There is nothing in your library
                   </Combobox.Empty>
-                ) : searchResults?.totalCount === 0 ? (
+                )}
+                {searchResults?.totalCount === 0 && (
                   <Combobox.Empty pb={'md'} fw={500}>
                     No results found
                   </Combobox.Empty>
-                ) : (
-                  <Stack gap={0} py={'xxs'}>
-                    {searchResults?.models?.map((result) =>
-                      result.type === SearchType.Artist ? (
-                        <ArtistOption key={result.id} artist={result as ArtistSearch} />
-                      ) : result.type === SearchType.Album ? (
-                        <AlbumOption key={result.id} album={result as AlbumSearch} />
-                      ) : result.type === SearchType.Song ? (
-                        <SongOption key={result.id} song={result as SongSearch} />
-                      ) : result.type === SearchType.Playlist ? (
-                        <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
-                      ) : (
-                        <></>
-                      )
-                    )}
-                  </Stack>
                 )}
+
+                <Stack gap={0} align={'center'}>
+                  <div ref={lastRef} />
+                  {isFetchingNextPage && <Loader size={25} m={'sm'} />}
+                </Stack>
               </ScrollArea.Autosize>
             </Combobox.Options>
           </Stack>
