@@ -1,11 +1,13 @@
 import {
   alpha,
   Avatar,
+  Box,
   Button,
   Center,
   Divider,
   Group,
   Highlight,
+  Loader,
   LoadingOverlay,
   Menu,
   Modal,
@@ -19,10 +21,10 @@ import {
   useAddAlbumsToPlaylistMutation,
   useAddArtistsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
-  useGetPlaylistsQuery
+  useGetInfinitePlaylistsInfiniteQuery
 } from '../../../../state/api/playlistsApi.ts'
 import Playlist from '../../../../types/models/Playlist.ts'
-import { useDebouncedValue, useDidUpdate, useSessionStorage } from '@mantine/hooks'
+import { useDebouncedValue, useDidUpdate, useIntersection, useSessionStorage } from '@mantine/hooks'
 import useOrderBy from '../../../../hooks/api/useOrderBy.ts'
 import OrderType from '../../../../types/enums/OrderType.ts'
 import useFilters from '../../../../hooks/filter/useFilters.ts'
@@ -39,7 +41,8 @@ import {
   AddToPlaylistResponse
 } from '../../../../types/responses/PlaylistResponses.ts'
 import { toast } from 'react-toastify'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 
 const AlreadyAddedModal = ({
   opened,
@@ -163,13 +166,27 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
   )
 
   const {
-    data: playlists,
+    data: dataPlaylists,
     isLoading,
-    isFetching
-  } = useGetPlaylistsQuery({
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useGetInfinitePlaylistsInfiniteQuery({
     orderBy: orderBy,
     searchBy: searchBy
   })
+  const playlists: WithTotalCountResponse<Playlist> = {
+    models: dataPlaylists?.pages.flatMap((x) => x.models ?? []),
+    totalCount: dataPlaylists?.pages[0].totalCount
+  }
+  const scrollRef = useRef()
+  const { ref: lastSongRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
 
   const [addArtistsToPlaylist] = useAddArtistsToPlaylistMutation()
   const [addAlbumsToPlaylist] = useAddAlbumsToPlaylistMutation()
@@ -343,27 +360,42 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
           />
           <Divider />
 
-          <ScrollArea.Autosize mah={'max(250px, 50vh)'} scrollbars={'y'} scrollbarSize={5}>
-            <Stack gap={'xxs'} py={7} px={'xxs'} style={{ transition: '0.16s' }}>
-              <LoadingOverlay visible={isFetching} />
-              {playlists?.models?.map((playlist) => (
-                <PlaylistOption
-                  key={playlist.id}
-                  playlist={playlist}
-                  searchValue={searchValue}
-                  onClick={() => handleClick(playlist)}
-                />
-              ))}
+          <ScrollArea.Autosize
+            mah={'max(250px, 50vh)'}
+            scrollbars={'y'}
+            scrollbarSize={5}
+            viewportRef={scrollRef}
+          >
+            <Stack gap={0} align={'center'} py={7} px={'xxs'} style={{ transition: '0.16s' }}>
+              <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
+
+              <Stack gap={'xxs'}>
+                {playlists?.models?.map((playlist) => (
+                  <PlaylistOption
+                    key={playlist.id}
+                    playlist={playlist}
+                    searchValue={searchValue}
+                    onClick={() => handleClick(playlist)}
+                  />
+                ))}
+              </Stack>
+
               {playlists?.totalCount === 0 && activeFilters === 0 && (
                 <Text fz={'xs'} c={'dimmed'} px={'xs'}>
                   There are no playlists
                 </Text>
               )}
+
               {playlists?.totalCount === 0 && activeFilters > 0 && (
                 <Text fz={'xs'} c={'dimmed'} px={'xs'}>
                   No playlists found
                 </Text>
               )}
+
+              <Box>
+                <div ref={lastSongRef} />
+                {isFetchingNextPage && <Loader size={25} mt={'sm'} style={{ alignSelf: 'center' }} />}
+              </Box>
             </Stack>
           </ScrollArea.Autosize>
         </Menu.Sub.Dropdown>

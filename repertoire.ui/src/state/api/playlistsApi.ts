@@ -42,7 +42,41 @@ const playlistsApi = api.injectEndpoints({
     }),
 
     // Infinite queries
-    getPlaylistSongs: build.infiniteQuery<
+    getInfinitePlaylists: build.infiniteQuery<
+      WithTotalCountResponse<Playlist>,
+      GetPlaylistsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalPlaylists = lastPageParam.currentPage * pageSize
+          const remainingPlaylists = lastPage?.totalCount - totalPlaylists
+
+          if (remainingPlaylists <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetPlaylistsRequest = {
+          ...queryArg,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `playlists${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Playlists', 'Songs']
+    }),
+    getInfinitePlaylistSongs: build.infiniteQuery<
       WithTotalCountResponse<Song>,
       GetPlaylistSongsRequest,
       { currentPage: number; pageSize: number }
@@ -175,7 +209,8 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
-  useGetPlaylistSongsInfiniteQuery,
+  useGetInfinitePlaylistsInfiniteQuery,
+  useGetInfinitePlaylistSongsInfiniteQuery,
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
