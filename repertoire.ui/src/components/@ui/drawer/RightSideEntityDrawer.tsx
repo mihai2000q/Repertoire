@@ -46,8 +46,10 @@ function RightSideEntityDrawer({
       <Drawer.Overlay backgroundOpacity={0.1} blur={1} />
       <Drawer.Content>
         <Drawer.Body>
-          {withScrollArea === false ? (
-            <div>{isLoading ? loader : children && children}</div>
+          {isLoading ? (
+            loader
+          ) : withScrollArea === false ? (
+            <div>{children && children}</div>
           ) : (
             <ScrollArea.Autosize
               mah={`calc(100vh - ${titleBarHeight})`}
@@ -62,7 +64,7 @@ function RightSideEntityDrawer({
                 }
               }}
             >
-              {isLoading ? loader : children && children}
+              {children && children}
             </ScrollArea.Autosize>
           )}
         </Drawer.Body>
