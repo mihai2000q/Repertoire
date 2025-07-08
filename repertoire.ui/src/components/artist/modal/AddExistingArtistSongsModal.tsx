@@ -7,6 +7,7 @@ import {
   Checkbox,
   Group,
   Highlight,
+  Loader,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -16,12 +17,19 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedValue, useFocusTrap, useInputState, useListState } from '@mantine/hooks'
+import {
+  useDebouncedValue,
+  useDidUpdate,
+  useFocusTrap,
+  useInputState,
+  useIntersection,
+  useListState
+} from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddSongsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
-import { MouseEvent } from 'react'
-import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
+import { MouseEvent, useEffect, useRef } from 'react'
+import { useGetInfiniteSearchInfiniteQuery } from '../../../state/api/searchApi.ts'
 import SearchType from '../../../types/enums/SearchType.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
@@ -124,17 +132,17 @@ function AddExistingArtistSongsModal({
   const {
     data,
     isLoading: songsIsLoading,
-    isFetching: songsIsFetching
-  } = useGetSearchQuery({
+    isFetching: songsIsFetching,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useGetInfiniteSearchInfiniteQuery({
     query: searchValue,
-    currentPage: 1,
-    pageSize: 20,
     type: SearchType.Song,
     filter: ['artist IS NULL'],
     order: ['updatedAt:desc']
   })
-  const totalCount = data?.totalCount
-  const songs = data?.models as SongSearch[] ?? []
+  const totalCount = data?.pages[0].totalCount
+  const songs = data?.pages.flatMap((s) => (s.models as SongSearch[]) ?? []) ?? []
   const [selectedSongs, selectedSongsHandlers] = useListState<SongSearch>([])
   const filteredSongs = songs.filter((s) => !selectedSongs.some((ss) => s.id === ss.id))
   const totalSongs = selectedSongs.concat(filteredSongs)
@@ -143,6 +151,16 @@ function AddExistingArtistSongsModal({
     filteredSongs.length === 0 && totalSongs.length === selectedSongs.length
 
   const searchRef = useFocusTrap(!songsIsLoading)
+
+  const scrollRef = useRef<HTMLDivElement>()
+  const { ref: lastSongRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
+  useDidUpdate(() => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
 
   function checkAllSongs(check: boolean) {
     if (check) {
@@ -219,11 +237,17 @@ function AddExistingArtistSongsModal({
             />
           )}
 
-          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+          <ScrollArea.Autosize
+            mah={'50vh'}
+            w={'100%'}
+            scrollbars={'y'}
+            scrollbarSize={7}
+            viewportRef={scrollRef}
+          >
             <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
-                visible={!songsIsLoading && songsIsFetching}
+                visible={!songsIsLoading && songsIsFetching && !isFetchingNextPage}
               />
               {songsIsLoading ? (
                 <SongsLoader />
@@ -238,6 +262,11 @@ function AddExistingArtistSongsModal({
                   />
                 ))
               )}
+
+              <Stack gap={0} align={'center'}>
+                <div ref={lastSongRef} />
+                {isFetchingNextPage && <Loader size={30} mt={'sm'} />}
+              </Stack>
             </Stack>
           </ScrollArea.Autosize>
 

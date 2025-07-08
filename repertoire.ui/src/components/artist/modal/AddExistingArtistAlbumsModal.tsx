@@ -7,6 +7,7 @@ import {
   Checkbox,
   Group,
   Highlight,
+  Loader,
   LoadingOverlay,
   Modal,
   ScrollArea,
@@ -16,12 +17,19 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedValue, useFocusTrap, useInputState, useListState } from '@mantine/hooks'
+import {
+  useDebouncedValue,
+  useDidUpdate,
+  useFocusTrap,
+  useInputState,
+  useIntersection,
+  useListState
+} from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
-import { MouseEvent } from 'react'
-import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
+import { MouseEvent, useEffect, useRef } from 'react'
+import { useGetInfiniteSearchInfiniteQuery } from '../../../state/api/searchApi.ts'
 import SearchType from '../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
@@ -112,17 +120,17 @@ function AddExistingArtistAlbumsModal({
   const {
     data,
     isLoading: albumsIsLoading,
-    isFetching: albumsIsFetching
-  } = useGetSearchQuery({
+    isFetching: albumsIsFetching,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useGetInfiniteSearchInfiniteQuery({
     query: searchValue,
-    currentPage: 1,
-    pageSize: 20,
     type: SearchType.Album,
     filter: ['artist IS NULL'],
     order: ['updatedAt:desc']
   })
-  const totalCount = data?.totalCount
-  const albums = data?.models as AlbumSearch[] ?? []
+  const totalCount = data?.pages[0].totalCount
+  const albums = data?.pages.flatMap((a) => (a.models as AlbumSearch[]) ?? []) ?? []
   const [selectedAlbums, selectedAlbumsHandlers] = useListState<AlbumSearch>([])
   const filteredAlbums = albums.filter((a) => !selectedAlbums.some((aa) => a.id === aa.id))
   const totalAlbums = selectedAlbums.concat(filteredAlbums)
@@ -131,6 +139,16 @@ function AddExistingArtistAlbumsModal({
     filteredAlbums.length === 0 && totalAlbums.length === selectedAlbums.length
 
   const searchRef = useFocusTrap(!albumsIsLoading)
+
+  const scrollRef = useRef<HTMLDivElement>()
+  const { ref: lastAlbumRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
+  useDidUpdate(() => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
 
   function checkAllAlbums(check: boolean) {
     if (check) {
@@ -219,11 +237,17 @@ function AddExistingArtistAlbumsModal({
             />
           )}
 
-          <ScrollArea.Autosize mah={'50vh'} w={'100%'} scrollbars={'y'} scrollbarSize={7}>
+          <ScrollArea.Autosize
+            mah={'50vh'}
+            w={'100%'}
+            scrollbars={'y'}
+            scrollbarSize={7}
+            viewportRef={scrollRef}
+          >
             <Stack gap={0}>
               <LoadingOverlay
                 data-testid={'loading-overlay-fetching'}
-                visible={!albumsIsLoading && albumsIsFetching}
+                visible={!albumsIsLoading && albumsIsFetching && !isFetchingNextPage}
               />
               {albumsIsLoading ? (
                 <AlbumsLoader />
@@ -238,6 +262,11 @@ function AddExistingArtistAlbumsModal({
                   />
                 ))
               )}
+
+              <Stack gap={0} align={'center'}>
+                <div ref={lastAlbumRef} />
+                {isFetchingNextPage && <Loader size={30} mt={'sm'} />}
+              </Stack>
             </Stack>
           </ScrollArea.Autosize>
 
