@@ -73,6 +73,7 @@ function AlbumOption({
         aria-label={album.title}
         checked={checked}
         onChange={(e) => checkAlbum(album, e.currentTarget.checked)}
+        onClick={(e) => e.stopPropagation()}
         pr={'sm'}
       />
       <Avatar radius={'md'} src={album.imageUrl} alt={album.imageUrl && album.title} bg={'gray.5'}>
@@ -122,7 +123,7 @@ function AddExistingArtistAlbumsModal({
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const albums = data?.models as AlbumSearch[]
+  const albums = data?.models as AlbumSearch[] ?? []
   const [selectedAlbums, selectedAlbumsHandlers] = useListState<AlbumSearch>([])
   const filteredAlbums = albums.filter((a) => !selectedAlbums.some((aa) => a.id === aa.id))
   const totalAlbums = selectedAlbums.concat(filteredAlbums)
@@ -209,9 +210,9 @@ function AddExistingArtistAlbumsModal({
 
           {(totalCount > 0 || selectedAlbums.length > 0) && (
             <Checkbox
+              label={areAllAlbumsChecked ? 'Deselect all' : 'Select all'}
               checked={areAllAlbumsChecked}
               onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
-              label={areAllAlbumsChecked ? 'Deselect all' : 'Select all'}
               px={'xl'}
               style={{ alignSelf: 'flex-start' }}
             />

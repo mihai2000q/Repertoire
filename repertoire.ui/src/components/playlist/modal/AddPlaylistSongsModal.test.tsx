@@ -127,6 +127,7 @@ describe('Add Playlist Songs Modal', () => {
     expect(screen.getByRole('button', { name: /show all/i })).not.toBeChecked()
     expect(screen.queryByText(/no songs/i)).not.toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).not.toBeDisabled()
+    expect(screen.getByRole('searchbox', { name: /search/i })).toHaveFocus()
 
     expect(screen.getAllByRole('checkbox')).toHaveLength(songs.length + 1) // plus the select all checkbox
 
@@ -164,6 +165,27 @@ describe('Add Playlist Songs Modal', () => {
     )
 
     reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
+
+    expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
+  })
+
+  it('should show text when searching and there are no results and hide select all checkbox', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.get('/songs', () => {
+        const response: WithTotalCountResponse<Song> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
+
+    await user.type(screen.getByRole('searchbox'), 'a')
 
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
     expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
@@ -295,39 +317,6 @@ describe('Add Playlist Songs Modal', () => {
     expect(await screen.findByText(/no songs/i)).toBeInTheDocument()
     expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
     expect(screen.queryAllByLabelText(/song-/i)).toHaveLength(0)
-  })
-
-  it('should deselect songs that do not match the search value, if they were previously selected', async () => {
-    const user = userEvent.setup()
-
-    const songToNotDeselect = songs[0].title
-    const songToDeselect = songs[1].title
-
-    reduxRender(<AddPlaylistSongsModal opened={true} onClose={() => {}} playlistId={''} />)
-
-    const searchBox = screen.getByRole('searchbox', { name: /search/i })
-
-    // check songs
-    await user.click(await screen.findByRole('checkbox', { name: songToNotDeselect }))
-    await user.click(await screen.findByRole('checkbox', { name: songToDeselect }))
-
-    // search for the first song, so that the second one disappears
-    await user.type(searchBox, songToNotDeselect)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loading-overlay-fetching')).toBeVisible()
-    })
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-overlay-fetching')).not.toBeInTheDocument()
-    })
-
-    expect(screen.queryByRole('checkbox', { name: songToDeselect })).not.toBeInTheDocument()
-
-    // clear the search so that the second song re-appears (unchecked)
-    await user.clear(searchBox)
-
-    expect(await screen.findByRole('checkbox', { name: songToDeselect })).not.toBeChecked()
-    expect(await screen.findByRole('checkbox', { name: songToNotDeselect })).toBeChecked()
   })
 
   it('should send songs request with filter by playlist by default and without when showing all', async () => {

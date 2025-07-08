@@ -137,7 +137,7 @@ function AddExistingAlbumSongsModal({
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const songs = data?.models as SongSearch[]
+  const songs = (data?.models as SongSearch[]) ?? []
   const [selectedSongs, selectedSongsHandlers] = useListState<SongSearch>([])
   const filteredSongs = songs.filter((s) => !selectedSongs.some((ss) => s.id === ss.id))
   const totalSongs = selectedSongs.concat(filteredSongs)
@@ -219,9 +219,9 @@ function AddExistingAlbumSongsModal({
 
           {(totalCount > 0 || selectedSongs.length > 0) && (
             <Checkbox
+              label={areAllSongsChecked ? 'Deselect all' : 'Select all'}
               checked={areAllSongsChecked}
               onChange={(e) => checkAllSongs(e.currentTarget.checked)}
-              label={areAllSongsChecked ? 'Deselect all' : 'Select all'}
               px={'xl'}
               style={{ alignSelf: 'flex-start' }}
             />
@@ -234,9 +234,7 @@ function AddExistingAlbumSongsModal({
                 visible={!songsIsLoading && songsIsFetching}
               />
               {songsIsLoading ? (
-                <Box data-testid={'songs-loader'}>
-                  <SongsLoader />
-                </Box>
+                <SongsLoader />
               ) : (
                 totalSongs.map((song) => (
                   <SongOption

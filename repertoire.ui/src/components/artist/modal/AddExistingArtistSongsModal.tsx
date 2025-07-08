@@ -73,6 +73,7 @@ function SongOption({
         aria-label={song.title}
         checked={checked}
         onChange={(e) => checkSong(song, e.currentTarget.checked)}
+        onClick={(e) => e.stopPropagation()}
         pr={'sm'}
       />
       <Avatar
@@ -134,7 +135,7 @@ function AddExistingArtistSongsModal({
     order: ['updatedAt:desc']
   })
   const totalCount = data?.totalCount
-  const songs = data?.models as SongSearch[]
+  const songs = data?.models as SongSearch[] ?? []
   const [selectedSongs, selectedSongsHandlers] = useListState<SongSearch>([])
   const filteredSongs = songs.filter((s) => !selectedSongs.some((ss) => s.id === ss.id))
   const totalSongs = selectedSongs.concat(filteredSongs)
@@ -209,9 +210,9 @@ function AddExistingArtistSongsModal({
 
           {(totalCount > 0 || selectedSongs.length > 0) && (
             <Checkbox
+              label={areAllSongsChecked ? 'Deselect all' : 'Select all'}
               checked={areAllSongsChecked}
               onChange={(e) => checkAllSongs(e.currentTarget.checked)}
-              label={areAllSongsChecked ? 'Deselect all' : 'Select all'}
               px={'xl'}
               style={{ alignSelf: 'flex-start' }}
             />
