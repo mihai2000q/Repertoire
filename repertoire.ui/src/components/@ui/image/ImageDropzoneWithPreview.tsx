@@ -78,6 +78,7 @@ function ImageDropzoneWithPreview({
           opened={isMenuOpened}
           onChange={setIsMenuOpened}
           offset={-(h / 2) + iconSizes / 2}
+          position={'bottom'}
           withArrow
           transitionProps={{ transition: 'fade-up', duration: 150 }}
         >

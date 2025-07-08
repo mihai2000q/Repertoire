@@ -1,11 +1,10 @@
 import Album from '../../types/models/Album.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
-import { useState } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
@@ -18,8 +17,8 @@ interface AlbumCardProps {
 function AlbumCard({ album }: AlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { ref, hovered } = useHover()
 
-  const [isImageHovered, setIsImageHovered] = useState(false)
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -48,12 +47,13 @@ function AlbumCard({ album }: AlbumCardProps) {
       gap={0}
       style={{
         transition: '0.3s',
-        ...((openedMenu || isImageHovered) && { transform: 'scale(1.1)' })
+        ...((openedMenu || hovered) && { transform: 'scale(1.1)' })
       }}
     >
       <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
         <ContextMenu.Target>
           <Avatar
+            ref={ref}
             radius={'10%'}
             w={'100%'}
             h={'unset'}
@@ -68,8 +68,6 @@ function AlbumCard({ album }: AlbumCardProps) {
               '&:hover': { boxShadow: theme.shadows.xxl_hover },
               ...(openedMenu && { boxShadow: theme.shadows.xxl_hover })
             })}
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
             onClick={handleClick}
           >
             <Center c={'white'}>

@@ -30,6 +30,7 @@ interface SongSectionsCardProps {
   sections: SongSection[]
   settings: SongSettings
   songId: string
+  isFetching?: boolean
   bandMembers?: BandMember[]
   isArtistBand?: boolean
 }
@@ -38,6 +39,7 @@ function SongSectionsCard({
   sections,
   settings,
   songId,
+  isFetching,
   bandMembers,
   isArtistBand
 }: SongSectionsCardProps) {
@@ -271,7 +273,7 @@ function SongSectionsCard({
                         key={section.id}
                         index={index}
                         draggableId={section.id}
-                        isDragDisabled={isMoveLoading}
+                        isDragDisabled={isFetching || isMoveLoading}
                       >
                         {(provided, snapshot) => (
                           <SongSectionCard

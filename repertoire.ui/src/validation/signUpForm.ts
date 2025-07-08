@@ -1,11 +1,5 @@
 import { z } from 'zod/v4'
 
-export interface SignUpForm {
-  email: string
-  password: string
-  name: string
-}
-
 export const signUpSchema = z.object({
   email: z.email('Email is invalid'),
   password: z
@@ -17,4 +11,4 @@ export const signUpSchema = z.object({
     .refine((val) => val.length > 0, 'Password cannot be blank'),
   name: z.string().trim().min(1, 'Name cannot be blank')
 })
-export type SignUpValues = z.infer<typeof signUpSchema>
+export type SignUpForm = z.infer<typeof signUpSchema>

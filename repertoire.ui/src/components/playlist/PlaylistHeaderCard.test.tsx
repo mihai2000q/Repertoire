@@ -1,5 +1,5 @@
 import Playlist from 'src/types/models/Playlist.ts'
-import { emptyPlaylist, emptySong, reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import { emptyPlaylist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import PlaylistHeaderCard from './PlaylistHeaderCard.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
@@ -12,19 +12,7 @@ describe('Playlist Header Card', () => {
     ...emptyPlaylist,
     id: '1',
     title: 'Playlist 1',
-    description: "This is the playlist's description",
-    songs: [
-      {
-        ...emptySong,
-        id: '1',
-        title: 'Song 1'
-      },
-      {
-        ...emptySong,
-        id: '2',
-        title: 'Song 2'
-      }
-    ]
+    description: "This is the playlist's description"
   }
 
   const server = setupServer()
@@ -38,12 +26,16 @@ describe('Playlist Header Card', () => {
   it('should render and display minimal info', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />)
+    const songsTotalCount = 12
+
+    reduxRouterRender(<PlaylistHeaderCard playlist={playlist} />, {
+      playlist: { songsTotalCount: songsTotalCount }
+    })
 
     expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: playlist.title })).toBeInTheDocument()
     expect(screen.getByText(playlist.description)).toBeInTheDocument()
-    expect(screen.getByText(`${playlist.songs.length} songs`)).toBeInTheDocument()
+    expect(await screen.findByText(`${songsTotalCount} songs`)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'edit-header' })).toBeInTheDocument()
 

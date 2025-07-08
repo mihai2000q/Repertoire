@@ -24,7 +24,7 @@ type PlaylistService interface {
 		request requests.GetPlaylistFiltersMetadataRequest,
 		token string,
 	) (model.PlaylistFiltersMetadata, *wrapper.ErrorCode)
-	GetSongs(request requests.GetPlaylistSongsRequest) ([]model.Song, *wrapper.ErrorCode)
+	GetSongs(request requests.GetPlaylistSongsRequest) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
 	SaveImage(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode
@@ -125,7 +125,7 @@ func (p *playlistService) GetFiltersMetadata(
 	return p.getPlaylistFiltersMetadata.Handle(request, token)
 }
 
-func (p *playlistService) GetSongs(request requests.GetPlaylistSongsRequest) ([]model.Song, *wrapper.ErrorCode) {
+func (p *playlistService) GetSongs(request requests.GetPlaylistSongsRequest) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode) {
 	return p.getPlaylistSongs.Handle(request)
 }
 

@@ -20,7 +20,7 @@ interface PlaylistDrawer {
   open: boolean
 }
 
-export interface GlobalState {
+interface GlobalState {
   userId?: string | undefined
   documentTitle?: string | undefined
   errorPath?: string | undefined

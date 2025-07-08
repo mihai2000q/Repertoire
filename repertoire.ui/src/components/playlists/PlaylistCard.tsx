@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/api/playlistsApi.ts'
-import { useState } from 'react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useHover } from '@mantine/hooks'
 import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
@@ -18,10 +17,10 @@ interface PlaylistCardProps {
 function PlaylistCard({ playlist }: PlaylistCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const { ref, hovered } = useHover()
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
-  const [isImageHovered, setIsImageHovered] = useState(false)
   const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -47,14 +46,13 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
       gap={0}
       style={{
         transition: '0.3s',
-        ...((openedMenu || isImageHovered) && { transform: 'scale(1.1)' })
+        ...((openedMenu || hovered) && { transform: 'scale(1.1)' })
       }}
     >
       <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
-            onMouseEnter={() => setIsImageHovered(true)}
-            onMouseLeave={() => setIsImageHovered(false)}
+            ref={ref}
             radius={'10%'}
             w={'100%'}
             h={'unset'}

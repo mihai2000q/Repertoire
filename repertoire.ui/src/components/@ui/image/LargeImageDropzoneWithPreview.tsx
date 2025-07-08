@@ -13,7 +13,7 @@ import {
 import { IconPhoto, IconPhotoDown, IconRestore, IconUpload, IconX } from '@tabler/icons-react'
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 
-interface ImageDropzoneWithPreviewProps {
+interface LargeImageDropzoneWithPreviewProps {
   image: FileWithPath | string | null
   setImage: Dispatch<SetStateAction<FileWithPath | string | null>>
   defaultValue?: string | null
@@ -27,7 +27,7 @@ function LargeImageDropzoneWithPreview({
   defaultValue,
   label = 'Image',
   ariaLabel = 'image'
-}: ImageDropzoneWithPreviewProps) {
+}: LargeImageDropzoneWithPreviewProps) {
   function handleRemoveImage() {
     setImage(null)
   }

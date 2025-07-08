@@ -5,7 +5,9 @@ import {
   Center,
   Divider,
   Group,
+  Loader,
   Menu,
+  ScrollArea,
   SimpleGrid,
   Stack,
   Text,
@@ -15,15 +17,15 @@ import { useGetArtistQuery } from '../../../state/api/artistsApi.ts'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import ArtistDrawerLoader from '../loader/ArtistDrawerLoader.tsx'
 import { useNavigate } from 'react-router-dom'
-import { useDisclosure } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useDisclosure, useIntersection } from '@mantine/hooks'
+import { useEffect, useRef, useState } from 'react'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash, IconUser } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
-import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
+import { useGetInfiniteSongsInfiniteQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
-import { closeArtistDrawer, deleteArtistDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
@@ -38,6 +40,8 @@ import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx
 import Song from '../../../types/models/Song.ts'
 import Album from '../../../types/models/Album.ts'
 import DeleteArtistModal from '../../@ui/modal/DeleteArtistModal.tsx'
+import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 function ArtistDrawerAlbumCard({ album, onClose }: { album: Album; onClose: () => void }) {
   const navigate = useNavigate()
@@ -133,14 +137,20 @@ function ArtistDrawer() {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
+  const titleBarHeight = useTitleBarHeight()
+
+  const isDocumentTitleSet = useRef(false)
 
   const { artistId, open: opened } = useAppSelector((state) => state.global.artistDrawer)
   const onClose = () => {
     dispatch(closeArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    isDocumentTitleSet.current = false
   }
 
-  const { data: artist, isFetching } = useGetArtistQuery(artistId, { skip: !artistId })
+  const { data: artist, isFetching: isArtistFetching } = useGetArtistQuery(artistId, {
+    skip: !artistId
+  })
 
   const albumsOrderBy = useOrderBy([
     {
@@ -172,18 +182,41 @@ function ArtistDrawer() {
   const songsSearchBy = useSearchBy([
     { property: SongProperty.ArtistId, operator: FilterOperator.Equal, value: artistId }
   ])
-  const { data: songs, isFetching: isSongsFetching } = useGetSongsQuery(
+  const {
+    data: dataSongs,
+    isFetching: isSongsFetching,
+    fetchNextPage,
+    isFetchingNextPage
+  } = useGetInfiniteSongsInfiniteQuery(
     {
       orderBy: songsOrderBy,
-      searchBy: songsSearchBy
+      searchBy: songsSearchBy,
+      pageSize: 25
     },
     { skip: !artistId || songsSearchBy[0].includes('undefined') }
   )
+  const songs: WithTotalCountResponse<Song> = dataSongs
+    ? {
+        models: dataSongs.pages.flatMap((x) => x.models ?? []),
+        totalCount: dataSongs.pages[0].totalCount
+      }
+    : undefined
+  const isFetching =
+    (isArtistFetching || isSongsFetching || isAlbumsFetching) && !isFetchingNextPage
 
   useEffect(() => {
-    if (artist && opened && !isFetching)
+    if (artist && opened && artistId === artist.id && !isDocumentTitleSet.current)
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + artist.name)
-  }, [artist, opened, isFetching])
+  }, [artist, opened])
+
+  const scrollRef = useRef()
+  const { ref: lastSongRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
@@ -197,7 +230,6 @@ function ArtistDrawer() {
   }
 
   function onDelete() {
-    dispatch(deleteArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
@@ -215,145 +247,168 @@ function ArtistDrawer() {
     <RightSideEntityDrawer
       opened={opened}
       onClose={onClose}
-      isLoading={isFetching || isSongsFetching || isAlbumsFetching}
+      isLoading={isFetching}
       loader={<ArtistDrawerLoader />}
+      withScrollArea={false}
     >
-      <Stack gap={'xs'}>
-        <Box
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          pos={'relative'}
-        >
-          <Avatar
-            w={'100%'}
-            h={'unset'}
-            radius={0}
-            src={artist.imageUrl}
-            alt={artist.imageUrl && artist.name}
-            bg={'gray.0'}
-            style={{ aspectRatio: 4 / 3 }}
+      <ScrollArea.Autosize
+        mah={`calc(100vh - ${titleBarHeight})`}
+        scrollbars={'y'}
+        scrollbarSize={10}
+        viewportRef={scrollRef}
+        styles={{
+          viewport: {
+            '> div': {
+              minWidth: '100%',
+              width: 0
+            }
+          }
+        }}
+      >
+        <Stack gap={'xs'}>
+          <Box
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            pos={'relative'}
           >
-            <Center c={'gray.7'}>
-              <CustomIconUserAlt
-                aria-label={`default-icon-${artist.name}`}
-                size={'100%'}
-                style={{ padding: '26%' }}
-              />
-            </Center>
-          </Avatar>
-
-          <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
-              <Menu.Target>
-                <ActionIcon
-                  variant={'grey-subtle'}
-                  aria-label={'more-menu'}
-                  style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
-                >
-                  <IconDotsVertical size={20} />
-                </ActionIcon>
-              </Menu.Target>
-
-              <Menu.Dropdown>
-                <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
-                  View Details
-                </Menu.Item>
-                <AddToPlaylistMenuItem
-                  ids={[artist.id]}
-                  type={'artist'}
-                  closeMenu={closeMenu}
-                  disabled={songs.totalCount === 0}
+            <Avatar
+              w={'100%'}
+              h={'unset'}
+              radius={0}
+              src={artist.imageUrl}
+              alt={artist.imageUrl && artist.name}
+              bg={'gray.0'}
+              style={{ aspectRatio: 4 / 3 }}
+            >
+              <Center c={'gray.7'}>
+                <CustomIconUserAlt
+                  aria-label={`default-icon-${artist.name}`}
+                  size={'100%'}
+                  style={{ padding: '26%' }}
                 />
-                <Menu.Divider />
-                <Menu.Item
-                  leftSection={<IconTrash size={14} />}
-                  c={'red.5'}
-                  onClick={openDeleteWarning}
-                >
-                  Delete
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
-          </Box>
-        </Box>
+              </Center>
+            </Avatar>
 
-        <Stack px={'md'} pb={'md'} gap={'xxs'}>
-          <Title order={5} fw={700} lh={1} lineClamp={2} fz={'max(1.85vw, 24px)'}>
-            {artist.name}
-          </Title>
-
-          <Group ml={2} gap={'xxs'}>
-            <Text fw={500} fz={'sm'} c={'dimmed'}>
-              {artist.isBand
-                ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
-                : ''}
-              {albums.totalCount} album{plural(albums.totalCount)} • {songs.totalCount} song
-              {plural(songs.totalCount)}
-            </Text>
-          </Group>
-
-          {artist.isBand && artist.bandMembers.length > 0 && (
-            <Stack gap={0} my={6}>
-              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-                Band Members
-              </Text>
-              <Divider />
-            </Stack>
-          )}
-
-          <Group align={'start'} px={6} gap={'sm'}>
-            {artist.isBand &&
-              artist.bandMembers.map((bandMember) => (
-                <Stack key={bandMember.id} align={'center'} gap={'xxs'} w={53}>
-                  <Avatar
-                    variant={'light'}
-                    size={42}
-                    color={bandMember.color}
-                    src={bandMember.imageUrl}
-                    alt={bandMember.imageUrl && bandMember.name}
-                    style={(theme) => ({ boxShadow: theme.shadows.sm })}
+            <Box pos={'absolute'} top={0} right={0} p={7}>
+              <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+                <Menu.Target>
+                  <ActionIcon
+                    variant={'grey-subtle'}
+                    aria-label={'more-menu'}
+                    style={{ transition: '0.25s', opacity: isHovered || isMenuOpened ? 1 : 0 }}
                   >
-                    <IconUser aria-label={`icon-${bandMember.name}`} size={19} />
-                  </Avatar>
+                    <IconDotsVertical size={20} />
+                  </ActionIcon>
+                </Menu.Target>
 
-                  <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
-                    {bandMember.name}
-                  </Text>
-                </Stack>
+                <Menu.Dropdown>
+                  <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+                    View Details
+                  </Menu.Item>
+                  <AddToPlaylistMenuItem
+                    ids={[artist.id]}
+                    type={'artist'}
+                    closeMenu={closeMenu}
+                    disabled={songs.totalCount === 0}
+                  />
+                  <Menu.Divider />
+                  <Menu.Item
+                    leftSection={<IconTrash size={14} />}
+                    c={'red.5'}
+                    onClick={openDeleteWarning}
+                  >
+                    Delete
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+            </Box>
+          </Box>
+
+          <Stack px={'md'} pb={'md'} gap={'xxs'}>
+            <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
+              {artist.name}
+            </Title>
+
+            <Group ml={2} gap={'xxs'}>
+              <Text fw={500} fz={'sm'} c={'dimmed'}>
+                {artist.isBand
+                  ? artist.bandMembers.length + ` member${plural(artist.bandMembers)} • `
+                  : ''}
+                {albums.totalCount} album{plural(albums.totalCount)} • {songs.totalCount} song
+                {plural(songs.totalCount)}
+              </Text>
+            </Group>
+
+            {artist.isBand && artist.bandMembers.length > 0 && (
+              <Stack gap={0} my={6}>
+                <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                  Band Members
+                </Text>
+                <Divider />
+              </Stack>
+            )}
+
+            <Group align={'start'} px={6} gap={'sm'}>
+              {artist.isBand &&
+                artist.bandMembers.map((bandMember) => (
+                  <Stack key={bandMember.id} align={'center'} gap={'xxs'} w={53}>
+                    <Avatar
+                      variant={'light'}
+                      size={42}
+                      color={bandMember.color}
+                      src={bandMember.imageUrl}
+                      alt={bandMember.imageUrl && bandMember.name}
+                      style={(theme) => ({ boxShadow: theme.shadows.sm })}
+                    >
+                      <IconUser aria-label={`icon-${bandMember.name}`} size={19} />
+                    </Avatar>
+
+                    <Text ta={'center'} fw={500} fz={'sm'} lh={1.1} lineClamp={2}>
+                      {bandMember.name}
+                    </Text>
+                  </Stack>
+                ))}
+            </Group>
+
+            {albums.totalCount > 0 && (
+              <Stack gap={0} my={6}>
+                <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                  Albums
+                </Text>
+                <Divider />
+              </Stack>
+            )}
+
+            <SimpleGrid cols={2} px={'xs'}>
+              {albums.models.map((album) => (
+                <ArtistDrawerAlbumCard key={album.id} album={album} onClose={onClose} />
               ))}
-          </Group>
+            </SimpleGrid>
 
-          {albums.totalCount > 0 && (
-            <Stack gap={0} my={6}>
-              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-                Albums
-              </Text>
-              <Divider />
+            {songs.totalCount > 0 && (
+              <Stack gap={0} my={6}>
+                <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
+                  Songs
+                </Text>
+                <Divider />
+              </Stack>
+            )}
+
+            <Stack gap={0}>
+              <SimpleGrid cols={2} px={'xs'}>
+                {songs.models.map((song) => (
+                  <ArtistDrawerSongCard key={song.id} song={song} onClose={onClose} />
+                ))}
+              </SimpleGrid>
+
+              <Stack gap={0} align={'center'}>
+                <div ref={lastSongRef} />
+                {isFetchingNextPage && <Loader size={30} mt={'sm'} />}
+              </Stack>
             </Stack>
-          )}
-
-          <SimpleGrid cols={2} px={'xs'}>
-            {albums.models.map((album) => (
-              <ArtistDrawerAlbumCard key={album.id} album={album} onClose={onClose} />
-            ))}
-          </SimpleGrid>
-
-          {songs.totalCount > 0 && (
-            <Stack gap={0} my={6}>
-              <Text ml={2} fw={500} fz={'xs'} c={'dimmed'}>
-                Songs
-              </Text>
-              <Divider />
-            </Stack>
-          )}
-
-          <SimpleGrid cols={2} px={'xs'}>
-            {songs.models.map((song) => (
-              <ArtistDrawerSongCard key={song.id} song={song} onClose={onClose} />
-            ))}
-          </SimpleGrid>
+          </Stack>
         </Stack>
-      </Stack>
+      </ScrollArea.Autosize>
 
       <DeleteArtistModal
         opened={openedDeleteWarning}

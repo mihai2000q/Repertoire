@@ -77,7 +77,9 @@ func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error {
 	return s.client.
 		Preload("Playlists").
-		Preload("Playlists.PlaylistSongs").
+		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
 		Find(&song, model.Song{ID: id}).
 		Error
 }

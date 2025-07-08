@@ -131,7 +131,8 @@ describe('Edit Song Header Modal', () => {
     const user = userEvent.setup()
 
     const newTitle = 'New Song'
-    const newReleaseDate = dayjs('2024-12-24')
+    const newDay = 24
+    const newReleaseDate = '2024-12-' + newDay
     const newAlbum = albums[0]
     const onClose = vitest.fn()
 
@@ -152,7 +153,7 @@ describe('Edit Song Header Modal', () => {
     await user.type(titleField, newTitle)
 
     await user.click(screen.getByRole('button', { name: /release date/i }))
-    await user.click(screen.getByText(newReleaseDate.date()))
+    await user.click(screen.getByText(newDay.toString()))
 
     await user.click(screen.getByRole('textbox', { name: /album/i }))
     await user.click(await screen.getByRole('option', { name: newAlbum.title }))
@@ -167,7 +168,7 @@ describe('Edit Song Header Modal', () => {
       ...song,
       id: song.id,
       title: newTitle,
-      releaseDate: newReleaseDate.toISOString(),
+      releaseDate: newReleaseDate,
       albumId: newAlbum.id,
       artistId: newAlbum.artist.id
     })

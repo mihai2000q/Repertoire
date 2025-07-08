@@ -17,7 +17,7 @@ func NewGetPlaylistSongs(repository repository.PlaylistRepository) GetPlaylistSo
 	}
 }
 
-func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (songs []model.Song, e *wrapper.ErrorCode) {
+func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (result wrapper.WithTotalCount[model.Song], e *wrapper.ErrorCode) {
 	if len(request.OrderBy) == 0 {
 		request.OrderBy = []string{"song_track_no"}
 	}
@@ -31,14 +31,21 @@ func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (song
 		request.OrderBy,
 	)
 	if err != nil {
-		return songs, wrapper.InternalServerError(err)
+		return result, wrapper.InternalServerError(err)
 	}
 
+	err = g.repository.GetPlaylistSongsCount(&result.TotalCount, request.ID)
+	if err != nil {
+		return result, wrapper.InternalServerError(err)
+	}
+
+	var songs []model.Song
 	for _, playlistSong := range playlistSongs {
 		songs = append(songs, g.mapToSong(playlistSong))
 	}
+	result.Models = songs
 
-	return songs, nil
+	return result, nil
 }
 
 func (g GetPlaylistSongs) mapToSong(playlistSong model.PlaylistSong) model.Song {

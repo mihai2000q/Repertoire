@@ -7,6 +7,7 @@ interface RightSideEntityDrawerProps {
   onClose: () => void
   isLoading: boolean
   loader: ReactNode
+  withScrollArea?: boolean
   children?: ReactNode
 }
 
@@ -15,6 +16,7 @@ function RightSideEntityDrawer({
   onClose,
   isLoading,
   loader,
+  withScrollArea,
   children
 }: RightSideEntityDrawerProps) {
   const titleBarHeight = useTitleBarHeight()
@@ -44,21 +46,27 @@ function RightSideEntityDrawer({
       <Drawer.Overlay backgroundOpacity={0.1} blur={1} />
       <Drawer.Content>
         <Drawer.Body>
-          <ScrollArea.Autosize
-            mah={`calc(100vh - ${titleBarHeight})`}
-            scrollbars={'y'}
-            scrollbarSize={10}
-            styles={{
-              viewport: {
-                '> div': {
-                  minWidth: '100%',
-                  width: 0
+          {isLoading ? (
+            loader
+          ) : withScrollArea === false ? (
+            <div>{children && children}</div>
+          ) : (
+            <ScrollArea.Autosize
+              mah={`calc(100vh - ${titleBarHeight})`}
+              scrollbars={'y'}
+              scrollbarSize={10}
+              styles={{
+                viewport: {
+                  '> div': {
+                    minWidth: '100%',
+                    width: 0
+                  }
                 }
-              }
-            }}
-          >
-            {isLoading ? loader : children && children}
-          </ScrollArea.Autosize>
+              }}
+            >
+              {children && children}
+            </ScrollArea.Autosize>
+          )}
         </Drawer.Body>
       </Drawer.Content>
     </Drawer.Root>

@@ -1,7 +1,6 @@
 package playlist
 
 import (
-	"errors"
 	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
@@ -51,9 +50,6 @@ func (a AddSongsToPlaylist) Handle(
 		currentTrackNo++
 	}
 
-	if len(duplicates) == 0 && request.ForceAdd != nil {
-		return nil, wrapper.BadRequestError(errors.New("force adding when there are no duplicates"))
-	}
 	if len(duplicates) > 0 && request.ForceAdd == nil {
 		return &responses.AddSongsToPlaylistResponse{Success: false, Duplicates: duplicates}, nil
 	}

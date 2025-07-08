@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-export interface AuthState {
+interface AuthState {
   token: string | null
   historyOnSignIn: { index: number; justSignedIn: boolean }
 }

@@ -1,14 +1,14 @@
 import type { MenuProps, MenuTargetProps } from '@mantine/core'
 import { createEventHandler, createSafeContext, isElement, Menu } from '@mantine/core'
 import React, { cloneElement, forwardRef, useRef } from 'react'
-import { useUncontrolled } from '@mantine/hooks'
+import { mergeRefs, useUncontrolled } from '@mantine/hooks'
 
 // Credits to: https://gist.github.com/minosss/f26fae6170d62df26103a0c589bf6da6
 
 type TriggerEvent = 'click' | 'context'
 
 interface ContextMenuContext {
-  lastEventRef: React.MutableRefObject<React.MouseEvent | null>
+  opened: boolean
 
   toggleDropdown(e: React.MouseEvent): void
 
@@ -35,22 +35,24 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
   const toggleDropdown = (e: React.MouseEvent) => {
     // ref of trigger should be a function
     if (typeof ref === 'function') {
-      ref({
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        getBoundingClientRect() {
-          return {
-            x: e.clientX,
-            y: e.clientY,
-            width: 0,
-            height: 0,
-            top: e.clientY,
-            right: e.clientX,
-            bottom: e.clientY,
-            left: e.clientX
+      if (!ctx.opened) {
+        ref({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          getBoundingClientRect() {
+            return {
+              x: e.clientX,
+              y: e.clientY,
+              width: 0,
+              height: 0,
+              top: e.clientY,
+              right: e.clientX,
+              bottom: e.clientY,
+              left: e.clientX
+            }
           }
-        }
-      })
+        })
+      }
       ctx.toggleDropdown(e)
     }
   }
@@ -64,7 +66,9 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
 
   return cloneElement(children, {
     onContextMenu,
-    [refProp]: ref
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    [refProp]: mergeRefs(ref, children.ref)
   })
 })
 
@@ -141,10 +145,10 @@ export const ContextMenu = (props: ContextMenuProps) => {
     else open()
   }
 
-  const ctx = {
+  const ctx: ContextMenuContext = {
+    opened: _opened,
     toggleDropdown,
-    trigger,
-    lastEventRef
+    trigger
   }
 
   return (
@@ -159,6 +163,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
         onOpen={open}
         defaultOpened={defaultOpened}
         position={position}
+        transitionProps={{ transition: 'pop-top-left', duration: 150 }}
       >
         {children}
       </Menu>

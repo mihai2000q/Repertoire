@@ -29,8 +29,16 @@ describe('Youtube Modal', () => {
       'https://www.youtube.com/watch?v=tAGnKpE4NCI',
       'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI'
     ],
+    [
+      'https://youtube.com/watch?v=tAGnKpE4NCI',
+      'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI'
+    ],
     ['https://youtu.be/tAGnKpE4NCI', 'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI'],
-    ['https://www.youtu.be/tAGnKpE4NCI', 'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI']
+    ['https://www.youtu.be/tAGnKpE4NCI', 'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI'],
+    [
+      'https://www.youtube.de/watch?v=tAGnKpE4NCI',
+      'https://www.youtube.de/embed/tAGnKpE4NCI',
+    ],
   ])('should render', async (link, expectedLinkToRender) => {
     const title = 'Some Song'
 

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useGetArtistQuery } from '../state/api/artistsApi.ts'
 import ArtistLoader from '../components/artist/loader/ArtistLoader.tsx'
 import { useGetAlbumsQuery } from '../state/api/albumsApi.ts'
-import { useGetSongsQuery } from '../state/api/songsApi.ts'
+import { useGetInfiniteSongsInfiniteQuery } from '../state/api/songsApi.ts'
 import { useEffect } from 'react'
 import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
@@ -19,6 +19,8 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import AlbumProperty from '../types/enums/AlbumProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/SongProperty.ts'
+import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
+import Song from '../types/models/Song.ts'
 
 function Artist() {
   const params = useParams()
@@ -26,7 +28,11 @@ function Artist() {
   const artistId = params['id'] ?? ''
   const isUnknownArtist = artistId === 'unknown'
 
-  const { data: artist, isLoading } = useGetArtistQuery(artistId, { skip: isUnknownArtist })
+  const {
+    data: artist,
+    isLoading,
+    isFetching
+  } = useGetArtistQuery(artistId, { skip: isUnknownArtist })
 
   useEffect(() => {
     if (isUnknownArtist) setDocumentTitle('Unknown Artist')
@@ -64,13 +70,20 @@ function Artist() {
     searchBy: albumsSearchBy
   })
   const {
-    data: songs,
+    data: dataSongs,
     isLoading: isSongsLoading,
-    isFetching: isSongsFetching
-  } = useGetSongsQuery({
+    isFetching: isSongsFetching,
+    isFetchingNextPage: isSongsFetchingNextPage,
+    fetchNextPage: songsFetchNextPage
+  } = useGetInfiniteSongsInfiniteQuery({
     orderBy: songsOrderBy,
-    searchBy: songsSearchBy
+    searchBy: songsSearchBy,
+    pageSize: 25
   })
+  const songs: WithTotalCountResponse<Song> = {
+    models: dataSongs?.pages.flatMap((x) => x.models ?? []),
+    totalCount: dataSongs?.pages[0].totalCount
+  }
 
   if (isLoading || (!artist && !isUnknownArtist)) return <ArtistLoader />
 
@@ -93,7 +106,11 @@ function Artist() {
         >
           {!isUnknownArtist && artist.isBand && (
             <Stack>
-              <BandMembersCard bandMembers={artist.bandMembers} artistId={artistId} />
+              <BandMembersCard
+                bandMembers={artist.bandMembers}
+                artistId={artistId}
+                isFetching={isFetching}
+              />
             </Stack>
           )}
 
@@ -111,12 +128,14 @@ function Artist() {
         <Stack flex={1} h={'100%'} pb={{ base: 'lg', md: 0 }}>
           <ArtistSongsCard
             songs={songs}
-            isLoading={isSongsLoading}
-            isFetching={isSongsFetching}
             isUnknownArtist={isUnknownArtist}
             order={songsOrder}
             setOrder={setSongsOrder}
             artistId={artist?.id}
+            isLoading={isSongsLoading}
+            isFetching={isSongsFetching}
+            isFetchingNextPage={isSongsFetchingNextPage}
+            fetchNextPage={songsFetchNextPage}
           />
         </Stack>
       </Flex>

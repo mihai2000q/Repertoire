@@ -255,7 +255,8 @@ describe('Add Playlist Songs Modal', () => {
 
     expect(capturedRequest).toStrictEqual({
       id: playlistId,
-      songIds: songsToSelect.map((song) => song.id)
+      songIds: songsToSelect.map((song) => song.id),
+      forceAdd: true
     })
     expect(onClose).toHaveBeenCalledOnce()
   })

@@ -16,7 +16,7 @@ function Song() {
   const setDocumentTitle = useDynamicDocumentTitle()
   const songId = params['id'] ?? ''
 
-  const { data: song, isLoading } = useGetSongQuery(songId)
+  const { data: song, isLoading, isFetching } = useGetSongQuery(songId)
 
   useEffect(() => {
     if (song) setDocumentTitle(song.title)
@@ -49,6 +49,7 @@ function Song() {
               songId={songId}
               settings={song.settings}
               sections={song.sections}
+              isFetching={isFetching}
               bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
               isArtistBand={song.artist?.isBand}
             />

@@ -91,8 +91,8 @@ export const queryWithRedirection: (
     const errorStatus = error?.status ?? 0
     if (errorCodeToPathname.has(errorStatus)) {
       api.dispatch(setErrorPath(errorCodeToPathname.get(errorStatus)))
-    } else if (errorStatus === 400) {
-      toast.error(error.data.error)
+    } else if (error && errorStatus !== 401) {
+      toast.error(error.data?.error)
     }
     return result
   }
