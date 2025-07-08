@@ -68,17 +68,19 @@ function SongOption({
     <Group
       aria-label={`song-${song.title}`}
       aria-selected={checked}
+      w={'100%'}
+      wrap={'nowrap'}
+      px={'xl'}
+      py={'xs'}
       sx={(theme) => ({
+        cursor: 'pointer',
         transition: '0.3s',
         '&:hover': {
           boxShadow: theme.shadows.xl,
           backgroundColor: alpha(theme.colors.primary[0], 0.15)
         }
       })}
-      w={'100%'}
-      wrap={'nowrap'}
-      px={'xl'}
-      py={'xs'}
+      onClick={() => checkSong(song, !checked)}
     >
       <Checkbox
         aria-label={song.title}
