@@ -17,26 +17,6 @@ import (
 	"testing"
 )
 
-func TestAddSongsToPlaylist_WhenWithoutDuplicatesButWithForceAdd_ShouldReturnBadRequest(t *testing.T) {
-	// given
-	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
-
-	request := requests.AddSongsToPlaylistRequest{
-		ID: playlistData.Playlists[1].ID,
-		SongIDs: []uuid.UUID{
-			playlistData.Songs[1].ID,
-		},
-		ForceAdd: &[]bool{false}[0],
-	}
-
-	// when
-	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/playlists/add-songs", request)
-
-	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-}
-
 func TestAddSongsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)

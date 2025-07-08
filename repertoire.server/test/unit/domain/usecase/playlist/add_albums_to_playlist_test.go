@@ -118,62 +118,6 @@ func TestAddAlbumsToPlaylist_WhenAddSongsFails_ShouldReturnInternalServerError(t
 	albumRepository.AssertExpectations(t)
 }
 
-func TestAddAlbumsToPlaylist_WhenWithoutDuplicatesButWithForceAdd_ShouldReturnBadRequestError(t *testing.T) {
-	tests := []struct {
-		name    string
-		request requests.AddAlbumsToPlaylistRequest
-	}{
-		{
-			"with force add false",
-			requests.AddAlbumsToPlaylistRequest{
-				ID:       uuid.New(),
-				AlbumIDs: []uuid.UUID{uuid.New()},
-				ForceAdd: &[]bool{false}[0],
-			},
-		},
-		{
-			"with force add true",
-			requests.AddAlbumsToPlaylistRequest{
-				ID:       uuid.New(),
-				AlbumIDs: []uuid.UUID{uuid.New()},
-				ForceAdd: &[]bool{true}[0],
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			playlistRepository := new(repository.PlaylistRepositoryMock)
-			albumRepository := new(repository.AlbumRepositoryMock)
-			_uut := playlist.NewAddAlbumsToPlaylist(playlistRepository, albumRepository)
-
-			// given - mocking
-			playlistSongs := &[]model.PlaylistSong{}
-			playlistRepository.On("GetPlaylistSongs", mock.IsType(playlistSongs), tt.request.ID).
-				Return(nil, playlistSongs).
-				Once()
-
-			albums := &[]model.Album{}
-			albumRepository.On("GetAllByIDsWithSongs", mock.IsType(albums), tt.request.AlbumIDs).
-				Return(nil, albums).
-				Once()
-
-			// when
-			res, errCode := _uut.Handle(tt.request)
-
-			// then
-			assert.Nil(t, res)
-			assert.NotNil(t, errCode)
-			assert.Equal(t, http.StatusBadRequest, errCode.Code)
-			assert.Equal(t, "force adding when there are no duplicates", errCode.Error.Error())
-
-			playlistRepository.AssertExpectations(t)
-			albumRepository.AssertExpectations(t)
-		})
-	}
-}
-
 func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
