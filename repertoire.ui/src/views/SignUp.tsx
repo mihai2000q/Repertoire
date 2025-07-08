@@ -17,7 +17,7 @@ import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { signIn } from '../state/slice/authSlice.ts'
-import { signUpSchema, SignUpValues } from '../validation/signUpForm.ts'
+import { signUpSchema, SignUpForm } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { useSignUpMutation } from '../state/api/usersApi.ts'
 import { api } from '../state/api.ts'
@@ -33,7 +33,7 @@ function SignUp(): ReactElement {
   const [signUpMutation, { error, isLoading }] = useSignUpMutation()
   const signUpError = (error as HttpErrorResponse | undefined)?.data?.error
 
-  const form = useForm<SignUpValues>({
+  const form = useForm<SignUpForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: '',

@@ -13,7 +13,6 @@ import { DeleteAlbumRequest } from '../types/requests/AlbumRequests.ts'
 
 function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
   if (typeof args !== 'object' || args.method !== 'DELETE') return
-  console.log('cleaning')
 
   const globalState = (api.getState() as RootState).global
 

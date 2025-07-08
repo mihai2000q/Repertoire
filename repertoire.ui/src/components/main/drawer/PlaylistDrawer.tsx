@@ -127,7 +127,7 @@ function PlaylistDrawer() {
   useEffect(() => {
     if (playlist && opened && playlistId === playlist.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + playlist.title)
-      isDocumentTitleSet.current = true
+      isDocumentTitleSet.current = false
     }
   }, [playlist, opened])
 
