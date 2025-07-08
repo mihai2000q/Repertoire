@@ -181,6 +181,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
 
   const areAllSongsChecked =
     filteredSongs.length === 0 && totalSongs.length === selectedSongs.length
+  const isShowAllChecked = !filters.get(SongProperty.PlaylistId + FilterOperator.NotEqualVariant)
+    .isSet
 
   const searchRef = useFocusTrap(!songsIsLoading)
 
@@ -194,6 +196,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   }, [entry?.isIntersecting])
   useDidUpdate(
     () => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }),
+    [searchValue, isShowAllChecked]
   )
 
   function checkAllSongs(check: boolean) {
@@ -273,9 +276,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
               />
               <Chip
-                checked={
-                  !filters.get(SongProperty.PlaylistId + FilterOperator.NotEqualVariant).isSet
-                }
+                checked={isShowAllChecked}
                 onChange={(checked) =>
                   handleIsSetChange(
                     SongProperty.PlaylistId + FilterOperator.NotEqualVariant,
