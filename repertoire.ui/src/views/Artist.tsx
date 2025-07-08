@@ -77,7 +77,8 @@ function Artist() {
     fetchNextPage: songsFetchNextPage
   } = useGetInfiniteSongsInfiniteQuery({
     orderBy: songsOrderBy,
-    searchBy: songsSearchBy
+    searchBy: songsSearchBy,
+    pageSize: 25
   })
   const songs: WithTotalCountResponse<Song> = {
     models: dataSongs?.pages.flatMap((x) => x.models ?? []),
