@@ -101,7 +101,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
       return
     }
 
-    await addSongMutation({ id: playlistId, songIds }).unwrap()
+    await addSongMutation({ id: playlistId, songIds, forceAdd: true }).unwrap()
 
     toast.success(`Songs added to playlist!`)
     onClose()
