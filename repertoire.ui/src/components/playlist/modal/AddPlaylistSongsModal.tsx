@@ -137,7 +137,6 @@ interface AddPlaylistSongsModalProps {
 }
 
 function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongsModalProps) {
-  const searchRef = useFocusTrap()
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
 
@@ -180,6 +179,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
 
   const areAllSongsChecked =
     filteredSongs.length === 0 && totalSongs.length === selectedSongs.length
+
+  const searchRef = useFocusTrap(!songsIsLoading)
 
   function checkAllSongs(check: boolean) {
     if (check) {

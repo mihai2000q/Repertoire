@@ -104,7 +104,6 @@ function AddExistingArtistAlbumsModal({
   onClose,
   artistId
 }: AddExistingArtistAlbumsModalProps) {
-  const searchRef = useFocusTrap()
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
 
@@ -130,6 +129,8 @@ function AddExistingArtistAlbumsModal({
 
   const areAllAlbumsChecked =
     filteredAlbums.length === 0 && totalAlbums.length === selectedAlbums.length
+
+  const searchRef = useFocusTrap(!albumsIsLoading)
 
   function checkAllAlbums(check: boolean) {
     if (check) {

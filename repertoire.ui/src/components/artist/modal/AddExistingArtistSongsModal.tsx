@@ -116,7 +116,6 @@ function AddExistingArtistSongsModal({
   onClose,
   artistId
 }: AddExistingArtistSongsModalProps) {
-  const searchRef = useFocusTrap()
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
 
@@ -142,6 +141,8 @@ function AddExistingArtistSongsModal({
 
   const areAllSongsChecked =
     filteredSongs.length === 0 && totalSongs.length === selectedSongs.length
+
+  const searchRef = useFocusTrap(!songsIsLoading)
 
   function checkAllSongs(check: boolean) {
     if (check) {
