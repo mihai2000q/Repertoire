@@ -99,16 +99,17 @@ func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
 
 func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode {
 	for _, playlist := range song.Playlists {
-		songFound := false
+		songsFound := uint(0)
 		var playlistSongsToUpdate []model.PlaylistSong
 		for _, playlistSong := range playlist.PlaylistSongs {
-			if songFound {
-				playlistSong.SongTrackNo = playlistSong.SongTrackNo - 1
-				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
+			if playlistSong.SongID == song.ID {
+				songsFound++
+				continue
 			}
 
-			if playlistSong.SongID == song.ID {
-				songFound = true
+			if songsFound != 0 {
+				playlistSong.SongTrackNo = playlistSong.SongTrackNo - songsFound
+				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
 			}
 		}
 		err := d.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
