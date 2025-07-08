@@ -16,15 +16,81 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedValue, useInputState, useListState } from '@mantine/hooks'
+import { useDebouncedValue, useFocusTrap, useInputState, useListState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddAlbumsToArtistMutation } from '../../../state/api/artistsApi.ts'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
-import { MouseEvent, useEffect } from 'react'
+import { MouseEvent } from 'react'
 import { useGetSearchQuery } from '../../../state/api/searchApi.ts'
 import SearchType from '../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
+
+const AlbumsLoader = () => (
+  <Box data-testid={'albums-loader'}>
+    {Array.from(Array(5)).map((_, i) => (
+      <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+        <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+        <Skeleton width={37} height={37} radius={'md'} />
+        <Skeleton width={160} height={18} />
+      </Group>
+    ))}
+  </Box>
+)
+
+function AlbumOption({
+  album,
+  selectedAlbums,
+  checkAlbum,
+  searchValue
+}: {
+  album: AlbumSearch
+  selectedAlbums: AlbumSearch[]
+  checkAlbum: (album: AlbumSearch, checked: boolean) => void
+  searchValue: string
+}) {
+  const checked = selectedAlbums.some((a) => a.id === album.id)
+
+  return (
+    <Group
+      aria-label={`album-${album.title}`}
+      aria-selected={checked}
+      w={'100%'}
+      wrap={'nowrap'}
+      px={'xl'}
+      py={'xs'}
+      sx={(theme) => ({
+        cursor: 'pointer',
+        transition: '0.3s',
+        '&:hover': {
+          boxShadow: theme.shadows.xl,
+          backgroundColor: alpha(theme.colors.primary[0], 0.15)
+        }
+      })}
+      onClick={() => checkAlbum(album, !checked)}
+    >
+      <Checkbox
+        aria-label={album.title}
+        checked={checked}
+        onChange={(e) => checkAlbum(album, e.currentTarget.checked)}
+        pr={'sm'}
+      />
+      <Avatar radius={'md'} src={album.imageUrl} alt={album.imageUrl && album.title} bg={'gray.5'}>
+        <Center c={'white'}>
+          <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={14} />
+        </Center>
+      </Avatar>
+      <Highlight
+        highlight={searchValue}
+        highlightStyles={{ fontWeight: 800 }}
+        fw={500}
+        lineClamp={2}
+      >
+        {album.title}
+      </Highlight>
+    </Group>
+  )
+}
 
 interface AddExistingArtistAlbumsModalProps {
   opened: boolean
@@ -37,8 +103,11 @@ function AddExistingArtistAlbumsModal({
   onClose,
   artistId
 }: AddExistingArtistAlbumsModalProps) {
+  const searchRef = useFocusTrap()
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
+
+  const [addAlbumsMutation, { isLoading: addAlbumsIsLoading }] = useAddAlbumsToArtistMutation()
 
   const {
     data,
@@ -54,41 +123,40 @@ function AddExistingArtistAlbumsModal({
   })
   const totalCount = data?.totalCount
   const albums = data?.models as AlbumSearch[]
+  const [selectedAlbums, selectedAlbumsHandlers] = useListState<AlbumSearch>([])
+  const filteredAlbums = albums.filter((a) => !selectedAlbums.some((aa) => a.id === aa.id))
+  const totalAlbums = selectedAlbums.concat(filteredAlbums)
 
-  const [addAlbumMutation, { isLoading: addAlbumIsLoading }] = useAddAlbumsToArtistMutation()
-
-  const [albumIds, albumIdsHandlers] = useListState<string>([])
-
-  useEffect(() => {
-    albumIdsHandlers.filter((albumId) => albums?.some((album) => album.id === albumId))
-  }, [searchValue, albums])
+  const areAllAlbumsChecked =
+    filteredAlbums.length === 0 && totalAlbums.length === selectedAlbums.length
 
   function checkAllAlbums(check: boolean) {
-    albumIdsHandlers.setState([])
     if (check) {
-      albums.forEach((album) => albumIdsHandlers.append(album.id))
+      filteredAlbums.forEach((album) => selectedAlbumsHandlers.append(album))
+    } else {
+      selectedAlbumsHandlers.setState([])
     }
   }
 
-  function checkAlbum(albumId: string, check: boolean) {
+  function checkAlbum(album: AlbumSearch, check: boolean) {
     if (check) {
-      albumIdsHandlers.append(albumId)
+      selectedAlbumsHandlers.append(album)
     } else {
-      albumIdsHandlers.filter((s) => s !== albumId)
+      selectedAlbumsHandlers.filter((a) => a.id !== album.id)
     }
   }
 
   async function addAlbums(e: MouseEvent) {
-    if (albumIds.length === 0) {
+    if (selectedAlbums.length === 0) {
       e.preventDefault()
       return
     }
 
-    await addAlbumMutation({ id: artistId, albumIds }).unwrap()
+    await addAlbumsMutation({ id: artistId, albumIds: selectedAlbums.map((a) => a.id) }).unwrap()
 
     toast.success(`Albums added to artist!`)
     onClose()
-    albumIdsHandlers.setState([])
+    selectedAlbumsHandlers.setState([])
     setSearch('')
   }
 
@@ -98,9 +166,10 @@ function AddExistingArtistAlbumsModal({
       onClose={onClose}
       title={'Add Existing Albums'}
       styles={{ body: { padding: 0 } }}
+      trapFocus={false}
     >
       <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
-        <LoadingOverlay visible={addAlbumIsLoading} loaderProps={{ type: 'bars' }} />
+        <LoadingOverlay visible={addAlbumsIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
           <Group gap={'xxs'} align={'start'}>
@@ -120,6 +189,7 @@ function AddExistingArtistAlbumsModal({
           </Group>
 
           <TextInput
+            ref={searchRef}
             w={250}
             role={'searchbox'}
             aria-label={'search'}
@@ -130,12 +200,18 @@ function AddExistingArtistAlbumsModal({
             onChange={setSearch}
           />
 
-          {totalCount === 0 && <Text>There are no albums without artist</Text>}
-          {totalCount > 0 && (
+          {totalCount === 0 && selectedAlbums.length === 0 && searchValue.trim() === '' && (
+            <Text>There are no albums without artist</Text>
+          )}
+          {totalCount === 0 && selectedAlbums.length === 0 && searchValue.trim() !== '' && (
+            <Text>There are no albums with that title</Text>
+          )}
+
+          {(totalCount > 0 || selectedAlbums.length > 0) && (
             <Checkbox
-              checked={albumIds.length === albums?.length}
+              checked={areAllAlbumsChecked}
               onChange={(e) => checkAllAlbums(e.currentTarget.checked)}
-              label={albumIds.length === albums?.length ? 'Deselect all' : 'Select all'}
+              label={areAllAlbumsChecked ? 'Deselect all' : 'Select all'}
               px={'xl'}
               style={{ alignSelf: 'flex-start' }}
             />
@@ -148,69 +224,24 @@ function AddExistingArtistAlbumsModal({
                 visible={!albumsIsLoading && albumsIsFetching}
               />
               {albumsIsLoading ? (
-                <Box data-testid={'albums-loader'}>
-                  {Array.from(Array(5)).map((_, i) => (
-                    <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                      <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                      <Skeleton width={37} height={37} radius={'md'} />
-                      <Skeleton width={160} height={18} />
-                    </Group>
-                  ))}
-                </Box>
+                <AlbumsLoader />
               ) : (
-                albums.map((album) => (
-                  <Group
+                totalAlbums.map((album) => (
+                  <AlbumOption
                     key={album.id}
-                    aria-label={`album-${album.title}`}
-                    aria-selected={albumIds.some((id) => id === album.id)}
-                    sx={(theme) => ({
-                      transition: '0.3s',
-                      '&:hover': {
-                        boxShadow: theme.shadows.xl,
-                        backgroundColor: alpha(theme.colors.primary[0], 0.15)
-                      }
-                    })}
-                    w={'100%'}
-                    wrap={'nowrap'}
-                    px={'xl'}
-                    py={'xs'}
-                  >
-                    <Checkbox
-                      aria-label={album.title}
-                      checked={albumIds.includes(album.id)}
-                      onChange={(e) => checkAlbum(album.id, e.currentTarget.checked)}
-                      pr={'sm'}
-                    />
-                    <Avatar
-                      radius={'md'}
-                      src={album.imageUrl}
-                      alt={album.imageUrl && album.title}
-                      bg={'gray.5'}
-                    >
-                      <Center c={'white'}>
-                        <CustomIconAlbumVinyl
-                          aria-label={`default-icon-${album.title}`}
-                          size={14}
-                        />
-                      </Center>
-                    </Avatar>
-                    <Highlight
-                      highlight={searchValue}
-                      highlightStyles={{ fontWeight: 800 }}
-                      fw={500}
-                      lineClamp={2}
-                    >
-                      {album.title}
-                    </Highlight>
-                  </Group>
+                    album={album}
+                    selectedAlbums={selectedAlbums}
+                    checkAlbum={checkAlbum}
+                    searchValue={searchValue}
+                  />
                 ))
               )}
             </Stack>
           </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
-            <Tooltip disabled={albumIds.length > 0} label="Select albums">
-              <Button data-disabled={albumIds.length === 0} onClick={addAlbums}>
+            <Tooltip disabled={selectedAlbums.length > 0} label="Select albums">
+              <Button data-disabled={selectedAlbums.length === 0} onClick={addAlbums}>
                 Add
               </Button>
             </Tooltip>

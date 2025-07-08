@@ -17,12 +17,18 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { useDebouncedValue, useDidUpdate, useInputState, useListState } from '@mantine/hooks'
+import {
+  useDebouncedValue,
+  useDidUpdate,
+  useFocusTrap,
+  useInputState,
+  useListState
+} from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { useAddSongsToPlaylistMutation } from '../../../state/api/playlistsApi.ts'
 import { useGetSongsQuery } from '../../../state/api/songsApi.ts'
 import { IconSearch } from '@tabler/icons-react'
-import { MouseEvent, useEffect } from 'react'
+import { MouseEvent } from 'react'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import OrderType from '../../../types/enums/OrderType.ts'
 import SongProperty from '../../../types/enums/SongProperty.ts'
@@ -31,6 +37,95 @@ import useSearchBy from '../../../hooks/api/useSearchBy.ts'
 import useFilters from '../../../hooks/filter/useFilters.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
 import useFiltersHandlers from '../../../hooks/filter/useFiltersHandlers.ts'
+import Song from '../../../types/models/Song.ts'
+
+const SongsLoader = () => (
+  <Box data-testid={'songs-loader'}>
+    {Array.from(Array(5)).map((_, i) => (
+      <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
+        <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
+        <Skeleton width={37} height={37} radius={'md'} />
+        <Skeleton width={160} height={18} />
+      </Group>
+    ))}
+  </Box>
+)
+
+function SongOption({
+  song,
+  selectedSongs,
+  checkSong,
+  searchValue
+}: {
+  song: Song
+  selectedSongs: Song[]
+  checkSong: (song: Song, checked: boolean) => void
+  searchValue: string
+}) {
+  const checked = selectedSongs.some((s) => s.id === song.id)
+
+  return (
+    <Group
+      aria-label={`song-${song.title}`}
+      aria-selected={checked}
+      sx={(theme) => ({
+        transition: '0.3s',
+        '&:hover': {
+          boxShadow: theme.shadows.xl,
+          backgroundColor: alpha(theme.colors.primary[0], 0.15)
+        }
+      })}
+      w={'100%'}
+      wrap={'nowrap'}
+      px={'xl'}
+      py={'xs'}
+    >
+      <Checkbox
+        aria-label={song.title}
+        checked={checked}
+        onChange={(e) => checkSong(song, e.currentTarget.checked)}
+        pr={'sm'}
+      />
+      <Avatar
+        radius={'md'}
+        src={song.imageUrl ?? song.album?.imageUrl}
+        alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+        bg={'gray.5'}
+      >
+        <Center c={'white'}>
+          <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
+        </Center>
+      </Avatar>
+      <Stack gap={0} style={{ overflow: 'hidden' }}>
+        <Group gap={'xxs'} wrap={'nowrap'}>
+          <Highlight
+            highlight={searchValue}
+            highlightStyles={{ fontWeight: 800 }}
+            fw={500}
+            truncate={'end'}
+          >
+            {song.title}
+          </Highlight>
+          {song.album && (
+            <Group gap={'xxs'} wrap={'nowrap'}>
+              <Text fz={'sm'} c={'dimmed'}>
+                -
+              </Text>
+              <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
+                {song.album.title}
+              </Highlight>
+            </Group>
+          )}
+        </Group>
+        {song.artist && (
+          <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} truncate={'end'}>
+            {song.artist.name}
+          </Highlight>
+        )}
+      </Stack>
+    </Group>
+  )
+}
 
 interface AddPlaylistSongsModalProps {
   opened: boolean
@@ -39,8 +134,11 @@ interface AddPlaylistSongsModalProps {
 }
 
 function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongsModalProps) {
+  const searchRef = useFocusTrap()
   const [search, setSearch] = useInputState('')
   const [searchValue] = useDebouncedValue(search, 200)
+
+  const [addSongsMutation, { isLoading: addSongsIsLoading }] = useAddSongsToPlaylistMutation()
 
   const orderBy = useOrderBy([{ property: SongProperty.LastModified, type: OrderType.Descending }])
   const [filters, setFilters] = useFilters([
@@ -62,7 +160,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   )
 
   const {
-    data: songs,
+    data,
     isLoading: songsIsLoading,
     isFetching: songsIsFetching
   } = useGetSongsQuery({
@@ -71,41 +169,46 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
     orderBy: orderBy,
     searchBy: searchBy
   })
+  const totalCount = data?.totalCount
+  const songs = data?.models
+  const [selectedSongs, selectedSongsHandlers] = useListState<Song>([])
+  const filteredSongs = songs.filter((s) => !selectedSongs.some((ss) => s.id === ss.id))
+  const totalSongs = selectedSongs.concat(filteredSongs)
 
-  const [addSongMutation, { isLoading: addSongIsLoading }] = useAddSongsToPlaylistMutation()
-
-  const [songIds, songIdsHandlers] = useListState<string>([])
-
-  useEffect(() => {
-    songIdsHandlers.filter((songId) => songs.models.some((song) => song.id === songId))
-  }, [searchValue, songs])
+  const areAllSongsChecked =
+    filteredSongs.length === 0 && totalSongs.length === selectedSongs.length
 
   function checkAllSongs(check: boolean) {
-    songIdsHandlers.setState([])
     if (check) {
-      songs.models.forEach((song) => songIdsHandlers.append(song.id))
+      filteredSongs.forEach((song) => selectedSongsHandlers.append(song))
+    } else {
+      selectedSongsHandlers.setState([])
     }
   }
 
-  function checkSong(songId: string, check: boolean) {
+  function checkSong(song: Song, check: boolean) {
     if (check) {
-      songIdsHandlers.append(songId)
+      selectedSongsHandlers.append(song)
     } else {
-      songIdsHandlers.filter((s) => s !== songId)
+      selectedSongsHandlers.filter((s) => s.id !== song.id)
     }
   }
 
   async function addSongs(e: MouseEvent) {
-    if (songIds.length === 0) {
+    if (selectedSongs.length === 0) {
       e.preventDefault()
       return
     }
 
-    await addSongMutation({ id: playlistId, songIds, forceAdd: true }).unwrap()
+    await addSongsMutation({
+      id: playlistId,
+      songIds: selectedSongs.map((s) => s.id),
+      forceAdd: true
+    }).unwrap()
 
     toast.success(`Songs added to playlist!`)
     onClose()
-    songIdsHandlers.setState([])
+    selectedSongsHandlers.setState([])
     setSearch('')
   }
 
@@ -115,9 +218,10 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
       onClose={onClose}
       title={'Add Playlist Songs'}
       styles={{ body: { padding: 0 } }}
+      trapFocus={false}
     >
       <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
-        <LoadingOverlay visible={addSongIsLoading} loaderProps={{ type: 'bars' }} />
+        <LoadingOverlay visible={addSongsIsLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack align={'center'} w={'100%'}>
           <Text fw={500} fz={'lg'}>
@@ -125,6 +229,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
           </Text>
 
           <TextInput
+            ref={searchRef}
             w={250}
             role={'searchbox'}
             aria-label={'search'}
@@ -135,13 +240,19 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
             onChange={setSearch}
           />
 
-          {songs?.totalCount === 0 && <Text>There are no songs without playlist</Text>}
-          {songs?.totalCount > 0 && (
+          {totalCount === 0 && selectedSongs.length === 0 && searchValue.trim() === '' && (
+            <Text>There are no songs without playlist</Text>
+          )}
+          {totalCount === 0 && selectedSongs.length === 0 && searchValue.trim() !== '' && (
+            <Text>There are no songs with that title</Text>
+          )}
+
+          {(totalCount > 0 || selectedSongs.length > 0) && (
             <Group w={'100%'} pl={'xl'} pr={'md'} justify={'space-between'}>
               <Checkbox
+                checked={areAllSongsChecked}
                 onChange={(e) => checkAllSongs(e.currentTarget.checked)}
-                checked={songIds.length === songs.models.length}
-                label={songIds.length === songs.models.length ? 'Deselect all' : 'Select all'}
+                label={areAllSongsChecked ? 'Deselect all' : 'Select all'}
               />
               <Chip
                 checked={
@@ -181,88 +292,24 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
                 visible={!songsIsLoading && songsIsFetching}
               />
               {songsIsLoading ? (
-                <Box data-testid={'songs-loader'}>
-                  {Array.from(Array(5)).map((_, i) => (
-                    <Group key={i} w={'100%'} px={'xl'} py={'xs'}>
-                      <Skeleton mr={'sm'} radius={'md'} width={22} height={22} />
-                      <Skeleton width={37} height={37} radius={'md'} />
-                      <Skeleton width={160} height={18} />
-                    </Group>
-                  ))}
-                </Box>
+                <SongsLoader />
               ) : (
-                songs.models.map((song) => (
-                  <Group
+                totalSongs.map((song) => (
+                  <SongOption
                     key={song.id}
-                    aria-label={`song-${song.title}`}
-                    aria-selected={songIds.some((id) => id === song.id)}
-                    sx={(theme) => ({
-                      transition: '0.3s',
-                      '&:hover': {
-                        boxShadow: theme.shadows.xl,
-                        backgroundColor: alpha(theme.colors.primary[0], 0.15)
-                      }
-                    })}
-                    w={'100%'}
-                    wrap={'nowrap'}
-                    px={'xl'}
-                    py={'xs'}
-                  >
-                    <Checkbox
-                      aria-label={song.title}
-                      checked={songIds.includes(song.id)}
-                      onChange={(e) => checkSong(song.id, e.currentTarget.checked)}
-                      pr={'sm'}
-                    />
-                    <Avatar
-                      radius={'md'}
-                      src={song.imageUrl ?? song.album?.imageUrl}
-                      alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-                      bg={'gray.5'}
-                    >
-                      <Center c={'white'}>
-                        <CustomIconMusicNoteEighth
-                          aria-label={`default-icon-${song.title}`}
-                          size={18}
-                        />
-                      </Center>
-                    </Avatar>
-                    <Stack gap={0} style={{ overflow: 'hidden' }}>
-                      <Group gap={'xxs'} wrap={'nowrap'}>
-                        <Highlight
-                          highlight={searchValue}
-                          highlightStyles={{ fontWeight: 800 }}
-                          fw={500}
-                          truncate={'end'}
-                        >
-                          {song.title}
-                        </Highlight>
-                        {song.album && (
-                          <Group gap={'xxs'} wrap={'nowrap'}>
-                            <Text fz={'sm'} c={'dimmed'}>
-                              -
-                            </Text>
-                            <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} lineClamp={1}>
-                              {song.album.title}
-                            </Highlight>
-                          </Group>
-                        )}
-                      </Group>
-                      {song.artist && (
-                        <Highlight highlight={searchValue} fz={'sm'} c={'dimmed'} truncate={'end'}>
-                          {song.artist.name}
-                        </Highlight>
-                      )}
-                    </Stack>
-                  </Group>
+                    song={song}
+                    selectedSongs={selectedSongs}
+                    checkSong={checkSong}
+                    searchValue={searchValue}
+                  />
                 ))
               )}
             </Stack>
           </ScrollArea.Autosize>
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
-            <Tooltip disabled={songIds.length > 0} label="Select songs">
-              <Button data-disabled={songIds.length === 0} onClick={addSongs}>
+            <Tooltip disabled={selectedSongs.length > 0} label="Select songs">
+              <Button data-disabled={selectedSongs.length === 0} onClick={addSongs}>
                 Add
               </Button>
             </Tooltip>
