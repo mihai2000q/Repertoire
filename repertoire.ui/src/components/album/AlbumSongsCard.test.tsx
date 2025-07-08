@@ -1,4 +1,9 @@
-import { defaultSongFiltersMetadata, emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import {
+  defaultSongFiltersMetadata,
+  emptyAlbum,
+  emptySong,
+  reduxRouterRender
+} from '../../test-utils.tsx'
 import AlbumSongsCard from './AlbumSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Album from '../../types/models/Album.ts'
@@ -158,6 +163,33 @@ describe('Album Songs Card', () => {
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
     expect(screen.queryByRole('menuitem', { name: /add existing songs/i })).not.toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
+  })
+
+  it('should display orders and be able to change it', async () => {
+    const user = userEvent.setup()
+
+    const newOrder = albumSongsOrders[3]
+    const setOrder = vitest.fn()
+
+    reduxRouterRender(
+      <AlbumSongsCard
+        album={album}
+        songs={songs}
+        isUnknownAlbum={true}
+        order={order}
+        setOrder={setOrder}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: order.label }))
+
+    albumSongsOrders.forEach((o) =>
+      expect(screen.getByRole('menuitem', { name: o.label })).toBeInTheDocument()
+    )
+
+    await user.click(screen.getByRole('menuitem', { name: newOrder.label }))
+
+    expect(setOrder).toHaveBeenCalledWith(newOrder)
   })
 
   describe('on menu', () => {

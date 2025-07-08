@@ -25,8 +25,7 @@ describe('Playlist', () => {
   const playlist: PlaylistType = {
     ...emptyPlaylist,
     id: '1',
-    title: 'Playlist 1',
-    songs: songs
+    title: 'Playlist 1'
   }
 
   const handlers = [
