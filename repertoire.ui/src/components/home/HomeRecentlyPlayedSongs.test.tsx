@@ -23,14 +23,14 @@ describe('Home Recently Played Songs', () => {
       title: 'Song 2',
       progress: 10,
       imageUrl: 'something.png',
-      lastTimePlayed: '2024-12-12'
+      lastTimePlayed: '2025-01-22'
     },
     {
       ...emptySong,
       id: '3',
       title: 'Song 3',
       imageUrl: 'something.png',
-      lastTimePlayed: '2025-01-22',
+      lastTimePlayed: '2024-12-14',
       progress: 500,
       album: {
         ...emptyAlbum,
@@ -48,6 +48,7 @@ describe('Home Recently Played Songs', () => {
       ...emptySong,
       id: '4',
       title: 'Song 4',
+      lastTimePlayed: '2024-12-13',
       progress: 20,
       album: {
         ...emptyAlbum,
@@ -58,6 +59,7 @@ describe('Home Recently Played Songs', () => {
       ...emptySong,
       id: '5',
       title: 'Song 5',
+      lastTimePlayed: '2024-12-12',
       progress: 267,
       artist: { ...emptyArtist, name: 'Artist' }
     }
@@ -108,9 +110,7 @@ describe('Home Recently Played Songs', () => {
         expect(screen.getByText(dayjs(song.lastTimePlayed).format('DD MMM'))).toBeInTheDocument()
     }
 
-    // TODO: Why is this not working?
-    // expect(screen.getAllByRole('progressbar', { name: 'progress' })).toHaveLength(songs.length)
-    expect(screen.getAllByText('never')).toHaveLength(songs.filter((s) => !s.lastTimePlayed).length)
+    expect(screen.getAllByRole('progressbar', { name: 'progress' })).toHaveLength(songs.length)
   })
 
   it('should display empty message when there are no songs', async () => {
