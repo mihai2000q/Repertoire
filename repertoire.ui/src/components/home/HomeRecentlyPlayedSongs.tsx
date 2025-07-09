@@ -31,6 +31,7 @@ import OpenLinksMenuItem from '../@ui/menu/item/song/OpenLinksMenuItem.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import PastDate from '../@ui/text/PastDate.tsx'
 
 function Loader() {
   return (
@@ -170,9 +171,14 @@ function LocalSongCard({ song }: { song: Song }) {
                 openDelay={400}
                 disabled={!song.lastTimePlayed}
               >
-                <Text ta={'center'} fz={'sm'} fw={500} c={'dimmed'} truncate={'end'}>
-                  {song.lastTimePlayed ? dayjs(song.lastTimePlayed).format('DD MMM') : 'never'}
-                </Text>
+                <PastDate
+                  dateValue={song.lastTimePlayed}
+                  ta={'center'}
+                  fz={'sm'}
+                  fw={500}
+                  c={'dimmed'}
+                  truncate={'end'}
+                />
               </Tooltip>
             </Grid.Col>
           </Grid>
