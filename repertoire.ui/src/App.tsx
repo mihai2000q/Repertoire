@@ -28,6 +28,14 @@ import Playlists from './views/Playlists.tsx'
 import Playlist from './views/Playlist.tsx'
 import useIsDesktop from './hooks/useIsDesktop.ts'
 import { MainScrollProvider } from './context/MainScrollContext.tsx'
+import dayjs from 'dayjs'
+import isToday from 'dayjs/plugin/isToday'
+import isYesterday from 'dayjs/plugin/isYesterday'
+import 'dayjs/locale/en-gb'
+
+dayjs.extend(isToday)
+dayjs.extend(isYesterday)
+dayjs.locale('en-gb')
 
 function App(): ReactElement {
   const isDesktop = useIsDesktop()
