@@ -349,7 +349,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
       </Combobox.Target>
 
       <Combobox.Dropdown p={0}>
-        <LoadingOverlay visible={isFetching} />
+        <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
 
         <Stack gap={'xs'}>
           <Chip.Group multiple={false} value={type} onChange={(e) => setType(e as SearchType)}>
