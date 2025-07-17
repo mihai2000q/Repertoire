@@ -10,7 +10,7 @@ interface AddNewBandMemberModalProps {
 
 function BandMemberDetailsModal({ opened, onClose, bandMember }: AddNewBandMemberModalProps) {
   return (
-    <Modal opened={opened} onClose={onClose} size={'xs'} withCloseButton={false} trapFocus={false}>
+    <Modal opened={opened} onClose={onClose} size={'xs'} withCloseButton={false}>
       <Box pos={'relative'}>
         <Modal.CloseButton pos={'absolute'} top={0} right={0} onClick={onClose} />
 

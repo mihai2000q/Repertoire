@@ -200,7 +200,6 @@ function AddExistingAlbumSongsModal({
       onClose={onClose}
       title={'Add Existing Songs'}
       styles={{ body: { padding: 0 } }}
-      trapFocus={false}
     >
       <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addSongsIsLoading} loaderProps={{ type: 'bars' }} />

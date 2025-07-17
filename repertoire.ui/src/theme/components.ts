@@ -7,12 +7,15 @@ import {
   CardFactory,
   Chip,
   Combobox,
+  Drawer,
+  DrawerRoot,
   Highlight,
   HoverCard,
   Indicator,
   LoadingOverlay,
   Menu,
   Modal,
+  ModalRoot,
   NavLink,
   NumberFormatter,
   NumberInput,
@@ -142,7 +145,7 @@ export const components = {
   }),
   Chip: Chip.extend({
     defaultProps: {
-      role: 'button',
+      role: 'button'
     },
     styles: () => ({
       label: {
@@ -172,6 +175,16 @@ export const components = {
           duration: 160
         }
       }
+    }
+  }),
+  Drawer: Drawer.extend({
+    defaultProps: {
+      trapFocus: false
+    }
+  }),
+  DrawerRoot: DrawerRoot.extend({
+    defaultProps: {
+      trapFocus: false
     }
   }),
   Highlight: Highlight.extend({
@@ -213,7 +226,8 @@ export const components = {
     defaultProps: {
       closeButtonProps: {
         iconSize: 20
-      }
+      },
+      trapFocus: false
     },
     styles: (theme) => ({
       content: {
@@ -225,6 +239,11 @@ export const components = {
         color: theme.colors.gray[7]
       }
     })
+  }),
+  ModalRoot: ModalRoot.extend({
+    defaultProps: {
+      trapFocus: false
+    }
   }),
   NavLink: NavLink.extend({
     defaultProps: {

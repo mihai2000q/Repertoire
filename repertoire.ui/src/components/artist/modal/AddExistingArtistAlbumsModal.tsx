@@ -186,7 +186,6 @@ function AddExistingArtistAlbumsModal({
       onClose={onClose}
       title={'Add Existing Albums'}
       styles={{ body: { padding: 0 } }}
-      trapFocus={false}
     >
       <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
         <LoadingOverlay visible={addAlbumsIsLoading} loaderProps={{ type: 'bars' }} />
