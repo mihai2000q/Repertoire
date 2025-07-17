@@ -104,8 +104,10 @@ function AlbumDrawer() {
   const { data: album, isFetching } = useGetAlbumQuery({ id: albumId }, { skip: !albumId })
 
   useEffect(() => {
-    if (album && opened && albumId === album.id && !isDocumentTitleSet.current)
+    if (album && opened && albumId === album.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + album.title)
+      isDocumentTitleSet.current = true
+    }
   }, [album, opened])
 
   const [isHovered, setIsHovered] = useState(false)

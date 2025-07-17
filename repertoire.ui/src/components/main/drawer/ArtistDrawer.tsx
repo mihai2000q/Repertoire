@@ -205,8 +205,10 @@ function ArtistDrawer() {
     (isArtistFetching || isSongsFetching || isAlbumsFetching) && !isFetchingNextPage
 
   useEffect(() => {
-    if (artist && opened && artistId === artist.id && !isDocumentTitleSet.current)
+    if (artist && opened && artistId === artist.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + artist.name)
+      isDocumentTitleSet.current = true
+    }
   }, [artist, opened])
 
   const scrollRef = useRef()
