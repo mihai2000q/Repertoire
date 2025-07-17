@@ -17,6 +17,7 @@ import BandMemberCard from '../BandMemberCard.tsx'
 import { useRef, useState } from 'react'
 import { useMoveBandMemberMutation } from '../../../state/api/artistsApi.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
+import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 
 interface BandMembersCardProps {
   bandMembers: BandMember[]
@@ -77,6 +78,8 @@ function BandMembersCard({ bandMembers, artistId, isFetching }: BandMembersCardP
   return (
     <Card aria-label={'band-members-card'} variant={'panel'} p={0}>
       <Stack gap={0}>
+        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
+
         <Group px={'md'} pt={'xs'} gap={'xs'}>
           <Text fw={600}>Band Members</Text>
 

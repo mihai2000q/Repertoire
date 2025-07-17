@@ -9,7 +9,6 @@ import {
   Card,
   Group,
   Loader,
-  LoadingOverlay,
   Menu,
   ScrollArea,
   Space,
@@ -24,6 +23,7 @@ import AddNewArtistSongModal from '../modal/AddNewArtistSongModal.tsx'
 import AddExistingArtistSongsModal from '../modal/AddExistingArtistSongsModal.tsx'
 import { useDisclosure, useIntersection } from '@mantine/hooks'
 import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
+import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 
 interface ArtistSongsCardProps {
   songs: WithTotalCountResponse<Song>
@@ -66,7 +66,7 @@ function ArtistSongsCard({
   return (
     <Card aria-label={'songs-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
-        <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
+        <LoadingOverlayDebounced visible={isFetching && !isFetchingNextPage} />
 
         <Group px={'md'} py={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>

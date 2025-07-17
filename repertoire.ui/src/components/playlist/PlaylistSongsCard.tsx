@@ -23,6 +23,7 @@ import { setSongsTotalCount } from '../../state/slice/playlistSlice.ts'
 import useMainScroll from '../../hooks/useMainScroll.ts'
 import Order from '../../types/Order.ts'
 import { MoveSongFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
+import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
 
 interface PlaylistSongsCardProps {
   playlistId: string
@@ -70,6 +71,8 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
   return (
     <Card variant={'panel'} aria-label={'songs-card'} p={0} mx={'xs'} mb={'lg'}>
       <Stack gap={0}>
+        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
+
         <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
 

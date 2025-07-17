@@ -25,6 +25,7 @@ import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
 import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
 import useMainScroll from '../../../hooks/useMainScroll.ts'
+import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 
 interface SongSectionsCardProps {
   sections: SongSection[]
@@ -122,6 +123,8 @@ function SongSectionsCard({
   return (
     <Card ref={ref} variant={'panel'} aria-label={'song-sections'} p={0}>
       <Stack gap={0}>
+        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
+
         <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
           <Text fw={600} inline>
             Sections
