@@ -24,7 +24,7 @@ function WarningModal({
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={title} trapFocus={false} centered>
+    <Modal opened={opened} onClose={onClose} title={title} centered>
       <Stack px={'xs'} py={0}>
         {typeof description === 'string' ? <Text fw={500}>{description}</Text> : description}
         <Group gap={'xxs'} style={{ alignSelf: 'end' }}>

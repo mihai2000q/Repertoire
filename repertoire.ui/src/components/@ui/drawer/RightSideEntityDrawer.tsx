@@ -35,7 +35,8 @@ function RightSideEntityDrawer({
           marginTop: titleBarHeight
         },
         inner: {
-          marginTop: titleBarHeight
+          marginTop: titleBarHeight,
+          zIndex: 2000,
         },
         body: {
           padding: 0,

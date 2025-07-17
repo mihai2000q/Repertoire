@@ -14,6 +14,7 @@ import Order from '../../types/Order.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import SongProperty from '../../types/enums/SongProperty.ts'
+import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
 
 interface AlbumSongsCardProps {
   album: Album | undefined
@@ -38,9 +39,7 @@ function AlbumSongsCard({
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
-  const [internalSongs, { setState }] = useListState<Song>(
-    isUnknownAlbum ? [] : album.songs
-  )
+  const [internalSongs, { setState }] = useListState<Song>(isUnknownAlbum ? [] : album.songs)
   useDidUpdate(() => setState(album.songs), [album])
 
   function onSongsDragEnd({ source, destination }) {
@@ -63,6 +62,8 @@ function AlbumSongsCard({
   return (
     <Card aria-label={'songs-card'} variant={'panel'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
       <Stack gap={0}>
+        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
+
         <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
           <Text fw={600}>Songs</Text>
 

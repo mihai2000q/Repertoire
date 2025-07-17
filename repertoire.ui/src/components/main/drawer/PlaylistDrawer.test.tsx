@@ -14,7 +14,7 @@ import Song from '../../../types/models/Song.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import { expect } from 'vitest'
-import { openPlaylistDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import { openPlaylistDrawer } from '../../../state/slice/globalSlice.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 describe('Playlist Drawer', () => {
@@ -187,8 +187,8 @@ describe('Playlist Drawer', () => {
       )
     })
 
-    // change back the document title (as if the drawer closed)
-    await act(() => store.dispatch(setDocumentTitle(prevDocumentTitle)))
+    // click outside to close drawer
+    await userEvent.click(document.querySelector('.mantine-Drawer-overlay'))
 
     // make sure it doesn't use the old title when a new playlist is introduced
     server.use(getPlaylist(newPlaylist), getPlaylistSongs(newPlaylist.id, songs))

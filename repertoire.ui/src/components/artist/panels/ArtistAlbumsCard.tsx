@@ -4,7 +4,6 @@ import {
   ActionIcon,
   Card,
   Group,
-  LoadingOverlay,
   Menu,
   ScrollArea,
   SimpleGrid,
@@ -23,6 +22,7 @@ import Album from '../../../types/models/Album.ts'
 import AddNewArtistAlbumModal from '../modal/AddNewArtistAlbumModal.tsx'
 import AddExistingArtistAlbumsModal from '../modal/AddExistingArtistAlbumsModal.tsx'
 import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
+import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 
 interface ArtistAlbumsCardProps {
   albums: WithTotalCountResponse<Album>
@@ -53,7 +53,7 @@ function ArtistAlbumsCard({
   return (
     <Card aria-label={'albums-card'} variant={'panel'} p={0} mah={'100%'}>
       <Stack gap={0} mah={'100%'}>
-        <LoadingOverlay visible={isFetching} />
+        <LoadingOverlayDebounced visible={isFetching} />
 
         <Group px={'md'} py={'xs'} gap={'xs'}>
           <Text fw={600}>Albums</Text>

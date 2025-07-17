@@ -86,7 +86,7 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
   return (
     <Modal opened={opened} onClose={onClose} title={'Account'} styles={{ body: { padding: 0 } }}>
       <ScrollArea.Autosize offsetScrollbars={'y'} scrollbars={'y'} scrollbarSize={7} mah={'77vh'}>
-        <LoadingOverlay visible={isLoading} />
+        <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <form onSubmit={form.onSubmit(updateUser)}>
           <Stack px={26} pb={'md'}>

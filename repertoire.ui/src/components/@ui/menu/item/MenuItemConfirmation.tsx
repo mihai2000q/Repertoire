@@ -4,9 +4,9 @@ import { MouseEvent, ReactNode, useState } from 'react'
 
 interface MenuItemConfirmationProps extends MenuItemProps {
   children: ReactNode
-  onConfirm?: () => void
+  onConfirm?: () => Promise<void>
   isLoading?: boolean
-  onCancel?: () => void
+  onCancel?: () => Promise<void>
 }
 
 function MenuItemConfirmation({
@@ -23,15 +23,15 @@ function MenuItemConfirmation({
     setOpenedControls(true)
   }
 
-  function handleCancel(e: MouseEvent) {
+  async function handleCancel(e: MouseEvent) {
     e.stopPropagation()
-    if (onCancel) onCancel()
+    if (onCancel) await onCancel()
     setOpenedControls(false)
   }
 
-  function handleConfirm(e: MouseEvent) {
+  async function handleConfirm(e: MouseEvent) {
     e.stopPropagation()
-    if (onConfirm) onConfirm()
+    if (onConfirm) await onConfirm()
     setOpenedControls(false)
   }
 

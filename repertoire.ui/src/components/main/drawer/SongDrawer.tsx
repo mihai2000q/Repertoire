@@ -69,7 +69,7 @@ function SongDrawer() {
   useEffect(() => {
     if (song && opened && songId === song.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + song.title)
-      isDocumentTitleSet.current = false
+      isDocumentTitleSet.current = true
     }
   }, [song, opened])
 

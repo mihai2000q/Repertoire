@@ -16,7 +16,7 @@ describe('Menu Item Confirmation', () => {
 
   it('should render', () => {
     render(
-      <MenuItemConfirmation onConfirm={() => {}}>
+      <MenuItemConfirmation onConfirm={vi.fn()}>
         <span data-testid={'test-item'}>Something</span>
       </MenuItemConfirmation>
     )

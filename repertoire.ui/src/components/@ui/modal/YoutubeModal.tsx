@@ -24,7 +24,6 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
       opened={opened}
       onClose={onClose}
       size={'min(80vw, 1000px)'}
-      trapFocus={false}
       centered
     >
       <Modal.Overlay />
