@@ -1,4 +1,4 @@
-package playlist
+package song
 
 import (
 	"repertoire/server/api/requests"

@@ -1,4 +1,4 @@
-package playlist
+package song
 
 import (
 	"github.com/google/uuid"
@@ -26,7 +26,7 @@ func TestMoveSongFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/playlists/move-song", request)
+	core.NewTestHandler().PUT(w, "/api/playlists/songs/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -45,7 +45,7 @@ func TestMoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *te
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/playlists/move-song", request)
+	core.NewTestHandler().PUT(w, "/api/playlists/songs/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -64,7 +64,7 @@ func TestMoveSongFromPlaylist_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/playlists/move-song", request)
+	core.NewTestHandler().PUT(w, "/api/playlists/songs/move", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -104,7 +104,7 @@ func TestMoveSongFromPlaylist_WhenSuccessful_ShouldMoveSongs(t *testing.T) {
 
 			// when
 			w := httptest.NewRecorder()
-			core.NewTestHandler().PUT(w, "/api/playlists/move-song", request)
+			core.NewTestHandler().PUT(w, "/api/playlists/songs/move", request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
