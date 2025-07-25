@@ -82,6 +82,9 @@ describe('Album Songs Card', () => {
     }),
     http.get('/playlists', async () => {
       return HttpResponse.json(defaultSongFiltersMetadata)
+    }),
+    http.get('/songs/guitar-tunings', async () => {
+      return HttpResponse.json([])
     })
   ]
 
