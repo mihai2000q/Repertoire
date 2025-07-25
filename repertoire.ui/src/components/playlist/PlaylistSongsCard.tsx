@@ -1,11 +1,12 @@
 import { ActionIcon, Box, Card, Group, Loader, Menu, Space, Stack, Text } from '@mantine/core'
-import { IconDots, IconPlus } from '@tabler/icons-react'
+import { IconArrowsShuffle, IconDots, IconPlus } from '@tabler/icons-react'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
 import {
   useGetInfinitePlaylistSongsInfiniteQuery,
-  useMoveSongFromPlaylistMutation
+  useMoveSongFromPlaylistMutation,
+  useShufflePlaylistMutation
 } from '../../state/api/playlistsApi.ts'
 import { useDidUpdate, useDisclosure, useIntersection, useListState } from '@mantine/hooks'
 import CompactOrderButton from '../@ui/button/CompactOrderButton.tsx'
@@ -17,13 +18,15 @@ import PlaylistSongsLoader from './loader/PlaylistSongsLoader.tsx'
 import useLocalStorage from '../../hooks/useLocalStorage.ts'
 import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
-import { memo, useEffect } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { setSongsTotalCount } from '../../state/slice/playlistSlice.ts'
 import useMainScroll from '../../hooks/useMainScroll.ts'
 import Order from '../../types/Order.ts'
 import { MoveSongFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
+import MenuItemConfirmation from '../@ui/menu/item/MenuItemConfirmation.tsx'
+import { Id, toast } from 'react-toastify'
 
 interface PlaylistSongsCardProps {
   playlistId: string
@@ -33,6 +36,7 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
   const dispatch = useAppDispatch()
 
   const [moveSongFromPlaylist, { isLoading: isMoveLoading }] = useMoveSongFromPlaylistMutation()
+  const [shufflePlaylistSongs, { isLoading: isShuffleLoading }] = useShufflePlaylistMutation()
 
   const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 
@@ -66,6 +70,13 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
 
+  const shuffleToastId = useRef<Id>()
+  async function handleShuffle() {
+    await shufflePlaylistSongs({ id: playlistId }).unwrap()
+    if (shuffleToastId.current) toast.dismiss(shuffleToastId.current)
+    shuffleToastId.current = toast.info('Playlist shuffled!')
+  }
+
   if (isLoading) return <PlaylistSongsLoader />
 
   return (
@@ -90,7 +101,14 @@ function PlaylistSongsCard({ playlistId }: PlaylistSongsCardProps) {
                 <IconDots size={15} />
               </ActionIcon>
             </Menu.Target>
-            <Menu.Dropdown>
+            <Menu.Dropdown miw={125}>
+              <MenuItemConfirmation
+                leftSection={<IconArrowsShuffle size={15} />}
+                isLoading={isShuffleLoading}
+                onConfirm={handleShuffle}
+              >
+                Shuffle
+              </MenuItemConfirmation>
               <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddSongs}>
                 Add Songs
               </Menu.Item>

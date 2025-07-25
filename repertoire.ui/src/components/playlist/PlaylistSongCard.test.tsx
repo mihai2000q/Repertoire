@@ -438,7 +438,7 @@ describe('Playlist Song Card', () => {
 
       let capturedRequest: RemoveSongsFromPlaylistRequest
       server.use(
-        http.put('/playlists/remove-songs', async (req) => {
+        http.put('/playlists/songs/remove', async (req) => {
           capturedRequest = (await req.request.json()) as RemoveSongsFromPlaylistRequest
           return HttpResponse.json()
         })

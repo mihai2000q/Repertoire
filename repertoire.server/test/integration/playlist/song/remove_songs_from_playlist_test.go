@@ -1,4 +1,4 @@
-package playlist
+package song
 
 import (
 	"github.com/google/uuid"
@@ -30,7 +30,7 @@ func TestRemoveSongsFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t 
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/playlists/remove-songs", request)
+	core.NewTestHandler().PUT(w, "/api/playlists/songs/remove", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -55,7 +55,7 @@ func TestRemoveSongsFromPlaylist_WhenSuccessful_ShouldDeleteSongsFromPlaylist(t 
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/playlists/remove-songs", request)
+	core.NewTestHandler().PUT(w, "/api/playlists/songs/remove", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

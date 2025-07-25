@@ -1,11 +1,11 @@
-package playlist
+package song
 
 import (
 	"errors"
 	"net/http"
 	"os"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -19,7 +19,7 @@ import (
 func TestGetPlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewGetPlaylistSongs(playlistRepository)
+	_uut := song.NewGetPlaylistSongs(playlistRepository)
 
 	request := requests.GetPlaylistSongsRequest{
 		ID:      uuid.New(),
@@ -54,7 +54,7 @@ func TestGetPlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerEr
 func TestGetPlaylistSongs_WhenGetPlaylistSongsCountFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewGetPlaylistSongs(playlistRepository)
+	_uut := song.NewGetPlaylistSongs(playlistRepository)
 
 	request := requests.GetPlaylistSongsRequest{
 		ID:      uuid.New(),
@@ -114,7 +114,7 @@ func TestGetPlaylistSongs_WhenSuccessful_ShouldReturnPlaylist(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			playlistRepository := new(repository.PlaylistRepositoryMock)
-			_uut := playlist.NewGetPlaylistSongs(playlistRepository)
+			_uut := song.NewGetPlaylistSongs(playlistRepository)
 
 			expectedPlaylistSongs := []model.PlaylistSong{
 				{

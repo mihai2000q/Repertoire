@@ -1,10 +1,10 @@
-package playlist
+package song
 
 import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -18,7 +18,7 @@ import (
 func TestAddSongsToPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+	_uut := song.NewAddSongsToPlaylist(playlistRepository)
 
 	request := requests.AddSongsToPlaylistRequest{
 		ID:      uuid.New(),
@@ -46,7 +46,7 @@ func TestAddSongsToPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServer
 func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+	_uut := song.NewAddSongsToPlaylist(playlistRepository)
 
 	request := requests.AddSongsToPlaylistRequest{
 		ID:      uuid.New(),
@@ -79,7 +79,7 @@ func TestAddSongsToPlaylist_WhenAddSongsToPlaylistFails_ShouldReturnInternalServ
 func TestAddSongsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+	_uut := song.NewAddSongsToPlaylist(playlistRepository)
 
 	request := requests.AddSongsToPlaylistRequest{
 		ID:      uuid.New(),
@@ -114,7 +114,7 @@ func TestAddSongsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoS
 func TestAddSongsToPlaylist_WhenWithoutDuplicatesNorForceAdd_ShouldReturnSuccess(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+	_uut := song.NewAddSongsToPlaylist(playlistRepository)
 
 	request := requests.AddSongsToPlaylistRequest{
 		ID:      uuid.New(),
@@ -159,7 +159,7 @@ func TestAddSongsToPlaylist_WhenWithoutDuplicatesNorForceAdd_ShouldReturnSuccess
 func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddDuplicatesTooAndReturnSuccess(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+	_uut := song.NewAddSongsToPlaylist(playlistRepository)
 
 	request := requests.AddSongsToPlaylistRequest{
 		ID:       uuid.New(),
@@ -208,7 +208,7 @@ func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddDuplicate
 func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldSkipDuplicatesAndReturnSuccess(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewAddSongsToPlaylist(playlistRepository)
+	_uut := song.NewAddSongsToPlaylist(playlistRepository)
 
 	request := requests.AddSongsToPlaylistRequest{
 		ID:       uuid.New(),

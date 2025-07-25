@@ -152,7 +152,7 @@ describe('Add To Playlist Menu Item', () => {
 
       let capturedRequest: AddSongsToPlaylistRequest
       server.use(
-        http.post('/playlists/add-songs', async (req) => {
+        http.post('/playlists/songs/add', async (req) => {
           capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
           const response: AddSongsToPlaylistResponse = {
             success: true,
@@ -260,7 +260,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             const response: AddSongsToPlaylistResponse = {
               success: false,
@@ -295,7 +295,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -343,7 +343,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -392,7 +392,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -439,7 +439,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             const response: AddSongsToPlaylistResponse = {
               success: false,
@@ -474,7 +474,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {

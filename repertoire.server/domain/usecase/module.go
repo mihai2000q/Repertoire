@@ -5,6 +5,7 @@ import (
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/domain/usecase/artist/band/member"
 	"repertoire/server/domain/usecase/playlist"
+	playlistSong "repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/section"
@@ -58,18 +59,20 @@ var artistUseCases = fx.Options(
 var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewAddAlbumsToPlaylist),
 	fx.Provide(playlist.NewAddArtistsToPlaylist),
-	fx.Provide(playlist.NewAddSongsToPlaylist),
 	fx.Provide(playlist.NewCreatePlaylist),
 	fx.Provide(playlist.NewDeletePlaylist),
 	fx.Provide(playlist.NewDeleteImageFromPlaylist),
 	fx.Provide(playlist.NewGetAllPlaylists),
 	fx.Provide(playlist.NewGetPlaylist),
 	fx.Provide(playlist.NewGetPlaylistFiltersMetadata),
-	fx.Provide(playlist.NewGetPlaylistSongs),
-	fx.Provide(playlist.NewMoveSongFromPlaylist),
-	fx.Provide(playlist.NewRemoveSongsFromPlaylist),
 	fx.Provide(playlist.NewSaveImageToPlaylist),
 	fx.Provide(playlist.NewUpdatePlaylist),
+	
+	fx.Provide(playlistSong.NewAddSongsToPlaylist),
+	fx.Provide(playlistSong.NewGetPlaylistSongs),
+	fx.Provide(playlistSong.NewMoveSongFromPlaylist),
+	fx.Provide(playlistSong.NewRemoveSongsFromPlaylist),
+	fx.Provide(playlistSong.NewShufflePlaylistSongs),
 )
 
 var searchUseCases = fx.Options(

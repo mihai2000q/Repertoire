@@ -11,14 +11,6 @@ export interface GetPlaylistRequest {
   id: string
 }
 
-export interface GetPlaylistSongsRequest {
-  id: string
-  currentPage?: number
-  pageSize?: number
-  orderBy?: string[]
-  searchBy?: string[]
-}
-
 export interface CreatePlaylistRequest {
   title: string
   description: string
@@ -47,10 +39,24 @@ export interface AddAlbumsToPlaylistRequest {
   forceAdd?: boolean
 }
 
+// songs
+
+export interface GetPlaylistSongsRequest {
+  id: string
+  currentPage?: number
+  pageSize?: number
+  orderBy?: string[]
+  searchBy?: string[]
+}
+
 export interface AddSongsToPlaylistRequest {
   id: string
   songIds: string[]
   forceAdd?: boolean
+}
+
+export interface ShufflePlaylistSongsRequest {
+  id: string
 }
 
 export interface MoveSongFromPlaylistRequest {

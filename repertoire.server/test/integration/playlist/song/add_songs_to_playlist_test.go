@@ -1,4 +1,4 @@
-package playlist
+package song
 
 import (
 	"encoding/json"
@@ -31,7 +31,7 @@ func TestAddSongsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoS
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/playlists/add-songs", request)
+	core.NewTestHandler().POST(w, "/api/playlists/songs/add", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -59,7 +59,7 @@ func TestAddSongsToPlaylist_WhenWithoutDuplicatesNorForceAdd_ShouldAddSongsOnPla
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/playlists/add-songs", request)
+	core.NewTestHandler().POST(w, "/api/playlists/songs/add", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -89,7 +89,7 @@ func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddTrue_ShouldAddAllSongsO
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/playlists/add-songs", request)
+	core.NewTestHandler().POST(w, "/api/playlists/songs/add", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -129,7 +129,7 @@ func TestAddSongsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldAddOnlyNonD
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/playlists/add-songs", request)
+	core.NewTestHandler().POST(w, "/api/playlists/songs/add", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)

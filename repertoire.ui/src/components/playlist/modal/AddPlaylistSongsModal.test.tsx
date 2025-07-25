@@ -246,7 +246,7 @@ describe('Add Playlist Songs Modal', () => {
 
     let capturedRequest: AddSongsToPlaylistRequest
     server.use(
-      http.post('/playlists/add-songs', async (req) => {
+      http.post('/playlists/songs/add', async (req) => {
         capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
         return HttpResponse.json({ message: 'it worked' })
       })

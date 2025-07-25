@@ -1,10 +1,10 @@
-package playlist
+package song
 
 import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
@@ -18,7 +18,7 @@ import (
 func TestRemoveSongsFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, nil)
+	_uut := song.NewRemoveSongsFromPlaylist(playlistRepository, nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:              uuid.New(),
@@ -45,7 +45,7 @@ func TestRemoveSongsFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalS
 func TestRemoveSongsFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, nil)
+	_uut := song.NewRemoveSongsFromPlaylist(playlistRepository, nil)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:              uuid.New(),
@@ -76,7 +76,7 @@ func TestRemoveSongsFromPlaylist_WhenTransactionFails_ShouldReturnInternalServer
 	// given
 	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+	_uut := song.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
 		ID:              uuid.New(),
@@ -110,7 +110,7 @@ func TestRemoveSongsFromPlaylist_WhenRemoveSongsFails_ShouldReturnInternalServer
 	// given
 	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+	_uut := song.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
@@ -153,7 +153,7 @@ func TestRemoveSongsFromPlaylist_WhenUpdateAllPlaylistSongsFails_ShouldReturnInt
 	// given
 	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+	_uut := song.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)
@@ -200,7 +200,7 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 	// given
 	transactionManager := new(transaction.ManagerMock)
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
+	_uut := song.NewRemoveSongsFromPlaylist(playlistRepository, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	transactionPlaylistRepository := new(repository.PlaylistRepositoryMock)

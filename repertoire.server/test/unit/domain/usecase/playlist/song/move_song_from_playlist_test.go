@@ -1,11 +1,11 @@
-package playlist
+package song
 
 import (
 	"cmp"
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -19,7 +19,7 @@ import (
 func TestMoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
+	_uut := song.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
 		ID:                 uuid.New(),
@@ -47,7 +47,7 @@ func TestMoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServ
 func TestMoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
+	_uut := song.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
 		ID:                 uuid.New(),
@@ -77,7 +77,7 @@ func TestMoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *te
 func TestMoveSongFromPlaylist_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
+	_uut := song.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
 		ID:                 uuid.New(),
@@ -107,7 +107,7 @@ func TestMoveSongFromPlaylist_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t
 func TestMoveSongFromPlaylist_WhenUpdateAllFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
-	_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
+	_uut := song.NewMoveSongFromPlaylist(playlistRepository)
 
 	request := requests.MoveSongFromPlaylistRequest{
 		ID:                 uuid.New(),
@@ -177,7 +177,7 @@ func TestMoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			playlistRepository := new(repository.PlaylistRepositoryMock)
-			_uut := playlist.NewMoveSongFromPlaylist(playlistRepository)
+			_uut := song.NewMoveSongFromPlaylist(playlistRepository)
 
 			request := requests.MoveSongFromPlaylistRequest{
 				ID:                 uuid.New(),

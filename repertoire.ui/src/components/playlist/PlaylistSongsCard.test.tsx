@@ -1,4 +1,10 @@
-import { emptyAlbum, emptyPlaylist, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyPlaylist,
+  emptySong,
+  reduxRouterRender,
+  withToastify
+} from '../../test-utils.tsx'
 import PlaylistSongsCard from './PlaylistSongsCard.tsx'
 import Song from '../../types/models/Song.ts'
 import Playlist from '../../types/models/Playlist.ts'
@@ -10,6 +16,7 @@ import { setupServer } from 'msw/node'
 import { MainScrollProvider } from '../../context/MainScrollContext.tsx'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import OrderType from '../../types/enums/OrderType.ts'
+import { ShufflePlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
 
 describe('Playlist Songs Card', () => {
   const songs: Song[] = [
@@ -98,9 +105,11 @@ describe('Playlist Songs Card', () => {
 
   const render = () =>
     reduxRouterRender(
-      <MainScrollProvider>
-        <PlaylistSongsCard playlistId={playlist.id} />
-      </MainScrollProvider>
+      withToastify(
+        <MainScrollProvider>
+          <PlaylistSongsCard playlistId={playlist.id} />
+        </MainScrollProvider>
+      )
     )
 
   it("should render and display playlist's songs", async () => {
@@ -158,10 +167,32 @@ describe('Playlist Songs Card', () => {
 
     await user.click(await screen.findByRole('button', { name: 'songs-more-menu' }))
 
+    expect(screen.getByRole('menuitem', { name: /shuffle/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add songs/i })).toBeInTheDocument()
   })
 
   describe('on menu', () => {
+    it('should send shuffle request', async () => {
+      const user = userEvent.setup()
+
+      let capturedRequest: ShufflePlaylistSongsRequest
+      server.use(
+        http.post(`/playlists/songs/shuffle`, async (req) => {
+          capturedRequest = (await req.request.json()) as ShufflePlaylistSongsRequest
+          return HttpResponse.json('it worked!')
+        })
+      )
+
+      render()
+
+      await user.click(await screen.findByRole('button', { name: 'songs-more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /shuffle/i }))
+      await user.click(await screen.findByRole('button', { name: /confirm/i }))
+
+      expect(await screen.findByText(/playlist shuffled/i)).toBeInTheDocument()
+      expect(capturedRequest.id).toBe(playlist.id)
+    })
+
     it('should open add playlist songs modal', async () => {
       const user = userEvent.setup()
 
