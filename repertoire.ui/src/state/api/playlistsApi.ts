@@ -232,6 +232,7 @@ export const {
   useAddArtistsToPlaylistMutation,
   useAddAlbumsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
+  useShufflePlaylistMutation,
   useMoveSongFromPlaylistMutation,
   useRemoveSongsFromPlaylistMutation
 } = playlistsApi
