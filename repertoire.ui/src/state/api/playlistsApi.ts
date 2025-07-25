@@ -76,41 +76,6 @@ const playlistsApi = api.injectEndpoints({
       },
       providesTags: ['Playlists', 'Songs']
     }),
-    getInfinitePlaylistSongs: build.infiniteQuery<
-      WithTotalCountResponse<Song>,
-      GetPlaylistSongsRequest,
-      { currentPage: number; pageSize: number }
-    >({
-      infiniteQueryOptions: {
-        initialPageParam: {
-          currentPage: 1,
-          pageSize: 20
-        },
-        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
-          const pageSize = args.pageSize ?? lastPageParam.pageSize
-
-          const totalSongs = lastPageParam.currentPage * pageSize
-          const remainingSongs = lastPage?.totalCount - totalSongs
-
-          if (remainingSongs <= 0) return undefined
-
-          return {
-            ...lastPageParam,
-            currentPage: lastPageParam.currentPage + 1
-          }
-        }
-      },
-      query: ({ queryArg, pageParam }) => {
-        const newQueryParams: GetPlaylistSongsRequest = {
-          ...queryArg,
-          id: undefined,
-          currentPage: pageParam.currentPage,
-          pageSize: queryArg.pageSize ?? pageParam.pageSize
-        }
-        return `playlists/songs/${queryArg.id}${createQueryParams(newQueryParams)}`
-      },
-      providesTags: ['Songs', 'Albums', 'Artists']
-    }),
 
     // Mutations
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
@@ -179,9 +144,51 @@ const playlistsApi = api.injectEndpoints({
         duplicateAlbumIds: response.duplicateAlbumIds ?? []
       })
     }),
+
+    // songs
+    getInfinitePlaylistSongs: build.infiniteQuery<
+      WithTotalCountResponse<Song>,
+      GetPlaylistSongsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalSongs = lastPageParam.currentPage * pageSize
+          const remainingSongs = lastPage?.totalCount - totalSongs
+
+          if (remainingSongs <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetPlaylistSongsRequest = {
+          ...queryArg,
+          id: undefined,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `playlists/songs/${queryArg.id}${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Songs', 'Albums', 'Artists']
+    }),
     addSongsToPlaylist: build.mutation<AddSongsToPlaylistResponse, AddSongsToPlaylistRequest>({
       query: (body) => ({
-        url: `playlists/add-songs`,
+        url: `playlists/songs/add`,
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
         method: 'POST',
         body: body
       }),
@@ -189,7 +196,7 @@ const playlistsApi = api.injectEndpoints({
     }),
     moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
       query: (body) => ({
-        url: `playlists/move-song`,
+        url: `playlists/songs/move`,
         method: 'PUT',
         body: body
       }),
@@ -197,7 +204,7 @@ const playlistsApi = api.injectEndpoints({
     }),
     removeSongsFromPlaylist: build.mutation<HttpMessageResponse, RemoveSongsFromPlaylistRequest>({
       query: (body) => ({
-        url: `playlists/remove-songs`,
+        url: `playlists/songs/remove`,
         method: 'PUT',
         body: body
       }),
