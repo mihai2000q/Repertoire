@@ -752,3 +752,51 @@ func TestValidateRemoveSongsFromPlaylistRequest_WhenSingleFieldIsInvalid_ShouldR
 		})
 	}
 }
+
+func TestValidateShufflePlaylistSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.ShufflePlaylistSongsRequest{
+		ID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateShufflePlaylistSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.ShufflePlaylistSongsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.ShufflePlaylistSongsRequest{ID: uuid.Nil},
+			"ID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "ShufflePlaylistSongsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}

@@ -72,6 +72,7 @@ var playlistUseCases = fx.Options(
 	fx.Provide(playlistSong.NewGetPlaylistSongs),
 	fx.Provide(playlistSong.NewMoveSongFromPlaylist),
 	fx.Provide(playlistSong.NewRemoveSongsFromPlaylist),
+	fx.Provide(playlistSong.NewShufflePlaylistSongs),
 )
 
 var searchUseCases = fx.Options(

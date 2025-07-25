@@ -47,6 +47,10 @@ type AddSongsToPlaylistRequest struct {
 	ForceAdd *bool
 }
 
+type ShufflePlaylistSongsRequest struct {
+	ID uuid.UUID `validate:"required"`
+}
+
 type UpdatePlaylistRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`

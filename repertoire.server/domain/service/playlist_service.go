@@ -31,6 +31,7 @@ type PlaylistService interface {
 	GetSongs(request requests.GetPlaylistSongsRequest) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
+	ShuffleSongs(request requests.ShufflePlaylistSongsRequest) *wrapper.ErrorCode
 }
 
 type playlistService struct {
@@ -49,6 +50,7 @@ type playlistService struct {
 	getPlaylistSongs        song.GetPlaylistSongs
 	moveSongFromPlaylist    song.MoveSongFromPlaylist
 	removeSongsFromPlaylist song.RemoveSongsFromPlaylist
+	shufflePlaylistSongs    song.ShufflePlaylistSongs
 }
 
 func NewPlaylistService(
@@ -67,6 +69,7 @@ func NewPlaylistService(
 	getPlaylistSongs song.GetPlaylistSongs,
 	moveSongFromPlaylist song.MoveSongFromPlaylist,
 	removeSongFromPlaylist song.RemoveSongsFromPlaylist,
+	shufflePlaylistSongs song.ShufflePlaylistSongs,
 ) PlaylistService {
 	return &playlistService{
 		addAlbumsToPlaylist:        addAlbumsToPlaylist,
@@ -84,6 +87,7 @@ func NewPlaylistService(
 		getPlaylistSongs:        getPlaylistSongs,
 		moveSongFromPlaylist:    moveSongFromPlaylist,
 		removeSongsFromPlaylist: removeSongFromPlaylist,
+		shufflePlaylistSongs:    shufflePlaylistSongs,
 	}
 }
 
@@ -152,4 +156,6 @@ func (p *playlistService) RemoveSongs(request requests.RemoveSongsFromPlaylistRe
 	return p.removeSongsFromPlaylist.Handle(request)
 }
 
+func (p *playlistService) ShuffleSongs(request requests.ShufflePlaylistSongsRequest) *wrapper.ErrorCode {
+	return p.shufflePlaylistSongs.Handle(request)
 }

@@ -285,9 +285,22 @@ func (p PlaylistHandler) AddSongs(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-
+func (p PlaylistHandler) Shuffle(c *gin.Context) {
+	var request requests.ShufflePlaylistSongsRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
+
+	errorCode = p.service.ShuffleSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "playlist has been shuffled successfully")
+}
 
 func (p PlaylistHandler) MoveSong(c *gin.Context) {
 	var request requests.MoveSongFromPlaylistRequest
