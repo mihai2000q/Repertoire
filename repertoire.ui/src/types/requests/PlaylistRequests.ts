@@ -55,6 +55,10 @@ export interface AddSongsToPlaylistRequest {
   forceAdd?: boolean
 }
 
+export interface ShufflePlaylistSongsRequest {
+  id: string
+}
+
 export interface MoveSongFromPlaylistRequest {
   id: string
   playlistSongId: string

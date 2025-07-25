@@ -12,6 +12,7 @@ import {
   MoveSongFromPlaylistRequest,
   RemoveSongsFromPlaylistRequest,
   SaveImageToPlaylistRequest,
+  ShufflePlaylistSongsRequest,
   UpdatePlaylistRequest
 } from '../../types/requests/PlaylistRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
@@ -189,6 +190,9 @@ const playlistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    shufflePlaylist: build.mutation<HttpMessageResponse, ShufflePlaylistSongsRequest>({
+      query: (body) => ({
+        url: 'playlists/songs/shuffle',
         method: 'POST',
         body: body
       }),
