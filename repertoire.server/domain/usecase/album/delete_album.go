@@ -51,7 +51,7 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.AlbumDeletedTopic, album)
+	err = d.messagePublisherService.Publish(topics.AlbumsDeletedTopic, []model.Album{album})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

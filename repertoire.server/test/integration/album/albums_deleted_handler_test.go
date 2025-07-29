@@ -13,34 +13,34 @@ import (
 	"time"
 )
 
-func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
+func TestAlbumsDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	tests := []struct {
-		name  string
-		album model.Album
+		name   string
+		albums []model.Album
 	}{
 		{
 			"Normal",
-			model.Album{
+			[]model.Album{{
 				ID:        uuid.New(),
 				Title:     "Album 1",
 				ImageURL:  &[]internal.FilePath{"something.png"}[0],
 				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
-			},
+			}},
 		},
 		{
 			"With related songs",
-			model.Album{
+			[]model.Album{{
 				ID:        albumData.AlbumSearchID,
 				Title:     "Album 2",
 				ImageURL:  &[]internal.FilePath{"something.png"}[0],
 				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
-			},
+			}},
 		},
 		{
 			"Delete with songs",
-			model.Album{
+			[]model.Album{{
 				ID:        uuid.New(),
 				Title:     "Album 3",
 				UpdatedAt: time.Now().UTC(),
@@ -49,7 +49,7 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 					{ID: uuid.New()},
 					{ID: uuid.New()},
 				},
-			},
+			}},
 		},
 	}
 
@@ -60,26 +60,26 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 
 			deleteMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
 			var updateMessages utils.SubscribedToTopic
-			if len(test.album.Songs) == 0 {
+			if len(test.albums[0].Songs) == 0 {
 				updateMessages = utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 			}
 			deleteStorageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
 			// when
-			err := utils.PublishToTopic(topics.AlbumDeletedTopic, test.album)
+			err := utils.PublishToTopic(topics.AlbumsDeletedTopic, test.albums)
 
 			// then
 			assert.NoError(t, err)
 
 			assertion.AssertMessage(t, deleteMessages, func(ids []string) {
-				assert.Len(t, ids, len(test.album.Songs)+1)
-				assertion.AlbumSearchID(t, test.album.ID, ids[0])
-				for i, song := range test.album.Songs {
+				assert.Len(t, ids, len(test.albums[0].Songs)+1)
+				assertion.AlbumSearchID(t, test.albums[0].ID, ids[0])
+				for i, song := range test.albums[0].Songs {
 					assertion.SongSearchID(t, song.ID, ids[i+1])
 				}
 			})
 
-			if len(test.album.Songs) == 0 {
+			if len(test.albums[0].Songs) == 0 {
 				assertion.AssertMessage(t, updateMessages, func(documents []any) {
 					assert.Len(t, documents, len(albumData.SongSearches))
 					for i, songSearch := range albumData.SongSearches {
@@ -90,7 +90,7 @@ func TestAlbumDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 			}
 
 			assertion.AssertMessage(t, deleteStorageMessages, func(directoryPaths []string) {
-				assert.Len(t, directoryPaths, len(test.album.Songs)+1)
+				assert.Len(t, directoryPaths, len(test.albums[0].Songs)+1)
 			})
 		})
 	}

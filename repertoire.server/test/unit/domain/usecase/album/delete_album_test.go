@@ -153,7 +153,7 @@ func TestDeleteAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing
 	albumRepository.On("Delete", []uuid.UUID{request.ID}).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.AlbumDeletedTopic, *mockAlbum).
+	messagePublisherService.On("Publish", topics.AlbumsDeletedTopic, []model.Album{*mockAlbum}).
 		Return(internalError).
 		Once()
 
@@ -215,7 +215,7 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 				albumRepository.On("Delete", []uuid.UUID{request.ID}).Return(nil).Once()
 			}
 
-			messagePublisherService.On("Publish", topics.AlbumDeletedTopic, tt.album).
+			messagePublisherService.On("Publish", topics.AlbumsDeletedTopic, []model.Album{tt.album}).
 				Return(nil).
 				Once()
 

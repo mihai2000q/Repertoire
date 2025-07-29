@@ -17,10 +17,10 @@ import (
 	"testing"
 )
 
-func TestAlbumDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturnError(t *testing.T) {
+func TestAlbumsDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturnError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := album.NewAlbumDeletedHandler(messagePublisherService, nil, nil)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, nil, nil)
 
 	mockAlbum := model.Album{ID: uuid.New()}
 
@@ -41,11 +41,11 @@ func TestAlbumDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturn
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestAlbumDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.T) {
+func TestAlbumsDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := album.NewAlbumDeletedHandler(messagePublisherService, searchEngineService, nil)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, nil)
 
 	mockAlbum := model.Album{ID: uuid.New()}
 
@@ -71,11 +71,11 @@ func TestAlbumDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestAlbumDeletedHandler_WhenPublishUpdateFromSearchEngineFails_ShouldReturnError(t *testing.T) {
+func TestAlbumsDeletedHandler_WhenPublishUpdateFromSearchEngineFails_ShouldReturnError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
-	_uut := album.NewAlbumDeletedHandler(messagePublisherService, searchEngineService, nil)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, nil)
 
 	mockAlbum := model.Album{ID: uuid.New()}
 
@@ -108,12 +108,12 @@ func TestAlbumDeletedHandler_WhenPublishUpdateFromSearchEngineFails_ShouldReturn
 	searchEngineService.AssertExpectations(t)
 }
 
-func TestAlbumDeletedHandler_WhenPublishDeleteDirectoriesStorageFails_ShouldReturnError(t *testing.T) {
+func TestAlbumsDeletedHandler_WhenPublishDeleteDirectoriesStorageFails_ShouldReturnError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := album.NewAlbumDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
 
 	mockAlbum := model.Album{ID: uuid.New()}
 
@@ -154,12 +154,12 @@ func TestAlbumDeletedHandler_WhenPublishDeleteDirectoriesStorageFails_ShouldRetu
 	storageFilePathProvider.AssertExpectations(t)
 }
 
-func TestAlbumDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *testing.T) {
+func TestAlbumsDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	searchEngineService := new(service.SearchEngineServiceMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-	_uut := album.NewAlbumDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
 
 	mockAlbum := model.Album{ID: uuid.New()}
 
@@ -191,7 +191,7 @@ func TestAlbumDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *t
 	storageFilePathProvider.AssertExpectations(t)
 }
 
-func TestAlbumDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
+func TestAlbumsDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
 	tests := []struct {
 		name  string
 		album model.Album
@@ -219,7 +219,7 @@ func TestAlbumDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSear
 			messagePublisherService := new(service.MessagePublisherServiceMock)
 			searchEngineService := new(service.SearchEngineServiceMock)
 			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-			_uut := album.NewAlbumDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
+			_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
 
 			messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 				Run(func(args mock.Arguments) {
