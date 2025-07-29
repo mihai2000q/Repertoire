@@ -20,6 +20,7 @@ import (
 
 var albumUseCases = fx.Options(
 	fx.Provide(album.NewAddSongsToAlbum),
+	fx.Provide(album.NewBulkDeleteAlbums),
 	fx.Provide(album.NewCreateAlbum),
 	fx.Provide(album.NewDeleteAlbum),
 	fx.Provide(album.NewDeleteImageFromAlbum),

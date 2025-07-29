@@ -8,7 +8,7 @@ type Topic string
 
 const (
 	AlbumCreatedTopic  Topic = "album_created_topic"
-	AlbumDeletedTopic  Topic = "album_deleted_topic"
+	AlbumsDeletedTopic Topic = "albums_deleted_topic"
 	AlbumsUpdatedTopic Topic = "albums_updated_topic"
 
 	ArtistCreatedTopic Topic = "artist_created_topic"
@@ -34,7 +34,7 @@ const (
 
 var TopicToQueueMap = map[Topic]queues.Queue{
 	AlbumCreatedTopic:  queues.MainQueue,
-	AlbumDeletedTopic:  queues.MainQueue,
+	AlbumsDeletedTopic: queues.MainQueue,
 	AlbumsUpdatedTopic: queues.MainQueue,
 
 	ArtistCreatedTopic: queues.MainQueue,

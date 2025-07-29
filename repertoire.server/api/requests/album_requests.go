@@ -51,6 +51,11 @@ type RemoveSongsFromAlbumRequest struct {
 	SongIDs []uuid.UUID `validate:"min=1"`
 }
 
+type BulkDeleteAlbumsRequest struct {
+	IDs       []uuid.UUID `validate:"min=1"`
+	WithSongs bool
+}
+
 type DeleteAlbumRequest struct {
 	ID        uuid.UUID `validate:"required"`
 	WithSongs bool      `form:"withSongs"`

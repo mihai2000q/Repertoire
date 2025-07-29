@@ -34,7 +34,7 @@ func NewRouter(
 	logger *logger.WatermillLogger,
 
 	albumCreatedHandler album.AlbumCreatedHandler,
-	albumDeletedHandler album.AlbumDeletedHandler,
+	albumDeletedHandler album.AlbumsDeletedHandler,
 	albumsUpdatedHandler album.AlbumsUpdatedHandler,
 
 	artistCreatedHandler artist.ArtistCreatedHandler,

@@ -13,7 +13,7 @@ import (
 
 var albumHandlers = fx.Options(
 	fx.Provide(album.NewAlbumCreatedHandler),
-	fx.Provide(album.NewAlbumDeletedHandler),
+	fx.Provide(album.NewAlbumsDeletedHandler),
 	fx.Provide(album.NewAlbumsUpdatedHandler),
 )
 

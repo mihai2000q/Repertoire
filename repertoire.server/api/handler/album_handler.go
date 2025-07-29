@@ -197,6 +197,23 @@ func (a AlbumHandler) RemoveSongs(c *gin.Context) {
 	a.SendMessage(c, "songs have been removed from album successfully")
 }
 
+func (a AlbumHandler) BulkDelete(c *gin.Context) {
+	var request requests.BulkDeleteAlbumsRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.BulkDelete(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "albums have been deleted successfully")
+}
+
 func (a AlbumHandler) Delete(c *gin.Context) {
 	var request requests.DeleteAlbumRequest
 	err := c.BindQuery(&request)

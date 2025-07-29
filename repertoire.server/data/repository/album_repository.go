@@ -14,6 +14,7 @@ type AlbumRepository interface {
 	GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error
 	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID, searchBy []string) error
+	GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
@@ -107,6 +108,10 @@ func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata
 		return json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
 	}
 	return nil
+}
+
+func (a albumRepository) GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error {
+	return a.client.Model(&model.Album{}).Find(&albums, ids).Error
 }
 
 func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {

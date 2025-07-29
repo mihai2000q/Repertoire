@@ -10,6 +10,7 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"slices"
+	"strings"
 )
 
 type AlbumsDeletedHandler struct {
@@ -72,7 +73,7 @@ func (a AlbumsDeletedHandler) syncWithSearchEngine(albums []model.Album) error {
 	}
 
 	// get the songs based on the album and delete their album (nullify)
-	filter := fmt.Sprintf("type = %s AND album.id IN %s", enums.Song, albumIDs)
+	filter := fmt.Sprintf("type = %s AND album.id IN [%s]", enums.Song, strings.Join(albumIDs, ", "))
 	meiliSongs, err := a.searchEngineService.GetDocuments(filter)
 	if err != nil {
 		return err
