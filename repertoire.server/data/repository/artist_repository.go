@@ -28,9 +28,9 @@ type ArtistRepository interface {
 	Create(artist *model.Artist) error
 	Update(artist *model.Artist) error
 	UpdateWithAssociations(artist *model.Artist) error
-	Delete(id uuid.UUID) error
-	DeleteAlbums(id uuid.UUID) error
-	DeleteSongs(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
+	DeleteAlbums(ids []uuid.UUID) error
+	DeleteSongs(ids []uuid.UUID) error
 
 	GetBandMember(bandMember *model.BandMember, id uuid.UUID) error
 	GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error
@@ -196,16 +196,16 @@ func (a artistRepository) UpdateWithAssociations(artist *model.Artist) error {
 		Error
 }
 
-func (a artistRepository) Delete(id uuid.UUID) error {
-	return a.client.Delete(&model.Artist{}, id).Error
+func (a artistRepository) Delete(ids []uuid.UUID) error {
+	return a.client.Delete(&model.Artist{}, ids).Error
 }
 
-func (a artistRepository) DeleteAlbums(id uuid.UUID) error {
-	return a.client.Where("artist_id = ?", id).Delete(&model.Album{}).Error
+func (a artistRepository) DeleteAlbums(ids []uuid.UUID) error {
+	return a.client.Where("artist_id IN (?)", ids).Delete(&model.Album{}).Error
 }
 
-func (a artistRepository) DeleteSongs(id uuid.UUID) error {
-	return a.client.Where("artist_id = ?", id).Delete(&model.Song{}).Error
+func (a artistRepository) DeleteSongs(ids []uuid.UUID) error {
+	return a.client.Where("artist_id IN (?)", ids).Delete(&model.Song{}).Error
 }
 
 // Band Member

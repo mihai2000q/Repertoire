@@ -151,7 +151,9 @@ func TestDeleteArtist_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServerErro
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("DeleteAlbums", request.ID).Return(internalError).Once()
+	transactionArtistRepository.On("DeleteAlbums", []uuid.UUID{request.ID}).
+		Return(internalError).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -182,7 +184,9 @@ func TestDeleteArtist_WhenDeleteArtistSongsFails_ShouldReturnInternalServerError
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("DeleteSongs", request.ID).Return(internalError).Once()
+	transactionArtistRepository.On("DeleteSongs", []uuid.UUID{request.ID}).
+		Return(internalError).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -210,7 +214,9 @@ func TestDeleteArtist_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *t
 	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("Delete", request.ID).Return(internalError).Once()
+	transactionArtistRepository.On("Delete", []uuid.UUID{request.ID}).
+		Return(internalError).
+		Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -238,7 +244,9 @@ func TestDeleteArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testin
 	}
 	artistRepository.On("Get", new(model.Artist), request.ID).Return(nil, mockArtist).Once()
 
-	artistRepository.On("Delete", request.ID).Return(nil).Once()
+	transactionArtistRepository.On("Delete", []uuid.UUID{request.ID}).
+		Return(nil).
+		Once()
 
 	internalError := errors.New("internal error")
 	messagePublisherService.On("Publish", topics.ArtistDeletedTopic, *mockArtist).
@@ -322,13 +330,19 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			}
 
 			if tt.withAlbums {
-				artistRepository.On("DeleteAlbums", request.ID).Return(nil).Once()
+				transactionArtistRepository.On("DeleteAlbums", []uuid.UUID{request.ID}).
+					Return(nil).
+					Once()
 			}
 			if tt.withSongs {
-				artistRepository.On("DeleteSongs", request.ID).Return(nil).Once()
+				transactionArtistRepository.On("DeleteSongs", []uuid.UUID{request.ID}).
+					Return(nil).
+					Once()
 			}
 
-			artistRepository.On("Delete", request.ID).Return(nil).Once()
+			transactionArtistRepository.On("Delete", []uuid.UUID{request.ID}).
+				Return(nil).
+				Once()
 
 			messagePublisherService.On("Publish", topics.ArtistDeletedTopic, tt.artist).
 				Return(nil).

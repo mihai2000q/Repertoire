@@ -138,18 +138,18 @@ func (a *ArtistRepositoryMock) UpdateWithAssociations(artist *model.Artist) erro
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) Delete(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *ArtistRepositoryMock) Delete(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) DeleteAlbums(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *ArtistRepositoryMock) DeleteAlbums(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) DeleteSongs(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *ArtistRepositoryMock) DeleteSongs(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
