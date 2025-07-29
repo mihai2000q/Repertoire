@@ -133,13 +133,13 @@ func (a *AlbumRepositoryMock) UpdateAllWithSongs(albums *[]model.Album) error {
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) Delete(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *AlbumRepositoryMock) Delete(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) DeleteWithSongs(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *AlbumRepositoryMock) DeleteWithSongs(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 

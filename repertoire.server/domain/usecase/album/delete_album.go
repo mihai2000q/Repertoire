@@ -2,6 +2,7 @@ package album
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -42,9 +43,9 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 	}
 
 	if request.WithSongs {
-		err = d.repository.DeleteWithSongs(request.ID)
+		err = d.repository.DeleteWithSongs([]uuid.UUID{request.ID})
 	} else {
-		err = d.repository.Delete(request.ID)
+		err = d.repository.Delete([]uuid.UUID{request.ID})
 	}
 	if err != nil {
 		return wrapper.InternalServerError(err)
