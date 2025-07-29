@@ -37,7 +37,7 @@ func (a ArtistUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	}
 
 	var artist model.Artist
-	err = a.artistRepository.GetWithAlbumsAndSongs(&artist, artistID)
+	err = a.artistRepository.GetWithSongsOrAlbums(&artist, artistID, true, true)
 	if err != nil {
 		return err
 	}

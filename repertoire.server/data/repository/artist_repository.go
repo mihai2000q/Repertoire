@@ -11,9 +11,7 @@ type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
 	GetWithBandMembers(artist *model.Artist, id uuid.UUID) error
-	GetWithAlbums(artist *model.Artist, id uuid.UUID) error
-	GetWithSongs(artist *model.Artist, id uuid.UUID) error
-	GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error
+	GetWithSongsOrAlbums(artist *model.Artist, id uuid.UUID, withSongs bool, withAlbums bool) error
 	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
@@ -76,28 +74,22 @@ func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID)
 		Error
 }
 
-func (a artistRepository) GetWithAlbums(artist *model.Artist, id uuid.UUID) error {
-	return a.client.
-		Preload("Albums").
-		Find(&artist, model.Artist{ID: id}).
-		Error
-}
+func (a artistRepository) GetWithSongsOrAlbums(
+	artist *model.Artist,
+	id uuid.UUID,
+	withSongs bool,
+	withAlbums bool,
+) error {
+	tx := a.client.Model(&model.Artist{})
 
-func (a artistRepository) GetWithSongs(artist *model.Artist, id uuid.UUID) error {
-	return a.client.
-		Preload("Songs").
-		Preload("Songs.Album").
-		Find(&artist, model.Artist{ID: id}).
-		Error
-}
+	if withAlbums {
+		tx = tx.Preload("Albums")
+	}
+	if withSongs {
+		tx = tx.Preload("Songs").Preload("Songs.Albums")
+	}
 
-func (a artistRepository) GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error {
-	return a.client.
-		Preload("Albums").
-		Preload("Songs").
-		Preload("Songs.Album").
-		Find(&artist, model.Artist{ID: id}).
-		Error
+	return tx.Find(&artist, id).Error
 }
 
 func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error {

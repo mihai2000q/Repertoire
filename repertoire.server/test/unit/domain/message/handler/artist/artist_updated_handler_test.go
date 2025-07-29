@@ -23,7 +23,7 @@ func TestArtistUpdatedHandler_WhenGetArtistFails_ShouldReturnError(t *testing.T)
 	artistID := uuid.New()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("GetWithAlbumsAndSongs", new(model.Artist), artistID).
+	artistRepository.On("GetWithSongsOrAlbums", new(model.Artist), artistID, true, true).
 		Return(internalError).
 		Once()
 
@@ -46,7 +46,7 @@ func TestArtistUpdatedHandler_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	_uut := artist.NewArtistUpdatedHandler(artistRepository, messagePublisherService)
 
 	mockArtist := model.Artist{ID: uuid.New()}
-	artistRepository.On("GetWithAlbumsAndSongs", new(model.Artist), mockArtist.ID).
+	artistRepository.On("GetWithSongsOrAlbums", new(model.Artist), mockArtist.ID, true, true).
 		Return(nil, &mockArtist).
 		Once()
 
@@ -124,7 +124,7 @@ func TestArtistUpdatedHandler_WhenSuccessful_ShouldNotReturnAnyError(t *testing.
 			messagePublisherService := new(service.MessagePublisherServiceMock)
 			_uut := artist.NewArtistUpdatedHandler(artistRepository, messagePublisherService)
 
-			artistRepository.On("GetWithAlbumsAndSongs", new(model.Artist), tt.artist.ID).
+			artistRepository.On("GetWithSongsOrAlbums", new(model.Artist), tt.artist.ID, true, true).
 				Return(nil, &tt.artist).
 				Once()
 

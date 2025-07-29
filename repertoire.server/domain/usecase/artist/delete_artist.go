@@ -2,8 +2,10 @@ package artist
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
@@ -14,56 +16,58 @@ import (
 type DeleteArtist struct {
 	repository              repository.ArtistRepository
 	messagePublisherService service.MessagePublisherService
+	transaction             transaction.Manager
 }
 
 func NewDeleteArtist(
 	repository repository.ArtistRepository,
 	messagePublisherService service.MessagePublisherService,
+	transaction transaction.Manager,
 ) DeleteArtist {
 	return DeleteArtist{
 		repository:              repository,
 		messagePublisherService: messagePublisherService,
+		transaction:             transaction,
 	}
 }
 
 func (d DeleteArtist) Handle(request requests.DeleteArtistRequest) *wrapper.ErrorCode {
 	var artist model.Artist
-	var err error
-	if request.WithAlbums && request.WithSongs {
-		err = d.repository.GetWithAlbumsAndSongs(&artist, request.ID)
-	} else if request.WithSongs {
-		err = d.repository.GetWithSongs(&artist, request.ID)
-	} else if request.WithAlbums {
-		err = d.repository.GetWithAlbums(&artist, request.ID)
-	} else {
-		err = d.repository.Get(&artist, request.ID)
-	}
+	err := d.repository.GetWithSongsOrAlbums(&artist, request.ID, request.WithSongs, request.WithAlbums)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
 		return wrapper.NotFoundError(errors.New("artist not found"))
 	}
-	
-	if request.WithAlbums {
-		err = d.repository.DeleteAlbums(request.ID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-	}
-	if request.WithSongs {
-		err = d.repository.DeleteSongs(request.ID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-	}
 
-	err = d.repository.Delete(request.ID)
+	err = d.transaction.Execute(func(factory transaction.RepositoryFactory) error {
+		artistRepo := factory.NewArtistRepository()
+
+		if request.WithAlbums {
+			err = artistRepo.DeleteAlbums([]uuid.UUID{request.ID})
+			if err != nil {
+				return err
+			}
+		}
+		if request.WithSongs {
+			err = artistRepo.DeleteSongs([]uuid.UUID{request.ID})
+			if err != nil {
+				return err
+			}
+		}
+
+		err = artistRepo.Delete([]uuid.UUID{request.ID})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.ArtistDeletedTopic, artist)
+	err = d.messagePublisherService.Publish(topics.ArtistsDeletedTopic, artist)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
