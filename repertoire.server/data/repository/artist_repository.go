@@ -13,6 +13,7 @@ type ArtistRepository interface {
 	GetWithBandMembers(artist *model.Artist, id uuid.UUID) error
 	GetWithSongsOrAlbums(artist *model.Artist, id uuid.UUID, withSongs bool, withAlbums bool) error
 	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error
+	GetAllByIDs(artists *[]model.Artist, ids []uuid.UUID, withSongs bool, withAlbums bool) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.EnhancedArtist,
@@ -119,6 +120,24 @@ func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetada
 	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundArtistsFields)
 	database.SearchBy(tx, searchBy)
 	return tx.Scan(&metadata).Error
+}
+
+func (a artistRepository) GetAllByIDs(
+	artists *[]model.Artist,
+	ids []uuid.UUID,
+	withSongs bool,
+	withAlbums bool,
+) error {
+	tx := a.client.Model(&model.Artist{})
+
+	if withAlbums {
+		tx = tx.Preload("Albums")
+	}
+	if withSongs {
+		tx = tx.Preload("Songs").Preload("Songs.Album")
+	}
+
+	return tx.Find(&artists, ids).Error
 }
 
 func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {

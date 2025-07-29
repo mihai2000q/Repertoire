@@ -14,6 +14,7 @@ import (
 type ArtistService interface {
 	AddAlbums(request requests.AddAlbumsToArtistRequest) *wrapper.ErrorCode
 	AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode
+	BulkDelete(request requests.BulkDeleteArtistsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(request requests.DeleteArtistRequest) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -38,6 +39,7 @@ type ArtistService interface {
 type artistService struct {
 	addAlbumsToArtist        artist.AddAlbumsToArtist
 	addSongsToArtist         artist.AddSongsToArtist
+	bulkDeleteArtists        artist.BulkDeleteArtists
 	createArtist             artist.CreateArtist
 	deleteArtist             artist.DeleteArtist
 	deleteImageFromArtist    artist.DeleteImageFromArtist
@@ -62,6 +64,7 @@ type artistService struct {
 func NewArtistService(
 	addAlbumsToArtist artist.AddAlbumsToArtist,
 	addSongsToArtist artist.AddSongsToArtist,
+	bulkDeleteArtists artist.BulkDeleteArtists,
 	createArtist artist.CreateArtist,
 	deleteArtist artist.DeleteArtist,
 	deleteImageFromArtist artist.DeleteImageFromArtist,
@@ -85,6 +88,7 @@ func NewArtistService(
 	return &artistService{
 		addAlbumsToArtist:        addAlbumsToArtist,
 		addSongsToArtist:         addSongsToArtist,
+		bulkDeleteArtists:        bulkDeleteArtists,
 		createArtist:             createArtist,
 		deleteArtist:             deleteArtist,
 		deleteImageFromArtist:    deleteImageFromArtist,
@@ -113,6 +117,10 @@ func (a *artistService) AddAlbums(request requests.AddAlbumsToArtistRequest) *wr
 
 func (a *artistService) AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode {
 	return a.addSongsToArtist.Handle(request)
+}
+
+func (a *artistService) BulkDelete(request requests.BulkDeleteArtistsRequest) *wrapper.ErrorCode {
+	return a.bulkDeleteArtists.Handle(request)
 }
 
 func (a *artistService) Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

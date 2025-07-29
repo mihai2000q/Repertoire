@@ -200,6 +200,23 @@ func (a ArtistHandler) RemoveSongs(c *gin.Context) {
 	a.SendMessage(c, "songs have been removed from artist successfully")
 }
 
+func (a ArtistHandler) BulkDelete(c *gin.Context) {
+	var request requests.BulkDeleteArtistsRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.BulkDelete(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "artists have been deleted successfully")
+}
+
 func (a ArtistHandler) Delete(c *gin.Context) {
 	var request requests.DeleteArtistRequest
 	err := c.BindQuery(&request)
