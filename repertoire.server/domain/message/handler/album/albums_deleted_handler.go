@@ -98,9 +98,7 @@ func (a AlbumsDeletedHandler) cleanupStorage(albums []model.Album) error {
 	var directoryPaths []string
 
 	for _, album := range albums {
-		albumDirectoryPath := a.storageFilePathProvider.GetAlbumDirectoryPath(album)
-		directoryPaths = append(directoryPaths, albumDirectoryPath)
-
+		directoryPaths = append(directoryPaths, a.storageFilePathProvider.GetAlbumDirectoryPath(album))
 		// previously in delete album, the album was populated with songs, only if they have to be deleted too
 		for _, song := range album.Songs {
 			directoryPaths = append(directoryPaths, a.storageFilePathProvider.GetSongDirectoryPath(song))

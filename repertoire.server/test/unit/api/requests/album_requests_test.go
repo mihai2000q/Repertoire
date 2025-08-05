@@ -653,7 +653,7 @@ func TestValidateBulkDeleteAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 	}{
 		// IDs Test Cases
 		{
-			"ID is invalid because it requires at least 1 id",
+			"IDs is invalid because it requires at least 1 id",
 			requests.BulkDeleteAlbumsRequest{IDs: []uuid.UUID{}},
 			"IDs",
 			"min",

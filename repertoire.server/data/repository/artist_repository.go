@@ -87,7 +87,7 @@ func (a artistRepository) GetWithSongsOrAlbums(
 		tx = tx.Preload("Albums")
 	}
 	if withSongs {
-		tx = tx.Preload("Songs").Preload("Songs.Albums")
+		tx = tx.Preload("Songs").Preload("Songs.Album")
 	}
 
 	return tx.Find(&artist, id).Error

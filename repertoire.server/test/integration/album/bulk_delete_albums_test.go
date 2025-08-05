@@ -15,7 +15,7 @@ import (
 	"testing"
 )
 
-func TestBulkDeleteAlbums_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteAlbums_WhenAlbumsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -31,7 +31,7 @@ func TestBulkDeleteAlbums_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testi
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestBulkDeleteAlbums_WhenWithoutSongs_ShouldDeleteAlbums(t *testing.T) {
+func TestBulkDeleteAlbums_WhenSuccessful_ShouldDeleteAlbums(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -106,6 +106,10 @@ func TestBulkDeleteAlbums_WhenWithSongs_ShouldBulkDeleteAlbumsAndSongs(t *testin
 		var ids []uuid.UUID
 		for _, song := range album.Songs {
 			ids = append(ids, song.ID)
+		}
+
+		if len(ids) == 0 {
+			continue
 		}
 
 		var songs []model.Song
