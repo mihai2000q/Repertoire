@@ -199,13 +199,9 @@ func TestArtistsDeletedHandler_WhenWithoutSongsOrAlbums_ShouldPublishMessagesToD
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 		Run(func(args mock.Arguments) {
 			ids := args.Get(1).([]string)
-			var artistSearchIDs []string
-			for _, art := range mockArtists {
-				artistSearchIDs = append(artistSearchIDs, art.ToSearch().ID)
-			}
-			assert.Len(t, ids, len(artistSearchIDs))
-			for _, id := range ids {
-				assert.Contains(t, artistSearchIDs, id)
+			assert.Len(t, ids, len(mockArtists))
+			for i, art := range mockArtists {
+				assert.Equal(t, art.ToSearch().ID, ids[i])
 			}
 		}).
 		Return(nil).
@@ -319,31 +315,31 @@ func TestArtistsDeletedHandler_WhenWithSongsAndOrAlbums_ShouldPublishMessageToDe
 		},
 	}
 
-	var albumIDs []string
-	var songIDs []string
+	var albumSearchIDs []string
+	var songSearchIDs []string
 	for _, art := range mockArtists {
 		for _, album := range art.Albums {
-			albumIDs = append(albumIDs, album.ToSearch().ID)
+			albumSearchIDs = append(albumSearchIDs, album.ToSearch().ID)
 		}
 		for _, song := range art.Songs {
-			songIDs = append(songIDs, song.ToSearch().ID)
+			songSearchIDs = append(songSearchIDs, song.ToSearch().ID)
 		}
 	}
 
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 		Run(func(args mock.Arguments) {
 			ids := args.Get(1).([]string)
-			assert.Len(t, ids, len(mockArtists)+len(albumIDs)+len(songIDs))
+			assert.Len(t, ids, len(mockArtists)+len(albumSearchIDs)+len(songSearchIDs))
 
 			// assert IDs one by one
 			for i, art := range mockArtists {
 				assert.Equal(t, art.ToSearch().ID, ids[i])
 			}
-			for i, albumID := range albumIDs {
+			for i, albumID := range albumSearchIDs {
 				assert.Equal(t, albumID, ids[len(mockArtists)+i])
 			}
-			for i, songID := range songIDs {
-				assert.Equal(t, songID, ids[len(mockArtists)+len(albumIDs)+i])
+			for i, songID := range songSearchIDs {
+				assert.Equal(t, songID, ids[len(mockArtists)+len(albumSearchIDs)+i])
 			}
 		}).
 		Return(nil).
@@ -367,7 +363,7 @@ func TestArtistsDeletedHandler_WhenWithSongsAndOrAlbums_ShouldPublishMessageToDe
 	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, mock.IsType([]string{})).
 		Run(func(args mock.Arguments) {
 			paths := args.Get(1).([]string)
-			assert.Len(t, paths, len(mockArtists)+len(albumIDs)+len(songIDs))
+			assert.Len(t, paths, len(mockArtists)+len(albumSearchIDs)+len(songSearchIDs))
 			// assert directory paths one by one
 			index := 0
 			for _, art := range mockArtists {

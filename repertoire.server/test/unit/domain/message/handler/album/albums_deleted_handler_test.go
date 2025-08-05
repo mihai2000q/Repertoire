@@ -14,6 +14,7 @@ import (
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/service"
 	"repertoire/server/test/unit/domain/provider"
+	"strings"
 	"testing"
 )
 
@@ -22,7 +23,7 @@ func TestAlbumsDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldRetur
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, nil, nil)
 
-	mockAlbum := model.Album{ID: uuid.New()}
+	mockAlbums := []model.Album{{ID: uuid.New()}}
 
 	internalError := errors.New("internal error")
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
@@ -30,7 +31,7 @@ func TestAlbumsDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldRetur
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockAlbum)
+	payload, _ := json.Marshal(mockAlbums)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -47,7 +48,7 @@ func TestAlbumsDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing
 	searchEngineService := new(service.SearchEngineServiceMock)
 	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, nil)
 
-	mockAlbum := model.Album{ID: uuid.New()}
+	mockAlbums := []model.Album{{ID: uuid.New()}}
 
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 		Return(nil).
@@ -59,7 +60,7 @@ func TestAlbumsDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockAlbum)
+	payload, _ := json.Marshal(mockAlbums)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -77,7 +78,7 @@ func TestAlbumsDeletedHandler_WhenPublishUpdateFromSearchEngineFails_ShouldRetur
 	searchEngineService := new(service.SearchEngineServiceMock)
 	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, nil)
 
-	mockAlbum := model.Album{ID: uuid.New()}
+	mockAlbums := []model.Album{{ID: uuid.New()}}
 
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 		Return(nil).
@@ -96,7 +97,7 @@ func TestAlbumsDeletedHandler_WhenPublishUpdateFromSearchEngineFails_ShouldRetur
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockAlbum)
+	payload, _ := json.Marshal(mockAlbums)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -115,7 +116,7 @@ func TestAlbumsDeletedHandler_WhenPublishDeleteDirectoriesStorageFails_ShouldRet
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
 
-	mockAlbum := model.Album{ID: uuid.New()}
+	mockAlbums := []model.Album{{ID: uuid.New()}}
 
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 		Return(nil).
@@ -133,7 +134,9 @@ func TestAlbumsDeletedHandler_WhenPublishDeleteDirectoriesStorageFails_ShouldRet
 		Once()
 
 	directoryPath := "some_path"
-	storageFilePathProvider.On("GetAlbumDirectoryPath", mockAlbum).Return(directoryPath).Once()
+	storageFilePathProvider.On("GetAlbumDirectoryPath", mock.IsType(mockAlbums[0])).
+		Return(directoryPath).
+		Times(len(mockAlbums))
 
 	internalError := errors.New("internal error")
 	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
@@ -141,7 +144,7 @@ func TestAlbumsDeletedHandler_WhenPublishDeleteDirectoriesStorageFails_ShouldRet
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockAlbum)
+	payload, _ := json.Marshal(mockAlbums)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -161,7 +164,10 @@ func TestAlbumsDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
 
-	mockAlbum := model.Album{ID: uuid.New()}
+	mockAlbums := []model.Album{
+		{ID: uuid.New()},
+		{ID: uuid.New()},
+	}
 
 	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
 		Return(nil).
@@ -172,14 +178,20 @@ func TestAlbumsDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *
 		Once()
 
 	directoryPath := "some_path"
-	storageFilePathProvider.On("GetAlbumDirectoryPath", mockAlbum).Return(directoryPath).Once()
+	storageFilePathProvider.On("GetAlbumDirectoryPath", mock.IsType(mockAlbums[0])).
+		Return(directoryPath).
+		Times(len(mockAlbums))
 
-	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, []string{directoryPath}).
+	var directoryPaths []string
+	for _ = range mockAlbums {
+		directoryPaths = append(directoryPaths, directoryPath)
+	}
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, directoryPaths).
 		Return(nil).
 		Once()
 
 	// when
-	payload, _ := json.Marshal(mockAlbum)
+	payload, _ := json.Marshal(mockAlbums)
 	msg := message.NewMessage("1", payload)
 	err := _uut.Handle(msg)
 
@@ -191,113 +203,157 @@ func TestAlbumsDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *
 	storageFilePathProvider.AssertExpectations(t)
 }
 
-func TestAlbumsDeletedHandler_WhenSuccessful_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
-	tests := []struct {
-		name  string
-		album model.Album
-	}{
+func TestAlbumsDeletedHandler_WhenWithoutSongs_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
+	// given
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	searchEngineService := new(service.SearchEngineServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
+
+	mockAlbums := []model.Album{
+		{ID: uuid.New()},
+		{ID: uuid.New()},
+	}
+
+	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
+		Run(func(args mock.Arguments) {
+			ids := args.Get(1).([]string)
+			assert.Len(t, ids, len(mockAlbums))
+			for i, alb := range mockAlbums {
+				assert.Equal(t, alb.ToSearch().ID, ids[i])
+			}
+		}).
+		Return(nil).
+		Once()
+
+	songsToUpdate := []map[string]any{
 		{
-			"without Songs",
-			model.Album{ID: uuid.New()},
+			"id":    uuid.New().String(),
+			"title": "Song 1",
+			"album": model.SongAlbumSearch{ID: mockAlbums[0].ID},
 		},
 		{
-			"with Songs",
-			model.Album{
-				ID: uuid.New(),
-				Songs: []model.Song{
-					{ID: uuid.New()},
-					{ID: uuid.New()},
-					{ID: uuid.New()},
-				},
+			"id":    uuid.New().String(),
+			"title": "Song 2",
+			"album": model.SongAlbumSearch{ID: mockAlbums[1].ID},
+		},
+	}
+
+	var albumIDs []string
+	for _, alb := range mockAlbums {
+		albumIDs = append(albumIDs, alb.ID.String())
+	}
+	filter := fmt.Sprintf("type = %s AND album.id IN [%s]", enums.Song, strings.Join(albumIDs, ", "))
+	searchEngineService.On("GetDocuments", filter).
+		Return(songsToUpdate, nil).
+		Once()
+
+	messagePublisherService.On("Publish", topics.UpdateFromSearchEngineTopic, mock.IsType([]any{})).
+		Run(func(args mock.Arguments) {
+			newSongs := args.Get(1).([]any)
+			assert.Len(t, newSongs, len(songsToUpdate))
+			for _, song := range newSongs {
+				assert.Nil(t, song.(model.SongSearch).Album)
+			}
+		}).
+		Return(nil).
+		Once()
+
+	var directoryPaths []string
+	for _, alb := range mockAlbums {
+		directoryPath := "some_path" + alb.ID.String()
+		directoryPaths = append(directoryPaths, directoryPath)
+		storageFilePathProvider.On("GetAlbumDirectoryPath", alb).Return(directoryPath).Once()
+	}
+
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, directoryPaths).
+		Return(nil).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(mockAlbums)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.NoError(t, err)
+
+	messagePublisherService.AssertExpectations(t)
+	searchEngineService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
+}
+
+func TestAlbumsDeletedHandler_WhenWithSongs_ShouldPublishMessageToDeleteFromSearchEngine(t *testing.T) {
+	// given
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	searchEngineService := new(service.SearchEngineServiceMock)
+	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
+	_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
+
+	mockAlbums := []model.Album{
+		{
+			ID:    uuid.New(),
+			Title: "With Songs",
+			Songs: []model.Song{
+				{ID: uuid.New()},
+				{ID: uuid.New()},
+				{ID: uuid.New()},
 			},
 		},
+		{
+			ID:    uuid.New(),
+			Title: "Without Songs",
+		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			messagePublisherService := new(service.MessagePublisherServiceMock)
-			searchEngineService := new(service.SearchEngineServiceMock)
-			storageFilePathProvider := new(provider.StorageFilePathProviderMock)
-			_uut := album.NewAlbumsDeletedHandler(messagePublisherService, searchEngineService, storageFilePathProvider)
-
-			messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
-				Run(func(args mock.Arguments) {
-					ids := args.Get(1).([]string)
-					assert.Len(t, ids, len(tt.album.Songs)+1)
-
-					assert.Contains(t, ids[0], tt.album.ID.String())
-					for i, song := range tt.album.Songs {
-						assert.Contains(t, ids[1+i], song.ID.String())
-					}
-				}).
-				Return(nil).
-				Once()
-
-			if len(tt.album.Songs) == 0 {
-				songsToUpdate := []map[string]any{
-					{
-						"id":    uuid.New().String(),
-						"title": "Song 1",
-						"album": model.SongAlbumSearch{ID: tt.album.ID},
-					},
-					{
-						"id":    uuid.New().String(),
-						"title": "Song 2",
-						"album": model.SongAlbumSearch{ID: tt.album.ID},
-					},
-				}
-				filter := fmt.Sprintf("type = %s AND album.id = %s", enums.Song, tt.album.ID)
-				searchEngineService.On("GetDocuments", filter).
-					Return(songsToUpdate, nil).
-					Once()
-
-				messagePublisherService.On("Publish", topics.UpdateFromSearchEngineTopic, mock.IsType([]any{})).
-					Run(func(args mock.Arguments) {
-						newSongs := args.Get(1).([]any)
-						assert.Len(t, newSongs, len(songsToUpdate))
-						for _, song := range newSongs {
-							assert.Nil(t, song.(model.SongSearch).Album)
-						}
-					}).
-					Return(nil).
-					Once()
-			}
-
-			directoryPath := "some_path"
-			storageFilePathProvider.On("GetAlbumDirectoryPath", tt.album).Return(directoryPath).Once()
-
-			songDirectoryPath := "song_directory_path"
-			for _, song := range tt.album.Songs {
-				storageFilePathProvider.On("GetSongDirectoryPath", song).Return(songDirectoryPath).Once()
-			}
-
-			messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, mock.IsType([]string{})).
-				Run(func(args mock.Arguments) {
-					directoryPaths := args.Get(1).([]string)
-					assert.Len(t, directoryPaths, len(tt.album.Songs)+1)
-					assert.Equal(t, directoryPaths[0], directoryPath)
-					for i, path := range directoryPaths {
-						if i == 0 {
-							continue
-						}
-						assert.Equal(t, songDirectoryPath, path)
-					}
-				}).
-				Return(nil).
-				Once()
-
-			// when
-			payload, _ := json.Marshal(tt.album)
-			msg := message.NewMessage("1", payload)
-			err := _uut.Handle(msg)
-
-			// then
-			assert.NoError(t, err)
-
-			messagePublisherService.AssertExpectations(t)
-			searchEngineService.AssertExpectations(t)
-			storageFilePathProvider.AssertExpectations(t)
-		})
+	var songSearchIDs []string
+	for _, alb := range mockAlbums {
+		for _, song := range alb.Songs {
+			songSearchIDs = append(songSearchIDs, song.ToSearch().ID)
+		}
 	}
+
+	messagePublisherService.On("Publish", topics.DeleteFromSearchEngineTopic, mock.IsType([]string{})).
+		Run(func(args mock.Arguments) {
+			ids := args.Get(1).([]string)
+			assert.Len(t, ids, len(mockAlbums)+len(songSearchIDs))
+
+			for i, alb := range mockAlbums {
+				assert.Equal(t, alb.ToSearch().ID, ids[i])
+			}
+			for i, id := range songSearchIDs {
+				assert.Equal(t, ids[i+len(mockAlbums)], id)
+			}
+		}).
+		Return(nil).
+		Once()
+
+	var directoryPaths []string
+	for _, alb := range mockAlbums {
+		directoryPath := "some_path" + alb.ID.String()
+		directoryPaths = append(directoryPaths, directoryPath)
+		storageFilePathProvider.On("GetAlbumDirectoryPath", alb).Return(directoryPath).Once()
+
+		for _, song := range alb.Songs {
+			songDirectoryPath := "song_directory_path" + song.ID.String()
+			directoryPaths = append(directoryPaths, songDirectoryPath)
+			storageFilePathProvider.On("GetSongDirectoryPath", song).Return(songDirectoryPath).Once()
+		}
+	}
+
+	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, directoryPaths).
+		Return(nil).
+		Once()
+
+	// when
+	payload, _ := json.Marshal(mockAlbums)
+	msg := message.NewMessage("1", payload)
+	err := _uut.Handle(msg)
+
+	// then
+	assert.NoError(t, err)
+
+	messagePublisherService.AssertExpectations(t)
+	searchEngineService.AssertExpectations(t)
+	storageFilePathProvider.AssertExpectations(t)
 }

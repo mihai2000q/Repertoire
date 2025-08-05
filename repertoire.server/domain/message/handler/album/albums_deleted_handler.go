@@ -53,22 +53,24 @@ func (a AlbumsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 func (a AlbumsDeletedHandler) syncWithSearchEngine(albums []model.Album) error {
 	// previously in delete album, the album was populated with songs, only if they have to be deleted too
 	var albumIDs []string
-	var songIDs []string
+	var albumSearchIDs []string
+	var songSearchIDs []string
 	for _, album := range albums {
-		albumIDs = append(albumIDs, album.ToSearch().ID)
+		albumIDs = append(albumIDs, album.ID.String())
+		albumSearchIDs = append(albumSearchIDs, album.ToSearch().ID)
 		for _, song := range album.Songs {
-			songIDs = append(songIDs, song.ToSearch().ID)
+			songSearchIDs = append(songSearchIDs, song.ToSearch().ID)
 		}
 	}
 
-	ids := slices.Concat(albumIDs, songIDs)
+	ids := slices.Concat(albumSearchIDs, songSearchIDs)
 	err := a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
 	if err != nil {
 		return err
 	}
 
 	// if the album already has songs populated, there is no need to update the songs, as they will be deleted
-	if len(songIDs) > 0 {
+	if len(songSearchIDs) > 0 {
 		return nil
 	}
 
