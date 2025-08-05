@@ -13,34 +13,34 @@ import (
 	"time"
 )
 
-func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
+func TestArtistsDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	tests := []struct {
-		name   string
-		artist model.Artist
+		name    string
+		artists []model.Artist
 	}{
 		{
 			"Normal",
-			model.Artist{
+			[]model.Artist{{
 				ID:        uuid.New(),
 				Name:      "Artist 1",
 				ImageURL:  &[]internal.FilePath{"something.png"}[0],
 				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
-			},
+			}},
 		},
 		{
 			"With related songs and albums",
-			model.Artist{
+			[]model.Artist{{
 				ID:        artistData.ArtistSearchID,
 				Name:      "Artist 2",
 				ImageURL:  &[]internal.FilePath{"something.png"}[0],
 				UpdatedAt: time.Now().UTC(),
 				UserID:    uuid.New(),
-			},
+			}},
 		},
 		{
 			"Delete with songs",
-			model.Artist{
+			[]model.Artist{{
 				ID:        uuid.New(),
 				Name:      "Artist 3",
 				UpdatedAt: time.Now().UTC(),
@@ -49,11 +49,11 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 					{ID: uuid.New()},
 					{ID: uuid.New()},
 				},
-			},
+			}},
 		},
 		{
 			"Delete with albums",
-			model.Artist{
+			[]model.Artist{{
 				ID:        uuid.New(),
 				Name:      "Artist 4",
 				UpdatedAt: time.Now().UTC(),
@@ -62,11 +62,11 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 					{ID: uuid.New()},
 					{ID: uuid.New()},
 				},
-			},
+			}},
 		},
 		{
 			"Delete with songs and albums",
-			model.Artist{
+			[]model.Artist{{
 				ID:        uuid.New(),
 				Name:      "Artist 5",
 				UpdatedAt: time.Now().UTC(),
@@ -79,7 +79,7 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 					{ID: uuid.New()},
 					{ID: uuid.New()},
 				},
-			},
+			}},
 		},
 	}
 
@@ -90,29 +90,29 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 
 			deleteMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
 			var updateMessages utils.SubscribedToTopic
-			if len(test.artist.Songs) == 0 || len(test.artist.Albums) == 0 {
+			if len(test.artists[0].Songs) == 0 || len(test.artists[0].Albums) == 0 {
 				updateMessages = utils.SubscribeToTopic(topics.UpdateFromSearchEngineTopic)
 			}
 			deleteStorageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
 			// when
-			err := utils.PublishToTopic(topics.ArtistDeletedTopic, test.artist)
+			err := utils.PublishToTopic(topics.ArtistsDeletedTopic, test.artists)
 
 			// then
 			assert.NoError(t, err)
 
 			assertion.AssertMessage(t, deleteMessages, func(ids []string) {
-				assert.Len(t, ids, len(test.artist.Songs)+len(test.artist.Albums)+1)
-				assertion.ArtistSearchID(t, test.artist.ID, ids[0])
-				for i, song := range test.artist.Songs {
+				assert.Len(t, ids, len(test.artists[0].Songs)+len(test.artists[0].Albums)+1)
+				assertion.ArtistSearchID(t, test.artists[0].ID, ids[0])
+				for i, song := range test.artists[0].Songs {
 					assertion.SongSearchID(t, song.ID, ids[i+1])
 				}
-				for i, album := range test.artist.Albums {
-					assertion.AlbumSearchID(t, album.ID, ids[i+1+len(test.artist.Songs)])
+				for i, album := range test.artists[0].Albums {
+					assertion.AlbumSearchID(t, album.ID, ids[i+1+len(test.artists[0].Songs)])
 				}
 			})
 
-			if len(test.artist.Songs) == 0 || len(test.artist.Albums) == 0 {
+			if len(test.artists[0].Songs) == 0 || len(test.artists[0].Albums) == 0 {
 				assertion.AssertMessage(t, updateMessages, func(documents []any) {
 					assert.Len(t, documents, len(artistData.SongSearches)+len(artistData.AlbumSearches))
 					for i, songSearch := range artistData.SongSearches {
@@ -127,7 +127,7 @@ func TestArtistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 			}
 
 			assertion.AssertMessage(t, deleteStorageMessages, func(paths []string) {
-				assert.Len(t, paths, len(test.artist.Songs)+len(test.artist.Albums)+1)
+				assert.Len(t, paths, len(test.artists[0].Songs)+len(test.artists[0].Albums)+1)
 			})
 		})
 	}

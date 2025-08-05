@@ -11,9 +11,9 @@ const (
 	AlbumsDeletedTopic Topic = "albums_deleted_topic"
 	AlbumsUpdatedTopic Topic = "albums_updated_topic"
 
-	ArtistCreatedTopic Topic = "artist_created_topic"
-	ArtistDeletedTopic Topic = "artist_deleted_topic"
-	ArtistUpdatedTopic Topic = "artist_updated_topic"
+	ArtistCreatedTopic  Topic = "artist_created_topic"
+	ArtistsDeletedTopic Topic = "artists_deleted_topic"
+	ArtistUpdatedTopic  Topic = "artist_updated_topic"
 
 	PlaylistCreatedTopic Topic = "playlist_created_topic"
 	PlaylistDeletedTopic Topic = "playlist_deleted_topic"
@@ -37,9 +37,9 @@ var TopicToQueueMap = map[Topic]queues.Queue{
 	AlbumsDeletedTopic: queues.MainQueue,
 	AlbumsUpdatedTopic: queues.MainQueue,
 
-	ArtistCreatedTopic: queues.MainQueue,
-	ArtistDeletedTopic: queues.MainQueue,
-	ArtistUpdatedTopic: queues.MainQueue,
+	ArtistCreatedTopic:  queues.MainQueue,
+	ArtistsDeletedTopic: queues.MainQueue,
+	ArtistUpdatedTopic:  queues.MainQueue,
 
 	PlaylistCreatedTopic: queues.MainQueue,
 	PlaylistDeletedTopic: queues.MainQueue,

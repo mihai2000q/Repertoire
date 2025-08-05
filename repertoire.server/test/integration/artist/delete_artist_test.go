@@ -47,7 +47,7 @@ func TestDeleteArtist_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
-			messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
+			messages := utils.SubscribeToTopic(topics.ArtistsDeletedTopic)
 
 			// when
 			w := httptest.NewRecorder()
@@ -97,7 +97,7 @@ func TestDeleteArtist_WhenWithAlbums_ShouldDeleteArtistAndAlbums(t *testing.T) {
 
 	artist := artistData.Artists[1]
 
-	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
+	messages := utils.SubscribeToTopic(topics.ArtistsDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -132,7 +132,7 @@ func TestDeleteArtist_WhenWithSongs_ShouldDeleteArtistAndSongs(t *testing.T) {
 
 	artist := artistData.Artists[1]
 
-	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
+	messages := utils.SubscribeToTopic(topics.ArtistsDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -167,7 +167,7 @@ func TestDeleteArtist_WhenWithAlbumsAndSongs_ShouldDeleteArtistAndAlbumsAndSongs
 
 	artist := artistData.Artists[1]
 
-	messages := utils.SubscribeToTopic(topics.ArtistDeletedTopic)
+	messages := utils.SubscribeToTopic(topics.ArtistsDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
