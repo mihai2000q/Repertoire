@@ -1,9 +1,6 @@
 package song
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -13,6 +10,10 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestAddPerfectSongRehearsal_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

@@ -2,13 +2,14 @@ package assertion
 
 import (
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"slices"
 	"testing"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/stretchr/testify/assert"
 )

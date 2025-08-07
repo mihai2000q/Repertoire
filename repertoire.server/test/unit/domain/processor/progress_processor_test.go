@@ -1,11 +1,12 @@
 package processor
 
 import (
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/domain/processor"
 	"repertoire/server/model"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestComputeRehearsalsScore_WhenHistoryLengthIs0_ShouldReturn0(t *testing.T) {

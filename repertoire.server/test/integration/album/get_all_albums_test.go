@@ -2,7 +2,6 @@ package album
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +10,8 @@ import (
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetAllAlbums_WhenSuccessful_ShouldReturnAlbums(t *testing.T) {

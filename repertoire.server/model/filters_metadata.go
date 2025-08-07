@@ -1,10 +1,11 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type AlbumFiltersMetadata struct {

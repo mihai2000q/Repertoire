@@ -3,16 +3,17 @@ package artist
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/domain/message/handler/artist"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestArtistUpdatedHandler_WhenGetArtistFails_ShouldReturnError(t *testing.T) {

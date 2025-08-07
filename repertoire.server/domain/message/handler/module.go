@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"go.uber.org/fx"
 	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/domain/message/handler/artist"
 	"repertoire/server/domain/message/handler/playlist"
@@ -9,6 +8,8 @@ import (
 	"repertoire/server/domain/message/handler/song"
 	"repertoire/server/domain/message/handler/storage"
 	"repertoire/server/domain/message/handler/user"
+
+	"go.uber.org/fx"
 )
 
 var albumHandlers = fx.Options(

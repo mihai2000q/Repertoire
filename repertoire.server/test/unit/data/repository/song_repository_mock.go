@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/model"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/google/uuid"
 )

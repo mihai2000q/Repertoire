@@ -1,9 +1,10 @@
 package requests
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
+
+	"github.com/google/uuid"
 )
 
 type GetSongsRequest struct {

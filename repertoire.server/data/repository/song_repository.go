@@ -2,12 +2,13 @@ package repository
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 	"slices"
 	"strings"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type SongRepository interface {

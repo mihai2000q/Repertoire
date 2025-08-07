@@ -1,8 +1,9 @@
 package transaction
 
 import (
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
+
+	"gorm.io/gorm"
 )
 
 type FunctionWithFactories func(factory RepositoryFactory) error

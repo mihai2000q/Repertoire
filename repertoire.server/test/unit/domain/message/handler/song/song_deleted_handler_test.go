@@ -3,16 +3,17 @@ package song
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/domain/message/handler/song"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/service"
 	"repertoire/server/test/unit/domain/provider"
 	"testing"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestSongDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturnError(t *testing.T) {

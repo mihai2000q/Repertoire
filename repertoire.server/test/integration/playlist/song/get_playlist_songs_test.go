@@ -2,7 +2,6 @@ package song
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/wrapper"
@@ -12,6 +11,8 @@ import (
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetPlaylistSongs_WhenSuccessful_ShouldReturnPlaylistWithSongsOrderedByTrackNo(t *testing.T) {

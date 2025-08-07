@@ -1,8 +1,6 @@
 package user
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/message/topics"
@@ -12,6 +10,9 @@ import (
 	userData "repertoire/server/test/integration/test/data/user"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteUser_WhenSuccessful_ShouldDeleteUser(t *testing.T) {

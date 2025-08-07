@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/database"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/search"
 	"repertoire/server/internal"
 	"repertoire/server/internal/migration/utils"
 	"repertoire/server/model"
+
+	"github.com/meilisearch/meilisearch-go"
 )
 
 var uid = "20250226172615"

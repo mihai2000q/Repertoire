@@ -1,8 +1,6 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -13,6 +11,9 @@ import (
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBulkDeleteAlbums_WhenAlbumsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {

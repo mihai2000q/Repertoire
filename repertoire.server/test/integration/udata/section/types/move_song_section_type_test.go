@@ -1,8 +1,6 @@
 package types
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -11,6 +9,9 @@ import (
 	userDataData "repertoire/server/test/integration/test/data/udata"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMoveSongSectionType_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

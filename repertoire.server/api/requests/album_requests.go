@@ -1,8 +1,9 @@
 package requests
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
+
+	"github.com/google/uuid"
 )
 
 type GetAlbumRequest struct {

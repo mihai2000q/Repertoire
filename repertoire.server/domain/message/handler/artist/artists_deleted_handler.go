@@ -3,7 +3,6 @@ package artist
 import (
 	"encoding/json"
 	"fmt"
-	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal/enums"
@@ -11,6 +10,8 @@ import (
 	"repertoire/server/model"
 	"slices"
 	"strings"
+
+	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 )
 
 type ArtistsDeletedHandler struct {

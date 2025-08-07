@@ -4,10 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/domain/message/handler/album"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/message/topics"
@@ -16,6 +12,11 @@ import (
 	"repertoire/server/test/unit/domain/provider"
 	"strings"
 	"testing"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAlbumsDeletedHandler_WhenPublishDeleteFromSearchEngineFails_ShouldReturnError(t *testing.T) {

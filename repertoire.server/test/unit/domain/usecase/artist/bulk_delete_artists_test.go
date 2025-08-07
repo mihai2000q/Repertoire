@@ -2,7 +2,6 @@ package artist
 
 import (
 	"errors"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
@@ -12,6 +11,8 @@ import (
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

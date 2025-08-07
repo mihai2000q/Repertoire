@@ -2,7 +2,6 @@ package search
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/enums"
@@ -12,6 +11,8 @@ import (
 	searchData "repertoire/server/test/integration/test/data/search"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSearchGet_WhenSuccessful_ShouldReturnSearchResults(t *testing.T) {

@@ -2,15 +2,16 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestUpdateSongSettings_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {

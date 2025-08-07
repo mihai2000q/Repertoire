@@ -1,7 +1,6 @@
 package artist
 
 import (
-	"github.com/google/uuid"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -12,6 +11,8 @@ import (
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"
 )

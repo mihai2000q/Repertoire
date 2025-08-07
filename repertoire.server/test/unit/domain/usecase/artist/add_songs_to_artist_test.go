@@ -2,9 +2,6 @@ package artist
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
@@ -13,6 +10,10 @@ import (
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {

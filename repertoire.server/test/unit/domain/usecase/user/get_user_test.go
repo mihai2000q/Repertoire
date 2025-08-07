@@ -2,13 +2,14 @@ package user
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/server/domain/usecase/user"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetUser_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.T) {

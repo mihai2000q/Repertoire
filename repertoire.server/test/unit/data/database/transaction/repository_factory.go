@@ -1,8 +1,9 @@
 package transaction
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/data/repository"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type RepositoryFactoryMock struct {

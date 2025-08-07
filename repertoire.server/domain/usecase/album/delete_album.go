@@ -2,7 +2,6 @@ package album
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -10,6 +9,8 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type DeleteAlbum struct {

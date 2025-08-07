@@ -2,11 +2,12 @@ package search
 
 import (
 	"encoding/json"
-	"github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
 	"strconv"
+
+	"github.com/ThreeDotsLabs/watermill/message"
 )
 
 type AddToSearchEngineHandler struct {

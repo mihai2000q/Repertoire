@@ -1,13 +1,14 @@
 package playlist
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPlaylistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {

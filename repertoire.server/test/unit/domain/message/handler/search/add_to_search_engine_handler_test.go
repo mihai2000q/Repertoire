@@ -3,13 +3,14 @@ package search
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/domain/message/handler/search"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"strconv"
 	"testing"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddToSearchEngineHandler_WhenAddFails_ShouldReturnError(t *testing.T) {

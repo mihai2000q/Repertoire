@@ -1,13 +1,14 @@
 package playlist
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"slices"
+
+	"github.com/google/uuid"
 )
 
 type AddArtistsToPlaylist struct {

@@ -1,13 +1,14 @@
 package requests
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"strings"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 // Band Member Roles

@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"net/http"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type TestHandler interface {

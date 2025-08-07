@@ -2,11 +2,12 @@ package user
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type GetUser struct {

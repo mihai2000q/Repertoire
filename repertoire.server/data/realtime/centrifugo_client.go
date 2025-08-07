@@ -2,8 +2,9 @@ package realtime
 
 import (
 	"context"
-	"github.com/centrifugal/centrifuge-go"
 	"repertoire/server/internal"
+
+	"github.com/centrifugal/centrifuge-go"
 )
 
 type CentrifugoClient interface {

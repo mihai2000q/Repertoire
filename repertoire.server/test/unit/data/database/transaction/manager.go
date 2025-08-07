@@ -1,8 +1,9 @@
 package transaction
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/data/database/transaction"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type ManagerMock struct {

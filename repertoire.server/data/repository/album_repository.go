@@ -2,10 +2,11 @@ package repository
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AlbumRepository interface {

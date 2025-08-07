@@ -2,8 +2,6 @@ package song
 
 import (
 	"bytes"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +11,9 @@ import (
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSaveImageFromSong_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

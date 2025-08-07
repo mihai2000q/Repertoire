@@ -3,9 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/meilisearch/meilisearch-go"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -18,6 +15,10 @@ import (
 	"repertoire/server/domain"
 	"repertoire/server/internal"
 	"time"
+
+	"github.com/meilisearch/meilisearch-go"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pressly/goose"

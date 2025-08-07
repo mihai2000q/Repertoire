@@ -2,9 +2,6 @@ package section
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"math"
 	"net/http"
 	"repertoire/server/api/requests"
@@ -12,6 +9,10 @@ import (
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestCreateSongSection_WhenCountSectionsBySongFails_ShouldReturnInternalServerError(t *testing.T) {

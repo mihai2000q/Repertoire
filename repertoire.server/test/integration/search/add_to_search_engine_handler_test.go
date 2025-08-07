@@ -1,14 +1,15 @@
 package search
 
 import (
-	"github.com/google/uuid"
-	"github.com/meilisearch/meilisearch-go"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/test/integration/test/core"
 	"repertoire/server/test/integration/test/utils"
 	"strconv"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/meilisearch/meilisearch-go"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddToSearchEngine_WhenSuccessful_ShouldAddDataToMeilisearch(t *testing.T) {

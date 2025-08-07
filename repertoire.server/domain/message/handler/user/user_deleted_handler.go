@@ -2,11 +2,12 @@ package user
 
 import (
 	"encoding/json"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/google/uuid"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal/message/topics"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
 )
 
 type UserDeletedHandler struct {

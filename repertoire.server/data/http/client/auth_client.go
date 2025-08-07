@@ -1,10 +1,11 @@
 package client
 
 import (
-	"github.com/go-resty/resty/v2"
 	"repertoire/server/data/http"
 	"repertoire/server/data/http/auth"
 	"repertoire/server/internal"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type AuthClient struct {

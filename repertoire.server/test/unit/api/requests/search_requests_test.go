@@ -1,12 +1,13 @@
 package requests
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
 	"repertoire/server/internal/enums"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateSearchGetRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {

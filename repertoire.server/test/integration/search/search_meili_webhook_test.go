@@ -2,15 +2,16 @@ package search
 
 import (
 	"encoding/json"
-	"github.com/centrifugal/centrifuge-go"
-	"github.com/patrickmn/go-cache"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/test/integration/test/core"
 	"repertoire/server/test/integration/test/utils"
 	"strconv"
 	"testing"
+
+	"github.com/centrifugal/centrifuge-go"
+	"github.com/patrickmn/go-cache"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSearchMeiliWebhook_WhenSuccessful_ShouldPublishOnCentrifugo(t *testing.T) {

@@ -2,10 +2,6 @@ package message
 
 import (
 	"context"
-	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
-	"github.com/cenkalti/backoff/v4"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/domain/message/handler/album"
@@ -16,10 +12,16 @@ import (
 	"repertoire/server/domain/message/handler/user"
 	"repertoire/server/internal/message/topics"
 
-	"go.uber.org/fx"
+	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
+	"github.com/cenkalti/backoff/v4"
+
 	"log"
 	"repertoire/server/domain/message/handler/artist"
 	"time"
+
+	"go.uber.org/fx"
 )
 
 type messageHandler interface {

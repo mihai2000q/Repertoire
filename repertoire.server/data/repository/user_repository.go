@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"gorm.io/gorm/clause"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"gorm.io/gorm/clause"
 
 	"github.com/google/uuid"
 )

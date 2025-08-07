@@ -2,8 +2,6 @@ package album
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -16,6 +14,9 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {

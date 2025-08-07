@@ -2,7 +2,6 @@ package section
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +10,8 @@ import (
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetSongSectionTypes_WhenSuccessful_ShouldGetTypes(t *testing.T) {

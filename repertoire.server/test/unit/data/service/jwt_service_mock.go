@@ -1,9 +1,10 @@
 package service
 
 import (
+	"repertoire/server/internal/wrapper"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"repertoire/server/internal/wrapper"
 )
 
 type JwtServiceMock struct {

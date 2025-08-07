@@ -2,7 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -10,6 +9,8 @@ import (
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 type DeleteSong struct {

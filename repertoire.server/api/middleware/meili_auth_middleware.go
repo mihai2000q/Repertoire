@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/server/internal"
+
+	"github.com/gin-gonic/gin"
 )
 
 type MeiliAuthMiddleware struct {

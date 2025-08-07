@@ -5,13 +5,14 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/test/unit/data/service"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSearchMeiliWebhook_WhenTaskHasNotSucceeded_ShouldReturnError(t *testing.T) {

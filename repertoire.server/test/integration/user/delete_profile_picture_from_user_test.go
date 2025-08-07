@@ -1,13 +1,14 @@
 package user
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/test/integration/test/core"
 	userData "repertoire/server/test/integration/test/data/user"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteProfilePictureFromUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

@@ -2,7 +2,6 @@ package artist
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
@@ -11,6 +10,8 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type DeleteArtist struct {
