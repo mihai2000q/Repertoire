@@ -105,24 +105,24 @@ func TestArtistsDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 			assertion.AssertMessage(t, deleteMessages, func(ids []string) {
 				assert.Len(t, ids, len(test.artists[0].Songs)+len(test.artists[0].Albums)+1)
 				assertion.ArtistSearchID(t, test.artists[0].ID, ids[0])
-				for i, song := range test.artists[0].Songs {
-					assertion.SongSearchID(t, song.ID, ids[i+1])
-				}
 				for i, album := range test.artists[0].Albums {
-					assertion.AlbumSearchID(t, album.ID, ids[i+1+len(test.artists[0].Songs)])
+					assertion.AlbumSearchID(t, album.ID, ids[i+1])
+				}
+				for i, song := range test.artists[0].Songs {
+					assertion.SongSearchID(t, song.ID, ids[i+1+len(test.artists[0].Albums)])
 				}
 			})
 
 			if len(test.artists[0].Songs) == 0 || len(test.artists[0].Albums) == 0 {
 				assertion.AssertMessage(t, updateMessages, func(documents []any) {
 					assert.Len(t, documents, len(artistData.SongSearches)+len(artistData.AlbumSearches))
-					for i, songSearch := range artistData.SongSearches {
-						assert.Equal(t, documents[i].(model.SongSearch).ID, songSearch.(model.SongSearch).ID)
-						assert.Nil(t, songSearch.(model.SongSearch).Artist)
-					}
 					for i, albumSearch := range artistData.AlbumSearches {
 						assert.Equal(t, documents[i].(model.AlbumSearch).ID, albumSearch.(model.AlbumSearch).ID)
 						assert.Nil(t, albumSearch.(model.AlbumSearch).Artist)
+					}
+					for i, songSearch := range artistData.SongSearches {
+						assert.Equal(t, documents[i].(model.SongSearch).ID, songSearch.(model.SongSearch).ID)
+						assert.Nil(t, songSearch.(model.SongSearch).Artist)
 					}
 				})
 			}
