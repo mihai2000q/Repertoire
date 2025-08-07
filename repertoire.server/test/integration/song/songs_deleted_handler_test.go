@@ -16,19 +16,24 @@ func TestSongDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	searchMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
 	storageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
-	song := model.Song{ID: uuid.New()}
+	songs := []model.Song{
+		{ID: uuid.New()},
+		{ID: uuid.New()},
+	}
 
 	// when
-	err := utils.PublishToTopic(topics.SongDeletedTopic, song)
+	err := utils.PublishToTopic(topics.SongsDeletedTopic, songs)
 
 	// then
 	assert.NoError(t, err)
 
 	assertion.AssertMessage(t, searchMessages, func(ids []string) {
-		assert.Len(t, ids, 1)
-		assertion.SongSearchID(t, song.ID, ids[0])
+		assert.Len(t, ids, len(songs))
+		for i := range songs {
+			assertion.SongSearchID(t, songs[i].ID, ids[i])
+		}
 	})
 	assertion.AssertMessage(t, storageMessages, func(paths []string) {
-		assert.Len(t, paths, 1)
+		assert.Len(t, paths, len(songs))
 	})
 }

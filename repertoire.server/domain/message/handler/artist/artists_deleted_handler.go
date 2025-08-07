@@ -28,7 +28,7 @@ func NewArtistsDeletedHandler(
 	storageFilePathProvider provider.StorageFilePathProvider,
 ) ArtistsDeletedHandler {
 	return ArtistsDeletedHandler{
-		name:                    "artist_deleted_handler",
+		name:                    "artists_deleted_handler",
 		topic:                   topics.ArtistsDeletedTopic,
 		messagePublisherService: messagePublisherService,
 		searchEngineService:     searchEngineService,

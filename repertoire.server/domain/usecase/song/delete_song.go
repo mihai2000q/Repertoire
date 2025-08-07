@@ -66,7 +66,7 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.SongDeletedTopic, song)
+	err = d.messagePublisherService.Publish(topics.SongsDeletedTopic, []model.Song{song})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

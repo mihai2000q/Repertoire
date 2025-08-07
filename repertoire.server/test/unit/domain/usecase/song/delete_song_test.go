@@ -223,7 +223,7 @@ func TestDeleteSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 	songRepository.On("Delete", id).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.SongDeletedTopic, *mockSong).
+	messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{*mockSong}).
 		Return(internalError).
 		Once()
 
@@ -362,7 +362,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 					Once()
 			}
 
-			messagePublisherService.On("Publish", topics.SongDeletedTopic, tt.song).
+			messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{tt.song}).
 				Return(nil).
 				Once()
 

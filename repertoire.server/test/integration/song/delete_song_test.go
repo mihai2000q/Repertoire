@@ -59,7 +59,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			db := utils.GetDatabase(t)
 			db.Preload("Playlists").Preload("PlaylistSongs").Find(&test.song, test.song.ID)
 
-			messages := utils.SubscribeToTopic(topics.SongDeletedTopic)
+			messages := utils.SubscribeToTopic(topics.SongsDeletedTopic)
 
 			// when
 			w := httptest.NewRecorder()
@@ -90,8 +90,9 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 				}
 			}
 
-			assertion.AssertMessage(t, messages, func(payloadSong model.Song) {
-				assert.Equal(t, test.song.ID, payloadSong.ID)
+			assertion.AssertMessage(t, messages, func(payloadSongs []model.Song) {
+				assert.Len(t, payloadSongs, 1)
+				assert.Equal(t, test.song.ID, payloadSongs[0].ID)
 			})
 		})
 	}

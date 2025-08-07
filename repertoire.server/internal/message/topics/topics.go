@@ -20,7 +20,7 @@ const (
 	PlaylistUpdatedTopic Topic = "playlist_updated_topic"
 
 	SongCreatedTopic  Topic = "song_created_topic"
-	SongDeletedTopic  Topic = "song_deleted_topic"
+	SongsDeletedTopic Topic = "songs_deleted_topic"
 	SongsUpdatedTopic Topic = "songs_updated_topic"
 
 	UserDeletedTopic Topic = "user_deleted_topic"
@@ -46,7 +46,7 @@ var TopicToQueueMap = map[Topic]queues.Queue{
 	PlaylistUpdatedTopic: queues.MainQueue,
 
 	SongCreatedTopic:  queues.MainQueue,
-	SongDeletedTopic:  queues.MainQueue,
+	SongsDeletedTopic: queues.MainQueue,
 	SongsUpdatedTopic: queues.MainQueue,
 
 	UserDeletedTopic: queues.MainQueue,
