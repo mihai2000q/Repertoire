@@ -115,8 +115,8 @@ A Sample Data has been provided for testing purposes of the application.
 
 To populate the database, simply use the following script: `add-sample-data.sh`.
 
-Also, if you add data outside the application, 
-you also have to re-run the search migrations(`apply-search-migrations.sh`) 
+Also, if you add data outside the application,
+you also have to re-run the search migrations(`apply-search-migrations.sh`)
 (it is recommended to remove the docker container if it has already run).
 
 ## Build Executable
