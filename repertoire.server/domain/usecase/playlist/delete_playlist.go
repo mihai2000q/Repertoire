@@ -42,7 +42,7 @@ func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.PlaylistDeletedTopic, playlist)
+	err = d.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, []model.Playlist{playlist})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

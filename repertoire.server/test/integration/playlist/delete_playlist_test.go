@@ -47,7 +47,7 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
-			messages := utils.SubscribeToTopic(topics.PlaylistDeletedTopic)
+			messages := utils.SubscribeToTopic(topics.PlaylistsDeletedTopic)
 
 			// when
 			w := httptest.NewRecorder()

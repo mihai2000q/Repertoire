@@ -11,24 +11,26 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPlaylistDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
+func TestPlaylistsDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	// given
 	searchMessages := utils.SubscribeToTopic(topics.DeleteFromSearchEngineTopic)
 	storageMessages := utils.SubscribeToTopic(topics.DeleteDirectoriesStorageTopic)
 
-	playlist := model.Playlist{ID: uuid.New()}
+	playlists := []model.Playlist{{ID: uuid.New()}}
 
 	// when
-	err := utils.PublishToTopic(topics.PlaylistDeletedTopic, playlist)
+	err := utils.PublishToTopic(topics.PlaylistsDeletedTopic, playlists)
 
 	// then
 	assert.NoError(t, err)
 
 	assertion.AssertMessage(t, searchMessages, func(ids []string) {
-		assert.Len(t, ids, 1)
-		assertion.PlaylistSearchID(t, playlist.ID, ids[0])
+		assert.Len(t, ids, len(playlists))
+		for i := range ids {
+			assertion.PlaylistSearchID(t, playlists[i].ID, ids[0])
+		}
 	})
 	assertion.AssertMessage(t, storageMessages, func(paths []string) {
-		assert.Len(t, paths, 1)
+		assert.Len(t, paths, len(playlists))
 	})
 }
