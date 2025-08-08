@@ -31,6 +31,7 @@ type SongRepository interface {
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
@@ -38,7 +39,7 @@ type SongRepository interface {
 	UpdateAll(songs *[]model.Song) error
 	UpdateWithAssociations(song *model.Song) error
 	UpdateAllWithAssociations(songs *[]model.Song) error
-	Delete(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
 
 	GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error
 	UpdateSettings(settings *model.SongSettings) error
@@ -271,6 +272,20 @@ func (s songRepository) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids [
 		Error
 }
 
+func (s songRepository) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Album").
+		Preload("Album.Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("album_track_no")
+		}).
+		Preload("Playlists").
+		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
+		Find(&songs, ids).
+		Error
+}
+
 func (s songRepository) CountByAlbum(count *int64, albumID uuid.UUID) error {
 	return s.client.Model(&model.Song{}).
 		Where("album_id = ?", albumID).
@@ -331,8 +346,8 @@ func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 	})
 }
 
-func (s songRepository) Delete(id uuid.UUID) error {
-	return s.client.Delete(&model.Song{}, id).Error
+func (s songRepository) Delete(ids []uuid.UUID) error {
+	return s.client.Delete(&model.Song{}, ids).Error
 }
 
 // Settings

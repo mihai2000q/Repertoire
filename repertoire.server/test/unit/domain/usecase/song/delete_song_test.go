@@ -99,7 +99,7 @@ func TestDeleteSong_WhenGetAllByAlbumAndTrackNoFails_ShouldReturnInternalServerE
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteSong_WhenUpdateAllFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteSong_WhenUpdateAllAlbumSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewDeleteSong(songRepository, nil, nil)
@@ -194,7 +194,7 @@ func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testi
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Delete", id).Return(internalError).Once()
+	songRepository.On("Delete", []uuid.UUID{id}).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
@@ -220,7 +220,7 @@ func TestDeleteSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 		Return(nil, mockSong).
 		Once()
 
-	songRepository.On("Delete", id).Return(nil).Once()
+	songRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{*mockSong}).
@@ -321,7 +321,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			songRepository.On("GetWithPlaylistsAndSongs", mock.IsType(&tt.song), id).
 				Return(nil, &tt.song).
 				Once()
-			songRepository.On("Delete", id).Return(nil).Once()
+			songRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
 
 			if tt.song.AlbumID != nil {
 				mockAlbumSongs := slices.Clone(tt.albumSongs)

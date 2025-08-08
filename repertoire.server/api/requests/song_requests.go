@@ -63,6 +63,10 @@ type UpdateSongSettingsRequest struct {
 	DefaultBandMemberID *uuid.UUID
 }
 
+type BulkDeleteSongsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
 type CreateSectionRequest struct {
 	Name   string    `validate:"required,max=30"`
 	TypeID uuid.UUID `validate:"required"`

@@ -61,7 +61,7 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		}
 	}
 
-	err = d.repository.Delete(id)
+	err = d.repository.Delete([]uuid.UUID{id})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

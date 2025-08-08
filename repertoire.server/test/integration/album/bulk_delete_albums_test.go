@@ -53,9 +53,9 @@ func TestBulkDeleteAlbums_WhenSuccessful_ShouldDeleteAlbums(t *testing.T) {
 
 	db := utils.GetDatabase(t)
 
-	var deletedAlbum []model.Album
-	db.Find(&deletedAlbum, request.IDs)
-	assert.Empty(t, deletedAlbum)
+	var deletedAlbums []model.Album
+	db.Find(&deletedAlbums, request.IDs)
+	assert.Empty(t, deletedAlbums)
 
 	for _, album := range albums {
 		if len(album.Songs) > 0 {
@@ -99,9 +99,9 @@ func TestBulkDeleteAlbums_WhenWithSongs_ShouldBulkDeleteAlbumsAndSongs(t *testin
 
 	db := utils.GetDatabase(t)
 
-	var deletedAlbum []model.Album
-	db.Find(&deletedAlbum, request.IDs)
-	assert.Empty(t, deletedAlbum)
+	var deletedAlbums []model.Album
+	db.Find(&deletedAlbums, request.IDs)
+	assert.Empty(t, deletedAlbums)
 
 	for _, album := range albums {
 		var ids []uuid.UUID

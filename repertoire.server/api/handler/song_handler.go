@@ -183,6 +183,23 @@ func (s SongHandler) UpdateSettings(c *gin.Context) {
 	s.SendMessage(c, "song's settings have been updated successfully")
 }
 
+func (s SongHandler) BulkDelete(c *gin.Context) {
+	var request requests.BulkDeleteSongsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.BulkDelete(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "songs have been deleted successfully")
+}
+
 func (s SongHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

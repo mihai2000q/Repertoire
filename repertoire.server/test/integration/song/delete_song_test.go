@@ -57,7 +57,7 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 			db := utils.GetDatabase(t)
-			db.Preload("Playlists").Preload("PlaylistSongs").Find(&test.song, test.song.ID)
+			db.Preload("Playlists").Find(&test.song, test.song.ID)
 
 			messages := utils.SubscribeToTopic(topics.SongsDeletedTopic)
 
@@ -74,16 +74,32 @@ func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
 			db.Find(&deletedSong, test.song.ID)
 			assert.Empty(t, deletedSong)
 
+			// assert ordered album
 			if test.song.AlbumID != nil {
 				var albumSongs []model.Song
 				db.Order("album_track_no").Find(&albumSongs, model.Song{AlbumID: test.song.AlbumID})
 
 				for i, song := range albumSongs {
+					assert.NotEqual(t, test.song.ID, song.ID)
 					assert.Equal(t, uint(i+1), *song.AlbumTrackNo)
 				}
 			}
 
+			// get playlists from song
+			var playlistsIds []uuid.UUID
 			for _, playlist := range test.song.Playlists {
+				playlistsIds = append(playlistsIds, playlist.ID)
+			}
+
+			var playlists []model.Playlist
+			db.
+				Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+					return db.Order("song_track_no")
+				}).
+				Find(&playlists, playlistsIds)
+
+			// assert ordered playlists
+			for _, playlist := range playlists {
 				for i, playlistSong := range playlist.PlaylistSongs {
 					assert.NotEqual(t, test.song.ID, playlistSong.SongID)
 					assert.Equal(t, uint(i+1), playlistSong.SongTrackNo)
