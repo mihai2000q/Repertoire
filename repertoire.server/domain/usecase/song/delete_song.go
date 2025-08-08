@@ -90,18 +90,20 @@ func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
 		albumSongs[i].AlbumTrackNo = &trackNo
 	}
 
-	err = d.repository.UpdateAll(&albumSongs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if len(albumSongs) != 0 {
+		err = d.repository.UpdateAll(&albumSongs)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
 	}
 
 	return nil
 }
 
 func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode {
+	var playlistSongsToUpdate []model.PlaylistSong
 	for _, playlist := range song.Playlists {
 		songsFound := uint(0)
-		var playlistSongsToUpdate []model.PlaylistSong
 		for _, playlistSong := range playlist.PlaylistSongs {
 			if playlistSong.SongID == song.ID {
 				songsFound++
@@ -113,10 +115,14 @@ func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode 
 				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
 			}
 		}
+	}
+
+	if len(playlistSongsToUpdate) != 0 {
 		err := d.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
 	}
+
 	return nil
 }
