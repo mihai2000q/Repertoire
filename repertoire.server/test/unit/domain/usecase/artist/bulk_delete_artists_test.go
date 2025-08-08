@@ -50,7 +50,7 @@ func TestBulkDeleteArtists_WhenGetArtistsFails_ShouldReturnInternalServerError(t
 	artistRepository.AssertExpectations(t)
 }
 
-func TestBulkDeleteArtists_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteArtists_WhenArtistsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewBulkDeleteArtists(artistRepository, nil, nil)

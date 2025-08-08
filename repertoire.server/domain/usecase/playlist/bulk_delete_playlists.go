@@ -2,47 +2,45 @@ package playlist
 
 import (
 	"errors"
-	"reflect"
+	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
-type DeletePlaylist struct {
+type BulkDeletePlaylists struct {
 	repository              repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
-func NewDeletePlaylist(
+func NewBulkDeletePlaylists(
 	repository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
-) DeletePlaylist {
-	return DeletePlaylist{
+) BulkDeletePlaylists {
+	return BulkDeletePlaylists{
 		repository:              repository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
-	var playlist model.Playlist
-	err := d.repository.Get(&playlist, id)
+func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode {
+	var playlists []model.Playlist
+	err := b.repository.GetAllByIDs(&playlists, request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if reflect.ValueOf(playlist).IsZero() {
-		return wrapper.NotFoundError(errors.New("playlist not found"))
+	if len(playlists) == 0 {
+		return wrapper.NotFoundError(errors.New("playlists not found"))
 	}
 
-	err = d.repository.Delete([]uuid.UUID{id})
+	err = b.repository.Delete(request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, []model.Playlist{playlist})
+	err = b.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, playlists)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

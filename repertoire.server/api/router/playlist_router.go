@@ -20,6 +20,7 @@ func (p PlaylistRouter) RegisterRoutes() {
 		api.POST("/add-albums", p.handler.AddAlbums)
 		api.POST("/add-artists", p.handler.AddArtists)
 		api.PUT("", p.handler.Update)
+		api.PUT("/bulk-delete", p.handler.BulkDelete)
 		api.DELETE("/:id", p.handler.Delete)
 	}
 

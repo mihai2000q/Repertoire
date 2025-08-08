@@ -68,7 +68,7 @@ func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("Delete", id).Return(internalError).Once()
+	playlistRepository.On("Delete", []uuid.UUID{id}).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
@@ -94,7 +94,7 @@ func TestDeletePlaylist_WhenPublishFails_ShouldReturnInternalServerError(t *test
 	}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	playlistRepository.On("Delete", id).Return(nil).Once()
+	playlistRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
 
 	internalError := errors.New("internal error")
 	messagePublisherService.On("Publish", topics.PlaylistsDeletedTopic, mock.IsType([]model.Playlist{})).
@@ -124,7 +124,7 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 		Return(nil, &expectedPlaylist).
 		Once()
 
-	playlistRepository.On("Delete", expectedPlaylist.ID).Return(nil).Once()
+	playlistRepository.On("Delete", []uuid.UUID{expectedPlaylist.ID}).Return(nil).Once()
 
 	messagePublisherService.On("Publish", topics.PlaylistsDeletedTopic, []model.Playlist{expectedPlaylist}).
 		Return(nil).

@@ -180,6 +180,23 @@ func (p PlaylistHandler) Update(c *gin.Context) {
 	p.SendMessage(c, "playlist has been updated successfully")
 }
 
+func (p PlaylistHandler) BulkDelete(c *gin.Context) {
+	var request requests.BulkDeletePlaylistsRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.BulkDelete(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "playlists have been deleted successfully")
+}
+
 func (p PlaylistHandler) Delete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {

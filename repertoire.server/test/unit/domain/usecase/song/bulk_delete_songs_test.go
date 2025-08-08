@@ -41,7 +41,7 @@ func TestBulkDeleteSongs_WhenGetSongsFails_ShouldReturnInternalServerError(t *te
 	songRepository.AssertExpectations(t)
 }
 
-func TestBulkDeleteSongs_WhenGetSongsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteSongs_WhenSongsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewBulkDeleteSongs(songRepository, nil, nil)
