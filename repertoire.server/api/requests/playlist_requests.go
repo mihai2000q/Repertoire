@@ -41,6 +41,18 @@ type AddArtistsToPlaylistRequest struct {
 	ForceAdd  *bool
 }
 
+type UpdatePlaylistRequest struct {
+	ID          uuid.UUID `validate:"required"`
+	Title       string    `validate:"required,max=100"`
+	Description string
+}
+
+type BulkDeletePlaylistsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
+// Songs
+
 type AddSongsToPlaylistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
 	SongIDs  []uuid.UUID `validate:"min=1"`
@@ -49,12 +61,6 @@ type AddSongsToPlaylistRequest struct {
 
 type ShufflePlaylistSongsRequest struct {
 	ID uuid.UUID `validate:"required"`
-}
-
-type UpdatePlaylistRequest struct {
-	ID          uuid.UUID `validate:"required"`
-	Title       string    `validate:"required,max=100"`
-	Description string
 }
 
 type MoveSongFromPlaylistRequest struct {

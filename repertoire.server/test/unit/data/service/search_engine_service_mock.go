@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 )
 
 type SearchEngineServiceMock struct {

@@ -14,7 +14,7 @@
   "engine": {
     "type": "memory"
   },
-  "http_server" : {
+  "http_server": {
     "port": "8003"
   },
   "admin": {
@@ -22,7 +22,7 @@
     "password": "admin",
     "secret": "admin-secret"
   },
-  "log" : {
+  "log": {
     "level": "info"
   },
   "channel": {

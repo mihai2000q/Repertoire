@@ -15,6 +15,7 @@ import (
 type PlaylistService interface {
 	AddAlbums(request requests.AddAlbumsToPlaylistRequest) (*responses.AddAlbumsToPlaylistResponse, *wrapper.ErrorCode)
 	AddArtists(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode)
+	BulkDelete(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -37,6 +38,7 @@ type PlaylistService interface {
 type playlistService struct {
 	addAlbumsToPlaylist        playlist.AddAlbumsToPlaylist
 	addArtistsToPlaylist       playlist.AddArtistsToPlaylist
+	bulkDeletePlaylists        playlist.BulkDeletePlaylists
 	createPlaylist             playlist.CreatePlaylist
 	deletePlaylist             playlist.DeletePlaylist
 	deleteImageFromPlaylist    playlist.DeleteImageFromPlaylist
@@ -56,6 +58,7 @@ type playlistService struct {
 func NewPlaylistService(
 	addAlbumsToPlaylist playlist.AddAlbumsToPlaylist,
 	addArtistsToPlaylist playlist.AddArtistsToPlaylist,
+	bulkDeletePlaylists playlist.BulkDeletePlaylists,
 	createPlaylist playlist.CreatePlaylist,
 	deletePlaylist playlist.DeletePlaylist,
 	deleteImageFromPlaylist playlist.DeleteImageFromPlaylist,
@@ -74,6 +77,7 @@ func NewPlaylistService(
 	return &playlistService{
 		addAlbumsToPlaylist:        addAlbumsToPlaylist,
 		addArtistsToPlaylist:       addArtistsToPlaylist,
+		bulkDeletePlaylists:        bulkDeletePlaylists,
 		createPlaylist:             createPlaylist,
 		deletePlaylist:             deletePlaylist,
 		deleteImageFromPlaylist:    deleteImageFromPlaylist,
@@ -99,6 +103,10 @@ func (p *playlistService) AddArtists(
 	request requests.AddArtistsToPlaylistRequest,
 ) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addArtistsToPlaylist.Handle(request)
+}
+
+func (p *playlistService) BulkDelete(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode {
+	return p.bulkDeletePlaylists.Handle(request)
 }
 
 func (p *playlistService) Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

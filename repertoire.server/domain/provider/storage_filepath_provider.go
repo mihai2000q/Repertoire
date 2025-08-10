@@ -1,12 +1,13 @@
 package provider
 
 import (
-	"github.com/google/uuid"
 	"mime/multipart"
 	"path/filepath"
 	"repertoire/server/model"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type StorageFilePathProvider interface {

@@ -1,12 +1,13 @@
 package user
 
 import (
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/test/integration/test/assertion"
 	userData "repertoire/server/test/integration/test/data/user"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {

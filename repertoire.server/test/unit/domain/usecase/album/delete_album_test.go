@@ -95,7 +95,7 @@ func TestDeleteAlbum_WhenDeleteAlbumFails_ShouldReturnInternalServerError(t *tes
 	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("Delete", request.ID).Return(internalError).Once()
+	albumRepository.On("Delete", []uuid.UUID{request.ID}).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -126,7 +126,7 @@ func TestDeleteAlbum_WhenDeleteAlbumWithSongsFails_ShouldReturnInternalServerErr
 		Once()
 
 	internalError := errors.New("internal error")
-	albumRepository.On("DeleteWithSongs", request.ID).Return(internalError).Once()
+	albumRepository.On("DeleteWithSongs", []uuid.UUID{request.ID}).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -150,10 +150,10 @@ func TestDeleteAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing
 	mockAlbum := &model.Album{ID: request.ID}
 	albumRepository.On("Get", new(model.Album), request.ID).Return(nil, mockAlbum).Once()
 
-	albumRepository.On("Delete", request.ID).Return(nil).Once()
+	albumRepository.On("Delete", []uuid.UUID{request.ID}).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.AlbumDeletedTopic, *mockAlbum).
+	messagePublisherService.On("Publish", topics.AlbumsDeletedTopic, []model.Album{*mockAlbum}).
 		Return(internalError).
 		Once()
 
@@ -210,12 +210,12 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 			}
 
 			if tt.withSongs {
-				albumRepository.On("DeleteWithSongs", request.ID).Return(nil).Once()
+				albumRepository.On("DeleteWithSongs", []uuid.UUID{request.ID}).Return(nil).Once()
 			} else {
-				albumRepository.On("Delete", request.ID).Return(nil).Once()
+				albumRepository.On("Delete", []uuid.UUID{request.ID}).Return(nil).Once()
 			}
 
-			messagePublisherService.On("Publish", topics.AlbumDeletedTopic, tt.album).
+			messagePublisherService.On("Publish", topics.AlbumsDeletedTopic, []model.Album{tt.album}).
 				Return(nil).
 				Once()
 

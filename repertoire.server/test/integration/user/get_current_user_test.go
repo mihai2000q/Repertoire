@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +10,8 @@ import (
 	userData "repertoire/server/test/integration/test/data/user"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetCurrentUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

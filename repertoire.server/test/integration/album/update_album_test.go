@@ -1,8 +1,6 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -15,6 +13,9 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

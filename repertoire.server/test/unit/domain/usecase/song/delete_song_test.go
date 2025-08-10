@@ -2,9 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal/message/topics"
@@ -13,6 +10,10 @@ import (
 	"repertoire/server/test/unit/data/service"
 	"slices"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestDeleteSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -98,7 +99,7 @@ func TestDeleteSong_WhenGetAllByAlbumAndTrackNoFails_ShouldReturnInternalServerE
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteSong_WhenUpdateAllFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteSong_WhenUpdateAllAlbumSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewDeleteSong(songRepository, nil, nil)
@@ -178,6 +179,7 @@ func TestDeleteSong_WhenUpdateAllPlaylistsSongsFails_ShouldReturnInternalServerE
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
 }
 
 func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -193,7 +195,7 @@ func TestDeleteSong_WhenDeleteSongFails_ShouldReturnInternalServerError(t *testi
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("Delete", id).Return(internalError).Once()
+	songRepository.On("Delete", []uuid.UUID{id}).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
@@ -219,10 +221,10 @@ func TestDeleteSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 		Return(nil, mockSong).
 		Once()
 
-	songRepository.On("Delete", id).Return(nil).Once()
+	songRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.SongDeletedTopic, *mockSong).
+	messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{*mockSong}).
 		Return(internalError).
 		Once()
 
@@ -238,141 +240,191 @@ func TestDeleteSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 	messagePublisherService.AssertExpectations(t)
 }
 
-func TestDeleteSong_WhenSuccessful_ShouldDeleteSong(t *testing.T) {
-	songID := uuid.New()
+func TestDeleteSong_WhenWithoutAlbumOrPlaylists_ShouldDeleteSong(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewDeleteSong(songRepository, nil, messagePublisherService)
 
-	tests := []struct {
-		name       string
-		song       model.Song
-		albumSongs []model.Song
-	}{
+	mockSong := model.Song{ID: uuid.New()}
+
+	id := mockSong.ID
+
+	songRepository.On("GetWithPlaylistsAndSongs", mock.IsType(&mockSong), id).
+		Return(nil, &mockSong).
+		Once()
+	songRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
+
+	messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{mockSong}).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id)
+
+	// then
+	assert.Nil(t, errCode)
+
+	songRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestDeleteSong_WhenWithAlbum_ShouldDeleteSongAndReorderAlbum(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewDeleteSong(songRepository, nil, messagePublisherService)
+
+	mockSong := model.Song{
+		ID:           uuid.New(),
+		AlbumID:      &[]uuid.UUID{uuid.New()}[0],
+		AlbumTrackNo: &[]uint{2}[0],
+	}
+
+	id := mockSong.ID
+
+	songRepository.On("GetWithPlaylistsAndSongs", mock.IsType(&mockSong), id).
+		Return(nil, &mockSong).
+		Once()
+
+	mockAlbumSongs := &[]model.Song{
+		{AlbumTrackNo: &[]uint{3}[0]},
+		{AlbumTrackNo: &[]uint{4}[0]},
+		{AlbumTrackNo: &[]uint{5}[0]},
+	}
+	oldAlbumSongs := slices.Clone(*mockAlbumSongs)
+	songRepository.
+		On(
+			"GetAllByAlbumAndTrackNo",
+			mock.IsType(mockAlbumSongs),
+			*mockSong.AlbumID,
+			*mockSong.AlbumTrackNo,
+		).
+		Return(nil, mockAlbumSongs).
+		Once()
+
+	songRepository.On("UpdateAll", mock.IsType(mockAlbumSongs)).
+		Run(func(args mock.Arguments) {
+			newSongs := args.Get(0).(*[]model.Song)
+			for i := range *newSongs {
+				assert.Equal(t, *oldAlbumSongs[i].AlbumTrackNo-1, *(*newSongs)[i].AlbumTrackNo)
+			}
+		}).
+		Return(nil).
+		Once()
+
+	songRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
+
+	messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{mockSong}).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(id)
+
+	// then
+	assert.Nil(t, errCode)
+
+	songRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestDeleteSong_WhenWithPlaylists_ShouldDeleteSongAndReorderPlaylists(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := song.NewDeleteSong(songRepository, playlistRepository, messagePublisherService)
+
+	id := uuid.New()
+
+	mockPlaylists := []model.Playlist{
 		{
-			"Normal delete, without album",
-			model.Song{ID: songID},
-			[]model.Song{},
-		},
-		{
-			"With Album",
-			model.Song{
-				ID:           songID,
-				AlbumID:      &[]uuid.UUID{uuid.New()}[0],
-				AlbumTrackNo: &[]uint{2}[0],
-			},
-			[]model.Song{
-				{AlbumTrackNo: &[]uint{3}[0]},
-				{AlbumTrackNo: &[]uint{4}[0]},
-				{AlbumTrackNo: &[]uint{5}[0]},
-			},
-		},
-		{
-			"With Playlist",
-			model.Song{
-				ID:           songID,
-				AlbumID:      &[]uuid.UUID{uuid.New()}[0],
-				AlbumTrackNo: &[]uint{2}[0],
-				Playlists: []model.Playlist{
-					{
-						Title: "Playlist 1",
-						PlaylistSongs: []model.PlaylistSong{
-							{
-								SongID:      uuid.New(),
-								SongTrackNo: 1,
-							},
-							{
-								SongID:      songID,
-								SongTrackNo: 2,
-							},
-							{
-								SongID:      uuid.New(),
-								SongTrackNo: 3,
-							},
-						},
-					},
-					{
-						Title: "Playlist 2",
-						PlaylistSongs: []model.PlaylistSong{
-							{
-								SongID:      songID,
-								SongTrackNo: 1,
-							},
-							{
-								SongID:      uuid.New(),
-								SongTrackNo: 2,
-							},
-						},
-					},
+			Title: "Playlist 1",
+			PlaylistSongs: []model.PlaylistSong{
+				{
+					SongID:      uuid.New(),
+					SongTrackNo: 1,
+				},
+				{
+					SongID:      id,
+					SongTrackNo: 2,
+				},
+				{
+					SongID:      uuid.New(),
+					SongTrackNo: 3,
+				},
+				{
+					SongID:      id,
+					SongTrackNo: 4,
+				},
+				{
+					SongID:      uuid.New(),
+					SongTrackNo: 5,
 				},
 			},
-			[]model.Song{},
+		},
+		{
+			Title: "Playlist 2",
+			PlaylistSongs: []model.PlaylistSong{
+				{
+					SongID:      id,
+					SongTrackNo: 1,
+				},
+				{
+					SongID:      uuid.New(),
+					SongTrackNo: 2,
+				},
+			},
+		},
+	}
+	mockSong := model.Song{
+		ID:        id,
+		Playlists: mockPlaylists,
+	}
+
+	expectedOrderedPlaylistSongs := &[]model.PlaylistSong{
+		// Playlist 1
+		{
+			SongID:      mockPlaylists[0].PlaylistSongs[0].SongID,
+			SongTrackNo: 1,
+		},
+		{
+			SongID:      mockPlaylists[0].PlaylistSongs[2].SongID,
+			SongTrackNo: 2,
+		},
+		{
+			SongID:      mockPlaylists[0].PlaylistSongs[4].SongID,
+			SongTrackNo: 3,
+		},
+		// Playlist 2
+		{
+			SongID:      mockPlaylists[1].PlaylistSongs[1].SongID,
+			SongTrackNo: 1,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			songRepository := new(repository.SongRepositoryMock)
-			playlistRepository := new(repository.PlaylistRepositoryMock)
-			messagePublisherService := new(service.MessagePublisherServiceMock)
-			_uut := song.NewDeleteSong(songRepository, playlistRepository, messagePublisherService)
+	songRepository.On("GetWithPlaylistsAndSongs", mock.IsType(&mockSong), id).
+		Return(nil, &mockSong).
+		Once()
 
-			id := tt.song.ID
+	playlistRepository.On("UpdateAllPlaylistSongs", mock.IsType(expectedOrderedPlaylistSongs)).
+		Return(nil).
+		Once()
 
-			songRepository.On("GetWithPlaylistsAndSongs", mock.IsType(&tt.song), id).
-				Return(nil, &tt.song).
-				Once()
-			songRepository.On("Delete", id).Return(nil).Once()
+	songRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
 
-			if tt.song.AlbumID != nil {
-				mockAlbumSongs := slices.Clone(tt.albumSongs)
-				songRepository.
-					On(
-						"GetAllByAlbumAndTrackNo",
-						mock.IsType(&tt.albumSongs),
-						*tt.song.AlbumID,
-						*tt.song.AlbumTrackNo,
-					).
-					Return(nil, &mockAlbumSongs).
-					Once()
+	messagePublisherService.On("Publish", topics.SongsDeletedTopic, []model.Song{mockSong}).
+		Return(nil).
+		Once()
 
-				songRepository.On("UpdateAll", mock.IsType(&tt.albumSongs)).
-					Run(func(args mock.Arguments) {
-						newSongs := args.Get(0).(*[]model.Song)
-						for i := range *newSongs {
-							assert.Equal(t, *tt.albumSongs[i].AlbumTrackNo-1, *(*newSongs)[i].AlbumTrackNo)
-						}
-					}).
-					Return(nil).
-					Once()
-			}
+	// when
+	errCode := _uut.Handle(id)
 
-			for _, playlist := range tt.song.Playlists {
-				songRemovedIndex := slices.IndexFunc(playlist.PlaylistSongs, func(playlistSong model.PlaylistSong) bool {
-					return playlistSong.SongID == tt.song.ID
-				})
-				playlistRepository.On("UpdateAllPlaylistSongs", mock.IsType(&playlist.PlaylistSongs)).
-					Run(func(args mock.Arguments) {
-						newPlaylistSongs := args.Get(0).(*[]model.PlaylistSong)
-						for i := range *newPlaylistSongs {
-							expectedTrackNo := playlist.PlaylistSongs[songRemovedIndex+1+i].SongTrackNo - 1
-							assert.Equal(t, expectedTrackNo, (*newPlaylistSongs)[i].SongTrackNo)
-						}
-					}).
-					Return(nil).
-					Once()
-			}
+	// then
+	assert.Nil(t, errCode)
 
-			messagePublisherService.On("Publish", topics.SongDeletedTopic, tt.song).
-				Return(nil).
-				Once()
-
-			// when
-			errCode := _uut.Handle(id)
-
-			// then
-			assert.Nil(t, errCode)
-
-			songRepository.AssertExpectations(t)
-			messagePublisherService.AssertExpectations(t)
-		})
-	}
+	songRepository.AssertExpectations(t)
+	playlistRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
 }

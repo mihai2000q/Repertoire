@@ -1,10 +1,11 @@
 package internal
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"repertoire/server/internal"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestToFullURL_WhenIsNil_ShouldReturnNil(t *testing.T) {

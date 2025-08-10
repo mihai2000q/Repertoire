@@ -1,8 +1,9 @@
 package cache
 
 import (
-	"github.com/patrickmn/go-cache"
 	"time"
+
+	"github.com/patrickmn/go-cache"
 )
 
 type CentrifugoCache interface {

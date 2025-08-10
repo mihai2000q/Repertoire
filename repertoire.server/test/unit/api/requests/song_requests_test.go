@@ -621,6 +621,54 @@ func TestValidateUpdateSongSettingsRequest_WhenSingleFieldIsInvalid_ShouldReturn
 	}
 }
 
+func TestValidateBulkDeleteSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.BulkDeleteSongsRequest{
+		IDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateBulkDeleteSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.BulkDeleteSongsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// IDs Test Cases
+		{
+			"IDs is invalid because it requires at least 1 id",
+			requests.BulkDeleteSongsRequest{IDs: []uuid.UUID{}},
+			"IDs",
+			"min",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "BulkDeleteSongsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 // Sections
 
 var validSectionName = "James Solo"

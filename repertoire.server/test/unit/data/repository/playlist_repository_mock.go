@@ -72,6 +72,16 @@ func (p *PlaylistRepositoryMock) GetFiltersMetadata(
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error {
+	args := p.Called(playlists, ids)
+
+	if len(args) > 1 {
+		*playlists = *args.Get(1).(*[]model.Playlist)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetAllByUser(
 	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,
@@ -129,8 +139,8 @@ func (p *PlaylistRepositoryMock) UpdateAllPlaylistSongs(playlistSongs *[]model.P
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) Delete(id uuid.UUID) error {
-	args := p.Called(id)
+func (p *PlaylistRepositoryMock) Delete(ids []uuid.UUID) error {
+	args := p.Called(ids)
 	return args.Error(0)
 }
 

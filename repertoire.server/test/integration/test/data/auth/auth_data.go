@@ -1,9 +1,10 @@
 package auth
 
 import (
+	"repertoire/server/model"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"repertoire/server/model"
 )
 
 func SeedData(db *gorm.DB) {

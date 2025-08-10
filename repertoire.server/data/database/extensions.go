@@ -2,10 +2,11 @@ package database
 
 import (
 	"fmt"
-	"gorm.io/gorm"
 	"reflect"
 	"slices"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 func AddCoalesceToCompoundFields(str []string, compoundFields []string) []string {

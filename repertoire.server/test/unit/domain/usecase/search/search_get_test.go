@@ -2,8 +2,6 @@ package search
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/internal"
@@ -14,6 +12,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSearchGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {

@@ -1,8 +1,6 @@
 package search
 
 import (
-	"github.com/meilisearch/meilisearch-go"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
@@ -11,6 +9,9 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/meilisearch/meilisearch-go"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t *testing.T) {

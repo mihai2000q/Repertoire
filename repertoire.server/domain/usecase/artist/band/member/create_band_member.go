@@ -2,12 +2,13 @@ package member
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type CreateBandMember struct {

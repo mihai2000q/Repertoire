@@ -2,12 +2,13 @@ package storage
 
 import (
 	"encoding/json"
-	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
-	"go.uber.org/zap"
 	"net/http"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
+
+	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
+	"go.uber.org/zap"
 )
 
 type DeleteDirectoriesStorageHandler struct {

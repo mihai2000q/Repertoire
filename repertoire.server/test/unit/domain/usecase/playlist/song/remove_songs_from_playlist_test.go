@@ -229,8 +229,8 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 		Run(func(args mock.Arguments) {
 			songs := args.Get(0).(*[]model.PlaylistSong)
 			assert.Len(t, *songs, len(request.PlaylistSongIDs))
-			for _, song := range *songs {
-				assert.Contains(t, request.PlaylistSongIDs, song.ID)
+			for _, s := range *songs {
+				assert.Contains(t, request.PlaylistSongIDs, s.ID)
 			}
 		}).
 		Return(nil).
@@ -240,9 +240,9 @@ func TestRemoveSongsFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.
 		Run(func(args mock.Arguments) {
 			newSongs := args.Get(0).(*[]model.PlaylistSong)
 			assert.Len(t, *newSongs, len(*playlistSongs)-len(request.PlaylistSongIDs))
-			for i, song := range *newSongs {
-				assert.NotContains(t, request.PlaylistSongIDs, song.ID)
-				assert.Equal(t, uint(i)+1, song.SongTrackNo)
+			for i, s := range *newSongs {
+				assert.NotContains(t, request.PlaylistSongIDs, s.ID)
+				assert.Equal(t, uint(i)+1, s.SongTrackNo)
 			}
 		}).
 		Return(nil).

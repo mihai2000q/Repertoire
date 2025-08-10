@@ -1,8 +1,9 @@
 package processor
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/model"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type ProgressProcessorMock struct {

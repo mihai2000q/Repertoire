@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/server/data/service"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type JWTAuthMiddleware struct {

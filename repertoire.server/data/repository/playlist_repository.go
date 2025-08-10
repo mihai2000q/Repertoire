@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type PlaylistRepository interface {
@@ -19,6 +20,7 @@ type PlaylistRepository interface {
 	) error
 	GetPlaylistSongsCount(count *int64, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
+	GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
@@ -32,7 +34,7 @@ type PlaylistRepository interface {
 	AddSongs(playlistSongs *[]model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
 	UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error
-	Delete(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
 	RemoveSongs(playlistSongs *[]model.PlaylistSong) error
 }
 
@@ -101,6 +103,10 @@ func (p playlistRepository) GetFiltersMetadata(
 	return tx.Scan(&metadata).Error
 }
 
+func (p playlistRepository) GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error {
+	return p.client.Model(&model.Playlist{}).Find(&playlists, ids).Error
+}
+
 var compoundPlaylistsFields = []string{"songs_count"}
 
 func (p playlistRepository) GetAllByUser(
@@ -162,8 +168,8 @@ func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.Playli
 	})
 }
 
-func (p playlistRepository) Delete(id uuid.UUID) error {
-	return p.client.Delete(&model.Playlist{}, id).Error
+func (p playlistRepository) Delete(ids []uuid.UUID) error {
+	return p.client.Delete(&model.Playlist{}, ids).Error
 }
 
 func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {

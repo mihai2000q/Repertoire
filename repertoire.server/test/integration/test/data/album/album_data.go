@@ -1,11 +1,12 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func SeedData(db *gorm.DB) {

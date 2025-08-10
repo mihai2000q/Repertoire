@@ -1,8 +1,6 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/message/topics"
@@ -12,6 +10,9 @@ import (
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -46,7 +47,7 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
-			messages := utils.SubscribeToTopic(topics.AlbumDeletedTopic)
+			messages := utils.SubscribeToTopic(topics.AlbumsDeletedTopic)
 
 			// when
 			w := httptest.NewRecorder()
@@ -72,8 +73,9 @@ func TestDeleteAlbum_WhenSuccessful_ShouldDeleteAlbum(t *testing.T) {
 				assert.NotEmpty(t, songs)
 			}
 
-			assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
-				assert.Equal(t, test.album.ID, payloadAlbum.ID)
+			assertion.AssertMessage(t, messages, func(payloadAlbums []model.Album) {
+				assert.Len(t, payloadAlbums, 1)
+				assert.Equal(t, test.album.ID, payloadAlbums[0].ID)
 			})
 		})
 	}
@@ -85,7 +87,7 @@ func TestDeleteAlbum_WhenWithSongs_ShouldDeleteAlbumAndSongs(t *testing.T) {
 
 	album := albumData.Albums[0]
 
-	messages := utils.SubscribeToTopic(topics.AlbumDeletedTopic)
+	messages := utils.SubscribeToTopic(topics.AlbumsDeletedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -109,7 +111,8 @@ func TestDeleteAlbum_WhenWithSongs_ShouldDeleteAlbumAndSongs(t *testing.T) {
 	db.Find(&songs, ids)
 	assert.Empty(t, songs)
 
-	assertion.AssertMessage(t, messages, func(payloadAlbum model.Album) {
-		assert.Equal(t, album.ID, payloadAlbum.ID)
+	assertion.AssertMessage(t, messages, func(payloadAlbums []model.Album) {
+		assert.Len(t, payloadAlbums, 1)
+		assert.Equal(t, album.ID, payloadAlbums[0].ID)
 	})
 }

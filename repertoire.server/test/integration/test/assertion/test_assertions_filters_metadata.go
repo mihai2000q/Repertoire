@@ -1,13 +1,14 @@
 package assertion
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, albums []model.Album) {

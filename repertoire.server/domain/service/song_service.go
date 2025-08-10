@@ -14,6 +14,7 @@ import (
 type SongService interface {
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
 	AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode
+	BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -43,6 +44,7 @@ type SongService interface {
 type songService struct {
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal
 	addPartialSongRehearsal song.AddPartialSongRehearsal
+	bulkDeleteSongs         song.BulkDeleteSongs
 	createSong              song.CreateSong
 	deleteImageFromSong     song.DeleteImageFromSong
 	deleteSong              song.DeleteSong
@@ -69,6 +71,7 @@ type songService struct {
 func NewSongService(
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
 	addPartialSongRehearsal song.AddPartialSongRehearsal,
+	bulkDeleteSongs song.BulkDeleteSongs,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
 	deleteSong song.DeleteSong,
@@ -94,6 +97,7 @@ func NewSongService(
 	return &songService{
 		addPerfectSongRehearsal: addPerfectSongRehearsal,
 		addPartialSongRehearsal: addPartialSongRehearsal,
+		bulkDeleteSongs:         bulkDeleteSongs,
 		createSong:              createSong,
 		deleteImageFromSong:     deleteImageFromSong,
 		deleteSong:              deleteSong,
@@ -124,6 +128,10 @@ func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehears
 
 func (s *songService) AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {
 	return s.addPartialSongRehearsal.Handle(request)
+}
+
+func (s *songService) BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode {
+	return s.bulkDeleteSongs.Handle(request)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

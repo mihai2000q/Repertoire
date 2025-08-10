@@ -2,7 +2,6 @@ package artist
 
 import (
 	"encoding/json"
-	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +10,8 @@ import (
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"gorm.io/gorm"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

@@ -2,9 +2,10 @@ package utils
 
 import (
 	"fmt"
-	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/search"
 	"time"
+
+	"github.com/meilisearch/meilisearch-go"
 )
 
 type MigrationStatus struct {

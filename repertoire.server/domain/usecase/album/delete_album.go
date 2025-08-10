@@ -9,6 +9,8 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type DeleteAlbum struct {
@@ -42,15 +44,15 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 	}
 
 	if request.WithSongs {
-		err = d.repository.DeleteWithSongs(request.ID)
+		err = d.repository.DeleteWithSongs([]uuid.UUID{request.ID})
 	} else {
-		err = d.repository.Delete(request.ID)
+		err = d.repository.Delete([]uuid.UUID{request.ID})
 	}
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.AlbumDeletedTopic, album)
+	err = d.messagePublisherService.Publish(topics.AlbumsDeletedTopic, []model.Album{album})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

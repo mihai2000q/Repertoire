@@ -3,6 +3,15 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"mime/multipart"
+	"os"
+	"repertoire/server/internal"
+	"repertoire/server/internal/message/topics"
+	"repertoire/server/model"
+	"repertoire/server/test/integration/test/core"
+	"testing"
+	"time"
+
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/centrifugal/centrifuge-go"
@@ -12,14 +21,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"mime/multipart"
-	"os"
-	"repertoire/server/internal"
-	"repertoire/server/internal/message/topics"
-	"repertoire/server/model"
-	"repertoire/server/test/integration/test/core"
-	"testing"
-	"time"
 )
 
 // Clients

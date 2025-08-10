@@ -2,9 +2,10 @@ package message
 
 import (
 	"context"
+	"repertoire/server/data/logger"
+
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
-	"repertoire/server/data/logger"
 )
 
 type Publisher interface {

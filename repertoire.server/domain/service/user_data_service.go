@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/domain/usecase/udata/guitar/tuning"
 	"repertoire/server/domain/usecase/udata/instrument"
 	"repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/internal/wrapper"
+
+	"github.com/google/uuid"
 )
 
 type UserDataService interface {

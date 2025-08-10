@@ -1,9 +1,10 @@
 package requests
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
+
+	"github.com/google/uuid"
 )
 
 type GetSongsRequest struct {
@@ -60,6 +61,10 @@ type UpdateSongSettingsRequest struct {
 	SettingsID          uuid.UUID `validate:"required"`
 	DefaultInstrumentID *uuid.UUID
 	DefaultBandMemberID *uuid.UUID
+}
+
+type BulkDeleteSongsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
 }
 
 type CreateSectionRequest struct {

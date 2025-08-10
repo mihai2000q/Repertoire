@@ -1,8 +1,6 @@
 package song
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -11,6 +9,9 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSongCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {

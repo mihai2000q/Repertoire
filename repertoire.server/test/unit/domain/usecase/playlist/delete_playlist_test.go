@@ -2,7 +2,6 @@ package playlist
 
 import (
 	"errors"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal/message/topics"
@@ -10,6 +9,8 @@ import (
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -67,7 +68,7 @@ func TestDeletePlaylist_WhenDeletePlaylistFails_ShouldReturnInternalServerError(
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("Delete", id).Return(internalError).Once()
+	playlistRepository.On("Delete", []uuid.UUID{id}).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
@@ -93,10 +94,10 @@ func TestDeletePlaylist_WhenPublishFails_ShouldReturnInternalServerError(t *test
 	}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	playlistRepository.On("Delete", id).Return(nil).Once()
+	playlistRepository.On("Delete", []uuid.UUID{id}).Return(nil).Once()
 
 	internalError := errors.New("internal error")
-	messagePublisherService.On("Publish", topics.PlaylistDeletedTopic, mock.IsType(model.Playlist{})).
+	messagePublisherService.On("Publish", topics.PlaylistsDeletedTopic, mock.IsType([]model.Playlist{})).
 		Return(internalError).
 		Once()
 
@@ -123,9 +124,9 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 		Return(nil, &expectedPlaylist).
 		Once()
 
-	playlistRepository.On("Delete", expectedPlaylist.ID).Return(nil).Once()
+	playlistRepository.On("Delete", []uuid.UUID{expectedPlaylist.ID}).Return(nil).Once()
 
-	messagePublisherService.On("Publish", topics.PlaylistDeletedTopic, expectedPlaylist).
+	messagePublisherService.On("Publish", topics.PlaylistsDeletedTopic, []model.Playlist{expectedPlaylist}).
 		Return(nil).
 		Once()
 

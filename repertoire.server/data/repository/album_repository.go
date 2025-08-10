@@ -2,10 +2,11 @@ package repository
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type AlbumRepository interface {
@@ -14,6 +15,7 @@ type AlbumRepository interface {
 	GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error
 	GetWithAssociations(album *model.Album, id uuid.UUID, songsOrderBy []string) error
 	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID, searchBy []string) error
+	GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
@@ -29,8 +31,8 @@ type AlbumRepository interface {
 	Update(album *model.Album) error
 	UpdateWithAssociations(album *model.Album) error
 	UpdateAllWithSongs(albums *[]model.Album) error
-	Delete(id uuid.UUID) error
-	DeleteWithSongs(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
+	DeleteWithSongs(ids []uuid.UUID) error
 	RemoveSongs(album *model.Album, song *[]model.Song) error
 }
 
@@ -107,6 +109,10 @@ func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata
 		return json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
 	}
 	return nil
+}
+
+func (a albumRepository) GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error {
+	return a.client.Model(&model.Album{}).Find(&albums, ids).Error
 }
 
 func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {
@@ -197,18 +203,18 @@ func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
 	})
 }
 
-func (a albumRepository) Delete(id uuid.UUID) error {
-	return a.client.Delete(&model.Album{}, id).Error
+func (a albumRepository) Delete(ids []uuid.UUID) error {
+	return a.client.Delete(&model.Album{}, ids).Error
 }
 
-func (a albumRepository) DeleteWithSongs(id uuid.UUID) error {
+func (a albumRepository) DeleteWithSongs(ids []uuid.UUID) error {
 	return a.client.Transaction(func(tx *gorm.DB) error {
-		err := tx.Where("album_id = ?", id).Delete(&model.Song{}).Error
+		err := tx.Where("album_id IN (?)", ids).Delete(&model.Song{}).Error
 		if err != nil {
 			return err
 		}
 
-		err = tx.Delete(&model.Album{}, id).Error
+		err = tx.Delete(&model.Album{}, ids).Error
 		if err != nil {
 			return err
 		}

@@ -37,12 +37,12 @@ func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 
-	err = d.repository.Delete(id)
+	err = d.repository.Delete([]uuid.UUID{id})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.PlaylistDeletedTopic, playlist)
+	err = d.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, []model.Playlist{playlist})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

@@ -1,13 +1,14 @@
 package search
 
 import (
-	"github.com/goccy/go-json"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"strings"
+
+	"github.com/goccy/go-json"
 )
 
 type Get struct {

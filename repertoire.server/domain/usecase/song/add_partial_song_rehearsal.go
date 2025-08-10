@@ -2,7 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -10,6 +9,8 @@ import (
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type AddPartialSongRehearsal struct {

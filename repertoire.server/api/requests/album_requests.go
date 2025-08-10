@@ -1,8 +1,9 @@
 package requests
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
+
+	"github.com/google/uuid"
 )
 
 type GetAlbumRequest struct {
@@ -49,6 +50,11 @@ type MoveSongFromAlbumRequest struct {
 type RemoveSongsFromAlbumRequest struct {
 	ID      uuid.UUID   `validate:"required"`
 	SongIDs []uuid.UUID `validate:"min=1"`
+}
+
+type BulkDeleteAlbumsRequest struct {
+	IDs       []uuid.UUID `validate:"min=1"`
+	WithSongs bool
 }
 
 type DeleteAlbumRequest struct {

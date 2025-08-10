@@ -2,10 +2,11 @@ package logger
 
 import (
 	"context"
+	"time"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	gormlogger "gorm.io/gorm/logger"
-	"time"
 )
 
 var gormLevelsMap = map[zapcore.Level]gormlogger.LogLevel{

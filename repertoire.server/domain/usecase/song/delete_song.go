@@ -2,7 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
@@ -10,6 +9,8 @@ import (
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 type DeleteSong struct {
@@ -60,12 +61,12 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		}
 	}
 
-	err = d.repository.Delete(id)
+	err = d.repository.Delete([]uuid.UUID{id})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.SongDeletedTopic, song)
+	err = d.messagePublisherService.Publish(topics.SongsDeletedTopic, []model.Song{song})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -89,18 +90,20 @@ func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
 		albumSongs[i].AlbumTrackNo = &trackNo
 	}
 
-	err = d.repository.UpdateAll(&albumSongs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if len(albumSongs) != 0 {
+		err = d.repository.UpdateAll(&albumSongs)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
 	}
 
 	return nil
 }
 
 func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode {
+	var playlistSongsToUpdate []model.PlaylistSong
 	for _, playlist := range song.Playlists {
 		songsFound := uint(0)
-		var playlistSongsToUpdate []model.PlaylistSong
 		for _, playlistSong := range playlist.PlaylistSongs {
 			if playlistSong.SongID == song.ID {
 				songsFound++
@@ -112,10 +115,14 @@ func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode 
 				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
 			}
 		}
+	}
+
+	if len(playlistSongsToUpdate) != 0 {
 		err := d.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
 	}
+
 	return nil
 }

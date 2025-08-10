@@ -1,12 +1,13 @@
 package service
 
 import (
-	"github.com/google/uuid"
-	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/search"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/meilisearch/meilisearch-go"
 )
 
 type SearchEngineService interface {

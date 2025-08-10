@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/server"
 	"repertoire/server/api/validation"
 	"repertoire/server/domain/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SearchHandler struct {

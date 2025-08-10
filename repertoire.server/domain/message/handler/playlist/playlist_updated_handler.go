@@ -2,10 +2,11 @@ package playlist
 
 import (
 	"encoding/json"
-	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+
+	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 )
 
 type PlaylistUpdatedHandler struct {
