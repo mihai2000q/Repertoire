@@ -76,7 +76,7 @@ func (a ArtistsDeletedHandler) syncWithSearchEngine(artists []model.Artist) erro
 	}
 
 	// if the artist already has songs and albums populated, there is no need to update them, as they have been deleted
-	if len(songIDs) > 0 && len(albumIDs) > 0 {
+	if len(songIDs) > 0 || len(albumIDs) > 0 {
 		return nil
 	}
 
