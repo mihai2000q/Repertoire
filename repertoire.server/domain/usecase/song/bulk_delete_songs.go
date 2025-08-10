@@ -8,6 +8,7 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"slices"
 	"sync"
 )
 
@@ -73,66 +74,77 @@ func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *wrappe
 }
 
 func (b BulkDeleteSongs) reorderAlbums(songs []model.Song) *wrapper.ErrorCode {
-	var albumSongsToUpdate []model.Song
+	var albumsToReorder []model.Album
 	for _, song := range songs {
-		if song.AlbumID == nil {
-			continue
+		if song.AlbumID != nil && !slices.ContainsFunc(albumsToReorder, func(album model.Album) bool {
+			return album.ID == *song.AlbumID
+		}) {
+			albumsToReorder = append(albumsToReorder, *song.Album)
 		}
+	}
 
-		// PROBLEM:
-		// I delete a song from songs[0].Album.Songs
-		// but songs[1].Album.Songs has the same Album as songs[0],
-		// and on songs[1].Album.Songs, songs[0] still exists.
-		songFound := false
-		for _, albumSong := range song.Album.Songs {
-			if albumSong.ID == song.ID {
-				songFound = true
+	var albumSongsToUpdate []model.Song
+	for _, album := range albumsToReorder {
+		songsFound := uint(0)
+		for _, albumSong := range album.Songs {
+			if slices.ContainsFunc(songs, func(song model.Song) bool {
+				return song.ID == albumSong.ID
+			}) {
+				songsFound++
 				continue
 			}
-			if songFound {
-				trackNo := *albumSong.AlbumTrackNo - 1
+			if songsFound != 0 {
+				trackNo := *albumSong.AlbumTrackNo - songsFound
 				albumSong.AlbumTrackNo = &trackNo
 				albumSongsToUpdate = append(albumSongsToUpdate, albumSong)
 			}
 		}
 	}
 
-	if len(albumSongsToUpdate) == 0 {
-		return nil
-	}
-	err := b.repository.UpdateAll(&albumSongsToUpdate)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if len(albumSongsToUpdate) != 0 {
+		err := b.repository.UpdateAll(&albumSongsToUpdate)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
 	}
 
 	return nil
 }
 
 func (b BulkDeleteSongs) reorderSongsInPlaylists(songs []model.Song) *wrapper.ErrorCode {
-	var playlistSongsToUpdate []model.PlaylistSong
+	var playlistsToReorder []model.Playlist
 	for _, song := range songs {
 		for _, playlist := range song.Playlists {
-			songsFound := uint(0)
-			for _, playlistSong := range playlist.PlaylistSongs {
-				if playlistSong.SongID == song.ID {
-					songsFound++
-					continue
-				}
-
-				if songsFound != 0 {
-					playlistSong.SongTrackNo = playlistSong.SongTrackNo - songsFound
-					playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
-				}
+			if !slices.ContainsFunc(playlistsToReorder, func(p model.Playlist) bool {
+				return p.ID == playlist.ID
+			}) {
+				playlistsToReorder = append(playlistsToReorder, playlist)
 			}
 		}
 	}
 
-	if len(playlistSongsToUpdate) == 0 {
-		return nil
+	var playlistSongsToUpdate []model.PlaylistSong
+	for _, playlist := range playlistsToReorder {
+		songsFound := uint(0)
+		for _, playlistSong := range playlist.PlaylistSongs {
+			if slices.ContainsFunc(songs, func(song model.Song) bool {
+				return song.ID == playlistSong.SongID
+			}) {
+				songsFound++
+				continue
+			}
+			if songsFound != 0 {
+				playlistSong.SongTrackNo = playlistSong.SongTrackNo - songsFound
+				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
+			}
+		}
 	}
-	err := b.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+
+	if len(playlistSongsToUpdate) != 0 {
+		err := b.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
+		if err != nil {
+			return wrapper.InternalServerError(err)
+		}
 	}
 
 	return nil

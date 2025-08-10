@@ -256,6 +256,7 @@ func TestBulkDeleteSongs_WhenWithAlbums_ShouldDeleteSongsAndReorderAlbums(t *tes
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	_uut := song.NewBulkDeleteSongs(songRepository, nil, messagePublisherService)
 
+	// given - mocking data
 	request := requests.BulkDeleteSongsRequest{
 		IDs: []uuid.UUID{
 			uuid.New(),
@@ -266,7 +267,8 @@ func TestBulkDeleteSongs_WhenWithAlbums_ShouldDeleteSongsAndReorderAlbums(t *tes
 
 	mockAlbums := []model.Album{
 		{
-			ID: uuid.New(),
+			ID:    uuid.New(),
+			Title: "Album 1",
 			Songs: []model.Song{
 				{ID: request.IDs[0], AlbumTrackNo: &[]uint{1}[0]},
 				{ID: uuid.New(), AlbumTrackNo: &[]uint{2}[0]},
@@ -276,7 +278,8 @@ func TestBulkDeleteSongs_WhenWithAlbums_ShouldDeleteSongsAndReorderAlbums(t *tes
 			},
 		},
 		{
-			ID: uuid.New(),
+			ID:    uuid.New(),
+			Title: "Album 2",
 			Songs: []model.Song{
 				{ID: uuid.New(), AlbumTrackNo: &[]uint{1}[0]},
 				{ID: request.IDs[1], AlbumTrackNo: &[]uint{2}[0]},
@@ -291,15 +294,21 @@ func TestBulkDeleteSongs_WhenWithAlbums_ShouldDeleteSongsAndReorderAlbums(t *tes
 		{ID: request.IDs[2], Album: &mockAlbums[0], AlbumID: &mockAlbums[0].ID, AlbumTrackNo: &[]uint{3}[0]},
 	}
 
+	expectedOrderedAlbumSongs := &[]model.Song{
+		// Album 1
+		{ID: mockAlbums[0].Songs[1].ID, AlbumTrackNo: &[]uint{1}[0]},
+		{ID: mockAlbums[0].Songs[2].ID, AlbumTrackNo: &[]uint{2}[0]},
+		{ID: mockAlbums[0].Songs[4].ID, AlbumTrackNo: &[]uint{3}[0]},
+		// Album 2
+		{ID: mockAlbums[1].Songs[2].ID, AlbumTrackNo: &[]uint{2}[0]},
+	}
+
+	// given - mocking
 	songRepository.On("GetAllByIDsWithAlbumsAndPlaylists", mock.IsType(mockSongs), request.IDs).
 		Return(nil, mockSongs).
 		Once()
 
-	songRepository.On("UpdateAll", mock.IsType(mockSongs)).
-		Run(func(args mock.Arguments) {
-			newAlbumSongs := args.Get(0).(*[]model.Song)
-			assert.NotEmpty(t, newAlbumSongs)
-		}).
+	songRepository.On("UpdateAll", expectedOrderedAlbumSongs).
 		Return(nil).
 		Once()
 
@@ -326,6 +335,7 @@ func TestBulkDeleteSongs_WhenWithPlaylists_ShouldDeleteSongsAndReorderPlaylists(
 	messagePublisherService := new(service.MessagePublisherServiceMock)
 	_uut := song.NewBulkDeleteSongs(songRepository, playlistRepository, messagePublisherService)
 
+	// given - mocking data
 	request := requests.BulkDeleteSongsRequest{
 		IDs: []uuid.UUID{
 			uuid.New(),
@@ -336,7 +346,8 @@ func TestBulkDeleteSongs_WhenWithPlaylists_ShouldDeleteSongsAndReorderPlaylists(
 
 	mockPlaylists := []model.Playlist{
 		{
-			ID: uuid.New(),
+			ID:    uuid.New(),
+			Title: "Playlist 1",
 			PlaylistSongs: []model.PlaylistSong{
 				{SongID: request.IDs[0], SongTrackNo: 1},
 				{SongID: uuid.New(), SongTrackNo: 2},
@@ -347,10 +358,11 @@ func TestBulkDeleteSongs_WhenWithPlaylists_ShouldDeleteSongsAndReorderPlaylists(
 			},
 		},
 		{
-			ID: uuid.New(),
+			ID:    uuid.New(),
+			Title: "Playlist 2",
 			PlaylistSongs: []model.PlaylistSong{
-				{SongID: request.IDs[0], SongTrackNo: 1},
-				{SongID: uuid.New(), SongTrackNo: 2},
+				{SongID: uuid.New(), SongTrackNo: 1},
+				{SongID: request.IDs[0], SongTrackNo: 2},
 				{SongID: request.IDs[1], SongTrackNo: 3},
 				{SongID: uuid.New(), SongTrackNo: 4},
 			},
@@ -363,15 +375,21 @@ func TestBulkDeleteSongs_WhenWithPlaylists_ShouldDeleteSongsAndReorderPlaylists(
 		{ID: request.IDs[2], Playlists: []model.Playlist{mockPlaylists[0]}},
 	}
 
+	expectedOrderedPlaylistSongs := &[]model.PlaylistSong{
+		// Playlist 1
+		{SongID: mockPlaylists[0].PlaylistSongs[1].SongID, SongTrackNo: 1},
+		{SongID: mockPlaylists[0].PlaylistSongs[3].SongID, SongTrackNo: 2},
+		{SongID: mockPlaylists[0].PlaylistSongs[5].SongID, SongTrackNo: 3},
+		// Playlist 2
+		{SongID: mockPlaylists[1].PlaylistSongs[3].SongID, SongTrackNo: 2},
+	}
+
+	// given - mocking
 	songRepository.On("GetAllByIDsWithAlbumsAndPlaylists", mock.IsType(mockSongs), request.IDs).
 		Return(nil, mockSongs).
 		Once()
 
-	playlistRepository.On("UpdateAllPlaylistSongs", mock.IsType(new([]model.PlaylistSong))).
-		Run(func(args mock.Arguments) {
-			newPlaylistSongs := args.Get(0).(*[]model.PlaylistSong)
-			assert.NotEmpty(t, newPlaylistSongs)
-		}).
+	playlistRepository.On("UpdateAllPlaylistSongs", expectedOrderedPlaylistSongs).
 		Return(nil).
 		Once()
 
