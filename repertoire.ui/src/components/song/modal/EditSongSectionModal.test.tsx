@@ -89,7 +89,7 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(section.name)
 
-    expect(screen.getByRole('textbox', { name: /type/i })).toBeInTheDocument()
+    expect(await screen.findByRole('textbox', { name: /type/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /type/i })).not.toBeInvalid()
     expect(await screen.findByRole('textbox', { name: /type/i })).toHaveValue(
       section.songSectionType.name
