@@ -285,7 +285,10 @@ export const emptyArtist: Artist = {
   albums: [],
   songs: [],
   bandMembers: [],
-  songsCount: 0
+  songsCount: 0,
+  rehearsals: 0,
+  confidence: 0,
+  progress: 0
 }
 
 export const emptyAlbum: Album = {

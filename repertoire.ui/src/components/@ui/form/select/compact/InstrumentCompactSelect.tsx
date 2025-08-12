@@ -44,9 +44,6 @@ const InstrumentCompactSelect = forwardRef<HTMLButtonElement, InstrumentCompactS
         combobox.resetSelectedOption()
         combobox.focusTarget()
         setSearch(value)
-      },
-      onDropdownOpen: () => {
-        combobox.focusSearchInput()
       }
     })
 
@@ -95,7 +92,13 @@ const InstrumentCompactSelect = forwardRef<HTMLButtonElement, InstrumentCompactS
     }
 
     return (
-      <Combobox onOptionSubmit={handleSubmit} store={combobox} withArrow {...others}>
+      <Combobox
+        onOptionSubmit={handleSubmit}
+        store={combobox}
+        withArrow
+        onEnterTransitionEnd={combobox.focusSearchInput}
+        {...others}
+      >
         <Combobox.Target withAriaAttributes={false}>
           {!instrument ? (
             <Tooltip
