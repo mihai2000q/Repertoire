@@ -70,14 +70,14 @@ const TabButton = ({
 )
 
 const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
-  const songsOrderBy = useOrderBy([
-    { property: SongProperty.Progress, type: OrderType.Descending },
-    { property: SongProperty.Title }
+  const artistsOrderBy = useOrderBy([
+    { property: ArtistProperty.Progress, type: OrderType.Descending },
+    { property: ArtistProperty.Name }
   ])
-  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
+  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: songsOrderBy
+    orderBy: artistsOrderBy
   })
 
   const albumsOrderBy = useOrderBy([
@@ -90,14 +90,14 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
     orderBy: albumsOrderBy
   })
 
-  const artistsOrderBy = useOrderBy([
-    { property: ArtistProperty.Progress, type: OrderType.Descending },
-    { property: ArtistProperty.Name }
+  const songsOrderBy = useOrderBy([
+    { property: SongProperty.Progress, type: OrderType.Descending },
+    { property: SongProperty.Title }
   ])
-  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
+  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
     pageSize: 20,
     currentPage: 1,
-    orderBy: artistsOrderBy
+    orderBy: songsOrderBy
   })
 
   const topRef = useRef<HTMLDivElement>(null)
@@ -143,10 +143,10 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
       <Group px={'xl'} gap={0} justify={'space-between'}>
         <Group gap={0}>
           <TabButton
-            selected={topEntity === TopEntity.Songs}
-            onClick={() => setTopEntity(TopEntity.Songs)}
+            selected={topEntity === TopEntity.Artists}
+            onClick={() => setTopEntity(TopEntity.Artists)}
           >
-            Songs
+            Artists
           </TabButton>
           <TabButton
             selected={topEntity === TopEntity.Albums}
@@ -155,10 +155,10 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
             Albums
           </TabButton>
           <TabButton
-            selected={topEntity === TopEntity.Artists}
-            onClick={() => setTopEntity(TopEntity.Artists)}
+            selected={topEntity === TopEntity.Songs}
+            onClick={() => setTopEntity(TopEntity.Songs)}
           >
-            Artists
+            Songs
           </TabButton>
         </Group>
 
@@ -187,10 +187,10 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
         </Group>
       </Group>
 
-      {topEntity === TopEntity.Songs && songs?.models.length === 0 && (
-        <Center h={170}>
-          <Text c={'gray.6'} fw={500}>
-            There are no songs yet to display
+      {topEntity === TopEntity.Artists && artists?.models.length === 0 && (
+        <Center h={158}>
+          <Text c={'gray.6'} fw={500} pt={12}>
+            There are no artists yet to display
           </Text>
         </Center>
       )}
@@ -201,10 +201,10 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
           </Text>
         </Center>
       )}
-      {topEntity === TopEntity.Artists && artists?.models.length === 0 && (
-        <Center h={158}>
-          <Text c={'gray.6'} fw={500} pt={12}>
-            There are no artists yet to display
+      {topEntity === TopEntity.Songs && songs?.models.length === 0 && (
+        <Center h={170}>
+          <Text c={'gray.6'} fw={500}>
+            There are no songs yet to display
           </Text>
         </Center>
       )}
@@ -250,11 +250,11 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
             }
           })}
         >
-          {topEntity === TopEntity.Songs &&
-            (isSongsLoading || !songs ? (
-              <HomeSongsLoader />
+          {topEntity === TopEntity.Artists &&
+            (isArtistsLoading || !artists ? (
+              <HomeArtistsLoader />
             ) : (
-              songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
+              artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
             ))}
           {topEntity === TopEntity.Albums &&
             (isAlbumsLoading || !albums ? (
@@ -262,11 +262,11 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
             ) : (
               albums.models.map((album) => <HomeAlbumCard key={album.id} album={album} />)
             ))}
-          {topEntity === TopEntity.Artists &&
-            (isArtistsLoading || !artists ? (
-              <HomeArtistsLoader />
+          {topEntity === TopEntity.Songs &&
+            (isSongsLoading || !songs ? (
+              <HomeSongsLoader />
             ) : (
-              artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
+              songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
             ))}
         </Group>
       </ScrollArea.Autosize>
