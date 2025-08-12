@@ -29,6 +29,7 @@ interface HomeRecentlyPlayedCardProps extends GroupProps {
   openedMenu: boolean
   defaultIcon: ReactNode
   onClick: () => void
+  isArtist?: boolean
   additionalText?: AdditionalTextProps
 }
 
@@ -41,6 +42,7 @@ const HomeRecentlyPlayedCard = forwardRef<HTMLDivElement, HomeRecentlyPlayedCard
       lastPlayed,
       openedMenu,
       defaultIcon,
+      isArtist,
       onClick,
       additionalText,
       ...others
@@ -79,16 +81,16 @@ const HomeRecentlyPlayedCard = forwardRef<HTMLDivElement, HomeRecentlyPlayedCard
         {...others}
       >
         <Avatar
-          radius={'md'}
+          radius={isArtist === true ? '50%' : 'md'}
           src={imageUrl}
           alt={imageUrl && title}
-          bg={'gray.5'}
+          bg={isArtist === true ? 'gray.0' : 'gray.5'}
           sx={(theme) => ({
             aspectRatio: 1,
             boxShadow: theme.shadows.sm
           })}
         >
-          <Center c={'white'}>{defaultIcon}</Center>
+          <Center c={isArtist === true ? 'gray.7' : 'white'}>{defaultIcon}</Center>
         </Avatar>
 
         <Grid flex={1} columns={12} align={'center'}>

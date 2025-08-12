@@ -1,5 +1,5 @@
 import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../../test-utils.tsx'
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { afterEach, expect } from 'vitest'
 import { RootState } from '../../../state/store.ts'
 import Song from '../../../types/models/Song.ts'
@@ -74,7 +74,7 @@ describe('Home Recently Played Song Card', () => {
     )
   })
 
-  it('should open song drawer by clicking a song', async () => {
+  it('should open song drawer on clicking', async () => {
     const user = userEvent.setup()
 
     const [_, store] = reduxRouterRender(<HomeRecentlyPlayedSongCard song={song} />)
@@ -85,7 +85,7 @@ describe('Home Recently Played Song Card', () => {
     expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
   })
 
-  it("should open artist drawer by clicking a song's artist", async () => {
+  it("should open artist drawer by clicking the artist", async () => {
     const user = userEvent.setup()
 
     const [_, store] = reduxRouterRender(<HomeRecentlyPlayedSongCard song={song} />)
@@ -127,11 +127,7 @@ describe('Home Recently Played Song Card', () => {
       keys: '[MouseRight>]',
       target: await screen.findByRole('img', { name: song.title })
     })
-    // the other menu is still opened,
-    // waiting for it to close automatically by opening another one
-    await waitFor(() =>
-      expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
-    )
+    expect(screen.getByRole('menuitem', { name: /view artist/i })).not.toBeDisabled()
     expect(screen.getByRole('menuitem', { name: /view album/i })).not.toBeDisabled()
     expect(screen.getByRole('menuitem', { name: /open links/i })).not.toBeDisabled()
   })

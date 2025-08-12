@@ -2,6 +2,7 @@
 // (if the values for home top entity ever change, increase the number)
 enum LocalStorageKeys {
   HomeTopEntity = 'home_top_entity_1',
+  HomeRecentlyPlayedEntity = 'home_recently_played_entity_1',
 
   ArtistsOrders = 'artists_orders_1',
 

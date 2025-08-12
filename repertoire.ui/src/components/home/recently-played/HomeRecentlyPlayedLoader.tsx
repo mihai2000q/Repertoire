@@ -1,8 +1,8 @@
-import { Center, Grid, Group, Skeleton, Stack } from '@mantine/core'
+import { Box, Center, Grid, Group, Skeleton, Stack } from '@mantine/core'
 
 function HomeRecentlyPlayedLoader() {
   return (
-    <>
+    <Box data-testid={'recently-played-loader'}>
       {Array.from(Array(20)).map((_, i) => (
         <Group key={i} pl={'lg'} pr={'xxs'} py={'xs'}>
           <Skeleton
@@ -29,7 +29,7 @@ function HomeRecentlyPlayedLoader() {
           </Grid>
         </Group>
       ))}
-    </>
+    </Box>
   )
 }
 
