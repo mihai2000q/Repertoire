@@ -41,12 +41,11 @@ export const components = {
         transition: '0.16s',
         '&[data-variant="grey"]': {
           color: theme.colors.gray[5],
-          backgroundColor: theme.colors.gray[0],
+          backgroundColor: 'transparent',
 
           '&:hover': {
             color: theme.colors.gray[6],
-            backgroundColor: theme.colors.gray[2],
-            shadows: theme.shadows.lg
+            backgroundColor: theme.colors.gray[2]
           },
 
           '&[data-disabled="true"]': {
@@ -58,7 +57,6 @@ export const components = {
         '&[data-variant="grey-subtle"]': {
           color: theme.colors.gray[2],
           backgroundColor: alpha(theme.colors.gray[6], 0.3),
-          shadows: theme.shadows.xs,
 
           '&:hover': {
             color: theme.white,
@@ -67,9 +65,19 @@ export const components = {
           }
         },
 
+        '&[data-variant="grey-primary"]': {
+          color: theme.colors.gray[5],
+          backgroundColor: 'transparent',
+
+          '&:hover': {
+            color: theme.colors.primary[4],
+            backgroundColor: theme.colors.primary[0]
+          }
+        },
+
         '&[data-variant="form"]': {
           color: theme.colors.gray[5],
-          backgroundColor: theme.colors.gray[0],
+          backgroundColor: 'transparent',
 
           '&:hover': {
             color: theme.colors.gray[6],
@@ -416,7 +424,12 @@ export const components = {
 declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
-    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle' | 'form'
+    variant?:
+      | StylesApiProps<ActionIconFactory>['variant']
+      | 'grey'
+      | 'grey-subtle'
+      | 'grey-primary'
+      | 'form'
   }
 
   // noinspection JSUnusedGlobalSymbols
