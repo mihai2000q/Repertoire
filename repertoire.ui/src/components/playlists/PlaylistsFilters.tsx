@@ -6,7 +6,7 @@ import {
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery
 } from '../../state/api/playlistsApi.ts'
-import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
+import PlaylistProperty from '../../types/enums/properties/PlaylistProperty.ts'
 import { playlistsFiltersMetadataMap } from '../../data/playlists/playlistsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'

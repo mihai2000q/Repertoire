@@ -8,7 +8,7 @@ import {
   useGetArtistFiltersMetadataQuery,
   useLazyGetArtistFiltersMetadataQuery
 } from '../../state/api/artistsApi.ts'
-import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import ArtistProperty from '../../types/enums/properties/ArtistProperty.ts'
 import { artistsFiltersMetadataMap } from '../../data/artists/artistsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'

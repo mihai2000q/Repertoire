@@ -1,7 +1,8 @@
 // The number suffix represents the version
 // (if the values for home top entity ever change, increase the number)
 enum LocalStorageKeys {
-  HomeTopEntity = 'home_top_entity_1',
+  HomeTopEntity = 'home_top_entity_2',
+  HomeOrderTopEntities = 'home_order_top_entities_1',
   HomeRecentlyPlayedEntity = 'home_recently_played_entity_1',
 
   ArtistsOrders = 'artists_orders_1',

@@ -27,7 +27,7 @@ import albumsSearchParamsState from '../state/searchParams/AlbumsSearchParamsSta
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import albumsOrders from '../data/albums/albumsOrders.ts'
 import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
-import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
+import LocalStorageKeys from '../types/enums/keys/LocalStorageKeys.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
 import { albumPropertyIcons } from '../data/icons/albumPropertyIcons.tsx'
 import useSearchBy from '../hooks/api/useSearchBy.ts'

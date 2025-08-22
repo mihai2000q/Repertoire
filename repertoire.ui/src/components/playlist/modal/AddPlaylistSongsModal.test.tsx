@@ -17,7 +17,7 @@ import Artist from '../../../types/models/Artist.ts'
 import Album from '../../../types/models/Album.ts'
 import { expect } from 'vitest'
 import OrderType from '../../../types/enums/OrderType.ts'
-import SongProperty from '../../../types/enums/SongProperty.ts'
+import SongProperty from '../../../types/enums/properties/SongProperty.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
 
 describe('Add Playlist Songs Modal', () => {

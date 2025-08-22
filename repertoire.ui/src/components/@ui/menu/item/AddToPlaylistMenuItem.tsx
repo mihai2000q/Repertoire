@@ -30,8 +30,8 @@ import useFilters from '../../../../hooks/filter/useFilters.ts'
 import FilterOperator from '../../../../types/enums/FilterOperator.ts'
 import useFiltersHandlers from '../../../../hooks/filter/useFiltersHandlers.ts'
 import useSearchBy from '../../../../hooks/api/useSearchBy.ts'
-import PlaylistProperty from '../../../../types/enums/PlaylistProperty.ts'
-import SessionStorageKeys from '../../../../types/enums/SessionStorageKeys.ts'
+import PlaylistProperty from '../../../../types/enums/properties/PlaylistProperty.ts'
+import SessionStorageKeys from '../../../../types/enums/keys/SessionStorageKeys.ts'
 import plural from '../../../../utils/plural.ts'
 import {
   AddAlbumsToPlaylistResponse,

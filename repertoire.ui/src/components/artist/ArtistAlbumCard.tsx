@@ -22,7 +22,7 @@ import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-rea
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import Order from '../../types/Order.ts'
-import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import AlbumProperty from '../../types/enums/properties/AlbumProperty.ts'
 import { useRemoveAlbumsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'

@@ -1,5 +1,5 @@
 import Order from '../../types/Order.ts'
-import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import AlbumProperty from '../../types/enums/properties/AlbumProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 
 const albumsOrders: Order[] = [

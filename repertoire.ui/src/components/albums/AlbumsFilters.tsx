@@ -8,7 +8,7 @@ import {
   useGetAlbumFiltersMetadataQuery,
   useLazyGetAlbumFiltersMetadataQuery
 } from '../../state/api/albumsApi.ts'
-import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import AlbumProperty from '../../types/enums/properties/AlbumProperty.ts'
 import { albumsFiltersMetadataMap } from '../../data/albums/albumsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'

@@ -8,7 +8,7 @@ import {
   useGetSongFiltersMetadataQuery,
   useLazyGetSongFiltersMetadataQuery
 } from '../../state/api/songsApi.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import { songsFiltersMetadataMap } from '../../data/songs/songsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
