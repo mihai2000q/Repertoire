@@ -63,16 +63,11 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
         <Space flex={1} style={{ order: 4 - shiftOrder }} />
 
         <ActionIcon
-          variant={'subtle'}
+          variant={'grey-primary'}
           size={'lg'}
+          radius={'50%'}
           sx={(theme) => ({
-            borderRadius: '50%',
-            color: theme.colors.gray[6],
-            '&:hover': {
-              boxShadow: theme.shadows.sm,
-              backgroundColor: theme.colors.primary[0],
-              color: theme.colors.primary[6]
-            }
+            '&:hover': { boxShadow: theme.shadows.sm }
           })}
           style={{ order: 5 - shiftOrder }}
         >

@@ -1,4 +1,4 @@
-import PlaylistProperty from '../../types/enums/PlaylistProperty.ts'
+import PlaylistProperty from '../../types/enums/properties/PlaylistProperty.ts'
 import Filter, { FilterValue } from '../../types/Filter.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import { PlaylistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'

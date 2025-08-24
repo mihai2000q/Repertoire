@@ -5,9 +5,9 @@ import Difficulty from '../../../../../types/enums/Difficulty.ts'
 import DifficultyMultiSelect from './DifficultyMultiSelect.tsx'
 
 describe('Difficulty Multi Select', () => {
-  const allDifficultiesMap = new Map<Difficulty, string>([
-    ...(Object.entries(Difficulty).map(([key, value]) => [value, key]) as [Difficulty, string][])
-  ])
+  const allDifficultiesMap = new Map<Difficulty, string>(
+    Object.entries(Difficulty).map(([key, value]) => [value, key])
+  )
   const allDifficulties = Array.from(allDifficultiesMap.keys())
 
   it('should render and change difficulties', async () => {

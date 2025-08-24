@@ -21,7 +21,7 @@ import { IconCircleMinus, IconDisc, IconDots, IconEye, IconTrash } from '@tabler
 import { useDisclosure, useHover } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'

@@ -108,4 +108,21 @@ describe('use Local Storage', () => {
     expect(result.current[0]).toBe(42)
     expect(JSON.parse(localStorage.getItem('testKey')!)).toBe(42)
   })
+
+  it('should accept serialize and deserialize functions', () => {
+    const { result } = renderHook(() =>
+      useLocalStorage<number | undefined>({
+        key: 'testKey',
+        serialize: (val) => (val - 10).toString(),
+        deserialize: (val) => (parseInt(val) + 10)
+      })
+    )
+
+    act(() => {
+      result.current[1](42)
+    })
+
+    expect(result.current[0]).toBe(42)
+    expect(JSON.parse(localStorage.getItem('testKey')!)).toBe(32)
+  })
 })

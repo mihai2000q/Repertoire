@@ -17,7 +17,7 @@ import Album from '../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
 import artistsOrders from '../data/artists/artistsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
-import ArtistProperty from '../types/enums/ArtistProperty.ts'
+import ArtistProperty from '../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import Playlist from '../types/models/Playlist.ts'
 

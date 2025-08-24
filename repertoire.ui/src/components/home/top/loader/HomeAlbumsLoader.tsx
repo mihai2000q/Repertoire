@@ -6,9 +6,9 @@ function HomeAlbumsLoader() {
       {Array.from(Array(20)).map((_, i) => (
         <Stack key={i} gap={'xs'} align={'center'}>
           <Skeleton
-            radius={'lg'}
-            h={150}
-            w={150}
+            radius={'10%'}
+            h={'max(10vw, 150px)'}
+            w={'max(10vw, 150px)'}
             style={(theme) => ({ boxShadow: theme.shadows.md })}
           />
           <Stack gap={0} align={'center'}>

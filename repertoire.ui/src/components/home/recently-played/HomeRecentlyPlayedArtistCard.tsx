@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { openArtistDrawer } from '../../../state/slice/globalSlice.ts'
 import { ContextMenu } from '../../@ui/menu/ContextMenu.tsx'
-import { IconEye, IconUser } from '@tabler/icons-react'
+import { IconEye } from '@tabler/icons-react'
 import HomeRecentlyPlayedCard from './HomeRecentlyPlayedCard.tsx'
+import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 
 interface HomeRecentlyPlayedArtistCardProps {
   artist: Artist
@@ -35,7 +36,7 @@ function HomeRecentlyPlayedArtistCard({ artist }: HomeRecentlyPlayedArtistCardPr
           progress={artist.progress}
           lastPlayed={artist.lastTimePlayed}
           openedMenu={openedMenu}
-          defaultIcon={<IconUser aria-label={`default-icon-${artist.name}`} size={18} />}
+          defaultIcon={<CustomIconUserAlt aria-label={`default-icon-${artist.name}`} size={16} />}
           onClick={handleClick}
           isArtist={true}
         />

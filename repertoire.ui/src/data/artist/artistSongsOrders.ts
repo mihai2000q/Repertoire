@@ -1,5 +1,5 @@
 import Order from '../../types/Order.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 
 const artistSongsOrders: Order[] = [

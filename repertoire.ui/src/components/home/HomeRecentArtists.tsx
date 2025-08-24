@@ -18,7 +18,7 @@ import { IconChevronLeft, IconChevronRight, IconEye } from '@tabler/icons-react'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
-import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import ArtistProperty from '../../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import { useNavigate } from 'react-router-dom'
@@ -135,8 +135,7 @@ function HomeRecentArtists({ ...others }: CardProps) {
   }, [artists])
 
   const handleTopNav = (direction: 'left' | 'right') => {
-    if (!viewportRef.current) return
-    viewportRef.current.scrollBy({ left: direction === 'left' ? -250 : 250, behavior: 'smooth' })
+    viewportRef.current?.scrollBy({ left: direction === 'left' ? -250 : 250, behavior: 'smooth' })
   }
 
   const handleOnScroll = () => {

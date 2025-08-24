@@ -1,5 +1,5 @@
 import Order from '../../../types/Order.ts'
-import AlbumProperty from '../../../types/enums/AlbumProperty.ts'
+import AlbumProperty from '../../../types/enums/properties/AlbumProperty.ts'
 import { mantineRender } from '../../../test-utils.tsx'
 import AdvancedOrderMenu from './AdvancedOrderMenu.tsx'
 import { ReactNode } from 'react'

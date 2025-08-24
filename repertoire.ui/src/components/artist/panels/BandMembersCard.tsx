@@ -53,8 +53,7 @@ function BandMembersCard({ bandMembers, artistId, isFetching }: BandMembersCardP
     useDisclosure(false)
 
   const handleMembersNav = (direction: 'left' | 'right') => {
-    if (!viewportRef.current) return
-    viewportRef.current.scrollBy({ left: direction === 'left' ? -100 : 100, behavior: 'smooth' })
+    viewportRef.current?.scrollBy({ left: direction === 'left' ? -100 : 100, behavior: 'smooth' })
   }
 
   const handleOnScroll = () => {

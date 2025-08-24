@@ -12,7 +12,7 @@ import {
   Text
 } from '@mantine/core'
 import { IconClock } from '@tabler/icons-react'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import useSearchBy from '../../hooks/api/useSearchBy.ts'
@@ -25,51 +25,55 @@ import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.ts
 import { Dispatch, SetStateAction, useState } from 'react'
 import { useHover } from '@mantine/hooks'
 import { useGetArtistsQuery } from '../../state/api/artistsApi.ts'
-import ArtistProperty from '../../types/enums/ArtistProperty.ts'
-import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import ArtistProperty from '../../types/enums/properties/ArtistProperty.ts'
+import AlbumProperty from '../../types/enums/properties/AlbumProperty.ts'
 import { useGetAlbumsQuery } from '../../state/api/albumsApi.ts'
 import HomeRecentlyPlayedAlbumCard from './recently-played/HomeRecentlyPlayedAlbumCard.tsx'
 import HomeRecentlyPlayedArtistCard from './recently-played/HomeRecentlyPlayedArtistCard.tsx'
 import useLocalStorage from '../../hooks/useLocalStorage.ts'
-import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
-
-enum RecentlyPlayedTab {
-  Artists,
-  Albums,
-  Songs
-}
+import LocalStorageKeys from '../../types/enums/keys/LocalStorageKeys.ts'
+import HomeRecentlyPlayedEntity from '../../types/enums/HomeRecentlyPlayedEntity.ts'
 
 interface TabButtonProps extends ActionIconProps {
-  tabValue: RecentlyPlayedTab
-  tab: RecentlyPlayedTab
-  setTab: Dispatch<SetStateAction<RecentlyPlayedTab>>
-  setIndicatorRef: (val: RecentlyPlayedTab) => (node: HTMLButtonElement) => void
+  tabValue: HomeRecentlyPlayedEntity
+  tab: HomeRecentlyPlayedEntity
+  setTab: Dispatch<SetStateAction<HomeRecentlyPlayedEntity>>
+  setIndicatorRef: (val: HomeRecentlyPlayedEntity) => (node: HTMLButtonElement) => void
 }
 
 const TabButton = ({ tabValue, tab, setTab, setIndicatorRef, ...others }: TabButtonProps) => (
   <ActionIcon
-    variant={'subtle'}
+    variant={'grey'}
     size={'sm'}
     aria-selected={tab === tabValue}
     ref={setIndicatorRef(tabValue)}
     onClick={() => setTab(tabValue)}
-    sx={(theme) => ({
-      color: theme.colors.gray[5],
+    sx={{
       // disable active so that the floating indicator can work smoothly
-      '&:active': { transform: 'scale(1)' },
-      '&:hover': {
-        color: theme.colors.gray[6],
-        backgroundColor: theme.colors.gray[2],
-        shadows: theme.shadows.lg
-      },
-      '&[aria-selected="true"]': { color: theme.colors.primary[4] }
-    })}
+      '&:active': { transform: 'scale(1)' }
+    }}
+    style={(theme) => ({ ...(tab === tabValue && { color: theme.colors.primary[4] }) })}
     {...others}
   />
 )
 
 function HomeRecentlyPlayed() {
   const { ref, hovered } = useHover()
+
+  const [tab, setTab] = useLocalStorage<HomeRecentlyPlayedEntity>({
+    key: LocalStorageKeys.HomeRecentlyPlayedEntity,
+    defaultValue: HomeRecentlyPlayedEntity.Songs
+  })
+  const [indicatorRootRef, setIndicatorRootRef] = useState<HTMLDivElement>()
+  const [indicatorsRefs, setIndicatorsRefs] = useState<
+    Record<HomeRecentlyPlayedEntity, HTMLButtonElement>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+  >({})
+  const setIndicatorRef = (tab: HomeRecentlyPlayedEntity) => (node: HTMLButtonElement) => {
+    indicatorsRefs[tab] = node
+    setIndicatorsRefs(indicatorsRefs)
+  }
 
   const artistsOrderBy = useOrderBy([
     { property: ArtistProperty.LastPlayed, type: OrderType.Descending },
@@ -79,12 +83,15 @@ function HomeRecentlyPlayed() {
   const artistsSearchBy = useSearchBy([
     { property: ArtistProperty.LastPlayed, operator: FilterOperator.IsNotNull }
   ])
-  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
-    pageSize: 20,
-    currentPage: 1,
-    orderBy: artistsOrderBy,
-    searchBy: artistsSearchBy
-  })
+  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery(
+    {
+      pageSize: 20,
+      currentPage: 1,
+      orderBy: artistsOrderBy,
+      searchBy: artistsSearchBy
+    },
+    { skip: tab !== HomeRecentlyPlayedEntity.Artists }
+  )
 
   const albumsOrderBy = useOrderBy([
     { property: AlbumProperty.LastPlayed, type: OrderType.Descending },
@@ -94,12 +101,15 @@ function HomeRecentlyPlayed() {
   const albumsSearchBy = useSearchBy([
     { property: AlbumProperty.LastPlayed, operator: FilterOperator.IsNotNull }
   ])
-  const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery({
-    pageSize: 20,
-    currentPage: 1,
-    orderBy: albumsOrderBy,
-    searchBy: albumsSearchBy
-  })
+  const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery(
+    {
+      pageSize: 20,
+      currentPage: 1,
+      orderBy: albumsOrderBy,
+      searchBy: albumsSearchBy
+    },
+    { skip: tab !== HomeRecentlyPlayedEntity.Albums }
+  )
 
   const songsOrderBy = useOrderBy([
     { property: SongProperty.LastPlayed, type: OrderType.Descending },
@@ -109,27 +119,15 @@ function HomeRecentlyPlayed() {
   const songsSearchBy = useSearchBy([
     { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull }
   ])
-  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
-    pageSize: 20,
-    currentPage: 1,
-    orderBy: songsOrderBy,
-    searchBy: songsSearchBy
-  })
-
-  const [tab, setTab] = useLocalStorage<RecentlyPlayedTab>({
-    key: LocalStorageKeys.HomeRecentlyPlayedEntity,
-    defaultValue: RecentlyPlayedTab.Songs
-  })
-  const [indicatorRootRef, setIndicatorRootRef] = useState<HTMLDivElement>()
-  const [indicatorsRefs, setIndicatorsRefs] = useState<
-    Record<RecentlyPlayedTab, HTMLButtonElement>
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-  >({})
-  const setIndicatorRef = (tab: RecentlyPlayedTab) => (node: HTMLButtonElement) => {
-    indicatorsRefs[tab] = node
-    setIndicatorsRefs(indicatorsRefs)
-  }
+  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery(
+    {
+      pageSize: 20,
+      currentPage: 1,
+      orderBy: songsOrderBy,
+      searchBy: songsSearchBy
+    },
+    { skip: tab !== HomeRecentlyPlayedEntity.Songs }
+  )
 
   return (
     <Card ref={ref} aria-label={'recently-played'} radius={'lg'} variant={'panel'} p={0}>
@@ -147,7 +145,7 @@ function HomeRecentlyPlayed() {
           >
             <TabButton
               aria-label={'recently-played-artists'}
-              tabValue={RecentlyPlayedTab.Artists}
+              tabValue={HomeRecentlyPlayedEntity.Artists}
               tab={tab}
               setTab={setTab}
               setIndicatorRef={setIndicatorRef}
@@ -156,7 +154,7 @@ function HomeRecentlyPlayed() {
             </TabButton>
             <TabButton
               aria-label={'recently-played-albums'}
-              tabValue={RecentlyPlayedTab.Albums}
+              tabValue={HomeRecentlyPlayedEntity.Albums}
               tab={tab}
               setTab={setTab}
               setIndicatorRef={setIndicatorRef}
@@ -165,7 +163,7 @@ function HomeRecentlyPlayed() {
             </TabButton>
             <TabButton
               aria-label={'recently-played-songs'}
-              tabValue={RecentlyPlayedTab.Songs}
+              tabValue={HomeRecentlyPlayedEntity.Songs}
               tab={tab}
               setTab={setTab}
               setIndicatorRef={setIndicatorRef}
@@ -186,13 +184,13 @@ function HomeRecentlyPlayed() {
           </Group>
         </Group>
 
-        {((artists?.models.length !== 0 && tab === RecentlyPlayedTab.Artists) ||
-          (albums?.models.length !== 0 && tab === RecentlyPlayedTab.Albums) ||
-          (songs?.models.length !== 0 && tab === RecentlyPlayedTab.Songs)) && (
+        {((artists?.models.length !== 0 && tab === HomeRecentlyPlayedEntity.Artists) ||
+          (albums?.models.length !== 0 && tab === HomeRecentlyPlayedEntity.Albums) ||
+          (songs?.models.length !== 0 && tab === HomeRecentlyPlayedEntity.Songs)) && (
           <Grid columns={12} pl={'lg'} pr={'sm'}>
             <Grid.Col span={{ base: 4.5, md: 10, xxl: 4.5 }}>
               <Text fz={'sm'} fw={500} c={'gray.5'}>
-                {tab === RecentlyPlayedTab.Artists ? 'Name' : 'Title'}
+                {tab === HomeRecentlyPlayedEntity.Artists ? 'Name' : 'Title'}
               </Text>
             </Grid.Col>
             <Grid.Col span={6} display={{ base: 'block', md: 'none', xxl: 'block' }}>
@@ -206,17 +204,17 @@ function HomeRecentlyPlayed() {
           </Grid>
         )}
 
-        {artists?.models.length === 0 && tab === RecentlyPlayedTab.Artists && (
+        {artists?.models.length === 0 && tab === HomeRecentlyPlayedEntity.Artists && (
           <Text ta={'center'} c={'gray.6'} fw={500} pt={'lg'}>
             There are no artists yet to display
           </Text>
         )}
-        {albums?.models.length === 0 && tab === RecentlyPlayedTab.Albums && (
+        {albums?.models.length === 0 && tab === HomeRecentlyPlayedEntity.Albums && (
           <Text ta={'center'} c={'gray.6'} fw={500} pt={'lg'}>
             There are no albums yet to display
           </Text>
         )}
-        {songs?.models.length === 0 && tab === RecentlyPlayedTab.Songs && (
+        {songs?.models.length === 0 && tab === HomeRecentlyPlayedEntity.Songs && (
           <Text ta={'center'} c={'gray.6'} fw={500} pt={'lg'}>
             There are no songs yet to display
           </Text>
@@ -242,7 +240,7 @@ function HomeRecentlyPlayed() {
           })}
         >
           <Stack gap={'xxs'}>
-            {tab === RecentlyPlayedTab.Artists &&
+            {tab === HomeRecentlyPlayedEntity.Artists &&
               (isArtistsLoading ? (
                 <HomeRecentlyPlayedLoader />
               ) : (
@@ -250,7 +248,7 @@ function HomeRecentlyPlayed() {
                   <HomeRecentlyPlayedArtistCard key={artist.id} artist={artist} />
                 ))
               ))}
-            {tab === RecentlyPlayedTab.Albums &&
+            {tab === HomeRecentlyPlayedEntity.Albums &&
               (isAlbumsLoading ? (
                 <HomeRecentlyPlayedLoader />
               ) : (
@@ -258,7 +256,7 @@ function HomeRecentlyPlayed() {
                   <HomeRecentlyPlayedAlbumCard key={album.id} album={album} />
                 ))
               ))}
-            {tab === RecentlyPlayedTab.Songs &&
+            {tab === HomeRecentlyPlayedEntity.Songs &&
               (isSongsLoading ? (
                 <HomeRecentlyPlayedLoader />
               ) : (

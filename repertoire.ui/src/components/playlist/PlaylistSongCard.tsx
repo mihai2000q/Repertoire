@@ -25,7 +25,7 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenu
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import { useRemoveSongsFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import Order from '../../types/Order.ts'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'

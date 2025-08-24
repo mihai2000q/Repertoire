@@ -8,7 +8,7 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
-import PlaylistProperty from '../types/enums/PlaylistProperty.ts'
+import PlaylistProperty from '../types/enums/properties/PlaylistProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import OrderType from '../types/enums/OrderType.ts'
 

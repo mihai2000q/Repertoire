@@ -1,6 +1,6 @@
 import { useGetSongsQuery } from '../state/api/songsApi.ts'
 import useSearchBy from './api/useSearchBy.ts'
-import SongProperty from '../types/enums/SongProperty.ts'
+import SongProperty from '../types/enums/properties/SongProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 
 export default function useShowUnknownAlbum(): boolean {

@@ -4,11 +4,11 @@ function HomeArtistsLoader() {
   return (
     <>
       {Array.from(Array(20)).map((_, i) => (
-        <Stack key={i} gap={'sm'} align={'center'} w={140}>
+        <Stack key={i} gap={'sm'} align={'center'} w={'max(9vw, 140px)'}>
           <Skeleton
             radius={'50%'}
-            h={125}
-            w={125}
+            h={'max(calc(9vw - 25px), 125px)'}
+            w={'max(calc(9vw - 25px), 125px)'}
             style={(theme) => ({ boxShadow: theme.shadows.md })}
           />
           <Stack gap={0} align={'center'}>
