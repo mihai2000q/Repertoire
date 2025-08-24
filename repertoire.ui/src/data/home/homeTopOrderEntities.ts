@@ -79,7 +79,7 @@ const homeTopOrderEntities: Map<HomeTopEntity, Order[]> = new Map<HomeTopEntity,
   ]
 ])
 
-export const defaultOrderEntities = new Map<HomeTopEntity, Order>([
+export const defaultHomeTopOrderEntities = new Map<HomeTopEntity, Order>([
   [
     HomeTopEntity.Artists,
     {
