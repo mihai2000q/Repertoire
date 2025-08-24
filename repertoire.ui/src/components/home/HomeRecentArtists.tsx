@@ -135,8 +135,7 @@ function HomeRecentArtists({ ...others }: CardProps) {
   }, [artists])
 
   const handleTopNav = (direction: 'left' | 'right') => {
-    if (!viewportRef.current) return
-    viewportRef.current.scrollBy({ left: direction === 'left' ? -250 : 250, behavior: 'smooth' })
+    viewportRef.current?.scrollBy({ left: direction === 'left' ? -250 : 250, behavior: 'smooth' })
   }
 
   const handleOnScroll = () => {

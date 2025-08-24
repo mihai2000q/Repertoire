@@ -20,9 +20,9 @@ interface DifficultyMultiSelectProps extends PillsInputProps {
   availableDifficulties?: Difficulty[]
 }
 
-const allDifficultiesMap = new Map<Difficulty, string>([
-  ...(Object.entries(Difficulty).map(([key, value]) => [value, key]) as [Difficulty, string][])
-])
+const allDifficultiesMap = new Map<Difficulty, string>(
+  Object.entries(Difficulty).map(([key, value]) => [value, key])
+)
 const allDifficulties = Array.from(allDifficultiesMap.keys())
 
 function DifficultyMultiSelect({
