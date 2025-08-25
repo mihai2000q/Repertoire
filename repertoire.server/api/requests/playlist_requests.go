@@ -41,6 +41,10 @@ type AddArtistsToPlaylistRequest struct {
 	ForceAdd  *bool
 }
 
+type AddPerfectRehearsalsToPlaylistsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
 type UpdatePlaylistRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`

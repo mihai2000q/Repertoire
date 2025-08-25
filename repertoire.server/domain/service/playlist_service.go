@@ -15,6 +15,7 @@ import (
 type PlaylistService interface {
 	AddAlbums(request requests.AddAlbumsToPlaylistRequest) (*responses.AddAlbumsToPlaylistResponse, *wrapper.ErrorCode)
 	AddArtists(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode)
+	AddPerfectRehearsals(request requests.AddPerfectRehearsalsToPlaylistsRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode
 	Create(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -36,17 +37,18 @@ type PlaylistService interface {
 }
 
 type playlistService struct {
-	addAlbumsToPlaylist        playlist.AddAlbumsToPlaylist
-	addArtistsToPlaylist       playlist.AddArtistsToPlaylist
-	bulkDeletePlaylists        playlist.BulkDeletePlaylists
-	createPlaylist             playlist.CreatePlaylist
-	deletePlaylist             playlist.DeletePlaylist
-	deleteImageFromPlaylist    playlist.DeleteImageFromPlaylist
-	getAllPlaylists            playlist.GetAllPlaylists
-	getPlaylist                playlist.GetPlaylist
-	getPlaylistFiltersMetadata playlist.GetPlaylistFiltersMetadata
-	saveImageToPlaylist        playlist.SaveImageToPlaylist
-	updatePlaylist             playlist.UpdatePlaylist
+	addAlbumsToPlaylist             playlist.AddAlbumsToPlaylist
+	addPerfectRehearsalsToPlaylists playlist.AddPerfectRehearsalsToPlaylists
+	addArtistsToPlaylist            playlist.AddArtistsToPlaylist
+	bulkDeletePlaylists             playlist.BulkDeletePlaylists
+	createPlaylist                  playlist.CreatePlaylist
+	deletePlaylist                  playlist.DeletePlaylist
+	deleteImageFromPlaylist         playlist.DeleteImageFromPlaylist
+	getAllPlaylists                 playlist.GetAllPlaylists
+	getPlaylist                     playlist.GetPlaylist
+	getPlaylistFiltersMetadata      playlist.GetPlaylistFiltersMetadata
+	saveImageToPlaylist             playlist.SaveImageToPlaylist
+	updatePlaylist                  playlist.UpdatePlaylist
 
 	addSongsToPlaylist      song.AddSongsToPlaylist
 	getPlaylistSongs        song.GetPlaylistSongs
@@ -58,6 +60,7 @@ type playlistService struct {
 func NewPlaylistService(
 	addAlbumsToPlaylist playlist.AddAlbumsToPlaylist,
 	addArtistsToPlaylist playlist.AddArtistsToPlaylist,
+	addPerfectRehearsalsToPlaylists playlist.AddPerfectRehearsalsToPlaylists,
 	bulkDeletePlaylists playlist.BulkDeletePlaylists,
 	createPlaylist playlist.CreatePlaylist,
 	deletePlaylist playlist.DeletePlaylist,
@@ -75,17 +78,18 @@ func NewPlaylistService(
 	shufflePlaylistSongs song.ShufflePlaylistSongs,
 ) PlaylistService {
 	return &playlistService{
-		addAlbumsToPlaylist:        addAlbumsToPlaylist,
-		addArtistsToPlaylist:       addArtistsToPlaylist,
-		bulkDeletePlaylists:        bulkDeletePlaylists,
-		createPlaylist:             createPlaylist,
-		deletePlaylist:             deletePlaylist,
-		deleteImageFromPlaylist:    deleteImageFromPlaylist,
-		getAllPlaylists:            getAllPlaylists,
-		getPlaylist:                getPlaylist,
-		getPlaylistFiltersMetadata: getPlaylistFiltersMetadata,
-		saveImageToPlaylist:        saveImageToPlaylist,
-		updatePlaylist:             updatePlaylist,
+		addAlbumsToPlaylist:             addAlbumsToPlaylist,
+		addArtistsToPlaylist:            addArtistsToPlaylist,
+		addPerfectRehearsalsToPlaylists: addPerfectRehearsalsToPlaylists,
+		bulkDeletePlaylists:             bulkDeletePlaylists,
+		createPlaylist:                  createPlaylist,
+		deletePlaylist:                  deletePlaylist,
+		deleteImageFromPlaylist:         deleteImageFromPlaylist,
+		getAllPlaylists:                 getAllPlaylists,
+		getPlaylist:                     getPlaylist,
+		getPlaylistFiltersMetadata:      getPlaylistFiltersMetadata,
+		saveImageToPlaylist:             saveImageToPlaylist,
+		updatePlaylist:                  updatePlaylist,
 
 		addSongsToPlaylist:      addSongsToPlaylist,
 		getPlaylistSongs:        getPlaylistSongs,
@@ -103,6 +107,10 @@ func (p *playlistService) AddArtists(
 	request requests.AddArtistsToPlaylistRequest,
 ) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addArtistsToPlaylist.Handle(request)
+}
+
+func (p *playlistService) AddPerfectRehearsals(request requests.AddPerfectRehearsalsToPlaylistsRequest) *wrapper.ErrorCode {
+	return p.addPerfectRehearsalsToPlaylists.Handle(request)
 }
 
 func (p *playlistService) BulkDelete(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode {

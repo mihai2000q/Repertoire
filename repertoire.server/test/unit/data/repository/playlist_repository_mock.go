@@ -82,6 +82,16 @@ func (p *PlaylistRepositoryMock) GetAllByIDs(playlists *[]model.Playlist, ids []
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error {
+	args := p.Called(playlists, ids)
+
+	if len(args) > 1 {
+		*playlists = *args.Get(1).(*[]model.Playlist)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetAllByUser(
 	playlists *[]model.EnhancedPlaylist,
 	userID uuid.UUID,

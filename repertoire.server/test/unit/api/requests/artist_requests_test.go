@@ -344,7 +344,7 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 	}
 }
 
-func TestAddPerfectRehearsalsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+func TestAddPerfectRehearsalsToArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)
 
@@ -359,7 +359,7 @@ func TestAddPerfectRehearsalsToArtistRequest_WhenIsValid_ShouldReturnNil(t *test
 	assert.Nil(t, errCode)
 }
 
-func TestAddPerfectRehearsalsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
 		request              requests.AddPerfectRehearsalsToArtistsRequest
