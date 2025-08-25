@@ -110,7 +110,9 @@ func (p playlistRepository) GetAllByIDs(playlists *[]model.Playlist, ids []uuid.
 
 func (p playlistRepository) GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error {
 	return p.client.Model(&model.Playlist{}).
-		Preload("PlaylistSongs").
+		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
 		Preload("PlaylistSongs.Song").
 		Preload("PlaylistSongs.Song.Sections").
 		Find(&playlists, ids).
