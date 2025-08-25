@@ -62,10 +62,13 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	song := songData.Songs[4]
 	request := requests.AddPerfectSongRehearsalRequest{
-		ID: song.ID,
+		ID: songData.Songs[4].ID,
 	}
+
+	var song model.Song
+	db := utils.GetDatabase(t)
+	db.Preload("Sections").Preload("Sections.History").Find(&song, request.ID)
 
 	// when
 	w := httptest.NewRecorder()
@@ -75,7 +78,7 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var newSong model.Song
-	db := utils.GetDatabase(t)
+	db = db.Session(&gorm.Session{NewDB: true})
 	db.Preload("Sections").Preload("Sections.History").Find(&newSong, request.ID)
 
 	assertion.PerfectSongRehearsal(t, song, newSong)

@@ -39,16 +39,19 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
-	albums := []model.Album{
-		albumData.Albums[0],
-		albumData.Albums[1],
-	}
 	request := requests.AddPerfectRehearsalsToAlbumsRequest{
 		IDs: []uuid.UUID{
-			albums[0].ID,
-			albums[1].ID,
+			albumData.Albums[0].ID,
+			albumData.Albums[1].ID,
 		},
 	}
+
+	var albums []model.Album
+	db := utils.GetDatabase(t)
+	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
+		Preload("Songs.Sections").
+		Preload("Songs.Sections.History").
+		Find(&albums, request.IDs)
 
 	// when
 	w := httptest.NewRecorder()
@@ -58,7 +61,7 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var newAlbums []model.Album
-	db := utils.GetDatabase(t)
+	db = db.Session(&gorm.Session{NewDB: true})
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
 		Preload("Songs.Sections").
 		Preload("Songs.Sections.History").
@@ -74,9 +77,9 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 			if totalOccurrences > 0 {
 				assertion.PerfectSongRehearsal(t, albums[i].Songs[j], newAlbums[i].Songs[j])
 			} else {
-				assert.Equal(t, newAlbums[i].Songs[j].Rehearsals, albums[i].Songs[j].Rehearsals)
-				assert.Equal(t, newAlbums[i].Songs[j].Progress, albums[i].Songs[j].Progress)
-				assert.Equal(t, newAlbums[i].Songs[j].LastTimePlayed, albums[i].Songs[j].LastTimePlayed)
+				assert.Equal(t, albums[i].Songs[j].Rehearsals, newAlbums[i].Songs[j].Rehearsals)
+				assert.Equal(t, albums[i].Songs[j].Progress, newAlbums[i].Songs[j].Progress)
+				assert.Equal(t, albums[i].Songs[j].LastTimePlayed, newAlbums[i].Songs[j].LastTimePlayed)
 			}
 		}
 	}

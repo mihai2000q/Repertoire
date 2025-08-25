@@ -59,6 +59,9 @@ var Albums = []model.Album{
 				UserID:       Users[0].ID,
 				AlbumTrackNo: &[]uint{1}[0],
 				ArtistID:     &[]uuid.UUID{Artists[0].ID}[0],
+				Rehearsals:   10,
+				Confidence:   10,
+				Progress:     5,
 				Sections: []model.SongSection{
 					{
 						ID:                uuid.New(),
@@ -75,7 +78,7 @@ var Albums = []model.Album{
 							{
 								ID:       uuid.New(),
 								From:     0,
-								To:       10,
+								To:       15,
 								Property: model.RehearsalsProperty,
 							},
 							{

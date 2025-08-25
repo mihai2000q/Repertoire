@@ -130,9 +130,7 @@ func (a albumRepository) GetAllByIDsWithSongSections(albums *[]model.Album, ids 
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
-		Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB {
-			return db.Order("songs.sections.order")
-		}).
+		Preload("Songs.Sections").
 		Find(&albums, ids).
 		Error
 }

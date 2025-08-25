@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestAddPerfectSongRehearsals_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -38,16 +39,16 @@ func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTh
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	songs := []model.Song{
-		songData.Songs[0],
-		songData.Songs[4],
-	}
 	request := requests.AddPerfectSongRehearsalsRequest{
 		IDs: []uuid.UUID{
-			songs[0].ID,
-			songs[1].ID,
+			songData.Songs[0].ID,
+			songData.Songs[4].ID,
 		},
 	}
+
+	var songs []model.Song
+	db := utils.GetDatabase(t)
+	db.Preload("Sections").Preload("Sections.History").Find(&songs, request.IDs)
 
 	// when
 	w := httptest.NewRecorder()
@@ -57,7 +58,7 @@ func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTh
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var newSongs []model.Song
-	db := utils.GetDatabase(t)
+	db = db.Session(&gorm.Session{NewDB: true})
 	db.Preload("Sections").Preload("Sections.History").Find(&newSongs, request.IDs)
 
 	for i := range newSongs {
