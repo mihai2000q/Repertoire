@@ -12,6 +12,7 @@ import (
 
 var processors = fx.Options(
 	fx.Provide(processor.NewProgressProcessor),
+	fx.Provide(processor.NewSongProcessor),
 )
 
 var providers = fx.Options(
