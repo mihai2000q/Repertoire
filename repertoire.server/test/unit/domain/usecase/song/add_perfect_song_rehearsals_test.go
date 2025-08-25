@@ -265,6 +265,11 @@ func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongs(t *testing.T)
 	}
 
 	transactionSongRepository.On("UpdateAllWithAssociations", mock.IsType(new([]model.Song))).
+		Run(func(args mock.Arguments) {
+			newSongs := args.Get(0).(*[]model.Song)
+			assert.Len(t, *newSongs, len(mockSongs))
+			assert.ElementsMatch(t, mockSongs, *newSongs)
+		}).
 		Return(nil).
 		Once()
 

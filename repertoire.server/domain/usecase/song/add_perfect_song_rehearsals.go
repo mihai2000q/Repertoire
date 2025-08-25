@@ -44,12 +44,12 @@ func (a AddPerfectSongRehearsals) Handle(request requests.AddPerfectSongRehearsa
 
 		var newSongs []model.Song
 		for _, song := range songs {
-			errC, updatedSong := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
+			errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
 			if errC != nil {
 				errCode = errC
 				return errCode.Error
 			}
-			if updatedSong {
+			if isUpdated {
 				newSongs = append(newSongs, song)
 			}
 		}

@@ -43,13 +43,13 @@ func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsal
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		transactionSongRepository := factory.NewSongRepository()
 
-		errC, updatedSong := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
+		errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
 		if errC != nil {
 			errCode = errC
 			return errCode.Error
 		}
 
-		if updatedSong {
+		if isUpdated {
 			err := transactionSongRepository.UpdateWithAssociations(&song)
 			if err != nil {
 				errCode = wrapper.InternalServerError(err)
