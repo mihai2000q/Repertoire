@@ -5,11 +5,11 @@ import (
 	"net/http/httptest"
 	"repertoire/server/api/requests"
 	"repertoire/server/model"
+	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -78,26 +78,5 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 	db := utils.GetDatabase(t)
 	db.Preload("Sections").Preload("Sections.History").Find(&newSong, request.ID)
 
-	for i, section := range newSong.Sections {
-		if section.Occurrences == 0 { // nothing changed
-			newSong.Sections[i].History = nil
-			assert.Equal(t, song.Sections[i], newSong.Sections[i])
-			continue
-		}
-
-		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].Occurrences)
-		assert.Greater(t, section.RehearsalsScore, song.Sections[i].RehearsalsScore)
-		assert.Greater(t, section.Progress, song.Sections[i].Progress)
-
-		assert.NotEmpty(t, section.History[len(section.History)-1].ID)
-		assert.Equal(t, song.Sections[i].Rehearsals, section.History[len(section.History)-1].From)
-		assert.Equal(t, section.Rehearsals, section.History[len(section.History)-1].To)
-		assert.Equal(t, model.RehearsalsProperty, section.History[len(section.History)-1].Property)
-	}
-
-	assert.Greater(t, newSong.Rehearsals, song.Rehearsals)
-	assert.Greater(t, newSong.Progress, song.Progress)
-
-	assert.NotNil(t, newSong.LastTimePlayed)
-	assert.WithinDuration(t, time.Now(), *newSong.LastTimePlayed, 1*time.Minute)
+	assertion.PerfectSongRehearsal(t, song, newSong)
 }

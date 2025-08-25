@@ -29,6 +29,7 @@ type SongRepository interface {
 	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
@@ -240,6 +241,15 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 
 func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error {
 	return s.client.Model(&model.Song{}).Find(&songs, ids).Error
+}
+
+func (s songRepository) GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Find(&songs, ids).
+		Error
 }
 
 func (s songRepository) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
