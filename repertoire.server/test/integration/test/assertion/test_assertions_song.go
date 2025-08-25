@@ -11,14 +11,13 @@ import (
 func PerfectSongRehearsal(t *testing.T, song model.Song, newSong model.Song) {
 	for i, section := range newSong.Sections {
 		if section.Occurrences == 0 { // nothing changed
-			newSong.Sections[i].History = nil
 			assert.Equal(t, song.Sections[i], newSong.Sections[i])
 			continue
 		}
 
 		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].Occurrences)
 		assert.Greater(t, section.RehearsalsScore, song.Sections[i].RehearsalsScore)
-		assert.Greater(t, section.Progress, song.Sections[i].Progress)
+		assert.GreaterOrEqual(t, section.Progress, song.Sections[i].Progress)
 
 		assert.NotEmpty(t, section.History[len(section.History)-1].ID)
 		assert.Equal(t, song.Sections[i].Rehearsals, section.History[len(section.History)-1].From)

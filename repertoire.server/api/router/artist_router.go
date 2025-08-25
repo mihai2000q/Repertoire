@@ -19,6 +19,7 @@ func (a ArtistRouter) RegisterRoutes() {
 		api.POST("", a.handler.Create)
 		api.POST("/add-albums", a.handler.AddAlbums)
 		api.POST("/add-songs", a.handler.AddSongs)
+		api.POST("/perfect-rehearsals", a.handler.AddPerfectRehearsals)
 		api.PUT("", a.handler.Update)
 		api.PUT("/remove-albums", a.handler.RemoveAlbums)
 		api.PUT("/remove-songs", a.handler.RemoveSongs)

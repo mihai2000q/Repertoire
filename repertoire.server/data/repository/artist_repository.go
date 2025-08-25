@@ -16,6 +16,7 @@ type ArtistRepository interface {
 	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(artists *[]model.Artist, ids []uuid.UUID, withSongs bool, withAlbums bool) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
+	GetAllByIDsWithSongSections(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.EnhancedArtist,
 		userID uuid.UUID,
@@ -144,6 +145,14 @@ func (a artistRepository) GetAllByIDs(
 func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
 	return a.client.Model(&model.Artist{}).
 		Preload("Songs").
+		Find(&artists, ids).
+		Error
+}
+
+func (a artistRepository) GetAllByIDsWithSongSections(artists *[]model.Artist, ids []uuid.UUID) error {
+	return a.client.Model(&model.Artist{}).
+		Preload("Songs").
+		Preload("Songs.Sections").
 		Find(&artists, ids).
 		Error
 }

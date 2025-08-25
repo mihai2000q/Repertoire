@@ -149,6 +149,23 @@ func (a ArtistHandler) AddSongs(c *gin.Context) {
 	a.SendMessage(c, "songs have been added to artist successfully")
 }
 
+func (a ArtistHandler) AddPerfectRehearsals(c *gin.Context) {
+	var request requests.AddPerfectRehearsalsToArtistsRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.AddPerfectRehearsals(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "perfect rehearsals have been added to artists successfully")
+}
+
 func (a ArtistHandler) Update(c *gin.Context) {
 	var request requests.UpdateArtistRequest
 	errorCode := a.BindAndValidate(c, &request)
