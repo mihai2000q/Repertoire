@@ -19,6 +19,10 @@ export interface CreateAlbumRequest {
   artistName?: string
 }
 
+export interface AddPerfectRehearsalsToAlbumsRequest {
+  ids: string[]
+}
+
 export interface UpdateAlbumRequest {
   id: string
   title: string

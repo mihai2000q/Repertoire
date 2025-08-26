@@ -3,6 +3,7 @@ import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse
 import Artist, { BandMemberRole } from '../../types/models/Artist.ts'
 import {
   AddAlbumsToArtistRequest,
+  AddPerfectRehearsalsToArtistsRequest,
   AddSongsToArtistRequest,
   CreateArtistRequest,
   CreateBandMemberRequest,
@@ -43,6 +44,17 @@ const artistsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Artists']
+    }),
+    addPerfectRehearsalsToArtists: build.mutation<
+      HttpMessageResponse,
+      AddPerfectRehearsalsToArtistsRequest
+    >({
+      query: (body) => ({
+        url: 'artists/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Artists', 'Songs']
     }),
     updateArtist: build.mutation<HttpMessageResponse, UpdateArtistRequest>({
       query: (body) => ({
@@ -174,6 +186,7 @@ export const {
   useGetArtistFiltersMetadataQuery,
   useLazyGetArtistFiltersMetadataQuery,
   useCreateArtistMutation,
+  useAddPerfectRehearsalsToArtistsMutation,
   useUpdateArtistMutation,
   useSaveImageToArtistMutation,
   useDeleteImageFromArtistMutation,

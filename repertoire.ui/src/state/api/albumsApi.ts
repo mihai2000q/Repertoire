@@ -2,6 +2,7 @@ import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Album from '../../types/models/Album.ts'
 import {
+  AddPerfectRehearsalsToAlbumsRequest,
   AddSongsToAlbumRequest,
   CreateAlbumRequest,
   DeleteAlbumRequest,
@@ -42,6 +43,17 @@ const albumsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Albums', 'Artists']
+    }),
+    addPerfectRehearsalsToAlbums: build.mutation<
+      HttpMessageResponse,
+      AddPerfectRehearsalsToAlbumsRequest
+    >({
+      query: (body) => ({
+        url: 'albums/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Albums', 'Songs']
     }),
     updateAlbum: build.mutation<HttpMessageResponse, UpdateAlbumRequest>({
       query: (body) => ({
@@ -109,6 +121,7 @@ export const {
   useGetAlbumFiltersMetadataQuery,
   useLazyGetAlbumFiltersMetadataQuery,
   useCreateAlbumMutation,
+  useAddPerfectRehearsalsToAlbumsMutation,
   useUpdateAlbumMutation,
   useSaveImageToAlbumMutation,
   useDeleteImageFromAlbumMutation,

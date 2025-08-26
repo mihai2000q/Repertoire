@@ -12,6 +12,10 @@ export interface CreateArtistRequest {
   isBand?: boolean
 }
 
+export interface AddPerfectRehearsalsToArtistsRequest {
+  ids: string[]
+}
+
 export interface UpdateArtistRequest {
   id: string
   name: string
