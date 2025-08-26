@@ -94,9 +94,7 @@ describe('Artist Songs Widget', () => {
 
   afterAll(() => server.close())
 
-  it('should render and display songs', async () => {
-    const user = userEvent.setup()
-
+  it('should render and display songs', () => {
     reduxRouterRender(
       <ArtistSongsWidget
         songs={songs}
@@ -118,11 +116,6 @@ describe('Artist Songs Widget', () => {
       expect(screen.getByLabelText(`song-card-${song.title}`)).toBeInTheDocument()
     )
     expect(screen.getByLabelText('new-songs-widget')).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
-
-    expect(screen.getByRole('menuitem', { name: /add existing songs/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
 
   it('should display loader on loading', async () => {
@@ -185,6 +178,7 @@ describe('Artist Songs Widget', () => {
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add existing songs/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
@@ -205,6 +199,7 @@ describe('Artist Songs Widget', () => {
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
+    expect(screen.queryByRole('menuitem', { name: /perfect rehearsal/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('menuitem', { name: /add existing songs/i })).not.toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })

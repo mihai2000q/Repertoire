@@ -90,6 +90,9 @@ function ArtistSongsWidget({
             </Menu.Target>
             <Menu.Dropdown>
               {!isUnknownArtist && (
+                <PerfectRehearsalMenuItem id={artistId} closeMenu={closeMenu} type={'artist'} />
+              )}
+              {!isUnknownArtist && (
                 <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
                   Add Existing Songs
                 </Menu.Item>

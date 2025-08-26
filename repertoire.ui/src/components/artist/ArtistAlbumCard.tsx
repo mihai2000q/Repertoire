@@ -32,6 +32,7 @@ import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
 import { toast } from 'react-toastify'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -87,13 +88,17 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
       <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
         View Details
       </Menu.Item>
+      <Menu.Divider />
+
       <AddToPlaylistMenuItem
         ids={[album.id]}
         type={'album'}
         closeMenu={closeMenus}
         disabled={album.songsCount === 0}
       />
+      <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenus} type={'album'} />
       <Menu.Divider />
+
       {!isUnknownArtist && (
         <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
           Remove from Artist

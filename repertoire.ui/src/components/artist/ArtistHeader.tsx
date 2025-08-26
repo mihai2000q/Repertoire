@@ -13,6 +13,7 @@ import lowerTitleFontSize from '../../utils/style/lowerTitleFontSize.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import DeleteArtistModal from '../@ui/modal/DeleteArtistModal.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistHeaderProps {
   artist: Artist | undefined
@@ -24,6 +25,8 @@ interface ArtistHeaderProps {
 const ArtistHeader = forwardRef<HTMLDivElement, ArtistHeaderProps>(
   ({ artist, songsTotalCount, albumsTotalCount, isUnknownArtist }, ref) => {
     const navigate = useNavigate()
+
+    console.log(artist)
 
     const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
     const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] =
@@ -53,13 +56,17 @@ const ArtistHeader = forwardRef<HTMLDivElement, ArtistHeaderProps>(
             <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
               Edit
             </Menu.Item>
+            <Menu.Divider />
+
             <AddToPlaylistMenuItem
               ids={[artist?.id]}
               type={'artist'}
               closeMenu={closeMenu}
               disabled={artist?.songsCount === 0}
             />
+            <PerfectRehearsalMenuItem id={artist?.id} closeMenu={closeMenu} type={'artist'} />
             <Menu.Divider />
+
             <Menu.Item
               leftSection={<IconTrash size={14} />}
               c={'red.5'}

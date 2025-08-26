@@ -96,11 +96,11 @@ describe('Artist Header', () => {
     )
 
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: artist.name })).toHaveAttribute('src', artist.imageUrl)
+    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute('src', localArtist.imageUrl)
     expect(screen.getByRole('heading', { name: localArtist.name })).toBeInTheDocument()
     expect(
       screen.getByText(
-        `${artist.bandMembers.length} members • ${albumsTotalCount} album • ${songsTotalCount} song`
+        `${localArtist.bandMembers.length} members • ${albumsTotalCount} album • ${songsTotalCount} song`
       )
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
@@ -159,6 +159,7 @@ describe('Artist Header', () => {
     expect(screen.getByRole('menuitem', { name: /info/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
