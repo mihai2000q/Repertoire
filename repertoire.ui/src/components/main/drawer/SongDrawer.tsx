@@ -154,7 +154,7 @@ function SongDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
