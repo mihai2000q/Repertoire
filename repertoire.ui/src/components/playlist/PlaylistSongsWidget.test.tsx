@@ -168,6 +168,7 @@ describe('Playlist Songs Card', () => {
     await user.click(await screen.findByRole('button', { name: 'songs-more-menu' }))
 
     expect(screen.getByRole('menuitem', { name: /shuffle/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add songs/i })).toBeInTheDocument()
   })
 

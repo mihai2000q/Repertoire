@@ -13,6 +13,7 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import titleFontSize from '../../utils/style/titleFontSize.ts'
 import { useAppSelector } from '../../state/store.ts'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface PlaylistHeaderProps {
   playlist: Playlist
@@ -54,6 +55,10 @@ function PlaylistHeader({ playlist }: PlaylistHeaderProps) {
             Edit
           </Menu.Item>
           <Menu.Divider />
+
+          <PerfectRehearsalMenuItem id={playlist.id} closeMenu={closeMenu} type={'playlist'} />
+          <Menu.Divider />
+
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

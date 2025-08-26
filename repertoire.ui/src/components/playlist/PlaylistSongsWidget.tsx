@@ -27,6 +27,7 @@ import { MoveSongFromPlaylistRequest } from '../../types/requests/PlaylistReques
 import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
 import MenuItemConfirmation from '../@ui/menu/item/MenuItemConfirmation.tsx'
 import { Id, toast } from 'react-toastify'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface PlaylistSongsWidgetProps {
   playlistId: string
@@ -37,6 +38,8 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
 
   const [moveSongFromPlaylist, { isLoading: isMoveLoading }] = useMoveSongFromPlaylistMutation()
   const [shufflePlaylistSongs, { isLoading: isShuffleLoading }] = useShufflePlaylistMutation()
+
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedAddSongs, { open: openAddSongs, close: closeAddSongs }] = useDisclosure(false)
 
@@ -95,7 +98,7 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
 
           <Space flex={1} />
 
-          <Menu>
+          <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
             <Menu.Target>
               <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
                 <IconDots size={15} />
@@ -109,6 +112,7 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
               >
                 Shuffle
               </MenuItemConfirmation>
+              <PerfectRehearsalMenuItem id={playlistId} closeMenu={closeMenu} type={'playlist'} />
               <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddSongs}>
                 Add Songs
               </Menu.Item>

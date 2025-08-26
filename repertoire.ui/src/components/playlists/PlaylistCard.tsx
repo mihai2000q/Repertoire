@@ -9,6 +9,7 @@ import { useDisclosure, useHover } from '@mantine/hooks'
 import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface PlaylistCardProps {
   playlist: Playlist
@@ -21,7 +22,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
-  const [openedMenu, { toggle: toggleMenu }] = useDisclosure(false)
+  const [openedMenu, { toggle: toggleMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -86,6 +87,9 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
           >
             Open Drawer
           </ContextMenu.Item>
+          <PerfectRehearsalMenuItem id={playlist.id} closeMenu={closeMenu} type={'playlist'} />
+          <ContextMenu.Divider />
+
           <ContextMenu.Item
             c={'red'}
             leftSection={<IconTrash size={14} />}
