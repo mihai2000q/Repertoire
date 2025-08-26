@@ -1,6 +1,7 @@
 package assertion
 
 import (
+	"math"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
@@ -75,30 +76,40 @@ func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, alb
 			if rehearsals != 0 {
 				rehearsals = rehearsals / float64(songsCount)
 				if minRehearsals == nil || rehearsals < *minRehearsals {
-					minRehearsals = &rehearsals
+					minRehearsals = &[]float64{math.Ceil(rehearsals)}[0]
 				}
 				if rehearsals > maxRehearsals {
-					maxRehearsals = rehearsals
+					maxRehearsals = math.Ceil(rehearsals)
 				}
+			} else {
+				minRehearsals = &[]float64{0}[0]
 			}
 			if confidence != 0 {
 				confidence = confidence / float64(songsCount)
 				if minConfidence == nil || confidence < *minConfidence {
-					minConfidence = &confidence
+					minConfidence = &[]float64{math.Ceil(confidence)}[0]
 				}
 				if confidence > maxConfidence {
-					maxConfidence = confidence
+					maxConfidence = math.Ceil(confidence)
 				}
+			} else {
+				minConfidence = &[]float64{0}[0]
 			}
 			if progress != 0 {
 				progress = progress / float64(songsCount)
 				if minProgress == nil || progress < *minProgress {
-					minProgress = &progress
+					minProgress = &[]float64{math.Ceil(progress)}[0]
 				}
 				if progress > maxProgress {
-					maxProgress = progress
+					maxProgress = math.Ceil(progress)
 				}
+			} else {
+				minProgress = &[]float64{0}[0]
 			}
+		} else {
+			minRehearsals = &[]float64{0}[0]
+			minConfidence = &[]float64{0}[0]
+			minProgress = &[]float64{0}[0]
 		}
 	}
 
@@ -212,30 +223,40 @@ func ArtistFiltersMetadata(t *testing.T, metadata model.ArtistFiltersMetadata, a
 			if rehearsals != 0 {
 				rehearsals = rehearsals / float64(songsCount)
 				if minRehearsals == nil || rehearsals < *minRehearsals {
-					minRehearsals = &rehearsals
+					minRehearsals = &[]float64{math.Ceil(rehearsals)}[0]
 				}
 				if rehearsals > maxRehearsals {
-					maxRehearsals = rehearsals
+					maxRehearsals = math.Ceil(rehearsals)
 				}
+			} else {
+				minRehearsals = &[]float64{0}[0]
 			}
 			if confidence != 0 {
 				confidence = confidence / float64(songsCount)
 				if minConfidence == nil || confidence < *minConfidence {
-					minConfidence = &confidence
+					minConfidence = &[]float64{math.Ceil(confidence)}[0]
 				}
 				if confidence > maxConfidence {
-					maxConfidence = confidence
+					maxConfidence = math.Ceil(confidence)
 				}
+			} else {
+				minConfidence = &[]float64{0}[0]
 			}
 			if progress != 0 {
 				progress = progress / float64(songsCount)
 				if minProgress == nil || progress < *minProgress {
-					minProgress = &progress
+					minProgress = &[]float64{math.Ceil(progress)}[0]
 				}
 				if progress > maxProgress {
-					maxProgress = progress
+					maxProgress = math.Ceil(progress)
 				}
+			} else {
+				minProgress = &[]float64{0}[0]
 			}
+		} else {
+			minRehearsals = &[]float64{0}[0]
+			minConfidence = &[]float64{0}[0]
+			minProgress = &[]float64{0}[0]
 		}
 	}
 

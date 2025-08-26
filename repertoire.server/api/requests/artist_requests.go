@@ -28,6 +28,10 @@ type AddSongsToArtistRequest struct {
 	SongIDs []uuid.UUID `validate:"min=1"`
 }
 
+type AddPerfectRehearsalsToArtistsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
 type UpdateArtistRequest struct {
 	ID     uuid.UUID `validate:"required"`
 	Name   string    `validate:"required,max=100"`

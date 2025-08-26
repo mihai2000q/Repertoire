@@ -39,6 +39,13 @@ var Users = []model.User{
 				Order: 2,
 			},
 		},
+		SongSectionTypes: []model.SongSectionType{
+			{
+				ID:    uuid.New(),
+				Name:  "Chorus",
+				Order: 0,
+			},
+		},
 	},
 }
 
@@ -110,19 +117,107 @@ var Artists = []model.Artist{
 		},
 		Songs: []model.Song{
 			{
-				ID:     uuid.New(),
-				Title:  "Test Song 1",
-				UserID: Users[0].ID,
+				ID:         uuid.New(),
+				Title:      "Test Song 1",
+				UserID:     Users[0].ID,
+				Rehearsals: 10,
+				Confidence: 10,
+				Progress:   5,
+				Sections: []model.SongSection{
+					{
+						ID:                uuid.New(),
+						Name:              "Test Song Section 1",
+						Order:             0,
+						Rehearsals:        16,
+						Confidence:        10,
+						ConfidenceScore:   12,
+						RehearsalsScore:   45,
+						Progress:          5,
+						Occurrences:       2,
+						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+						History: []model.SongSectionHistory{
+							{
+								ID:       uuid.New(),
+								From:     0,
+								To:       16,
+								Property: model.RehearsalsProperty,
+							},
+							{
+								ID:       uuid.New(),
+								From:     0,
+								To:       10,
+								Property: model.ConfidenceProperty,
+							},
+						},
+					},
+					{
+						ID:                uuid.New(),
+						Name:              "Test Song Section 2",
+						Order:             1,
+						Rehearsals:        20,
+						Confidence:        30,
+						ConfidenceScore:   25,
+						RehearsalsScore:   45,
+						Progress:          10,
+						Occurrences:       5,
+						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+						History: []model.SongSectionHistory{
+							{
+								ID:       uuid.New(),
+								From:     0,
+								To:       20,
+								Property: model.RehearsalsProperty,
+							},
+							{
+								ID:       uuid.New(),
+								From:     0,
+								To:       30,
+								Property: model.ConfidenceProperty,
+							},
+						},
+					},
+				},
 			},
 			{
 				ID:     uuid.New(),
 				Title:  "Test Song 2",
 				UserID: Users[0].ID,
+				Sections: []model.SongSection{
+					{
+						ID:                uuid.New(),
+						Name:              "Test Song Section 1",
+						Order:             0,
+						Occurrences:       2,
+						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+					},
+				},
 			},
 			{
 				ID:     uuid.New(),
 				Title:  "Test Song 3",
 				UserID: Users[0].ID,
+			},
+		},
+	},
+	{
+		ID:     uuid.New(),
+		Name:   "Rock",
+		UserID: Users[0].ID,
+		IsBand: true,
+		Songs: []model.Song{
+			{
+				ID:     uuid.New(),
+				Title:  "Test Song",
+				UserID: Users[0].ID,
+				Sections: []model.SongSection{
+					{
+						ID:                uuid.New(),
+						Name:              "Test Song Section 1",
+						Order:             0,
+						Occurrences:       2,
+						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+					},
+				},
 			},
 		},
 	},

@@ -13,6 +13,7 @@ import (
 
 type SongService interface {
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
+	AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode
 	AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
@@ -42,18 +43,19 @@ type SongService interface {
 }
 
 type songService struct {
-	addPerfectSongRehearsal song.AddPerfectSongRehearsal
-	addPartialSongRehearsal song.AddPartialSongRehearsal
-	bulkDeleteSongs         song.BulkDeleteSongs
-	createSong              song.CreateSong
-	deleteImageFromSong     song.DeleteImageFromSong
-	deleteSong              song.DeleteSong
-	getAllSongs             song.GetAllSongs
-	getSong                 song.GetSong
-	getSongFiltersMetadata  song.GetSongFiltersMetadata
-	saveImageToSong         song.SaveImageToSong
-	updateSong              song.UpdateSong
-	updateSongSettings      song.UpdateSongSettings
+	addPerfectSongRehearsal  song.AddPerfectSongRehearsal
+	addPerfectSongRehearsals song.AddPerfectSongRehearsals
+	addPartialSongRehearsal  song.AddPartialSongRehearsal
+	bulkDeleteSongs          song.BulkDeleteSongs
+	createSong               song.CreateSong
+	deleteImageFromSong      song.DeleteImageFromSong
+	deleteSong               song.DeleteSong
+	getAllSongs              song.GetAllSongs
+	getSong                  song.GetSong
+	getSongFiltersMetadata   song.GetSongFiltersMetadata
+	saveImageToSong          song.SaveImageToSong
+	updateSong               song.UpdateSong
+	updateSongSettings       song.UpdateSongSettings
 
 	getGuitarTunings    song.GetGuitarTunings
 	getInstruments      song.GetInstruments
@@ -70,6 +72,7 @@ type songService struct {
 
 func NewSongService(
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
+	addPerfectSongRehearsals song.AddPerfectSongRehearsals,
 	addPartialSongRehearsal song.AddPartialSongRehearsal,
 	bulkDeleteSongs song.BulkDeleteSongs,
 	createSong song.CreateSong,
@@ -95,18 +98,19 @@ func NewSongService(
 	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences,
 ) SongService {
 	return &songService{
-		addPerfectSongRehearsal: addPerfectSongRehearsal,
-		addPartialSongRehearsal: addPartialSongRehearsal,
-		bulkDeleteSongs:         bulkDeleteSongs,
-		createSong:              createSong,
-		deleteImageFromSong:     deleteImageFromSong,
-		deleteSong:              deleteSong,
-		getAllSongs:             getAllSongs,
-		getSong:                 getSong,
-		getSongFiltersMetadata:  getSongFiltersMetadata,
-		saveImageToSong:         saveImageToSong,
-		updateSong:              updateSong,
-		updateSongSettings:      updateSongSettings,
+		addPerfectSongRehearsal:  addPerfectSongRehearsal,
+		addPerfectSongRehearsals: addPerfectSongRehearsals,
+		addPartialSongRehearsal:  addPartialSongRehearsal,
+		bulkDeleteSongs:          bulkDeleteSongs,
+		createSong:               createSong,
+		deleteImageFromSong:      deleteImageFromSong,
+		deleteSong:               deleteSong,
+		getAllSongs:              getAllSongs,
+		getSong:                  getSong,
+		getSongFiltersMetadata:   getSongFiltersMetadata,
+		saveImageToSong:          saveImageToSong,
+		updateSong:               updateSong,
+		updateSongSettings:       updateSongSettings,
 
 		getGuitarTunings:    getGuitarTunings,
 		getInstruments:      getInstruments,
@@ -124,6 +128,10 @@ func NewSongService(
 
 func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
 	return s.addPerfectSongRehearsal.Handle(request)
+}
+
+func (s *songService) AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode {
+	return s.addPerfectSongRehearsals.Handle(request)
 }
 
 func (s *songService) AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {

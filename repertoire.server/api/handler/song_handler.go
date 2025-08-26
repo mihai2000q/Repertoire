@@ -132,6 +132,23 @@ func (s SongHandler) AddPerfectRehearsal(c *gin.Context) {
 	s.SendMessage(c, "perfect rehearsal has been added successfully!")
 }
 
+func (s SongHandler) AddPerfectRehearsals(c *gin.Context) {
+	var request requests.AddPerfectSongRehearsalsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.AddPerfectRehearsals(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "perfect rehearsals have been added successfully!")
+}
+
 func (s SongHandler) AddPartialRehearsal(c *gin.Context) {
 	var request requests.AddPartialSongRehearsalRequest
 	errorCode := s.BindAndValidate(c, &request)

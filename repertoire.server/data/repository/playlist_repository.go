@@ -21,6 +21,7 @@ type PlaylistRepository interface {
 	GetPlaylistSongsCount(count *int64, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error
+	GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
@@ -105,6 +106,17 @@ func (p playlistRepository) GetFiltersMetadata(
 
 func (p playlistRepository) GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error {
 	return p.client.Model(&model.Playlist{}).Find(&playlists, ids).Error
+}
+
+func (p playlistRepository) GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error {
+	return p.client.Model(&model.Playlist{}).
+		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
+		Preload("PlaylistSongs.Song").
+		Preload("PlaylistSongs.Song.Sections").
+		Find(&playlists, ids).
+		Error
 }
 
 var compoundPlaylistsFields = []string{"songs_count"}

@@ -20,6 +20,7 @@ import (
 
 var albumUseCases = fx.Options(
 	fx.Provide(album.NewAddSongsToAlbum),
+	fx.Provide(album.NewAddPerfectRehearsalsToAlbums),
 	fx.Provide(album.NewBulkDeleteAlbums),
 	fx.Provide(album.NewCreateAlbum),
 	fx.Provide(album.NewDeleteAlbum),
@@ -35,6 +36,7 @@ var albumUseCases = fx.Options(
 
 var artistUseCases = fx.Options(
 	fx.Provide(artist.NewAddAlbumsToArtist),
+	fx.Provide(artist.NewAddPerfectRehearsalsToArtists),
 	fx.Provide(artist.NewAddSongsToArtist),
 	fx.Provide(artist.NewBulkDeleteArtists),
 	fx.Provide(artist.NewCreateArtist),
@@ -61,6 +63,7 @@ var artistUseCases = fx.Options(
 var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewAddAlbumsToPlaylist),
 	fx.Provide(playlist.NewAddArtistsToPlaylist),
+	fx.Provide(playlist.NewAddPerfectRehearsalsToPlaylists),
 	fx.Provide(playlist.NewBulkDeletePlaylists),
 	fx.Provide(playlist.NewCreatePlaylist),
 	fx.Provide(playlist.NewDeletePlaylist),
@@ -85,6 +88,7 @@ var searchUseCases = fx.Options(
 
 var songUseCases = fx.Options(
 	fx.Provide(song.NewAddPerfectSongRehearsal),
+	fx.Provide(song.NewAddPerfectSongRehearsals),
 	fx.Provide(song.NewAddPartialSongRehearsal),
 	fx.Provide(song.NewBulkDeleteSongs),
 	fx.Provide(song.NewCreateSong),

@@ -17,6 +17,7 @@ type AlbumRepository interface {
 	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
+	GetAllByIDsWithSongSections(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.EnhancedAlbum,
@@ -120,6 +121,16 @@ func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
+		Find(&albums, ids).
+		Error
+}
+
+func (a albumRepository) GetAllByIDsWithSongSections(albums *[]model.Album, ids []uuid.UUID) error {
+	return a.client.Model(&model.Album{}).
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("songs.album_track_no")
+		}).
+		Preload("Songs.Sections").
 		Find(&albums, ids).
 		Error
 }

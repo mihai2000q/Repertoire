@@ -1,8 +1,7 @@
-package song
+package artist
 
 import (
 	"errors"
-	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
@@ -11,46 +10,54 @@ import (
 	"repertoire/server/model"
 )
 
-type AddPerfectSongRehearsal struct {
-	repository         repository.SongRepository
+type AddPerfectRehearsalsToArtists struct {
+	repository         repository.ArtistRepository
 	songProcessor      processor.SongProcessor
 	transactionManager transaction.Manager
 }
 
-func NewAddPerfectSongRehearsal(
-	repository repository.SongRepository,
+func NewAddPerfectRehearsalsToArtists(
+	repository repository.ArtistRepository,
 	songProcessor processor.SongProcessor,
 	transactionManager transaction.Manager,
-) AddPerfectSongRehearsal {
-	return AddPerfectSongRehearsal{
+) AddPerfectRehearsalsToArtists {
+	return AddPerfectRehearsalsToArtists{
 		repository:         repository,
 		songProcessor:      songProcessor,
 		transactionManager: transactionManager,
 	}
 }
 
-func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
-	var song model.Song
-	err := a.repository.GetWithSections(&song, request.ID)
+func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehearsalsToArtistsRequest) *wrapper.ErrorCode {
+	var artists []model.Artist
+	err := a.repository.GetAllByIDsWithSongSections(&artists, request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+	if len(artists) == 0 {
+		return wrapper.NotFoundError(errors.New("artists not found"))
 	}
 
 	var errCode *wrapper.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		transactionSongRepository := factory.NewSongRepository()
 
-		errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
-		if errC != nil {
-			errCode = errC
-			return errCode.Error
+		var newSongs []model.Song
+		for _, artist := range artists {
+			for _, song := range artist.Songs {
+				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
+				if errC != nil {
+					errCode = errC
+					return errCode.Error
+				}
+				if isUpdated {
+					newSongs = append(newSongs, song)
+				}
+			}
 		}
 
-		if isUpdated {
-			err := transactionSongRepository.UpdateWithAssociations(&song)
+		if len(newSongs) > 0 {
+			err = transactionSongRepository.UpdateAllWithAssociations(&newSongs)
 			if err != nil {
 				errCode = wrapper.InternalServerError(err)
 				return err
