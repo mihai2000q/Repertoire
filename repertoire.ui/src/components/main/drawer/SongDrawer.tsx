@@ -39,7 +39,7 @@ import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
-import PerfectRehearsalMenuItem from '../../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
@@ -154,7 +154,7 @@ function SongDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -173,7 +173,7 @@ function SongDrawer() {
                 <Menu.Divider />
                 <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
                 <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-                <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+                <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
                 <Menu.Divider />
 
                 <Menu.Item

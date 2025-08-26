@@ -33,6 +33,7 @@ import {
 import PlaylistDrawerLoader from '../loader/PlaylistDrawerLoader.tsx'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
   const navigate = useNavigate()
@@ -214,7 +215,7 @@ function PlaylistDrawer() {
             </Avatar>
 
             <Box pos={'absolute'} top={0} right={0} p={7}>
-              <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+              <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
                 <Menu.Target>
                   <ActionIcon
                     variant={'grey-subtle'}
@@ -229,6 +230,13 @@ function PlaylistDrawer() {
                   <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                     View Details
                   </Menu.Item>
+                  <PerfectRehearsalMenuItem
+                    id={playlist.id}
+                    closeMenu={closeMenu}
+                    type={'playlist'}
+                  />
+                  <Menu.Divider />
+
                   <Menu.Item
                     leftSection={<IconTrash size={14} />}
                     c={'red.5'}

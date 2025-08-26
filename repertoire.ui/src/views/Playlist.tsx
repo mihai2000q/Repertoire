@@ -2,8 +2,8 @@ import { Divider, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import { useGetPlaylistQuery } from '../state/api/playlistsApi.ts'
 import PlaylistLoader from '../components/playlist/loader/PlaylistLoader.tsx'
-import PlaylistHeaderCard from '../components/playlist/PlaylistHeaderCard.tsx'
-import PlaylistSongsCard from '../components/playlist/PlaylistSongsCard.tsx'
+import PlaylistHeader from '../components/playlist/PlaylistHeader.tsx'
+import PlaylistSongsWidget from '../components/playlist/PlaylistSongsWidget.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 
@@ -22,11 +22,11 @@ function Playlist() {
 
   return (
     <Stack px={'xl'}>
-      <PlaylistHeaderCard playlist={playlist} />
+      <PlaylistHeader playlist={playlist} />
 
       <Divider />
 
-      <PlaylistSongsCard playlistId={playlistId} />
+      <PlaylistSongsWidget playlistId={playlistId} />
     </Stack>
   )
 }

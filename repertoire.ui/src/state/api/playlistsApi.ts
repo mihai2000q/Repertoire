@@ -4,6 +4,7 @@ import Playlist from '../../types/models/Playlist.ts'
 import {
   AddAlbumsToPlaylistRequest,
   AddArtistsToPlaylistRequest,
+  AddPerfectRehearsalsToPlaylistsRequest,
   AddSongsToPlaylistRequest,
   CreatePlaylistRequest,
   GetPlaylistRequest,
@@ -86,6 +87,17 @@ const playlistsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Playlists']
+    }),
+    addPerfectRehearsalsToPlaylists: build.mutation<
+      HttpMessageResponse,
+      AddPerfectRehearsalsToPlaylistsRequest
+    >({
+      query: (body) => ({
+        url: 'playlists/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Playlists', 'Songs']
     }),
     updatePlaylist: build.mutation<HttpMessageResponse, UpdatePlaylistRequest>({
       query: (body) => ({
@@ -225,6 +237,7 @@ export const {
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
+  useAddPerfectRehearsalsToPlaylistsMutation,
   useUpdatePlaylistMutation,
   useSaveImageToPlaylistMutation,
   useDeleteImageFromPlaylistMutation,

@@ -19,7 +19,7 @@ function AlbumLoader() {
 
       <Divider />
 
-      <Card variant={'panel'} mx={'xs'} mb={'lg'} p={0}>
+      <Card variant={'widget'} mx={'xs'} mb={'lg'} p={0}>
         <Stack px={'md'} pt={'md'} pb={'xs'}>
           <Group>
             <Skeleton w={50} h={15} />

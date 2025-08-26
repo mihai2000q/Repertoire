@@ -16,6 +16,10 @@ export interface CreatePlaylistRequest {
   description: string
 }
 
+export interface AddPerfectRehearsalsToPlaylistsRequest {
+  ids: string[]
+}
+
 export interface UpdatePlaylistRequest {
   id: string
   title: string

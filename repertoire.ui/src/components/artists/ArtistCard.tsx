@@ -9,6 +9,7 @@ import { useAppDispatch } from '../../state/store.ts'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import DeleteArtistModal from '../@ui/modal/DeleteArtistModal.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistCardProps {
   artist: Artist
@@ -76,13 +77,17 @@ function ArtistCard({ artist }: ArtistCardProps) {
           >
             Open Drawer
           </Menu.Item>
+          <Menu.Divider />
+
           <AddToPlaylistMenuItem
             ids={[artist.id]}
             type={'artist'}
             closeMenu={closeMenu}
             disabled={artist.songsCount === 0}
           />
+          <PerfectRehearsalMenuItem id={artist.id} closeMenu={closeMenu} type={'artist'} />
           <Menu.Divider />
+
           <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
             Delete
           </Menu.Item>

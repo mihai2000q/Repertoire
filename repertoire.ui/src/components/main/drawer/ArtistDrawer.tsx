@@ -42,6 +42,7 @@ import Album from '../../../types/models/Album.ts'
 import DeleteArtistModal from '../../@ui/modal/DeleteArtistModal.tsx'
 import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function ArtistDrawerAlbumCard({ album, onClose }: { album: Album; onClose: () => void }) {
   const navigate = useNavigate()
@@ -292,7 +293,7 @@ function ArtistDrawer() {
             </Avatar>
 
             <Box pos={'absolute'} top={0} right={0} p={7}>
-              <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+              <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
                 <Menu.Target>
                   <ActionIcon
                     variant={'grey-subtle'}
@@ -307,13 +308,17 @@ function ArtistDrawer() {
                   <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                     View Details
                   </Menu.Item>
+                  <Menu.Divider />
+
                   <AddToPlaylistMenuItem
                     ids={[artist.id]}
                     type={'artist'}
                     closeMenu={closeMenu}
                     disabled={songs.totalCount === 0}
                   />
+                  <PerfectRehearsalMenuItem id={artist.id} closeMenu={closeMenu} type={'artist'} />
                   <Menu.Divider />
+
                   <Menu.Item
                     leftSection={<IconTrash size={14} />}
                     c={'red.5'}

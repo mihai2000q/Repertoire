@@ -24,7 +24,7 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
@@ -257,7 +257,7 @@ function SongCard({ song }: SongCardProps) {
         <ContextMenu.Divider />
         <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
         <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-        <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+        <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
         <ContextMenu.Divider />
 
         <ContextMenu.Item

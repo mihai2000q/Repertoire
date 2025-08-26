@@ -9,6 +9,7 @@ import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface AlbumCardProps {
   album: Album
@@ -94,13 +95,17 @@ function AlbumCard({ album }: AlbumCardProps) {
           >
             View Artist
           </ContextMenu.Item>
+          <ContextMenu.Divider />
+
           <AddToPlaylistMenuItem
             ids={[album.id]}
             type={'album'}
             closeMenu={closeMenu}
             disabled={album.songsCount === 0}
           />
+          <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenu} type={'album'} />
           <ContextMenu.Divider />
+
           <ContextMenu.Item
             c={'red'}
             leftSection={<IconTrash size={14} />}

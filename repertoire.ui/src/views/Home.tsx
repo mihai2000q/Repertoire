@@ -2,10 +2,10 @@ import { ReactElement } from 'react'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { SimpleGrid, Stack } from '@mantine/core'
 import HomeTop from '../components/home/HomeTop.tsx'
-import HomeRecentlyPlayed from '../components/home/HomeRecentlyPlayed.tsx'
-import HomeGenres from '../components/home/HomeGenres.tsx'
-import HomeRecentPlaylists from '../components/home/HomeRecentPlaylists.tsx'
-import HomeRecentArtists from '../components/home/HomeRecentArtists.tsx'
+import HomeRecentlyPlayed from '../components/home/widgets/HomeRecentlyPlayed.tsx'
+import HomeGenres from '../components/home/widgets/HomeGenres.tsx'
+import HomeRecentPlaylists from '../components/home/widgets/HomeRecentPlaylists.tsx'
+import HomeRecentArtists from '../components/home/widgets/HomeRecentArtists.tsx'
 
 function Home(): ReactElement {
   useFixedDocumentTitle('Home')

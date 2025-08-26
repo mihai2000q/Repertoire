@@ -30,6 +30,7 @@ import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import Song from '../../../types/models/Song.ts'
 import DeleteAlbumModal from '../../@ui/modal/DeleteAlbumModal.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function AlbumDrawerSongCard({
   song,
@@ -168,7 +169,7 @@ function AlbumDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -183,13 +184,17 @@ function AlbumDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <Menu.Divider />
+
                 <AddToPlaylistMenuItem
                   ids={[album.id]}
                   type={'album'}
                   closeMenu={closeMenu}
                   disabled={album.songs.length === 0}
                 />
+                <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenu} type={'album'} />
                 <Menu.Divider />
+
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}

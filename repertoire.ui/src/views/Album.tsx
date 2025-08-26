@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom'
 import { useGetAlbumQuery } from '../state/api/albumsApi.ts'
 import AlbumLoader from '../components/album/AlbumLoader.tsx'
 import { useGetSongsQuery } from '../state/api/songsApi.ts'
-import AlbumHeaderCard from '../components/album/AlbumHeaderCard.tsx'
-import AlbumSongsCard from '../components/album/AlbumSongsCard.tsx'
+import AlbumHeader from '../components/album/AlbumHeader.tsx'
+import AlbumSongsWidget from '../components/album/AlbumSongsWidget.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import albumSongsOrders from '../data/album/albumSongsOrders.ts'
@@ -67,7 +67,7 @@ function Album() {
 
   return (
     <Stack px={'xl'}>
-      <AlbumHeaderCard
+      <AlbumHeader
         album={album}
         isUnknownAlbum={isUnknownAlbum}
         songsTotalCount={songs?.totalCount}
@@ -75,7 +75,7 @@ function Album() {
 
       <Divider />
 
-      <AlbumSongsCard
+      <AlbumSongsWidget
         album={album}
         songs={songs?.models}
         isUnknownAlbum={isUnknownAlbum}
