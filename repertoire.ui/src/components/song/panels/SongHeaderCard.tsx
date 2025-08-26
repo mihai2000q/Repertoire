@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import SongInfoModal from '../modal/SongInfoModal.tsx'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import ImageModal from '../../@ui/modal/ImageModal.tsx'
-import PerfectRehearsalMenuItem from '../../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import titleFontSize from '../../../utils/style/titleFontSize.ts'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
@@ -71,7 +71,7 @@ function SongHeaderCard({ song }: SongHeaderCardProps) {
           <Menu.Divider />
           <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
           <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-          <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+          <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
           <Menu.Divider />
 
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>

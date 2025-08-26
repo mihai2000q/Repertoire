@@ -26,7 +26,7 @@ import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import { useNavigate } from 'react-router-dom'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useRemoveSongsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
@@ -119,7 +119,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
       <Menu.Divider />
       <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
       <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
-      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
       <Menu.Divider />
 
       {!isUnknownArtist && (
