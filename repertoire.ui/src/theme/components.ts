@@ -128,7 +128,7 @@ export const components = {
   Card: Card.extend({
     styles: (theme) => ({
       root: {
-        '&[data-variant="panel"]': {
+        '&[data-variant="widget"]': {
           boxShadow: theme.shadows.sm,
           transition: '0.3s',
           '&:hover': {
@@ -434,6 +434,6 @@ declare module '@mantine/core' {
 
   // noinspection JSUnusedGlobalSymbols
   interface CardProps {
-    variant?: StylesApiProps<CardFactory>['variant'] | 'panel' | 'add-new'
+    variant?: StylesApiProps<CardFactory>['variant'] | 'widget' | 'add-new'
   }
 }

@@ -99,9 +99,9 @@ describe('Artist', () => {
 
     expect(screen.getByTestId('artist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('albums-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()
-    expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
+    expect(await screen.findByLabelText('albums-widget')).toBeInTheDocument()
+    expect(await screen.findByLabelText('songs-widget')).toBeInTheDocument()
+    expect(screen.queryByLabelText('band-members-widget')).not.toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(artist.name)
 
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
@@ -142,9 +142,9 @@ describe('Artist', () => {
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
     expect(screen.getByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('albums-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()
-    expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
+    expect(await screen.findByLabelText('albums-widget')).toBeInTheDocument()
+    expect(await screen.findByLabelText('songs-widget')).toBeInTheDocument()
+    expect(screen.queryByLabelText('band-members-widget')).not.toBeInTheDocument()
 
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
       AlbumProperty.ReleaseDate + ' ' + OrderType.Descending + ' nulls last',
@@ -167,6 +167,6 @@ describe('Artist', () => {
 
     reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${artist.id}`])
 
-    expect(await screen.findByLabelText('band-members-card')).toBeInTheDocument()
+    expect(await screen.findByLabelText('band-members-widget')).toBeInTheDocument()
   })
 })

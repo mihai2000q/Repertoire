@@ -84,7 +84,7 @@ describe('Album', () => {
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect(screen.getByLabelText('songs-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(album.title)
 
     expect(songsOrderBy).toStrictEqual(['album_track_no asc'])
@@ -111,7 +111,7 @@ describe('Album', () => {
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect(screen.getByLabelText('songs-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
 
     expect(songsSearchBy).toHaveLength(1)

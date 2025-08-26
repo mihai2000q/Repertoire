@@ -7,11 +7,11 @@ import { useGetInfiniteSongsInfiniteQuery } from '../state/api/songsApi.ts'
 import { useEffect } from 'react'
 import artistSongsOrders from '../data/artist/artistSongsOrders.ts'
 import artistAlbumsOrders from '../data/artist/artistAlbumsOrders.ts'
-import ArtistAlbumsCard from '../components/artist/panels/ArtistAlbumsCard.tsx'
-import ArtistSongsCard from '../components/artist/panels/ArtistSongsCard.tsx'
-import ArtistHeaderCard from '../components/artist/panels/ArtistHeaderCard.tsx'
+import ArtistAlbumsWidget from '../components/artist/widgets/ArtistAlbumsWidget.tsx'
+import ArtistSongsWidget from '../components/artist/widgets/ArtistSongsWidget.tsx'
+import ArtistHeader from '../components/artist/ArtistHeader.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
-import BandMembersCard from '../components/artist/panels/BandMembersCard.tsx'
+import BandMembersWidget from '../components/artist/widgets/BandMembersWidget.tsx'
 import LocalStorageKeys from '../types/enums/keys/LocalStorageKeys.ts'
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
@@ -89,7 +89,7 @@ function Artist() {
 
   return (
     <Stack h={'100%'} px={'xl'} gap={'16px'}>
-      <ArtistHeaderCard
+      <ArtistHeader
         artist={artist}
         albumsTotalCount={albums?.totalCount}
         songsTotalCount={songs?.totalCount}
@@ -106,7 +106,7 @@ function Artist() {
         >
           {!isUnknownArtist && artist.isBand && (
             <Stack>
-              <BandMembersCard
+              <BandMembersWidget
                 bandMembers={artist.bandMembers}
                 artistId={artistId}
                 isFetching={isFetching}
@@ -114,7 +114,7 @@ function Artist() {
             </Stack>
           )}
 
-          <ArtistAlbumsCard
+          <ArtistAlbumsWidget
             albums={albums}
             isLoading={isAlbumsLoading}
             isFetching={isAlbumsFetching}
@@ -126,7 +126,7 @@ function Artist() {
         </Stack>
 
         <Stack flex={1} h={'100%'} pb={{ base: 'lg', md: 0 }}>
-          <ArtistSongsCard
+          <ArtistSongsWidget
             songs={songs}
             isUnknownArtist={isUnknownArtist}
             order={songsOrder}
