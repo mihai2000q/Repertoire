@@ -15,6 +15,7 @@ import { Dispatch, SetStateAction } from 'react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface AlbumSongsWidgetProps {
   album: Album | undefined
@@ -34,6 +35,8 @@ function AlbumSongsWidget({
   isFetching
 }: AlbumSongsWidgetProps) {
   const [moveSongFromAlbum, { isLoading: isMoveLoading }] = useMoveSongFromAlbumMutation()
+
+  const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedAddNewSong, { open: openAddNewSong, close: closeAddNewSong }] = useDisclosure(false)
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
@@ -76,13 +79,16 @@ function AlbumSongsWidget({
 
           <Space flex={1} />
 
-          <Menu>
+          <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
             <Menu.Target>
               <ActionIcon aria-label={'songs-more-menu'} size={'md'} variant={'grey'}>
                 <IconDots size={15} />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
+              {!isUnknownAlbum && (
+                <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenu} type={'album'} />
+              )}
               {!isUnknownAlbum && (
                 <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
                   Add Existing Songs

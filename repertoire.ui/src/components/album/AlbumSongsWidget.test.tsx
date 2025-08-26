@@ -125,7 +125,9 @@ describe('Album Songs Widget', () => {
       expect(screenOrder).not.toBeDisabled()
     })
 
+    // more menu
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add existing songs/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
@@ -163,7 +165,9 @@ describe('Album Songs Widget', () => {
       }
     })
 
+    // more menu
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
+    expect(screen.queryByRole('menuitem', { name: /perfect rehearsal/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('menuitem', { name: /add existing songs/i })).not.toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add new song/i })).toBeInTheDocument()
   })
