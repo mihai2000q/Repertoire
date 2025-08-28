@@ -4,6 +4,7 @@ import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/mod
 import {
   AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
+  AddPerfectSongRehearsalsRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
@@ -102,6 +103,14 @@ const songsApi = api.injectEndpoints({
     addPerfectSongRehearsal: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalRequest>({
       query: (body) => ({
         url: 'songs/perfect-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    addPerfectSongRehearsals: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalsRequest>({
+      query: (body) => ({
+        url: 'songs/perfect-rehearsals',
         method: 'POST',
         body: body
       }),
@@ -246,6 +255,7 @@ export const {
   useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
+  useAddPerfectSongRehearsalsMutation,
   useAddPartialSongRehearsalMutation,
   useUpdateSongMutation,
   useUpdateSongSettingsMutation,

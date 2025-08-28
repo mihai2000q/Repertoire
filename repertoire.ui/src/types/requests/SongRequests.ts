@@ -29,6 +29,10 @@ export interface AddPerfectSongRehearsalRequest {
   id: string
 }
 
+export interface AddPerfectSongRehearsalsRequest {
+  ids: string[]
+}
+
 export interface AddPartialSongRehearsalRequest {
   id: string
 }
