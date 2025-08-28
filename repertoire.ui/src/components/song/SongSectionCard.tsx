@@ -23,7 +23,7 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import { useDidUpdate, useDisclosure } from '@mantine/hooks'
+import { useDidUpdate, useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import {
   useDeleteSongSectionMutation,
@@ -78,6 +78,9 @@ function SongSectionCard({
   isArtistBand,
   showRehearsalsToast
 }: SongSectionCardProps) {
+  const { ref: hoverRef, hovered } = useHover()
+  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
+
   const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
     getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
   )
@@ -101,6 +104,8 @@ function SongSectionCard({
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
+
+  const isSelected = openedMenu || hovered || openedContextMenu
 
   async function handleAddRehearsal() {
     await updateSongSectionMutation({
@@ -133,6 +138,7 @@ function SongSectionCard({
     <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
       <ContextMenu.Target>
         <Stack
+          ref={ref}
           py={'xs'}
           aria-label={`song-section-${section.name}`}
           gap={0}
@@ -142,10 +148,10 @@ function SongSectionCard({
             borderRadius: 0,
             border: '1px solid transparent',
 
-            '&:hover': {
+            ...(isSelected && {
               boxShadow: theme.shadows.xl,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
-            },
+            }),
 
             ...(isDragging && {
               boxShadow: theme.shadows.xl,
@@ -154,7 +160,6 @@ function SongSectionCard({
               border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
             })
           })}
-          ref={draggableProvided?.innerRef}
           {...draggableProvided?.draggableProps}
         >
           <Group gap={'xs'} px={'md'}>
