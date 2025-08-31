@@ -8,11 +8,12 @@ import { useAddPerfectRehearsalsToPlaylistsMutation } from '../../../../state/ap
 
 interface PerfectRehearsalsMenuItemProps {
   ids: string[]
-  onClose: () => void
+  closeMenu: () => void
   type: 'artists' | 'albums' | 'songs' | 'playlists'
+  onSuccess?: () => void
 }
 
-function PerfectRehearsalsMenuItem({ ids, onClose, type }: PerfectRehearsalsMenuItemProps) {
+function PerfectRehearsalsMenuItem({ ids, type, closeMenu, onSuccess }: PerfectRehearsalsMenuItemProps) {
   const [addPerfectRehearsalsToArtists, { isLoading: isArtistsLoading }] =
     useAddPerfectRehearsalsToArtistsMutation()
   const [addPerfectRehearsalsToAlbums, { isLoading: isAlbumsLoading }] =
@@ -39,7 +40,8 @@ function PerfectRehearsalsMenuItem({ ids, onClose, type }: PerfectRehearsalsMenu
         break
     }
     toast.success(`Perfect rehearsals added!`)
-    onClose()
+    closeMenu()
+    onSuccess?.()
   }
 
   return (

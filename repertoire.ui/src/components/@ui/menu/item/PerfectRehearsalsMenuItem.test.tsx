@@ -27,7 +27,7 @@ describe('Perfect Rehearsals Menu Item', () => {
       withToastify(
         <Menu opened={true}>
           <Menu.Dropdown>
-            <PerfectRehearsalsMenuItem ids={[]} onClose={vi.fn()} type={'songs'} />
+            <PerfectRehearsalsMenuItem ids={[]} type={'songs'} closeMenu={vi.fn()} />
           </Menu.Dropdown>
         </Menu>
       )
@@ -54,13 +54,13 @@ describe('Perfect Rehearsals Menu Item', () => {
       )
 
       const artistIds = ['some-id-1', 'some-id-2']
-      const onClose = vi.fn()
+      const closeMenu = vi.fn()
 
       reduxRender(
         withToastify(
           <Menu opened={true}>
             <Menu.Dropdown>
-              <PerfectRehearsalsMenuItem ids={artistIds} onClose={onClose} type={'artists'} />
+              <PerfectRehearsalsMenuItem ids={artistIds} closeMenu={closeMenu} type={'artists'} />
             </Menu.Dropdown>
           </Menu>
         )
@@ -71,7 +71,7 @@ describe('Perfect Rehearsals Menu Item', () => {
 
       expect(await screen.findByText(/perfect rehearsals added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ ids: artistIds })
-      expect(onClose).toHaveBeenCalledOnce()
+      expect(closeMenu).toHaveBeenCalledOnce()
     })
 
     it('should send albums request', async () => {
@@ -86,13 +86,13 @@ describe('Perfect Rehearsals Menu Item', () => {
       )
 
       const albumIds = ['some-id-1', 'some-id-2']
-      const onClose = vi.fn()
+      const closeMenu = vi.fn()
 
       reduxRender(
         withToastify(
           <Menu opened={true}>
             <Menu.Dropdown>
-              <PerfectRehearsalsMenuItem ids={albumIds} onClose={onClose} type={'albums'} />
+              <PerfectRehearsalsMenuItem ids={albumIds} closeMenu={closeMenu} type={'albums'} />
             </Menu.Dropdown>
           </Menu>
         )
@@ -103,10 +103,10 @@ describe('Perfect Rehearsals Menu Item', () => {
 
       expect(await screen.findByText(/perfect rehearsals added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ ids: albumIds })
-      expect(onClose).toHaveBeenCalledOnce()
+      expect(closeMenu).toHaveBeenCalledOnce()
     })
 
-    it('should send song request', async () => {
+    it('should send song request and call onSuccess', async () => {
       const user = userEvent.setup()
 
       let capturedRequest: AddPerfectSongRehearsalsRequest
@@ -118,13 +118,19 @@ describe('Perfect Rehearsals Menu Item', () => {
       )
 
       const songIds = ['some-id-1', 'some-id-2']
-      const onClose = vi.fn()
+      const closeMenu = vi.fn()
+      const onSuccess = vi.fn()
 
       reduxRender(
         withToastify(
           <Menu opened={true}>
             <Menu.Dropdown>
-              <PerfectRehearsalsMenuItem ids={songIds} onClose={onClose} type={'songs'} />
+              <PerfectRehearsalsMenuItem
+                ids={songIds}
+                closeMenu={closeMenu}
+                onSuccess={onSuccess}
+                type={'songs'}
+              />
             </Menu.Dropdown>
           </Menu>
         )
@@ -135,7 +141,8 @@ describe('Perfect Rehearsals Menu Item', () => {
 
       expect(await screen.findByText(/perfect rehearsals added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ ids: songIds })
-      expect(onClose).toHaveBeenCalledOnce()
+      expect(closeMenu).toHaveBeenCalledOnce()
+      expect(onSuccess).toHaveBeenCalledOnce()
     })
 
     it('should send playlists request', async () => {
@@ -150,7 +157,7 @@ describe('Perfect Rehearsals Menu Item', () => {
       )
 
       const playlistIds = ['some-id-1', 'some-id-2']
-      const onClose = vi.fn()
+      const closeMenu = vi.fn()
 
       reduxRender(
         withToastify(
@@ -158,7 +165,7 @@ describe('Perfect Rehearsals Menu Item', () => {
             <Menu.Dropdown>
               <PerfectRehearsalsMenuItem
                 ids={playlistIds}
-                onClose={onClose}
+                closeMenu={closeMenu}
                 type={'playlists'}
               />
             </Menu.Dropdown>
@@ -171,7 +178,7 @@ describe('Perfect Rehearsals Menu Item', () => {
 
       expect(await screen.findByText(/perfect rehearsals added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ ids: playlistIds })
-      expect(onClose).toHaveBeenCalledOnce()
+      expect(closeMenu).toHaveBeenCalledOnce()
     })
   })
 })
