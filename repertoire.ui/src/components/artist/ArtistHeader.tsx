@@ -26,8 +26,6 @@ const ArtistHeader = forwardRef<HTMLDivElement, ArtistHeaderProps>(
   ({ artist, songsTotalCount, albumsTotalCount, isUnknownArtist }, ref) => {
     const navigate = useNavigate()
 
-    console.log(artist)
-
     const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
     const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] =
       useDisclosure(false)
