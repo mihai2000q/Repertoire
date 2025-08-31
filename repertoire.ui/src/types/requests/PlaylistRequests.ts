@@ -26,6 +26,10 @@ export interface UpdatePlaylistRequest {
   description: string
 }
 
+export interface BulkDeletePlaylistsRequest {
+  ids: string[]
+}
+
 export interface SaveImageToPlaylistRequest {
   image: FileWithPath
   id: string

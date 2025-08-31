@@ -30,6 +30,11 @@ export interface UpdateAlbumRequest {
   artistId?: string
 }
 
+export interface BulkDeleteAlbumsRequest {
+  ids: string[]
+  withSongs?: boolean
+}
+
 export interface SaveImageToAlbumRequest {
   image: FileWithPath
   id: string

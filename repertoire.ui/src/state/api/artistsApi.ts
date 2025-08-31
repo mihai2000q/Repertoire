@@ -5,6 +5,7 @@ import {
   AddAlbumsToArtistRequest,
   AddPerfectRehearsalsToArtistsRequest,
   AddSongsToArtistRequest,
+  BulkDeleteArtistsRequest,
   CreateArtistRequest,
   CreateBandMemberRequest,
   DeleteArtistRequest,
@@ -59,6 +60,14 @@ const artistsApi = api.injectEndpoints({
     updateArtist: build.mutation<HttpMessageResponse, UpdateArtistRequest>({
       query: (body) => ({
         url: 'artists',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Artists']
+    }),
+    bulkDeleteArtists: build.mutation<HttpMessageResponse, BulkDeleteArtistsRequest>({
+      query: (body) => ({
+        url: `artists/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -188,6 +197,7 @@ export const {
   useCreateArtistMutation,
   useAddPerfectRehearsalsToArtistsMutation,
   useUpdateArtistMutation,
+  useBulkDeleteArtistsMutation,
   useSaveImageToArtistMutation,
   useDeleteImageFromArtistMutation,
   useDeleteArtistMutation,

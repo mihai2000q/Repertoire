@@ -63,6 +63,10 @@ export interface UpdateSongSettingsRequest {
   defaultInstrumentId?: string
 }
 
+export interface BulkDeleteSongsRequest {
+  ids: string[]
+}
+
 export interface SaveImageToSongRequest {
   image: FileWithPath
   id: string

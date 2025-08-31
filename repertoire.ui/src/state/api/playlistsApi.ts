@@ -6,6 +6,7 @@ import {
   AddArtistsToPlaylistRequest,
   AddPerfectRehearsalsToPlaylistsRequest,
   AddSongsToPlaylistRequest,
+  BulkDeletePlaylistsRequest,
   CreatePlaylistRequest,
   GetPlaylistRequest,
   GetPlaylistSongsRequest,
@@ -102,6 +103,14 @@ const playlistsApi = api.injectEndpoints({
     updatePlaylist: build.mutation<HttpMessageResponse, UpdatePlaylistRequest>({
       query: (body) => ({
         url: 'playlists',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Playlists']
+    }),
+    bulkDeletePlaylists: build.mutation<HttpMessageResponse, BulkDeletePlaylistsRequest>({
+      query: (body) => ({
+        url: `playlists/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -239,6 +248,7 @@ export const {
   useCreatePlaylistMutation,
   useAddPerfectRehearsalsToPlaylistsMutation,
   useUpdatePlaylistMutation,
+  useBulkDeletePlaylistsMutation,
   useSaveImageToPlaylistMutation,
   useDeleteImageFromPlaylistMutation,
   useDeletePlaylistMutation,
