@@ -45,7 +45,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
       style={{ transition: '0.25s', ...(isSelected && { transform: 'scale(1.05)' }) }}
       w={'max(10vw, 150px)'}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

@@ -88,7 +88,7 @@ function SongCard({ song }: SongCardProps) {
   }
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
+    <ContextMenu opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
       <ContextMenu.Target>
         <Card
           aria-label={`song-card-${song.title}`}

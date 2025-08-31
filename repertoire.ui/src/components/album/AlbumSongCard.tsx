@@ -134,7 +134,7 @@ function AlbumSongCard({
   )
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+    <ContextMenu opened={openedContextMenu} onChange={toggleContextMenu}>
       <ContextMenu.Target>
         <Group
           aria-label={`song-card-${song.title}`}

@@ -51,7 +51,7 @@ function AlbumCard({ album }: AlbumCardProps) {
         ...((openedMenu || hovered) && { transform: 'scale(1.1)' })
       }}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
+      <ContextMenu opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

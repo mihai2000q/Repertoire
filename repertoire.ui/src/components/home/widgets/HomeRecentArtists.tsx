@@ -69,7 +69,7 @@ function LocalArtistCard({ artist }: { artist: Artist }) {
       w={60}
       sx={{ transition: '0.2s', ...(isSelected && { transform: 'scale(1.1)' }) }}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

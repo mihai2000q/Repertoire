@@ -50,7 +50,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
         ...((openedMenu || hovered) && { transform: 'scale(1.1)' })
       }}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

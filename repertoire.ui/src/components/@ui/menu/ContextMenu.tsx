@@ -154,6 +154,9 @@ export const ContextMenu = (props: ContextMenuProps) => {
   return (
     <ContextMenuProvider value={ctx}>
       <Menu
+        position={position}
+        shadow={'lg'}
+        transitionProps={{ transition: 'pop-top-left', duration: 150 }}
         {...others}
         trigger={trigger === 'context' ? undefined : trigger}
         opened={_opened}
@@ -162,8 +165,6 @@ export const ContextMenu = (props: ContextMenuProps) => {
         onClose={close}
         onOpen={open}
         defaultOpened={defaultOpened}
-        position={position}
-        transitionProps={{ transition: 'pop-top-left', duration: 150 }}
       >
         {children}
       </Menu>

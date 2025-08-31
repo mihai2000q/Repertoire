@@ -63,7 +63,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
 
   return (
     <Group wrap={'nowrap'} gap={0}>
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

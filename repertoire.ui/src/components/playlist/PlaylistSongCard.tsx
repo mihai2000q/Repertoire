@@ -144,7 +144,7 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
     )
 
     return (
-      <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu opened={openedContextMenu} onChange={toggleContextMenu}>
         <ContextMenu.Target>
           <Group
             ref={ref}
