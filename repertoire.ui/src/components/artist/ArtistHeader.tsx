@@ -12,7 +12,7 @@ import { forwardRef } from 'react'
 import lowerTitleFontSize from '../../utils/style/lowerTitleFontSize.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import DeleteArtistModal from '../@ui/modal/DeleteArtistModal.tsx'
+import DeleteArtistModal from '../@ui/modal/delete/DeleteArtistModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistHeaderProps {

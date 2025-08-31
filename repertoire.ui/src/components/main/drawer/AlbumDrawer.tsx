@@ -29,7 +29,7 @@ import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import Song from '../../../types/models/Song.ts'
-import DeleteAlbumModal from '../../@ui/modal/DeleteAlbumModal.tsx'
+import DeleteAlbumModal from '../../@ui/modal/delete/DeleteAlbumModal.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function AlbumDrawerSongCard({

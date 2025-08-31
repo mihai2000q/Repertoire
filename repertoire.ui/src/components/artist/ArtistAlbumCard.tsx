@@ -30,7 +30,7 @@ import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
-import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import DeleteAlbumModal from '../@ui/modal/delete/DeleteAlbumModal.tsx'
 import { toast } from 'react-toastify'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 

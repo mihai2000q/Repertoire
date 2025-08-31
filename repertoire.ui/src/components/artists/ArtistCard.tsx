@@ -8,7 +8,7 @@ import { openArtistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
-import DeleteArtistModal from '../@ui/modal/DeleteArtistModal.tsx'
+import DeleteArtistModal from '../@ui/modal/delete/DeleteArtistModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistCardProps {

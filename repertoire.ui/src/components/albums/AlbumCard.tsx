@@ -8,7 +8,7 @@ import { useDisclosure, useHover } from '@mantine/hooks'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
-import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import DeleteAlbumModal from '../@ui/modal/delete/DeleteAlbumModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface AlbumCardProps {

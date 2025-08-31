@@ -1,9 +1,9 @@
 import { Checkbox, Group, Stack, Text } from '@mantine/core'
-import WarningModal from './WarningModal.tsx'
-import { useDeleteArtistMutation } from '../../../state/api/artistsApi.ts'
+import WarningModal from '../WarningModal.tsx'
+import { useDeleteArtistMutation } from '../../../../state/api/artistsApi.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import Artist from '../../../types/models/Artist.ts'
+import Artist from '../../../../types/models/Artist.ts'
 
 interface DeleteArtistModalProps {
   opened: boolean

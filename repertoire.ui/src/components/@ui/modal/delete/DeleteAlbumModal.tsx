@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Checkbox, Group, Stack, Text } from '@mantine/core'
-import WarningModal from './WarningModal.tsx'
-import Album from '../../../types/models/Album.ts'
-import { useDeleteAlbumMutation } from '../../../state/api/albumsApi.ts'
+import WarningModal from '../WarningModal.tsx'
+import Album from '../../../../types/models/Album.ts'
+import { useDeleteAlbumMutation } from '../../../../state/api/albumsApi.ts'
 import { toast } from 'react-toastify'
 
 interface DeleteArtistModalProps {
