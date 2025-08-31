@@ -255,7 +255,7 @@ function SongCard({ song }: SongCardProps) {
         </ContextMenu.Item>
 
         <ContextMenu.Divider />
-        <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
+        <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
         <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
         <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
         <ContextMenu.Divider />

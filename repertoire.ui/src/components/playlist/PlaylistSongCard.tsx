@@ -128,7 +128,7 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
         <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
 
         <Menu.Divider />
-        <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+        <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
         <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
         <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
         <Menu.Divider />

@@ -81,7 +81,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
           <AddToPlaylistMenuItem
             ids={[artist.id]}
-            type={'artist'}
+            type={'artists'}
             closeMenu={closeMenu}
             disabled={artist.songsCount === 0}
           />

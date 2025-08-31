@@ -134,12 +134,13 @@ function PlaylistOption({
 
 interface AddToPlaylistMenuItemProps {
   ids: string[]
-  type: 'song' | 'album' | 'artist'
+  type: 'songs' | 'albums' | 'artists'
   closeMenu: () => void
+  onSuccess?: () => void
   disabled?: boolean
 }
 
-function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylistMenuItemProps) {
+function AddToPlaylistMenuItem({ ids, type, closeMenu, onSuccess, disabled }: AddToPlaylistMenuItemProps) {
   const [search, setSearch] = useSessionStorage({
     key: SessionStorageKeys.AddToPlaylist,
     defaultValue: ''
@@ -215,15 +216,15 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     let added: string[]
 
     switch (type) {
-      case 'artist':
+      case 'artists':
         res = await addArtistsToPlaylist({ id: playlist.id, artistIds: ids }).unwrap()
         added = (res as AddArtistsToPlaylistResponse).addedSongIds
         break
-      case 'album':
+      case 'albums':
         res = await addAlbumsToPlaylist({ id: playlist.id, albumIds: ids }).unwrap()
         added = (res as AddAlbumsToPlaylistResponse).addedSongIds
         break
-      case 'song':
+      case 'songs':
         res = await addSongsToPlaylist({ id: playlist.id, songIds: ids }).unwrap()
         added = (res as AddSongsToPlaylistResponse).added
         break
@@ -233,6 +234,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     if (res.success) {
       toast.success(`Successfully added ${added.length} song${plural(added)}!`)
       closeMenu()
+      onSuccess?.()
       return
     }
 
@@ -246,7 +248,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     let retryFn: (forceAdd: boolean) => void
 
     switch (type) {
-      case 'artist': {
+      case 'artists': {
         const { duplicateArtistIds } = res as AddArtistsToPlaylistResponse
         if (duplicateArtistIds.length > 1 && ids.length === duplicateArtistIds.length) {
           partialText = 'These artists are'
@@ -271,7 +273,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
         break
       }
 
-      case 'album': {
+      case 'albums': {
         const { duplicateAlbumIds } = res as AddAlbumsToPlaylistResponse
         if (duplicateAlbumIds.length > 1 && ids.length === duplicateAlbumIds.length) {
           partialText = 'These albums are'
@@ -296,7 +298,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
         break
       }
 
-      case 'song': {
+      case 'songs': {
         const { duplicates } = res as AddSongsToPlaylistResponse
         if (duplicates.length > 1 && ids.length === duplicates.length) {
           partialText = 'These songs are'
@@ -327,6 +329,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     const onRetry = (forceAdd: boolean) => {
       retryFn(forceAdd)
       closeMenu()
+      onSuccess?.()
     }
 
     setAlreadyAddedModalState({ opened: true, text, withCancel, onRetry })

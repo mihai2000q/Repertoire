@@ -188,7 +188,7 @@ function AlbumDrawer() {
 
                 <AddToPlaylistMenuItem
                   ids={[album.id]}
-                  type={'album'}
+                  type={'albums'}
                   closeMenu={closeMenu}
                   disabled={album.songs.length === 0}
                 />

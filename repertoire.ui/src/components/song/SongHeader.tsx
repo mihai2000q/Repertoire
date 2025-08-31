@@ -69,7 +69,7 @@ function SongHeader({ song }: SongHeaderProps) {
           </Menu.Item>
 
           <Menu.Divider />
-          <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
+          <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
           <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
           <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
           <Menu.Divider />

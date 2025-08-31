@@ -92,7 +92,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
 
       <AddToPlaylistMenuItem
         ids={[album.id]}
-        type={'album'}
+        type={'albums'}
         closeMenu={closeMenus}
         disabled={album.songsCount === 0}
       />

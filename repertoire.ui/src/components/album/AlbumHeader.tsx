@@ -62,7 +62,7 @@ function AlbumHeader({ album, isUnknownAlbum, songsTotalCount }: AlbumHeaderProp
 
           <AddToPlaylistMenuItem
             ids={[album?.id]}
-            type={'album'}
+            type={'albums'}
             closeMenu={closeMenu}
             disabled={album?.songsCount === 0}
           />

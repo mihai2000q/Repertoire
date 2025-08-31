@@ -312,7 +312,7 @@ function ArtistDrawer() {
 
                   <AddToPlaylistMenuItem
                     ids={[artist.id]}
-                    type={'artist'}
+                    type={'artists'}
                     closeMenu={closeMenu}
                     disabled={songs.totalCount === 0}
                   />
