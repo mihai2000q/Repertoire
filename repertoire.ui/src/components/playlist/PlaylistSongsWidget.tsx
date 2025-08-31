@@ -21,13 +21,13 @@ import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import { memo, useEffect, useRef } from 'react'
 import { useAppDispatch } from '../../state/store.ts'
 import { setSongsTotalCount } from '../../state/slice/playlistSlice.ts'
-import useMainScroll from '../../hooks/useMainScroll.ts'
 import Order from '../../types/Order.ts'
 import { MoveSongFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
 import MenuItemConfirmation from '../@ui/menu/item/MenuItemConfirmation.tsx'
 import { Id, toast } from 'react-toastify'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import { useMainScroll } from '../../context/MainScrollContext.tsx'
 
 interface PlaylistSongsWidgetProps {
   playlistId: string

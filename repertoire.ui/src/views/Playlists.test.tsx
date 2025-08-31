@@ -69,8 +69,8 @@ describe('Playlists', () => {
 
   beforeAll(() => {
     server.listen()
-    vi.mock('../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
+    vi.mock('../context/MainScrollContext.tsx', () => ({
+      useMainScroll: vi.fn(() => ({
         ref: { current: document.createElement('div') }
       }))
     }))

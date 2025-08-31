@@ -33,7 +33,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import SongsFilters from '../components/songs/SongsFilters.tsx'
 import songsFilters from '../data/songs/songsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
-import useMainScroll from '../hooks/useMainScroll.ts'
+import { useMainScroll } from '../context/MainScrollContext.tsx'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
@@ -79,7 +79,7 @@ function Songs(): ReactElement {
 
   const { ref: mainScrollRef } = useMainScroll()
 
-  function handleCurrentPageChange (p: number) {
+  function handleCurrentPageChange(p: number) {
     mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
@@ -142,7 +142,9 @@ function Songs(): ReactElement {
         verticalSpacing={'lg'}
       >
         {(isLoading || !songs) && <SongsLoader />}
-        {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
+        {songs?.models.map((song) => (
+          <SongCard key={song.id} song={song} />
+        ))}
         {!isFetching && songs?.totalCount > 0 && currentPage == totalPages && (
           <Card
             variant={'add-new'}

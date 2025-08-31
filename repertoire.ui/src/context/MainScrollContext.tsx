@@ -1,11 +1,19 @@
-import { createContext, MutableRefObject, ReactNode, useEffect, useRef, useState } from 'react'
+import {
+  createContext,
+  MutableRefObject,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
-export interface MainScrollContextReturnType {
+interface MainScrollContextReturnType {
   ref: MutableRefObject<HTMLDivElement>
   isTopScrollPositionOver0: boolean
 }
 
-export const MainScrollContext = createContext(null)
+export const MainScrollContext = createContext<MainScrollContextReturnType>(null)
 
 export function MainScrollProvider({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -31,4 +39,8 @@ export function MainScrollProvider({ children }: { children: ReactNode }) {
       {children}
     </MainScrollContext.Provider>
   )
+}
+
+export function useMainScroll() {
+  return useContext(MainScrollContext)
 }

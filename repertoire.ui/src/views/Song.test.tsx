@@ -9,8 +9,8 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { SearchBase } from '../types/models/Search.ts'
 
 describe('Song', () => {
-  vi.mock('../hooks/useMainScroll.ts', () => ({
-    default: vi.fn(() => ({
+  vi.mock('../context/MainScrollContext.tsx', () => ({
+    useMainScroll: vi.fn(() => ({
       ref: { current: document.createElement('div') }
     }))
   }))

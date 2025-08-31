@@ -34,7 +34,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import albumsFilters from '../data/albums/albumsFilters.ts'
 import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
-import useMainScroll from '../hooks/useMainScroll.ts'
+import { useMainScroll } from '../context/MainScrollContext.tsx'
 
 function Albums() {
   useFixedDocumentTitle('Albums')
@@ -81,7 +81,7 @@ function Albums() {
 
   const { ref: mainScrollRef } = useMainScroll()
 
-  function handleCurrentPageChange (p: number) {
+  function handleCurrentPageChange(p: number) {
     mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
@@ -146,7 +146,9 @@ function Albums() {
           spacing={{ base: 'lg', md: 'xl' }}
         >
           {(isLoading || !albums) && <AlbumsLoader />}
-          {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
+          {albums?.models.map((album) => (
+            <AlbumCard key={album.id} album={album} />
+          ))}
           {!isFetching && showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
           {!isFetching &&
             ((albums?.totalCount > 0 && currentPage == totalPages) ||

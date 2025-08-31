@@ -32,7 +32,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import playlistsFilters from '../data/playlists/playlistsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import playlistsSearchParamsState from '../state/searchParams/PlaylistsSearchParamsState.ts'
-import useMainScroll from '../hooks/useMainScroll.ts'
+import { useMainScroll } from '../context/MainScrollContext.tsx'
 
 function Playlists() {
   useFixedDocumentTitle('Playlists')
@@ -80,7 +80,7 @@ function Playlists() {
 
   const { ref: mainScrollRef } = useMainScroll()
 
-  function handleCurrentPageChange (p: number) {
+  function handleCurrentPageChange(p: number) {
     mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
