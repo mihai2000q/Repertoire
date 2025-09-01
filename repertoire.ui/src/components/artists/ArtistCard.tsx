@@ -10,10 +10,9 @@ import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import DeleteArtistModal from '../@ui/modal/delete/DeleteArtistModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import { MouseEvent, useEffect, useState } from 'react'
+import { MouseEvent } from 'react'
 import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
-import useDragSelectSelectableRef from '../../hooks/useDragSelectSelectableRef.ts'
+import useDragSelectSelectable from '../../hooks/useDragSelectSelectable.ts'
 
 interface ArtistCardProps {
   artist: Artist
@@ -22,18 +21,18 @@ interface ArtistCardProps {
 function ArtistCard({ artist }: ArtistCardProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const dragRef = useDragSelectSelectableRef<HTMLDivElement>()
-  const { ref: hoverRef, hovered } = useHover<HTMLElement>()
+  const {
+    ref: dragRef,
+    isDragSelected,
+    isDragSelecting
+  } = useDragSelectSelectable<HTMLDivElement>(artist.id)
+  const { ref: hoverRef, hovered } = useHover<HTMLDivElement>()
   const ref = useMergedRef(dragRef, hoverRef)
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
-
-  const { selectedIds } = useDragSelect()
-  const [isDragSelected, setIsDragSelected] = useState(false)
-  useEffect(() => setIsDragSelected(selectedIds.some((id) => id === artist.id)), [selectedIds])
 
   const isSelected = openedMenu || hovered || isDragSelected
 
@@ -60,7 +59,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
-        disabled={selectedIds.length !== 0}
+        disabled={isDragSelecting}
       >
         <ContextMenu.Target>
           <SelectableAvatar

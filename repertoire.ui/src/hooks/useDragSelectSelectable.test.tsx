@@ -1,5 +1,5 @@
 import { render, renderHook, screen } from '@testing-library/react'
-import useDragSelectSelectableRef from './useDragSelectSelectableRef'
+import useDragSelectSelectable from './useDragSelectSelectable.ts'
 import { useDragSelect } from '../context/DragSelectContext'
 import { afterEach } from 'vitest'
 
@@ -8,7 +8,7 @@ vi.mock('../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 
-describe('useDragSelectSelectableRef', () => {
+describe('use Drag Select Selectable', () => {
   const mockAddSelectables = vi.fn()
   const mockRemoveSelectables = vi.fn()
   const dataTestId = 'dataTestId'
@@ -28,16 +28,18 @@ describe('useDragSelectSelectableRef', () => {
 
   afterEach(() => vi.restoreAllMocks())
 
-  const TestComponent = () => {
-    const ref = useDragSelectSelectableRef<HTMLDivElement>()
+  const TestComponent = ({ id = ''}: { id?: string }) => {
+    const { ref } = useDragSelectSelectable<HTMLDivElement>(id)
     return <div ref={ref} data-testid={dataTestId} />
   }
 
-  it('should return a ref object', () => {
-    const { result } = renderHook(() => useDragSelectSelectableRef())
+  it('should return a ref object, is drag selected and is drag selecting with default values', () => {
+    const { result } = renderHook(() => useDragSelectSelectable(''))
 
-    expect(result.current).toBeDefined()
-    expect(result.current).toStrictEqual({ current: undefined })
+    expect(result.current.ref).toBeDefined()
+    expect(result.current.ref).toStrictEqual({ current: undefined })
+    expect(result.current.isDragSelected).toBeFalsy()
+    expect(result.current.isDragSelecting).toBeFalsy()
   })
 
   it('should call addSelectables when ref is set and dragSelect is available', () => {
@@ -82,5 +84,41 @@ describe('useDragSelectSelectableRef', () => {
     unmount()
 
     expect(mockRemoveSelectables).not.toHaveBeenCalled()
+  })
+
+  it('should return is drag selecting true when there are ids', () => {
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: {
+        addSelectables: mockAddSelectables,
+        removeSelectables: mockRemoveSelectables
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      selectedIds: ['something'],
+      clearSelection: vi.fn()
+    })
+
+    const { result } = renderHook(() => useDragSelectSelectable('asd'))
+
+    expect(result.current.isDragSelected).toBeFalsy()
+    expect(result.current.isDragSelecting).toBeTruthy()
+  })
+
+  it('should return is drag selected true when there are ids and the id is part of those', () => {
+    const id = 'something2'
+
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: {
+        addSelectables: mockAddSelectables,
+        removeSelectables: mockRemoveSelectables
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+      selectedIds: ['something', id],
+      clearSelection: vi.fn()
+    })
+
+    const { result } = renderHook(() => useDragSelectSelectable(id))
+
+    expect(result.current.isDragSelected).toBeTruthy()
+    expect(result.current.isDragSelecting).toBeTruthy()
   })
 })
