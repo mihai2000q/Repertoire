@@ -8,6 +8,7 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RootState } from 'src/state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
+import { expect } from 'vitest'
 
 // Mock the context
 vi.mock('../../context/DragSelectContext', () => ({
@@ -57,6 +58,11 @@ describe('Album Card', () => {
   it('should render minimal info', () => {
     reduxRouterRender(<AlbumCard album={album} />)
 
+    expect(screen.getByLabelText(`album-card-${album.title}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByLabelText(`default-icon-${album.title}`)).toBeInTheDocument()
     expect(screen.getByText(album.title)).toBeInTheDocument()
     expect(screen.getByText(/unknown/i)).toBeInTheDocument()
@@ -71,10 +77,18 @@ describe('Album Card', () => {
 
     reduxRouterRender(<AlbumCard album={localAlbum} />)
 
+    expect(screen.getByLabelText(`album-card-${album.title}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByRole('img', { name: localAlbum.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localAlbum.title })).toHaveAttribute(
       'src',
       localAlbum.imageUrl
+    )
+    expect(screen.getByRole('img', { name: localAlbum.title }).parentElement).not.toHaveAttribute(
+      'aria-selected'
     )
     expect(screen.getByText(localAlbum.title)).toBeInTheDocument()
     expect(screen.getByText(localAlbum.artist.name)).toBeInTheDocument()
@@ -199,23 +213,49 @@ describe('Album Card', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should be selected when part of the selected ids', () => {
-    const localAlbum = {
-      ...album,
-      imageUrl: 'something.png'
-    }
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
 
-    vi.mocked(useDragSelect).mockReturnValue({
-      dragSelect: null,
-      selectedIds: [localAlbum.id],
-      clearSelection: vi.fn()
+      reduxRouterRender(<AlbumCard album={album} />)
+
+      await user.hover(screen.getByLabelText(`default-icon-${album.title}`))
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
     })
 
-    reduxRouterRender(<AlbumCard album={localAlbum} />)
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
 
-    expect(screen.getByRole('img', { name: localAlbum.title }).parentElement).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+      reduxRouterRender(<AlbumCard album={album} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${album.title}`)
+      })
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when drag selected (part of the selected ids)', () => {
+      vi.mocked(useDragSelect).mockReturnValue({
+        dragSelect: null,
+        selectedIds: [album.id],
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(<AlbumCard album={album} />)
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })

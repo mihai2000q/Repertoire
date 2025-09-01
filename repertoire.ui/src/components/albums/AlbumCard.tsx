@@ -56,6 +56,7 @@ function AlbumCard({ album }: AlbumCardProps) {
   return (
     <Stack
       aria-label={`album-card-${album.title}`}
+      aria-selected={isSelected}
       align={'center'}
       gap={0}
       style={{

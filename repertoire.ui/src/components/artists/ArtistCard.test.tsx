@@ -6,7 +6,8 @@ import userEvent from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RootState } from '../../state/store.ts'
-import { useDragSelect } from '../../context/DragSelectContext.tsx' // Mock the context
+import { useDragSelect } from '../../context/DragSelectContext.tsx'
+import { expect } from 'vitest' // Mock the context
 
 // Mock the context
 vi.mock('../../context/DragSelectContext', () => ({
@@ -40,6 +41,7 @@ describe('Artist Card', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     server.resetHandlers()
+    window.location.pathname = '/'
   })
 
   beforeAll(() => server.listen())
@@ -49,11 +51,12 @@ describe('Artist Card', () => {
   it('should render with minimal info', () => {
     reduxRouterRender(<ArtistCard artist={artist} />)
 
-    expect(screen.getByLabelText(`default-icon-${artist.name}`)).toBeInTheDocument()
-    expect(screen.getByLabelText(`default-icon-${artist.name}`).parentElement).not.toHaveAttribute(
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
       'aria-selected',
-      'true'
+      'false'
     )
+    expect(screen.getByLabelText(`default-icon-${artist.name}`)).toBeInTheDocument()
     expect(screen.getByText(artist.name)).toBeInTheDocument()
   })
 
@@ -65,14 +68,18 @@ describe('Artist Card', () => {
 
     reduxRouterRender(<ArtistCard artist={localArtist} />)
 
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute(
       'src',
       localArtist.imageUrl
     )
     expect(screen.getByRole('img', { name: localArtist.name }).parentElement).not.toHaveAttribute(
-      'aria-selected',
-      'true'
+      'aria-selected'
     )
     expect(screen.getByText(localArtist.name)).toBeInTheDocument()
   })
@@ -160,23 +167,49 @@ describe('Artist Card', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should be selected when part of the selected ids', () => {
-    const localArtist = {
-      ...artist,
-      imageUrl: 'something.png'
-    }
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
 
-    vi.mocked(useDragSelect).mockReturnValue({
-      dragSelect: null,
-      selectedIds: [localArtist.id],
-      clearSelection: vi.fn()
+      reduxRouterRender(<ArtistCard artist={artist} />)
+
+      await user.hover(screen.getByLabelText(`default-icon-${artist.name}`))
+
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
     })
 
-    reduxRouterRender(<ArtistCard artist={localArtist} />)
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
 
-    expect(screen.getByRole('img', { name: localArtist.name }).parentElement).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+      reduxRouterRender(<ArtistCard artist={artist} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${artist.name}`)
+      })
+
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when drag selected (part of the selected ids)', () => {
+      vi.mocked(useDragSelect).mockReturnValue({
+        dragSelect: null,
+        selectedIds: [artist.id],
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(<ArtistCard artist={artist} />)
+
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })
