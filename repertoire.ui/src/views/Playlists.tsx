@@ -33,6 +33,10 @@ import playlistsFilters from '../data/playlists/playlistsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import playlistsSearchParamsState from '../state/searchParams/PlaylistsSearchParamsState.ts'
 import { useMainScroll } from '../context/MainScrollContext.tsx'
+import { useRef } from 'react'
+import PlaylistsSelectionDrawer from '../components/playlists/PlaylistsSelectionDrawer.tsx'
+import PlaylistsContextMenu from '../components/playlists/PlaylistsContextMenu.tsx'
+import { DragSelectProvider } from '../context/DragSelectContext.tsx'
 
 function Playlists() {
   useFixedDocumentTitle('Playlists')
@@ -78,6 +82,7 @@ function Playlists() {
     { open: openAddNewPlaylistModal, close: closeAddNewPlaylistModal }
   ] = useDisclosure(false)
 
+  const playlistsRef = useRef()
   const { ref: mainScrollRef } = useMainScroll()
 
   function handleCurrentPageChange(p: number) {
@@ -87,8 +92,8 @@ function Playlists() {
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'} px={'xl'}>
-      <Group gap={'xxs'}>
+    <Stack h={'100%'} gap={0}>
+      <Group px={'xl'} gap={'xxs'} pb={'xs'}>
         <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Playlists
         </Title>
@@ -135,40 +140,49 @@ function Playlists() {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text lh={'xxs'} mb={'xs'}>
+        <Text px={'xl'} lh={'xxs'}>
           {startCount} - {endCount} playlists out of {playlists?.totalCount ?? 0}
         </Text>
       )}
 
       {playlists?.totalCount === 0 && filtersSize === 0 && (
-        <Text mt={'sm'}>There are no playlists yet. Try to add one</Text>
+        <Text p={'xl'}>There are no playlists yet. Try to add one</Text>
       )}
       {playlists?.totalCount === 0 && filtersSize > 0 && (
-        <Text mt={'sm'}>There are no playlists with these filters</Text>
+        <Text p={'xl'}>There are no playlists with these filters</Text>
       )}
-      <SimpleGrid
-        cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
-        spacing={'lg'}
-        verticalSpacing={'lg'}
-      >
-        {(isLoading || !playlists) && <PlaylistsLoader />}
-        {playlists?.models.map((playlist) => (
-          <PlaylistCard key={playlist.id} playlist={playlist} />
-        ))}
-        {!isFetching && playlists?.totalCount > 0 && currentPage == totalPages && (
-          <Card
-            aria-label={'new-playlist-card'}
-            variant={'add-new'}
-            radius={'lg'}
-            onClick={openAddNewPlaylistModal}
-            style={{ aspectRatio: 1 }}
+      <DragSelectProvider settings={{ area: playlistsRef.current }}>
+        <PlaylistsContextMenu>
+          <SimpleGrid
+            ref={playlistsRef}
+            cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
+            spacing={'lg'}
+            verticalSpacing={'lg'}
+            pt={'lg'}
+            pb={'xs'}
+            px={'xl'}
           >
-            <Center h={'100%'}>
-              <IconPlaylistAdd size={'100%'} style={{ padding: '33%' }} />
-            </Center>
-          </Card>
-        )}
-      </SimpleGrid>
+            {(isLoading || !playlists) && <PlaylistsLoader />}
+            {playlists?.models.map((playlist) => (
+              <PlaylistCard key={playlist.id} playlist={playlist} />
+            ))}
+            {!isFetching && playlists?.totalCount > 0 && currentPage == totalPages && (
+              <Card
+                aria-label={'new-playlist-card'}
+                variant={'add-new'}
+                radius={'lg'}
+                onClick={openAddNewPlaylistModal}
+                style={{ aspectRatio: 1 }}
+              >
+                <Center h={'100%'}>
+                  <IconPlaylistAdd size={'100%'} style={{ padding: '33%' }} />
+                </Center>
+              </Card>
+            )}
+          </SimpleGrid>
+        </PlaylistsContextMenu>
+        <PlaylistsSelectionDrawer />
+      </DragSelectProvider>
 
       <Space flex={1} />
 
