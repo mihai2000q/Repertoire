@@ -1,9 +1,5 @@
 import Album from 'src/types/models/Album.ts'
-import {
-  emptyAlbum,
-  emptyArtist,
-  reduxRouterRender
-} from '../../test-utils.tsx'
+import { emptyAlbum, emptyArtist, reduxRouterRender } from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
 import Artist from 'src/types/models/Artist.ts'
@@ -11,6 +7,12 @@ import userEvent from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RootState } from 'src/state/store.ts'
+import { useDragSelect } from '../../context/DragSelectContext.tsx'
+
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
 
 describe('Album Card', () => {
   const album: Album = {
@@ -33,12 +35,22 @@ describe('Album Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: [],
+      clearSelection: vi.fn()
+    })
+  })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     server.resetHandlers()
     window.location.pathname = '/'
   })
+
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 
@@ -166,5 +178,44 @@ describe('Album Card', () => {
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localAlbum.artist.id)
+  })
+
+  it('should disable context menu there are selected ids', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: ['someone'],
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(<AlbumCard album={album} />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`default-icon-${album.title}`)
+    })
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+
+  it('should be selected when part of the selected ids', () => {
+    const localAlbum = {
+      ...album,
+      imageUrl: 'something.png'
+    }
+
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: [localAlbum.id],
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(<AlbumCard album={localAlbum} />)
+
+    expect(screen.getByRole('img', { name: localAlbum.title }).parentElement).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 })
