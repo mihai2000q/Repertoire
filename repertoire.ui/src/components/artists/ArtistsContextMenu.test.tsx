@@ -112,7 +112,7 @@ describe('Artists Context Menu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should open warning when trying to delete artist', async () => {
+  it('should open warning when clicking on delete menu item', async () => {
     const user = userEvent.setup()
 
     render()

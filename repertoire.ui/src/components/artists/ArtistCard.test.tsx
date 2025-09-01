@@ -1,6 +1,5 @@
 import Artist from 'src/types/models/Artist.ts'
 import {
-  defaultSongFiltersMetadata,
   emptyArtist,
   reduxRouterRender,
   withToastify
@@ -21,7 +20,7 @@ describe('Artist Card', () => {
 
   const handlers = [
     http.get('/playlists', async () => {
-      return HttpResponse.json(defaultSongFiltersMetadata)
+      return HttpResponse.json([])
     })
   ]
 

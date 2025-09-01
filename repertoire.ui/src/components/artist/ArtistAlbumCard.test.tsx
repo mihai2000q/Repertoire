@@ -1,5 +1,4 @@
 import {
-  defaultSongFiltersMetadata,
   emptyAlbum,
   emptyOrder,
   reduxRouterRender,
@@ -25,7 +24,7 @@ describe('Artist Album Card', () => {
 
   const handlers = [
     http.get('/playlists', async () => {
-      return HttpResponse.json(defaultSongFiltersMetadata)
+      return HttpResponse.json([])
     })
   ]
 
