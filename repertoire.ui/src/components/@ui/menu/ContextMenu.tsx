@@ -115,8 +115,11 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onOpen,
     onClose,
     children,
+    disabled,
     trigger = 'context',
     position = 'bottom-start',
+    shadow = 'lg',
+    transitionProps = { transition: 'pop-top-left', duration: 150 },
     ...others
   } = props
 
@@ -129,11 +132,13 @@ export const ContextMenu = (props: ContextMenuProps) => {
   })
 
   const close = () => {
+    if (disabled) return
     setOpened(false)
     if (_opened) onClose?.()
   }
 
   const open = () => {
+    if (disabled) return
     setOpened(true)
     if (!_opened) onOpen?.()
   }
@@ -154,9 +159,6 @@ export const ContextMenu = (props: ContextMenuProps) => {
   return (
     <ContextMenuProvider value={ctx}>
       <Menu
-        position={position}
-        shadow={'lg'}
-        transitionProps={{ transition: 'pop-top-left', duration: 150 }}
         {...others}
         trigger={trigger === 'context' ? undefined : trigger}
         opened={_opened}
@@ -165,6 +167,11 @@ export const ContextMenu = (props: ContextMenuProps) => {
         onClose={close}
         onOpen={open}
         defaultOpened={defaultOpened}
+        disabled={disabled}
+        // with default values
+        position={position}
+        shadow={shadow}
+        transitionProps={transitionProps}
       >
         {children}
       </Menu>
