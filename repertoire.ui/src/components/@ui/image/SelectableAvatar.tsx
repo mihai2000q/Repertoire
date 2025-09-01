@@ -1,5 +1,5 @@
 import { forwardRef, MouseEvent } from 'react'
-import { alpha, Avatar, AvatarProps, Box } from '@mantine/core'
+import { alpha, Avatar, AvatarProps, Box, Center } from '@mantine/core'
 import { IconCheck } from '@tabler/icons-react'
 
 interface SelectableAvatarProps extends AvatarProps {
@@ -14,30 +14,33 @@ const SelectableAvatar = forwardRef<HTMLDivElement, SelectableAvatarProps>(
       <Box pos={'relative'}>
         <Avatar ref={ref} id={id} onClick={onClick} {...others} />
 
-        <Box
-          data-testid={'selected-checkmark'}
+        <Center
+          data-testid={'selected-overlay'}
           pos={'absolute'}
-          top={'37%'}
-          left={'36%'}
-          p={'lg'}
+          top={0}
+          left={0}
+          w={'100%'}
+          h={'100%'}
           style={(theme) => ({
             pointerEvents: 'none',
             borderRadius: '100%',
-            backgroundColor: alpha(theme.colors.green[2], 0.95),
+            backgroundColor: alpha(theme.white, 0.3),
             transition: '0.2s',
             zIndex: 2,
             opacity: isSelected ? 1 : 0
           })}
         >
-          <IconCheck
-            color={'white'}
-            style={{
-              position: 'absolute',
-              top: '22%',
-              left: '22%'
-            }}
-          />
-        </Box>
+          <Center
+            data-testid={'selected-checkmark'}
+            p={'xxs'}
+            style={(theme) => ({
+              borderRadius: '100%',
+              backgroundColor: alpha(theme.colors.green[2], 0.95)
+            })}
+          >
+            <IconCheck color={'white'} />
+          </Center>
+        </Center>
       </Box>
     )
   }

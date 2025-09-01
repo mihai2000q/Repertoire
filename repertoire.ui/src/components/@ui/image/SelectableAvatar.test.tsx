@@ -8,6 +8,7 @@ describe('Selectable Avatar', () => {
 
     mantineRender(<SelectableAvatar isSelected={false} alt={imgAlt} src={'something.png'} />)
 
+    expect(screen.getByTestId('selected-overlay')).not.toBeVisible()
     expect(screen.getByTestId('selected-checkmark')).not.toBeVisible()
     expect(screen.getByRole('img', { name: imgAlt })).toBeInTheDocument()
   })
@@ -17,6 +18,7 @@ describe('Selectable Avatar', () => {
 
     mantineRender(<SelectableAvatar isSelected={true} alt={imgAlt} src={'something.png'} />)
 
+    expect(screen.getByTestId('selected-overlay')).toBeVisible()
     expect(screen.getByTestId('selected-checkmark')).toBeVisible()
     expect(screen.getByRole('img', { name: imgAlt })).toBeInTheDocument()
   })
