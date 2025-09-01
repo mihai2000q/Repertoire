@@ -1,7 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import { afterEach } from 'vitest'
 import { reduxRender } from '../../test-utils.tsx'
 import ArtistsSelectionDrawer from './ArtistsSelectionDrawer.tsx'
 import { screen } from '@testing-library/react'
@@ -31,13 +30,14 @@ describe('Artists Selection Drawer', () => {
       selectedIds: selectedIds,
       clearSelection: clearSelection
     })
-    server.listen()
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
     server.resetHandlers()
   })
+
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

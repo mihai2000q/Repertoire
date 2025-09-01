@@ -3,7 +3,6 @@ import ArtistsContextMenu from './ArtistsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import { afterEach } from 'vitest'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 
@@ -32,13 +31,14 @@ describe('Artists Context Menu', () => {
       selectedIds: selectedIds,
       clearSelection: clearSelection
     })
-    server.listen()
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
     server.resetHandlers()
   })
+
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

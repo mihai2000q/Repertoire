@@ -12,7 +12,7 @@ const SelectableAvatar = forwardRef<HTMLDivElement, SelectableAvatarProps>(
   ({ isSelected, id, onClick, ...others }, ref) => {
     return (
       <Box pos={'relative'}>
-        <Avatar ref={ref} id={id} onClick={onClick} {...others} />
+        <Avatar ref={ref} id={id} aria-selected={isSelected} onClick={onClick} {...others} />
 
         <Center
           data-testid={'selected-overlay'}
