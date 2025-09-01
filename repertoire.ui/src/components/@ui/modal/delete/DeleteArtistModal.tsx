@@ -20,7 +20,7 @@ function DeleteArtistModal({
   onDelete,
   withName
 }: DeleteArtistModalProps) {
-  const [deleteArtistMutation, { isLoading: isDeleteLoading }] = useDeleteArtistMutation()
+  const [deleteArtistMutation, { isLoading }] = useDeleteArtistMutation()
   const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
 
   async function handleDelete() {
@@ -62,7 +62,7 @@ function DeleteArtistModal({
         </Stack>
       }
       onYes={handleDelete}
-      isLoading={isDeleteLoading}
+      isLoading={isLoading}
     />
   )
 }

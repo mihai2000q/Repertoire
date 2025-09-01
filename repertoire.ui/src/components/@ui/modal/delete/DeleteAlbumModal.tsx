@@ -14,7 +14,7 @@ interface DeleteArtistModalProps {
 }
 
 function DeleteAlbumModal({ opened, onClose, album, onDelete, withName }: DeleteArtistModalProps) {
-  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading }] = useDeleteAlbumMutation()
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   async function handleDelete() {
@@ -49,7 +49,7 @@ function DeleteAlbumModal({ opened, onClose, album, onDelete, withName }: Delete
         </Stack>
       }
       onYes={handleDelete}
-      isLoading={isDeleteLoading}
+      isLoading={isLoading}
     />
   )
 }

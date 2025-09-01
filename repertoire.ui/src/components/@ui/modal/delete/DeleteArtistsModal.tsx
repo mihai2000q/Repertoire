@@ -13,7 +13,7 @@ interface DeleteArtistsModalProps {
 }
 
 function DeleteArtistsModal({ ids, opened, onClose, onDelete }: DeleteArtistsModalProps) {
-  const [bulkDeleteArtistsMutation, { isLoading: isDeleteLoading }] = useBulkDeleteArtistsMutation()
+  const [bulkDeleteArtistsMutation, { isLoading }] = useBulkDeleteArtistsMutation()
   const [deleteWithAssociations, setDeleteWithAssociations] = useState(false)
 
   async function handleDelete() {
@@ -47,7 +47,7 @@ function DeleteArtistsModal({ ids, opened, onClose, onDelete }: DeleteArtistsMod
         </Stack>
       }
       onYes={handleDelete}
-      isLoading={isDeleteLoading}
+      isLoading={isLoading}
     />
   )
 }

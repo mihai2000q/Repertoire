@@ -13,7 +13,7 @@ interface DeleteAlbumsModalProps {
 }
 
 function DeleteAlbumsModal({ ids, opened, onClose, onDelete }: DeleteAlbumsModalProps) {
-  const [bulkDeleteAlbumsMutation, { isLoading: isDeleteLoading }] = useBulkDeleteAlbumsMutation()
+  const [bulkDeleteAlbumsMutation, { isLoading }] = useBulkDeleteAlbumsMutation()
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   async function handleDelete() {
@@ -43,7 +43,7 @@ function DeleteAlbumsModal({ ids, opened, onClose, onDelete }: DeleteAlbumsModal
         </Stack>
       }
       onYes={handleDelete}
-      isLoading={isDeleteLoading}
+      isLoading={isLoading}
     />
   )
 }

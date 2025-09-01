@@ -83,7 +83,7 @@ function Artists() {
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
-  const songsRef = useRef<HTMLDivElement>()
+  const artistsRef = useRef<HTMLDivElement>()
   const { ref: mainScrollRef } = useMainScroll()
 
   function handleCurrentPageChange(p: number) {
@@ -154,10 +154,10 @@ function Artists() {
       {artists?.totalCount === 0 && !showUnknownArtist && filtersSize > 0 && (
         <Text p={'xl'}>There are no artists with these filter properties</Text>
       )}
-      <DragSelectProvider settings={{ area: songsRef.current }}>
+      <DragSelectProvider settings={{ area: artistsRef.current }}>
         <ArtistsContextMenu>
           <SimpleGrid
-            ref={songsRef}
+            ref={artistsRef}
             cols={{ base: 3, xs: 4, sm: 3, betweenSmMd: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}
             verticalSpacing={{ base: 'lg', md: 'xl' }}
             spacing={{ base: 'lg', md: 'xl' }}
