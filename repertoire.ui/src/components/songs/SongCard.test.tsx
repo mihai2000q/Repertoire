@@ -17,6 +17,13 @@ import { setupServer } from 'msw/node'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { expect } from 'vitest'
+import { useDragSelect } from '../../context/DragSelectContext.tsx'
+import ArtistCard from '../artists/ArtistCard.tsx'
+
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
 
 describe('Song Card', () => {
   const song: Song = {
@@ -40,12 +47,22 @@ describe('Song Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: [],
+      clearSelection: vi.fn()
+    })
+  })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     server.resetHandlers()
     window.location.pathname = '/'
   })
+
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 
@@ -339,5 +356,70 @@ describe('Song Card', () => {
     expect(screen.getByRole('link', { name: /songsterr/i })).toBeExternalLink(
       localSong.songsterrLink
     )
+  })
+
+  it('should disable context menu there are selected ids', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: ['someone'],
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(<ArtistCard artist={artist} />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`default-icon-${artist.name}`)
+    })
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<SongCard song={song} />)
+
+      await user.hover(screen.getByLabelText(`default-icon-${song.title}`))
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<SongCard song={song} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${song.title}`)
+      })
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when drag selected (part of the selected ids)', () => {
+      vi.mocked(useDragSelect).mockReturnValue({
+        dragSelect: null,
+        selectedIds: [song.id],
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(<SongCard song={song} />)
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })
