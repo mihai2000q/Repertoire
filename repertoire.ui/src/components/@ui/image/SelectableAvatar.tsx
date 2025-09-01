@@ -23,7 +23,7 @@ const SelectableAvatar = forwardRef<HTMLDivElement, SelectableAvatarProps>(
           h={'100%'}
           style={(theme) => ({
             pointerEvents: 'none',
-            borderRadius: '100%',
+            borderRadius: others.radius ?? '100%',
             backgroundColor: alpha(theme.white, 0.3),
             transition: '0.2s',
             zIndex: 2,
