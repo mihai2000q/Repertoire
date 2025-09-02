@@ -1,5 +1,5 @@
 import Song from '../../types/models/Song'
-import { Anchor, Avatar, Box, Card, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
+import { Anchor, Box, Card, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../state/store.ts'
 import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
@@ -19,7 +19,7 @@ import {
 import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
-import { useDisclosure } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
@@ -29,6 +29,8 @@ import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenu
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import useDragSelectSelectable from '../../hooks/useDragSelectSelectable.ts'
+import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
 
 const iconSize = 18
 
@@ -45,6 +47,13 @@ interface SongCardProps {
 function SongCard({ song }: SongCardProps) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const {
+    ref: dragRef,
+    isDragSelected,
+    isDragSelecting
+  } = useDragSelectSelectable<HTMLDivElement>(song.id)
+  const { ref: hoverRef, hovered } = useHover<HTMLDivElement>()
+  const ref = useMergedRef(dragRef, hoverRef)
 
   const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
@@ -56,16 +65,21 @@ function SongCard({ song }: SongCardProps) {
     useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
-  function handleClick() {
+  const isSelected = openedMenu || hovered || isDragSelected
+
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     navigate(`/song/${song.id}`)
   }
 
-  function handleArtistClick(e: MouseEvent<HTMLElement>) {
+  function handleArtistClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
     dispatch(openArtistDrawer(song.artist.id))
   }
 
-  function handleOpenYoutube(e: MouseEvent<HTMLElement>) {
+  function handleOpenYoutube(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
     openYoutube()
   }
@@ -88,21 +102,25 @@ function SongCard({ song }: SongCardProps) {
   }
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedMenu} onClose={closeMenu} onOpen={openMenu}>
+    <ContextMenu
+      opened={openedMenu}
+      onClose={closeMenu}
+      onOpen={openMenu}
+      disabled={isDragSelecting}
+    >
       <ContextMenu.Target>
         <Card
+          ref={ref}
+          id={song.id}
           aria-label={`song-card-${song.title}`}
+          aria-selected={isSelected}
           p={0}
           radius={'10%'}
           sx={(theme) => ({
             cursor: 'pointer',
             transition: '0.3s',
             boxShadow: theme.shadows.lg,
-            '&:hover': {
-              boxShadow: theme.shadows.xxl,
-              transform: 'scale(1.1)'
-            },
-            ...(openedMenu && {
+            ...(isSelected && {
               boxShadow: theme.shadows.xxl,
               transform: 'scale(1.1)'
             })
@@ -110,7 +128,8 @@ function SongCard({ song }: SongCardProps) {
           onClick={handleClick}
         >
           <Stack gap={0}>
-            <Avatar
+            <SelectableAvatar
+              isSelected={isDragSelected}
               radius={'10%'}
               src={song.imageUrl ?? song.album?.imageUrl}
               alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
@@ -129,7 +148,7 @@ function SongCard({ song }: SongCardProps) {
                   style={{ padding: '30%' }}
                 />
               </Center>
-            </Avatar>
+            </SelectableAvatar>
 
             <Stack gap={0} px={'sm'} pt={'xs'} pb={6} align={'start'}>
               <Text fw={600} lineClamp={2} lh={'xxs'} mb={1}>
@@ -201,7 +220,10 @@ function SongCard({ song }: SongCardProps) {
                       target="_blank"
                       rel="noreferrer"
                       c={'inherit'}
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        if (e.ctrlKey || e.shiftKey) return
+                        e.stopPropagation()
+                      }}
                     >
                       <LocalTooltip label={'Open Songsterr'}>
                         <Center c={'blue.7'}>
@@ -255,7 +277,7 @@ function SongCard({ song }: SongCardProps) {
         </ContextMenu.Item>
 
         <ContextMenu.Divider />
-        <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
+        <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
         <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
         <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
         <ContextMenu.Divider />

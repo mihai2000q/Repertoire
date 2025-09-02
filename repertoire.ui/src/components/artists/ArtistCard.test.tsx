@@ -1,16 +1,12 @@
 import Artist from 'src/types/models/Artist.ts'
-import {
-  defaultSongFiltersMetadata,
-  emptyArtist,
-  reduxRouterRender,
-  withToastify
-} from '../../test-utils.tsx'
+import { emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import ArtistCard from './ArtistCard.tsx'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RootState } from '../../state/store.ts'
+import { useDragSelect } from '../../context/DragSelectContext.tsx'
 
 describe('Artist Card', () => {
   const artist: Artist = {
@@ -21,21 +17,45 @@ describe('Artist Card', () => {
 
   const handlers = [
     http.get('/playlists', async () => {
-      return HttpResponse.json(defaultSongFiltersMetadata)
+      return HttpResponse.json([])
     })
   ]
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: [],
+      clearSelection: vi.fn()
+    })
+  })
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    server.resetHandlers()
+    window.location.pathname = '/'
+  })
+
+  beforeAll(() => {
+    server.listen()
+    // Mock the context
+    vi.mock('../../context/DragSelectContext', () => ({
+      useDragSelect: vi.fn()
+    }))
+  })
 
   afterAll(() => server.close())
 
   it('should render with minimal info', () => {
     reduxRouterRender(<ArtistCard artist={artist} />)
 
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByLabelText(`default-icon-${artist.name}`)).toBeInTheDocument()
     expect(screen.getByText(artist.name)).toBeInTheDocument()
   })
@@ -48,10 +68,18 @@ describe('Artist Card', () => {
 
     reduxRouterRender(<ArtistCard artist={localArtist} />)
 
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute(
       'src',
       localArtist.imageUrl
+    )
+    expect(screen.getByRole('img', { name: localArtist.name }).parentElement).not.toHaveAttribute(
+      'aria-selected'
     )
     expect(screen.getByText(localArtist.name)).toBeInTheDocument()
   })
@@ -66,6 +94,7 @@ describe('Artist Card', () => {
       target: screen.getByLabelText(`default-icon-${artist.name}`)
     })
 
+    expect(screen.getByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /open drawer/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
@@ -117,5 +146,70 @@ describe('Artist Card', () => {
 
     await user.click(screen.getByLabelText(`default-icon-${artist.name}`))
     expect(window.location.pathname).toBe(`/artist/${artist.id}`)
+  })
+
+  it('should disable context menu there are selected ids', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: ['someone'],
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(<ArtistCard artist={artist} />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`default-icon-${artist.name}`)
+    })
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<ArtistCard artist={artist} />)
+
+      await user.hover(screen.getByLabelText(`default-icon-${artist.name}`))
+
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<ArtistCard artist={artist} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${artist.name}`)
+      })
+
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when drag selected (part of the selected ids)', () => {
+      vi.mocked(useDragSelect).mockReturnValue({
+        dragSelect: null,
+        selectedIds: [artist.id],
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(<ArtistCard artist={artist} />)
+
+      expect(screen.getByLabelText(`artist-card-${artist.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })

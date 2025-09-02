@@ -24,8 +24,8 @@ import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
 import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
-import useMainScroll from '../../../hooks/useMainScroll.ts'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
+import { useMainScroll } from '../../../context/MainScrollContext.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]

@@ -34,9 +34,9 @@ function Loader() {
             w={60}
             style={(theme) => ({ boxShadow: theme.shadows.md })}
           />
-          <Stack gap={'xxs'}>
-            <Skeleton w={100} h={13} />
-            <Skeleton w={75} h={13} />
+          <Stack flex={1} gap={'xxs'}>
+            <Skeleton w={'min(100%, 120px)'} h={13} />
+            <Skeleton w={'min(50%, 55px)'} h={13} />
           </Stack>
         </Group>
       ))}
@@ -63,7 +63,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
 
   return (
     <Group wrap={'nowrap'} gap={0}>
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}
@@ -115,7 +115,7 @@ function HomeRecentPlaylists({ ...others }: CardProps) {
     { property: PlaylistProperty.LastModified, type: OrderType.Descending }
   ])
 
-  const { data: playlists, isLoading } = useGetPlaylistsQuery({
+  const { data: playlists } = useGetPlaylistsQuery({
     pageSize: 20,
     currentPage: 1,
     orderBy: orderBy
@@ -168,7 +168,7 @@ function HomeRecentPlaylists({ ...others }: CardProps) {
           })}
         >
           <SimpleGrid cols={2} px={'md'} py={'xs'}>
-            {isLoading || !playlists ? (
+            {!playlists ? (
               <Loader />
             ) : (
               playlists.models.map((playlist) => (

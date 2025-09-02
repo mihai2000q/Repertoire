@@ -72,12 +72,13 @@ describe('Song Sections Widget', () => {
   const server = setupServer(...handlers)
 
   beforeAll(() => {
-    vi.mock('../../../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
+    server.listen()
+    // Mock Context
+    vi.mock('../../../context/MainScrollContext.tsx', () => ({
+      useMainScroll: vi.fn(() => ({
         ref: { current: document.createElement('div') }
       }))
     }))
-    server.listen()
   })
 
   afterEach(() => server.resetHandlers())

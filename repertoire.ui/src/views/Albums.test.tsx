@@ -110,9 +110,22 @@ describe('Albums', () => {
 
   beforeAll(() => {
     server.listen()
-    vi.mock('../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
+    vi.mock('../context/MainScrollContext.tsx', () => ({
+      useMainScroll: vi.fn(() => ({
         ref: { current: document.createElement('div') }
+      }))
+    }))
+    vi.mock('dragselect', () => ({
+      default: vi.fn(() => ({
+        start: vi.fn(),
+        stop: vi.fn(),
+        getSelection: vi.fn(),
+        clearSelection: vi.fn(),
+        setSettings: vi.fn(),
+        subscribe: vi.fn(),
+        unsubscribe: vi.fn(),
+        addSelectables: vi.fn(),
+        removeSelectables: vi.fn()
       }))
     }))
   })
@@ -354,5 +367,25 @@ describe('Albums', () => {
       ])
       expect(window.location.search).toMatch(/&f=/)
     })
+  })
+
+  it.skip('should show the drawer when selecting albums, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<Albums />)
+
+    const albumsArea = screen.getByTestId('albums-area')
+    await user.pointer([
+      { keys: '[MouseLeft>]', target: albumsArea, coords: { x: 0, y: 0 } },
+      { coords: { x: 1000, y: 300 } },
+      { keys: '[/MouseLeft]' }
+    ])
+
+    expect(
+      await screen.findByRole('dialog', { name: 'albums-selection-drawer' })
+    ).toBeInTheDocument()
+
+    await user.pointer({ keys: '[MouseRight>]', target: albumsArea })
+    expect(await screen.findByRole('menu', { name: 'albums-context-menu' })).toBeInTheDocument()
   })
 })

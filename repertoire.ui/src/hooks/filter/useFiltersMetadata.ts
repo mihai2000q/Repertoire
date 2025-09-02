@@ -11,6 +11,7 @@ export default function useFiltersMetadata<TMetadata>(
 ): Map<string, Filter> {
   const initialFilters = useRef(new Map<string, Filter>([...filters]))
 
+  // construct the initial filters
   useEffect(() => {
     if (!initialMetadata) return
 
@@ -21,12 +22,13 @@ export default function useFiltersMetadata<TMetadata>(
     filters.forEach((filter, key) => {
       const newInitialFilter: Filter = initialFiltersMetadata.has(key)
         ? { ...filter, value: initialFiltersMetadata.get(key), isSet: false }
-        : { ...filter, value: undefined, isSet: false }
+        : { ...filter, isSet: false }
 
       initialFilters.current.set(key, newInitialFilter)
     })
   }, [initialMetadata])
 
+  // construct the filters
   useEffect(() => {
     if (!metadata) return
 

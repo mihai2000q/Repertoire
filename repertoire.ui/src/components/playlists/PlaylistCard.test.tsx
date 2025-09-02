@@ -7,6 +7,7 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { expect } from 'vitest'
 import { RootState } from '../../state/store.ts'
+import { useDragSelect } from '../../context/DragSelectContext.tsx'
 
 describe('Playlist Card', () => {
   const playlist: Playlist = {
@@ -17,15 +18,38 @@ describe('Playlist Card', () => {
 
   const server = setupServer()
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: [],
+      clearSelection: vi.fn()
+    })
+  })
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    server.resetHandlers()
+  })
+
+  beforeAll(() => {
+    server.listen()
+    // Mock the context
+    vi.mock('../../context/DragSelectContext', () => ({
+      useDragSelect: vi.fn()
+    }))
+  })
 
   afterAll(() => server.close())
 
   it('should render minimal info', () => {
     reduxRouterRender(<PlaylistCard playlist={playlist} />)
 
+    expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toBeInTheDocument()
+    expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     expect(screen.getByText(playlist.title)).toBeInTheDocument()
   })
@@ -38,6 +62,10 @@ describe('Playlist Card', () => {
 
     reduxRouterRender(<PlaylistCard playlist={localPlaylist} />)
 
+    expect(screen.getByLabelText(`playlist-card-${localPlaylist.title}`)).toHaveAttribute(
+      'aria-selected',
+      'false'
+    )
     expect(screen.getByRole('img', { name: localPlaylist.title })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: localPlaylist.title })).toHaveAttribute(
       'src',
@@ -109,5 +137,70 @@ describe('Playlist Card', () => {
 
     await user.click(screen.getByLabelText(`default-icon-${playlist.title}`))
     expect(window.location.pathname).toBe(`/playlist/${playlist.id}`)
+  })
+
+  it('should disable context menu there are selected ids', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useDragSelect).mockReturnValue({
+      dragSelect: null,
+      selectedIds: ['someone'],
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(<PlaylistCard playlist={playlist} />)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`default-icon-${playlist.title}`)
+    })
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<PlaylistCard playlist={playlist} />)
+
+      await user.hover(screen.getByLabelText(`default-icon-${playlist.title}`))
+
+      expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(<PlaylistCard playlist={playlist} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${playlist.title}`)
+      })
+
+      expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when drag selected (part of the selected ids)', () => {
+      vi.mocked(useDragSelect).mockReturnValue({
+        dragSelect: null,
+        selectedIds: [playlist.id],
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(<PlaylistCard playlist={playlist} />)
+
+      expect(screen.getByLabelText(`playlist-card-${playlist.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })

@@ -4,6 +4,8 @@ import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/mod
 import {
   AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
+  AddPerfectSongRehearsalsRequest,
+  BulkDeleteSongsRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
@@ -21,7 +23,6 @@ import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
 import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
-import { GetPlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -79,9 +80,8 @@ const songsApi = api.injectEndpoints({
         }
       },
       query: ({ queryArg, pageParam }) => {
-        const newQueryParams: GetPlaylistSongsRequest = {
+        const newQueryParams: GetSongsRequest = {
           ...queryArg,
-          id: undefined,
           currentPage: pageParam.currentPage,
           pageSize: queryArg.pageSize ?? pageParam.pageSize
         }
@@ -107,6 +107,14 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    addPerfectSongRehearsals: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalsRequest>({
+      query: (body) => ({
+        url: 'songs/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     addPartialSongRehearsal: build.mutation<HttpMessageResponse, AddPartialSongRehearsalRequest>({
       query: (body) => ({
         url: 'songs/partial-rehearsal',
@@ -126,6 +134,14 @@ const songsApi = api.injectEndpoints({
     updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
       query: (body) => ({
         url: 'songs/settings',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    bulkDeleteSongs: build.mutation<HttpMessageResponse, BulkDeleteSongsRequest>({
+      query: (body) => ({
+        url: `songs/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -246,9 +262,11 @@ export const {
   useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
+  useAddPerfectSongRehearsalsMutation,
   useAddPartialSongRehearsalMutation,
   useUpdateSongMutation,
   useUpdateSongSettingsMutation,
+  useBulkDeleteSongsMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,
   useDeleteSongMutation,

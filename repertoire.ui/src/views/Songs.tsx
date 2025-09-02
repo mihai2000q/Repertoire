@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useRef } from 'react'
 import {
   ActionIcon,
   Box,
@@ -33,7 +33,10 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import SongsFilters from '../components/songs/SongsFilters.tsx'
 import songsFilters from '../data/songs/songsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
-import useMainScroll from '../hooks/useMainScroll.ts'
+import { useMainScroll } from '../context/MainScrollContext.tsx'
+import { DragSelectProvider } from '../context/DragSelectContext.tsx'
+import SongsContextMenu from '../components/songs/SongsContextMenu.tsx'
+import SongsSelectionDrawer from '../components/songs/SongsSelectionDrawer.tsx'
 
 function Songs(): ReactElement {
   useFixedDocumentTitle('Songs')
@@ -77,17 +80,18 @@ function Songs(): ReactElement {
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
 
+  const songsRef = useRef()
   const { ref: mainScrollRef } = useMainScroll()
 
-  function handleCurrentPageChange (p: number) {
+  function handleCurrentPageChange(p: number) {
     mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'} px={'xl'}>
-      <Group gap={'xxs'}>
+    <Stack h={'100%'} gap={0}>
+      <Group px={'xl'} gap={'xxs'} pb={'xs'}>
         <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Songs
         </Title>
@@ -125,37 +129,49 @@ function Songs(): ReactElement {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text lh={'xxs'} mb={'xs'}>
+        <Text px={'xl'} lh={'xxs'}>
           {startCount} - {endCount} songs out of {songs?.totalCount ?? 0}
         </Text>
       )}
 
       {songs?.totalCount === 0 && filtersSize === 0 && (
-        <Text mt={'sm'}>There are no songs yet. Try to add one</Text>
+        <Text p={'xl'}>There are no songs yet. Try to add one</Text>
       )}
       {songs?.totalCount === 0 && filtersSize > 0 && (
-        <Text mt={'sm'}>There are no songs with these filter properties</Text>
+        <Text p={'xl'}>There are no songs with these filter properties</Text>
       )}
-      <SimpleGrid
-        cols={{ base: 2, xs: 3, sm: 2, betweenSmMd: 3, betweenMdLg: 4, lg: 5, xl: 6, xxl: 7 }}
-        spacing={'lg'}
-        verticalSpacing={'lg'}
-      >
-        {(isLoading || !songs) && <SongsLoader />}
-        {songs?.models.map((song) => <SongCard key={song.id} song={song} />)}
-        {!isFetching && songs?.totalCount > 0 && currentPage == totalPages && (
-          <Card
-            variant={'add-new'}
-            aria-label={'new-song-card'}
-            radius={'lg'}
-            onClick={openAddNewSongModal}
+      <DragSelectProvider settings={{ area: songsRef.current }} data={songs}>
+        <SongsContextMenu>
+          <SimpleGrid
+            data-testid={'songs-area'}
+            ref={songsRef}
+            cols={{ base: 2, xs: 3, sm: 2, betweenSmMd: 3, betweenMdLg: 4, lg: 5, xl: 6, xxl: 7 }}
+            spacing={'lg'}
+            verticalSpacing={'lg'}
+            pt={'lg'}
+            pb={'xs'}
+            px={'xl'}
           >
-            <Center h={'100%'}>
-              <IconMusicPlus size={'100%'} style={{ padding: '35%' }} />
-            </Center>
-          </Card>
-        )}
-      </SimpleGrid>
+            {(isLoading || !songs) && <SongsLoader />}
+            {songs?.models.map((song) => (
+              <SongCard key={song.id} song={song} />
+            ))}
+            {!isFetching && songs?.totalCount > 0 && currentPage == totalPages && (
+              <Card
+                variant={'add-new'}
+                aria-label={'new-song-card'}
+                radius={'lg'}
+                onClick={openAddNewSongModal}
+              >
+                <Center h={'100%'}>
+                  <IconMusicPlus size={'100%'} style={{ padding: '35%' }} />
+                </Center>
+              </Card>
+            )}
+          </SimpleGrid>
+        </SongsContextMenu>
+        <SongsSelectionDrawer />
+      </DragSelectProvider>
 
       <Space flex={1} />
 

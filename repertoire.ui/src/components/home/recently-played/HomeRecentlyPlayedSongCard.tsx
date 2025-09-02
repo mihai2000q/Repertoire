@@ -44,7 +44,7 @@ function HomeRecentlyPlayedSongCard({ song }: HomeRecentlyPlayedSongCardProps) {
   }
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+    <ContextMenu opened={openedMenu} onChange={toggleMenu}>
       <ContextMenu.Target>
         <HomeRecentlyPlayedCard
           aria-label={`song-card-${song.title}`}

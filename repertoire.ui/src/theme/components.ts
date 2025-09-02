@@ -6,12 +6,14 @@ import {
   Card,
   CardFactory,
   Chip,
+  CloseButton,
   Combobox,
   Drawer,
   DrawerRoot,
   Highlight,
   HoverCard,
   Indicator,
+  lighten,
   LoadingOverlay,
   Menu,
   Modal,
@@ -161,6 +163,26 @@ export const components = {
         fontWeight: 500
       }
     })
+  }),
+  CloseButton: CloseButton.extend({
+    defaultProps: {
+      styles: (theme) => ({
+        root: {
+          transition: '0.16s',
+          color: theme.colors.gray[6],
+          borderRadius: '50%',
+
+          '&:hover': {
+            color: lighten(theme.colors.gray[7], 0.1),
+            backgroundColor: theme.colors.gray[2]
+          },
+
+          '&[data-disabled="true"]': {
+            color: theme.colors.gray[3]
+          }
+        }
+      })
+    }
   }),
   Combobox: Combobox.extend({
     defaultProps: {

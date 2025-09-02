@@ -15,7 +15,7 @@ import titleFontSize from '../../utils/style/titleFontSize.ts'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import DeleteAlbumModal from '../@ui/modal/delete/DeleteAlbumModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface AlbumHeaderProps {
@@ -62,7 +62,7 @@ function AlbumHeader({ album, isUnknownAlbum, songsTotalCount }: AlbumHeaderProp
 
           <AddToPlaylistMenuItem
             ids={[album?.id]}
-            type={'album'}
+            type={'albums'}
             closeMenu={closeMenu}
             disabled={album?.songsCount === 0}
           />

@@ -12,7 +12,7 @@ import { forwardRef } from 'react'
 import lowerTitleFontSize from '../../utils/style/lowerTitleFontSize.ts'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import DeleteArtistModal from '../@ui/modal/DeleteArtistModal.tsx'
+import DeleteArtistModal from '../@ui/modal/delete/DeleteArtistModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 interface ArtistHeaderProps {
@@ -25,8 +25,6 @@ interface ArtistHeaderProps {
 const ArtistHeader = forwardRef<HTMLDivElement, ArtistHeaderProps>(
   ({ artist, songsTotalCount, albumsTotalCount, isUnknownArtist }, ref) => {
     const navigate = useNavigate()
-
-    console.log(artist)
 
     const [openedImage, { open: openImage, close: closeImage }] = useDisclosure(false)
     const [openedArtistInfo, { open: openArtistInfo, close: closeArtistInfo }] =
@@ -60,7 +58,7 @@ const ArtistHeader = forwardRef<HTMLDivElement, ArtistHeaderProps>(
 
             <AddToPlaylistMenuItem
               ids={[artist?.id]}
-              type={'artist'}
+              type={'artists'}
               closeMenu={closeMenu}
               disabled={artist?.songsCount === 0}
             />

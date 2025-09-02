@@ -30,7 +30,7 @@ import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
-import DeleteAlbumModal from '../@ui/modal/DeleteAlbumModal.tsx'
+import DeleteAlbumModal from '../@ui/modal/delete/DeleteAlbumModal.tsx'
 import { toast } from 'react-toastify'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
@@ -92,7 +92,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
 
       <AddToPlaylistMenuItem
         ids={[album.id]}
-        type={'album'}
+        type={'albums'}
         closeMenu={closeMenus}
         disabled={album.songsCount === 0}
       />
@@ -115,7 +115,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
   )
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+    <ContextMenu opened={openedContextMenu} onChange={toggleContextMenu}>
       <ContextMenu.Target>
         <Group
           ref={ref}

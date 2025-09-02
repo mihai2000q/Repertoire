@@ -1,5 +1,4 @@
 import {
-  defaultSongFiltersMetadata,
   emptyAlbum,
   emptySong,
   reduxRouterRender
@@ -81,7 +80,7 @@ describe('Album Songs Widget', () => {
       return HttpResponse.json(response)
     }),
     http.get('/playlists', async () => {
-      return HttpResponse.json(defaultSongFiltersMetadata)
+      return HttpResponse.json([])
     }),
     http.get('/songs/guitar-tunings', async () => {
       return HttpResponse.json([])

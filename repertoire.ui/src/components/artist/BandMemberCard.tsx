@@ -59,7 +59,7 @@ function BandMemberCard({ bandMember, artistId, draggableProvided }: BandMemberC
       sx={{ transition: '0.3s', ...(isSelected && { transform: 'scale(1.1)' }) }}
       {...draggableProvided?.draggableProps}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

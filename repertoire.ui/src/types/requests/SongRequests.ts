@@ -29,6 +29,10 @@ export interface AddPerfectSongRehearsalRequest {
   id: string
 }
 
+export interface AddPerfectSongRehearsalsRequest {
+  ids: string[]
+}
+
 export interface AddPartialSongRehearsalRequest {
   id: string
 }
@@ -57,6 +61,10 @@ export interface UpdateSongSettingsRequest {
   settingsId: string
   defaultBandMemberId?: string
   defaultInstrumentId?: string
+}
+
+export interface BulkDeleteSongsRequest {
+  ids: string[]
 }
 
 export interface SaveImageToSongRequest {

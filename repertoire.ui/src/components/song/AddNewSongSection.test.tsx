@@ -285,10 +285,14 @@ describe('Add New Song Section', () => {
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
 
     // reset fields
-    expect(screen.getByRole('button', { name: settings.defaultBandMember.name })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: settings.defaultInstrument.name })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: settings.defaultBandMember.name })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: settings.defaultInstrument.name })
+    ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
+    expect(await screen.findByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   // Validation

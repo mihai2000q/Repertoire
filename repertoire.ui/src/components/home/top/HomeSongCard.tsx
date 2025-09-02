@@ -55,7 +55,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
       }}
       w={'max(10vw, 150px)'}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

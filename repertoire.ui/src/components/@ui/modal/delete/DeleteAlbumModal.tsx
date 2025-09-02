@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Checkbox, Group, Stack, Text } from '@mantine/core'
-import WarningModal from './WarningModal.tsx'
-import Album from '../../../types/models/Album.ts'
-import { useDeleteAlbumMutation } from '../../../state/api/albumsApi.ts'
+import WarningModal from '../WarningModal.tsx'
+import Album from '../../../../types/models/Album.ts'
+import { useDeleteAlbumMutation } from '../../../../state/api/albumsApi.ts'
 import { toast } from 'react-toastify'
 
 interface DeleteArtistModalProps {
@@ -14,7 +14,7 @@ interface DeleteArtistModalProps {
 }
 
 function DeleteAlbumModal({ opened, onClose, album, onDelete, withName }: DeleteArtistModalProps) {
-  const [deleteAlbumMutation, { isLoading: isDeleteLoading }] = useDeleteAlbumMutation()
+  const [deleteAlbumMutation, { isLoading }] = useDeleteAlbumMutation()
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
   async function handleDelete() {
@@ -49,7 +49,7 @@ function DeleteAlbumModal({ opened, onClose, album, onDelete, withName }: Delete
         </Stack>
       }
       onYes={handleDelete}
-      isLoading={isDeleteLoading}
+      isLoading={isLoading}
     />
   )
 }

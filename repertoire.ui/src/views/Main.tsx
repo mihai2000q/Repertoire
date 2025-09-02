@@ -14,9 +14,9 @@ import ArtistDrawer from '../components/main/drawer/ArtistDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
 import useTopbarHeight from '../hooks/useTopbarHeight.ts'
-import useMainScroll from '../hooks/useMainScroll.ts'
 import { createStyles } from '@mantine/emotion'
 import PlaylistDrawer from '../components/main/drawer/PlaylistDrawer.tsx'
+import { useMainScroll } from '../context/MainScrollContext.tsx'
 
 const useStyles = createStyles((theme) => ({
   scrollbar: {

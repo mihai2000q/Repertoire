@@ -34,7 +34,11 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import albumsFilters from '../data/albums/albumsFilters.ts'
 import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
-import useMainScroll from '../hooks/useMainScroll.ts'
+import { useMainScroll } from '../context/MainScrollContext.tsx'
+import { useRef } from 'react'
+import AlbumsSelectionDrawer from '../components/albums/AlbumsSelectionDrawer.tsx'
+import { DragSelectProvider } from '../context/DragSelectContext.tsx'
+import AlbumsContextMenu from '../components/albums/AlbumsContextMenu.tsx'
 
 function Albums() {
   useFixedDocumentTitle('Albums')
@@ -79,17 +83,18 @@ function Albums() {
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
 
+  const albumsRef = useRef<HTMLDivElement>()
   const { ref: mainScrollRef } = useMainScroll()
 
-  function handleCurrentPageChange (p: number) {
+  function handleCurrentPageChange(p: number) {
     mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'} px={'xl'}>
-      <Group gap={'xxs'}>
+    <Stack h={'100%'} gap={0}>
+      <Group gap={'xxs'} pb={'xs'} px={'xl'}>
         <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Albums
         </Title>
@@ -127,44 +132,54 @@ function Albums() {
         </Indicator>
       </Group>
       {!isLoading && (
-        <Text lh={'xxs'} mb={'xs'}>
+        <Text lh={'xxs'} px={'xl'}>
           {startCount} - {endCount} albums out of{' '}
           {(albums?.totalCount ?? 0) + (showUnknownAlbum ? 1 : 0)}
         </Text>
       )}
 
-      <Stack gap={'xs'} flex={1}>
-        {albums?.totalCount === 0 && !showUnknownAlbum && filtersSize === 0 && (
-          <Text mt={'sm'}>There are no albums yet. Try to add one</Text>
-        )}
-        {albums?.totalCount === 0 && !showUnknownAlbum && filtersSize > 0 && (
-          <Text mt={'sm'}>There are no albums with these filter properties</Text>
-        )}
-        <SimpleGrid
-          cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
-          verticalSpacing={{ base: 'lg', md: 'xl' }}
-          spacing={{ base: 'lg', md: 'xl' }}
-        >
-          {(isLoading || !albums) && <AlbumsLoader />}
-          {albums?.models.map((album) => <AlbumCard key={album.id} album={album} />)}
-          {!isFetching && showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
-          {!isFetching &&
-            ((albums?.totalCount > 0 && currentPage == totalPages) ||
-              (albums?.totalCount === 0 && showUnknownAlbum)) && (
-              <Card
-                variant={'add-new'}
-                aria-label={'new-album-card'}
-                radius={'lg'}
-                onClick={openAddNewAlbumModal}
-                style={{ aspectRatio: 1 }}
-              >
-                <Center h={'100%'}>
-                  <IconDisc size={'100%'} style={{ padding: '37%' }} />
-                </Center>
-              </Card>
-            )}
-        </SimpleGrid>
-      </Stack>
+      {albums?.totalCount === 0 && !showUnknownAlbum && filtersSize === 0 && (
+        <Text p={'xl'}>There are no albums yet. Try to add one</Text>
+      )}
+      {albums?.totalCount === 0 && !showUnknownAlbum && filtersSize > 0 && (
+        <Text p={'xl'}>There are no albums with these filter properties</Text>
+      )}
+      <DragSelectProvider settings={{ area: albumsRef.current }} data={albums}>
+        <AlbumsContextMenu>
+          <SimpleGrid
+            data-testid={'albums-area'}
+            ref={albumsRef}
+            cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
+            verticalSpacing={{ base: 'lg', md: 'xl' }}
+            spacing={{ base: 'lg', md: 'xl' }}
+            px={'xl'}
+            pt={'lg'}
+            pb={'xs'}
+          >
+            {(isLoading || !albums) && <AlbumsLoader />}
+            {albums?.models.map((album) => (
+              <AlbumCard key={album.id} album={album} />
+            ))}
+            {!isFetching && showUnknownAlbum && currentPage == totalPages && <UnknownAlbumCard />}
+            {!isFetching &&
+              ((albums?.totalCount > 0 && currentPage == totalPages) ||
+                (albums?.totalCount === 0 && showUnknownAlbum)) && (
+                <Card
+                  variant={'add-new'}
+                  aria-label={'new-album-card'}
+                  radius={'lg'}
+                  onClick={openAddNewAlbumModal}
+                  style={{ aspectRatio: 1 }}
+                >
+                  <Center h={'100%'}>
+                    <IconDisc size={'100%'} style={{ padding: '37%' }} />
+                  </Center>
+                </Card>
+              )}
+          </SimpleGrid>
+        </AlbumsContextMenu>
+        <AlbumsSelectionDrawer />
+      </DragSelectProvider>
 
       <Space flex={1} />
 

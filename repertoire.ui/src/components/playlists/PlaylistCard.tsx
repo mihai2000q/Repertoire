@@ -1,15 +1,18 @@
 import Playlist from '../../types/models/Playlist'
-import { Avatar, Center, Group, Stack, Text } from '@mantine/core'
+import { Center, Group, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import { useDeletePlaylistMutation } from '../../state/api/playlistsApi.ts'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
-import { useDisclosure, useHover } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { openPlaylistDrawer } from '../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../state/store.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import useDragSelectSelectable from '../../hooks/useDragSelectSelectable.ts'
+import { MouseEvent } from 'react'
+import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
 
 interface PlaylistCardProps {
   playlist: Playlist
@@ -18,7 +21,13 @@ interface PlaylistCardProps {
 function PlaylistCard({ playlist }: PlaylistCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { ref, hovered } = useHover()
+  const {
+    ref: dragRef,
+    isDragSelected,
+    isDragSelecting
+  } = useDragSelectSelectable<HTMLDivElement>(playlist.id)
+  const { ref: hoverRef, hovered } = useHover<HTMLDivElement>()
+  const ref = useMergedRef(dragRef, hoverRef)
 
   const [deletePlaylistMutation, { isLoading: isDeleteLoading }] = useDeletePlaylistMutation()
 
@@ -27,7 +36,10 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleClick() {
+  const isSelected = openedMenu || hovered || isDragSelected
+
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     navigate(`/playlist/${playlist.id}`)
   }
 
@@ -43,30 +55,31 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
   return (
     <Stack
       aria-label={`playlist-card-${playlist.title}`}
+      aria-selected={isSelected}
       align={'center'}
       gap={0}
       style={{
         transition: '0.3s',
-        ...((openedMenu || hovered) && { transform: 'scale(1.1)' })
+        ...(isSelected && { transform: 'scale(1.1)' })
       }}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu} disabled={isDragSelecting}>
         <ContextMenu.Target>
-          <Avatar
+          <SelectableAvatar
             ref={ref}
+            id={playlist.id}
             radius={'10%'}
             w={'100%'}
             h={'unset'}
             src={playlist.imageUrl}
             alt={playlist.imageUrl && playlist.title}
             bg={'gray.5'}
+            isSelected={isDragSelected}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
-              boxShadow: theme.shadows.xxl,
-              '&:hover': { boxShadow: theme.shadows.xxl_hover },
-              ...(openedMenu && { boxShadow: theme.shadows.xxl_hover })
+              boxShadow: isSelected ? theme.shadows.xxl_hover : theme.shadows.xxl,
             })}
             onClick={handleClick}
           >
@@ -77,7 +90,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
                 style={{ padding: '33%' }}
               />
             </Center>
-          </Avatar>
+          </SelectableAvatar>
         </ContextMenu.Target>
 
         <ContextMenu.Dropdown>

@@ -37,7 +37,7 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
       style={{ transition: '0.25s', ...(isSelected && { transform: 'scale(1.05)' }) }}
       w={'max(9vw, 140px)'}
     >
-      <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+      <ContextMenu opened={openedMenu} onChange={toggleMenu}>
         <ContextMenu.Target>
           <Avatar
             ref={ref}

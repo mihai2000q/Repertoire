@@ -5,8 +5,8 @@ import { useMediaQuery } from '@mantine/hooks'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import TopbarSearch from './topbar/TopbarSearch.tsx'
 import TopbarUser from './topbar/TopbarUser.tsx'
-import useMainScroll from '../../hooks/useMainScroll.ts'
 import TopbarNavigation from './topbar/TopbarNavigation.tsx'
+import { useMainScroll } from '../../context/MainScrollContext.tsx'
 
 interface TopbarProps {
   toggleSidebar: () => void

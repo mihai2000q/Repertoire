@@ -4,6 +4,7 @@ import Album from '../../types/models/Album.ts'
 import {
   AddPerfectRehearsalsToAlbumsRequest,
   AddSongsToAlbumRequest,
+  BulkDeleteAlbumsRequest,
   CreateAlbumRequest,
   DeleteAlbumRequest,
   GetAlbumRequest,
@@ -58,6 +59,14 @@ const albumsApi = api.injectEndpoints({
     updateAlbum: build.mutation<HttpMessageResponse, UpdateAlbumRequest>({
       query: (body) => ({
         url: 'albums',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Albums']
+    }),
+    bulkDeleteAlbums: build.mutation<HttpMessageResponse, BulkDeleteAlbumsRequest>({
+      query: (body) => ({
+        url: `albums/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -123,6 +132,7 @@ export const {
   useCreateAlbumMutation,
   useAddPerfectRehearsalsToAlbumsMutation,
   useUpdateAlbumMutation,
+  useBulkDeleteAlbumsMutation,
   useSaveImageToAlbumMutation,
   useDeleteImageFromAlbumMutation,
   useDeleteAlbumMutation,

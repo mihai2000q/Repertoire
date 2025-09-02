@@ -22,6 +22,12 @@ export interface UpdateArtistRequest {
   isBand?: boolean
 }
 
+export interface BulkDeleteArtistsRequest {
+  ids: string[]
+  withAlbums?: boolean
+  withSongs?: boolean
+}
+
 export interface SaveImageToArtistRequest {
   image: FileWithPath
   id: string

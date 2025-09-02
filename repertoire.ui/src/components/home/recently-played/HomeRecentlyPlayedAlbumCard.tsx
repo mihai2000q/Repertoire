@@ -37,7 +37,7 @@ function HomeRecentlyPlayedAlbumCard({ album }: HomeRecentlyPlayedAlbumCardProps
   }
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedMenu} onChange={toggleMenu}>
+    <ContextMenu opened={openedMenu} onChange={toggleMenu}>
       <ContextMenu.Target>
         <HomeRecentlyPlayedCard
           aria-label={`album-card-${album.title}`}
