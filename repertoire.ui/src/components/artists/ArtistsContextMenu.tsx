@@ -23,6 +23,7 @@ function ArtistsContextMenu({ children }: { children: ReactNode }) {
   return (
     <>
       <ContextMenu
+        aria-label={'artists-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}

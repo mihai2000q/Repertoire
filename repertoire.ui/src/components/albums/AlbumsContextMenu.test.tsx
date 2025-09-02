@@ -6,11 +6,6 @@ import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 
-// Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
-  useDragSelect: vi.fn()
-}))
-
 describe('Albums Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
@@ -38,7 +33,13 @@ describe('Albums Context Menu', () => {
     server.resetHandlers()
   })
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock the context
+    vi.mock('../../context/DragSelectContext', () => ({
+      useDragSelect: vi.fn()
+    }))
+  })
 
   afterAll(() => server.close())
 

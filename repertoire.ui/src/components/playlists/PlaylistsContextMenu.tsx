@@ -22,6 +22,7 @@ function PlaylistsContextMenu({ children }: { children: ReactNode }) {
   return (
     <>
       <ContextMenu
+        aria-label={'playlists-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}

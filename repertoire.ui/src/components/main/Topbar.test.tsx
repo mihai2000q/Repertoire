@@ -38,6 +38,7 @@ describe('Topbar', () => {
 
   beforeAll(() => {
     server.listen()
+    // Mock Context
     vi.mock('../../context/MainScrollContext.tsx', () => ({
       useMainScroll: vi.fn(() => ({
         ref: { current: document.createElement('div') },

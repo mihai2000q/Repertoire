@@ -7,12 +7,6 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import { expect } from 'vitest' // Mock the context
-
-// Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
-  useDragSelect: vi.fn()
-}))
 
 describe('Artist Card', () => {
   const artist: Artist = {
@@ -44,7 +38,13 @@ describe('Artist Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock the context
+    vi.mock('../../context/DragSelectContext', () => ({
+      useDragSelect: vi.fn()
+    }))
+  })
 
   afterAll(() => server.close())
 

@@ -1,12 +1,7 @@
 import { render, renderHook, screen } from '@testing-library/react'
 import useDragSelectSelectable from './useDragSelectSelectable.ts'
 import { useDragSelect } from '../context/DragSelectContext'
-import { afterEach } from 'vitest'
-
-// Mock the context
-vi.mock('../context/DragSelectContext', () => ({
-  useDragSelect: vi.fn()
-}))
+import { afterEach, beforeAll } from 'vitest'
 
 describe('use Drag Select Selectable', () => {
   const mockAddSelectables = vi.fn()
@@ -24,6 +19,13 @@ describe('use Drag Select Selectable', () => {
       selectedIds: [],
       clearSelection: vi.fn()
     })
+  })
+
+  beforeAll(() => {
+    // Mock the context
+    vi.mock('../context/DragSelectContext', () => ({
+      useDragSelect: vi.fn()
+    }))
   })
 
   afterEach(() => vi.restoreAllMocks())

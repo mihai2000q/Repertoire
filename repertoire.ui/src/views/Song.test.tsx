@@ -9,12 +9,6 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { SearchBase } from '../types/models/Search.ts'
 
 describe('Song', () => {
-  vi.mock('../context/MainScrollContext.tsx', () => ({
-    useMainScroll: vi.fn(() => ({
-      ref: { current: document.createElement('div') }
-    }))
-  }))
-
   const song: SongType = {
     ...emptySong,
     id: '1',
@@ -42,11 +36,21 @@ describe('Song', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
-
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  beforeAll(() => {
+    server.listen()
+    vi.mock('../context/MainScrollContext.tsx', () => ({
+      useMainScroll: vi.fn(() => ({
+        ref: { current: document.createElement('div') }
+      }))
+    }))
+  })
+
+  afterAll(() => {
+    vi.clearAllMocks()
+    server.close()
+  })
 
   it('should render', async () => {
     const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])

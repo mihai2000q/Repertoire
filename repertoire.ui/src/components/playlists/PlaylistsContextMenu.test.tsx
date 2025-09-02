@@ -4,11 +4,6 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 
-// Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
-  useDragSelect: vi.fn()
-}))
-
 describe('Playlists Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
@@ -21,6 +16,13 @@ describe('Playlists Context Menu', () => {
       selectedIds: selectedIds,
       clearSelection: clearSelection
     })
+  })
+
+  beforeAll(() => {
+    // Mock the context
+    vi.mock('../../context/DragSelectContext', () => ({
+      useDragSelect: vi.fn()
+    }))
   })
 
   afterEach(() => vi.restoreAllMocks())
