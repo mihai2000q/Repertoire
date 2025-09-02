@@ -46,17 +46,14 @@ describe('use Filters Metadata', () => {
       value: 'John'
     })
     expect(result.current.get('age>')).toStrictEqual({
-      ...filters.get('age>'),
-      value: undefined
+      ...filters.get('age>')
     })
     expect(result.current.get('age<')).toStrictEqual({
       ...filters.get('age<'),
-      value: undefined,
       isSet: false
     })
     expect(result.current.get('allergies_null')).toStrictEqual({
       ...filters.get('allergies_null'),
-      value: undefined,
       isSet: false
     })
   })
