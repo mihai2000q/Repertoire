@@ -140,7 +140,7 @@ function Songs(): ReactElement {
       {songs?.totalCount === 0 && filtersSize > 0 && (
         <Text p={'xl'}>There are no songs with these filter properties</Text>
       )}
-      <DragSelectProvider settings={{ area: songsRef.current }}>
+      <DragSelectProvider settings={{ area: songsRef.current }} data={songs}>
         <SongsContextMenu>
           <SimpleGrid
             data-testid={'songs-area'}

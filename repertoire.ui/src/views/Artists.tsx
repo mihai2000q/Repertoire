@@ -154,7 +154,7 @@ function Artists() {
       {artists?.totalCount === 0 && !showUnknownArtist && filtersSize > 0 && (
         <Text p={'xl'}>There are no artists with these filter properties</Text>
       )}
-      <DragSelectProvider settings={{ area: artistsRef.current }}>
+      <DragSelectProvider settings={{ area: artistsRef.current }} data={artists}>
         <ArtistsContextMenu>
           <SimpleGrid
             data-testid={'artists-area'}

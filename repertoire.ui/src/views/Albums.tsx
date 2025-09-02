@@ -144,7 +144,7 @@ function Albums() {
       {albums?.totalCount === 0 && !showUnknownAlbum && filtersSize > 0 && (
         <Text p={'xl'}>There are no albums with these filter properties</Text>
       )}
-      <DragSelectProvider settings={{ area: albumsRef.current }}>
+      <DragSelectProvider settings={{ area: albumsRef.current }} data={albums}>
         <AlbumsContextMenu>
           <SimpleGrid
             data-testid={'albums-area'}

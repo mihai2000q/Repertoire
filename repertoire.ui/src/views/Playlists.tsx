@@ -151,7 +151,7 @@ function Playlists() {
       {playlists?.totalCount === 0 && filtersSize > 0 && (
         <Text p={'xl'}>There are no playlists with these filters</Text>
       )}
-      <DragSelectProvider settings={{ area: playlistsRef.current }}>
+      <DragSelectProvider settings={{ area: playlistsRef.current }} data={playlists}>
         <PlaylistsContextMenu>
           <SimpleGrid
             data-testid={'playlists-area'}

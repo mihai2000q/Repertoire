@@ -14,6 +14,7 @@ const useStyles = createStyles((theme) => ({
 interface DragSelectProviderProps {
   children: React.ReactNode
   settings?: ConstructorParameters<typeof DragSelect<DSInputElement>>[0]
+  data?: unknown
 }
 
 interface DragSelectReturnType {
@@ -28,7 +29,7 @@ const DragSelectContext = createContext<DragSelectReturnType>({
   clearSelection: () => undefined,
 })
 
-export function DragSelectProvider({ children, settings = {} }: DragSelectProviderProps) {
+export function DragSelectProvider({ children, data, settings = {} }: DragSelectProviderProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [dragSelect, setDragSelect] = useState<DragSelect<DSInputElement>>()
   const { classes } = useStyles()
@@ -75,8 +76,10 @@ export function DragSelectProvider({ children, settings = {} }: DragSelectProvid
     [dragSelect, settings]
   )
 
+  useEffect(() => handleClearSelection(), [data])
+
   function handleClearSelection() {
-    dragSelect.clearSelection()
+    dragSelect?.clearSelection()
   }
 
   return (
