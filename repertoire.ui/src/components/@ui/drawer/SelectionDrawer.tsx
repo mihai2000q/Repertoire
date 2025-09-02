@@ -22,12 +22,13 @@ function SelectionDrawer({ opened, text, actionIcons, onClose, menu, ...props }:
       position={'bottom'}
       withOverlay={false}
       withCloseButton={false}
+      lockScroll={false}
+      zIndex={100}
       styles={{
         inner: {
           left: '50%',
           marginBottom: '32px',
           width: 'fit-content',
-          zIndex: 100
         },
         content: {
           borderRadius: '24px',
