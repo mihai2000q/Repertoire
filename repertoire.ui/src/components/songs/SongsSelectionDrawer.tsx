@@ -21,6 +21,7 @@ function SongsSelectionDrawer() {
       <SelectionDrawer
         aria-label={'songs-selection-drawer'}
         opened={selectedIds.length > 0}
+        onClose={clearSelection}
         text={`${selectedIds.length} song${plural(selectedIds)} selected`}
         actionIcons={
           <ActionIcon aria-label={'delete'} variant={'grey-primary'} onClick={openDeleteWarning}>
@@ -47,7 +48,6 @@ function SongsSelectionDrawer() {
             </Menu.Dropdown>
           )
         }}
-        onClose={clearSelection}
       />
 
       <DeleteSongsModal

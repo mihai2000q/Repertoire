@@ -20,6 +20,7 @@ function PlaylistsSelectionDrawer() {
       <SelectionDrawer
         aria-label={'playlists-selection-drawer'}
         opened={selectedIds.length > 0}
+        onClose={clearSelection}
         text={`${selectedIds.length} playlist${plural(selectedIds)} selected`}
         actionIcons={
           <ActionIcon aria-label={'delete'} variant={'grey-primary'} onClick={openDeleteWarning}>
@@ -40,7 +41,6 @@ function PlaylistsSelectionDrawer() {
             </Menu.Dropdown>
           )
         }}
-        onClose={clearSelection}
       />
 
       <DeletePlaylistsModal
