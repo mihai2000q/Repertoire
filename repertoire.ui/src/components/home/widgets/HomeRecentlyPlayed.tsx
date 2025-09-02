@@ -83,7 +83,7 @@ function HomeRecentlyPlayed() {
   const artistsSearchBy = useSearchBy([
     { property: ArtistProperty.LastPlayed, operator: FilterOperator.IsNotNull }
   ])
-  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery(
+  const { data: artists } = useGetArtistsQuery(
     {
       pageSize: 20,
       currentPage: 1,
@@ -101,7 +101,7 @@ function HomeRecentlyPlayed() {
   const albumsSearchBy = useSearchBy([
     { property: AlbumProperty.LastPlayed, operator: FilterOperator.IsNotNull }
   ])
-  const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery(
+  const { data: albums } = useGetAlbumsQuery(
     {
       pageSize: 20,
       currentPage: 1,
@@ -119,7 +119,7 @@ function HomeRecentlyPlayed() {
   const songsSearchBy = useSearchBy([
     { property: SongProperty.LastPlayed, operator: FilterOperator.IsNotNull }
   ])
-  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery(
+  const { data: songs } = useGetSongsQuery(
     {
       pageSize: 20,
       currentPage: 1,
@@ -241,26 +241,26 @@ function HomeRecentlyPlayed() {
         >
           <Stack gap={'xxs'}>
             {tab === HomeRecentlyPlayedEntity.Artists &&
-              (isArtistsLoading ? (
+              (!artists ? (
                 <HomeRecentlyPlayedLoader />
               ) : (
-                artists.models.map((artist) => (
+                artists?.models.map((artist) => (
                   <HomeRecentlyPlayedArtistCard key={artist.id} artist={artist} />
                 ))
               ))}
             {tab === HomeRecentlyPlayedEntity.Albums &&
-              (isAlbumsLoading ? (
+              (!albums ? (
                 <HomeRecentlyPlayedLoader />
               ) : (
-                albums.models.map((album) => (
+                albums?.models.map((album) => (
                   <HomeRecentlyPlayedAlbumCard key={album.id} album={album} />
                 ))
               ))}
             {tab === HomeRecentlyPlayedEntity.Songs &&
-              (isSongsLoading ? (
+              (!songs ? (
                 <HomeRecentlyPlayedLoader />
               ) : (
-                songs.models.map((song) => <HomeRecentlyPlayedSongCard key={song.id} song={song} />)
+                songs?.models.map((song) => <HomeRecentlyPlayedSongCard key={song.id} song={song} />)
               ))}
           </Stack>
         </ScrollArea>

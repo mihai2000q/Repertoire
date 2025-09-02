@@ -110,7 +110,7 @@ function HomeRecentArtists({ ...others }: CardProps) {
     { property: ArtistProperty.LastModified, type: OrderType.Descending }
   ])
 
-  const { data: artists, isLoading } = useGetArtistsQuery({
+  const { data: artists } = useGetArtistsQuery({
     pageSize: 15,
     currentPage: 1,
     orderBy: orderBy
@@ -205,7 +205,7 @@ function HomeRecentArtists({ ...others }: CardProps) {
           styles={{ viewport: { '> div': { display: 'flex' } } }}
         >
           <Group wrap={'nowrap'} align={'start'} px={'md'} pt={'xs'} pb={'md'}>
-            {isLoading || !artists ? (
+            {!artists ? (
               <Loader />
             ) : (
               artists.models.map((artist) => <LocalArtistCard key={artist.id} artist={artist} />)
