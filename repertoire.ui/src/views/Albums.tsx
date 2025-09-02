@@ -147,6 +147,7 @@ function Albums() {
       <DragSelectProvider settings={{ area: albumsRef.current }}>
         <AlbumsContextMenu>
           <SimpleGrid
+            data-testid={'albums-area'}
             ref={albumsRef}
             cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
             verticalSpacing={{ base: 'lg', md: 'xl' }}

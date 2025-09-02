@@ -143,6 +143,7 @@ function Songs(): ReactElement {
       <DragSelectProvider settings={{ area: songsRef.current }}>
         <SongsContextMenu>
           <SimpleGrid
+            data-testid={'songs-area'}
             ref={songsRef}
             cols={{ base: 2, xs: 3, sm: 2, betweenSmMd: 3, betweenMdLg: 4, lg: 5, xl: 6, xxl: 7 }}
             spacing={'lg'}

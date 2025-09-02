@@ -154,6 +154,7 @@ function Playlists() {
       <DragSelectProvider settings={{ area: playlistsRef.current }}>
         <PlaylistsContextMenu>
           <SimpleGrid
+            data-testid={'playlists-area'}
             ref={playlistsRef}
             cols={{ base: 2, xs: 3, md: 4, lg: 5, xl: 6, xxl: 7 }}
             spacing={'lg'}

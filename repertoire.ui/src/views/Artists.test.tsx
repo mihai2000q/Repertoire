@@ -129,9 +129,23 @@ describe('Artists', () => {
         ref: { current: document.createElement('div') }
       }))
     }))
+    vi.mock('dragselect', () => ({
+      default: vi.fn(() => ({
+        start: vi.fn(),
+        stop: vi.fn(),
+        getSelection: vi.fn(),
+        clearSelection: vi.fn(),
+        setSettings: vi.fn(),
+        subscribe: vi.fn(),
+        unsubscribe: vi.fn(),
+        addSelectables: vi.fn(),
+        removeSelectables: vi.fn()
+      }))
+    }))
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     window.location.search = ''
     server.resetHandlers()
   })
@@ -393,5 +407,25 @@ describe('Artists', () => {
       ])
       expect(window.location.search).toMatch(/&f=/)
     })
+  })
+
+  it.skip('should show the drawer when selecting artists, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<Artists />)
+
+    const artistsArea = screen.getByTestId('artists-area')
+    await user.pointer([
+      { keys: '[MouseLeft>]', target: artistsArea, coords: { x: 0, y: 0 } },
+      { coords: { x: 1000, y: 300 } },
+      { keys: '[/MouseLeft]' }
+    ])
+
+    expect(
+      await screen.findByRole('dialog', { name: 'artists-selection-drawer' })
+    ).toBeInTheDocument()
+
+    await user.pointer({ keys: '[MouseRight>]', target: artistsArea })
+    expect(await screen.findByRole('menu', { name: 'artists-context-menu' })).toBeInTheDocument()
   })
 })

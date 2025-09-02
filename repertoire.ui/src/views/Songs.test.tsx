@@ -13,6 +13,7 @@ import FilterOperator from '../types/enums/FilterOperator.ts'
 import SongProperty from '../types/enums/properties/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import Playlist from '../types/models/Playlist.ts'
+import { expect } from 'vitest'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -90,9 +91,23 @@ describe('Songs', () => {
 
   beforeAll(() => {
     server.listen()
+    // Mock Context
     vi.mock('../context/MainScrollContext.tsx', () => ({
       useMainScroll: vi.fn(() => ({
         ref: { current: document.createElement('div') }
+      }))
+    }))
+    vi.mock('dragselect', () => ({
+      default: vi.fn(() => ({
+        start: vi.fn(),
+        stop: vi.fn(),
+        getSelection: vi.fn(),
+        clearSelection: vi.fn(),
+        setSettings: vi.fn(),
+        subscribe: vi.fn(),
+        unsubscribe: vi.fn(),
+        addSelectables: vi.fn(),
+        removeSelectables: vi.fn()
       }))
     }))
   })
@@ -285,5 +300,25 @@ describe('Songs', () => {
       ])
       expect(window.location.search).toMatch(/&f=/)
     })
+  })
+
+  it.skip('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<Songs />)
+
+    const songsArea = screen.getByTestId('songs-area')
+    await user.pointer([
+      { keys: '[MouseLeft>]', target: songsArea, coords: { x: 0, y: 0 } },
+      { coords: { x: 1000, y: 300 } },
+      { keys: '[/MouseLeft]' }
+    ])
+
+    expect(
+      await screen.findByRole('dialog', { name: 'songs-selection-drawer' })
+    ).toBeInTheDocument()
+
+    await user.pointer({ keys: '[MouseRight>]', target: songsArea })
+    expect(await screen.findByRole('menu', { name: 'songs-context-menu' })).toBeInTheDocument()
   })
 })

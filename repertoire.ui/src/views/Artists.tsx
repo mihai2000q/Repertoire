@@ -157,6 +157,7 @@ function Artists() {
       <DragSelectProvider settings={{ area: artistsRef.current }}>
         <ArtistsContextMenu>
           <SimpleGrid
+            data-testid={'artists-area'}
             ref={artistsRef}
             cols={{ base: 3, xs: 4, sm: 3, betweenSmMd: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}
             verticalSpacing={{ base: 'lg', md: 'xl' }}
