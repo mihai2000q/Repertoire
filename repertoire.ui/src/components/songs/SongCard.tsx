@@ -136,6 +136,7 @@ function SongCard({ song }: SongCardProps) {
               w={'100%'}
               h={'unset'}
               bg={'gray.5'}
+              checkmarkSize={'28%'}
               style={(theme) => ({
                 aspectRatio: 8 / 7,
                 boxShadow: theme.shadows.sm

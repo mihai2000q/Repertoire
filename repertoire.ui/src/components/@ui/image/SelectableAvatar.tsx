@@ -6,10 +6,11 @@ interface SelectableAvatarProps extends AvatarProps {
   isSelected: boolean
   id?: string
   onClick?: (e: MouseEvent) => void
+  checkmarkSize?: string | number
 }
 
 const SelectableAvatar = forwardRef<HTMLDivElement, SelectableAvatarProps>(
-  ({ isSelected, id, onClick, ...others }, ref) => {
+  ({ isSelected, id, onClick, checkmarkSize = '63%', ...others }, ref) => {
     return (
       <Box pos={'relative'}>
         <Avatar ref={ref} id={id} onClick={onClick} {...others} />
@@ -32,13 +33,14 @@ const SelectableAvatar = forwardRef<HTMLDivElement, SelectableAvatarProps>(
         >
           <Center
             data-testid={'selected-checkmark'}
-            p={'xxs'}
+            w={checkmarkSize}
+            h={checkmarkSize}
             style={(theme) => ({
               borderRadius: '100%',
               backgroundColor: alpha(theme.colors.green[2], 0.95)
             })}
           >
-            <IconCheck color={'white'} />
+            <IconCheck color={'white'} size={'85%'} />
           </Center>
         </Center>
       </Box>
