@@ -12,6 +12,8 @@ import PlaylistProperty from '../types/enums/properties/PlaylistProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import { expect } from 'vitest'
+import { MainProvider } from '../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -70,12 +72,6 @@ describe('Playlists', () => {
 
   beforeAll(() => {
     server.listen()
-    // Mock Context
-    vi.mock('../context/MainScrollContext.tsx', () => ({
-      useMainScroll: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
-      }))
-    }))
     vi.mock('dragselect', () => ({
       default: vi.fn(() => ({
         start: vi.fn(),
@@ -101,8 +97,15 @@ describe('Playlists', () => {
     vi.clearAllMocks()
   })
 
+  const render = () =>
+    reduxRouterRender(
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <Playlists />
+      </MainProvider>
+    )
+
   it('should render and display relevant info when there are playlists', async () => {
-    const [_, store] = reduxRouterRender(<Playlists />)
+    const [_, store] = render()
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/playlists/i)
     expect(screen.getByRole('heading', { name: /playlists/i })).toBeInTheDocument()
@@ -128,7 +131,7 @@ describe('Playlists', () => {
   it('should open the add new playlist modal when clicking the new playlist button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     const newSongButton = screen.getByRole('button', { name: /new-playlist/i })
     await user.click(newSongButton)
@@ -139,7 +142,7 @@ describe('Playlists', () => {
   it('should open the add new playlist modal when clicking the new playlist card button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     const newSongCardButton = await screen.findByLabelText('new-playlist-card')
     await user.click(newSongCardButton)
@@ -148,7 +151,7 @@ describe('Playlists', () => {
   })
 
   it('should display not display some info when there are no playlists', async () => {
-    reduxRouterRender(<Playlists />)
+    render()
 
     server.use(
       http.get('/playlists', async () => {
@@ -170,7 +173,7 @@ describe('Playlists', () => {
 
     server.use(getSongsWithPagination(totalCount))
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/playlist-card-/)).toHaveLength(pageSize)
@@ -196,7 +199,7 @@ describe('Playlists', () => {
 
     server.use(getSongsWithPagination())
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     expect(await screen.findByTestId('playlists-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-playlist-card')).not.toBeInTheDocument()
@@ -226,7 +229,7 @@ describe('Playlists', () => {
       })
     )
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
@@ -260,7 +263,7 @@ describe('Playlists', () => {
       })
     )
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     await waitFor(() => expect(searchBy).toStrictEqual([]))
 
@@ -284,7 +287,7 @@ describe('Playlists', () => {
   it.skip('should show the drawer when selecting playlists, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<Playlists />)
+    render()
 
     const playlistsArea = screen.getByTestId('playlists-area')
     await user.pointer([

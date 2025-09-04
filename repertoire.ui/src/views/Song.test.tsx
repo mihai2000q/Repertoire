@@ -7,6 +7,8 @@ import { screen } from '@testing-library/react'
 import { RootState } from '../state/store.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import { MainProvider } from '../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Song', () => {
   const song: SongType = {
@@ -38,14 +40,7 @@ describe('Song', () => {
 
   afterEach(() => server.resetHandlers())
 
-  beforeAll(() => {
-    server.listen()
-    vi.mock('../context/MainScrollContext.tsx', () => ({
-      useMainScroll: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => {
     vi.clearAllMocks()
@@ -53,7 +48,13 @@ describe('Song', () => {
   })
 
   it('should render', async () => {
-    const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
+    const [_, store] = reduxMemoryRouterRender(
+      <MainProvider appRef={undefined} scrollRef={createRef()}>
+        <Song />
+      </MainProvider>,
+      '/song/:id',
+      [`/song/${song.id}`]
+    )
 
     expect(screen.getByTestId('song-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()

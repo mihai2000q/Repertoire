@@ -14,6 +14,8 @@ import SongProperty from '../types/enums/properties/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import Playlist from '../types/models/Playlist.ts'
 import { expect } from 'vitest'
+import { MainProvider } from '../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Songs', () => {
   const songs: Song[] = [
@@ -91,12 +93,6 @@ describe('Songs', () => {
 
   beforeAll(() => {
     server.listen()
-    // Mock Context
-    vi.mock('../context/MainScrollContext.tsx', () => ({
-      useMainScroll: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
-      }))
-    }))
     vi.mock('dragselect', () => ({
       default: vi.fn(() => ({
         start: vi.fn(),
@@ -122,8 +118,15 @@ describe('Songs', () => {
     vi.clearAllMocks()
   })
 
+  const render = () =>
+    reduxRouterRender(
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <Songs />
+      </MainProvider>
+    )
+
   it('should render and display relevant info when there are songs', async () => {
-    const [_, store] = reduxRouterRender(<Songs />)
+    const [_, store] = render()
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/songs/i)
     expect(screen.getByRole('heading', { name: /songs/i })).toBeInTheDocument()
@@ -149,7 +152,7 @@ describe('Songs', () => {
   it('should open the add new song modal when clicking the new song button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<Songs />)
+    render()
 
     const newSongButton = screen.getByRole('button', { name: /new-song/i })
     await user.click(newSongButton)
@@ -160,7 +163,7 @@ describe('Songs', () => {
   it('should open the add new song modal when clicking the new song card button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<Songs />)
+    render()
 
     const newSongCardButton = await screen.findByLabelText('new-song-card')
     await user.click(newSongCardButton)
@@ -169,7 +172,7 @@ describe('Songs', () => {
   })
 
   it('should display not display some info when there are no songs', async () => {
-    reduxRouterRender(<Songs />)
+    render()
 
     server.use(
       http.get('/songs', async () => {
@@ -191,7 +194,7 @@ describe('Songs', () => {
 
     server.use(getSongsWithPagination(totalCount))
 
-    reduxRouterRender(<Songs />)
+    render()
 
     expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/song-card-/)).toHaveLength(pageSize)
@@ -217,7 +220,7 @@ describe('Songs', () => {
 
     server.use(getSongsWithPagination())
 
-    reduxRouterRender(<Songs />)
+    render()
 
     expect(await screen.findByTestId('songs-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-song-card')).not.toBeInTheDocument()
@@ -247,7 +250,7 @@ describe('Songs', () => {
       })
     )
 
-    reduxRouterRender(<Songs />)
+    render()
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
@@ -281,7 +284,7 @@ describe('Songs', () => {
       })
     )
 
-    reduxRouterRender(<Songs />)
+    render()
 
     await waitFor(() => expect(searchBy).toStrictEqual([]))
 
@@ -305,7 +308,7 @@ describe('Songs', () => {
   it.skip('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(<Songs />)
+    render()
 
     const songsArea = screen.getByTestId('songs-area')
     await user.pointer([

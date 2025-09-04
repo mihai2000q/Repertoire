@@ -13,10 +13,11 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { MainScrollProvider } from '../../context/MainScrollContext.tsx'
+import { MainProvider } from '../../context/MainContext.tsx'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import { ShufflePlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
+import { createRef } from 'react'
 
 describe('Playlist Songs Card', () => {
   const songs: Song[] = [
@@ -106,9 +107,9 @@ describe('Playlist Songs Card', () => {
   const render = () =>
     reduxRouterRender(
       withToastify(
-        <MainScrollProvider>
+        <MainProvider appRef={undefined} scrollRef={createRef()}>
           <PlaylistSongsWidget playlistId={playlist.id} />
-        </MainScrollProvider>
+        </MainProvider>
       )
     )
 

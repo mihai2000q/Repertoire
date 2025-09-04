@@ -38,7 +38,7 @@ import { DragSelectProvider } from '../context/DragSelectContext.tsx'
 import { useRef } from 'react'
 import ArtistsSelectionDrawer from '../components/artists/ArtistsSelectionDrawer.tsx'
 import ArtistsContextMenu from '../components/artists/ArtistsContextMenu.tsx'
-import { useMainScroll } from '../context/MainScrollContext.tsx'
+import { useMain } from '../context/MainContext.tsx'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
@@ -84,10 +84,10 @@ function Artists() {
     useDisclosure(false)
 
   const artistsRef = useRef<HTMLDivElement>()
-  const { ref: mainScrollRef } = useMainScroll()
+  const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {
-    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    mainScroll.ref.current?.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }

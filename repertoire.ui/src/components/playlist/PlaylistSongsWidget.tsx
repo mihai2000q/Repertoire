@@ -27,7 +27,7 @@ import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
 import MenuItemConfirmation from '../@ui/menu/item/MenuItemConfirmation.tsx'
 import { Id, toast } from 'react-toastify'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import { useMainScroll } from '../../context/MainScrollContext.tsx'
+import { useMain } from '../../context/MainContext.tsx'
 
 interface PlaylistSongsWidgetProps {
   playlistId: string
@@ -64,9 +64,9 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
     }
   }, [totalCount])
 
-  const { ref: mainScrollRef } = useMainScroll()
+  const { mainScroll } = useMain()
   const { ref: lastSongRef, entry } = useIntersection({
-    root: mainScrollRef.current,
+    root: mainScroll.ref.current,
     threshold: 0.1
   })
   useEffect(() => {

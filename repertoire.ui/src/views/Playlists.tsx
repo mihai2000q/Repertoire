@@ -32,8 +32,8 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import playlistsFilters from '../data/playlists/playlistsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import playlistsSearchParamsState from '../state/searchParams/PlaylistsSearchParamsState.ts'
-import { useMainScroll } from '../context/MainScrollContext.tsx'
 import { useRef } from 'react'
+import { useMain } from '../context/MainContext.tsx'
 import PlaylistsSelectionDrawer from '../components/playlists/PlaylistsSelectionDrawer.tsx'
 import PlaylistsContextMenu from '../components/playlists/PlaylistsContextMenu.tsx'
 import { DragSelectProvider } from '../context/DragSelectContext.tsx'
@@ -83,10 +83,10 @@ function Playlists() {
   ] = useDisclosure(false)
 
   const playlistsRef = useRef()
-  const { ref: mainScrollRef } = useMainScroll()
+  const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {
-    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    mainScroll.ref.current?.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }

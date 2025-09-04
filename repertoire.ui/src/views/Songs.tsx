@@ -33,7 +33,7 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import SongsFilters from '../components/songs/SongsFilters.tsx'
 import songsFilters from '../data/songs/songsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
-import { useMainScroll } from '../context/MainScrollContext.tsx'
+import { useMain } from '../context/MainContext.tsx'
 import { DragSelectProvider } from '../context/DragSelectContext.tsx'
 import SongsContextMenu from '../components/songs/SongsContextMenu.tsx'
 import SongsSelectionDrawer from '../components/songs/SongsSelectionDrawer.tsx'
@@ -81,10 +81,10 @@ function Songs(): ReactElement {
     useDisclosure(false)
 
   const songsRef = useRef()
-  const { ref: mainScrollRef } = useMainScroll()
+  const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {
-    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    mainScroll.ref.current?.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }

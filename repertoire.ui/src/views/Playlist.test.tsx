@@ -7,7 +7,8 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { setupServer } from 'msw/node'
 import { default as PlaylistType } from './../types/models/Playlist.ts'
 import { RootState } from '../state/store.ts'
-import { MainScrollProvider } from '../context/MainScrollContext.tsx'
+import { MainProvider } from '../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Playlist', () => {
   const songs: Song[] = [
@@ -63,9 +64,9 @@ describe('Playlist', () => {
 
   it('should render and display playlist info and songs', async () => {
     const [_, store] = reduxMemoryRouterRender(
-      <MainScrollProvider>
+      <MainProvider appRef={undefined} scrollRef={createRef()}>
         <Playlist />
-      </MainScrollProvider>,
+      </MainProvider>,
       '/playlist/:id',
       [`/playlist/${playlist.id}`]
     )

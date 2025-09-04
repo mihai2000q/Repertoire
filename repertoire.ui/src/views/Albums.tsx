@@ -34,8 +34,8 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
 import albumsFilters from '../data/albums/albumsFilters.ts'
 import AlbumsFilters from '../components/albums/AlbumsFilters.tsx'
-import { useMainScroll } from '../context/MainScrollContext.tsx'
 import { useRef } from 'react'
+import { useMain } from '../context/MainContext.tsx'
 import AlbumsSelectionDrawer from '../components/albums/AlbumsSelectionDrawer.tsx'
 import { DragSelectProvider } from '../context/DragSelectContext.tsx'
 import AlbumsContextMenu from '../components/albums/AlbumsContextMenu.tsx'
@@ -84,10 +84,10 @@ function Albums() {
     useDisclosure(false)
 
   const albumsRef = useRef<HTMLDivElement>()
-  const { ref: mainScrollRef } = useMainScroll()
+  const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {
-    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    mainScroll.ref.current?.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }

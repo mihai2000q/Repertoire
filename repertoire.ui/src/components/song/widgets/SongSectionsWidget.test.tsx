@@ -16,6 +16,7 @@ import {
   AddPerfectSongRehearsalRequest,
   MoveSongSectionRequest
 } from '../../../types/requests/SongRequests.ts'
+import { createRef } from 'react'
 
 describe('Song Sections Widget', () => {
   const sections: SongSection[] = [
@@ -74,9 +75,9 @@ describe('Song Sections Widget', () => {
   beforeAll(() => {
     server.listen()
     // Mock Context
-    vi.mock('../../../context/MainScrollContext.tsx', () => ({
-      useMainScroll: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        scroll: { ref: createRef() }
       }))
     }))
   })
@@ -123,7 +124,9 @@ describe('Song Sections Widget', () => {
     it('should open add new song section when clicking on add new section button', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />)
+      reduxRender(
+        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'add-new-section' }))
       expect(screen.getByLabelText('add-new-song-section')).toBeInTheDocument()
@@ -132,7 +135,9 @@ describe('Song Sections Widget', () => {
     it('should show details when clicking on show details', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />)
+      reduxRender(
+        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'show-details' }))
       expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
@@ -148,7 +153,9 @@ describe('Song Sections Widget', () => {
     it("should open edit song sections' occurrences when clicking on edit sections' occurrences button", async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />)
+      reduxRender(
+        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+      )
 
       await user.click(screen.getByRole('button', { name: 'edit-occurrences' }))
       expect(
