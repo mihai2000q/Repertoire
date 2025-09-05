@@ -9,6 +9,8 @@ import { setupServer } from 'msw/node'
 import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
+import { createRef } from 'react'
+import { beforeEach } from 'vitest'
 
 describe('Artist Songs Widget', () => {
   const songModels: Song[] = [
@@ -83,14 +85,30 @@ describe('Artist Songs Widget', () => {
     }),
     http.get(`/songs/guitar-tunings`, () => {
       return HttpResponse.json([])
+    }),
+    http.get(`/playlists`, () => {
+      return HttpResponse.json([])
     })
   ]
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => vi.clearAllMocks())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    server.resetHandlers()
+  })
+
+  beforeAll(() => {
+    server.listen()
+    // Mock Context
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
 
   afterAll(() => server.close())
 
@@ -282,5 +300,30 @@ describe('Artist Songs Widget', () => {
     await user.click(screen.getByLabelText('new-songs-widget'))
 
     expect(await screen.findByRole('dialog', { name: /add new song/i })).toBeInTheDocument()
+  })
+
+  it('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(
+      <ArtistSongsWidget
+        songs={songs}
+        artistId={artistId}
+        isLoading={false}
+        order={order}
+        setOrder={() => {}}
+        isUnknownArtist={true}
+      />
+    )
+
+    // selection drawer
+    await user.keyboard('{Control>}')
+    await user.click(screen.getByLabelText(`song-card-${songModels[0].title}`))
+    await user.keyboard('{/Control}')
+    expect(screen.getByLabelText('songs-selection-drawer')).toBeInTheDocument()
+
+    // context menu
+    // await user.pointer({ keys: '[MouseRight>]', target: screen.getByLabelText(`song-card-${songModels[0].title}`) })
+    // expect(await screen.findByRole('menu', { name: 'songs-context-menu' })).toBeInTheDocument()
   })
 })

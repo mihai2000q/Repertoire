@@ -25,6 +25,9 @@ import { useDisclosure, useIntersection } from '@mantine/hooks'
 import CompactOrderButton from '../../@ui/button/CompactOrderButton.tsx'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import { ClickSelectProvider } from '../../../context/ClickSelectContext.tsx'
+import ArtistSongsSelectionDrawer from '../ArtistSongsSelectionDrawer.tsx'
+import ArtistSongsContextMenu from '../ArtistSongsContextMenu.tsx'
 
 interface ArtistSongsWidgetProps {
   songs: WithTotalCountResponse<Song>
@@ -67,93 +70,98 @@ function ArtistSongsWidget({
   if (isLoading || !songs) return <ArtistSongsLoader />
 
   return (
-    <Card aria-label={'songs-widget'} variant={'widget'} p={0} mah={'100%'}>
-      <Stack gap={0} mah={'100%'}>
-        <LoadingOverlayDebounced visible={isFetching && !isFetchingNextPage} />
+    <ClickSelectProvider data={songs}>
+      <Card aria-label={'songs-widget'} variant={'widget'} p={0} mah={'100%'}>
+        <Stack gap={0} mah={'100%'}>
+          <LoadingOverlayDebounced visible={isFetching && !isFetchingNextPage} />
 
-        <Group px={'md'} py={'xs'} gap={'xs'}>
-          <Text fw={600}>Songs</Text>
+          <Group px={'md'} py={'xs'} gap={'xs'}>
+            <Text fw={600}>Songs</Text>
 
-          <CompactOrderButton
-            availableOrders={artistSongsOrders}
-            order={order}
-            setOrder={setOrder}
-          />
-
-          <Space flex={1} />
-
-          <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
-            <Menu.Target>
-              <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
-                <IconDots size={15} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {!isUnknownArtist && (
-                <PerfectRehearsalMenuItem id={artistId} closeMenu={closeMenu} type={'artist'} />
-              )}
-              {!isUnknownArtist && (
-                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
-                  Add Existing Songs
-                </Menu.Item>
-              )}
-              <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
-                Add New Song
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-
-        <ScrollArea.Autosize
-          scrollbars={'y'}
-          scrollbarSize={7}
-          mah={'100%'}
-          viewportRef={scrollRef}
-          styles={{
-            viewport: {
-              '> div': {
-                width: 0,
-                minWidth: '100%'
-              }
-            }
-          }}
-        >
-          <Stack gap={0} style={{ overflow: 'hidden' }}>
-            <Songs
-              songs={songs}
-              artistId={artistId}
-              isUnknownArtist={isUnknownArtist}
+            <CompactOrderButton
+              availableOrders={artistSongsOrders}
               order={order}
+              setOrder={setOrder}
             />
 
-            <Stack gap={0} align={'center'}>
-              <Box ref={lastSongRef} w={1} h={1} />
-              {isFetchingNextPage && <Loader size={30} mt={'xs'} mb={'md'} />}
-            </Stack>
+            <Space flex={1} />
 
-            {songs.models.length === songs.totalCount && (
-              <NewHorizontalCard
-                ariaLabel={'new-songs-widget'}
-                onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
-              >
-                Add New Songs
-              </NewHorizontalCard>
-            )}
-          </Stack>
-        </ScrollArea.Autosize>
-      </Stack>
+            <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
+              <Menu.Target>
+                <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
+                  <IconDots size={15} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {!isUnknownArtist && (
+                  <PerfectRehearsalMenuItem id={artistId} closeMenu={closeMenu} type={'artist'} />
+                )}
+                {!isUnknownArtist && (
+                  <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
+                    Add Existing Songs
+                  </Menu.Item>
+                )}
+                <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
+                  Add New Song
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
 
-      <AddNewArtistSongModal
-        opened={openedAddNewSong}
-        onClose={closeAddNewSong}
-        artistId={artistId}
-      />
-      <AddExistingArtistSongsModal
-        opened={openedAddExistingSongs}
-        onClose={closeAddExistingSongs}
-        artistId={artistId}
-      />
-    </Card>
+          <ScrollArea.Autosize
+            scrollbars={'y'}
+            scrollbarSize={7}
+            mah={'100%'}
+            viewportRef={scrollRef}
+            styles={{
+              viewport: {
+                '> div': {
+                  width: 0,
+                  minWidth: '100%'
+                }
+              }
+            }}
+          >
+            <ArtistSongsContextMenu artistId={artistId} isUnknownArtist={isUnknownArtist}>
+              <Stack gap={0} style={{ overflow: 'hidden' }}>
+                <Songs
+                  songs={songs}
+                  artistId={artistId}
+                  isUnknownArtist={isUnknownArtist}
+                  order={order}
+                />
+
+                <Stack gap={0} align={'center'}>
+                  <Box ref={lastSongRef} w={1} h={1} />
+                  {isFetchingNextPage && <Loader size={30} mt={'xs'} mb={'md'} />}
+                </Stack>
+
+                {songs.models.length === songs.totalCount && (
+                  <NewHorizontalCard
+                    ariaLabel={'new-songs-widget'}
+                    onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
+                  >
+                    Add New Songs
+                  </NewHorizontalCard>
+                )}
+              </Stack>
+            </ArtistSongsContextMenu>
+            <ArtistSongsSelectionDrawer artistId={artistId} isUnknownArtist={isUnknownArtist} />
+          </ScrollArea.Autosize>
+        </Stack>
+
+        <AddNewArtistSongModal
+          opened={openedAddNewSong}
+          onClose={closeAddNewSong}
+          artistId={artistId}
+        />
+        <AddExistingArtistSongsModal
+          opened={openedAddExistingSongs}
+          onClose={closeAddExistingSongs}
+          artistId={artistId}
+        />
+      </Card>
+    </ClickSelectProvider>
   )
 }
 
