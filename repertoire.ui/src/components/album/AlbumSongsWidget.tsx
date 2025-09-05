@@ -16,6 +16,9 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import LoadingOverlayDebounced from '../@ui/loader/LoadingOverlayDebounced.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import { ClickSelectProvider, useClickSelect } from '../../context/ClickSelectContext.tsx'
+import AlbumSongsContextMenu from './AlbumSongsContextMenu.tsx'
+import AlbumSongsSelectionDrawer from './AlbumSongsSelectionDrawer.tsx'
 
 interface AlbumSongsWidgetProps {
   album: Album | undefined
@@ -63,100 +66,109 @@ function AlbumSongsWidget({
   }
 
   return (
-    <Card aria-label={'songs-widget'} variant={'widget'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
-      <Stack gap={0}>
-        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
-
-        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
-          <Text fw={600}>Songs</Text>
-
-          <CompactOrderButton
-            availableOrders={albumSongsOrders}
-            order={order}
-            setOrder={setOrder}
-            disabledOrders={isUnknownAlbum ? [albumSongsOrders[0]] : []}
-          />
-
-          <Space flex={1} />
-
-          <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
-            <Menu.Target>
-              <ActionIcon aria-label={'songs-more-menu'} size={'md'} variant={'grey'}>
-                <IconDots size={15} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {!isUnknownAlbum && (
-                <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenu} type={'album'} />
-              )}
-              {!isUnknownAlbum && (
-                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
-                  Add Existing Songs
-                </Menu.Item>
-              )}
-              <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
-                Add New Song
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-
+    <ClickSelectProvider data={songs}>
+      <Card aria-label={'songs-widget'} variant={'widget'} h={'100%'} p={0} mx={'xs'} mb={'lg'}>
         <Stack gap={0}>
-          <DragDropContext onDragEnd={onSongsDragEnd}>
-            <Droppable droppableId="dnd-list" direction="vertical">
-              {(provided) => (
-                <Box ref={provided.innerRef} {...provided.droppableProps}>
-                  {(isUnknownAlbum ? songs : internalSongs).map((song, index) => (
-                    <Draggable
-                      key={song.id}
-                      index={index}
-                      draggableId={song.id}
-                      isDragDisabled={
-                        isFetching ||
-                        isMoveLoading ||
-                        isUnknownAlbum ||
-                        order.property !== SongProperty.AlbumTrackNo
-                      }
-                    >
-                      {(provided, snapshot) => (
-                        <AlbumSongCard
-                          key={song.id}
-                          song={song}
-                          albumId={album?.id}
-                          isUnknownAlbum={isUnknownAlbum}
-                          order={order}
-                          isDragging={snapshot.isDragging}
-                          draggableProvided={provided}
-                          albumImageUrl={album?.imageUrl}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Box>
+          <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
+
+          <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
+            <Text fw={600}>Songs</Text>
+
+            <CompactOrderButton
+              availableOrders={albumSongsOrders}
+              order={order}
+              setOrder={setOrder}
+              disabledOrders={isUnknownAlbum ? [albumSongsOrders[0]] : []}
+            />
+
+            <Space flex={1} />
+
+            <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
+              <Menu.Target>
+                <ActionIcon aria-label={'songs-more-menu'} size={'md'} variant={'grey'}>
+                  <IconDots size={15} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {!isUnknownAlbum && (
+                  <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenu} type={'album'} />
+                )}
+                {!isUnknownAlbum && (
+                  <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddExistingSongs}>
+                    Add Existing Songs
+                  </Menu.Item>
+                )}
+                <Menu.Item leftSection={<IconMusicPlus size={15} />} onClick={openAddNewSong}>
+                  Add New Song
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
+
+          <AlbumSongsContextMenu albumId={album.id} isUnknownAlbum={isUnknownAlbum}>
+            <Stack gap={0}>
+              <DragDropContext onDragEnd={onSongsDragEnd}>
+                <Droppable droppableId="dnd-list" direction="vertical">
+                  {(provided) => (
+                    <Box ref={provided.innerRef} {...provided.droppableProps}>
+                      {(isUnknownAlbum ? songs : internalSongs).map((song, index) => {
+                        const { selectedIds } = useClickSelect()
+                        return (
+                          <Draggable
+                            key={song.id}
+                            index={index}
+                            draggableId={song.id}
+                            isDragDisabled={
+                              isFetching ||
+                              isMoveLoading ||
+                              isUnknownAlbum ||
+                              order.property !== SongProperty.AlbumTrackNo ||
+                              selectedIds.length > 0
+                            }
+                          >
+                            {(provided, snapshot) => (
+                              <AlbumSongCard
+                                key={song.id}
+                                song={song}
+                                albumId={album?.id}
+                                isUnknownAlbum={isUnknownAlbum}
+                                order={order}
+                                isDragging={snapshot.isDragging}
+                                draggableProvided={provided}
+                                albumImageUrl={album?.imageUrl}
+                              />
+                            )}
+                          </Draggable>
+                        )
+                      })}
+                      {provided.placeholder}
+                    </Box>
+                  )}
+                </Droppable>
+              </DragDropContext>
+
+              {(isUnknownAlbum || album.songs.length === 0) && (
+                <NewHorizontalCard
+                  ariaLabel={`new-song-card`}
+                  onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}
+                >
+                  Add New Song{isUnknownAlbum ? '' : 's'}
+                </NewHorizontalCard>
               )}
-            </Droppable>
-          </DragDropContext>
-
-          {(isUnknownAlbum || album.songs.length === 0) && (
-            <NewHorizontalCard
-              ariaLabel={`new-song-card`}
-              onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}
-            >
-              Add New Song{isUnknownAlbum ? '' : 's'}
-            </NewHorizontalCard>
-          )}
+            </Stack>
+          </AlbumSongsContextMenu>
+          <AlbumSongsSelectionDrawer albumId={album.id} isUnknownAlbum={isUnknownAlbum} />
         </Stack>
-      </Stack>
 
-      <AddNewAlbumSongModal opened={openedAddNewSong} onClose={closeAddNewSong} album={album} />
-      <AddExistingAlbumSongsModal
-        opened={openedAddExistingSongs}
-        onClose={closeAddExistingSongs}
-        albumId={album?.id}
-        artistId={album?.artist?.id}
-      />
-    </Card>
+        <AddNewAlbumSongModal opened={openedAddNewSong} onClose={closeAddNewSong} album={album} />
+        <AddExistingAlbumSongsModal
+          opened={openedAddExistingSongs}
+          onClose={closeAddExistingSongs}
+          albumId={album?.id}
+          artistId={album?.artist?.id}
+        />
+      </Card>
+    </ClickSelectProvider>
   )
 }
 
