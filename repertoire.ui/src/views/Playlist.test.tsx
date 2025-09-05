@@ -64,7 +64,7 @@ describe('Playlist', () => {
 
   it('should render and display playlist info and songs', async () => {
     const [_, store] = reduxMemoryRouterRender(
-      <MainProvider appRef={undefined} scrollRef={createRef()}>
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
         <Playlist />
       </MainProvider>,
       '/playlist/:id',

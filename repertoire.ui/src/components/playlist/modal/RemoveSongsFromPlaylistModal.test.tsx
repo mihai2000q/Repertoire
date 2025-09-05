@@ -59,6 +59,6 @@ describe('Remove Songs From Playlist Modal', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(onRemove).toHaveBeenCalledOnce()
     expect(screen.getByText(`${playlistSongIds.length} songs removed from playlist!`)).toBeInTheDocument()
-    expect(capturedRequest).toStrictEqual({ id: playlistId, songIds: playlistSongIds })
+    expect(capturedRequest).toStrictEqual({ id: playlistId, playlistSongIds: playlistSongIds })
   })
 })

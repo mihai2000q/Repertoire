@@ -106,7 +106,7 @@ function AlbumSongsWidget({
           </Group>
 
           <Stack gap={0}>
-            <AlbumSongsContextMenu albumId={album.id} isUnknownAlbum={isUnknownAlbum}>
+            <AlbumSongsContextMenu albumId={album?.id} isUnknownAlbum={isUnknownAlbum}>
               <span style={{ display: 'contents' }}>
                 <DragDropContext onDragEnd={onSongsDragEnd}>
                   <Droppable droppableId="dnd-list" direction="vertical">
@@ -149,7 +149,7 @@ function AlbumSongsWidget({
                 </DragDropContext>
               </span>
             </AlbumSongsContextMenu>
-            <AlbumSongsSelectionDrawer albumId={album.id} isUnknownAlbum={isUnknownAlbum} />
+            <AlbumSongsSelectionDrawer albumId={album?.id} isUnknownAlbum={isUnknownAlbum} />
 
             {(isUnknownAlbum || album.songs.length === 0) && (
               <NewHorizontalCard

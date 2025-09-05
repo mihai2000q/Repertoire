@@ -13,6 +13,8 @@ import SongProperty from '../types/enums/properties/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
+import { MainProvider } from '../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Album', () => {
   const songs: Song[] = [
@@ -69,6 +71,15 @@ describe('Album', () => {
 
   afterAll(() => server.close())
 
+  const render = (id = album.id) =>
+    reduxMemoryRouterRender(
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <Album />
+      </MainProvider>,
+      '/album/:id',
+      [`/album/${id}`]
+    )
+
   it('should render and display info from album when the album is not unknown', async () => {
     let songsOrderBy: string[]
     server.use(
@@ -80,7 +91,7 @@ describe('Album', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
+    const [_, store] = render()
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
@@ -107,7 +118,7 @@ describe('Album', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
+    const [_, store] = render('unknown')
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
