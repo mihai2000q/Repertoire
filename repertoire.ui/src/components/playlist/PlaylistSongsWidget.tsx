@@ -28,6 +28,9 @@ import MenuItemConfirmation from '../@ui/menu/item/MenuItemConfirmation.tsx'
 import { Id, toast } from 'react-toastify'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import { useMain } from '../../context/MainContext.tsx'
+import PlaylistSongsContextMenu from './PlaylistSongsContextMenu.tsx'
+import PlaylistSongsSelectionDrawer from './PlaylistSongsSelectionDrawer.tsx'
+import { ClickSelectProvider } from '../../context/ClickSelectContext.tsx'
 
 interface PlaylistSongsWidgetProps {
   playlistId: string
@@ -83,72 +86,79 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
   if (isLoading) return <PlaylistSongsLoader />
 
   return (
-    <Card variant={'widget'} aria-label={'songs-widget'} p={0} mx={'xs'} mb={'lg'}>
-      <Stack gap={0}>
-        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
-
-        <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
-          <Text fw={600}>Songs</Text>
-
-          <CompactOrderButton
-            availableOrders={playlistSongsOrders}
-            order={order}
-            setOrder={setOrder}
-          />
-
-          <Space flex={1} />
-
-          <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
-            <Menu.Target>
-              <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
-                <IconDots size={15} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown miw={125}>
-              <MenuItemConfirmation
-                leftSection={<IconArrowsShuffle size={15} />}
-                isLoading={isShuffleLoading}
-                onConfirm={handleShuffle}
-              >
-                Shuffle
-              </MenuItemConfirmation>
-              <PerfectRehearsalMenuItem id={playlistId} closeMenu={closeMenu} type={'playlist'} />
-              <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddSongs}>
-                Add Songs
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
-
+    <ClickSelectProvider data={songs}>
+      <Card variant={'widget'} aria-label={'songs-widget'} p={0} mx={'xs'} mb={'lg'}>
         <Stack gap={0}>
-          <Songs
-            songs={songs}
-            order={order}
-            playlistId={playlistId}
-            moveSongFromPlaylist={moveSongFromPlaylist}
-            isMoveLoading={isMoveLoading}
-            isFetching={isFetching}
-          />
+          <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
 
-          {songs.length === 0 && (
-            <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>
-              Add Songs
-            </NewHorizontalCard>
-          )}
+          <Group px={'md'} pt={'md'} pb={'xs'} gap={'xs'}>
+            <Text fw={600}>Songs</Text>
 
-          <Stack gap={0} align={'center'}>
-            <div ref={lastSongRef} />
-            {isFetchingNextPage && <Loader size={30} m={'md'} />}
+            <CompactOrderButton
+              availableOrders={playlistSongsOrders}
+              order={order}
+              setOrder={setOrder}
+            />
+
+            <Space flex={1} />
+
+            <Menu opened={openedMenu} onOpen={openMenu} onClose={closeMenu}>
+              <Menu.Target>
+                <ActionIcon size={'md'} variant={'grey'} aria-label={'songs-more-menu'}>
+                  <IconDots size={15} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown miw={125}>
+                <MenuItemConfirmation
+                  leftSection={<IconArrowsShuffle size={15} />}
+                  isLoading={isShuffleLoading}
+                  onConfirm={handleShuffle}
+                >
+                  Shuffle
+                </MenuItemConfirmation>
+                <PerfectRehearsalMenuItem id={playlistId} closeMenu={closeMenu} type={'playlist'} />
+                <Menu.Item leftSection={<IconPlus size={15} />} onClick={openAddSongs}>
+                  Add Songs
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
+
+          <Stack gap={0}>
+            <PlaylistSongsContextMenu playlistId={playlistId} songs={songs}>
+              <span style={{ display: 'contents' }}>
+                <Songs
+                  songs={songs}
+                  order={order}
+                  playlistId={playlistId}
+                  moveSongFromPlaylist={moveSongFromPlaylist}
+                  isMoveLoading={isMoveLoading}
+                  isFetching={isFetching}
+                />
+              </span>
+            </PlaylistSongsContextMenu>
+            <PlaylistSongsSelectionDrawer playlistId={playlistId} songs={songs} />
+
+            {songs.length === 0 && (
+              <NewHorizontalCard ariaLabel={'new-song-card'} onClick={openAddSongs}>
+                Add Songs
+              </NewHorizontalCard>
+            )}
+
+            <Stack gap={0} align={'center'}>
+              <div ref={lastSongRef} />
+              {isFetchingNextPage && <Loader size={30} m={'md'} />}
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
 
-      <AddPlaylistSongsModal
-        opened={openedAddSongs}
-        onClose={closeAddSongs}
-        playlistId={playlistId}
-      />
-    </Card>
+        <AddPlaylistSongsModal
+          opened={openedAddSongs}
+          onClose={closeAddSongs}
+          playlistId={playlistId}
+        />
+      </Card>
+    </ClickSelectProvider>
   )
 }
 

@@ -13,7 +13,7 @@ import { userEvent } from '@testing-library/user-event'
 import Artist from '../../types/models/Artist.ts'
 import Album from '../../types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
-import { afterEach, expect } from 'vitest'
+import { afterEach, beforeEach, expect } from 'vitest'
 import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -22,6 +22,7 @@ import Difficulty from '../../types/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
+import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 describe('Playlist Song Card', () => {
   const song: Song = {
@@ -53,11 +54,28 @@ describe('Playlist Song Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [],
+      clearSelection: vi.fn()
+    })
+  })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     server.resetHandlers()
     window.location.pathname = '/'
+  })
+
+  beforeAll(() => {
+    vi.mock('../../context/ClickSelectContext', () => ({
+      useClickSelect: vi.fn()
+    }))
+    server.listen()
   })
 
   afterAll(() => server.close())
@@ -506,5 +524,109 @@ describe('Playlist Song Card', () => {
 
     expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
     expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
+  })
+
+  it('should disable context menu and more menu when click selection is active', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: ['anything'],
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(
+      <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+    )
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`default-icon-${song.title}`)
+    })
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'more-menu' })).toBeDisabled()
+  })
+
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
+
+      await user.hover(screen.getByLabelText(`default-icon-${song.title}`))
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${song.title}`)
+      })
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when more menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when is dragging', () => {
+      reduxRouterRender(
+        <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={true} />
+      )
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when click selected (part of the selected ids)', () => {
+      vi.mocked(useClickSelect).mockReturnValue({
+        selectables: [],
+        addSelectable: vi.fn(),
+        removeSelectable: vi.fn(),
+        selectedIds: [song.playlistSongId],
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(
+        <PlaylistSongCard song={song} playlistId={''} order={emptyOrder} isDragging={false} />
+      )
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })

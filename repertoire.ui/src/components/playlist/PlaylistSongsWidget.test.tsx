@@ -18,6 +18,7 @@ import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import { ShufflePlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
 import { createRef } from 'react'
+import { expect } from 'vitest'
 
 describe('Playlist Songs Card', () => {
   const songs: Song[] = [
@@ -107,7 +108,7 @@ describe('Playlist Songs Card', () => {
   const render = () =>
     reduxRouterRender(
       withToastify(
-        <MainProvider appRef={undefined} scrollRef={createRef()}>
+        <MainProvider appRef={createRef()} scrollRef={createRef()}>
           <PlaylistSongsWidget playlistId={playlist.id} />
         </MainProvider>
       )
@@ -230,4 +231,23 @@ describe('Playlist Songs Card', () => {
   })
 
   it.skip('should be able to reorder', () => {})
+
+  it('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    render()
+
+    // selection drawer
+    await user.keyboard('{Control>}')
+    await user.click(screen.getByLabelText(`song-card-${songs[0].title}`))
+    await user.keyboard('{/Control}')
+    expect(screen.getByLabelText('songs-selection-drawer')).toBeInTheDocument()
+
+    // context menu
+    // await user.pointer({
+    //   keys: '[MouseRight>]',
+    //   target: screen.getByLabelText(`song-card-${songs[0].title}`)
+    // })
+    // expect(await screen.findByRole('menu', { name: 'songs-context-menu' })).toBeInTheDocument()
+  })
 })

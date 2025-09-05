@@ -1,28 +1,28 @@
 import { toast } from 'react-toastify'
-import { useRemoveSongsFromArtistMutation } from '../../../state/api/artistsApi.ts'
+import { useRemoveSongsFromPlaylistMutation } from '../../../state/api/playlistsApi.ts'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import plural from '../../../utils/plural.ts'
 
-interface RemoveSongsFromArtistProps {
-  artistId: string
+interface RemoveSongsFromPlaylistProps {
+  playlistId: string
   ids: string[]
   opened: boolean
   onClose: () => void
   onRemove?: () => void
 }
 
-function RemoveSongsFromArtist({
-  artistId,
+function RemoveSongsFromPlaylist({
+  playlistId,
   ids,
   opened,
   onClose,
   onRemove
-}: RemoveSongsFromArtistProps) {
-  const [removeSongsFromArtist, { isLoading }] = useRemoveSongsFromArtistMutation()
+}: RemoveSongsFromPlaylistProps) {
+  const [removeSongsFromPlaylist, { isLoading }] = useRemoveSongsFromPlaylistMutation()
 
   async function handleRemove() {
-    await removeSongsFromArtist({ id: artistId, songIds: ids }).unwrap()
-    toast.success(`${ids.length} song${plural(ids.length)} removed from artist!`)
+    await removeSongsFromPlaylist({ id: playlistId, playlistSongIds: ids }).unwrap()
+    toast.success(`${ids.length} song${plural(ids.length)} removed from playlist!`)
     onRemove?.()
   }
 
@@ -30,12 +30,12 @@ function RemoveSongsFromArtist({
     <WarningModal
       opened={opened}
       onClose={onClose}
-      title={`Remove song${plural(ids)} from artist`}
-      description={`Are you sure you want to remove ${ids.length} song${plural(ids)} from this artist?`}
+      title={`Remove song${plural(ids)} from playlist`}
+      description={`Are you sure you want to remove ${ids.length} song${plural(ids)} from this playlist?`}
       onYes={handleRemove}
       isLoading={isLoading}
     />
   )
 }
 
-export default RemoveSongsFromArtist
+export default RemoveSongsFromPlaylist
