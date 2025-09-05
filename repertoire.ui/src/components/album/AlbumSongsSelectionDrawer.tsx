@@ -1,4 +1,4 @@
-import { ActionIcon, Menu } from '@mantine/core'
+import { ActionIcon, Menu, Tooltip } from '@mantine/core'
 import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
 import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -35,20 +35,28 @@ function AlbumSongsSelectionDrawer({
         onClose={clearSelection}
         text={`${selectedIds.length} song${plural(selectedIds)} selected`}
         actionIcons={
-          <>
+          <Tooltip.Group openDelay={200}>
             {!isUnknownAlbum && (
-              <ActionIcon
-                aria-label={'remove-from-album'}
-                variant={'grey-primary'}
-                onClick={openRemoveWarning}
-              >
-                <IconCircleMinus size={18} />
-              </ActionIcon>
+              <Tooltip label={'Remove songs from album'}>
+                <ActionIcon
+                  aria-label={'remove-from-album'}
+                  variant={'grey-primary'}
+                  onClick={openRemoveWarning}
+                >
+                  <IconCircleMinus size={18} />
+                </ActionIcon>
+              </Tooltip>
             )}
-            <ActionIcon aria-label={'delete'} variant={'grey-primary'} onClick={openDeleteWarning}>
-              <IconTrash size={18} />
-            </ActionIcon>
-          </>
+            <Tooltip label={'Delete songs'}>
+              <ActionIcon
+                aria-label={'delete'}
+                variant={'grey-primary'}
+                onClick={openDeleteWarning}
+              >
+                <IconTrash size={18} />
+              </ActionIcon>
+            </Tooltip>
+          </Tooltip.Group>
         }
         menu={{
           opened: openedMenu,

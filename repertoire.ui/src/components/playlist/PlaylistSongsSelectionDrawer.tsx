@@ -1,4 +1,4 @@
-import { ActionIcon, Menu } from '@mantine/core'
+import { ActionIcon, Menu, Tooltip } from '@mantine/core'
 import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
 import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -37,15 +37,17 @@ function PlaylistSongsSelectionDrawer({ playlistId, songs }: PlaylistSongsSelect
         onClose={clearSelection}
         text={`${selectedIds.length} song${plural(selectedIds)} selected`}
         actionIcons={
-          <>
-            <ActionIcon
-              aria-label={'remove-from-playlist'}
-              variant={'grey-primary'}
-              onClick={openRemoveWarning}
-            >
-              <IconCircleMinus size={18} />
-            </ActionIcon>
-          </>
+          <Tooltip.Group openDelay={200}>
+            <Tooltip label={'Remove songs from playlist'}>
+              <ActionIcon
+                aria-label={'remove-from-playlist'}
+                variant={'grey-primary'}
+                onClick={openRemoveWarning}
+              >
+                <IconCircleMinus size={18} />
+              </ActionIcon>
+            </Tooltip>
+          </Tooltip.Group>
         }
         menu={{
           opened: openedMenu,
