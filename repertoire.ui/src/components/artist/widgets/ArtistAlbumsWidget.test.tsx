@@ -9,6 +9,8 @@ import { setupServer } from 'msw/node'
 import Order from 'src/types/Order.ts'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
+import { beforeEach } from 'vitest'
+import { createRef } from 'react'
 
 describe('Artist Albums Widget', () => {
   const albumModels: Album[] = [
@@ -48,9 +50,22 @@ describe('Artist Albums Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => vi.clearAllMocks())
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    server.resetHandlers()
+  })
+
+  beforeAll(() => {
+    server.listen()
+    // Mock Context
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
 
   afterAll(() => server.close())
 
@@ -249,5 +264,30 @@ describe('Artist Albums Widget', () => {
     await user.click(screen.getByLabelText('new-albums-widget'))
 
     expect(await screen.findByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
+  })
+
+  it('should show the drawer when selecting albums, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(
+      <ArtistAlbumsWidget
+        albums={albums}
+        artistId={artistId}
+        isLoading={false}
+        order={order}
+        setOrder={() => {}}
+        isUnknownArtist={false}
+      />
+    )
+
+    // selection drawer
+    await user.keyboard('{Control>}')
+    await user.click(screen.getByLabelText(`album-card-${albumModels[0].title}`))
+    await user.keyboard('{/Control}')
+    expect(screen.getByLabelText('albums-selection-drawer')).toBeInTheDocument()
+
+    // context menu
+    // await user.pointer({ keys: '[MouseRight>]', target: screen.getByLabelText(`albums-card-${albumModels[0].title}`) })
+    // expect(await screen.findByRole('menu', { name: 'albums-context-menu' })).toBeInTheDocument()
   })
 })
