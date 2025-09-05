@@ -105,59 +105,61 @@ function AlbumSongsWidget({
             </Menu>
           </Group>
 
-          <AlbumSongsContextMenu albumId={album.id} isUnknownAlbum={isUnknownAlbum}>
-            <Stack gap={0}>
-              <DragDropContext onDragEnd={onSongsDragEnd}>
-                <Droppable droppableId="dnd-list" direction="vertical">
-                  {(provided) => (
-                    <Box ref={provided.innerRef} {...provided.droppableProps}>
-                      {(isUnknownAlbum ? songs : internalSongs).map((song, index) => {
-                        const { selectedIds } = useClickSelect()
-                        return (
-                          <Draggable
-                            key={song.id}
-                            index={index}
-                            draggableId={song.id}
-                            isDragDisabled={
-                              isFetching ||
-                              isMoveLoading ||
-                              isUnknownAlbum ||
-                              order.property !== SongProperty.AlbumTrackNo ||
-                              selectedIds.length > 0
-                            }
-                          >
-                            {(provided, snapshot) => (
-                              <AlbumSongCard
-                                key={song.id}
-                                song={song}
-                                albumId={album?.id}
-                                isUnknownAlbum={isUnknownAlbum}
-                                order={order}
-                                isDragging={snapshot.isDragging}
-                                draggableProvided={provided}
-                                albumImageUrl={album?.imageUrl}
-                              />
-                            )}
-                          </Draggable>
-                        )
-                      })}
-                      {provided.placeholder}
-                    </Box>
-                  )}
-                </Droppable>
-              </DragDropContext>
+          <Stack gap={0}>
+            <AlbumSongsContextMenu albumId={album.id} isUnknownAlbum={isUnknownAlbum}>
+              <span style={{ display: 'contents' }}>
+                <DragDropContext onDragEnd={onSongsDragEnd}>
+                  <Droppable droppableId="dnd-list" direction="vertical">
+                    {(provided) => (
+                      <Box ref={provided.innerRef} {...provided.droppableProps}>
+                        {(isUnknownAlbum ? songs : internalSongs).map((song, index) => {
+                          const { selectedIds } = useClickSelect()
+                          return (
+                            <Draggable
+                              key={song.id}
+                              index={index}
+                              draggableId={song.id}
+                              isDragDisabled={
+                                isFetching ||
+                                isMoveLoading ||
+                                isUnknownAlbum ||
+                                order.property !== SongProperty.AlbumTrackNo ||
+                                selectedIds.length > 0
+                              }
+                            >
+                              {(provided, snapshot) => (
+                                <AlbumSongCard
+                                  key={song.id}
+                                  song={song}
+                                  albumId={album?.id}
+                                  isUnknownAlbum={isUnknownAlbum}
+                                  order={order}
+                                  isDragging={snapshot.isDragging}
+                                  draggableProvided={provided}
+                                  albumImageUrl={album?.imageUrl}
+                                />
+                              )}
+                            </Draggable>
+                          )
+                        })}
+                        {provided.placeholder}
+                      </Box>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </span>
+            </AlbumSongsContextMenu>
+            <AlbumSongsSelectionDrawer albumId={album.id} isUnknownAlbum={isUnknownAlbum} />
 
-              {(isUnknownAlbum || album.songs.length === 0) && (
-                <NewHorizontalCard
-                  ariaLabel={`new-song-card`}
-                  onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}
-                >
-                  Add New Song{isUnknownAlbum ? '' : 's'}
-                </NewHorizontalCard>
-              )}
-            </Stack>
-          </AlbumSongsContextMenu>
-          <AlbumSongsSelectionDrawer albumId={album.id} isUnknownAlbum={isUnknownAlbum} />
+            {(isUnknownAlbum || album.songs.length === 0) && (
+              <NewHorizontalCard
+                ariaLabel={`new-song-card`}
+                onClick={isUnknownAlbum ? openAddNewSong : openAddExistingSongs}
+              >
+                Add New Song{isUnknownAlbum ? '' : 's'}
+              </NewHorizontalCard>
+            )}
+          </Stack>
         </Stack>
 
         <AddNewAlbumSongModal opened={openedAddNewSong} onClose={closeAddNewSong} album={album} />

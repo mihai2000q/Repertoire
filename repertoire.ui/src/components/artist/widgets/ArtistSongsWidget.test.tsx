@@ -10,7 +10,7 @@ import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 import { createRef } from 'react'
-import { beforeEach } from 'vitest'
+import { MainProvider } from '../../../context/MainContext.tsx'
 
 describe('Artist Songs Widget', () => {
   const songModels: Song[] = [
@@ -93,36 +93,32 @@ describe('Artist Songs Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => server.resetHandlers())
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-    server.resetHandlers()
-  })
-
-  beforeAll(() => {
-    server.listen()
-    // Mock Context
-    vi.mock('../../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef()
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 
-  it('should render and display songs', () => {
+  const render = (props?: {
+    isUnknownArtist?: boolean
+    isLoading?: boolean
+    setOrder?: () => void
+  }) =>
     reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <ArtistSongsWidget
+          songs={songs}
+          artistId={artistId}
+          isLoading={props?.isLoading ?? false}
+          order={order}
+          setOrder={props?.setOrder ?? vi.fn()}
+          isUnknownArtist={props?.isUnknownArtist ?? false}
+        />
+      </MainProvider>
     )
+
+  it('should render and display songs', () => {
+    render()
 
     expect(screen.queryByTestId('songs-loader')).not.toBeInTheDocument()
     expect(screen.getByLabelText('songs-widget')).toBeInTheDocument()
@@ -137,16 +133,7 @@ describe('Artist Songs Widget', () => {
   })
 
   it('should display loader on loading', async () => {
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={true}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render({ isLoading: true })
 
     expect(screen.getByTestId('songs-loader')).toBeInTheDocument()
     expect(screen.queryByLabelText('songs-widget')).not.toBeInTheDocument()
@@ -158,16 +145,7 @@ describe('Artist Songs Widget', () => {
     const newOrder = artistSongsOrders[0]
     const setOrder = vitest.fn()
 
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={setOrder}
-        isUnknownArtist={false}
-      />
-    )
+    render({ setOrder })
 
     await user.click(screen.getByRole('button', { name: order.label }))
 
@@ -183,16 +161,7 @@ describe('Artist Songs Widget', () => {
   it('should display more menu', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render()
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
@@ -204,16 +173,7 @@ describe('Artist Songs Widget', () => {
   it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={true}
-      />
-    )
+    render({ isUnknownArtist: true })
 
     await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
 
@@ -226,16 +186,7 @@ describe('Artist Songs Widget', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(
-        <ArtistSongsWidget
-          songs={songs}
-          artistId={artistId}
-          isLoading={false}
-          order={order}
-          setOrder={() => {}}
-          isUnknownArtist={false}
-        />
-      )
+      render()
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
@@ -246,16 +197,7 @@ describe('Artist Songs Widget', () => {
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(
-        <ArtistSongsWidget
-          songs={songs}
-          artistId={artistId}
-          isLoading={false}
-          order={order}
-          setOrder={() => {}}
-          isUnknownArtist={false}
-        />
-      )
+      render()
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
@@ -267,16 +209,7 @@ describe('Artist Songs Widget', () => {
   it('should open Add existing songs modal, when clicking new song card and the artist is not unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render()
 
     await user.click(screen.getByLabelText('new-songs-widget'))
 
@@ -286,16 +219,7 @@ describe('Artist Songs Widget', () => {
   it('should open Add new song modal, when clicking new song card and the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={true}
-      />
-    )
+    render({ isUnknownArtist: true })
 
     await user.click(screen.getByLabelText('new-songs-widget'))
 
@@ -305,16 +229,7 @@ describe('Artist Songs Widget', () => {
   it('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistSongsWidget
-        songs={songs}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={true}
-      />
-    )
+    render()
 
     // selection drawer
     await user.keyboard('{Control>}')

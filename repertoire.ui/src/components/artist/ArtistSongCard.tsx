@@ -64,7 +64,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
 
-  const isSelected = hovered || openedMenu || openedContextMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isClickSelected
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -153,7 +153,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
         <Group
           ref={ref}
           aria-label={`song-card-${song.title}`}
-          aria-selected={isSelected || isClickSelected}
+          aria-selected={isSelected}
           wrap={'nowrap'}
           sx={(theme) => ({
             cursor: 'default',
@@ -166,7 +166,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
             ...(isClickSelected && {
               boxShadow: 'none',
               backgroundColor: alpha(theme.colors.primary[0], 0.15),
-              ...(isSelected && {
+              ...(hovered && {
                 boxShadow: theme.shadows.xs,
                 backgroundColor: alpha(theme.colors.primary[0], 0.35)
               }),
@@ -275,7 +275,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
             style={{ transition: '0.16s' }}
           />
 
-          <Menu opened={openedMenu} onChange={toggleMenu} disabled={isClickSelected}>
+          <Menu opened={openedMenu} onChange={toggleMenu}>
             <Menu.Target>
               <ActionIcon
                 size={'md'}
@@ -286,6 +286,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                   transition: '0.3s',
                   opacity: isSelected ? 1 : 0
                 }}
+                disabled={isClickSelectionActive}
               >
                 <IconDots size={15} />
               </ActionIcon>

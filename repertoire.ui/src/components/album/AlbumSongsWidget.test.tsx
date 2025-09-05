@@ -8,9 +8,10 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
-import { beforeEach, expect } from 'vitest'
+import { expect } from 'vitest'
 import { SongSearch } from '../../types/models/Search.ts'
 import { createRef } from 'react'
+import { MainProvider } from '../../context/MainContext.tsx'
 
 describe('Album Songs Widget', () => {
   const songs: Song[] = [
@@ -86,37 +87,34 @@ describe('Album Songs Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeEach(() => vi.clearAllMocks())
+  afterEach(() => server.resetHandlers())
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-    server.resetHandlers()
-  })
-
-  beforeAll(() => {
-    server.listen()
-    // Mock Context
-    vi.mock('../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef()
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
+
+  const render = (props?: {
+    album?: Album
+    songs?: Song[]
+    isUnknownAlbum?: boolean
+    setOrder?: () => void
+  }) =>
+    reduxRouterRender(
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <AlbumSongsWidget
+          album={props?.album ?? album}
+          songs={props?.songs ?? []}
+          isUnknownAlbum={props?.isUnknownAlbum ?? false}
+          order={order}
+          setOrder={props?.setOrder ?? vi.fn()}
+        />
+      </MainProvider>
+    )
 
   it("should render and display album's songs when the album is not unknown", async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <AlbumSongsWidget
-        album={album}
-        songs={[]}
-        isUnknownAlbum={false}
-        order={order}
-        setOrder={() => {}}
-      />
-    )
+    render()
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -144,15 +142,7 @@ describe('Album Songs Widget', () => {
   it('should render and display the songs when the album is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <AlbumSongsWidget
-        album={album}
-        songs={songs}
-        isUnknownAlbum={true}
-        order={order}
-        setOrder={() => {}}
-      />
-    )
+    render({ songs, isUnknownAlbum: true })
 
     expect(screen.getByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -187,15 +177,7 @@ describe('Album Songs Widget', () => {
     const newOrder = albumSongsOrders[3]
     const setOrder = vitest.fn()
 
-    reduxRouterRender(
-      <AlbumSongsWidget
-        album={album}
-        songs={songs}
-        isUnknownAlbum={true}
-        order={order}
-        setOrder={setOrder}
-      />
-    )
+    render({ songs, isUnknownAlbum: true, setOrder })
 
     await user.click(screen.getByRole('button', { name: order.label }))
 
@@ -212,15 +194,7 @@ describe('Album Songs Widget', () => {
     it('should open add existing songs modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(
-        <AlbumSongsWidget
-          album={album}
-          songs={[]}
-          isUnknownAlbum={false}
-          order={order}
-          setOrder={() => {}}
-        />
-      )
+      render()
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing songs/i }))
@@ -231,15 +205,7 @@ describe('Album Songs Widget', () => {
     it('should open add new song modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(
-        <AlbumSongsWidget
-          album={album}
-          songs={[]}
-          isUnknownAlbum={false}
-          order={order}
-          setOrder={() => {}}
-        />
-      )
+      render()
 
       await user.click(screen.getByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new song/i }))
@@ -251,15 +217,7 @@ describe('Album Songs Widget', () => {
   it('should display new song card when there are no album songs and open Add existing songs modal', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <AlbumSongsWidget
-        album={{ ...album, songs: [] }}
-        songs={[]}
-        isUnknownAlbum={false}
-        order={order}
-        setOrder={() => {}}
-      />
-    )
+    render({ album: { ...album, songs: [] } })
 
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
@@ -271,15 +229,7 @@ describe('Album Songs Widget', () => {
   it('should display new song card when the album is unknown and open Add new song modal', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <AlbumSongsWidget
-        album={album}
-        songs={songs}
-        isUnknownAlbum={true}
-        order={order}
-        setOrder={() => {}}
-      />
-    )
+    render({ songs, isUnknownAlbum: true })
 
     expect(screen.getByLabelText('new-song-card')).toBeInTheDocument()
 
@@ -293,15 +243,7 @@ describe('Album Songs Widget', () => {
   it('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <AlbumSongsWidget
-        songs={songs}
-        album={album}
-        isUnknownAlbum={false}
-        order={order}
-        setOrder={() => {}}
-      />
-    )
+    render()
 
     // selection drawer
     await user.keyboard('{Control>}')

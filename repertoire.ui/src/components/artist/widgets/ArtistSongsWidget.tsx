@@ -122,31 +122,33 @@ function ArtistSongsWidget({
               }
             }}
           >
-            <ArtistSongsContextMenu artistId={artistId} isUnknownArtist={isUnknownArtist}>
-              <Stack gap={0} style={{ overflow: 'hidden' }}>
-                <Songs
-                  songs={songs}
-                  artistId={artistId}
-                  isUnknownArtist={isUnknownArtist}
-                  order={order}
-                />
+            <Stack gap={0} style={{ overflow: 'hidden' }}>
+              <ArtistSongsContextMenu artistId={artistId} isUnknownArtist={isUnknownArtist}>
+                <span style={{ display: 'contents' }}>
+                  <Songs
+                    songs={songs}
+                    artistId={artistId}
+                    isUnknownArtist={isUnknownArtist}
+                    order={order}
+                  />
+                </span>
+              </ArtistSongsContextMenu>
+              <ArtistSongsSelectionDrawer artistId={artistId} isUnknownArtist={isUnknownArtist} />
 
-                <Stack gap={0} align={'center'}>
-                  <Box ref={lastSongRef} w={1} h={1} />
-                  {isFetchingNextPage && <Loader size={30} mt={'xs'} mb={'md'} />}
-                </Stack>
-
-                {songs.models.length === songs.totalCount && (
-                  <NewHorizontalCard
-                    ariaLabel={'new-songs-widget'}
-                    onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
-                  >
-                    Add New Songs
-                  </NewHorizontalCard>
-                )}
+              <Stack gap={0} align={'center'}>
+                <Box ref={lastSongRef} w={1} h={1} />
+                {isFetchingNextPage && <Loader size={30} mt={'xs'} mb={'md'} />}
               </Stack>
-            </ArtistSongsContextMenu>
-            <ArtistSongsSelectionDrawer artistId={artistId} isUnknownArtist={isUnknownArtist} />
+
+              {songs.models.length === songs.totalCount && (
+                <NewHorizontalCard
+                  ariaLabel={'new-songs-widget'}
+                  onClick={isUnknownArtist ? openAddNewSong : openAddExistingSongs}
+                >
+                  Add New Songs
+                </NewHorizontalCard>
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Stack>
 
@@ -178,7 +180,7 @@ const Songs = memo(
     order: Order
   }) => {
     return (
-      <div>
+      <span style={{ display: 'contents' }}>
         {songs.models.map((song) => (
           <ArtistSongCard
             key={song.id}
@@ -188,7 +190,7 @@ const Songs = memo(
             order={order}
           />
         ))}
-      </div>
+      </span>
     )
   },
   (prevProps, nextProps) => {

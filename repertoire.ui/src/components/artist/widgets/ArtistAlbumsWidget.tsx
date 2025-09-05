@@ -90,37 +90,36 @@ function ArtistAlbumsWidget({
             </Menu>
           </Group>
 
-          <ArtistAlbumsContextMenu artistId={artistId} isUnknownArtist={isUnknownArtist}>
-            <ScrollArea.Autosize scrollbars={'y'} scrollbarSize={7}>
-              <SimpleGrid
-                cols={{ base: 1, xs: 2, betweenXlXxl: 3 }}
-                spacing={0}
-                verticalSpacing={0}
-              >
-                {albums.models.map((album) => (
-                  <ArtistAlbumCard
-                    key={album.id}
-                    album={album}
-                    artistId={artistId}
-                    isUnknownArtist={isUnknownArtist}
-                    order={order}
-                  />
-                ))}
-                {albums.models.length === albums.totalCount && (
-                  <NewHorizontalCard
-                    ariaLabel={'new-albums-widget'}
-                    borderRadius={'8px'}
-                    onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
-                    icon={<IconDisc size={18} />}
-                    p={'9px 8px 5px 8px'}
-                  >
-                    Add New Albums
-                  </NewHorizontalCard>
-                )}
-              </SimpleGrid>
-            </ScrollArea.Autosize>
-          </ArtistAlbumsContextMenu>
-          <ArtistAlbumsSelectionDrawer artistId={artistId} isUnknownArtist={isUnknownArtist} />
+          <ScrollArea.Autosize scrollbars={'y'} scrollbarSize={7}>
+            <SimpleGrid cols={{ base: 1, xs: 2, betweenXlXxl: 3 }} spacing={0} verticalSpacing={0}>
+              <ArtistAlbumsContextMenu artistId={artistId} isUnknownArtist={isUnknownArtist}>
+                <span style={{ display: 'contents' }}>
+                  {albums.models.map((album) => (
+                    <ArtistAlbumCard
+                      key={album.id}
+                      album={album}
+                      artistId={artistId}
+                      isUnknownArtist={isUnknownArtist}
+                      order={order}
+                    />
+                  ))}
+                </span>
+              </ArtistAlbumsContextMenu>
+              <ArtistAlbumsSelectionDrawer artistId={artistId} isUnknownArtist={isUnknownArtist} />
+
+              {albums.models.length === albums.totalCount && (
+                <NewHorizontalCard
+                  ariaLabel={'new-albums-widget'}
+                  borderRadius={'8px'}
+                  onClick={isUnknownArtist ? openAddNewAlbum : openAddExistingAlbums}
+                  icon={<IconDisc size={18} />}
+                  p={'9px 8px 5px 8px'}
+                >
+                  Add New Albums
+                </NewHorizontalCard>
+              )}
+            </SimpleGrid>
+          </ScrollArea.Autosize>
         </Stack>
 
         <AddNewArtistAlbumModal

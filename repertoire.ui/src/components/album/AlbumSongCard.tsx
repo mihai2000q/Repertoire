@@ -75,7 +75,7 @@ function AlbumSongCard({
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
 
-  const isSelected = hovered || openedMenu || openedContextMenu || isDragging
+  const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -151,7 +151,7 @@ function AlbumSongCard({
         <Group
           ref={ref}
           aria-label={`song-card-${song.title}`}
-          aria-selected={isSelected || isClickSelected}
+          aria-selected={isSelected}
           wrap={'nowrap'}
           {...draggableProvided?.draggableProps}
           {...draggableProvided?.dragHandleProps}
@@ -171,7 +171,7 @@ function AlbumSongCard({
             ...(isClickSelected && {
               boxShadow: 'none',
               backgroundColor: alpha(theme.colors.primary[0], 0.15),
-              ...(isSelected && {
+              ...(hovered && {
                 boxShadow: theme.shadows.xs,
                 backgroundColor: alpha(theme.colors.primary[0], 0.35)
               }),

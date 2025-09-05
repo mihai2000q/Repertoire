@@ -6,7 +6,7 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
-describe('Artists Context Menu', () => {
+describe('Artists Songs Context Menu', () => {
   const artistId = 'artist-id'
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']

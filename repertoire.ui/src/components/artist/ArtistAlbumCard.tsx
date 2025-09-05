@@ -59,7 +59,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
 
-  const isSelected = hovered || openedMenu || openedContextMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isClickSelected
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
@@ -133,7 +133,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
           ref={ref}
           wrap={'nowrap'}
           aria-label={`album-card-${album.title}`}
-          aria-selected={isSelected || isClickSelected}
+          aria-selected={isSelected}
           sx={(theme) => ({
             cursor: 'default',
             borderRadius: '8px',
@@ -146,7 +146,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             ...(isClickSelected && {
               boxShadow: theme.shadows.xs,
               backgroundColor: alpha(theme.colors.primary[0], 0.15),
-              ...(isSelected && {
+              ...(hovered && {
                 boxShadow: theme.shadows.md,
                 backgroundColor: alpha(theme.colors.primary[0], 0.35)
               })

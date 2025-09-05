@@ -509,7 +509,7 @@ describe('Artist Song Card', () => {
     expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(localSong.album.id)
   })
 
-  it('should disable context menu there are selected ids', async () => {
+  it('should disable context menu and more menu when click selection is active', async () => {
     const user = userEvent.setup()
 
     vi.mocked(useClickSelect).mockReturnValue({
@@ -528,8 +528,9 @@ describe('Artist Song Card', () => {
       keys: '[MouseRight>]',
       target: screen.getByLabelText(`default-icon-${song.title}`)
     })
-
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'more-menu' })).toBeDisabled()
   })
 
   describe('should be selected', () => {
@@ -559,6 +560,21 @@ describe('Artist Song Card', () => {
         keys: '[MouseRight>]',
         target: screen.getByLabelText(`default-icon-${song.title}`)
       })
+
+      expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when more menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <ArtistSongCard artistId={''} song={song} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
       expect(screen.getByLabelText(`song-card-${song.title}`)).toHaveAttribute(
         'aria-selected',
