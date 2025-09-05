@@ -92,7 +92,7 @@ describe('Selection Drawer', () => {
       <SelectionDrawer
         opened={true}
         text={''}
-        actionIcons={<div></div>}
+        actionIcons={<></>}
         onClose={onClose}
       />
     )

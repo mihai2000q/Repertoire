@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import DragSelect, { DSInputElement } from 'dragselect'
 import { createStyles } from '@mantine/emotion'
 import { alpha } from '@mantine/core'
+import { useMain } from './MainContext.tsx'
 
 const useStyles = createStyles((theme) => ({
   selector: {
@@ -26,13 +27,27 @@ interface DragSelectReturnType {
 const DragSelectContext = createContext<DragSelectReturnType>({
   dragSelect: undefined,
   selectedIds: [],
-  clearSelection: () => undefined,
+  clearSelection: () => undefined
 })
 
 export function DragSelectProvider({ children, data, settings = {} }: DragSelectProviderProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [dragSelect, setDragSelect] = useState<DragSelect<DSInputElement>>()
   const { classes } = useStyles()
+  const { ref: appRef } = useMain()
+
+  useEffect(() => {
+    const clearOutside = (event: PointerEvent) => {
+      if (
+        appRef.current?.contains(event.target as Node) &&
+        !settings.area?.contains(event.target as Node)
+      )
+        handleClearSelection()
+    }
+
+    appRef.current?.addEventListener('click', clearOutside)
+    return () => appRef.current?.removeEventListener('click', clearOutside)
+  }, [appRef, settings, dragSelect])
 
   useEffect(() => {
     setDragSelect((prevState) => {
@@ -69,7 +84,7 @@ export function DragSelectProvider({ children, data, settings = {} }: DragSelect
         draggability: false,
         immediateDrag: false,
         keyboardDrag: false,
-        multiSelectKeys: ['Control'],
+        multiSelectKeys: ['Control', 'Shift'],
         selectorClass: classes.selector,
         ...settings
       }),

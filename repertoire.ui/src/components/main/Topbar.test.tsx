@@ -8,13 +8,17 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../../types/models/Search.ts'
+import { MainProvider } from '../../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Topbar', () => {
   const render = (token: string | null = 'some token', toggleSidebar: () => void = () => {}) =>
     reduxRouterRender(
-      <AppShell>
-        <Topbar toggleSidebar={toggleSidebar} />
-      </AppShell>,
+      <MainProvider appRef={undefined} scrollRef={createRef()}>
+        <AppShell>
+          <Topbar toggleSidebar={toggleSidebar} />
+        </AppShell>
+      </MainProvider>,
       { auth: { token, historyOnSignIn: { index: 0, justSignedIn: false } } }
     )
 
@@ -36,16 +40,7 @@ describe('Topbar', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Context
-    vi.mock('../../context/MainScrollContext.tsx', () => ({
-      useMainScroll: vi.fn(() => ({
-        ref: { current: document.createElement('div') },
-        isTopScrollPositionOver0: 0
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'

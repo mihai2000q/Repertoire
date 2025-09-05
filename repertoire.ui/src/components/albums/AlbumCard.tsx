@@ -80,6 +80,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
             bg={'gray.5'}
+            checkmarkSize={'28%'}
             isSelected={isDragSelected}
             sx={(theme) => ({
               aspectRatio: 1,

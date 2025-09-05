@@ -25,7 +25,7 @@ import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
 import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
-import { useMainScroll } from '../../../context/MainScrollContext.tsx'
+import { useMain } from '../../../context/MainContext.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
@@ -62,11 +62,11 @@ function SongSectionsWidget({
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
-  const { ref: mainScrollRef } = useMainScroll()
+  const { mainScroll } = useMain()
 
   const scrollAddIntoView = () => {
     scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
-    mainScrollRef.current.scrollTo({ top: mainScrollRef.current.scrollHeight, behavior: 'smooth' })
+    mainScroll.ref.current?.scrollTo({ top: mainScroll.ref.current.scrollHeight, behavior: 'smooth' })
   }
 
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)

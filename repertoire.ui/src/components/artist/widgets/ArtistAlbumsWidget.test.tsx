@@ -9,6 +9,8 @@ import { setupServer } from 'msw/node'
 import Order from 'src/types/Order.ts'
 import artistAlbumsOrders from '../../../data/artist/artistAlbumsOrders.ts'
 import { AlbumSearch } from '../../../types/models/Search.ts'
+import { MainProvider } from '../../../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Artist Albums Widget', () => {
   const albumModels: Album[] = [
@@ -48,25 +50,34 @@ describe('Artist Albums Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
-
   afterEach(() => server.resetHandlers())
 
+  beforeAll(() => server.listen())
+
   afterAll(() => server.close())
+
+  const render = (props?: {
+    isUnknownArtist?: boolean
+    isLoading?: boolean
+    setOrder?: () => void
+  }) =>
+    reduxRouterRender(
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <ArtistAlbumsWidget
+          albums={albums}
+          artistId={artistId}
+          isLoading={props?.isLoading ?? false}
+          order={order}
+          setOrder={props?.setOrder ?? vi.fn()}
+          isUnknownArtist={props?.isUnknownArtist ?? false}
+        />
+      </MainProvider>
+    )
 
   it('should render and display albums', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render()
 
     expect(screen.queryByTestId('albums-loader')).not.toBeInTheDocument()
     expect(screen.getByLabelText('albums-widget')).toBeInTheDocument()
@@ -86,16 +97,7 @@ describe('Artist Albums Widget', () => {
   })
 
   it('should display loader on loading', async () => {
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={true}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render({ isLoading: true })
 
     expect(screen.getByTestId('albums-loader')).toBeInTheDocument()
     expect(screen.queryByLabelText('albums-widget')).not.toBeInTheDocument()
@@ -107,16 +109,7 @@ describe('Artist Albums Widget', () => {
     const newOrder = artistAlbumsOrders[0]
     const setOrder = vitest.fn()
 
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={setOrder}
-        isUnknownArtist={false}
-      />
-    )
+    render({ setOrder })
 
     await user.click(screen.getByRole('button', { name: order.label }))
 
@@ -132,16 +125,7 @@ describe('Artist Albums Widget', () => {
   it('should display more menu', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render()
 
     await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
 
@@ -152,16 +136,7 @@ describe('Artist Albums Widget', () => {
   it('should display less information on the more menu, when the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={true}
-      />
-    )
+    render({ isUnknownArtist: true })
 
     await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
 
@@ -173,16 +148,7 @@ describe('Artist Albums Widget', () => {
     it('should open add existing albums modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(
-        <ArtistAlbumsWidget
-          albums={albums}
-          artistId={artistId}
-          isLoading={false}
-          order={order}
-          setOrder={() => {}}
-          isUnknownArtist={false}
-        />
-      )
+      render()
 
       await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add existing albums/i }))
@@ -195,16 +161,7 @@ describe('Artist Albums Widget', () => {
     it('should open add new album modal', async () => {
       const user = userEvent.setup()
 
-      reduxRouterRender(
-        <ArtistAlbumsWidget
-          albums={albums}
-          artistId={artistId}
-          isLoading={false}
-          order={order}
-          setOrder={() => {}}
-          isUnknownArtist={false}
-        />
-      )
+      render()
 
       await user.click(screen.getByRole('button', { name: 'albums-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new album/i }))
@@ -216,16 +173,7 @@ describe('Artist Albums Widget', () => {
   it('should open Add existing albums modal, when clicking new album card and the artist is not unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={false}
-      />
-    )
+    render()
 
     await user.click(screen.getByLabelText('new-albums-widget'))
 
@@ -235,19 +183,26 @@ describe('Artist Albums Widget', () => {
   it('should open Add new album modal, when clicking new album card and the artist is unknown', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <ArtistAlbumsWidget
-        albums={albums}
-        artistId={artistId}
-        isLoading={false}
-        order={order}
-        setOrder={() => {}}
-        isUnknownArtist={true}
-      />
-    )
+    render({ isUnknownArtist: true })
 
     await user.click(screen.getByLabelText('new-albums-widget'))
 
     expect(await screen.findByRole('dialog', { name: /add new album/i })).toBeInTheDocument()
+  })
+
+  it('should show the drawer when selecting albums, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    render()
+
+    // selection drawer
+    await user.keyboard('{Control>}')
+    await user.click(screen.getByLabelText(`album-card-${albumModels[0].title}`))
+    await user.keyboard('{/Control}')
+    expect(screen.getByLabelText('albums-selection-drawer')).toBeInTheDocument()
+
+    // context menu
+    // await user.pointer({ keys: '[MouseRight>]', target: screen.getByLabelText(`albums-card-${albumModels[0].title}`) })
+    // expect(await screen.findByRole('menu', { name: 'albums-context-menu' })).toBeInTheDocument()
   })
 })

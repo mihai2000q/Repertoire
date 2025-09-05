@@ -15,6 +15,8 @@ import OrderType from '../types/enums/OrderType.ts'
 import SongProperty from '../types/enums/properties/SongProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
+import { MainProvider } from '../context/MainContext.tsx'
+import { createRef } from 'react'
 
 describe('Artist', () => {
   const artist: ArtistType = {
@@ -76,6 +78,15 @@ describe('Artist', () => {
 
   afterAll(() => server.close())
 
+  const render = (id = artist.id) =>
+    reduxMemoryRouterRender(
+      <MainProvider appRef={createRef()} scrollRef={createRef()}>
+        <Artist />
+      </MainProvider>,
+      '/artist/:id',
+      [`/artist/${id}`]
+    )
+
   it('should render and display artist info when the artist is not unknown', async () => {
     let albumsParams: URLSearchParams
     let songsParams: URLSearchParams
@@ -95,7 +106,7 @@ describe('Artist', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${artist.id}`])
+    const [_, store] = render()
 
     expect(screen.getByTestId('artist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
@@ -138,7 +149,7 @@ describe('Artist', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Artist />, '/artist/:id', ['/artist/unknown'])
+    const [_, store] =  render('unknown')
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
     expect(screen.getByLabelText('header-panel-card')).toBeInTheDocument()
@@ -165,7 +176,7 @@ describe('Artist', () => {
   it('should render and display band members when the artist is a band', async () => {
     server.use(getArtist({ ...artist, isBand: true }))
 
-    reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${artist.id}`])
+    render()
 
     expect(await screen.findByLabelText('band-members-widget')).toBeInTheDocument()
   })

@@ -57,10 +57,10 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
     }
   }
 
-  const onContextMenu = createEventHandler(children.props.onContextMenu, (e) => {
+  const onContextMenu = createEventHandler(children.props.onContextMenu, (e: React.MouseEvent) => {
     if (ctx.trigger === 'context') {
-      ;(e as React.MouseEvent).preventDefault()
-      toggleDropdown(e as React.MouseEvent)
+      e.preventDefault()
+      toggleDropdown(e)
     }
   })
 

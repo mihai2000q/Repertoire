@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useRef } from 'react'
 import Sidebar from '../components/main/Sidebar'
 import Topbar from '../components/main/Topbar'
 import { Outlet } from 'react-router-dom'
@@ -16,7 +16,7 @@ import useNetworkDisconnected from '../hooks/useNetworkDisconnected.tsx'
 import useTopbarHeight from '../hooks/useTopbarHeight.ts'
 import { createStyles } from '@mantine/emotion'
 import PlaylistDrawer from '../components/main/drawer/PlaylistDrawer.tsx'
-import { useMainScroll } from '../context/MainScrollContext.tsx'
+import { MainProvider } from '../context/MainContext.tsx'
 
 const useStyles = createStyles((theme) => ({
   scrollbar: {
@@ -52,43 +52,46 @@ function Main(): ReactElement {
 
   const [mobileSidebarOpened, { toggle: toggleSidebarMobile }] = useDisclosure()
 
-  const { ref: viewportRef } = useMainScroll()
+  const appRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { classes } = useStyles()
 
   return (
-    <Box w={'100%'} h={'100%'}>
-      {isDesktop && <TitleBar />}
-      <AppShell
-        layout={'alt'}
-        header={{ height: topbarHeight }}
-        navbar={{
-          width: 'max(15vw, 250px)',
-          breakpoint: 'sm',
-          collapsed: { mobile: !mobileSidebarOpened, desktop: false }
-        }}
-        w={'100%'}
-        h={`calc(100% - ${titleBarHeight})`}
-        mt={titleBarHeight}
-        disabled={!useAuth()}
-      >
-        <Topbar toggleSidebar={toggleSidebarMobile} />
-        <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
-        <AppShell.Main h={'100%'} mih={0}>
-          <Box
-            ref={viewportRef}
-            className={classes.scrollbar}
-            style={{ height: '100%', overflow: 'auto' }}
-          >
-            <Outlet />
-          </Box>
-        </AppShell.Main>
-      </AppShell>
+    <MainProvider appRef={appRef} scrollRef={scrollRef}>
+      <Box ref={appRef} w={'100%'} h={'100%'}>
+        {isDesktop && <TitleBar />}
+        <AppShell
+          layout={'alt'}
+          header={{ height: topbarHeight }}
+          navbar={{
+            width: 'max(15vw, 250px)',
+            breakpoint: 'sm',
+            collapsed: { mobile: !mobileSidebarOpened, desktop: false }
+          }}
+          w={'100%'}
+          h={`calc(100% - ${titleBarHeight})`}
+          mt={titleBarHeight}
+          disabled={!useAuth()}
+        >
+          <Topbar toggleSidebar={toggleSidebarMobile} />
+          <Sidebar toggleSidebarOnMobile={toggleSidebarMobile} />
+          <AppShell.Main h={'100%'} mih={0}>
+            <Box
+              ref={scrollRef}
+              className={classes.scrollbar}
+              style={{ height: '100%', overflow: 'auto' }}
+            >
+              <Outlet />
+            </Box>
+          </AppShell.Main>
+        </AppShell>
 
-      <ArtistDrawer />
-      <AlbumDrawer />
-      <SongDrawer />
-      <PlaylistDrawer />
-    </Box>
+        <ArtistDrawer />
+        <AlbumDrawer />
+        <SongDrawer />
+        <PlaylistDrawer />
+      </Box>
+    </MainProvider>
   )
 }
 

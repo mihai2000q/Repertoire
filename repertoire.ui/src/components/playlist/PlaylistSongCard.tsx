@@ -2,7 +2,6 @@ import Song from '../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
-  Avatar,
   Center,
   Flex,
   Grid,
@@ -37,6 +36,8 @@ import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import { toast } from 'react-toastify'
+import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
+import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -50,8 +51,14 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
   ({ song, playlistId, order, isDragging, draggableProvided }, refProp) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const {
+      ref: selectableRef,
+      isClickSelected,
+      isClickSelectionActive,
+      isLastInSelection
+    } = useClickSelectSelectable(song.playlistSongId)
     const { ref: hoverRef, hovered } = useHover()
-    const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, refProp)
+    const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, refProp, selectableRef)
 
     const [removeSongsFromPlaylist, { isLoading: isRemoveLoading }] =
       useRemoveSongsFromPlaylistMutation()
@@ -61,21 +68,24 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
     const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
       useDoubleMenu()
 
-    const isSelected = hovered || openedContextMenu || openedMenu || isDragging
+    const isSelected = hovered || openedContextMenu || openedMenu || isDragging || isClickSelected
 
     const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
       useDisclosure(false)
 
-    function handleClick() {
+    function handleClick(e: MouseEvent) {
+      if (e.ctrlKey || e.shiftKey) return
       dispatch(openSongDrawer(song.id))
     }
 
     function handleAlbumClick(e: MouseEvent) {
+      if (e.ctrlKey || e.shiftKey) return
       e.stopPropagation()
       dispatch(openAlbumDrawer(song.album.id))
     }
 
     function handleArtistClick(e: MouseEvent) {
+      if (e.ctrlKey || e.shiftKey) return
       e.stopPropagation()
       dispatch(openArtistDrawer(song.artist.id))
     }
@@ -85,11 +95,13 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
       navigate(`/song/${song.id}`)
     }
 
-    function handleViewArtist() {
+    function handleViewArtist(e: MouseEvent) {
+      e.stopPropagation()
       navigate(`/artist/${song.artist.id}`)
     }
 
-    function handleViewAlbum() {
+    function handleViewAlbum(e: MouseEvent) {
+      e.stopPropagation()
       navigate(`/album/${song.album.id}`)
     }
 
@@ -144,12 +156,17 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
     )
 
     return (
-      <ContextMenu opened={openedContextMenu} onChange={toggleContextMenu}>
+      <ContextMenu
+        opened={openedContextMenu}
+        onChange={toggleContextMenu}
+        disabled={isClickSelectionActive}
+      >
         <ContextMenu.Target>
           <Group
             ref={ref}
             wrap={'nowrap'}
             aria-label={`song-card-${song.title}`}
+            aria-selected={isSelected}
             {...draggableProvided?.draggableProps}
             {...draggableProvided?.dragHandleProps}
             style={{
@@ -161,8 +178,20 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
               borderRadius: 0,
               border: '1px solid transparent',
               ...(isSelected && {
-                boxShadow: theme.shadows.xl,
+                boxShadow: theme.shadows.md,
                 backgroundColor: alpha(theme.colors.primary[0], 0.15)
+              }),
+
+              ...(isClickSelected && {
+                boxShadow: 'none',
+                backgroundColor: alpha(theme.colors.primary[0], 0.15),
+                ...(hovered && {
+                  boxShadow: theme.shadows.xs,
+                  backgroundColor: alpha(theme.colors.primary[0], 0.35)
+                }),
+                ...(isLastInSelection && {
+                  boxShadow: theme.shadows.lg
+                })
               }),
 
               ...(isDragging && {
@@ -190,7 +219,8 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
                     {song.playlistTrackNo}
                   </Text>
 
-                  <Avatar
+                  <SelectableAvatar
+                    isSelected={isClickSelected}
                     radius={'md'}
                     src={song.imageUrl ?? song.album?.imageUrl}
                     alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
@@ -202,7 +232,7 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
                         size={20}
                       />
                     </Center>
-                  </Avatar>
+                  </SelectableAvatar>
 
                   <Stack flex={1} gap={0} style={{ overflow: 'hidden' }}>
                     <Group gap={'xxs'} wrap={'nowrap'}>
@@ -309,6 +339,7 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
                       size={'md'}
                       variant={'grey'}
                       aria-label={'more-menu'}
+                      disabled={isClickSelectionActive}
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         transition: '0.3s',

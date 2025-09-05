@@ -6,7 +6,7 @@ import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import TopbarSearch from './topbar/TopbarSearch.tsx'
 import TopbarUser from './topbar/TopbarUser.tsx'
 import TopbarNavigation from './topbar/TopbarNavigation.tsx'
-import { useMainScroll } from '../../context/MainScrollContext.tsx'
+import { useMain } from '../../context/MainContext.tsx'
 
 interface TopbarProps {
   toggleSidebar: () => void
@@ -14,7 +14,7 @@ interface TopbarProps {
 
 function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const isDesktop = useIsDesktop()
-  const { isTopScrollPositionOver0 } = useMainScroll()
+  const { mainScroll } = useMain()
   const shiftOrder = isDesktop ? 0 : 1
 
   const theme = useMantineTheme()
@@ -27,7 +27,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
       top={'unset'}
       style={(theme) => ({
         transition: '0.35s',
-        ...(isTopScrollPositionOver0 && { boxShadow: theme.shadows.md })
+        ...(mainScroll.isPositionOver0 && { boxShadow: theme.shadows.md })
       })}
     >
       <Group h={'100%'} gap={0}>

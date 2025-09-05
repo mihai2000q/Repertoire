@@ -71,6 +71,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
             w={'100%'}
             h={'unset'}
             bg={'gray.0'}
+            checkmarkSize={'28%'}
             isSelected={isDragSelected}
             style={(theme) => ({
               aspectRatio: 1,

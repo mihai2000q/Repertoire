@@ -2,7 +2,6 @@ import Album from '../../types/models/Album.ts'
 import {
   ActionIcon,
   alpha,
-  Avatar,
   Center,
   Flex,
   Group,
@@ -17,7 +16,7 @@ import dayjs from 'dayjs'
 import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent } from 'react'
-import { useDisclosure, useHover } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
@@ -33,6 +32,8 @@ import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import DeleteAlbumModal from '../@ui/modal/delete/DeleteAlbumModal.tsx'
 import { toast } from 'react-toastify'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
+import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
 
 interface ArtistAlbumCardProps {
   album: Album
@@ -44,7 +45,13 @@ interface ArtistAlbumCardProps {
 function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbumCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { ref, hovered } = useHover()
+  const {
+    ref: selectableRef,
+    isClickSelected,
+    isClickSelectionActive
+  } = useClickSelectSelectable(album.id)
+  const { ref: hoverRef, hovered } = useHover()
+  const ref = useMergedRef(selectableRef, hoverRef)
 
   const [removeAlbumsFromArtist, { isLoading: isRemoveLoading }] =
     useRemoveAlbumsFromArtistMutation()
@@ -52,14 +59,15 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
 
-  const isSelected = hovered || openedMenu || openedContextMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isClickSelected
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleClick() {
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     dispatch(openAlbumDrawer(album.id))
   }
 
@@ -115,19 +123,33 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
   )
 
   return (
-    <ContextMenu opened={openedContextMenu} onChange={toggleContextMenu}>
+    <ContextMenu
+      opened={openedContextMenu}
+      onChange={toggleContextMenu}
+      disabled={isClickSelectionActive}
+    >
       <ContextMenu.Target>
         <Group
           ref={ref}
           wrap={'nowrap'}
           aria-label={`album-card-${album.title}`}
+          aria-selected={isSelected}
           sx={(theme) => ({
             cursor: 'default',
             borderRadius: '8px',
             transition: '0.3s',
             ...(isSelected && {
-              boxShadow: theme.shadows.xl,
+              boxShadow: theme.shadows.md,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }),
+
+            ...(isClickSelected && {
+              boxShadow: theme.shadows.xs,
+              backgroundColor: alpha(theme.colors.primary[0], 0.15),
+              ...(hovered && {
+                boxShadow: theme.shadows.md,
+                backgroundColor: alpha(theme.colors.primary[0], 0.35)
+              })
             })
           })}
           px={'md'}
@@ -135,7 +157,8 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
           gap={0}
           onClick={handleClick}
         >
-          <Avatar
+          <SelectableAvatar
+            isSelected={isClickSelected}
             radius={'md'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
@@ -144,7 +167,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             <Center c={'white'}>
               <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={15} />
             </Center>
-          </Avatar>
+          </SelectableAvatar>
 
           <Space
             ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'xs', lg: 'md' }}
@@ -209,6 +232,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
                 size={'md'}
                 variant={'grey'}
                 aria-label={'more-menu'}
+                disabled={isClickSelectionActive}
                 onClick={(e) => e.stopPropagation()}
                 style={{
                   transition: '0.3s',
