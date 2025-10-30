@@ -291,8 +291,8 @@ func (s *SongRepositoryMock) UpdateSection(section *model.SongSection) error {
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) DeleteSection(id uuid.UUID) error {
-	args := s.Called(id)
+func (s *SongRepositoryMock) DeleteSections(ids []uuid.UUID) error {
+	args := s.Called(ids)
 	return args.Error(0)
 }
 

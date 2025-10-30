@@ -34,19 +34,6 @@ func (s SongRouter) RegisterRoutes() {
 
 	api.Group("/guitar-tunings").GET("", s.handler.GetGuitarTunings)
 	api.Group("/instruments").GET("", s.handler.GetInstruments)
-
-	sectionsApi := api.Group("/sections")
-	{
-		sectionsApi.POST("", s.handler.CreateSection)
-		sectionsApi.PUT("", s.handler.UpdateSection)
-		sectionsApi.PUT("/occurrences", s.handler.UpdateSectionsOccurrences)
-		sectionsApi.PUT("/partial-occurrences", s.handler.UpdateSectionsPartialOccurrences)
-		sectionsApi.PUT("/all", s.handler.UpdateAllSections)
-		sectionsApi.PUT("/move", s.handler.MoveSection)
-		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
-	}
-
-	sectionsApi.Group("/types").GET("", s.handler.GetSectionTypes)
 }
 
 func NewSongRouter(

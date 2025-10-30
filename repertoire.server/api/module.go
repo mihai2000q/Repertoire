@@ -35,6 +35,7 @@ var routers = fx.Options(
 	fx.Provide(router.NewPlaylistRouter),
 	fx.Provide(router.NewSearchRouter),
 	fx.Provide(router.NewSongRouter),
+	fx.Provide(router.NewSongSectionRouter),
 	fx.Provide(router.NewUserDataRouter),
 	fx.Provide(router.NewUserRouter),
 )

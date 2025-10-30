@@ -53,7 +53,7 @@ type SongRepository interface {
 	CountSectionsBySong(count *int64, songID uuid.UUID) error
 	CreateSection(section *model.SongSection) error
 	UpdateSection(section *model.SongSection) error
-	DeleteSection(id uuid.UUID) error
+	DeleteSections(ids []uuid.UUID) error
 
 	GetSongSectionHistory(
 		history *[]model.SongSectionHistory,
@@ -421,8 +421,8 @@ func (s songRepository) UpdateSection(section *model.SongSection) error {
 	return s.client.Save(&section).Error
 }
 
-func (s songRepository) DeleteSection(id uuid.UUID) error {
-	return s.client.Delete(&model.SongSection{}, id).Error
+func (s songRepository) DeleteSections(ids []uuid.UUID) error {
+	return s.client.Delete(&model.SongSection{}, ids).Error
 }
 
 // Song Section History
