@@ -20,6 +20,7 @@ func NewRoutes(
 	playlistRouter router.PlaylistRouter,
 	searchRouter router.SearchRouter,
 	songRouter router.SongRouter,
+	songSectionRouter router.SongSectionRouter,
 	userDataRouter router.UserDataRouter,
 	userRouter router.UserRouter,
 ) *Routes {
@@ -29,6 +30,7 @@ func NewRoutes(
 		playlistRouter,
 		searchRouter,
 		songRouter,
+		songSectionRouter,
 		userDataRouter,
 		userRouter,
 	}

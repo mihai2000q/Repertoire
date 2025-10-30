@@ -3,6 +3,7 @@ package section
 import (
 	"net/http"
 	"net/http/httptest"
+	"repertoire/server/api/requests"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	songData "repertoire/server/test/integration/test/data/song"
@@ -15,43 +16,54 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestDeleteSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
+	request := requests.BulkDeleteSongSectionsRequest{
+		IDs:    []uuid.UUID{uuid.New()},
+		SongID: uuid.New(),
+	}
+
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/sections/"+uuid.New().String()+"/from/"+uuid.New().String())
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteSongSections_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	song := songData.Songs[0]
+	request := requests.BulkDeleteSongSectionsRequest{
+		IDs:    []uuid.UUID{uuid.New()},
+		SongID: songData.Songs[0].ID,
+	}
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/sections/"+uuid.New().String()+"/from/"+song.ID.String())
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
+func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	// song with sections and previous stats
 	song := songData.Songs[0]
-	section := song.Sections[1]
+	request := requests.BulkDeleteSongSectionsRequest{
+		IDs:    []uuid.UUID{songData.Songs[0].Sections[0].ID, songData.Songs[0].Sections[1].ID},
+		SongID: songData.Songs[0].ID,
+	}
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().DELETE(w, "/api/songs/sections/"+section.ID.String()+"/from/"+section.SongID.String())
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -63,15 +75,14 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 		return db.Order("\"order\"")
 	}).Find(&song, song.ID)
 
-	assert.True(t,
-		slices.IndexFunc(newSong.Sections, func(t model.SongSection) bool {
-			return t.ID == section.ID
-		}) == -1,
-		"Song Section has not been deleted",
-	)
-
 	for i, s := range newSong.Sections {
 		assert.Equal(t, uint(i), s.Order)
+		assert.True(t,
+			slices.IndexFunc(newSong.Sections, func(t model.SongSection) bool {
+				return t.ID == s.ID
+			}) == -1,
+			"Song Section with id:"+s.ID.String()+", has not been deleted",
+		)
 	}
 
 	assert.LessOrEqual(t, newSong.Confidence, song.Confidence)
