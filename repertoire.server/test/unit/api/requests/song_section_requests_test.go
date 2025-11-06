@@ -674,6 +674,78 @@ func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 	}
 }
 
+func TestValidateBulkRehearsalsSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.BulkRehearsalsSongSectionsRequest{
+		Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsal: 0}},
+		SongID:   uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateBulkRehearsalsSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.BulkRehearsalsSongSectionsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Sections Test Cases
+		{
+			"Sections is invalid because it requires at least 1 section",
+			requests.BulkRehearsalsSongSectionsRequest{
+				Sections: []requests.BulkRehearsalsSongSectionRequest{},
+				SongID:   uuid.New(),
+			},
+			"Sections",
+			"min",
+		},
+		// Sections Test Cases
+		{
+			"Sections is invalid because it requires at least 1 section",
+			requests.BulkRehearsalsSongSectionsRequest{
+				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.Nil, Rehearsal: 0}},
+				SongID:   uuid.New(),
+			},
+			"Sections[0].ID",
+			"required",
+		},
+		// Song ID Test Cases
+		{
+			"Song ID is invalid because it's required",
+			requests.BulkRehearsalsSongSectionsRequest{
+				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsal: 0}},
+				SongID:   uuid.Nil,
+			},
+			"SongID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "BulkRehearsalsSongSectionsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 func TestValidateBulkDeleteSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	// given
 	_uut := validation.NewValidator(nil)

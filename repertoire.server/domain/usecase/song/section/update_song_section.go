@@ -14,23 +14,26 @@ import (
 )
 
 type UpdateSongSection struct {
-	songRepository    repository.SongRepository
-	progressProcessor processor.ProgressProcessor
+	songSectionRepository repository.SongSectionRepository
+	songRepository        repository.SongRepository
+	progressProcessor     processor.ProgressProcessor
 }
 
 func NewUpdateSongSection(
-	repository repository.SongRepository,
+	songSectionRepository repository.SongSectionRepository,
+	songRepository repository.SongRepository,
 	progressProcessor processor.ProgressProcessor,
 ) UpdateSongSection {
 	return UpdateSongSection{
-		songRepository:    repository,
-		progressProcessor: progressProcessor,
+		songSectionRepository: songSectionRepository,
+		songRepository:        songRepository,
+		progressProcessor:     progressProcessor,
 	}
 }
 
 func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
 	var section model.SongSection
-	err := u.songRepository.GetSection(&section, request.ID)
+	err := u.songSectionRepository.Get(&section, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -54,7 +57,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
-		err = u.songRepository.CountSectionsBySong(&sectionsCount, section.SongID)
+		err = u.songSectionRepository.CountAllBySong(&sectionsCount, section.SongID)
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
@@ -97,7 +100,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 			return wrapper.InternalServerError(err)
 		}
 	}
-	err = u.songRepository.UpdateSection(&section)
+	err = u.songSectionRepository.Update(&section)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -119,7 +122,7 @@ func (u UpdateSongSection) rehearsalsHasChanged(
 		To:            newRehearsals,
 		SongSectionID: section.ID,
 	}
-	err := u.songRepository.CreateSongSectionHistory(&newHistory)
+	err := u.songSectionRepository.CreateHistory(&newHistory)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -130,7 +133,7 @@ func (u UpdateSongSection) rehearsalsHasChanged(
 
 	// update section's rehearsals score based on the history changes
 	var history []model.SongSectionHistory
-	err = u.songRepository.GetSongSectionHistory(&history, section.ID, model.RehearsalsProperty)
+	err = u.songSectionRepository.GetHistory(&history, section.ID, model.RehearsalsProperty)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -164,7 +167,7 @@ func (u UpdateSongSection) confidenceHasChanged(
 		To:            newConfidence,
 		SongSectionID: section.ID,
 	}
-	err := u.songRepository.CreateSongSectionHistory(&newHistory)
+	err := u.songSectionRepository.CreateHistory(&newHistory)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -175,7 +178,7 @@ func (u UpdateSongSection) confidenceHasChanged(
 
 	// update section's confidence score based on the history changes
 	var history []model.SongSectionHistory
-	err = u.songRepository.GetSongSectionHistory(&history, section.ID, model.ConfidenceProperty)
+	err = u.songSectionRepository.GetHistory(&history, section.ID, model.ConfidenceProperty)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

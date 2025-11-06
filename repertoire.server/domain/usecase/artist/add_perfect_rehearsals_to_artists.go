@@ -40,12 +40,13 @@ func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehears
 
 	var errCode *wrapper.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		transactionSongSectionRepository := factory.NewSongSectionRepository()
 		transactionSongRepository := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, artist := range artists {
 			for _, song := range artist.Songs {
-				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongRepository)
+				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongSectionRepository)
 				if errC != nil {
 					errCode = errC
 					return errCode.Error

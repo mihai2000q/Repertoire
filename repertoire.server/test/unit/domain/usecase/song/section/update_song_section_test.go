@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestUpdateSongSection_WhenGetSectionsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateSongSection_WhenGetSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateSongSection(songRepository, nil)
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := section.NewUpdateSongSection(songSectionRepository, nil, nil)
 
 	request := requests.UpdateSongSectionRequest{
 		ID:     uuid.New(),
@@ -28,7 +28,7 @@ func TestUpdateSongSection_WhenGetSectionsFails_ShouldReturnInternalServerError(
 	}
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetSection", new(model.SongSection), request.ID).
+	songSectionRepository.On("Get", new(model.SongSection), request.ID).
 		Return(internalError).
 		Once()
 
@@ -40,13 +40,13 @@ func TestUpdateSongSection_WhenGetSectionsFails_ShouldReturnInternalServerError(
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	songSectionRepository.AssertExpectations(t)
 }
 
 func TestUpdateSongSection_WhenSectionsIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateSongSection(songRepository, nil)
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := section.NewUpdateSongSection(songSectionRepository, nil, nil)
 
 	request := requests.UpdateSongSectionRequest{
 		ID:     uuid.New(),
@@ -54,7 +54,7 @@ func TestUpdateSongSection_WhenSectionsIsEmpty_ShouldReturnNotFoundError(t *test
 		TypeID: uuid.New(),
 	}
 
-	songRepository.On("GetSection", new(model.SongSection), request.ID).
+	songSectionRepository.On("Get", new(model.SongSection), request.ID).
 		Return(nil).
 		Once()
 
@@ -66,13 +66,13 @@ func TestUpdateSongSection_WhenSectionsIsEmpty_ShouldReturnNotFoundError(t *test
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song section not found", errCode.Error.Error())
 
-	songRepository.AssertExpectations(t)
+	songSectionRepository.AssertExpectations(t)
 }
 
 func TestUpdateSongSection_WhenRehearsalsIsDecreasing_ShouldReturnConflictError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateSongSection(songRepository, nil)
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := section.NewUpdateSongSection(songSectionRepository, nil, nil)
 
 	request := requests.UpdateSongSectionRequest{
 		ID:         uuid.New(),
@@ -85,7 +85,7 @@ func TestUpdateSongSection_WhenRehearsalsIsDecreasing_ShouldReturnConflictError(
 		ID:         request.ID,
 		Rehearsals: request.Rehearsals + 1,
 	}
-	songRepository.On("GetSection", new(model.SongSection), request.ID).
+	songSectionRepository.On("Get", new(model.SongSection), request.ID).
 		Return(nil, mockSection).
 		Once()
 
@@ -97,7 +97,7 @@ func TestUpdateSongSection_WhenRehearsalsIsDecreasing_ShouldReturnConflictError(
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "rehearsals can only be increased", errCode.Error.Error())
 
-	songRepository.AssertExpectations(t)
+	songSectionRepository.AssertExpectations(t)
 }
 
 func TestUpdateSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -138,8 +138,9 @@ func TestUpdateSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *t
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := section.NewUpdateSongSection(songRepository, nil)
+			_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, nil)
 
 			// given - mocking
 			mockSection := &model.SongSection{
@@ -147,7 +148,7 @@ func TestUpdateSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *t
 				Name:   "Old name",
 				SongID: uuid.New(),
 			}
-			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
+			songSectionRepository.On("Get", new(model.SongSection), tt.request.ID).
 				Return(nil, mockSection).
 				Once()
 
@@ -164,6 +165,7 @@ func TestUpdateSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *t
 			assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 			assert.Equal(t, internalError, errCode.Error)
 
+			songSectionRepository.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
 		})
 	}
@@ -207,8 +209,9 @@ func TestUpdateSongSection_WhenCountSectionsFails_ShouldReturnInternalServerErro
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := section.NewUpdateSongSection(songRepository, nil)
+			_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, nil)
 
 			// given - mocking
 			mockSection := &model.SongSection{
@@ -216,7 +219,7 @@ func TestUpdateSongSection_WhenCountSectionsFails_ShouldReturnInternalServerErro
 				Name:   "Old name",
 				SongID: uuid.New(),
 			}
-			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
+			songSectionRepository.On("Get", new(model.SongSection), tt.request.ID).
 				Return(nil, mockSection).
 				Once()
 
@@ -226,7 +229,7 @@ func TestUpdateSongSection_WhenCountSectionsFails_ShouldReturnInternalServerErro
 				Once()
 
 			internalError := errors.New("internal error")
-			songRepository.On("CountSectionsBySong", mock.Anything, mockSection.SongID).
+			songSectionRepository.On("CountAllBySong", mock.Anything, mockSection.SongID).
 				Return(internalError).
 				Once()
 
@@ -238,6 +241,7 @@ func TestUpdateSongSection_WhenCountSectionsFails_ShouldReturnInternalServerErro
 			assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 			assert.Equal(t, internalError, errCode.Error)
 
+			songSectionRepository.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
 		})
 	}
@@ -245,8 +249,9 @@ func TestUpdateSongSection_WhenCountSectionsFails_ShouldReturnInternalServerErro
 
 func TestUpdateSongSection_WhenIsBandMemberAssociatedWithSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateSongSection(songRepository, nil)
+	_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, nil)
 
 	request := requests.UpdateSongSectionRequest{
 		ID:           uuid.New(),
@@ -261,7 +266,7 @@ func TestUpdateSongSection_WhenIsBandMemberAssociatedWithSongFails_ShouldReturnI
 		Name:   "Old name",
 		SongID: uuid.New(),
 	}
-	songRepository.On("GetSection", new(model.SongSection), request.ID).
+	songSectionRepository.On("Get", new(model.SongSection), request.ID).
 		Return(nil, mockSection).
 		Once()
 
@@ -278,13 +283,15 @@ func TestUpdateSongSection_WhenIsBandMemberAssociatedWithSongFails_ShouldReturnI
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
 func TestUpdateSongSection_WhenBandMemberIsNotAssociatedWithSong_ShouldReturnConflictError(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateSongSection(songRepository, nil)
+	_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, nil)
 
 	request := requests.UpdateSongSectionRequest{
 		ID:           uuid.New(),
@@ -299,7 +306,7 @@ func TestUpdateSongSection_WhenBandMemberIsNotAssociatedWithSong_ShouldReturnCon
 		Name:   "Old name",
 		SongID: uuid.New(),
 	}
-	songRepository.On("GetSection", new(model.SongSection), request.ID).
+	songSectionRepository.On("Get", new(model.SongSection), request.ID).
 		Return(nil, mockSection).
 		Once()
 
@@ -315,6 +322,7 @@ func TestUpdateSongSection_WhenBandMemberIsNotAssociatedWithSong_ShouldReturnCon
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
@@ -360,8 +368,9 @@ func TestUpdateSongSection_WhenCreateHistoryFails_ShouldReturnInternalServerErro
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := section.NewUpdateSongSection(songRepository, nil)
+			_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, nil)
 
 			// given - mocking
 			mockSection := &model.SongSection{
@@ -369,7 +378,7 @@ func TestUpdateSongSection_WhenCreateHistoryFails_ShouldReturnInternalServerErro
 				Name:   "Old name",
 				SongID: uuid.New(),
 			}
-			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
+			songSectionRepository.On("Get", new(model.SongSection), tt.request.ID).
 				Return(nil, mockSection).
 				Once()
 
@@ -379,12 +388,12 @@ func TestUpdateSongSection_WhenCreateHistoryFails_ShouldReturnInternalServerErro
 				Once()
 
 			sectionsCount := &[]int64{20}[0]
-			songRepository.On("CountSectionsBySong", mock.IsType(sectionsCount), mockSection.SongID).
+			songSectionRepository.On("CountAllBySong", mock.IsType(sectionsCount), mockSection.SongID).
 				Return(nil, sectionsCount).
 				Once()
 
 			internalError := errors.New("internal error")
-			songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+			songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 				Run(func(args mock.Arguments) {
 					newHistory := args.Get(0).(*model.SongSectionHistory)
 					assert.Equal(t, tt.property, newHistory.Property)
@@ -400,6 +409,7 @@ func TestUpdateSongSection_WhenCreateHistoryFails_ShouldReturnInternalServerErro
 			assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 			assert.Equal(t, internalError, errCode.Error)
 
+			songSectionRepository.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
 		})
 	}
@@ -447,8 +457,9 @@ func TestUpdateSongSection_WhenGetHistoryFails_ShouldReturnInternalServerError(t
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := section.NewUpdateSongSection(songRepository, nil)
+			_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, nil)
 
 			// given - mocking
 			mockSection := &model.SongSection{
@@ -456,7 +467,7 @@ func TestUpdateSongSection_WhenGetHistoryFails_ShouldReturnInternalServerError(t
 				Name:   "Old name",
 				SongID: uuid.New(),
 			}
-			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
+			songSectionRepository.On("Get", new(model.SongSection), tt.request.ID).
 				Return(nil, mockSection).
 				Once()
 
@@ -466,18 +477,18 @@ func TestUpdateSongSection_WhenGetHistoryFails_ShouldReturnInternalServerError(t
 				Once()
 
 			sectionsCount := &[]int64{20}[0]
-			songRepository.On("CountSectionsBySong", mock.IsType(sectionsCount), mockSection.SongID).
+			songSectionRepository.On("CountAllBySong", mock.IsType(sectionsCount), mockSection.SongID).
 				Return(nil, sectionsCount).
 				Once()
 
-			songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+			songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 				Return(nil).
 				Once()
 
 			internalError := errors.New("internal error")
-			songRepository.
+			songSectionRepository.
 				On(
-					"GetSongSectionHistory",
+					"GetHistory",
 					mock.IsType(new([]model.SongSectionHistory)),
 					mockSection.ID,
 					tt.property,
@@ -500,8 +511,8 @@ func TestUpdateSongSection_WhenGetHistoryFails_ShouldReturnInternalServerError(t
 
 func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateSongSection(songRepository, nil)
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := section.NewUpdateSongSection(songSectionRepository, nil, nil)
 
 	request := requests.UpdateSongSectionRequest{
 		ID:     uuid.New(),
@@ -514,12 +525,12 @@ func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerErro
 		ID:   request.ID,
 		Name: "Old name",
 	}
-	songRepository.On("GetSection", new(model.SongSection), request.ID).
+	songSectionRepository.On("Get", new(model.SongSection), request.ID).
 		Return(nil, mockSection).
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateSection", mock.IsType(new(model.SongSection))).
+	songSectionRepository.On("Update", mock.IsType(new(model.SongSection))).
 		Return(internalError).
 		Once()
 
@@ -531,7 +542,7 @@ func TestUpdateSongSection_WhenUpdateSectionFails_ShouldReturnInternalServerErro
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songRepository.AssertExpectations(t)
+	songSectionRepository.AssertExpectations(t)
 }
 
 func TestUpdateSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -576,9 +587,10 @@ func TestUpdateSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
 			progressProcessor := new(processor.ProgressProcessorMock)
-			_uut := section.NewUpdateSongSection(songRepository, progressProcessor)
+			_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, progressProcessor)
 
 			// given - mocking
 			mockSection := &model.SongSection{
@@ -586,7 +598,7 @@ func TestUpdateSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 				Name:   "Old name",
 				SongID: uuid.New(),
 			}
-			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
+			songSectionRepository.On("Get", new(model.SongSection), tt.request.ID).
 				Return(nil, mockSection).
 				Once()
 
@@ -598,7 +610,7 @@ func TestUpdateSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 				Once()
 
 			sectionsCount := &[]int64{20}[0]
-			songRepository.On("CountSectionsBySong", mock.IsType(sectionsCount), mockSection.SongID).
+			songSectionRepository.On("CountAllBySong", mock.IsType(sectionsCount), mockSection.SongID).
 				Return(nil, sectionsCount).
 				Once()
 
@@ -616,13 +628,13 @@ func TestUpdateSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 			}
 
 			if songSectionHistoryTimes > 0 {
-				songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+				songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 					Return(nil).
 					Times(songSectionHistoryTimes)
 
-				songRepository.
+				songSectionRepository.
 					On(
-						"GetSongSectionHistory",
+						"GetHistory",
 						mock.IsType(new([]model.SongSectionHistory)),
 						mockSection.ID,
 						mock.IsType(model.ConfidenceProperty),
@@ -650,7 +662,9 @@ func TestUpdateSongSection_WhenUpdateSongFails_ShouldReturnInternalServerError(t
 			assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 			assert.Equal(t, internalError, errCode.Error)
 
+			songSectionRepository.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
+			progressProcessor.AssertExpectations(t)
 		})
 	}
 }
@@ -775,12 +789,13 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
 			progressProcessor := new(processor.ProgressProcessorMock)
-			_uut := section.NewUpdateSongSection(songRepository, progressProcessor)
+			_uut := section.NewUpdateSongSection(songSectionRepository, songRepository, progressProcessor)
 
 			// given - mocking
-			songRepository.On("GetSection", new(model.SongSection), tt.request.ID).
+			songSectionRepository.On("Get", new(model.SongSection), tt.request.ID).
 				Return(nil, tt.songSection).
 				Once()
 
@@ -803,7 +818,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			}
 
 			if songSectionHistoryTimes > 0 {
-				songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+				songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 					Run(func(args mock.Arguments) {
 						newHistory := args.Get(0).(*model.SongSectionHistory)
 
@@ -823,9 +838,9 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 					Return(nil).
 					Times(songSectionHistoryTimes)
 
-				songRepository.
+				songSectionRepository.
 					On(
-						"GetSongSectionHistory",
+						"GetHistory",
 						mock.IsType(new([]model.SongSectionHistory)),
 						tt.songSection.ID,
 						mock.IsType(model.ConfidenceProperty),
@@ -855,7 +870,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 						Once()
 				}
 
-				songRepository.On("CountSectionsBySong", mock.IsType(tt.sectionsCount), tt.songSection.SongID).
+				songSectionRepository.On("CountAllBySong", mock.IsType(tt.sectionsCount), tt.songSection.SongID).
 					Return(nil, tt.sectionsCount).
 					Once()
 
@@ -875,7 +890,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 					Once()
 			}
 
-			songRepository.On("UpdateSection", mock.IsType(new(model.SongSection))).
+			songSectionRepository.On("Update", mock.IsType(new(model.SongSection))).
 				Run(func(args mock.Arguments) {
 					newSection := args.Get(0).(*model.SongSection)
 					assertUpdatedSongSection(t, tt.request, *newSection, rehearsalScore, confidenceScore, tt.progress)
@@ -889,6 +904,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			// then
 			assert.Nil(t, errCode)
 
+			songSectionRepository.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
 			progressProcessor.AssertExpectations(t)
 		})

@@ -10,6 +10,7 @@ type RepositoryFactory interface {
 	NewAlbumRepository() repository.AlbumRepository
 	NewPlaylistRepository() repository.PlaylistRepository
 	NewSongRepository() repository.SongRepository
+	NewSongSectionRepository() repository.SongSectionRepository
 	NewUserDataRepository() repository.UserDataRepository
 	NewUserRepository() repository.UserRepository
 }
@@ -32,6 +33,10 @@ func (f repositoryFactory) NewPlaylistRepository() repository.PlaylistRepository
 
 func (f repositoryFactory) NewSongRepository() repository.SongRepository {
 	return repository.NewSongRepository(f.client)
+}
+
+func (f repositoryFactory) NewSongSectionRepository() repository.SongSectionRepository {
+	return repository.NewSongSectionRepository(f.client)
 }
 
 func (f repositoryFactory) NewUserDataRepository() repository.UserDataRepository {

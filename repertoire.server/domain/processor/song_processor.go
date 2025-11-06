@@ -12,7 +12,7 @@ import (
 type SongProcessor interface {
 	AddPerfectRehearsal(
 		song *model.Song,
-		repository repository.SongRepository,
+		songSectionRepository repository.SongSectionRepository,
 	) (errCode *wrapper.ErrorCode, updatedSong bool)
 }
 
@@ -26,7 +26,7 @@ func NewSongProcessor(progressProcessor ProgressProcessor) SongProcessor {
 
 func (s *songProcessor) AddPerfectRehearsal(
 	song *model.Song,
-	repository repository.SongRepository,
+	songSectionRepository repository.SongSectionRepository,
 ) (*wrapper.ErrorCode, bool) {
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
@@ -44,14 +44,14 @@ func (s *songProcessor) AddPerfectRehearsal(
 			To:            newRehearsals,
 			SongSectionID: section.ID,
 		}
-		err := repository.CreateSongSectionHistory(&newHistory)
+		err := songSectionRepository.CreateHistory(&newHistory)
 		if err != nil {
 			return wrapper.InternalServerError(err), false
 		}
 
 		// update section's rehearsals score based on the history changes and update the rehearsals and progress too
 		var history []model.SongSectionHistory
-		err = repository.GetSongSectionHistory(&history, section.ID, model.RehearsalsProperty)
+		err = songSectionRepository.GetHistory(&history, section.ID, model.RehearsalsProperty)
 		if err != nil {
 			return wrapper.InternalServerError(err), false
 		}

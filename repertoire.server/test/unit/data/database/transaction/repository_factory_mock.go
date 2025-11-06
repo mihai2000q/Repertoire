@@ -30,6 +30,11 @@ func (m *RepositoryFactoryMock) NewSongRepository() repository.SongRepository {
 	return args.Get(0).(repository.SongRepository)
 }
 
+func (m *RepositoryFactoryMock) NewSongSectionRepository() repository.SongSectionRepository {
+	args := m.Called()
+	return args.Get(0).(repository.SongSectionRepository)
+}
+
 func (m *RepositoryFactoryMock) NewUserDataRepository() repository.UserDataRepository {
 	args := m.Called()
 	return args.Get(0).(repository.UserDataRepository)

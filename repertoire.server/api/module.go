@@ -25,6 +25,7 @@ var handlers = fx.Options(
 	fx.Provide(handler.NewPlaylistHandler),
 	fx.Provide(handler.NewSearchHandler),
 	fx.Provide(handler.NewSongHandler),
+	fx.Provide(handler.NewSongSectionHandler),
 	fx.Provide(handler.NewUserDataHandler),
 	fx.Provide(handler.NewUserHandler),
 )

@@ -47,20 +47,6 @@ type SongRepository interface {
 
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error
-	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
-
-	GetSection(section *model.SongSection, id uuid.UUID) error
-	CountSectionsBySong(count *int64, songID uuid.UUID) error
-	CreateSection(section *model.SongSection) error
-	UpdateSection(section *model.SongSection) error
-	DeleteSections(ids []uuid.UUID) error
-
-	GetSongSectionHistory(
-		history *[]model.SongSectionHistory,
-		sectionID uuid.UUID,
-		property model.SongSectionProperty,
-	) error
-	CreateSongSectionHistory(history *model.SongSectionHistory) error
 }
 
 type songRepository struct {
@@ -388,58 +374,6 @@ func (s songRepository) GetInstruments(instruments *[]model.Instrument, userID u
 		Order("\"order\"").
 		Find(&instruments).
 		Error
-}
-
-// Section Types
-
-func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
-	return s.client.Model(&model.SongSectionType{}).
-		Where(model.SongSectionType{UserID: userID}).
-		Order("\"order\"").
-		Find(&types).
-		Error
-}
-
-// Sections
-
-func (s songRepository) GetSection(section *model.SongSection, id uuid.UUID) error {
-	return s.client.Find(&section, model.SongSection{ID: id}).Error
-}
-
-func (s songRepository) CountSectionsBySong(count *int64, songID uuid.UUID) error {
-	return s.client.Model(&model.SongSection{}).
-		Where(model.SongSection{SongID: songID}).
-		Count(count).
-		Error
-}
-
-func (s songRepository) CreateSection(section *model.SongSection) error {
-	return s.client.Create(&section).Error
-}
-
-func (s songRepository) UpdateSection(section *model.SongSection) error {
-	return s.client.Save(&section).Error
-}
-
-func (s songRepository) DeleteSections(ids []uuid.UUID) error {
-	return s.client.Delete(&model.SongSection{}, ids).Error
-}
-
-// Song Section History
-
-func (s songRepository) GetSongSectionHistory(
-	history *[]model.SongSectionHistory,
-	sectionID uuid.UUID,
-	property model.SongSectionProperty,
-) error {
-	return s.client.
-		Order("created_at").
-		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
-		Error
-}
-
-func (s songRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
-	return s.client.Create(&history).Error
 }
 
 func (s songRepository) addSongSectionsSubQuery(tx *gorm.DB, userID uuid.UUID) {

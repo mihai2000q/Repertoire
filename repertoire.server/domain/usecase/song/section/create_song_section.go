@@ -12,18 +12,23 @@ import (
 )
 
 type CreateSongSection struct {
-	songRepository repository.SongRepository
+	songSectionRepository repository.SongSectionRepository
+	songRepository        repository.SongRepository
 }
 
-func NewCreateSongSection(repository repository.SongRepository) CreateSongSection {
+func NewCreateSongSection(
+	songSectionRepository repository.SongSectionRepository,
+	songRepository repository.SongRepository,
+) CreateSongSection {
 	return CreateSongSection{
-		songRepository: repository,
+		songSectionRepository: songSectionRepository,
+		songRepository:        songRepository,
 	}
 }
 
 func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wrapper.ErrorCode {
 	var sectionsCount int64
-	err := c.songRepository.CountSectionsBySong(&sectionsCount, request.SongID)
+	err := c.songSectionRepository.CountAllBySong(&sectionsCount, request.SongID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -56,7 +61,7 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 		BandMemberID:      request.BandMemberID,
 		InstrumentID:      request.InstrumentID,
 	}
-	err = c.songRepository.CreateSection(&section)
+	err = c.songSectionRepository.Create(&section)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

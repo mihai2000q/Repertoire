@@ -8,14 +8,17 @@ import (
 )
 
 type GetSongSectionTypes struct {
-	repository repository.SongRepository
-	jwtService service.JwtService
+	songSectionRepository repository.SongSectionRepository
+	jwtService            service.JwtService
 }
 
-func NewGetSongSectionTypes(repository repository.SongRepository, jwtService service.JwtService) GetSongSectionTypes {
+func NewGetSongSectionTypes(
+	songSectionRepository repository.SongSectionRepository,
+	jwtService service.JwtService,
+) GetSongSectionTypes {
 	return GetSongSectionTypes{
-		repository: repository,
-		jwtService: jwtService,
+		songSectionRepository: songSectionRepository,
+		jwtService:            jwtService,
 	}
 }
 
@@ -25,7 +28,7 @@ func (g GetSongSectionTypes) Handle(token string) (result []model.SongSectionTyp
 		return result, errCode
 	}
 
-	err := g.repository.GetSectionTypes(&result, userID)
+	err := g.songSectionRepository.GetTypes(&result, userID)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)
 	}
