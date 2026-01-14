@@ -679,7 +679,7 @@ func TestValidateBulkRehearsalsSongSectionsRequest_WhenIsValid_ShouldReturnNil(t
 	_uut := validation.NewValidator(nil)
 
 	request := requests.BulkRehearsalsSongSectionsRequest{
-		Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsal: 0}},
+		Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsals: 0}},
 		SongID:   uuid.New(),
 	}
 
@@ -711,7 +711,7 @@ func TestValidateBulkRehearsalsSongSectionsRequest_WhenSingleFieldIsInvalid_Shou
 		{
 			"Sections is invalid because it requires at least 1 section",
 			requests.BulkRehearsalsSongSectionsRequest{
-				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.Nil, Rehearsal: 0}},
+				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.Nil, Rehearsals: 0}},
 				SongID:   uuid.New(),
 			},
 			"Sections[0].ID",
@@ -721,7 +721,7 @@ func TestValidateBulkRehearsalsSongSectionsRequest_WhenSingleFieldIsInvalid_Shou
 		{
 			"Song ID is invalid because it's required",
 			requests.BulkRehearsalsSongSectionsRequest{
-				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsal: 0}},
+				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsals: 0}},
 				SongID:   uuid.Nil,
 			},
 			"SongID",

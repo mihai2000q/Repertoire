@@ -45,6 +45,23 @@ func (s SongSectionHandler) Create(c *gin.Context) {
 	s.SendMessage(c, "song section has been created successfully!")
 }
 
+func (s SongSectionHandler) BulkRehearsals(c *gin.Context) {
+	var request requests.BulkRehearsalsSongSectionsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.BulkRehearsals(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song sections' rehearsals have been updated successfully!")
+}
+
 func (s SongSectionHandler) Update(c *gin.Context) {
 	var request requests.UpdateSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)
