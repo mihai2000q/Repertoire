@@ -134,7 +134,7 @@ func TestBulkRehearsalsSongSections_WhenNotAllSectionsAreFound_ShouldReturnNotFo
 	songRepository.AssertExpectations(t)
 }
 
-func TestBulkRehearsalsSongSections_WhenTransactionExecuteFails_ShouldReturnInternalError(t *testing.T) {
+func TestBulkRehearsalsSongSections_WhenTransactionExecuteFails_ShouldReturnError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	transactionManager := new(transaction.ManagerMock)
@@ -163,7 +163,7 @@ func TestBulkRehearsalsSongSections_WhenTransactionExecuteFails_ShouldReturnInte
 		Once()
 
 	internalError := errors.New("internal error")
-	transactionManager.On("Execute", mock.Anything).Return(internalError, repositoryFactory).Once()
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -216,7 +216,7 @@ func TestBulkRehearsalsSongSections_WhenCreateHistoryFails_ShouldReturnInternalE
 
 	internalError := errors.New("internal error")
 	transactionSongSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
-		Return(nil).
+		Return(internalError).
 		Times(len(request.Sections))
 
 	// when
