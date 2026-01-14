@@ -14,23 +14,26 @@ import (
 )
 
 type AddPartialSongRehearsal struct {
-	repository        repository.SongRepository
-	progressProcessor processor.ProgressProcessor
+	songSectionRepository repository.SongSectionRepository
+	songRepository        repository.SongRepository
+	progressProcessor     processor.ProgressProcessor
 }
 
 func NewAddPartialSongRehearsal(
-	repository repository.SongRepository,
+	songSectionRepository repository.SongSectionRepository,
+	songRepository repository.SongRepository,
 	progressProcessor processor.ProgressProcessor,
 ) AddPartialSongRehearsal {
 	return AddPartialSongRehearsal{
-		repository:        repository,
-		progressProcessor: progressProcessor,
+		songSectionRepository: songSectionRepository,
+		songRepository:        songRepository,
+		progressProcessor:     progressProcessor,
 	}
 }
 
 func (a AddPartialSongRehearsal) Handle(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.GetWithSections(&song, request.ID)
+	err := a.songRepository.GetWithSections(&song, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -54,14 +57,14 @@ func (a AddPartialSongRehearsal) Handle(request requests.AddPartialSongRehearsal
 			To:            newRehearsals,
 			SongSectionID: section.ID,
 		}
-		err = a.repository.CreateSongSectionHistory(&newHistory)
+		err = a.songSectionRepository.CreateHistory(&newHistory)
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
 
 		// update section's rehearsals score based on the history changes and update the rehearsals and progress too
 		var history []model.SongSectionHistory
-		err = a.repository.GetSongSectionHistory(&history, section.ID, model.RehearsalsProperty)
+		err = a.songSectionRepository.GetHistory(&history, section.ID, model.RehearsalsProperty)
 		if err != nil {
 			return wrapper.InternalServerError(err)
 		}
@@ -86,7 +89,7 @@ func (a AddPartialSongRehearsal) Handle(request requests.AddPartialSongRehearsal
 	song.Progress = totalProgress / float64(sectionsCount)
 	song.LastTimePlayed = &[]time.Time{time.Now().UTC()}[0]
 
-	err = a.repository.UpdateWithAssociations(&song)
+	err = a.songRepository.UpdateWithAssociations(&song)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

@@ -14,14 +14,14 @@ type SongProcessorMock struct {
 
 func (s *SongProcessorMock) AddPerfectRehearsal(
 	song *model.Song,
-	repository repository.SongRepository,
+	songSectionRepository repository.SongSectionRepository,
 ) (*wrapper.ErrorCode, bool) {
-	args := s.Called(song, repository)
+	args := s.Called(song, songSectionRepository)
 
 	var errCode *wrapper.ErrorCode
 	if e := args.Get(0); e != nil {
 		errCode = e.(*wrapper.ErrorCode)
 	}
-	
+
 	return errCode, args.Bool(1)
 }

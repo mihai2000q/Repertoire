@@ -106,6 +106,7 @@ func TestAddPerfectPlaylistRehearsals_WhenProcessorFails_ShouldReturnInternalSer
 	_uut := playlist.NewAddPerfectRehearsalsToPlaylists(playlistRepository, songProcessor, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionSongSectionRepository := new(repository.SongSectionRepositoryMock)
 	transactionSongRepository := new(repository.SongRepositoryMock)
 
 	request := requests.AddPerfectRehearsalsToPlaylistsRequest{
@@ -120,11 +121,12 @@ func TestAddPerfectPlaylistRehearsals_WhenProcessorFails_ShouldReturnInternalSer
 		Return(nil, &mockPlaylists).
 		Once()
 
+	repositoryFactory.On("NewSongSectionRepository").Return(transactionSongSectionRepository).Once()
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := wrapper.InternalServerError(errors.New("internal error"))
-	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongRepository).
+	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongSectionRepository).
 		Return(internalError, false).
 		Times(len(mockPlaylists[0].Songs))
 
@@ -139,6 +141,7 @@ func TestAddPerfectPlaylistRehearsals_WhenProcessorFails_ShouldReturnInternalSer
 	songProcessor.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
+	transactionSongSectionRepository.AssertExpectations(t)
 	transactionSongRepository.AssertExpectations(t)
 }
 
@@ -150,6 +153,7 @@ func TestAddPerfectPlaylistRehearsals_WhenUpdateFails_ShouldReturnInternalServer
 	_uut := playlist.NewAddPerfectRehearsalsToPlaylists(playlistRepository, songProcessor, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionSongSectionRepository := new(repository.SongSectionRepositoryMock)
 	transactionSongRepository := new(repository.SongRepositoryMock)
 
 	request := requests.AddPerfectRehearsalsToPlaylistsRequest{
@@ -164,10 +168,11 @@ func TestAddPerfectPlaylistRehearsals_WhenUpdateFails_ShouldReturnInternalServer
 		Return(nil, &mockPlaylists).
 		Once()
 
+	repositoryFactory.On("NewSongSectionRepository").Return(transactionSongSectionRepository).Once()
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongRepository).
+	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongSectionRepository).
 		Return(nil, true).
 		Times(len(mockPlaylists[0].Songs))
 
@@ -188,6 +193,7 @@ func TestAddPerfectPlaylistRehearsals_WhenUpdateFails_ShouldReturnInternalServer
 	songProcessor.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
+	transactionSongSectionRepository.AssertExpectations(t)
 	transactionSongRepository.AssertExpectations(t)
 }
 
@@ -199,6 +205,7 @@ func TestAddPerfectPlaylistRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSong
 	_uut := playlist.NewAddPerfectRehearsalsToPlaylists(playlistRepository, songProcessor, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionSongSectionRepository := new(repository.SongSectionRepositoryMock)
 	transactionSongRepository := new(repository.SongRepositoryMock)
 
 	request := requests.AddPerfectRehearsalsToPlaylistsRequest{
@@ -218,10 +225,11 @@ func TestAddPerfectPlaylistRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSong
 		Return(nil, &mockPlaylists).
 		Once()
 
+	repositoryFactory.On("NewSongSectionRepository").Return(transactionSongSectionRepository).Once()
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongRepository).
+	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongSectionRepository).
 		Return(nil, false).
 		Times(len(mockPlaylists[0].Songs))
 
@@ -235,6 +243,7 @@ func TestAddPerfectPlaylistRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSong
 	songProcessor.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
+	transactionSongSectionRepository.AssertExpectations(t)
 	transactionSongRepository.AssertExpectations(t)
 }
 
@@ -246,6 +255,7 @@ func TestAddPerfectPlaylistRehearsals_WhenSuccessful_ShouldUpdatePlaylists(t *te
 	_uut := playlist.NewAddPerfectRehearsalsToPlaylists(playlistRepository, songProcessor, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	transactionSongSectionRepository := new(repository.SongSectionRepositoryMock)
 	transactionSongRepository := new(repository.SongRepositoryMock)
 
 	request := requests.AddPerfectRehearsalsToPlaylistsRequest{
@@ -276,13 +286,14 @@ func TestAddPerfectPlaylistRehearsals_WhenSuccessful_ShouldUpdatePlaylists(t *te
 		Return(nil, &mockPlaylists).
 		Once()
 
+	repositoryFactory.On("NewSongSectionRepository").Return(transactionSongSectionRepository).Once()
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	var playlistSongs []model.Song
 	for _, a := range mockPlaylists {
 		for _, ps := range a.PlaylistSongs {
-			songProcessor.On("AddPerfectRehearsal", &ps.Song, transactionSongRepository).
+			songProcessor.On("AddPerfectRehearsal", &ps.Song, transactionSongSectionRepository).
 				Return(nil, true).
 				Once()
 			playlistSongs = append(playlistSongs, ps.Song)
@@ -308,5 +319,6 @@ func TestAddPerfectPlaylistRehearsals_WhenSuccessful_ShouldUpdatePlaylists(t *te
 	songProcessor.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
+	transactionSongSectionRepository.AssertExpectations(t)
 	transactionSongRepository.AssertExpectations(t)
 }

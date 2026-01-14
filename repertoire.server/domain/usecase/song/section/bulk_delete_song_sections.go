@@ -13,12 +13,17 @@ import (
 )
 
 type BulkDeleteSongSections struct {
-	songRepository repository.SongRepository
+	songSectionRepository repository.SongSectionRepository
+	songRepository        repository.SongRepository
 }
 
-func NewBulkDeleteSongSections(repository repository.SongRepository) BulkDeleteSongSections {
+func NewBulkDeleteSongSections(
+	songSectionRepository repository.SongSectionRepository,
+	songRepository repository.SongRepository,
+) BulkDeleteSongSections {
 	return BulkDeleteSongSections{
-		songRepository: repository,
+		songSectionRepository: songSectionRepository,
+		songRepository:        songRepository,
 	}
 }
 
@@ -50,7 +55,7 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 		song.Sections[i].Order = song.Sections[i].Order - sectionsFound
 	}
 
-	if sectionsFound == 0 {
+	if int(sectionsFound) != len(request.IDs) {
 		return wrapper.NotFoundError(errors.New("song sections not found"))
 	}
 
@@ -71,7 +76,7 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	err = b.songRepository.DeleteSections(request.IDs)
+	err = b.songSectionRepository.Delete(request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

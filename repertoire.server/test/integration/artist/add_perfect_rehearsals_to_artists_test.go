@@ -64,7 +64,7 @@ func TestAddPerfectRehearsalsToArtists_WhenSuccessful_ShouldUpdateSongsAndSectio
 	db = db.Session(&gorm.Session{NewDB: true})
 	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.title") }).
 		Preload("Songs.Sections").
-		Preload("Songs.Sections.History").
+		Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
 		Find(&newArtists, request.IDs)
 
 	for i, artist := range newArtists {

@@ -66,7 +66,7 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB { return db.Order("song_track_no") }).
 		Preload("PlaylistSongs.Song").
 		Preload("PlaylistSongs.Song.Sections").
-		Preload("PlaylistSongs.Song.Sections.History").
+		Preload("PlaylistSongs.Song.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
 		Find(&playlists, request.IDs)
 
 	for i, playlist := range newPlaylists {

@@ -19,7 +19,7 @@ import (
 func TestBulkDeleteSongSections_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewBulkDeleteSongSections(songRepository)
+	_uut := section.NewBulkDeleteSongSections(nil, songRepository)
 
 	request := requests.BulkDeleteSongSectionsRequest{
 		SongID: uuid.New(),
@@ -44,7 +44,7 @@ func TestBulkDeleteSongSections_WhenGetSongFails_ShouldReturnInternalServerError
 func TestBulkDeleteSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewBulkDeleteSongSections(songRepository)
+	_uut := section.NewBulkDeleteSongSections(nil, songRepository)
 
 	request := requests.BulkDeleteSongSectionsRequest{
 		SongID: uuid.New(),
@@ -68,7 +68,7 @@ func TestBulkDeleteSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *
 func TestBulkDeleteSongSections_WhenSectionsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewBulkDeleteSongSections(songRepository)
+	_uut := section.NewBulkDeleteSongSections(nil, songRepository)
 
 	request := requests.BulkDeleteSongSectionsRequest{
 		IDs:    []uuid.UUID{uuid.New()},
@@ -96,10 +96,42 @@ func TestBulkDeleteSongSections_WhenSectionsAreNotFound_ShouldReturnNotFoundErro
 	songRepository.AssertExpectations(t)
 }
 
+func TestBulkDeleteSongSections_WhenNotAllSectionsAreFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := section.NewBulkDeleteSongSections(nil, songRepository)
+
+	request := requests.BulkDeleteSongSectionsRequest{
+		IDs:    []uuid.UUID{uuid.New(), uuid.New()},
+		SongID: uuid.New(),
+	}
+
+	song := &model.Song{
+		ID: request.SongID,
+		Sections: []model.SongSection{
+			{ID: request.IDs[0], Order: 0},
+			{ID: uuid.New(), Order: 1},
+		},
+	}
+	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+		Return(nil, song).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	assert.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "song sections not found", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestBulkDeleteSongSections_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewBulkDeleteSongSections(songRepository)
+	_uut := section.NewBulkDeleteSongSections(nil, songRepository)
 
 	request := requests.BulkDeleteSongSectionsRequest{
 		IDs:    []uuid.UUID{uuid.New()},
@@ -133,10 +165,11 @@ func TestBulkDeleteSongSections_WhenUpdateSongFails_ShouldReturnInternalServerEr
 	songRepository.AssertExpectations(t)
 }
 
-func TestBulkDeleteSongSections_WhenDeleteSectionFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestBulkDeleteSongSections_WhenDeleteSectionsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewBulkDeleteSongSections(songRepository)
+	_uut := section.NewBulkDeleteSongSections(songSectionRepository, songRepository)
 
 	request := requests.BulkDeleteSongSectionsRequest{
 		IDs:    []uuid.UUID{uuid.New()},
@@ -159,7 +192,7 @@ func TestBulkDeleteSongSections_WhenDeleteSectionFails_ShouldReturnInternalServe
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("DeleteSections", request.IDs).Return(internalError).Once()
+	songSectionRepository.On("Delete", request.IDs).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(request)
@@ -169,6 +202,7 @@ func TestBulkDeleteSongSections_WhenDeleteSectionFails_ShouldReturnInternalServe
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
@@ -254,8 +288,9 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *testin
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songRepository := new(repository.SongRepositoryMock)
-			_uut := section.NewBulkDeleteSongSections(songRepository)
+			_uut := section.NewBulkDeleteSongSections(songSectionRepository, songRepository)
 
 			request := requests.BulkDeleteSongSectionsRequest{
 				SongID: tt.song.ID,
@@ -294,7 +329,7 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *testin
 				Return(nil).
 				Once()
 
-			songRepository.On("DeleteSections", request.IDs).Return(nil).Once()
+			songSectionRepository.On("Delete", request.IDs).Return(nil).Once()
 
 			// when
 			errCode := _uut.Handle(request)
@@ -302,6 +337,7 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *testin
 			// then
 			assert.Nil(t, errCode)
 
+			songSectionRepository.AssertExpectations(t)
 			songRepository.AssertExpectations(t)
 		})
 	}

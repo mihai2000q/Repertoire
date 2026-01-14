@@ -7,28 +7,29 @@ import (
 
 type SongSectionRouter struct {
 	requestHandler *server.RequestHandler
-	handler        *handler.SongHandler
+	handler        *handler.SongSectionHandler
 }
 
 func (s SongSectionRouter) RegisterRoutes() {
 	api := s.requestHandler.PrivateRouter.Group("/songs/sections")
 	{
-		api.POST("", s.handler.CreateSection)
-		api.PUT("", s.handler.UpdateSection)
-		api.PUT("/occurrences", s.handler.UpdateSectionsOccurrences)
-		api.PUT("/partial-occurrences", s.handler.UpdateSectionsPartialOccurrences)
-		api.PUT("/all", s.handler.UpdateAllSections)
-		api.PUT("/move", s.handler.MoveSection)
-		api.PUT("/bulk", s.handler.BulkDeleteSections)
-		api.DELETE("/:id/from/:songID", s.handler.DeleteSection)
+		api.POST("", s.handler.Create)
+		api.POST("bulk-rehearsals", s.handler.BulkRehearsals)
+		api.PUT("", s.handler.Update)
+		api.PUT("/occurrences", s.handler.UpdateOccurrences)
+		api.PUT("/partial-occurrences", s.handler.UpdatePartialOccurrences)
+		api.PUT("/all", s.handler.UpdateAll)
+		api.PUT("/move", s.handler.Move)
+		api.PUT("/bulk", s.handler.BulkDelete)
+		api.DELETE("/:id/from/:songID", s.handler.Delete)
 	}
 
-	api.Group("/types").GET("", s.handler.GetSectionTypes)
+	api.Group("/types").GET("", s.handler.GetTypes)
 }
 
 func NewSongSectionRouter(
 	requestHandler *server.RequestHandler,
-	handler *handler.SongHandler,
+	handler *handler.SongSectionHandler,
 ) SongSectionRouter {
 	return SongSectionRouter{
 		handler:        handler,
