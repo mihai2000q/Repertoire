@@ -79,7 +79,9 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 
 	var newSong model.Song
 	db = db.Session(&gorm.Session{NewDB: true})
-	db.Preload("Sections").Preload("Sections.History").Find(&newSong, request.ID)
+	db.Preload("Sections").
+		Preload("Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+		Find(&newSong, request.ID)
 
 	assertion.PerfectSongRehearsal(t, song, newSong)
 }
