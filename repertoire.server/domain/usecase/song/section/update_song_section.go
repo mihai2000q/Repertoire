@@ -140,7 +140,7 @@ func (u UpdateSongSection) rehearsalsHasChanged(
 
 	section.RehearsalsScore = u.progressProcessor.ComputeRehearsalsScore(history)
 
-	// update section's progress (dependent on the rehearsals score)
+	// update section's progress (depends on the rehearsals score)
 	section.Progress = u.progressProcessor.ComputeProgress(*section)
 
 	// update the song's rehearsals and progress median with new section values
@@ -185,7 +185,7 @@ func (u UpdateSongSection) confidenceHasChanged(
 
 	section.ConfidenceScore = u.progressProcessor.ComputeConfidenceScore(history)
 
-	// update section's progress (dependent on the confidence score)
+	// update section's progress (depends on the confidence score)
 	section.Progress = u.progressProcessor.ComputeProgress(*section)
 
 	// update the song's confidence and progress median with new section values
