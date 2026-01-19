@@ -5,7 +5,9 @@ import {
   AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
   AddPerfectSongRehearsalsRequest,
+  BulkDeleteSongSectionsRequest,
   BulkDeleteSongsRequest,
+  BulkRehearsalsSongSectionsRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
@@ -180,6 +182,14 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    bulkRehearsalsSongSections: build.mutation<HttpMessageResponse, BulkRehearsalsSongSectionsRequest>({
+      query: (body) => ({
+        url: 'songs/sections/bulk-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     updateSongSection: build.mutation<HttpMessageResponse, UpdateSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections',
@@ -221,6 +231,14 @@ const songsApi = api.injectEndpoints({
     moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections/move',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    bulkDeleteSongSections: build.mutation<HttpMessageResponse, BulkDeleteSongSectionsRequest>({
+      query: (body) => ({
+        url: 'songs/sections/bulk-delete',
         method: 'PUT',
         body: body
       }),
@@ -274,10 +292,12 @@ export const {
   useGetInstrumentsQuery,
   useGetSongSectionTypesQuery,
   useCreateSongSectionMutation,
+  useBulkRehearsalsSongSectionsMutation,
   useUpdateSongSectionMutation,
   useUpdateSongSectionsOccurrencesMutation,
   useUpdateSongSectionsPartialOccurrencesMutation,
   useUpdateAllSongSectionsMutation,
   useMoveSongSectionMutation,
+  useBulkDeleteSongSectionsMutation,
   useDeleteSongSectionMutation
 } = songsApi
