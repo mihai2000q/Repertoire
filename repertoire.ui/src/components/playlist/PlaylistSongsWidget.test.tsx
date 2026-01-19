@@ -13,7 +13,6 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { MainProvider } from '../../context/MainContext.tsx'
 import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import { ShufflePlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
@@ -99,23 +98,26 @@ describe('Playlist Songs Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
-
-  const render = () =>
-    reduxRouterRender(
-      withToastify(
-        <MainProvider appRef={createRef()} scrollRef={createRef()}>
-          <PlaylistSongsWidget playlistId={playlist.id} />
-        </MainProvider>
-      )
-    )
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   it("should render and display playlist's songs", async () => {
-    render()
+    reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)
 
     expect(await screen.findByText(/songs/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'songs-more-menu' })).toBeInTheDocument()
@@ -144,7 +146,7 @@ describe('Playlist Songs Card', () => {
       })
     )
 
-    render()
+    reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)
 
     await user.click(await screen.findByRole('button', { name: playlistSongsOrders[0].label }))
 
@@ -165,7 +167,7 @@ describe('Playlist Songs Card', () => {
   it('should display menu', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)
 
     await user.click(await screen.findByRole('button', { name: 'songs-more-menu' }))
 
@@ -186,7 +188,7 @@ describe('Playlist Songs Card', () => {
         })
       )
 
-      render()
+      reduxRouterRender(withToastify(<PlaylistSongsWidget playlistId={playlist.id} />))
 
       await user.click(await screen.findByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /shuffle/i }))
@@ -199,7 +201,7 @@ describe('Playlist Songs Card', () => {
     it('should open add playlist songs modal', async () => {
       const user = userEvent.setup()
 
-      render()
+      reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)
 
       await user.click(await screen.findByRole('button', { name: 'songs-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add songs/i }))
@@ -221,7 +223,7 @@ describe('Playlist Songs Card', () => {
       })
     )
 
-    render()
+    reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)
 
     expect(await screen.findByLabelText('new-song-card')).toBeInTheDocument()
 
@@ -235,7 +237,7 @@ describe('Playlist Songs Card', () => {
   it('should show the drawer when selecting songs, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)
 
     // selection drawer
     await user.keyboard('{Control>}')

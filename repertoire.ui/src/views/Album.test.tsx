@@ -13,7 +13,6 @@ import SongProperty from '../types/enums/properties/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
-import { MainProvider } from '../context/MainContext.tsx'
 import { createRef } from 'react'
 
 describe('Album', () => {
@@ -65,20 +64,25 @@ describe('Album', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   const render = (id = album.id) =>
-    reduxMemoryRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <Album />
-      </MainProvider>,
-      '/album/:id',
-      [`/album/${id}`]
-    )
+    reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${id}`])
 
   it('should render and display info from album when the album is not unknown', async () => {
     let songsOrderBy: string[]

@@ -8,17 +8,25 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../../types/models/Search.ts'
-import { MainProvider } from '../../context/MainContext.tsx'
 import { createRef } from 'react'
 
 describe('Topbar', () => {
+  beforeAll(() => {
+    // Mock Main Context
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        mainScroll: { ref: createRef() }
+      }))
+    }))
+  })
+
+  afterAll(() => vi.clearAllMocks())
+
   const render = (token: string | null = 'some token', toggleSidebar: () => void = () => {}) =>
     reduxRouterRender(
-      <MainProvider appRef={undefined} scrollRef={createRef()}>
-        <AppShell>
-          <Topbar toggleSidebar={toggleSidebar} />
-        </AppShell>
-      </MainProvider>,
+      <AppShell>
+        <Topbar toggleSidebar={toggleSidebar} />
+      </AppShell>,
       { auth: { token, historyOnSignIn: { index: 0, justSignedIn: false } } }
     )
 

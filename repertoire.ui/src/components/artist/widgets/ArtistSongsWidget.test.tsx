@@ -10,7 +10,6 @@ import Order from 'src/types/Order.ts'
 import artistSongsOrders from '../../../data/artist/artistSongsOrders.ts'
 import { SongSearch } from '../../../types/models/Search.ts'
 import { createRef } from 'react'
-import { MainProvider } from '../../../context/MainContext.tsx'
 
 describe('Artist Songs Widget', () => {
   const songModels: Song[] = [
@@ -93,11 +92,22 @@ describe('Artist Songs Widget', () => {
 
   const server = setupServer(...handlers)
 
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
+
   afterEach(() => server.resetHandlers())
 
-  beforeAll(() => server.listen())
-
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   const render = (props?: {
     isUnknownArtist?: boolean
@@ -105,16 +115,14 @@ describe('Artist Songs Widget', () => {
     setOrder?: () => void
   }) =>
     reduxRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <ArtistSongsWidget
-          songs={songs}
-          artistId={artistId}
-          isLoading={props?.isLoading ?? false}
-          order={order}
-          setOrder={props?.setOrder ?? vi.fn()}
-          isUnknownArtist={props?.isUnknownArtist ?? false}
-        />
-      </MainProvider>
+      <ArtistSongsWidget
+        songs={songs}
+        artistId={artistId}
+        isLoading={props?.isLoading ?? false}
+        order={order}
+        setOrder={props?.setOrder ?? vi.fn()}
+        isUnknownArtist={props?.isUnknownArtist ?? false}
+      />
     )
 
   it('should render and display songs', () => {

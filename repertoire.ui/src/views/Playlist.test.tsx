@@ -7,7 +7,6 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { setupServer } from 'msw/node'
 import { default as PlaylistType } from './../types/models/Playlist.ts'
 import { RootState } from '../state/store.ts'
-import { MainProvider } from '../context/MainContext.tsx'
 import { createRef } from 'react'
 
 describe('Playlist', () => {
@@ -56,20 +55,28 @@ describe('Playlist', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    vi.clearAllMocks()
+    server.close()
+  })
 
   it('should render and display playlist info and songs', async () => {
-    const [_, store] = reduxMemoryRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <Playlist />
-      </MainProvider>,
-      '/playlist/:id',
-      [`/playlist/${playlist.id}`]
-    )
+    const [_, store] = reduxMemoryRouterRender(<Playlist />, '/playlist/:id', [
+      `/playlist/${playlist.id}`
+    ])
 
     expect(screen.getByTestId('playlist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()

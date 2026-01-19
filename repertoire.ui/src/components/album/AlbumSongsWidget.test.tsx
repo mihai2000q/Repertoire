@@ -11,7 +11,6 @@ import albumSongsOrders from '../../data/album/albumSongsOrders.ts'
 import { expect } from 'vitest'
 import { SongSearch } from '../../types/models/Search.ts'
 import { createRef } from 'react'
-import { MainProvider } from '../../context/MainContext.tsx'
 
 describe('Album Songs Widget', () => {
   const songs: Song[] = [
@@ -87,11 +86,22 @@ describe('Album Songs Widget', () => {
 
   const server = setupServer(...handlers)
 
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
+
   afterEach(() => server.resetHandlers())
 
-  beforeAll(() => server.listen())
-
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   const render = (props?: {
     album?: Album
@@ -100,15 +110,13 @@ describe('Album Songs Widget', () => {
     setOrder?: () => void
   }) =>
     reduxRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <AlbumSongsWidget
-          album={props?.album ?? album}
-          songs={props?.songs ?? []}
-          isUnknownAlbum={props?.isUnknownAlbum ?? false}
-          order={order}
-          setOrder={props?.setOrder ?? vi.fn()}
-        />
-      </MainProvider>
+      <AlbumSongsWidget
+        album={props?.album ?? album}
+        songs={props?.songs ?? []}
+        isUnknownAlbum={props?.isUnknownAlbum ?? false}
+        order={order}
+        setOrder={props?.setOrder ?? vi.fn()}
+      />
     )
 
   it("should render and display album's songs when the album is not unknown", async () => {

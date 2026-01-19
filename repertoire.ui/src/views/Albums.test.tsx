@@ -21,7 +21,6 @@ import { expect } from 'vitest'
 import OrderType from '../types/enums/OrderType.ts'
 import Playlist from '../types/models/Playlist.ts'
 import { createRef } from 'react'
-import { MainProvider } from '../context/MainContext.tsx'
 
 describe('Albums', () => {
   const albums: Album[] = [
@@ -112,6 +111,7 @@ describe('Albums', () => {
 
   beforeAll(() => {
     server.listen()
+    // Mock Drag Select
     vi.mock('dragselect', () => ({
       default: vi.fn(() => ({
         start: vi.fn(),
@@ -123,6 +123,12 @@ describe('Albums', () => {
         unsubscribe: vi.fn(),
         addSelectables: vi.fn(),
         removeSelectables: vi.fn()
+      }))
+    }))
+    // Mock Main Context
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
       }))
     }))
   })
@@ -137,15 +143,8 @@ describe('Albums', () => {
     vi.clearAllMocks()
   })
 
-  const render = () =>
-    reduxRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <Albums />
-      </MainProvider>
-    )
-
   it('should render and display relevant info when there are albums', async () => {
-    const [_, store] = render()
+    const [_, store] = reduxRouterRender(<Albums />)
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/albums/i)
     expect(screen.getByRole('heading', { name: /albums/i })).toBeInTheDocument()
@@ -171,7 +170,7 @@ describe('Albums', () => {
   it('should open the add new album modal when clicking the new album button', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<Albums />)
 
     const newAlbumButton = screen.getByRole('button', { name: /new-album/i })
     await user.click(newAlbumButton)
@@ -182,11 +181,7 @@ describe('Albums', () => {
   it('should open the add new album modal when clicking the new album card button', async () => {
     const user = userEvent.setup()
 
-    reduxRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <Albums />
-      </MainProvider>
-    )
+    reduxRouterRender(<Albums />)
 
     const newAlbumCardButton = await screen.findByLabelText('new-album-card')
     await user.click(newAlbumCardButton)
@@ -195,7 +190,7 @@ describe('Albums', () => {
   })
 
   it('should display not display some info when there are no albums', async () => {
-    render()
+    reduxRouterRender(<Albums />)
 
     server.use(getNoAlbums())
 
@@ -207,7 +202,7 @@ describe('Albums', () => {
   })
 
   it('should display pagination and new album card when the unknown album card is shown and there are no albums', async () => {
-    render()
+    reduxRouterRender(<Albums />)
 
     server.use(getNoAlbums(), getSongsWithoutAlbums())
 
@@ -225,7 +220,7 @@ describe('Albums', () => {
 
     server.use(getAlbumsWithPagination(totalCount))
 
-    render()
+    reduxRouterRender(<Albums />)
 
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/album-card-/)).toHaveLength(pageSize)
@@ -249,7 +244,7 @@ describe('Albums', () => {
   it('should display unknown album card when there are songs without album', async () => {
     server.use(getSongsWithoutAlbums())
 
-    render()
+    reduxRouterRender(<Albums />)
 
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('unknown-album-card')).toBeInTheDocument()
@@ -265,7 +260,7 @@ describe('Albums', () => {
 
     server.use(getAlbumsWithPagination())
 
-    render()
+    reduxRouterRender(<Albums />)
 
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-album-card')).not.toBeInTheDocument()
@@ -284,7 +279,7 @@ describe('Albums', () => {
 
     server.use(getAlbumsWithPagination(totalCount), getSongsWithoutAlbums())
 
-    render()
+    reduxRouterRender(<Albums />)
 
     expect(await screen.findByTestId('albums-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('unknown-album-card')).not.toBeInTheDocument()
@@ -322,7 +317,7 @@ describe('Albums', () => {
       })
     )
 
-    render()
+    reduxRouterRender(<Albums />)
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
@@ -356,7 +351,7 @@ describe('Albums', () => {
       })
     )
 
-    render()
+    reduxRouterRender(<Albums />)
 
     await waitFor(() => expect(searchBy).toStrictEqual([]))
 
@@ -380,7 +375,7 @@ describe('Albums', () => {
   it.skip('should show the drawer when selecting albums, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<Albums />)
 
     const albumsArea = screen.getByTestId('albums-area')
     await user.pointer([

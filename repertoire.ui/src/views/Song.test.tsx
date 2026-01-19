@@ -7,7 +7,6 @@ import { screen } from '@testing-library/react'
 import { RootState } from '../state/store.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import { MainProvider } from '../context/MainContext.tsx'
 import { createRef } from 'react'
 
 describe('Song', () => {
@@ -38,9 +37,18 @@ describe('Song', () => {
 
   const server = setupServer(...handlers)
 
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
+      }))
+    }))
+  })
 
-  beforeAll(() => server.listen())
+  afterEach(() => server.resetHandlers())
 
   afterAll(() => {
     vi.clearAllMocks()
@@ -48,13 +56,7 @@ describe('Song', () => {
   })
 
   it('should render', async () => {
-    const [_, store] = reduxMemoryRouterRender(
-      <MainProvider appRef={undefined} scrollRef={createRef()}>
-        <Song />
-      </MainProvider>,
-      '/song/:id',
-      [`/song/${song.id}`]
-    )
+    const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
 
     expect(screen.getByTestId('song-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
