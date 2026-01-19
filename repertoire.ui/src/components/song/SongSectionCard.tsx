@@ -4,6 +4,7 @@ import {
   alpha,
   Avatar,
   Box,
+  Center,
   Collapse,
   Group,
   HoverCard,
@@ -15,6 +16,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import {
+  IconCheck,
   IconDots,
   IconEdit,
   IconGripVertical,
@@ -36,6 +38,7 @@ import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
 import { useState } from 'react'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
+import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
 
 function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
   return rehearsalsMaxLength > 4
@@ -79,7 +82,13 @@ function SongSectionCard({
   showRehearsalsToast
 }: SongSectionCardProps) {
   const { ref: hoverRef, hovered } = useHover()
-  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
+  const {
+    ref: selectableRef,
+    isClickSelected,
+    isClickSelectionActive,
+    isLastInSelection
+  } = useClickSelectSelectable(section.id)
+  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
 
   const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
     getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
@@ -105,7 +114,7 @@ function SongSectionCard({
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  const isSelected = openedMenu || hovered || openedContextMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
 
   async function handleAddRehearsal() {
     await updateSongSectionMutation({
@@ -135,22 +144,38 @@ function SongSectionCard({
   )
 
   return (
-    <ContextMenu opened={openedContextMenu} onChange={toggleContextMenu}>
+    <ContextMenu
+      opened={openedContextMenu}
+      onChange={toggleContextMenu}
+      disabled={isClickSelectionActive}
+    >
       <ContextMenu.Target>
         <Stack
           ref={ref}
           py={'xs'}
           aria-label={`song-section-${section.name}`}
+          aria-selected={isSelected}
           gap={0}
           sx={(theme) => ({
             cursor: 'default',
             transition: '0.25s',
             borderRadius: 0,
             border: '1px solid transparent',
-
             ...(isSelected && {
-              boxShadow: theme.shadows.xl,
+              boxShadow: theme.shadows.md,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }),
+
+            ...(isClickSelected && {
+              boxShadow: 'none',
+              backgroundColor: alpha(theme.colors.primary[0], 0.15),
+              ...(hovered && {
+                boxShadow: theme.shadows.xs,
+                backgroundColor: alpha(theme.colors.primary[0], 0.35)
+              }),
+              ...(isLastInSelection && {
+                boxShadow: theme.shadows.lg
+              })
             }),
 
             ...(isDragging && {
@@ -163,14 +188,31 @@ function SongSectionCard({
           {...draggableProvided?.draggableProps}
         >
           <Group gap={'xs'} px={'md'}>
-            <ActionIcon
-              aria-label={'drag-handle'}
-              variant={'subtle'}
-              size={'lg'}
-              {...draggableProvided?.dragHandleProps}
-            >
-              <IconGripVertical size={20} />
-            </ActionIcon>
+            {!isClickSelected ? (
+              <ActionIcon
+                aria-label={'drag-handle'}
+                variant={'subtle'}
+                size={'lg'}
+                {...draggableProvided?.dragHandleProps}
+                disabled={isClickSelectionActive}
+                sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
+              >
+                <IconGripVertical size={20} />
+              </ActionIcon>
+            ) : (
+              <Center
+                m={6.5}
+                data-testid={'selected-checkmark'}
+                w={21}
+                h={21}
+                style={(theme) => ({
+                  borderRadius: '100%',
+                  backgroundColor: alpha(theme.colors.green[2], 0.95)
+                })}
+              >
+                <IconCheck color={'white'} size={'75%'} />
+              </Center>
+            )}
 
             {isArtistBand && section.bandMember && (
               <HoverCard openDelay={200} position="top">
@@ -225,12 +267,14 @@ function SongSectionCard({
             </Text>
 
             <Group gap={2}>
-              <Tooltip label={'Add Rehearsal'} openDelay={200}>
+              <Tooltip label={'Add Rehearsal'} openDelay={200} disabled={isClickSelectionActive}>
                 <ActionIcon
                   variant={'subtle'}
                   size={'md'}
                   loading={isUpdateLoading}
                   aria-label={'add-rehearsal'}
+                  disabled={isClickSelectionActive}
+                  sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
                   onClick={handleAddRehearsal}
                 >
                   <IconLocationPlus size={15} />
@@ -239,7 +283,13 @@ function SongSectionCard({
 
               <Menu opened={openedMenu} onChange={toggleMenu}>
                 <Menu.Target>
-                  <ActionIcon variant={'subtle'} size={'lg'} aria-label={'more-menu'}>
+                  <ActionIcon
+                    variant={'subtle'}
+                    size={'md'}
+                    aria-label={'more-menu'}
+                    disabled={isClickSelectionActive}
+                    sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
+                  >
                     <IconDots size={20} />
                   </ActionIcon>
                 </Menu.Target>
