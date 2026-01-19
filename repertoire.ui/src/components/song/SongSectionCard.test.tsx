@@ -318,7 +318,7 @@ describe('Song Section Card', () => {
     expect(showToast).toHaveBeenCalledOnce()
   })
 
-  it('should disable context menu; more menu and rehearsal buttons, when click selection is active', async () => {
+  it('should disable context menu; drag handle, more menu and rehearsal buttons, when click selection is active', async () => {
     const user = userEvent.setup()
 
     vi.mocked(useClickSelect).mockReturnValue({
@@ -348,8 +348,35 @@ describe('Song Section Card', () => {
     })
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
+    expect(screen.getByRole('button', { name: 'drag-handle' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeDisabled()
+  })
+
+  it('should hide the drag handle and display a checkmark, when click selected (part of the selected ids)', () => {
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [section.id],
+      isClickSelectionActive: true,
+      clearSelection: vi.fn()
+    })
+
+    reduxRender(
+      <SongSectionCard
+        section={section}
+        songId={''}
+        maxSectionProgress={0}
+        maxSectionRehearsals={0}
+        showDetails={false}
+        isDragging={false}
+        showRehearsalsToast={vi.fn()}
+      />
+    )
+
+    expect(screen.queryByRole('button', { name: 'drag-handle' })).not.toBeInTheDocument()
+    expect(screen.getByTestId('selected-checkmark')).toBeInTheDocument()
   })
 
   describe('should be selected', () => {
