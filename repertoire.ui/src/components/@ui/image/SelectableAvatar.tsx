@@ -40,7 +40,7 @@ const SelectableAvatar = forwardRef<HTMLDivElement, SelectableAvatarProps>(
               backgroundColor: alpha(theme.colors.green[2], 0.95)
             })}
           >
-            <IconCheck color={'white'} size={'85%'} />
+            <IconCheck color={'white'} size={'75%'} />
           </Center>
         </Center>
       </Box>
