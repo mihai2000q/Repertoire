@@ -27,7 +27,7 @@ describe('Albums Context Menu', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: selectedIds,
-      isSelectionActive: true,
+      isClickSelectionActive: true,
       clearSelection: clearSelection
     })
   })
@@ -97,7 +97,7 @@ describe('Albums Context Menu', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: [],
-      isSelectionActive: false,
+      isClickSelectionActive: false,
       clearSelection: clearSelection
     })
 
@@ -129,7 +129,7 @@ describe('Albums Context Menu', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: [],
-      isSelectionActive: false,
+      isClickSelectionActive: false,
       clearSelection: clearSelection
     })
 

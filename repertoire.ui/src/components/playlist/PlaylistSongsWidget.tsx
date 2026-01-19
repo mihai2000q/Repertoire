@@ -204,7 +204,7 @@ const Songs = memo(
           {(provided) => (
             <Box ref={provided.innerRef} {...provided.droppableProps}>
               {internalSongs.map((song, index) => {
-                const { isSelectionActive } = useClickSelect()
+                const { isClickSelectionActive } = useClickSelect()
                 return (
                   <Draggable
                     key={song.playlistSongId}
@@ -214,7 +214,7 @@ const Songs = memo(
                       isFetching ||
                       isMoveLoading ||
                       order.property !== SongProperty.PlaylistTrackNo ||
-                      isSelectionActive
+                      isClickSelectionActive
                     }
                   >
                     {(provided, snapshot) => (

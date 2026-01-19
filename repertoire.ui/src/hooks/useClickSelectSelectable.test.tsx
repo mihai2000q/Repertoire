@@ -16,7 +16,7 @@ describe('use Click Select Selectable', () => {
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: [],
-      isSelectionActive: false,
+      isClickSelectionActive: false,
       clearSelection: vi.fn()
     })
   })
@@ -69,7 +69,7 @@ describe('use Click Select Selectable', () => {
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: [],
-      isSelectionActive: isSelectionActive,
+      isClickSelectionActive: isSelectionActive,
       clearSelection: vi.fn()
     })
 
@@ -84,7 +84,7 @@ describe('use Click Select Selectable', () => {
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: ['something', id],
-      isSelectionActive: false,
+      isClickSelectionActive: false,
       clearSelection: vi.fn()
     })
 
@@ -131,7 +131,7 @@ describe('use Click Select Selectable', () => {
         addSelectable: mockAddSelectables,
         removeSelectable: mockRemoveSelectables,
         selectedIds: selectedIds,
-        isSelectionActive: false,
+        isClickSelectionActive: false,
         clearSelection: vi.fn()
       })
 
@@ -154,7 +154,7 @@ describe('use Click Select Selectable', () => {
   ])('should return is last in selection false', (id, selectables, selectedIds) => {
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: selectables,
-      isSelectionActive: false,
+      isClickSelectionActive: false,
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: selectedIds,

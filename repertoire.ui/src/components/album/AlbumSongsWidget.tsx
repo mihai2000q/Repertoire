@@ -113,7 +113,7 @@ function AlbumSongsWidget({
                     {(provided) => (
                       <Box ref={provided.innerRef} {...provided.droppableProps}>
                         {(isUnknownAlbum ? songs : internalSongs).map((song, index) => {
-                          const { isSelectionActive } = useClickSelect()
+                          const { isClickSelectionActive } = useClickSelect()
                           return (
                             <Draggable
                               key={song.id}
@@ -124,7 +124,7 @@ function AlbumSongsWidget({
                                 isMoveLoading ||
                                 isUnknownAlbum ||
                                 order.property !== SongProperty.AlbumTrackNo ||
-                                isSelectionActive
+                                isClickSelectionActive
                               }
                             >
                               {(provided, snapshot) => (

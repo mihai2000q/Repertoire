@@ -9,7 +9,7 @@ import { toast } from 'react-toastify'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
-  const { selectedIds, clearSelection, isSelectionActive } = useClickSelect()
+  const { selectedIds, clearSelection, isClickSelectionActive } = useClickSelect()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -30,7 +30,7 @@ function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
     <>
       <SelectionDrawer
         aria-label={'song-sections-selection-drawer'}
-        opened={isSelectionActive}
+        opened={isClickSelectionActive}
         onClose={clearSelection}
         text={`${selectedIds.length} section${plural(selectedIds)} selected`}
         actionIcons={

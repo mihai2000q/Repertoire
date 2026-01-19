@@ -9,7 +9,7 @@ interface ClickSelectProviderProps {
 interface ClickSelectReturnType {
   selectables: ClickSelectable[]
   selectedIds: string[]
-  isSelectionActive: boolean
+  isClickSelectionActive: boolean
   addSelectable: (id: string, el: HTMLElement) => void
   removeSelectable: (id: string) => void
   clearSelection: () => void
@@ -18,7 +18,7 @@ interface ClickSelectReturnType {
 const ClickSelectContext = createContext<ClickSelectReturnType>({
   selectables: [],
   selectedIds: [],
-  isSelectionActive: false,
+  isClickSelectionActive: false,
   addSelectable: () => undefined,
   removeSelectable: () => undefined,
   clearSelection: () => undefined
@@ -111,7 +111,7 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
       value={{
         selectables: selectables.current,
         selectedIds: selectedIds,
-        isSelectionActive: isSelectionActive,
+        isClickSelectionActive: isSelectionActive,
         addSelectable: handleAddSelectable,
         removeSelectable: handleRemoveSelectable,
         clearSelection: handleClearSelection

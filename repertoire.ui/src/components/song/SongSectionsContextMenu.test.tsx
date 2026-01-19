@@ -25,7 +25,7 @@ describe('Song Sections Context Menu', () => {
     vi.mocked(useDragSelect).mockReturnValue({
       dragSelect: null,
       selectedIds: selectedIds,
-      isSelectionActive: true,
+      isClickSelectionActive: true,
       clearSelection: clearSelection
     })
   })

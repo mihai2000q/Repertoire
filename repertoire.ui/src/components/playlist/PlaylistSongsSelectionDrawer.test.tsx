@@ -33,7 +33,7 @@ describe('Playlist Songs Selection Drawer', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: selectedIds,
-      isSelectionActive: true,
+      isClickSelectionActive: true,
       clearSelection: clearSelection
     })
   })

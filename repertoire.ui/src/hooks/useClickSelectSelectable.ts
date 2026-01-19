@@ -12,7 +12,7 @@ export default function useClickSelectSelectable<T extends HTMLElement>(
   id: string
 ): UseClickSelectSelectableReturnType<T> {
   const ref = useRef<T>()
-  const { addSelectable, removeSelectable, selectedIds, selectables, isSelectionActive } =
+  const { addSelectable, removeSelectable, selectedIds, selectables, isClickSelectionActive } =
     useClickSelect()
   const [isSelected, setIsSelected] = useState(false)
   const [isLastInSelection, setIsLastInSelection] = useState(false)
@@ -39,7 +39,7 @@ export default function useClickSelectSelectable<T extends HTMLElement>(
   return {
     ref: ref,
     isClickSelected: isSelected,
-    isClickSelectionActive: isSelectionActive,
+    isClickSelectionActive: isClickSelectionActive,
     isLastInSelection: isLastInSelection
   }
 }
