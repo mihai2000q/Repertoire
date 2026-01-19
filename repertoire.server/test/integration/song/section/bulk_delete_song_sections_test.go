@@ -27,7 +27,7 @@ func TestBulkDeleteSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk", request)
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk-delete", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -44,7 +44,7 @@ func TestBulkDeleteSongSections_WhenSectionIsNotFound_ShouldReturnNotFoundError(
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk", request)
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk-delete", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -63,7 +63,7 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk", request)
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk-delete", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
