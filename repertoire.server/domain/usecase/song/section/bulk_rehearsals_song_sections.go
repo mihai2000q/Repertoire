@@ -43,6 +43,7 @@ func (b BulkRehearsalsSongSections) Handle(request requests.BulkRehearsalsSongSe
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
+	// check whether all sections can be found
 	sectionsFound := 0
 	for _, section := range song.Sections {
 		ind := slices.IndexFunc(request.Sections, func(sec requests.BulkRehearsalsSongSectionRequest) bool {
@@ -52,9 +53,6 @@ func (b BulkRehearsalsSongSections) Handle(request requests.BulkRehearsalsSongSe
 			continue
 		}
 		sectionsFound++
-		if section.Rehearsals > request.Sections[ind].Rehearsals {
-			return wrapper.ConflictError(errors.New("song rehearsals not found"))
-		}
 	}
 
 	if sectionsFound != len(request.Sections) {
@@ -74,12 +72,12 @@ func (b BulkRehearsalsSongSections) Handle(request requests.BulkRehearsalsSongSe
 			ind := slices.IndexFunc(request.Sections, func(sec requests.BulkRehearsalsSongSectionRequest) bool {
 				return sec.ID == section.ID
 			})
-			if ind == -1 || section.Rehearsals == request.Sections[ind].Rehearsals {
+			if ind == -1 || request.Sections[ind].Rehearsals == 0 {
 				continue
 			}
 			oldProgress := section.Progress
 			oldRehearsals := section.Rehearsals
-			newRehearsals := request.Sections[ind].Rehearsals
+			newRehearsals := section.Rehearsals + request.Sections[ind].Rehearsals
 
 			// add history of the rehearsals change
 			newHistory := model.SongSectionHistory{
