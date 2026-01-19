@@ -1,5 +1,4 @@
 import { ActionIcon, Tooltip } from '@mantine/core'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
@@ -7,9 +6,10 @@ import plural from '../../utils/plural.ts'
 import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { useBulkRehearsalsSongSectionsMutation } from '../../state/api/songsApi.ts'
 import { toast } from 'react-toastify'
+import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
-  const { selectedIds, clearSelection } = useDragSelect()
+  const { selectedIds, clearSelection, isSelectionActive } = useClickSelect()
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -30,7 +30,7 @@ function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
     <>
       <SelectionDrawer
         aria-label={'song-sections-selection-drawer'}
-        opened={selectedIds.length > 0}
+        opened={isSelectionActive}
         onClose={clearSelection}
         text={`${selectedIds.length} section${plural(selectedIds)} selected`}
         actionIcons={
@@ -45,7 +45,7 @@ function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
                 <IconLocationPlus size={15} />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label={'Delete song sections'}>
+            <Tooltip label={'Delete sections'}>
               <ActionIcon
                 aria-label={'delete'}
                 variant={'grey-primary'}

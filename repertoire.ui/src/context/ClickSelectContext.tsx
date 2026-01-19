@@ -9,6 +9,7 @@ interface ClickSelectProviderProps {
 interface ClickSelectReturnType {
   selectables: ClickSelectable[]
   selectedIds: string[]
+  isSelectionActive: boolean
   addSelectable: (id: string, el: HTMLElement) => void
   removeSelectable: (id: string) => void
   clearSelection: () => void
@@ -17,6 +18,7 @@ interface ClickSelectReturnType {
 const ClickSelectContext = createContext<ClickSelectReturnType>({
   selectables: [],
   selectedIds: [],
+  isSelectionActive: false,
   addSelectable: () => undefined,
   removeSelectable: () => undefined,
   clearSelection: () => undefined
@@ -31,10 +33,13 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
   const selectables = useRef<ClickSelectable[]>([])
   const lastSelectedId = useRef('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [isSelectionActive, setIsSelectionActive] = useState(false)
   const areaRef = useRef<HTMLSpanElement>()
   const { ref: appRef } = useMain()
 
   useEffect(() => handleClearSelection(), [data])
+
+  useEffect(() => setIsSelectionActive(selectedIds.length > 0), [selectedIds])
 
   useEffect(() => {
     const clearOutside = (event: PointerEvent) => {
@@ -106,6 +111,7 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
       value={{
         selectables: selectables.current,
         selectedIds: selectedIds,
+        isSelectionActive: isSelectionActive,
         addSelectable: handleAddSelectable,
         removeSelectable: handleRemoveSelectable,
         clearSelection: handleClearSelection

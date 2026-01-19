@@ -18,6 +18,7 @@ describe('Song Sections Selection Drawer', () => {
     vi.mocked(useDragSelect).mockReturnValue({
       dragSelect: null,
       selectedIds: selectedIds,
+      isSelectionActive: true,
       clearSelection: clearSelection
     })
   })

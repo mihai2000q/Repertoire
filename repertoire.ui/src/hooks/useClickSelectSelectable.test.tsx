@@ -16,6 +16,7 @@ describe('use Click Select Selectable', () => {
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: [],
+      isSelectionActive: false,
       clearSelection: vi.fn()
     })
   })
@@ -60,19 +61,21 @@ describe('use Click Select Selectable', () => {
     expect(mockRemoveSelectables).toHaveBeenCalledExactlyOnceWith(id)
   })
 
-  it('should return is click selection active true when there are ids', () => {
+  it('should return is click selection active based on the returned value from the provider', () => {
+    const isSelectionActive = false
+
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: [],
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
-      selectedIds: ['something'],
+      selectedIds: [],
+      isSelectionActive: isSelectionActive,
       clearSelection: vi.fn()
     })
 
     const { result } = renderHook(() => useClickSelectSelectable('asd'))
 
-    expect(result.current.isClickSelected).toBeFalsy()
-    expect(result.current.isClickSelectionActive).toBeTruthy()
+    expect(result.current.isClickSelectionActive).toBe(isSelectionActive)
   })
 
   it('should return is click selected true when there are ids and the id is part of those', () => {
@@ -81,13 +84,13 @@ describe('use Click Select Selectable', () => {
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: ['something', id],
+      isSelectionActive: false,
       clearSelection: vi.fn()
     })
 
     const { result } = renderHook(() => useClickSelectSelectable(id))
 
     expect(result.current.isClickSelected).toBeTruthy()
-    expect(result.current.isClickSelectionActive).toBeTruthy()
   })
 
   it.each([
@@ -128,6 +131,7 @@ describe('use Click Select Selectable', () => {
         addSelectable: mockAddSelectables,
         removeSelectable: mockRemoveSelectables,
         selectedIds: selectedIds,
+        isSelectionActive: false,
         clearSelection: vi.fn()
       })
 
@@ -150,6 +154,7 @@ describe('use Click Select Selectable', () => {
   ])('should return is last in selection false', (id, selectables, selectedIds) => {
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: selectables,
+      isSelectionActive: false,
       addSelectable: mockAddSelectables,
       removeSelectable: mockRemoveSelectables,
       selectedIds: selectedIds,

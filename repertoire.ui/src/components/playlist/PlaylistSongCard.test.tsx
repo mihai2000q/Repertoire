@@ -61,6 +61,7 @@ describe('Playlist Song Card', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: [],
+      isSelectionActive: false,
       clearSelection: vi.fn()
     })
   })
@@ -533,7 +534,8 @@ describe('Playlist Song Card', () => {
       selectables: [],
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
-      selectedIds: ['anything'],
+      selectedIds: [],
+      isSelectionActive: true,
       clearSelection: vi.fn()
     })
 
@@ -616,6 +618,7 @@ describe('Playlist Song Card', () => {
         addSelectable: vi.fn(),
         removeSelectable: vi.fn(),
         selectedIds: [song.playlistSongId],
+        isSelectionActive: true,
         clearSelection: vi.fn()
       })
 

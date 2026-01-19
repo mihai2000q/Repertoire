@@ -26,6 +26,7 @@ describe('Album Songs Selection Drawer', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: selectedIds,
+      isSelectionActive: false,
       clearSelection: clearSelection
     })
   })

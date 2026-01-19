@@ -27,6 +27,7 @@ describe('Artist Albums Context Menu', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: selectedIds,
+      isSelectionActive: false,
       clearSelection: clearSelection
     })
   })
@@ -88,7 +89,7 @@ describe('Artist Albums Context Menu', () => {
     expect(screen.queryByRole('menuitem', { name: /remove from artist/i })).not.toBeInTheDocument()
   })
 
-  it('should be disabled when there are no selected ids', async () => {
+  it('should be disabled when the selection is inactive', async () => {
     const user = userEvent.setup()
 
     vi.mocked(useClickSelect).mockReturnValue({
@@ -96,6 +97,7 @@ describe('Artist Albums Context Menu', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: [],
+      isSelectionActive: false,
       clearSelection: clearSelection
     })
 
@@ -109,7 +111,7 @@ describe('Artist Albums Context Menu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should close menu when selected ids deplete', async () => {
+  it('should close menu when the selection becomes inactive', async () => {
     const user = userEvent.setup()
 
     // render and open menu
@@ -121,12 +123,13 @@ describe('Artist Albums Context Menu', () => {
     })
     expect(screen.queryByRole('menu')).toBeInTheDocument()
 
-    // empty the selected ids and rerender the closed menu
+    // close the activity of the selection and rerender the closed menu
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: [],
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: [],
+      isSelectionActive: false,
       clearSelection: clearSelection
     })
 
