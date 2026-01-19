@@ -6,24 +6,21 @@ import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequests.ts'
+import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 describe('Song Sections Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
   const clearSelection = vi.fn()
 
-  const handlers = [
-    http.get('/playlists', async () => {
-      return HttpResponse.json([])
-    })
-  ]
-
-  const server = setupServer(...handlers)
+  const server = setupServer()
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useDragSelect).mockReturnValue({
-      dragSelect: null,
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
       selectedIds: selectedIds,
       isClickSelectionActive: true,
       clearSelection: clearSelection
@@ -38,7 +35,7 @@ describe('Song Sections Context Menu', () => {
   beforeAll(() => {
     server.listen()
     // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
+    vi.mock('../../context/ClickSelectContext', () => ({
       useDragSelect: vi.fn()
     }))
   })

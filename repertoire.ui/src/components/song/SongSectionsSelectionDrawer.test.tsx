@@ -1,11 +1,11 @@
 import { setupServer } from 'msw/node'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { reduxRender, withToastify } from '../../test-utils.tsx'
 import SongSectionsSelectionDrawer from './SongSectionsSelectionDrawer.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequests.ts'
 import { http, HttpResponse } from 'msw'
+import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 describe('Song Sections Selection Drawer', () => {
   const selectedIds = ['1', '2', '3']
@@ -15,10 +15,12 @@ describe('Song Sections Selection Drawer', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useDragSelect).mockReturnValue({
-      dragSelect: null,
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
       selectedIds: selectedIds,
-      isSelectionActive: true,
+      isClickSelectionActive: true,
       clearSelection: clearSelection
     })
   })
@@ -31,7 +33,7 @@ describe('Song Sections Selection Drawer', () => {
   beforeAll(() => {
     server.listen()
     // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
+    vi.mock('../../context/ClickSelectContext', () => ({
       useDragSelect: vi.fn()
     }))
   })
