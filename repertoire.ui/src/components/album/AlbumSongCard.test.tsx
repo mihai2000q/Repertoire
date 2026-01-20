@@ -38,6 +38,7 @@ describe('Album Song Card', () => {
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
       selectedIds: [],
+      isClickSelectionActive: false,
       clearSelection: vi.fn()
     })
   })
@@ -523,7 +524,8 @@ describe('Album Song Card', () => {
       selectables: [],
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
-      selectedIds: ['anything'],
+      selectedIds: [],
+      isClickSelectionActive: true,
       clearSelection: vi.fn()
     })
 
@@ -636,6 +638,7 @@ describe('Album Song Card', () => {
         addSelectable: vi.fn(),
         removeSelectable: vi.fn(),
         selectedIds: [song.id],
+        isClickSelectionActive: true,
         clearSelection: vi.fn()
       })
 

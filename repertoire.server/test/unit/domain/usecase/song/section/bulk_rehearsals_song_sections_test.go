@@ -393,7 +393,7 @@ func TestBulkRehearsalsSongSections_WhenSongIsNotUpdated_ShouldNotUpdateSong(t *
 
 	request := requests.BulkRehearsalsSongSectionsRequest{
 		Sections: []requests.BulkRehearsalsSongSectionRequest{
-			{ID: uuid.New(), Rehearsals: 1},
+			{ID: uuid.New(), Rehearsals: 0},
 		},
 		SongID: uuid.New(),
 	}
@@ -487,7 +487,7 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *te
 				Progress:   1,
 			},
 			[]RequestSectionsTestData{
-				{Index: 0, NewRehearsals: 1},
+				{Index: 0, NewRehearsals: 0},
 				{Index: 2, NewRehearsals: 1},
 			},
 			model.Song{
@@ -518,8 +518,8 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *te
 				Progress:   78.6,
 			},
 			[]RequestSectionsTestData{
-				{Index: 0, NewRehearsals: 22},
-				{Index: 2, NewRehearsals: 40},
+				{Index: 0, NewRehearsals: 10},
+				{Index: 2, NewRehearsals: 15},
 			},
 			model.Song{
 				Sections: []model.SongSection{
@@ -572,7 +572,7 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *te
 				sectionIndex := slices.IndexFunc(tt.song.Sections, func(sec model.SongSection) bool {
 					return sec.ID == s.ID
 				})
-				if sectionIndex == -1 || s.Rehearsals == tt.song.Sections[sectionIndex].Rehearsals {
+				if sectionIndex == -1 || s.Rehearsals == 0 {
 					continue
 				}
 
@@ -582,7 +582,7 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *te
 
 						assert.NotEmpty(t, newHistory.ID)
 						assert.Equal(t, model.RehearsalsProperty, newHistory.Property)
-						assert.Equal(t, s.Rehearsals, newHistory.To)
+						assert.Equal(t, s.Rehearsals+tt.song.Sections[sectionIndex].Rehearsals, newHistory.To)
 						songSectionIndex := slices.IndexFunc(tt.song.Sections, func(sec model.SongSection) bool {
 							return sec.ID == newHistory.SongSectionID
 						})

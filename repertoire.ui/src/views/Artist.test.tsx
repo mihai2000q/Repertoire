@@ -15,7 +15,6 @@ import OrderType from '../types/enums/OrderType.ts'
 import SongProperty from '../types/enums/properties/SongProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
-import { MainProvider } from '../context/MainContext.tsx'
 import { createRef } from 'react'
 
 describe('Artist', () => {
@@ -72,20 +71,25 @@ describe('Artist', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
 
   const render = (id = artist.id) =>
-    reduxMemoryRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <Artist />
-      </MainProvider>,
-      '/artist/:id',
-      [`/artist/${id}`]
-    )
+    reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${id}`])
 
   it('should render and display artist info when the artist is not unknown', async () => {
     let albumsParams: URLSearchParams
@@ -149,7 +153,7 @@ describe('Artist', () => {
       })
     )
 
-    const [_, store] =  render('unknown')
+    const [_, store] = render('unknown')
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
     expect(screen.getByLabelText('header-panel-card')).toBeInTheDocument()

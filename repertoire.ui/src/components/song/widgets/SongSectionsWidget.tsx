@@ -26,6 +26,9 @@ import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
 import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../context/MainContext.tsx'
+import SongSectionsContextMenu from '../SongSectionsContextMenu.tsx'
+import SongSectionsSelectionDrawer from '../SongSectionsSelectionDrawer.tsx'
+import { ClickSelectProvider, useClickSelect } from '../../../context/ClickSelectContext.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
@@ -66,7 +69,10 @@ function SongSectionsWidget({
 
   const scrollAddIntoView = () => {
     scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
-    mainScroll.ref.current?.scrollTo({ top: mainScroll.ref.current.scrollHeight, behavior: 'smooth' })
+    mainScroll.ref.current?.scrollTo({
+      top: mainScroll.ref.current.scrollHeight,
+      behavior: 'smooth'
+    })
   }
 
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
@@ -121,213 +127,223 @@ function SongSectionsWidget({
   }
 
   return (
-    <Card ref={ref} variant={'widget'} aria-label={'sections-widget'} p={0}>
-      <Stack gap={0}>
-        <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
+    <ClickSelectProvider data={sections}>
+      <Card ref={ref} variant={'widget'} aria-label={'sections-widget'} p={0}>
+        <Stack gap={0}>
+          <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
 
-        <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
-          <Text fw={600} inline>
-            Sections
-          </Text>
+          <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
+            <Text fw={600} inline>
+              Sections
+            </Text>
 
-          <Tooltip.Group openDelay={500} closeDelay={100}>
-            <Tooltip label={'Add New Section'}>
-              <ActionIcon
-                aria-label={'add-new-section'}
-                variant={'grey'}
-                size={'sm'}
-                onClick={openedAdd ? closeAdd : openAdd}
-              >
-                <IconPlus size={16} />
-              </ActionIcon>
-            </Tooltip>
+            <Tooltip.Group openDelay={500} closeDelay={100}>
+              <Tooltip label={'Add New Section'}>
+                <ActionIcon
+                  aria-label={'add-new-section'}
+                  variant={'grey'}
+                  size={'sm'}
+                  onClick={openedAdd ? closeAdd : openAdd}
+                >
+                  <IconPlus size={16} />
+                </ActionIcon>
+              </Tooltip>
 
-            <Tooltip
-              label={
-                sections.length > 0
-                  ? showDetails
-                    ? 'Hide details'
-                    : 'Show Details'
-                  : 'To show details you need sections'
-              }
-            >
-              <ActionIcon
-                aria-label={showDetails ? 'hide-details' : 'show-details'}
-                variant={'grey'}
-                size={'sm'}
-                disabled={sections.length === 0}
-                onClick={handleShowDetails}
-              >
-                {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}
-              </ActionIcon>
-            </Tooltip>
-
-            <Tooltip
-              label={
-                sections.length === 0
-                  ? "To edit sections' occurrences you need sections"
-                  : "Edit Sections' Occurrences"
-              }
-            >
-              <ActionIcon
-                aria-label={'edit-occurrences'}
-                variant={'grey'}
-                size={'sm'}
-                disabled={sections.length === 0}
-                onClick={openOccurrences}
-              >
-                <IconListNumbers size={16} />
-              </ActionIcon>
-            </Tooltip>
-
-            <PopoverConfirmation
-              label={"Increase sections' rehearsals based on partial occurrences"}
-              popoverProps={{
-                opened: openedPartialRehearsalPopover,
-                onChange: setOpenedPartialRehearsalPopover,
-                closeOnClickOutside: !isPartialRehearsalLoading
-              }}
-              isLoading={isPartialRehearsalLoading}
-              onCancel={() => setOpenedPartialRehearsalPopover(false)}
-              onConfirm={handleAddPartialRehearsal}
-            >
               <Tooltip
                 label={
-                  sections.length === 0
-                    ? 'To add a partial rehearsal you need sections'
-                    : 'Add Partial Rehearsal'
+                  sections.length > 0
+                    ? showDetails
+                      ? 'Hide details'
+                      : 'Show Details'
+                    : 'To show details you need sections'
                 }
-                disabled={openedPartialRehearsalPopover}
               >
                 <ActionIcon
-                  aria-label={'add-partial-rehearsal'}
+                  aria-label={showDetails ? 'hide-details' : 'show-details'}
                   variant={'grey'}
                   size={'sm'}
                   disabled={sections.length === 0}
-                  onClick={() =>
-                    setOpenedPartialRehearsalPopover(
-                      isPartialRehearsalLoading || !openedPartialRehearsalPopover
-                    )
-                  }
+                  onClick={handleShowDetails}
                 >
-                  <IconCheck size={16} />
+                  {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}
                 </ActionIcon>
               </Tooltip>
-            </PopoverConfirmation>
 
-            <PopoverConfirmation
-              label={"Increase sections' rehearsals based on occurrences"}
-              popoverProps={{
-                opened: openedPerfectRehearsalPopover,
-                onChange: setOpenedPerfectRehearsalPopover,
-                closeOnClickOutside: !isPerfectRehearsalLoading
-              }}
-              isLoading={isPerfectRehearsalLoading}
-              onCancel={() => setOpenedPerfectRehearsalPopover(false)}
-              onConfirm={handleAddPerfectRehearsal}
-            >
               <Tooltip
                 label={
                   sections.length === 0
-                    ? 'To add a perfect rehearsal you need sections'
-                    : 'Add Perfect Rehearsal'
+                    ? "To edit sections' occurrences you need sections"
+                    : "Edit Sections' Occurrences"
                 }
-                disabled={openedPerfectRehearsalPopover}
               >
                 <ActionIcon
-                  aria-label={'add-perfect-rehearsal'}
+                  aria-label={'edit-occurrences'}
                   variant={'grey'}
                   size={'sm'}
                   disabled={sections.length === 0}
-                  onClick={() =>
-                    setOpenedPerfectRehearsalPopover(
-                      isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
-                    )
-                  }
+                  onClick={openOccurrences}
                 >
-                  <IconChecks size={16} />
+                  <IconListNumbers size={16} />
                 </ActionIcon>
               </Tooltip>
-            </PopoverConfirmation>
 
-            <SongSectionsSettingsPopover
-              settings={settings}
-              sections={sections}
-              songId={songId}
-              bandMembers={bandMembers}
-            />
-          </Tooltip.Group>
-        </Group>
-
-        <ScrollArea.Autosize
-          viewportRef={scrollableRef}
-          scrollbars={'y'}
-          scrollbarSize={7}
-          mah={(showDetails ? 2 : 1) * 383.35}
-          style={{ transition: 'max-height 0.25s' }}
-        >
-          <Stack gap={0}>
-            <DragDropContext onDragEnd={onSectionsDragEnd}>
-              <Droppable droppableId="dnd-list" direction="vertical">
-                {(provided) => (
-                  <Box ref={provided.innerRef} {...provided.droppableProps}>
-                    {internalSections.map((section, index) => (
-                      <Draggable
-                        key={section.id}
-                        index={index}
-                        draggableId={section.id}
-                        isDragDisabled={isFetching || isMoveLoading}
-                      >
-                        {(provided, snapshot) => (
-                          <SongSectionCard
-                            section={section}
-                            songId={songId}
-                            isDragging={snapshot.isDragging}
-                            showDetails={showDetails}
-                            maxSectionProgress={maxSectionProgress}
-                            maxSectionRehearsals={maxSectionRehearsals}
-                            draggableProvided={provided}
-                            bandMembers={bandMembers}
-                            isArtistBand={isArtistBand}
-                            showRehearsalsToast={showRehearsalsToast}
-                          />
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </Box>
-                )}
-              </Droppable>
-            </DragDropContext>
-
-            {sections.length === 0 && (
-              <NewHorizontalCard
-                ariaLabel={'add-new-song-section-card'}
-                onClick={openedAdd ? closeAdd : openAdd}
+              <PopoverConfirmation
+                label={"Increase sections' rehearsals based on partial occurrences"}
+                popoverProps={{
+                  opened: openedPartialRehearsalPopover,
+                  onChange: setOpenedPartialRehearsalPopover,
+                  closeOnClickOutside: !isPartialRehearsalLoading
+                }}
+                isLoading={isPartialRehearsalLoading}
+                onCancel={() => setOpenedPartialRehearsalPopover(false)}
+                onConfirm={handleAddPartialRehearsal}
               >
-                Add New Song Section
-              </NewHorizontalCard>
-            )}
+                <Tooltip
+                  label={
+                    sections.length === 0
+                      ? 'To add a partial rehearsal you need sections'
+                      : 'Add Partial Rehearsal'
+                  }
+                  disabled={openedPartialRehearsalPopover}
+                >
+                  <ActionIcon
+                    aria-label={'add-partial-rehearsal'}
+                    variant={'grey'}
+                    size={'sm'}
+                    disabled={sections.length === 0}
+                    onClick={() =>
+                      setOpenedPartialRehearsalPopover(
+                        isPartialRehearsalLoading || !openedPartialRehearsalPopover
+                      )
+                    }
+                  >
+                    <IconCheck size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </PopoverConfirmation>
 
-            <AddNewSongSection
-              songId={songId}
-              opened={openedAdd}
-              onClose={closeAdd}
-              settings={settings}
-              bandMembers={bandMembers}
-              scrollIntoView={scrollAddIntoView}
-            />
-          </Stack>
-        </ScrollArea.Autosize>
-      </Stack>
+              <PopoverConfirmation
+                label={"Increase sections' rehearsals based on occurrences"}
+                popoverProps={{
+                  opened: openedPerfectRehearsalPopover,
+                  onChange: setOpenedPerfectRehearsalPopover,
+                  closeOnClickOutside: !isPerfectRehearsalLoading
+                }}
+                isLoading={isPerfectRehearsalLoading}
+                onCancel={() => setOpenedPerfectRehearsalPopover(false)}
+                onConfirm={handleAddPerfectRehearsal}
+              >
+                <Tooltip
+                  label={
+                    sections.length === 0
+                      ? 'To add a perfect rehearsal you need sections'
+                      : 'Add Perfect Rehearsal'
+                  }
+                  disabled={openedPerfectRehearsalPopover}
+                >
+                  <ActionIcon
+                    aria-label={'add-perfect-rehearsal'}
+                    variant={'grey'}
+                    size={'sm'}
+                    disabled={sections.length === 0}
+                    onClick={() =>
+                      setOpenedPerfectRehearsalPopover(
+                        isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
+                      )
+                    }
+                  >
+                    <IconChecks size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </PopoverConfirmation>
 
-      <EditSongSectionsOccurrencesModal
-        opened={openedOccurrences}
-        onClose={closeOccurrences}
-        sections={sections}
-        songId={songId}
-      />
-    </Card>
+              <SongSectionsSettingsPopover
+                settings={settings}
+                sections={sections}
+                songId={songId}
+                bandMembers={bandMembers}
+              />
+            </Tooltip.Group>
+          </Group>
+
+          <ScrollArea.Autosize
+            viewportRef={scrollableRef}
+            scrollbars={'y'}
+            scrollbarSize={7}
+            mah={(showDetails ? 2 : 1) * 383.35}
+            style={{ transition: 'max-height 0.25s' }}
+          >
+            <Stack gap={0}>
+              <SongSectionsContextMenu songId={songId}>
+                <span style={{ display: 'contents' }}>
+                  <DragDropContext onDragEnd={onSectionsDragEnd}>
+                    <Droppable droppableId="dnd-list" direction="vertical">
+                      {(provided) => (
+                        <Box ref={provided.innerRef} {...provided.droppableProps}>
+                          {internalSections.map((section, index) => {
+                            const { isClickSelectionActive } = useClickSelect()
+                            return (
+                              <Draggable
+                                key={section.id}
+                                index={index}
+                                draggableId={section.id}
+                                isDragDisabled={isFetching || isMoveLoading || isClickSelectionActive}
+                              >
+                                {(provided, snapshot) => (
+                                  <SongSectionCard
+                                    section={section}
+                                    songId={songId}
+                                    isDragging={snapshot.isDragging}
+                                    showDetails={showDetails}
+                                    maxSectionProgress={maxSectionProgress}
+                                    maxSectionRehearsals={maxSectionRehearsals}
+                                    draggableProvided={provided}
+                                    bandMembers={bandMembers}
+                                    isArtistBand={isArtistBand}
+                                    showRehearsalsToast={showRehearsalsToast}
+                                  />
+                                )}
+                              </Draggable>
+                            )
+                          })}
+                          {provided.placeholder}
+                        </Box>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
+                </span>
+              </SongSectionsContextMenu>
+              <SongSectionsSelectionDrawer songId={songId} />
+
+              {sections.length === 0 && (
+                <NewHorizontalCard
+                  ariaLabel={'add-new-song-section-card'}
+                  onClick={openedAdd ? closeAdd : openAdd}
+                >
+                  Add New Song Section
+                </NewHorizontalCard>
+              )}
+
+              <AddNewSongSection
+                songId={songId}
+                opened={openedAdd}
+                onClose={closeAdd}
+                settings={settings}
+                bandMembers={bandMembers}
+                scrollIntoView={scrollAddIntoView}
+              />
+            </Stack>
+          </ScrollArea.Autosize>
+        </Stack>
+
+        <EditSongSectionsOccurrencesModal
+          opened={openedOccurrences}
+          onClose={closeOccurrences}
+          sections={sections}
+          songId={songId}
+        />
+      </Card>
+    </ClickSelectProvider>
   )
 }
 

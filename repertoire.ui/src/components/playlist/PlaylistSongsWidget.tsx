@@ -30,7 +30,7 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.
 import { useMain } from '../../context/MainContext.tsx'
 import PlaylistSongsContextMenu from './PlaylistSongsContextMenu.tsx'
 import PlaylistSongsSelectionDrawer from './PlaylistSongsSelectionDrawer.tsx'
-import { ClickSelectProvider } from '../../context/ClickSelectContext.tsx'
+import { ClickSelectProvider, useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 interface PlaylistSongsWidgetProps {
   playlistId: string
@@ -203,27 +203,33 @@ const Songs = memo(
         <Droppable droppableId="dnd-list" direction="vertical">
           {(provided) => (
             <Box ref={provided.innerRef} {...provided.droppableProps}>
-              {internalSongs.map((song, index) => (
-                <Draggable
-                  key={song.playlistSongId}
-                  index={index}
-                  draggableId={song.playlistSongId}
-                  isDragDisabled={
-                    isFetching || isMoveLoading || order.property !== SongProperty.PlaylistTrackNo
-                  }
-                >
-                  {(provided, snapshot) => (
-                    <PlaylistSongCard
-                      key={song.playlistSongId}
-                      song={song}
-                      playlistId={playlistId}
-                      order={order}
-                      isDragging={snapshot.isDragging}
-                      draggableProvided={provided}
-                    />
-                  )}
-                </Draggable>
-              ))}
+              {internalSongs.map((song, index) => {
+                const { isClickSelectionActive } = useClickSelect()
+                return (
+                  <Draggable
+                    key={song.playlistSongId}
+                    index={index}
+                    draggableId={song.playlistSongId}
+                    isDragDisabled={
+                      isFetching ||
+                      isMoveLoading ||
+                      order.property !== SongProperty.PlaylistTrackNo ||
+                      isClickSelectionActive
+                    }
+                  >
+                    {(provided, snapshot) => (
+                      <PlaylistSongCard
+                        key={song.playlistSongId}
+                        song={song}
+                        playlistId={playlistId}
+                        order={order}
+                        isDragging={snapshot.isDragging}
+                        draggableProvided={provided}
+                      />
+                    )}
+                  </Draggable>
+                )
+              })}
               {provided.placeholder}
             </Box>
           )}

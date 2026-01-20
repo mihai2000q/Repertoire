@@ -1,31 +1,18 @@
-import { emptySong, reduxRender } from '../../test-utils.tsx'
-import PlaylistSongsContextMenu from './PlaylistSongsContextMenu.tsx'
+import { reduxRender, withToastify } from '../../test-utils.tsx'
+import SongSectionsContextMenu from './SongSectionsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
+import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequests.ts'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
-import Song from '../../types/models/Song.ts'
 
-describe('Playlists Songs Context Menu', () => {
-  const playlistId = 'playlist-id'
+describe('Song Sections Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
   const clearSelection = vi.fn()
 
-  const songs: Song[] = [
-    { ...emptySong, id: 's1', playlistSongId: selectedIds[0] },
-    { ...emptySong, id: 's2', playlistSongId: selectedIds[1] },
-    { ...emptySong, id: 's3', playlistSongId: selectedIds[2] }
-  ]
-
-  const handlers = [
-    http.get('/playlists', async () => {
-      return HttpResponse.json([])
-    })
-  ]
-
-  const server = setupServer(...handlers)
+  const server = setupServer()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -54,11 +41,13 @@ describe('Playlists Songs Context Menu', () => {
 
   afterAll(() => server.close())
 
-  const render = () =>
+  const render = (songId = '1') =>
     reduxRender(
-      <PlaylistSongsContextMenu playlistId={playlistId} songs={songs}>
-        <div data-testid={dataTestId} />
-      </PlaylistSongsContextMenu>
+      withToastify(
+        <SongSectionsContextMenu songId={songId}>
+          <div data-testid={dataTestId} />
+        </SongSectionsContextMenu>
+      )
     )
 
   it('should render', async () => {
@@ -72,9 +61,8 @@ describe('Playlists Songs Context Menu', () => {
     })
 
     expect(await screen.findByRole('menu')).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /perfect rehearsals/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /remove from playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add rehearsals/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
   it('should be disabled when the selection is inactive', async () => {
@@ -86,7 +74,7 @@ describe('Playlists Songs Context Menu', () => {
       removeSelectable: vi.fn(),
       selectedIds: [],
       isClickSelectionActive: false,
-      clearSelection: clearSelection
+      clearSelection: vi.fn()
     })
 
     render()
@@ -118,33 +106,61 @@ describe('Playlists Songs Context Menu', () => {
       removeSelectable: vi.fn(),
       selectedIds: [],
       isClickSelectionActive: false,
-      clearSelection: clearSelection
+      clearSelection: vi.fn()
     })
 
     rerender(
-      <PlaylistSongsContextMenu playlistId={playlistId} songs={songs}>
+      <SongSectionsContextMenu songId={'1'}>
         <div data-testid={dataTestId} />
-      </PlaylistSongsContextMenu>
+      </SongSectionsContextMenu>
     )
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  describe('on menu', () => {
-    it('should open warning when clicking on remove from playlist menu item', async () => {
-      const user = userEvent.setup()
+  it('should bulk rehearsals by 1 on add rehearsals menu item', async () => {
+    const user = userEvent.setup()
 
-      render()
-
-      await user.pointer({
-        keys: '[MouseRight>]',
-        target: screen.getByTestId(dataTestId)
+    let capturedRequest: BulkRehearsalsSongSectionsRequest
+    server.use(
+      http.post(`/songs/sections/bulk-rehearsals`, async (req) => {
+        capturedRequest = (await req.request.json()) as BulkRehearsalsSongSectionsRequest
+        return HttpResponse.json({ message: 'it worked' })
       })
-      await user.click(screen.getByRole('menuitem', { name: /remove from playlist/i }))
+    )
 
-      expect(
-        await screen.findByRole('dialog', { name: /remove songs from playlist/i })
-      ).toBeInTheDocument()
+    const songId = '1'
+
+    render(songId)
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByTestId(dataTestId)
     })
+    await user.click(screen.getByRole('menuitem', { name: /add rehearsals/i }))
+    await user.click(screen.getByRole('button', { name: /confirm/i })) // menu item confirmation
+
+    expect(
+      screen.getByText(`Rehearsals added to ${selectedIds.length} sections!`)
+    ).toBeInTheDocument()
+    expect(capturedRequest).toStrictEqual({
+      sections: selectedIds.map((id) => ({ id: id, rehearsals: 1 })),
+      songId: songId
+    })
+    expect(clearSelection).toHaveBeenCalledOnce()
+  })
+
+  it('should open warning when clicking on delete menu item', async () => {
+    const user = userEvent.setup()
+
+    render()
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByTestId(dataTestId)
+    })
+    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+    expect(await screen.findByRole('dialog', { name: /delete sections/i })).toBeInTheDocument()
   })
 })

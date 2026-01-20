@@ -51,26 +51,6 @@ func TestBulkRehearsalsSongSections_WhenSectionIsNotFound_ShouldReturnNotFoundEr
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestBulkRehearsalsSongSections_WhenSectionRehearsalsAreDecreasing_ShouldReturnConflictError(t *testing.T) {
-	// given
-	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
-
-	song := songData.Songs[0]
-	request := requests.BulkRehearsalsSongSectionsRequest{
-		Sections: []requests.BulkRehearsalsSongSectionRequest{
-			{ID: song.Sections[0].ID, Rehearsals: song.Sections[0].Rehearsals - 1},
-		},
-		SongID: song.ID,
-	}
-
-	// when
-	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/songs/sections/bulk-rehearsals", request)
-
-	// then
-	assert.Equal(t, http.StatusConflict, w.Code)
-}
-
 func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -80,8 +60,9 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldDeleteSections(t *testi
 	oldSections := slices.Clone(song.Sections)
 	request := requests.BulkRehearsalsSongSectionsRequest{
 		Sections: []requests.BulkRehearsalsSongSectionRequest{
-			{ID: song.Sections[0].ID, Rehearsals: song.Sections[0].Rehearsals + 10},
-			{ID: song.Sections[2].ID, Rehearsals: song.Sections[2].Rehearsals + 5},
+			{ID: song.Sections[0].ID, Rehearsals: 10},
+			{ID: song.Sections[1].ID, Rehearsals: 0},
+			{ID: song.Sections[2].ID, Rehearsals: 5},
 		},
 		SongID: songData.Songs[0].ID,
 	}
@@ -109,7 +90,7 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldDeleteSections(t *testi
 		ind := slices.IndexFunc(request.Sections, func(s requests.BulkRehearsalsSongSectionRequest) bool {
 			return newSection.ID == s.ID
 		})
-		if ind == -1 || newSection.Rehearsals == request.Sections[ind].Rehearsals {
+		if ind == -1 || newSection.Rehearsals == 0 {
 			continue
 		}
 		assert.Greater(t, newSection.Rehearsals, oldSections[i].Rehearsals)
@@ -118,7 +99,7 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldDeleteSections(t *testi
 
 		assert.NotEmpty(t, newSection.History[0].ID)
 		assert.Equal(t, oldSections[i].Rehearsals, newSection.History[0].From)
-		assert.Equal(t, request.Sections[ind].Rehearsals, newSection.History[0].To)
+		assert.Equal(t, oldSections[i].Rehearsals+request.Sections[ind].Rehearsals, newSection.History[0].To)
 		assert.Equal(t, model.RehearsalsProperty, newSection.History[0].Property)
 	}
 

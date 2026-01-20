@@ -20,7 +20,6 @@ import FilterOperator from '../types/enums/FilterOperator.ts'
 import ArtistProperty from '../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import Playlist from '../types/models/Playlist.ts'
-import { MainProvider } from '../context/MainContext.tsx'
 import { createRef } from 'react'
 
 describe('Artists', () => {
@@ -126,6 +125,7 @@ describe('Artists', () => {
 
   beforeAll(() => {
     server.listen()
+    // Mock Drag Select
     vi.mock('dragselect', () => ({
       default: vi.fn(() => ({
         start: vi.fn(),
@@ -137,6 +137,13 @@ describe('Artists', () => {
         unsubscribe: vi.fn(),
         addSelectables: vi.fn(),
         removeSelectables: vi.fn()
+      }))
+    }))
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
       }))
     }))
   })
@@ -152,15 +159,8 @@ describe('Artists', () => {
     vi.clearAllMocks()
   })
 
-  const render = () =>
-    reduxRouterRender(
-      <MainProvider appRef={createRef()} scrollRef={createRef()}>
-        <Artists />
-      </MainProvider>
-    )
-
   it('should render and display relevant info when there are artists', async () => {
-    const [_, store] = render()
+    const [_, store] = reduxRouterRender(<Artists />)
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/artists/i)
     expect(screen.getByRole('heading', { name: /artists/i })).toBeInTheDocument()
@@ -186,7 +186,7 @@ describe('Artists', () => {
   it('should open the add new artist modal when clicking the new artist button', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<Artists />)
 
     const newAlbumButton = screen.getByRole('button', { name: /new-artist/i })
     await user.click(newAlbumButton)
@@ -197,7 +197,7 @@ describe('Artists', () => {
   it('should open the add new artist modal when clicking the new artist card button', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<Artists />)
 
     const newAlbumCardButton = await screen.findByLabelText('new-artist-card')
     await user.click(newAlbumCardButton)
@@ -206,7 +206,7 @@ describe('Artists', () => {
   })
 
   it('should display not display some info when there are no artists', async () => {
-    render()
+    reduxRouterRender(<Artists />)
 
     server.use(getNoArtists())
 
@@ -218,7 +218,7 @@ describe('Artists', () => {
   })
 
   it('should display pagination and new artist card when the unknown artist card is shown and there are no artists', async () => {
-    render()
+    reduxRouterRender(<Artists />)
 
     server.use(getNoArtists(), getSongsWithoutArtists())
 
@@ -236,7 +236,7 @@ describe('Artists', () => {
 
     server.use(getArtistsWithPagination(totalCount))
 
-    render()
+    reduxRouterRender(<Artists />)
 
     expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
     expect(screen.queryAllByLabelText(/artist-card-/)).toHaveLength(pageSize)
@@ -262,7 +262,7 @@ describe('Artists', () => {
 
     server.use(getArtistsWithPagination())
 
-    render()
+    reduxRouterRender(<Artists />)
 
     expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
     expect(screen.queryByLabelText('new-artist-card')).not.toBeInTheDocument()
@@ -288,7 +288,7 @@ describe('Artists', () => {
         server.use(getSongsWithoutArtists())
       }
 
-      render()
+      reduxRouterRender(<Artists />)
 
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
       expect(screen.queryByLabelText('unknown-artist-card')).toBeInTheDocument()
@@ -319,7 +319,7 @@ describe('Artists', () => {
         server.use(getSongsWithoutArtists())
       }
 
-      render()
+      reduxRouterRender(<Artists />)
 
       expect(await screen.findByTestId('artists-pagination')).toBeInTheDocument()
       expect(screen.queryByLabelText('unknown-artist-card')).not.toBeInTheDocument()
@@ -358,7 +358,7 @@ describe('Artists', () => {
       })
     )
 
-    render()
+    reduxRouterRender(<Artists />)
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([initialOrder.property + ' ' + initialOrder.type])
@@ -392,7 +392,7 @@ describe('Artists', () => {
       })
     )
 
-    render()
+    reduxRouterRender(<Artists />)
 
     await waitFor(() => expect(searchBy).toStrictEqual([]))
 
@@ -416,7 +416,7 @@ describe('Artists', () => {
   it.skip('should show the drawer when selecting artists, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    render()
+    reduxRouterRender(<Artists />)
 
     const artistsArea = screen.getByTestId('artists-area')
     await user.pointer([

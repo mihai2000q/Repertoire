@@ -12,9 +12,9 @@ export default function useClickSelectSelectable<T extends HTMLElement>(
   id: string
 ): UseClickSelectSelectableReturnType<T> {
   const ref = useRef<T>()
-  const { addSelectable, removeSelectable, selectedIds, selectables } = useClickSelect()
+  const { addSelectable, removeSelectable, selectedIds, selectables, isClickSelectionActive } =
+    useClickSelect()
   const [isSelected, setIsSelected] = useState(false)
-  const [isActive, setIsActive] = useState(false)
   const [isLastInSelection, setIsLastInSelection] = useState(false)
 
   useEffect(() => {
@@ -26,7 +26,6 @@ export default function useClickSelectSelectable<T extends HTMLElement>(
   useEffect(() => {
     const isSelected = selectedIds.some((i) => i === id)
     setIsSelected(isSelected)
-    setIsActive(selectedIds.length > 0)
 
     if (!isSelected || selectedIds.length === 0) {
       setIsLastInSelection(false)
@@ -40,7 +39,7 @@ export default function useClickSelectSelectable<T extends HTMLElement>(
   return {
     ref: ref,
     isClickSelected: isSelected,
-    isClickSelectionActive: isActive,
+    isClickSelectionActive: isClickSelectionActive,
     isLastInSelection: isLastInSelection
   }
 }

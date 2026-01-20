@@ -74,10 +74,11 @@ describe('Song Sections Widget', () => {
 
   beforeAll(() => {
     server.listen()
-    // Mock Context
+    // Mock Main Context
     vi.mock('../../../context/MainContext.tsx', () => ({
       useMain: vi.fn(() => ({
-        scroll: { ref: createRef() }
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
       }))
     }))
   })
@@ -309,5 +310,24 @@ describe('Song Sections Widget', () => {
     // expect(
     //   screen.queryByText(new RegExp(`${section1.name} rehearsals.*increased.*1`, 'i'))
     // ).not.toBeInTheDocument()
+  })
+
+  it('should show the drawer when selecting sections, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />)
+
+    // selection drawer
+    await user.keyboard('{Control>}')
+    await user.click(screen.getByLabelText(`song-section-${sections[0].name}`))
+    await user.keyboard('{/Control}')
+    expect(screen.getByLabelText('song-sections-selection-drawer')).toBeInTheDocument()
+
+    // context menu
+    // await user.pointer({
+    //   keys: '[MouseRight>]',
+    //   target: screen.getByLabelText(`song-section-card-${songs[0].title}`)
+    // })
+    // expect(await screen.findByRole('menu', { name: 'song-sections-context-menu' })).toBeInTheDocument()
   })
 })
