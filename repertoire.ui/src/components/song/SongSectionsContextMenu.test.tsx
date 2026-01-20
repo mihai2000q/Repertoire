@@ -2,7 +2,6 @@ import { reduxRender, withToastify } from '../../test-utils.tsx'
 import SongSectionsContextMenu from './SongSectionsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequests.ts'
@@ -36,7 +35,7 @@ describe('Song Sections Context Menu', () => {
     server.listen()
     // Mock the context
     vi.mock('../../context/ClickSelectContext', () => ({
-      useDragSelect: vi.fn()
+      useClickSelect: vi.fn()
     }))
   })
 
@@ -66,13 +65,16 @@ describe('Song Sections Context Menu', () => {
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
-  it('should be disabled when there are no selected ids', async () => {
+  it('should be disabled when the selection is inactive', async () => {
     const user = userEvent.setup()
 
-    vi.mocked(useDragSelect).mockReturnValue({
-      dragSelect: null,
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
       selectedIds: [],
-      clearSelection: clearSelection
+      isClickSelectionActive: false,
+      clearSelection: vi.fn()
     })
 
     render()
@@ -85,7 +87,7 @@ describe('Song Sections Context Menu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should close menu when selected ids deplete', async () => {
+  it('should close menu when the selection becomes inactive', async () => {
     const user = userEvent.setup()
 
     // render and open menu
@@ -97,11 +99,14 @@ describe('Song Sections Context Menu', () => {
     })
     expect(screen.queryByRole('menu')).toBeInTheDocument()
 
-    // empty the selected ids and rerender the closed menu
-    vi.mocked(useDragSelect).mockReturnValue({
-      dragSelect: null,
+    // close the activity of the selection and rerender the closed menu
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
       selectedIds: [],
-      clearSelection: clearSelection
+      isClickSelectionActive: false,
+      clearSelection: vi.fn()
     })
 
     rerender(

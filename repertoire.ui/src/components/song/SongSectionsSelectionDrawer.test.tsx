@@ -34,7 +34,7 @@ describe('Song Sections Selection Drawer', () => {
     server.listen()
     // Mock the context
     vi.mock('../../context/ClickSelectContext', () => ({
-      useDragSelect: vi.fn()
+      useClickSelect: vi.fn()
     }))
   })
 

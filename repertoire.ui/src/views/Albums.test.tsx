@@ -126,9 +126,10 @@ describe('Albums', () => {
       }))
     }))
     // Mock Main Context
-    vi.mock('../../../context/MainContext.tsx', () => ({
+    vi.mock('../context/MainContext.tsx', () => ({
       useMain: vi.fn(() => ({
-        ref: createRef()
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
       }))
     }))
   })
