@@ -42,16 +42,17 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
   useEffect(() => setIsSelectionActive(selectedIds.length > 0), [selectedIds])
 
   useEffect(() => {
-    const clearOutside = (event: PointerEvent) => {
+    const clickOutside = (event: PointerEvent) => {
       if (
-        appRef.current?.contains(event.target as Node) &&
-        !areaRef.current?.contains(event.target as Node)
+        isSelectionActive &&
+        !areaRef.current?.contains(event.target as Node) &&
+        appRef.current?.contains(event.target as Node)
       )
         handleClearSelection()
     }
 
-    appRef.current?.addEventListener('click', clearOutside)
-    return () => appRef.current?.removeEventListener('click', clearOutside)
+    appRef.current?.addEventListener('click', clickOutside)
+    return () => appRef.current?.removeEventListener('click', clickOutside)
   }, [appRef, areaRef])
 
   function setNewIds(id: string) {
