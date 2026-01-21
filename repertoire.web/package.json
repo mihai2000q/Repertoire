@@ -8,6 +8,7 @@
     "dev": "vite",
     "typecheck": "tsc -b --verbose",
     "build": "tsc -b && vite build",
+    "format": "prettier --write .",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -26,6 +27,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1",
     "vite": "^7.3.1"
