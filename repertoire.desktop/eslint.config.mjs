@@ -1,12 +1,15 @@
-import reactLint from 'eslint-plugin-react/configs/recommended'
-import reactLintJsxRuntime from 'eslint-plugin-react/configs/jsx-runtime'
-import prettier from 'prettier'
+import reactLint from 'eslint-plugin-react'
+import jsLint from '@eslint/js'
+import tsLint from 'typescript-eslint'
+import prettier from 'eslint-config-prettier'
 import electronToolkitPrettier from '@electron-toolkit/eslint-config-prettier'
 
-export default [
+export default tsLint.config(
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
-  reactLint,
-  reactLintJsxRuntime,
+  { ignores: ['node_modules', 'dist', 'out', '.gitignore'] },
+  reactLint.configs.flat.recommended,
+  jsLint.configs.recommended,
+  ...tsLint.configs.recommended,
   prettier,
   electronToolkitPrettier
-]
+)
