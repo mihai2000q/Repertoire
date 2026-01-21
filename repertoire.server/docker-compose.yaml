@@ -53,8 +53,8 @@ services:
       - "8002:7700"
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
-      # - MEILI_TASK_WEBHOOK_URL=http://Repertoire-Server:${SERVER_PORT}/api/search/meili-webhook # use me when running server in docker
-      - MEILI_TASK_WEBHOOK_URL=${MEILI_WEBHOOK_URL} # use me when locally developing
+      - MEILI_TASK_WEBHOOK_URL=http://Repertoire-Server:${SERVER_PORT}/api/search/meili-webhook # use me when running server in docker
+      # - MEILI_TASK_WEBHOOK_URL=${MEILI_WEBHOOK_URL} # use me when locally developing
       - MEILI_TASK_WEBHOOK_AUTHORIZATION_HEADER=${MEILI_WEBHOOK_AUTHORIZATION_KEY}
     volumes:
       - ./.container-data/meili_data:/meili_data
