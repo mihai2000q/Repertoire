@@ -15,7 +15,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
 
-![Version](https://img.shields.io/badge/version-0.13.0-1098ad)
+![Version](https://img.shields.io/badge/version-0.14.0-1098ad)
  
 * [Repertoire](#repertoire)
   * [Abstract](#abstract)
