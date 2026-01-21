@@ -2,12 +2,12 @@ import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from '../components/song/SongLoader.tsx'
 import { useGetSongQuery } from '../state/api/songsApi.ts'
-import SongSectionsCard from '../components/song/panels/SongSectionsCard.tsx'
-import SongInformationCard from '../components/song/panels/SongInformationCard.tsx'
-import SongLinksCard from '../components/song/panels/SongLinksCard.tsx'
-import SongOverallCard from '../components/song/panels/SongOverallCard.tsx'
-import SongDescriptionCard from '../components/song/panels/SongDescriptionCard.tsx'
-import SongHeaderCard from '../components/song/panels/SongHeaderCard.tsx'
+import SongSectionsWidget from '../components/song/widgets/SongSectionsWidget.tsx'
+import SongInformationWidget from '../components/song/widgets/SongInformationWidget.tsx'
+import SongLinksWidget from '../components/song/widgets/SongLinksWidget.tsx'
+import SongOverallWidget from '../components/song/widgets/SongOverallWidget.tsx'
+import SongDescriptionWidget from '../components/song/widgets/SongDescriptionWidget.tsx'
+import SongHeader from '../components/song/SongHeader.tsx'
 import useDynamicDocumentTitle from '../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 
@@ -16,7 +16,7 @@ function Song() {
   const setDocumentTitle = useDynamicDocumentTitle()
   const songId = params['id'] ?? ''
 
-  const { data: song, isLoading } = useGetSongQuery(songId)
+  const { data: song, isLoading, isFetching } = useGetSongQuery(songId)
 
   useEffect(() => {
     if (song) setDocumentTitle(song.title)
@@ -26,29 +26,30 @@ function Song() {
 
   return (
     <Stack px={'xl'}>
-      <SongHeaderCard song={song} />
+      <SongHeader song={song} />
 
       <Divider />
 
       <Grid align="start" mb={'lg'}>
         <Grid.Col span={{ sm: 12, md: 4.5 }}>
           <Stack>
-            <SongInformationCard song={song} />
+            <SongInformationWidget song={song} />
 
-            <SongOverallCard song={song} />
+            <SongOverallWidget song={song} />
 
-            <SongLinksCard song={song} />
+            <SongLinksWidget song={song} />
           </Stack>
         </Grid.Col>
 
         <Grid.Col span={{ sm: 12, md: 7.5 }}>
           <Stack>
-            <SongDescriptionCard song={song} />
+            <SongDescriptionWidget song={song} />
 
-            <SongSectionsCard
+            <SongSectionsWidget
               songId={songId}
               settings={song.settings}
               sections={song.sections}
+              isFetching={isFetching}
               bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
               isArtistBand={song.artist?.isBand}
             />

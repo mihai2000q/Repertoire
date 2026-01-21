@@ -8,8 +8,20 @@ import { userEvent } from '@testing-library/user-event'
 import { beforeEach } from 'vitest'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../../types/models/Search.ts'
+import { createRef } from 'react'
 
 describe('Topbar', () => {
+  beforeAll(() => {
+    // Mock Main Context
+    vi.mock('../../../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        mainScroll: { ref: createRef() }
+      }))
+    }))
+  })
+
+  afterAll(() => vi.clearAllMocks())
+
   const render = (token: string | null = 'some token', toggleSidebar: () => void = () => {}) =>
     reduxRouterRender(
       <AppShell>
@@ -36,15 +48,7 @@ describe('Topbar', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    vi.mock('../../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
-        ref: { current: document.createElement('div') },
-        isTopScrollPositionOver0: 0
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'

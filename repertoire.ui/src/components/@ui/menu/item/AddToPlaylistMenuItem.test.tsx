@@ -40,7 +40,7 @@ describe('Add To Playlist Menu Item', () => {
   const menuTargetId = 'target-id'
   const render = (props: {
     ids: string[]
-    type: 'song' | 'album' | 'artist'
+    type: 'songs' | 'albums' | 'artists'
     closeMenu: () => void
     disabled?: boolean
   }) =>
@@ -79,7 +79,7 @@ describe('Add To Playlist Menu Item', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    render({ ids: [], type: 'song', closeMenu: vi.fn() })
+    render({ ids: [], type: 'songs', closeMenu: vi.fn() })
 
     await user.click(screen.getByTestId(menuTargetId))
     const menuItem = screen.getByRole('menuitem', { name: /add to playlist/i })
@@ -106,7 +106,7 @@ describe('Add To Playlist Menu Item', () => {
   it('should not be disabled when there are playlists', async () => {
     const user = userEvent.setup()
 
-    render({ ids: [], type: 'song', closeMenu: vi.fn() })
+    render({ ids: [], type: 'songs', closeMenu: vi.fn() })
 
     await user.click(screen.getByTestId(menuTargetId))
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
@@ -124,7 +124,7 @@ describe('Add To Playlist Menu Item', () => {
         })
       )
 
-      render({ ids: [], type: 'song', closeMenu: vi.fn() })
+      render({ ids: [], type: 'songs', closeMenu: vi.fn() })
 
       await user.click(screen.getByTestId(menuTargetId))
       expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
@@ -134,7 +134,7 @@ describe('Add To Playlist Menu Item', () => {
     it('when the props contain disabled', async () => {
       const user = userEvent.setup()
 
-      render({ ids: [], type: 'song', closeMenu: vi.fn(), disabled: true })
+      render({ ids: [], type: 'songs', closeMenu: vi.fn(), disabled: true })
 
       await user.click(screen.getByTestId(menuTargetId))
       expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
@@ -152,7 +152,7 @@ describe('Add To Playlist Menu Item', () => {
 
       let capturedRequest: AddSongsToPlaylistRequest
       server.use(
-        http.post('/playlists/add-songs', async (req) => {
+        http.post('/playlists/songs/add', async (req) => {
           capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
           const response: AddSongsToPlaylistResponse = {
             success: true,
@@ -163,7 +163,7 @@ describe('Add To Playlist Menu Item', () => {
         })
       )
 
-      render({ ids: ids, type: 'song', closeMenu: closeMenu })
+      render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
       await user.click(screen.getByTestId(menuTargetId))
       await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -199,7 +199,7 @@ describe('Add To Playlist Menu Item', () => {
         })
       )
 
-      render({ ids: ids, type: 'album', closeMenu: closeMenu })
+      render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
       await user.click(screen.getByTestId(menuTargetId))
       await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -235,7 +235,7 @@ describe('Add To Playlist Menu Item', () => {
         })
       )
 
-      render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+      render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
       await user.click(screen.getByTestId(menuTargetId))
       await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -260,7 +260,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             const response: AddSongsToPlaylistResponse = {
               success: false,
@@ -271,7 +271,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'song', closeMenu: closeMenu })
+        render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -295,7 +295,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -314,7 +314,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'song', closeMenu: closeMenu })
+        render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -343,7 +343,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -362,7 +362,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'song', closeMenu: closeMenu })
+        render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -392,7 +392,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -411,7 +411,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'song', closeMenu: closeMenu })
+        render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -439,7 +439,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             const response: AddSongsToPlaylistResponse = {
               success: false,
@@ -450,7 +450,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'song', closeMenu: closeMenu })
+        render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -474,7 +474,7 @@ describe('Add To Playlist Menu Item', () => {
 
         let capturedRequest: AddSongsToPlaylistRequest
         server.use(
-          http.post('/playlists/add-songs', async (req) => {
+          http.post('/playlists/songs/add', async (req) => {
             capturedRequest = (await req.request.json()) as AddSongsToPlaylistRequest
             if (capturedRequest.forceAdd !== undefined) {
               const response: AddSongsToPlaylistResponse = {
@@ -493,7 +493,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'song', closeMenu: closeMenu })
+        render({ ids: ids, type: 'songs', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -535,7 +535,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -581,7 +581,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -634,7 +634,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -687,7 +687,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -733,7 +733,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -779,7 +779,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -832,7 +832,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -885,7 +885,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'album', closeMenu: closeMenu })
+        render({ ids: ids, type: 'albums', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -933,7 +933,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -979,7 +979,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -997,7 +997,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated artists and it adds them all', async () => {
@@ -1032,7 +1036,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -1050,7 +1054,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated artists and it adds only the new ones', async () => {
@@ -1085,7 +1093,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -1131,7 +1139,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -1177,7 +1185,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -1195,7 +1203,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated songs in the artists and it adds them all', async () => {
@@ -1230,7 +1242,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
@@ -1248,7 +1260,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated songs in the artists and it adds only the new ones', async () => {
@@ -1283,7 +1299,7 @@ describe('Add To Playlist Menu Item', () => {
           })
         )
 
-        render({ ids: ids, type: 'artist', closeMenu: closeMenu })
+        render({ ids: ids, type: 'artists', closeMenu: closeMenu })
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))

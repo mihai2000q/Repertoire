@@ -38,9 +38,6 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
         combobox.resetSelectedOption()
         combobox.focusTarget()
         setSearch(value)
-      },
-      onDropdownOpen: () => {
-        combobox.focusSearchInput()
       }
     })
 
@@ -86,7 +83,13 @@ const BandMemberCompactSelect = forwardRef<HTMLButtonElement, BandMemberCompactS
     }
 
     return (
-      <Combobox onOptionSubmit={handleSubmit} store={combobox} withArrow {...others}>
+      <Combobox
+        onOptionSubmit={handleSubmit}
+        store={combobox}
+        withArrow
+        onEnterTransitionEnd={combobox.focusSearchInput}
+        {...others}
+      >
         <Combobox.Target withAriaAttributes={false}>
           {bandMember ? (
             <Tooltip

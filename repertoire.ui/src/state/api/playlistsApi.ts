@@ -4,13 +4,17 @@ import Playlist from '../../types/models/Playlist.ts'
 import {
   AddAlbumsToPlaylistRequest,
   AddArtistsToPlaylistRequest,
+  AddPerfectRehearsalsToPlaylistsRequest,
   AddSongsToPlaylistRequest,
+  BulkDeletePlaylistsRequest,
   CreatePlaylistRequest,
   GetPlaylistRequest,
+  GetPlaylistSongsRequest,
   GetPlaylistsRequest,
   MoveSongFromPlaylistRequest,
   RemoveSongsFromPlaylistRequest,
   SaveImageToPlaylistRequest,
+  ShufflePlaylistSongsRequest,
   UpdatePlaylistRequest
 } from '../../types/requests/PlaylistRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
@@ -22,25 +26,61 @@ import {
   AddArtistsToPlaylistResponse,
   AddSongsToPlaylistResponse
 } from '../../types/responses/PlaylistResponses.ts'
+import Song from '../../types/models/Song.ts'
 
 const playlistsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    // Queries
     getPlaylists: build.query<WithTotalCountResponse<Playlist>, GetPlaylistsRequest>({
       query: (arg) => `playlists${createQueryParams(arg)}`,
       providesTags: ['Playlists', 'Songs']
     }),
     getPlaylist: build.query<Playlist, GetPlaylistRequest>({
       query: (arg) => `playlists/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
-      providesTags: ['Playlists', 'Songs', 'Albums', 'Artists'],
-      transformResponse: (response: Playlist) => ({
-        ...response,
-        songs: response.songs ?? []
-      })
+      providesTags: ['Playlists']
     }),
     getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
       query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Playlists']
+      providesTags: ['Playlists', 'Songs']
     }),
+
+    // Infinite queries
+    getInfinitePlaylists: build.infiniteQuery<
+      WithTotalCountResponse<Playlist>,
+      GetPlaylistsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalPlaylists = lastPageParam.currentPage * pageSize
+          const remainingPlaylists = lastPage?.totalCount - totalPlaylists
+
+          if (remainingPlaylists <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetPlaylistsRequest = {
+          ...queryArg,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `playlists${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Playlists', 'Songs']
+    }),
+
+    // Mutations
     createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
       query: (body) => ({
         url: 'playlists',
@@ -49,9 +89,28 @@ const playlistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Playlists']
     }),
+    addPerfectRehearsalsToPlaylists: build.mutation<
+      HttpMessageResponse,
+      AddPerfectRehearsalsToPlaylistsRequest
+    >({
+      query: (body) => ({
+        url: 'playlists/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Playlists', 'Songs']
+    }),
     updatePlaylist: build.mutation<HttpMessageResponse, UpdatePlaylistRequest>({
       query: (body) => ({
         url: 'playlists',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Playlists']
+    }),
+    bulkDeletePlaylists: build.mutation<HttpMessageResponse, BulkDeletePlaylistsRequest>({
+      query: (body) => ({
+        url: `playlists/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -88,7 +147,7 @@ const playlistsApi = api.injectEndpoints({
           method: 'POST',
           body: body
         }),
-        invalidatesTags: ['Playlists'],
+        invalidatesTags: ['Songs'],
         transformResponse: (response: AddArtistsToPlaylistResponse) => ({
           ...response,
           duplicateArtistIds: response.duplicateArtistIds ?? []
@@ -101,35 +160,80 @@ const playlistsApi = api.injectEndpoints({
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists'],
+      invalidatesTags: ['Songs'],
       transformResponse: (response: AddAlbumsToPlaylistResponse) => ({
         ...response,
         duplicateAlbumIds: response.duplicateAlbumIds ?? []
       })
     }),
+
+    // songs
+    getInfinitePlaylistSongs: build.infiniteQuery<
+      WithTotalCountResponse<Song>,
+      GetPlaylistSongsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalSongs = lastPageParam.currentPage * pageSize
+          const remainingSongs = lastPage?.totalCount - totalSongs
+
+          if (remainingSongs <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetPlaylistSongsRequest = {
+          ...queryArg,
+          id: undefined,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `playlists/songs/${queryArg.id}${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Songs', 'Albums', 'Artists']
+    }),
     addSongsToPlaylist: build.mutation<AddSongsToPlaylistResponse, AddSongsToPlaylistRequest>({
       query: (body) => ({
-        url: `playlists/add-songs`,
+        url: `playlists/songs/add`,
         method: 'POST',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs']
+    }),
+    shufflePlaylist: build.mutation<HttpMessageResponse, ShufflePlaylistSongsRequest>({
+      query: (body) => ({
+        url: 'playlists/songs/shuffle',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
     }),
     moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
       query: (body) => ({
-        url: `playlists/move-song`,
+        url: `playlists/songs/move`,
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs']
     }),
     removeSongsFromPlaylist: build.mutation<HttpMessageResponse, RemoveSongsFromPlaylistRequest>({
       query: (body) => ({
-        url: `playlists/remove-songs`,
+        url: `playlists/songs/remove`,
         method: 'PUT',
         body: body
       }),
-      invalidatesTags: ['Playlists']
+      invalidatesTags: ['Songs']
     })
   })
 })
@@ -137,16 +241,21 @@ const playlistsApi = api.injectEndpoints({
 export const {
   useGetPlaylistsQuery,
   useGetPlaylistQuery,
+  useGetInfinitePlaylistsInfiniteQuery,
+  useGetInfinitePlaylistSongsInfiniteQuery,
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery,
   useCreatePlaylistMutation,
+  useAddPerfectRehearsalsToPlaylistsMutation,
   useUpdatePlaylistMutation,
+  useBulkDeletePlaylistsMutation,
   useSaveImageToPlaylistMutation,
   useDeleteImageFromPlaylistMutation,
   useDeletePlaylistMutation,
   useAddArtistsToPlaylistMutation,
   useAddAlbumsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
+  useShufflePlaylistMutation,
   useMoveSongFromPlaylistMutation,
   useRemoveSongsFromPlaylistMutation
 } = playlistsApi

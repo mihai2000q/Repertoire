@@ -2,8 +2,6 @@ package album
 
 import (
 	"bytes"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +11,9 @@ import (
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSaveImageFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

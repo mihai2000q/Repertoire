@@ -1,4 +1,4 @@
-import {Card, Divider, Group, Skeleton, Stack} from '@mantine/core'
+import { Card, Divider, Group, Skeleton, Stack } from '@mantine/core'
 
 function AlbumLoader() {
   return (
@@ -19,7 +19,7 @@ function AlbumLoader() {
 
       <Divider />
 
-      <Card variant={'panel'} mx={'xs'} mb={'lg'} p={0}>
+      <Card variant={'widget'} mx={'xs'} mb={'lg'} p={0}>
         <Stack px={'md'} pt={'md'} pb={'xs'}>
           <Group>
             <Skeleton w={50} h={15} />

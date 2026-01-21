@@ -146,6 +146,23 @@ func (a AlbumHandler) AddSongs(c *gin.Context) {
 	a.SendMessage(c, "songs have been added to album successfully")
 }
 
+func (a AlbumHandler) AddPerfectRehearsals(c *gin.Context) {
+	var request requests.AddPerfectRehearsalsToAlbumsRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.AddPerfectRehearsals(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "perfect rehearsals have been added to albums successfully")
+}
+
 func (a AlbumHandler) Update(c *gin.Context) {
 	var request requests.UpdateAlbumRequest
 	errorCode := a.BindAndValidate(c, &request)
@@ -195,6 +212,23 @@ func (a AlbumHandler) RemoveSongs(c *gin.Context) {
 	}
 
 	a.SendMessage(c, "songs have been removed from album successfully")
+}
+
+func (a AlbumHandler) BulkDelete(c *gin.Context) {
+	var request requests.BulkDeleteAlbumsRequest
+	errorCode := a.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = a.service.BulkDelete(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	a.SendMessage(c, "albums have been deleted successfully")
 }
 
 func (a AlbumHandler) Delete(c *gin.Context) {

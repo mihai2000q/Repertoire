@@ -27,7 +27,14 @@ import Song from './views/Song.tsx'
 import Playlists from './views/Playlists.tsx'
 import Playlist from './views/Playlist.tsx'
 import useIsDesktop from './hooks/useIsDesktop.ts'
-import { MainScrollProvider } from './context/MainScrollContext.tsx'
+import dayjs from 'dayjs'
+import isToday from 'dayjs/plugin/isToday'
+import isYesterday from 'dayjs/plugin/isYesterday'
+import 'dayjs/locale/en-gb'
+
+dayjs.extend(isToday)
+dayjs.extend(isYesterday)
+dayjs.locale('en-gb')
 
 function App(): ReactElement {
   const isDesktop = useIsDesktop()
@@ -36,46 +43,44 @@ function App(): ReactElement {
   return (
     <div className={'app'}>
       <Provider store={store}>
-        <MainScrollProvider>
-          <MantineProvider
-            theme={theme}
-            forceColorScheme={'light'}
-            stylesTransform={emotionTransform}
-          >
-            <MantineEmotionProvider cache={emotionCache}>
-              <Router>
-                <CustomizedToastContainer />
-                <Routes>
-                  <Route element={<Main />}>
-                    <Route path={'/'} element={<Navigate to={'home'} replace />} />
+        <MantineProvider
+          theme={theme}
+          forceColorScheme={'light'}
+          stylesTransform={emotionTransform}
+        >
+          <MantineEmotionProvider cache={emotionCache}>
+            <Router>
+              <CustomizedToastContainer />
+              <Routes>
+                <Route element={<Main />}>
+                  <Route path={'/'} element={<Navigate to={'home'} replace />} />
 
-                    <Route element={<IsAlreadyAuthenticated />}>
-                      <Route path={'sign-in'} element={<SignIn />} />
-                      <Route path={'sign-up'} element={<SignUp />} />
-                    </Route>
-
-                    <Route element={<RequireAuthentication />}>
-                      <Route path={'home'} element={<Home />} />
-                      <Route path={'artists'} element={<Artists />} />
-                      <Route path={'artist/:id'} element={<Artist />} />
-                      <Route path={'albums'} element={<Albums />} />
-                      <Route path={'album/:id'} element={<Album />} />
-                      <Route path={'songs'} element={<Songs />} />
-                      <Route path={'song/:id'} element={<Song />} />
-                      <Route path={'playlists'} element={<Playlists />} />
-                      <Route path={'playlist/:id'} element={<Playlist />} />
-
-                      {/* Errors */}
-                      <Route path={'401'} element={<Unauthorized />} />
-                      <Route path={'404'} element={<NotFound />} />
-                      <Route path={'*'} element={<Navigate to={'404'} replace />} />
-                    </Route>
+                  <Route element={<IsAlreadyAuthenticated />}>
+                    <Route path={'sign-in'} element={<SignIn />} />
+                    <Route path={'sign-up'} element={<SignUp />} />
                   </Route>
-                </Routes>
-              </Router>
-            </MantineEmotionProvider>
-          </MantineProvider>
-        </MainScrollProvider>
+
+                  <Route element={<RequireAuthentication />}>
+                    <Route path={'home'} element={<Home />} />
+                    <Route path={'artists'} element={<Artists />} />
+                    <Route path={'artist/:id'} element={<Artist />} />
+                    <Route path={'albums'} element={<Albums />} />
+                    <Route path={'album/:id'} element={<Album />} />
+                    <Route path={'songs'} element={<Songs />} />
+                    <Route path={'song/:id'} element={<Song />} />
+                    <Route path={'playlists'} element={<Playlists />} />
+                    <Route path={'playlist/:id'} element={<Playlist />} />
+
+                    {/* Errors */}
+                    <Route path={'401'} element={<Unauthorized />} />
+                    <Route path={'404'} element={<NotFound />} />
+                    <Route path={'*'} element={<Navigate to={'404'} replace />} />
+                  </Route>
+                </Route>
+              </Routes>
+            </Router>
+          </MantineEmotionProvider>
+        </MantineProvider>
       </Provider>
     </div>
   )

@@ -2,9 +2,6 @@ package song
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -13,6 +10,10 @@ import (
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestGetSong_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

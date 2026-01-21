@@ -12,10 +12,20 @@ export interface CreateArtistRequest {
   isBand?: boolean
 }
 
+export interface AddPerfectRehearsalsToArtistsRequest {
+  ids: string[]
+}
+
 export interface UpdateArtistRequest {
   id: string
   name: string
   isBand?: boolean
+}
+
+export interface BulkDeleteArtistsRequest {
+  ids: string[]
+  withAlbums?: boolean
+  withSongs?: boolean
 }
 
 export interface SaveImageToArtistRequest {

@@ -2,7 +2,6 @@ package user
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +9,8 @@ import (
 	userData "repertoire/server/test/integration/test/data/user"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSaveProfilePictureFromUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

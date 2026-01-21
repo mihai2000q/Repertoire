@@ -48,7 +48,7 @@ func addAlbums(dbClient database.Client, meiliClient search.MeiliClient) {
 	for _, album := range albums {
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
-	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
+	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ func addSongs(dbClient database.Client, meiliClient search.MeiliClient) {
 	for _, song := range songs {
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
-	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
+	_, err = meiliClient.Index("search").AddDocuments(meiliSongs, nil)
 	if err != nil {
 		panic(err)
 	}

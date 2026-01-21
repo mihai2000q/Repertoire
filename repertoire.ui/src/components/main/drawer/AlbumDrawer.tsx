@@ -18,18 +18,19 @@ import AlbumDrawerLoader from '../loader/AlbumDrawerLoader.tsx'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
 import { IconDotsVertical, IconEye, IconTrash } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
-import { closeAlbumDrawer, deleteAlbumDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconMusicNoteEighth from '../../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import Song from '../../../types/models/Song.ts'
-import DeleteAlbumModal from '../../@ui/modal/DeleteAlbumModal.tsx'
+import DeleteAlbumModal from '../../@ui/modal/delete/DeleteAlbumModal.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function AlbumDrawerSongCard({
   song,
@@ -92,18 +93,23 @@ function AlbumDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
+  const isDocumentTitleSet = useRef(false)
+
   const { albumId, open: opened } = useAppSelector((state) => state.global.albumDrawer)
   const onClose = () => {
     dispatch(closeAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    isDocumentTitleSet.current = false
   }
 
   const { data: album, isFetching } = useGetAlbumQuery({ id: albumId }, { skip: !albumId })
 
   useEffect(() => {
-    if (album && opened && !isFetching)
+    if (album && opened && albumId === album.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + album.title)
-  }, [album, opened, isFetching])
+      isDocumentTitleSet.current = true
+    }
+  }, [album, opened])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
@@ -119,11 +125,6 @@ function AlbumDrawer() {
   function handleViewDetails() {
     onClose()
     navigate(`/album/${album.id}`)
-  }
-
-  function onDelete() {
-    dispatch(deleteAlbumDrawer())
-    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
   }
 
   if (!album)
@@ -168,7 +169,7 @@ function AlbumDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -183,13 +184,17 @@ function AlbumDrawer() {
                 <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
                   View Details
                 </Menu.Item>
+                <Menu.Divider />
+
                 <AddToPlaylistMenuItem
                   ids={[album.id]}
-                  type={'album'}
+                  type={'albums'}
                   closeMenu={closeMenu}
                   disabled={album.songs.length === 0}
                 />
+                <PerfectRehearsalMenuItem id={album.id} closeMenu={closeMenu} type={'album'} />
                 <Menu.Divider />
+
                 <Menu.Item
                   leftSection={<IconTrash size={14} />}
                   c={'red.5'}
@@ -203,7 +208,7 @@ function AlbumDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'md'} gap={'xxs'}>
-          <Title order={5} fw={700} lineClamp={2} fz={'max(1.85vw, 24px)'}>
+          <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
             {album.title}
           </Title>
 
@@ -278,7 +283,7 @@ function AlbumDrawer() {
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         album={album}
-        onDelete={onDelete}
+        onDelete={onClose}
       />
     </RightSideEntityDrawer>
   )

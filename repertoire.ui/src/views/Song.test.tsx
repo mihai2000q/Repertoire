@@ -7,14 +7,9 @@ import { screen } from '@testing-library/react'
 import { RootState } from '../state/store.ts'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../types/models/Search.ts'
+import { createRef } from 'react'
 
 describe('Song', () => {
-  vi.mock('../hooks/useMainScroll.ts', () => ({
-    default: vi.fn(() => ({
-      ref: { current: document.createElement('div') }
-    }))
-  }))
-
   const song: SongType = {
     ...emptySong,
     id: '1',
@@ -42,22 +37,34 @@ describe('Song', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    vi.clearAllMocks()
+    server.close()
+  })
 
   it('should render', async () => {
     const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
 
     expect(screen.getByTestId('song-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('song-information-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('song-overall-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('song-links-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('song-description-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('song-sections')).toBeInTheDocument()
+    expect(screen.getByLabelText('information-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('overall-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('links-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('description-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('sections-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(song.title)
   })
 })

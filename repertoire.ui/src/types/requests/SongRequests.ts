@@ -29,6 +29,10 @@ export interface AddPerfectSongRehearsalRequest {
   id: string
 }
 
+export interface AddPerfectSongRehearsalsRequest {
+  ids: string[]
+}
+
 export interface AddPartialSongRehearsalRequest {
   id: string
 }
@@ -59,6 +63,10 @@ export interface UpdateSongSettingsRequest {
   defaultInstrumentId?: string
 }
 
+export interface BulkDeleteSongsRequest {
+  ids: string[]
+}
+
 export interface SaveImageToSongRequest {
   image: FileWithPath
   id: string
@@ -74,6 +82,11 @@ export interface CreateSongSectionRequest {
   bandMemberId?: string
 }
 
+export interface BulkRehearsalsSongSectionsRequest {
+  sections: { id: string; rehearsals: number }[]
+  songId: string
+}
+
 export interface UpdateSongSectionRequest {
   id: string
   typeId: string
@@ -86,12 +99,12 @@ export interface UpdateSongSectionRequest {
 
 export interface UpdateSongSectionsOccurrencesRequest {
   songId: string
-  sections: { id: string, occurrences: number }[]
+  sections: { id: string; occurrences: number }[]
 }
 
 export interface UpdateSongSectionsPartialOccurrencesRequest {
   songId: string
-  sections: { id: string, partialOccurrences: number }[]
+  sections: { id: string; partialOccurrences: number }[]
 }
 
 export interface UpdateAllSongSectionsRequest {
@@ -103,6 +116,11 @@ export interface UpdateAllSongSectionsRequest {
 export interface MoveSongSectionRequest {
   id: string
   overId: string
+  songId: string
+}
+
+export interface BulkDeleteSongSectionsRequest {
+  ids: string[]
   songId: string
 }
 

@@ -1,8 +1,9 @@
 package service
 
 import (
-	goCache "github.com/patrickmn/go-cache"
 	"repertoire/server/data/cache"
+
+	goCache "github.com/patrickmn/go-cache"
 )
 
 type SearchTaskTrackerService interface {

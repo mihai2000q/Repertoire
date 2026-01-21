@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/server/internal"
+
+	"github.com/gin-gonic/gin"
 )
 
 type MeiliAuthMiddleware struct {
@@ -21,9 +22,9 @@ func (m MeiliAuthMiddleware) Handler() gin.HandlerFunc {
 		if authKey != m.env.MeiliAuthKey {
 			_ = c.AbortWithError(http.StatusUnauthorized, errors.New("you are unauthorized"))
 			return
-		} else {
-			c.Next()
-			return
 		}
+
+		c.Next()
+		return
 	}
 }

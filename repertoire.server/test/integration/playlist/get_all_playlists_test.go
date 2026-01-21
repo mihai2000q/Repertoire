@@ -2,7 +2,6 @@ package playlist
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +10,8 @@ import (
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetAllPlaylists_WhenSuccessful_ShouldReturnPlaylists(t *testing.T) {

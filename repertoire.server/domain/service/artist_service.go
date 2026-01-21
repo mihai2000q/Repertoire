@@ -13,7 +13,9 @@ import (
 
 type ArtistService interface {
 	AddAlbums(request requests.AddAlbumsToArtistRequest) *wrapper.ErrorCode
+	AddPerfectRehearsals(request requests.AddPerfectRehearsalsToArtistsRequest) *wrapper.ErrorCode
 	AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode
+	BulkDelete(request requests.BulkDeleteArtistsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(request requests.DeleteArtistRequest) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -36,18 +38,20 @@ type ArtistService interface {
 }
 
 type artistService struct {
-	addAlbumsToArtist        artist.AddAlbumsToArtist
-	addSongsToArtist         artist.AddSongsToArtist
-	createArtist             artist.CreateArtist
-	deleteArtist             artist.DeleteArtist
-	deleteImageFromArtist    artist.DeleteImageFromArtist
-	getAllArtists            artist.GetAllArtists
-	getArtist                artist.GetArtist
-	getArtistFiltersMetadata artist.GetArtistFiltersMetadata
-	removeAlbumsFromArtist   artist.RemoveAlbumsFromArtist
-	removeSongsFromArtist    artist.RemoveSongsFromArtist
-	saveImageToArtist        artist.SaveImageToArtist
-	updateArtist             artist.UpdateArtist
+	addAlbumsToArtist             artist.AddAlbumsToArtist
+	addPerfectRehearsalsToArtists artist.AddPerfectRehearsalsToArtists
+	addSongsToArtist              artist.AddSongsToArtist
+	bulkDeleteArtists             artist.BulkDeleteArtists
+	createArtist                  artist.CreateArtist
+	deleteArtist                  artist.DeleteArtist
+	deleteImageFromArtist         artist.DeleteImageFromArtist
+	getAllArtists                 artist.GetAllArtists
+	getArtist                     artist.GetArtist
+	getArtistFiltersMetadata      artist.GetArtistFiltersMetadata
+	removeAlbumsFromArtist        artist.RemoveAlbumsFromArtist
+	removeSongsFromArtist         artist.RemoveSongsFromArtist
+	saveImageToArtist             artist.SaveImageToArtist
+	updateArtist                  artist.UpdateArtist
 
 	createBandMember          member.CreateBandMember
 	deleteBandMember          member.DeleteBandMember
@@ -61,7 +65,9 @@ type artistService struct {
 
 func NewArtistService(
 	addAlbumsToArtist artist.AddAlbumsToArtist,
+	addPerfectRehearsalsToArtists artist.AddPerfectRehearsalsToArtists,
 	addSongsToArtist artist.AddSongsToArtist,
+	bulkDeleteArtists artist.BulkDeleteArtists,
 	createArtist artist.CreateArtist,
 	deleteArtist artist.DeleteArtist,
 	deleteImageFromArtist artist.DeleteImageFromArtist,
@@ -83,18 +89,20 @@ func NewArtistService(
 	getBandMemberRoles member.GetBandMemberRoles,
 ) ArtistService {
 	return &artistService{
-		addAlbumsToArtist:        addAlbumsToArtist,
-		addSongsToArtist:         addSongsToArtist,
-		createArtist:             createArtist,
-		deleteArtist:             deleteArtist,
-		deleteImageFromArtist:    deleteImageFromArtist,
-		getAllArtists:            getAllArtists,
-		getArtist:                getArtist,
-		getArtistFiltersMetadata: getArtistFiltersMetadata,
-		removeAlbumsFromArtist:   removeAlbumsFromArtist,
-		removeSongsFromArtist:    removeSongsFromArtist,
-		saveImageToArtist:        saveImageToArtist,
-		updateArtist:             updateArtist,
+		addAlbumsToArtist:             addAlbumsToArtist,
+		addPerfectRehearsalsToArtists: addPerfectRehearsalsToArtists,
+		addSongsToArtist:              addSongsToArtist,
+		bulkDeleteArtists:             bulkDeleteArtists,
+		createArtist:                  createArtist,
+		deleteArtist:                  deleteArtist,
+		deleteImageFromArtist:         deleteImageFromArtist,
+		getAllArtists:                 getAllArtists,
+		getArtist:                     getArtist,
+		getArtistFiltersMetadata:      getArtistFiltersMetadata,
+		removeAlbumsFromArtist:        removeAlbumsFromArtist,
+		removeSongsFromArtist:         removeSongsFromArtist,
+		saveImageToArtist:             saveImageToArtist,
+		updateArtist:                  updateArtist,
 
 		createBandMember:          createBandMember,
 		deleteBandMember:          deleteBandMember,
@@ -111,8 +119,16 @@ func (a *artistService) AddAlbums(request requests.AddAlbumsToArtistRequest) *wr
 	return a.addAlbumsToArtist.Handle(request)
 }
 
+func (a *artistService) AddPerfectRehearsals(request requests.AddPerfectRehearsalsToArtistsRequest) *wrapper.ErrorCode {
+	return a.addPerfectRehearsalsToArtists.Handle(request)
+}
+
 func (a *artistService) AddSongs(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode {
 	return a.addSongsToArtist.Handle(request)
+}
+
+func (a *artistService) BulkDelete(request requests.BulkDeleteArtistsRequest) *wrapper.ErrorCode {
+	return a.bulkDeleteArtists.Handle(request)
 }
 
 func (a *artistService) Create(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

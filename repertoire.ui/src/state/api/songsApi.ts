@@ -4,6 +4,10 @@ import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/mod
 import {
   AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
+  AddPerfectSongRehearsalsRequest,
+  BulkDeleteSongSectionsRequest,
+  BulkDeleteSongsRequest,
+  BulkRehearsalsSongSectionsRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
@@ -24,6 +28,7 @@ import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    // Queries
     getSongs: build.query<WithTotalCountResponse<Song>, GetSongsRequest>({
       query: (arg) => `songs${createQueryParams(arg)}`,
       providesTags: ['Songs', 'Artists', 'Albums']
@@ -50,6 +55,44 @@ const songsApi = api.injectEndpoints({
         albumIds: response.albumIds ?? []
       })
     }),
+
+    // Infinite Queries
+    getInfiniteSongs: build.infiniteQuery<
+      WithTotalCountResponse<Song>,
+      GetSongsRequest,
+      { currentPage: number; pageSize: number }
+    >({
+      infiniteQueryOptions: {
+        initialPageParam: {
+          currentPage: 1,
+          pageSize: 20
+        },
+        getNextPageParam: (lastPage, __, lastPageParam, ___, args) => {
+          const pageSize = args.pageSize ?? lastPageParam.pageSize
+
+          const totalSongs = lastPageParam.currentPage * pageSize
+          const remainingSongs = lastPage?.totalCount - totalSongs
+
+          if (remainingSongs <= 0) return undefined
+
+          return {
+            ...lastPageParam,
+            currentPage: lastPageParam.currentPage + 1
+          }
+        }
+      },
+      query: ({ queryArg, pageParam }) => {
+        const newQueryParams: GetSongsRequest = {
+          ...queryArg,
+          currentPage: pageParam.currentPage,
+          pageSize: queryArg.pageSize ?? pageParam.pageSize
+        }
+        return `/songs${createQueryParams(newQueryParams)}`
+      },
+      providesTags: ['Songs', 'Albums', 'Artists']
+    }),
+
+    // Mutations
     createSong: build.mutation<{ id: string }, CreateSongRequest>({
       query: (body) => ({
         url: 'songs',
@@ -61,6 +104,14 @@ const songsApi = api.injectEndpoints({
     addPerfectSongRehearsal: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalRequest>({
       query: (body) => ({
         url: 'songs/perfect-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    addPerfectSongRehearsals: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalsRequest>({
+      query: (body) => ({
+        url: 'songs/perfect-rehearsals',
         method: 'POST',
         body: body
       }),
@@ -85,6 +136,14 @@ const songsApi = api.injectEndpoints({
     updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
       query: (body) => ({
         url: 'songs/settings',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    bulkDeleteSongs: build.mutation<HttpMessageResponse, BulkDeleteSongsRequest>({
+      query: (body) => ({
+        url: `songs/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -118,6 +177,17 @@ const songsApi = api.injectEndpoints({
     createSongSection: build.mutation<{ id: string }, CreateSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    bulkRehearsalsSongSections: build.mutation<
+      HttpMessageResponse,
+      BulkRehearsalsSongSectionsRequest
+    >({
+      query: (body) => ({
+        url: 'songs/sections/bulk-rehearsals',
         method: 'POST',
         body: body
       }),
@@ -169,6 +239,14 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
+    bulkDeleteSongSections: build.mutation<HttpMessageResponse, BulkDeleteSongSectionsRequest>({
+      query: (body) => ({
+        url: 'songs/sections/bulk-delete',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     deleteSongSection: build.mutation<HttpMessageResponse, DeleteSongSectionRequest>({
       query: (arg) => ({
         url: `songs/sections/${arg.id}/from/${arg.songId}`,
@@ -202,11 +280,14 @@ export const {
   useGetSongQuery,
   useGetSongFiltersMetadataQuery,
   useLazyGetSongFiltersMetadataQuery,
+  useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddPerfectSongRehearsalMutation,
+  useAddPerfectSongRehearsalsMutation,
   useAddPartialSongRehearsalMutation,
   useUpdateSongMutation,
   useUpdateSongSettingsMutation,
+  useBulkDeleteSongsMutation,
   useSaveImageToSongMutation,
   useDeleteImageFromSongMutation,
   useDeleteSongMutation,
@@ -214,10 +295,12 @@ export const {
   useGetInstrumentsQuery,
   useGetSongSectionTypesQuery,
   useCreateSongSectionMutation,
+  useBulkRehearsalsSongSectionsMutation,
   useUpdateSongSectionMutation,
   useUpdateSongSectionsOccurrencesMutation,
   useUpdateSongSectionsPartialOccurrencesMutation,
   useUpdateAllSongSectionsMutation,
   useMoveSongSectionMutation,
+  useBulkDeleteSongSectionsMutation,
   useDeleteSongSectionMutation
 } = songsApi

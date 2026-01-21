@@ -1,13 +1,14 @@
 {
   "name": "repertoire",
   "description": "A Music Application developed entirely in React and TypeScript",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -b --verbose",
     "build": "tsc -b && vite build",
+    "format": "prettier --write .",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -17,19 +18,18 @@
     "repertoire.ui": "file:../repertoire.ui"
   },
   "devDependencies": {
-    "@eslint/js": "^9.29.0",
-    "@mantine/core": "^8.1.1",
-    "@mantine/emotion": "^8.1.1",
-    "@types/node": "^24.0.3",
-    "@types/react": "^18.3.23",
+    "@eslint/js": "^9.39.2",
+    "@mantine/core": "^8.3.13",
+    "@mantine/emotion": "^8.3.13",
+    "@types/node": "^25.0.9",
+    "@types/react": "^18.3.27",
     "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react": "^4.5.2",
-    "eslint": "^9.29.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.2.0",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.34.1",
-    "vite": "6.3.5"
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.39.2",
+    "globals": "^17.0.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1",
+    "vite": "^7.3.1"
   }
 }

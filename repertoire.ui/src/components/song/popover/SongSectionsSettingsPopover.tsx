@@ -10,6 +10,7 @@ import {
   useUpdateSongSettingsMutation
 } from '../../../state/api/songsApi.ts'
 import { IconSettings } from '@tabler/icons-react'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface SongSectionsSettingsPopoverProps {
   settings: SongSettings
@@ -29,6 +30,10 @@ function SongSectionsSettingsPopover({
 
   const [defaultInstrument, setDefaultInstrument] = useState(settings.defaultInstrument)
   const [defaultBandMember, setDefaultBandMember] = useState(settings.defaultBandMember)
+  useDidUpdate(() => {
+    setDefaultInstrument(settings.defaultInstrument)
+    setDefaultBandMember(settings.defaultBandMember)
+  }, [settings])
 
   const [openedSettingsPopover, setOpenedSettingsPopover] = useState(false)
   const [openedUpdatedDefaultInstrumentPopover, setOpenedUpdatedDefaultInstrumentPopover] =

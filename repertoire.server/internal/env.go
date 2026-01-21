@@ -1,10 +1,11 @@
 package internal
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type Env struct {

@@ -2,7 +2,6 @@ package artist
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +10,8 @@ import (
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetArtistFiltersMetadata_WhenSuccessful_ShouldReturnArtistFiltersMetadata(t *testing.T) {

@@ -1,4 +1,4 @@
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import { ReactElement } from 'react'
 import {
   IconAbc,

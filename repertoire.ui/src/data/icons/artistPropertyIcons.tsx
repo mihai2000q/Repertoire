@@ -1,4 +1,4 @@
-import ArtistProperty from '../../types/enums/ArtistProperty.ts'
+import ArtistProperty from '../../types/enums/properties/ArtistProperty.ts'
 import { ReactElement } from 'react'
 import {
   IconAbc,
@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react'
 import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 
 export const artistPropertyIcons = new Map<string, ReactElement>([
   [ArtistProperty.Albums, <CustomIconAlbumVinyl size={'100%'} key={'albums'} />],

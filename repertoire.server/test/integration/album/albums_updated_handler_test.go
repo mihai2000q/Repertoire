@@ -1,14 +1,15 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAlbumsUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
@@ -38,14 +39,14 @@ func TestAlbumsUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 		Preload("Songs.Album").
 		Find(&albums, ids)
 
-	assertion.AssertMessage(t, messages, func(documents []any) {
+	assertion.AssertMessage(t, messages, func(documents []map[string]any) {
 		documentsLength := 0
 		for _, album := range albums {
-			albumSearch := utils.UnmarshallDocument[model.AlbumSearch](documents[documentsLength])
+			albumSearch := utils.UnmarshalDocument[model.AlbumSearch](documents[documentsLength])
 			assertion.AlbumSearch(t, albumSearch, album)
 			documentsLength++
 			for _, song := range album.Songs {
-				songSearch := utils.UnmarshallDocument[model.SongSearch](documents[documentsLength])
+				songSearch := utils.UnmarshalDocument[model.SongSearch](documents[documentsLength])
 				assertion.SongSearch(t, songSearch, song)
 				documentsLength++
 			}

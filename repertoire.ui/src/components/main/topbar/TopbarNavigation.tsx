@@ -12,8 +12,7 @@ function TopbarNavigation() {
   const historyOnSignIn = useAppSelector((state) => state.auth.historyOnSignIn)
 
   const disableGoBack = history.state?.idx < 1 + historyOnSignIn.index
-  const disableGoForward =
-    historyOnSignIn.justSignedIn || history.state?.idx >= history.length - 1
+  const disableGoForward = historyOnSignIn.justSignedIn || history.state?.idx >= history.length - 1
 
   // when first navigation after sign-in occurs
   useDidUpdate(() => {

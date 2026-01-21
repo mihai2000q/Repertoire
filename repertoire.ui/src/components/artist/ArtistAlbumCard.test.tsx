@@ -1,20 +1,15 @@
-import {
-  defaultSongFiltersMetadata,
-  emptyAlbum,
-  emptyOrder,
-  reduxRouterRender,
-  withToastify
-} from '../../test-utils.tsx'
+import { emptyAlbum, emptyOrder, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from 'src/types/models/Album.ts'
 import ArtistAlbumCard from './ArtistAlbumCard.tsx'
 import dayjs from 'dayjs'
-import { expect } from 'vitest'
-import AlbumProperty from '../../types/enums/AlbumProperty.ts'
+import { beforeEach, expect } from 'vitest'
+import AlbumProperty from '../../types/enums/properties/AlbumProperty.ts'
 import { RemoveAlbumsFromArtistRequest } from '../../types/requests/ArtistRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 describe('Artist Album Card', () => {
   const album: Album = {
@@ -25,17 +20,35 @@ describe('Artist Album Card', () => {
 
   const handlers = [
     http.get('/playlists', async () => {
-      return HttpResponse.json(defaultSongFiltersMetadata)
+      return HttpResponse.json([])
     })
   ]
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [],
+      isClickSelectionActive: false,
+      clearSelection: vi.fn()
+    })
+  })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     server.resetHandlers()
     window.location.pathname = '/'
+  })
+
+  beforeAll(() => {
+    vi.mock('../../context/ClickSelectContext', () => ({
+      useClickSelect: vi.fn()
+    }))
+    server.listen()
   })
 
   afterAll(() => server.close())
@@ -204,6 +217,7 @@ describe('Artist Album Card', () => {
   function expectMenu() {
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   }
@@ -296,6 +310,101 @@ describe('Artist Album Card', () => {
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: /yes/i }))
+    })
+  })
+
+  it('should disable context menu and more menu when click selection is active', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [],
+      isClickSelectionActive: true,
+      clearSelection: vi.fn()
+    })
+
+    reduxRouterRender(
+      <ArtistAlbumCard artistId={''} album={album} isUnknownArtist={false} order={emptyOrder} />
+    )
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`default-icon-${album.title}`)
+    })
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'more-menu' })).toBeDisabled()
+  })
+
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <ArtistAlbumCard artistId={''} album={album} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      await user.hover(screen.getByLabelText(`default-icon-${album.title}`))
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <ArtistAlbumCard artistId={''} album={album} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`default-icon-${album.title}`)
+      })
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when more menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRouterRender(
+        <ArtistAlbumCard artistId={''} album={album} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when click selected (part of the selected ids)', () => {
+      vi.mocked(useClickSelect).mockReturnValue({
+        selectables: [],
+        addSelectable: vi.fn(),
+        removeSelectable: vi.fn(),
+        selectedIds: [album.id],
+        isClickSelectionActive: true,
+        clearSelection: vi.fn()
+      })
+
+      reduxRouterRender(
+        <ArtistAlbumCard artistId={''} album={album} isUnknownArtist={false} order={emptyOrder} />
+      )
+
+      expect(screen.getByLabelText(`album-card-${album.title}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
     })
   })
 })

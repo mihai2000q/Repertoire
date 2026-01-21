@@ -2,9 +2,10 @@ package utils
 
 import (
 	"fmt"
-	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/search"
 	"time"
+
+	"github.com/meilisearch/meilisearch-go"
 )
 
 type MigrationStatus struct {
@@ -32,13 +33,15 @@ func HasMigrationAlreadyBeenApplied(client search.MeiliClient, uid string) bool 
 	}
 
 	var documentResults meilisearch.DocumentsResult
-	err = client.Index("migration_version").GetDocuments(&meilisearch.DocumentsQuery{}, &documentResults)
+	err = client.Index("migration_version").GetDocuments(nil, &documentResults)
 	if err != nil {
 		panic(err)
 	}
 
 	for _, result := range documentResults.Results {
-		if result["id"] == uid && result["is_applied"].(bool) {
+		var migrationStatus MigrationStatus
+		_ = result.DecodeInto(&migrationStatus)
+		if migrationStatus.Id == uid && migrationStatus.IsApplied {
 			return true
 		}
 	}
@@ -52,7 +55,7 @@ func SaveMigrationStatus(client search.MeiliClient, uid string, name string) {
 		IsApplied: true,
 		Timestamp: time.Now(),
 	}
-	addTask, err := client.Index("migration_version").AddDocuments([]any{status})
+	addTask, err := client.Index("migration_version").AddDocuments([]any{status}, nil)
 	if err != nil {
 		panic(err)
 	}

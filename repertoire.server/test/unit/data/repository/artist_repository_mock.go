@@ -42,28 +42,13 @@ func (a *ArtistRepositoryMock) GetWithBandMembers(artist *model.Artist, id uuid.
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) GetWithSongs(artist *model.Artist, id uuid.UUID) error {
-	args := a.Called(artist, id)
-
-	if len(args) > 1 {
-		*artist = *args.Get(1).(*model.Artist)
-	}
-
-	return args.Error(0)
-}
-
-func (a *ArtistRepositoryMock) GetWithAlbums(artist *model.Artist, id uuid.UUID) error {
-	args := a.Called(artist, id)
-
-	if len(args) > 1 {
-		*artist = *args.Get(1).(*model.Artist)
-	}
-
-	return args.Error(0)
-}
-
-func (a *ArtistRepositoryMock) GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error {
-	args := a.Called(artist, id)
+func (a *ArtistRepositoryMock) GetWithSongsOrAlbums(
+	artist *model.Artist,
+	id uuid.UUID,
+	withSongs bool,
+	withAlbums bool,
+) error {
+	args := a.Called(artist, id, withSongs, withAlbums)
 
 	if len(args) > 1 {
 		*artist = *args.Get(1).(*model.Artist)
@@ -86,7 +71,27 @@ func (a *ArtistRepositoryMock) GetFiltersMetadata(
 	return args.Error(0)
 }
 
+func (a *ArtistRepositoryMock) GetAllByIDs(artists *[]model.Artist, ids []uuid.UUID, withSongs bool, withAlbums bool) error {
+	args := a.Called(artists, ids, withSongs, withAlbums)
+
+	if len(args) > 1 {
+		*artists = *args.Get(1).(*[]model.Artist)
+	}
+
+	return args.Error(0)
+}
+
 func (a *ArtistRepositoryMock) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
+	args := a.Called(artists, ids)
+
+	if len(args) > 1 {
+		*artists = *args.Get(1).(*[]model.Artist)
+	}
+
+	return args.Error(0)
+}
+
+func (a *ArtistRepositoryMock) GetAllByIDsWithSongSections(artists *[]model.Artist, ids []uuid.UUID) error {
 	args := a.Called(artists, ids)
 
 	if len(args) > 1 {
@@ -138,18 +143,18 @@ func (a *ArtistRepositoryMock) UpdateWithAssociations(artist *model.Artist) erro
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) Delete(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *ArtistRepositoryMock) Delete(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) DeleteAlbums(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *ArtistRepositoryMock) DeleteAlbums(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
-func (a *ArtistRepositoryMock) DeleteSongs(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *ArtistRepositoryMock) DeleteSongs(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 

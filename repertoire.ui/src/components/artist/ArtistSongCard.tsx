@@ -2,7 +2,6 @@ import Song from '../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
-  Avatar,
   Center,
   Flex,
   Group,
@@ -18,15 +17,15 @@ import { useAppDispatch } from '../../state/store.ts'
 import { openAlbumDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
 import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDisc, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
-import { useDisclosure, useHover } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import { useNavigate } from 'react-router-dom'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useRemoveSongsFromArtistMutation } from '../../state/api/artistsApi.ts'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
@@ -37,6 +36,8 @@ import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import { toast } from 'react-toastify'
+import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
+import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
 
 interface ArtistSongCardProps {
   song: Song
@@ -48,7 +49,14 @@ interface ArtistSongCardProps {
 function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { ref, hovered } = useHover()
+  const {
+    ref: selectableRef,
+    isClickSelected,
+    isClickSelectionActive,
+    isLastInSelection
+  } = useClickSelectSelectable(song.id)
+  const { ref: hoverRef, hovered } = useHover()
+  const ref = useMergedRef(selectableRef, hoverRef)
 
   const [removeSongsFromArtist, { isLoading: isRemoveLoading }] = useRemoveSongsFromArtistMutation()
   const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
@@ -56,7 +64,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
 
-  const isSelected = hovered || openedMenu || openedContextMenu
+  const isSelected = hovered || openedMenu || openedContextMenu || isClickSelected
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -64,12 +72,13 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleClick() {
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     dispatch(openSongDrawer(song.id))
   }
-
   function handleAlbumClick(e: MouseEvent) {
     e.stopPropagation()
+    if (e.ctrlKey || e.shiftKey) return
     dispatch(openAlbumDrawer(song.album.id))
   }
 
@@ -77,16 +86,14 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     e.stopPropagation()
     navigate(`/song/${song.id}`)
   }
-
-  function handleViewAlbum() {
+  function handleViewAlbum(e: MouseEvent) {
+    e.stopPropagation()
     navigate(`/album/${song.album.id}`)
   }
-
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()
     openRemoveWarning()
   }
-
   function handleOpenDeleteWarning(e: MouseEvent) {
     e.stopPropagation()
     openDeleteWarning()
@@ -96,7 +103,6 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
     await removeSongsFromArtist({ songIds: [song.id], id: artistId }).unwrap()
     toast.success(`${song.title} removed from artist!`)
   }
-
   async function handleDelete() {
     await deleteSong(song.id).unwrap()
     toast.success(`${song.title} deleted!`)
@@ -117,9 +123,9 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
 
       <Menu.Divider />
-      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
       <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
-      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
       <Menu.Divider />
 
       {!isUnknownArtist && (
@@ -138,18 +144,35 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   )
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+    <ContextMenu
+      opened={openedContextMenu}
+      onChange={toggleContextMenu}
+      disabled={isClickSelectionActive}
+    >
       <ContextMenu.Target>
         <Group
           ref={ref}
           aria-label={`song-card-${song.title}`}
+          aria-selected={isSelected}
           wrap={'nowrap'}
           sx={(theme) => ({
             cursor: 'default',
             transition: '0.3s',
             ...(isSelected && {
-              boxShadow: theme.shadows.xl,
+              boxShadow: theme.shadows.md,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }),
+
+            ...(isClickSelected && {
+              boxShadow: 'none',
+              backgroundColor: alpha(theme.colors.primary[0], 0.15),
+              ...(hovered && {
+                boxShadow: theme.shadows.xs,
+                backgroundColor: alpha(theme.colors.primary[0], 0.35)
+              }),
+              ...(isLastInSelection && {
+                boxShadow: theme.shadows.lg
+              })
             })
           })}
           px={'md'}
@@ -157,7 +180,8 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
           gap={0}
           onClick={handleClick}
         >
-          <Avatar
+          <SelectableAvatar
+            isSelected={isClickSelected}
             radius={'md'}
             src={song.imageUrl ?? song.album?.imageUrl}
             alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
@@ -166,7 +190,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
             <Center c={'white'}>
               <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={20} />
             </Center>
-          </Avatar>
+          </SelectableAvatar>
 
           <Space
             ml={{ base: 'xs', xs: 'md', sm: 'xs', betweenSmMd: 'md', md: 'sm', lg: 'md' }}
@@ -262,6 +286,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
                   transition: '0.3s',
                   opacity: isSelected ? 1 : 0
                 }}
+                disabled={isClickSelectionActive}
               >
                 <IconDots size={15} />
               </ActionIcon>

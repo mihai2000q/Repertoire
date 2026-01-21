@@ -1,8 +1,6 @@
 package data
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/fx/fxevent"
 	"repertoire/server/data/cache"
 	"repertoire/server/data/database"
 	"repertoire/server/data/database/transaction"
@@ -14,6 +12,9 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/search"
 	"repertoire/server/data/service"
+
+	"go.uber.org/fx"
+	"go.uber.org/fx/fxevent"
 )
 
 var caches = fx.Options(
@@ -50,6 +51,7 @@ var repositories = fx.Options(
 	fx.Provide(repository.NewArtistRepository),
 	fx.Provide(repository.NewPlaylistRepository),
 	fx.Provide(repository.NewSongRepository),
+	fx.Provide(repository.NewSongSectionRepository),
 	fx.Provide(repository.NewUserDataRepository),
 	fx.Provide(repository.NewUserRepository),
 )

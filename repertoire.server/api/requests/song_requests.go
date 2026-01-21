@@ -1,9 +1,10 @@
 package requests
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
+
+	"github.com/google/uuid"
 )
 
 type GetSongsRequest struct {
@@ -37,6 +38,10 @@ type AddPerfectSongRehearsalRequest struct {
 	ID uuid.UUID `validate:"required"`
 }
 
+type AddPerfectSongRehearsalsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
 type AddPartialSongRehearsalRequest struct {
 	ID uuid.UUID `validate:"required"`
 }
@@ -62,59 +67,11 @@ type UpdateSongSettingsRequest struct {
 	DefaultBandMemberID *uuid.UUID
 }
 
+type BulkDeleteSongsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
 type CreateSectionRequest struct {
 	Name   string    `validate:"required,max=30"`
 	TypeID uuid.UUID `validate:"required"`
-}
-
-// Sections
-
-type CreateSongSectionRequest struct {
-	SongID       uuid.UUID `validate:"required"`
-	Name         string    `validate:"required,max=30"`
-	TypeID       uuid.UUID `validate:"required"`
-	BandMemberID *uuid.UUID
-	InstrumentID *uuid.UUID
-}
-
-type UpdateSongSectionRequest struct {
-	ID           uuid.UUID `validate:"required"`
-	Name         string    `validate:"required,max=30"`
-	Confidence   uint      `validate:"max=100"`
-	Rehearsals   uint
-	TypeID       uuid.UUID `validate:"required"`
-	BandMemberID *uuid.UUID
-	InstrumentID *uuid.UUID
-}
-
-type UpdateSongSectionsOccurrencesRequest struct {
-	SongID   uuid.UUID                         `validate:"required"`
-	Sections []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
-}
-
-type UpdateSongSectionsPartialOccurrencesRequest struct {
-	SongID   uuid.UUID                                `validate:"required"`
-	Sections []UpdateSectionPartialOccurrencesRequest `validate:"min=1,dive"`
-}
-
-type UpdateAllSongSectionsRequest struct {
-	SongID       uuid.UUID `validate:"required"`
-	InstrumentID *uuid.UUID
-	BandMemberID *uuid.UUID
-}
-
-type MoveSongSectionRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	OverID uuid.UUID `validate:"required"`
-	SongID uuid.UUID `validate:"required"`
-}
-
-type UpdateSectionOccurrencesRequest struct {
-	ID          uuid.UUID `validate:"required"`
-	Occurrences uint
-}
-
-type UpdateSectionPartialOccurrencesRequest struct {
-	ID                 uuid.UUID `validate:"required"`
-	PartialOccurrences uint
 }

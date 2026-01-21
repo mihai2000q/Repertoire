@@ -15,18 +15,12 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
     sm: 16 / 9
   })
   const src = link
-    ?.replace('watch?v=', 'embed/')
-    .replace('youtube', 'youtube-nocookie')
+    ?.replace(/(www\.)?youtube.com\/watch\?v=/, 'www.youtube-nocookie.com/embed/')
     .replace(/(www\.)?youtu.be/, 'www.youtube-nocookie.com/embed')
+    .replace('watch?v=', 'embed/')
 
   return (
-    <Modal.Root
-      opened={opened}
-      onClose={onClose}
-      size={'min(80vw, 1000px)'}
-      trapFocus={false}
-      centered
-    >
+    <Modal.Root opened={opened} onClose={onClose} size={'min(80vw, 1000px)'} centered>
       <Modal.Overlay />
       <Modal.Content>
         <Modal.Header>

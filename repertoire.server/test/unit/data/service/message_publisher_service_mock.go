@@ -1,9 +1,10 @@
 package service
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/data/message"
 	"repertoire/server/internal/message/topics"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type MessagePublisherServiceMock struct {

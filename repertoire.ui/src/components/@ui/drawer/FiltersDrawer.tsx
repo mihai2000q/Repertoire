@@ -63,7 +63,6 @@ function FiltersDrawer({
 
   return (
     <Drawer.Root
-      trapFocus={false}
       opened={opened}
       onClose={onClose}
       position={'right'}

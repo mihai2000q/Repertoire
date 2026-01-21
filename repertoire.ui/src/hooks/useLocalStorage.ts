@@ -1,17 +1,28 @@
 import { useState } from 'react'
 import { useDidUpdate } from '@mantine/hooks'
 
-export default function useLocalStorage<T>({
-  key,
-  defaultValue
-}: {
+interface useLocalStorageOptions<T> {
   key: string
   defaultValue?: T
-}): [T, (value: T) => void] {
-  const [item, setItem] = useState((JSON.parse(localStorage.getItem(key)) as T) ?? defaultValue)
+  serialize?: (value: T) => string
+  deserialize?: (item: string) => T
+}
+
+export default function useLocalStorage<T>({
+  key,
+  defaultValue,
+  serialize,
+  deserialize
+}: useLocalStorageOptions<T>): [T, (value: T) => void] {
+  const [item, setItem] = useState<T>(() => {
+    const item = localStorage.getItem(key)
+    if (item === null || item === undefined) return defaultValue
+    return deserialize ? deserialize(item) : JSON.parse(item)
+  })
 
   useDidUpdate(() => {
-    if (item !== undefined) localStorage.setItem(key, JSON.stringify(item))
+    if (item !== undefined)
+      localStorage.setItem(key, serialize ? serialize(item) : JSON.stringify(item))
     else localStorage.removeItem(key)
   }, [item])
 

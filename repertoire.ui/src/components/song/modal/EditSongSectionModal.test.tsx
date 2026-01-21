@@ -89,7 +89,7 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(section.name)
 
-    expect(screen.getByRole('textbox', { name: /type/i })).toBeInTheDocument()
+    expect(await screen.findByRole('textbox', { name: /type/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /type/i })).not.toBeInvalid()
     expect(await screen.findByRole('textbox', { name: /type/i })).toHaveValue(
       section.songSectionType.name
@@ -390,8 +390,12 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
       section.rehearsals.toString()
     )
-    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(section.bandMember?.name ?? '')
-    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(section.instrument?.name ?? '')
+    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(
+      section.bandMember?.name ?? ''
+    )
+    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(
+      section.instrument?.name ?? ''
+    )
 
     const newSection = {
       ...section,

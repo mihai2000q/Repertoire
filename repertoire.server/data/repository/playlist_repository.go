@@ -1,17 +1,27 @@
 package repository
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
-	GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOrderBy []string) error
+	GetPlaylistSongsWithSongs(
+		playlistSongs *[]model.PlaylistSong,
+		id uuid.UUID,
+		currentPage *int,
+		pageSize *int,
+		orderBy []string,
+	) error
+	GetPlaylistSongsCount(count *int64, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
+	GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error
+	GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
@@ -25,7 +35,7 @@ type PlaylistRepository interface {
 	AddSongs(playlistSongs *[]model.PlaylistSong) error
 	Update(playlist *model.Playlist) error
 	UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error
-	Delete(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
 	RemoveSongs(playlistSongs *[]model.PlaylistSong) error
 }
 
@@ -46,20 +56,32 @@ func (p playlistRepository) Get(playlist *model.Playlist, id uuid.UUID) error {
 func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error {
 	return p.client.
 		Order("song_track_no").
-		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
+		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).
+		Error
 }
 
-func (p playlistRepository) GetWithAssociations(playlist *model.Playlist, id uuid.UUID, songsOrderBy []string) error {
-	return p.client.
-		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
-			tx := db.
-				Joins("JOIN songs ON songs.id = playlist_songs.song_id").
-				Preload("Song").
-				Preload("Song.Artist").
-				Preload("Song.Album")
-			return database.OrderBy(tx, songsOrderBy)
-		}).
-		Find(&playlist, model.Playlist{ID: id}).Error
+func (p playlistRepository) GetPlaylistSongsWithSongs(
+	playlistSongs *[]model.PlaylistSong,
+	id uuid.UUID,
+	currentPage *int,
+	pageSize *int,
+	orderBy []string,
+) error {
+	tx := p.client.
+		Joins("Song").
+		Joins("Song.Artist").
+		Joins("Song.Album")
+
+	database.OrderBy(tx, orderBy)
+	database.Paginate(tx, currentPage, pageSize)
+	return tx.Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).Error
+}
+
+func (p playlistRepository) GetPlaylistSongsCount(count *int64, id uuid.UUID) error {
+	return p.client.Model(&model.PlaylistSong{}).
+		Where(model.PlaylistSong{PlaylistID: id}).
+		Count(count).
+		Error
 }
 
 func (p playlistRepository) GetFiltersMetadata(
@@ -80,6 +102,21 @@ func (p playlistRepository) GetFiltersMetadata(
 
 	database.SearchBy(tx, searchBy)
 	return tx.Scan(&metadata).Error
+}
+
+func (p playlistRepository) GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error {
+	return p.client.Model(&model.Playlist{}).Find(&playlists, ids).Error
+}
+
+func (p playlistRepository) GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error {
+	return p.client.Model(&model.Playlist{}).
+		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
+		Preload("PlaylistSongs.Song").
+		Preload("PlaylistSongs.Song.Sections").
+		Find(&playlists, ids).
+		Error
 }
 
 var compoundPlaylistsFields = []string{"songs_count"}
@@ -143,8 +180,8 @@ func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.Playli
 	})
 }
 
-func (p playlistRepository) Delete(id uuid.UUID) error {
-	return p.client.Delete(&model.Playlist{}, id).Error
+func (p playlistRepository) Delete(ids []uuid.UUID) error {
+	return p.client.Delete(&model.Playlist{}, ids).Error
 }
 
 func (p playlistRepository) RemoveSongs(playlistSongs *[]model.PlaylistSong) error {

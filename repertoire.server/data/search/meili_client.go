@@ -1,8 +1,9 @@
 package search
 
 import (
-	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/internal"
+
+	"github.com/meilisearch/meilisearch-go"
 )
 
 type MeiliClient struct {

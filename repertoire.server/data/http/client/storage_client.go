@@ -1,10 +1,11 @@
 package client
 
 import (
-	"github.com/go-resty/resty/v2"
 	"io"
 	"repertoire/server/data/http"
 	"repertoire/server/internal"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type StorageClient struct {

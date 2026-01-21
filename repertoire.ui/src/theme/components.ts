@@ -6,13 +6,18 @@ import {
   Card,
   CardFactory,
   Chip,
+  CloseButton,
   Combobox,
+  Drawer,
+  DrawerRoot,
   Highlight,
   HoverCard,
   Indicator,
+  lighten,
   LoadingOverlay,
   Menu,
   Modal,
+  ModalRoot,
   NavLink,
   NumberFormatter,
   NumberInput,
@@ -38,12 +43,11 @@ export const components = {
         transition: '0.16s',
         '&[data-variant="grey"]': {
           color: theme.colors.gray[5],
-          backgroundColor: theme.colors.gray[0],
+          backgroundColor: 'transparent',
 
           '&:hover': {
             color: theme.colors.gray[6],
-            backgroundColor: theme.colors.gray[2],
-            shadows: theme.shadows.lg
+            backgroundColor: theme.colors.gray[2]
           },
 
           '&[data-disabled="true"]': {
@@ -55,7 +59,6 @@ export const components = {
         '&[data-variant="grey-subtle"]': {
           color: theme.colors.gray[2],
           backgroundColor: alpha(theme.colors.gray[6], 0.3),
-          shadows: theme.shadows.xs,
 
           '&:hover': {
             color: theme.white,
@@ -64,9 +67,19 @@ export const components = {
           }
         },
 
+        '&[data-variant="grey-primary"]': {
+          color: theme.colors.gray[5],
+          backgroundColor: 'transparent',
+
+          '&:hover': {
+            color: theme.colors.primary[4],
+            backgroundColor: theme.colors.primary[0]
+          }
+        },
+
         '&[data-variant="form"]': {
           color: theme.colors.gray[5],
-          backgroundColor: theme.colors.gray[0],
+          backgroundColor: 'transparent',
 
           '&:hover': {
             color: theme.colors.gray[6],
@@ -117,7 +130,7 @@ export const components = {
   Card: Card.extend({
     styles: (theme) => ({
       root: {
-        '&[data-variant="panel"]': {
+        '&[data-variant="widget"]': {
           boxShadow: theme.shadows.sm,
           transition: '0.3s',
           '&:hover': {
@@ -142,7 +155,7 @@ export const components = {
   }),
   Chip: Chip.extend({
     defaultProps: {
-      role: 'button',
+      role: 'button'
     },
     styles: () => ({
       label: {
@@ -150,6 +163,26 @@ export const components = {
         fontWeight: 500
       }
     })
+  }),
+  CloseButton: CloseButton.extend({
+    defaultProps: {
+      styles: (theme) => ({
+        root: {
+          transition: '0.16s',
+          color: theme.colors.gray[6],
+          borderRadius: '50%',
+
+          '&:hover': {
+            color: lighten(theme.colors.gray[7], 0.1),
+            backgroundColor: theme.colors.gray[2]
+          },
+
+          '&[data-disabled="true"]': {
+            color: theme.colors.gray[3]
+          }
+        }
+      })
+    }
   }),
   Combobox: Combobox.extend({
     defaultProps: {
@@ -172,6 +205,16 @@ export const components = {
           duration: 160
         }
       }
+    }
+  }),
+  Drawer: Drawer.extend({
+    defaultProps: {
+      trapFocus: false
+    }
+  }),
+  DrawerRoot: DrawerRoot.extend({
+    defaultProps: {
+      trapFocus: false
     }
   }),
   Highlight: Highlight.extend({
@@ -213,7 +256,8 @@ export const components = {
     defaultProps: {
       closeButtonProps: {
         iconSize: 20
-      }
+      },
+      trapFocus: false
     },
     styles: (theme) => ({
       content: {
@@ -225,6 +269,11 @@ export const components = {
         color: theme.colors.gray[7]
       }
     })
+  }),
+  ModalRoot: ModalRoot.extend({
+    defaultProps: {
+      trapFocus: false
+    }
   }),
   NavLink: NavLink.extend({
     defaultProps: {
@@ -397,11 +446,16 @@ export const components = {
 declare module '@mantine/core' {
   // noinspection JSUnusedGlobalSymbols
   interface ActionIconProps {
-    variant?: StylesApiProps<ActionIconFactory>['variant'] | 'grey' | 'grey-subtle' | 'form'
+    variant?:
+      | StylesApiProps<ActionIconFactory>['variant']
+      | 'grey'
+      | 'grey-subtle'
+      | 'grey-primary'
+      | 'form'
   }
 
   // noinspection JSUnusedGlobalSymbols
   interface CardProps {
-    variant?: StylesApiProps<CardFactory>['variant'] | 'panel' | 'add-new'
+    variant?: StylesApiProps<CardFactory>['variant'] | 'widget' | 'add-new'
   }
 }

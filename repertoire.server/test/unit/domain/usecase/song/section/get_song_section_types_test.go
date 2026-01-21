@@ -39,8 +39,8 @@ func TestGetSongSectionTypes_WhenGetUserIdFromJwtFails_ShouldReturnError(t *test
 func TestGetSongSectionTypes_WhenGetSectionTypesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewGetSongSectionTypes(songRepository, jwtService)
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := section.NewGetSongSectionTypes(songSectionRepository, jwtService)
 
 	token := "this is a token"
 
@@ -48,7 +48,7 @@ func TestGetSongSectionTypes_WhenGetSectionTypesFails_ShouldReturnInternalServer
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).Return(internalError).Once()
+	songSectionRepository.On("GetTypes", new([]model.SongSectionType), userID).Return(internalError).Once()
 
 	// when
 	sectionTypes, errCode := _uut.Handle(token)
@@ -60,14 +60,14 @@ func TestGetSongSectionTypes_WhenGetSectionTypesFails_ShouldReturnInternalServer
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	songSectionRepository.AssertExpectations(t)
 }
 
 func TestGetSongSectionTypes_WhenSuccessful_ShouldReturnSongSectionTypes(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewGetSongSectionTypes(songRepository, jwtService)
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := section.NewGetSongSectionTypes(songSectionRepository, jwtService)
 
 	token := "this is a token"
 
@@ -78,7 +78,7 @@ func TestGetSongSectionTypes_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 		{ID: uuid.New(), Name: "Chorus"},
 		{ID: uuid.New(), Name: "Interlude"},
 	}
-	songRepository.On("GetSectionTypes", mock.IsType(expectedTypes), userID).
+	songSectionRepository.On("GetTypes", mock.IsType(expectedTypes), userID).
 		Return(nil, expectedTypes).
 		Once()
 
@@ -90,5 +90,5 @@ func TestGetSongSectionTypes_WhenSuccessful_ShouldReturnSongSectionTypes(t *test
 	assert.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
+	songSectionRepository.AssertExpectations(t)
 }

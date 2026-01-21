@@ -12,6 +12,8 @@ import (
 
 type AlbumService interface {
 	AddSongs(requests.AddSongsToAlbumRequest) *wrapper.ErrorCode
+	AddPerfectRehearsals(request requests.AddPerfectRehearsalsToAlbumsRequest) *wrapper.ErrorCode
+	BulkDelete(request requests.BulkDeleteAlbumsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(request requests.DeleteAlbumRequest) *wrapper.ErrorCode
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -28,21 +30,25 @@ type AlbumService interface {
 }
 
 type albumService struct {
-	addSongsToAlbum         album.AddSongsToAlbum
-	createAlbum             album.CreateAlbum
-	deleteAlbum             album.DeleteAlbum
-	deleteImageFromAlbum    album.DeleteImageFromAlbum
-	getAlbum                album.GetAlbum
-	getAlbumFiltersMetadata album.GetAlbumFiltersMetadata
-	getAllAlbums            album.GetAllAlbums
-	moveSongFromAlbum       album.MoveSongFromAlbum
-	removeSongsFromAlbum    album.RemoveSongsFromAlbum
-	saveImageToAlbum        album.SaveImageToAlbum
-	updateAlbum             album.UpdateAlbum
+	addSongsToAlbum              album.AddSongsToAlbum
+	addPerfectRehearsalsToAlbums album.AddPerfectRehearsalsToAlbums
+	bulkDeleteAlbums             album.BulkDeleteAlbums
+	createAlbum                  album.CreateAlbum
+	deleteAlbum                  album.DeleteAlbum
+	deleteImageFromAlbum         album.DeleteImageFromAlbum
+	getAlbum                     album.GetAlbum
+	getAlbumFiltersMetadata      album.GetAlbumFiltersMetadata
+	getAllAlbums                 album.GetAllAlbums
+	moveSongFromAlbum            album.MoveSongFromAlbum
+	removeSongsFromAlbum         album.RemoveSongsFromAlbum
+	saveImageToAlbum             album.SaveImageToAlbum
+	updateAlbum                  album.UpdateAlbum
 }
 
 func NewAlbumService(
 	addSongsToAlbum album.AddSongsToAlbum,
+	addPerfectRehearsalsToAlbums album.AddPerfectRehearsalsToAlbums,
+	bulkDeleteAlbums album.BulkDeleteAlbums,
 	createAlbum album.CreateAlbum,
 	deleteAlbum album.DeleteAlbum,
 	deleteImageFromAlbum album.DeleteImageFromAlbum,
@@ -55,22 +61,32 @@ func NewAlbumService(
 	updateAlbum album.UpdateAlbum,
 ) AlbumService {
 	return &albumService{
-		addSongsToAlbum:         addSongsToAlbum,
-		createAlbum:             createAlbum,
-		deleteAlbum:             deleteAlbum,
-		deleteImageFromAlbum:    deleteImageFromAlbum,
-		getAlbum:                getAlbum,
-		getAlbumFiltersMetadata: getAlbumFiltersMetadata,
-		getAllAlbums:            getAllAlbums,
-		moveSongFromAlbum:       moveSongFromAlbum,
-		removeSongsFromAlbum:    removeSongsFromAlbum,
-		saveImageToAlbum:        saveImageToAlbum,
-		updateAlbum:             updateAlbum,
+		addSongsToAlbum:              addSongsToAlbum,
+		addPerfectRehearsalsToAlbums: addPerfectRehearsalsToAlbums,
+		bulkDeleteAlbums:             bulkDeleteAlbums,
+		createAlbum:                  createAlbum,
+		deleteAlbum:                  deleteAlbum,
+		deleteImageFromAlbum:         deleteImageFromAlbum,
+		getAlbum:                     getAlbum,
+		getAlbumFiltersMetadata:      getAlbumFiltersMetadata,
+		getAllAlbums:                 getAllAlbums,
+		moveSongFromAlbum:            moveSongFromAlbum,
+		removeSongsFromAlbum:         removeSongsFromAlbum,
+		saveImageToAlbum:             saveImageToAlbum,
+		updateAlbum:                  updateAlbum,
 	}
 }
 
 func (a *albumService) AddSongs(request requests.AddSongsToAlbumRequest) *wrapper.ErrorCode {
 	return a.addSongsToAlbum.Handle(request)
+}
+
+func (a *albumService) AddPerfectRehearsals(request requests.AddPerfectRehearsalsToAlbumsRequest) *wrapper.ErrorCode {
+	return a.addPerfectRehearsalsToAlbums.Handle(request)
+}
+
+func (a *albumService) BulkDelete(request requests.BulkDeleteAlbumsRequest) *wrapper.ErrorCode {
+	return a.bulkDeleteAlbums.Handle(request)
 }
 
 func (a *albumService) Create(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {

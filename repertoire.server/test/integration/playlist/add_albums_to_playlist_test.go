@@ -2,9 +2,6 @@ package playlist
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -15,27 +12,11 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"slices"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
-
-func TestAddAlbumsToPlaylist_WhenWithoutDuplicatesButWithForceAdd_ShouldReturnBadRequest(t *testing.T) {
-	// given
-	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
-
-	request := requests.AddAlbumsToPlaylistRequest{
-		ID: playlistData.Playlists[1].ID,
-		AlbumIDs: []uuid.UUID{
-			playlistData.Albums[1].ID,
-		},
-		ForceAdd: &[]bool{false}[0],
-	}
-
-	// when
-	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/playlists/add-albums", request)
-
-	// then
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-}
 
 func TestAddAlbumsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
 	// given
@@ -220,15 +201,15 @@ func TestAddAlbumsToPlaylist_WhenWithDuplicatesAndForceAddFalse_ShouldSkipDuplic
 		return db.Preload("Song").Order("song_track_no")
 	}).Find(&playlist, request.ID)
 
-	assert.GreaterOrEqual(t, len(playlist.Songs), len(expectedSongIDs))
+	assert.GreaterOrEqual(t, len(playlist.PlaylistSongs), len(expectedSongIDs))
 
-	sizeDiff := len(playlist.Songs) - len(expectedSongIDs)
-	for i := 0; i < len(playlist.Songs)-sizeDiff; i++ {
-		assert.Equal(t, expectedSongIDs[i], playlist.Songs[i+sizeDiff].ID)
+	sizeDiff := len(playlist.PlaylistSongs) - len(expectedSongIDs)
+	for i := 0; i < len(playlist.PlaylistSongs)-sizeDiff; i++ {
+		assert.Equal(t, expectedSongIDs[i], playlist.PlaylistSongs[i+sizeDiff].SongID)
 	}
 
-	for i, song := range playlist.Songs {
-		assert.Equal(t, uint(i+1), song.PlaylistTrackNo)
+	for i, song := range playlist.PlaylistSongs {
+		assert.Equal(t, uint(i+1), song.SongTrackNo)
 	}
 }
 
@@ -253,14 +234,14 @@ func assertAlbumsAddedToPlaylist(t *testing.T, request requests.AddAlbumsToPlayl
 		return db.Preload("Song").Order("song_track_no")
 	}).Find(&playlist, request.ID)
 
-	assert.GreaterOrEqual(t, len(playlist.Songs), len(albumSongs))
+	assert.GreaterOrEqual(t, len(playlist.PlaylistSongs), len(albumSongs))
 
-	sizeDiff := len(playlist.Songs) - len(albumSongs)
-	for i := 0; i < len(playlist.Songs)-sizeDiff; i++ {
-		assert.Equal(t, albumSongs[i].ID, playlist.Songs[i+sizeDiff].ID)
+	sizeDiff := len(playlist.PlaylistSongs) - len(albumSongs)
+	for i := 0; i < len(playlist.PlaylistSongs)-sizeDiff; i++ {
+		assert.Equal(t, albumSongs[i].ID, playlist.PlaylistSongs[i+sizeDiff].SongID)
 	}
 
-	for i, song := range playlist.Songs {
-		assert.Equal(t, uint(i+1), song.PlaylistTrackNo)
+	for i, playlistSong := range playlist.PlaylistSongs {
+		assert.Equal(t, uint(i+1), playlistSong.SongTrackNo)
 	}
 }

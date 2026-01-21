@@ -6,6 +6,7 @@ import {
   Divider,
   Group,
   Highlight,
+  Loader,
   LoadingOverlay,
   Menu,
   Modal,
@@ -19,18 +20,18 @@ import {
   useAddAlbumsToPlaylistMutation,
   useAddArtistsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
-  useGetPlaylistsQuery
+  useGetInfinitePlaylistsInfiniteQuery
 } from '../../../../state/api/playlistsApi.ts'
 import Playlist from '../../../../types/models/Playlist.ts'
-import { useDebouncedValue, useDidUpdate, useSessionStorage } from '@mantine/hooks'
+import { useDebouncedValue, useDidUpdate, useIntersection, useSessionStorage } from '@mantine/hooks'
 import useOrderBy from '../../../../hooks/api/useOrderBy.ts'
 import OrderType from '../../../../types/enums/OrderType.ts'
 import useFilters from '../../../../hooks/filter/useFilters.ts'
 import FilterOperator from '../../../../types/enums/FilterOperator.ts'
 import useFiltersHandlers from '../../../../hooks/filter/useFiltersHandlers.ts'
 import useSearchBy from '../../../../hooks/api/useSearchBy.ts'
-import PlaylistProperty from '../../../../types/enums/PlaylistProperty.ts'
-import SessionStorageKeys from '../../../../types/enums/SessionStorageKeys.ts'
+import PlaylistProperty from '../../../../types/enums/properties/PlaylistProperty.ts'
+import SessionStorageKeys from '../../../../types/enums/keys/SessionStorageKeys.ts'
 import plural from '../../../../utils/plural.ts'
 import {
   AddAlbumsToPlaylistResponse,
@@ -39,7 +40,8 @@ import {
   AddToPlaylistResponse
 } from '../../../../types/responses/PlaylistResponses.ts'
 import { toast } from 'react-toastify'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 
 const AlreadyAddedModal = ({
   opened,
@@ -111,6 +113,7 @@ function PlaylistOption({
         alt={playlist.imageUrl && playlist.title}
         bg={'gray.5'}
         style={(theme) => ({ aspectRatio: 1, boxShadow: theme.shadows.sm })}
+        imageProps={{ loading: 'lazy' }}
       >
         <Center c={'white'}>
           <IconPlaylist aria-label={`default-icon-${playlist.title}`} size={12} />
@@ -131,12 +134,19 @@ function PlaylistOption({
 
 interface AddToPlaylistMenuItemProps {
   ids: string[]
-  type: 'song' | 'album' | 'artist'
+  type: 'songs' | 'albums' | 'artists'
   closeMenu: () => void
+  onSuccess?: () => void
   disabled?: boolean
 }
 
-function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylistMenuItemProps) {
+function AddToPlaylistMenuItem({
+  ids,
+  type,
+  closeMenu,
+  onSuccess,
+  disabled
+}: AddToPlaylistMenuItemProps) {
   const [search, setSearch] = useSessionStorage({
     key: SessionStorageKeys.AddToPlaylist,
     defaultValue: ''
@@ -163,13 +173,27 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
   )
 
   const {
-    data: playlists,
+    data: dataPlaylists,
     isLoading,
-    isFetching
-  } = useGetPlaylistsQuery({
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useGetInfinitePlaylistsInfiniteQuery({
     orderBy: orderBy,
     searchBy: searchBy
   })
+  const playlists: WithTotalCountResponse<Playlist> = {
+    models: dataPlaylists?.pages.flatMap((x) => x.models ?? []),
+    totalCount: dataPlaylists?.pages[0].totalCount
+  }
+  const scrollRef = useRef()
+  const { ref: lastSongRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
 
   const [addArtistsToPlaylist] = useAddArtistsToPlaylistMutation()
   const [addAlbumsToPlaylist] = useAddAlbumsToPlaylistMutation()
@@ -198,15 +222,15 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     let added: string[]
 
     switch (type) {
-      case 'artist':
+      case 'artists':
         res = await addArtistsToPlaylist({ id: playlist.id, artistIds: ids }).unwrap()
         added = (res as AddArtistsToPlaylistResponse).addedSongIds
         break
-      case 'album':
+      case 'albums':
         res = await addAlbumsToPlaylist({ id: playlist.id, albumIds: ids }).unwrap()
         added = (res as AddAlbumsToPlaylistResponse).addedSongIds
         break
-      case 'song':
+      case 'songs':
         res = await addSongsToPlaylist({ id: playlist.id, songIds: ids }).unwrap()
         added = (res as AddSongsToPlaylistResponse).added
         break
@@ -216,6 +240,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     if (res.success) {
       toast.success(`Successfully added ${added.length} song${plural(added)}!`)
       closeMenu()
+      onSuccess?.()
       return
     }
 
@@ -229,7 +254,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     let retryFn: (forceAdd: boolean) => void
 
     switch (type) {
-      case 'artist': {
+      case 'artists': {
         const { duplicateArtistIds } = res as AddArtistsToPlaylistResponse
         if (duplicateArtistIds.length > 1 && ids.length === duplicateArtistIds.length) {
           partialText = 'These artists are'
@@ -254,7 +279,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
         break
       }
 
-      case 'album': {
+      case 'albums': {
         const { duplicateAlbumIds } = res as AddAlbumsToPlaylistResponse
         if (duplicateAlbumIds.length > 1 && ids.length === duplicateAlbumIds.length) {
           partialText = 'These albums are'
@@ -279,7 +304,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
         break
       }
 
-      case 'song': {
+      case 'songs': {
         const { duplicates } = res as AddSongsToPlaylistResponse
         if (duplicates.length > 1 && ids.length === duplicates.length) {
           partialText = 'These songs are'
@@ -310,6 +335,7 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
     const onRetry = (forceAdd: boolean) => {
       retryFn(forceAdd)
       closeMenu()
+      onSuccess?.()
     }
 
     setAlreadyAddedModalState({ opened: true, text, withCancel, onRetry })
@@ -343,27 +369,42 @@ function AddToPlaylistMenuItem({ ids, type, closeMenu, disabled }: AddToPlaylist
           />
           <Divider />
 
-          <ScrollArea.Autosize mah={'max(250px, 50vh)'} scrollbars={'y'} scrollbarSize={5}>
-            <Stack gap={'xxs'} py={7} px={'xxs'} style={{ transition: '0.16s' }}>
-              <LoadingOverlay visible={isFetching} />
-              {playlists?.models?.map((playlist) => (
-                <PlaylistOption
-                  key={playlist.id}
-                  playlist={playlist}
-                  searchValue={searchValue}
-                  onClick={() => handleClick(playlist)}
-                />
-              ))}
+          <ScrollArea.Autosize
+            mah={'max(250px, 50vh)'}
+            scrollbars={'y'}
+            scrollbarSize={5}
+            viewportRef={scrollRef}
+          >
+            <Stack gap={0} align={'center'} py={7} px={'xxs'} style={{ transition: '0.16s' }}>
+              <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
+
+              <Stack gap={'xxs'}>
+                {playlists?.models?.map((playlist) => (
+                  <PlaylistOption
+                    key={playlist.id}
+                    playlist={playlist}
+                    searchValue={searchValue}
+                    onClick={() => handleClick(playlist)}
+                  />
+                ))}
+              </Stack>
+
               {playlists?.totalCount === 0 && activeFilters === 0 && (
                 <Text fz={'xs'} c={'dimmed'} px={'xs'}>
                   There are no playlists
                 </Text>
               )}
+
               {playlists?.totalCount === 0 && activeFilters > 0 && (
                 <Text fz={'xs'} c={'dimmed'} px={'xs'}>
                   No playlists found
                 </Text>
               )}
+
+              <Stack gap={0} align={'center'}>
+                <div ref={lastSongRef} />
+                {isFetchingNextPage && <Loader size={25} mt={'sm'} />}
+              </Stack>
             </Stack>
           </ScrollArea.Autosize>
         </Menu.Sub.Dropdown>

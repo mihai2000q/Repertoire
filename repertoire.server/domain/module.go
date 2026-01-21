@@ -12,6 +12,7 @@ import (
 
 var processors = fx.Options(
 	fx.Provide(processor.NewProgressProcessor),
+	fx.Provide(processor.NewSongProcessor),
 )
 
 var providers = fx.Options(
@@ -24,6 +25,7 @@ var services = fx.Options(
 	fx.Provide(service.NewArtistService),
 	fx.Provide(service.NewPlaylistService),
 	fx.Provide(service.NewSearchService),
+	fx.Provide(service.NewSongSectionService),
 	fx.Provide(service.NewSongService),
 	fx.Provide(service.NewUserDataService),
 	fx.Provide(service.NewUserService),

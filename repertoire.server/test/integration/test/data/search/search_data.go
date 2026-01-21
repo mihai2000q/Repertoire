@@ -1,12 +1,13 @@
 package album
 
 import (
-	"github.com/google/uuid"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func GetSearchDocuments() []any {

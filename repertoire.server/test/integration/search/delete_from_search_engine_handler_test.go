@@ -1,8 +1,6 @@
 package search
 
 import (
-	"github.com/meilisearch/meilisearch-go"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
@@ -10,6 +8,8 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteFromSearchEngine_WhenSuccessful_ShouldDeleteDataFromMeilisearch(t *testing.T) {
@@ -24,7 +24,7 @@ func TestDeleteFromSearchEngine_WhenSuccessful_ShouldDeleteDataFromMeilisearch(t
 	}
 
 	searchClient := utils.GetSearchClient(t)
-	tasks, _ := searchClient.GetTasks(&meilisearch.TasksQuery{})
+	tasks, _ := searchClient.GetTasks(nil)
 
 	// when
 	err := utils.PublishToTopic(topics.DeleteFromSearchEngineTopic, ids)
@@ -36,12 +36,12 @@ func TestDeleteFromSearchEngine_WhenSuccessful_ShouldDeleteDataFromMeilisearch(t
 	utils.WaitForAllSearchTasks(searchClient)
 	for _, id := range ids {
 		var entity *map[string]any
-		getErr := searchClient.Index("search").GetDocument(id, &meilisearch.DocumentQuery{}, &entity)
+		getErr := searchClient.Index("search").GetDocument(id, nil, &entity)
 		assert.Nil(t, entity)
 		assert.Error(t, getErr)
 	}
 
-	tasks, _ = searchClient.GetTasks(&meilisearch.TasksQuery{})
+	tasks, _ = searchClient.GetTasks(nil)
 	latestTaskID := strconv.FormatInt((*tasks).Results[0].UID, 10)
 	cachedUserID, _ := core.MeiliCache.Get("task-" + latestTaskID)
 	assert.Equal(t, userID.String(), cachedUserID)

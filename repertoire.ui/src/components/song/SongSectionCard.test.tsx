@@ -7,6 +7,8 @@ import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
 import { BandMember } from '../../types/models/Artist.ts'
+import { beforeEach, expect } from 'vitest'
+import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 describe('Song Section Card', () => {
   const section: SongSection = {
@@ -33,9 +35,29 @@ describe('Song Section Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [],
+      isClickSelectionActive: false,
+      clearSelection: vi.fn()
+    })
+  })
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    vi.restoreAllMocks()
+    server.resetHandlers()
+  })
+
+  beforeAll(() => {
+    vi.mock('../../context/ClickSelectContext', () => ({
+      useClickSelect: vi.fn()
+    }))
+    server.listen()
+  })
 
   afterAll(() => server.close())
 
@@ -294,5 +316,187 @@ describe('Song Section Card', () => {
       rehearsals: section.rehearsals + 1
     })
     expect(showToast).toHaveBeenCalledOnce()
+  })
+
+  it('should disable context menu; drag handle, more menu and rehearsal buttons, when click selection is active', async () => {
+    const user = userEvent.setup()
+
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [],
+      isClickSelectionActive: true,
+      clearSelection: vi.fn()
+    })
+
+    reduxRender(
+      <SongSectionCard
+        section={section}
+        songId={''}
+        maxSectionProgress={0}
+        maxSectionRehearsals={0}
+        showDetails={true}
+        isDragging={false}
+        showRehearsalsToast={vi.fn()}
+      />
+    )
+
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`song-section-${section.name}`)
+    })
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: 'drag-handle' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'more-menu' })).toBeDisabled()
+  })
+
+  it('should hide the drag handle and display a checkmark, when click selected (part of the selected ids)', () => {
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [section.id],
+      isClickSelectionActive: true,
+      clearSelection: vi.fn()
+    })
+
+    reduxRender(
+      <SongSectionCard
+        section={section}
+        songId={''}
+        maxSectionProgress={0}
+        maxSectionRehearsals={0}
+        showDetails={false}
+        isDragging={false}
+        showRehearsalsToast={vi.fn()}
+      />
+    )
+
+    expect(screen.queryByRole('button', { name: 'drag-handle' })).not.toBeInTheDocument()
+    expect(screen.getByTestId('selected-checkmark')).toBeInTheDocument()
+  })
+
+  describe('should be selected', () => {
+    it('when avatar is hovered', async () => {
+      const user = userEvent.setup()
+
+      reduxRender(
+        <SongSectionCard
+          section={section}
+          songId={''}
+          maxSectionProgress={0}
+          maxSectionRehearsals={0}
+          showDetails={false}
+          isDragging={false}
+          showRehearsalsToast={vi.fn()}
+        />
+      )
+
+      await user.hover(screen.getByLabelText(`song-section-${section.name}`))
+
+      expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when context menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRender(
+        <SongSectionCard
+          section={section}
+          songId={''}
+          maxSectionProgress={0}
+          maxSectionRehearsals={0}
+          showDetails={false}
+          isDragging={false}
+          showRehearsalsToast={vi.fn()}
+        />
+      )
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`song-section-${section.name}`)
+      })
+
+      expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when more menu is open', async () => {
+      const user = userEvent.setup()
+
+      reduxRender(
+        <SongSectionCard
+          section={section}
+          songId={''}
+          maxSectionProgress={0}
+          maxSectionRehearsals={0}
+          showDetails={false}
+          isDragging={false}
+          showRehearsalsToast={vi.fn()}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+
+      expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when is dragging', async () => {
+      reduxRender(
+        <SongSectionCard
+          section={section}
+          songId={''}
+          maxSectionProgress={0}
+          maxSectionRehearsals={0}
+          showDetails={false}
+          isDragging={true}
+          showRehearsalsToast={vi.fn()}
+        />
+      )
+
+      expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+
+    it('when click selected (part of the selected ids)', () => {
+      vi.mocked(useClickSelect).mockReturnValue({
+        selectables: [],
+        addSelectable: vi.fn(),
+        removeSelectable: vi.fn(),
+        selectedIds: [section.id],
+        isClickSelectionActive: true,
+        clearSelection: vi.fn()
+      })
+
+      reduxRender(
+        <SongSectionCard
+          section={section}
+          songId={''}
+          maxSectionProgress={0}
+          maxSectionRehearsals={0}
+          showDetails={false}
+          isDragging={false}
+          showRehearsalsToast={vi.fn()}
+        />
+      )
+
+      expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
   })
 })

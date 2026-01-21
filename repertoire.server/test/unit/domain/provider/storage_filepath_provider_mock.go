@@ -1,9 +1,10 @@
 package provider
 
 import (
-	"github.com/google/uuid"
 	"mime/multipart"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/mock"
 )

@@ -14,7 +14,7 @@ import Song from '../../../types/models/Song.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import { expect } from 'vitest'
-import { openPlaylistDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import { openPlaylistDrawer } from '../../../state/slice/globalSlice.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 describe('Playlist Drawer', () => {
@@ -50,8 +50,7 @@ describe('Playlist Drawer', () => {
   const playlist: Playlist = {
     ...emptyPlaylist,
     id: '1',
-    title: 'Playlist 1',
-    songs: songs
+    title: 'Playlist 1'
   }
 
   const getPlaylist = (playlist: Playlist) =>
@@ -59,8 +58,18 @@ describe('Playlist Drawer', () => {
       return HttpResponse.json(playlist)
     })
 
+  const getPlaylistSongs = (playlistId: string, songs: Song[]) =>
+    http.get(`/playlists/songs/${playlistId}`, async () => {
+      const response: WithTotalCountResponse<Song> = {
+        models: songs,
+        totalCount: songs.length
+      }
+      return HttpResponse.json(response)
+    })
+
   const handlers = [
     getPlaylist(playlist),
+    getPlaylistSongs(playlist.id, songs),
     http.get('/playlists', async () => {
       const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
@@ -101,12 +110,12 @@ describe('Playlist Drawer', () => {
     expect(await screen.findByRole('button', { name: 'more-menu' })).toBeInTheDocument()
     expect(screen.getByLabelText(`default-icon-${playlist.title}`)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: playlist.title })).toBeInTheDocument()
-    expect(screen.getByText(`${playlist.songs.length} songs`)).toBeInTheDocument()
+    expect(screen.getByText(`${songs.length} songs`)).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
       prevDocumentTitle + ' - ' + playlist.title
     )
 
-    playlist.songs.forEach((song) => {
+    songs.forEach((song) => {
       expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.imageUrl) {
@@ -138,12 +147,12 @@ describe('Playlist Drawer', () => {
       localPlaylist.imageUrl
     )
     expect(screen.getByRole('heading', { name: localPlaylist.title })).toBeInTheDocument()
-    expect(screen.getByText(`${localPlaylist.songs.length} songs`)).toBeInTheDocument()
+    expect(screen.getByText(`${songs.length} songs`)).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(
       prevDocumentTitle + ' - ' + localPlaylist.title
     )
 
-    localPlaylist.songs.forEach((song) => {
+    songs.forEach((song) => {
       expect(screen.getByText(song.playlistTrackNo)).toBeInTheDocument()
       expect(screen.getByText(song.title)).toBeInTheDocument()
       if (song.imageUrl) {
@@ -178,11 +187,11 @@ describe('Playlist Drawer', () => {
       )
     })
 
-    // change back the document title (as if the drawer closed)
-    await act(() => store.dispatch(setDocumentTitle(prevDocumentTitle)))
+    // click outside to close drawer
+    await userEvent.click(document.querySelector('.mantine-Drawer-overlay'))
 
     // make sure it doesn't use the old title when a new playlist is introduced
-    server.use(getPlaylist(newPlaylist))
+    server.use(getPlaylist(newPlaylist), getPlaylistSongs(newPlaylist.id, songs))
     await act(() => store.dispatch(openPlaylistDrawer(newPlaylist.id)))
     await waitFor(() => {
       expect((store.getState() as RootState).global.documentTitle).toBe(
@@ -198,6 +207,7 @@ describe('Playlist Drawer', () => {
 
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

@@ -163,21 +163,21 @@ func (p PlaylistHandler) AddArtists(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (p PlaylistHandler) AddSongs(c *gin.Context) {
-	var request requests.AddSongsToPlaylistRequest
+func (p PlaylistHandler) AddPerfectRehearsals(c *gin.Context) {
+	var request requests.AddPerfectRehearsalsToPlaylistsRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	res, errorCode := p.service.AddSongs(request)
+	errorCode = p.service.AddPerfectRehearsals(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	p.SendMessage(c, "perfect rehearsals have been added to playlists successfully")
 }
 
 func (p PlaylistHandler) Update(c *gin.Context) {
@@ -197,21 +197,21 @@ func (p PlaylistHandler) Update(c *gin.Context) {
 	p.SendMessage(c, "playlist has been updated successfully")
 }
 
-func (p PlaylistHandler) MoveSong(c *gin.Context) {
-	var request requests.MoveSongFromPlaylistRequest
+func (p PlaylistHandler) BulkDelete(c *gin.Context) {
+	var request requests.BulkDeletePlaylistsRequest
 	errorCode := p.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = p.service.MoveSong(request)
+	errorCode = p.service.BulkDelete(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	p.SendMessage(c, "song has been moved from playlist successfully")
+	p.SendMessage(c, "playlists have been deleted successfully")
 }
 
 func (p PlaylistHandler) Delete(c *gin.Context) {
@@ -228,23 +228,6 @@ func (p PlaylistHandler) Delete(c *gin.Context) {
 	}
 
 	p.SendMessage(c, "playlist has been deleted successfully")
-}
-
-func (p PlaylistHandler) RemoveSongs(c *gin.Context) {
-	var request requests.RemoveSongsFromPlaylistRequest
-	errorCode := p.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	errorCode = p.service.RemoveSongs(request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	p.SendMessage(c, "songs have been removed from playlist successfully")
 }
 
 // Images
@@ -285,4 +268,104 @@ func (p PlaylistHandler) DeleteImage(c *gin.Context) {
 	}
 
 	p.SendMessage(c, "image has been deleted from playlist successfully")
+}
+
+// Songs
+
+func (p PlaylistHandler) GetSongs(c *gin.Context) {
+	var request requests.GetPlaylistSongsRequest
+	err := c.BindQuery(&request)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	request.ID = id
+
+	errorCode := p.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	songs, errorCode := p.service.GetSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, songs)
+}
+
+func (p PlaylistHandler) AddSongs(c *gin.Context) {
+	var request requests.AddSongsToPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	res, errorCode := p.service.AddSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
+func (p PlaylistHandler) Shuffle(c *gin.Context) {
+	var request requests.ShufflePlaylistSongsRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.ShuffleSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "playlist has been shuffled successfully")
+}
+
+func (p PlaylistHandler) MoveSong(c *gin.Context) {
+	var request requests.MoveSongFromPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.MoveSong(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "song has been moved from playlist successfully")
+}
+
+func (p PlaylistHandler) RemoveSongs(c *gin.Context) {
+	var request requests.RemoveSongsFromPlaylistRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.RemoveSongs(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "songs have been removed from playlist successfully")
 }

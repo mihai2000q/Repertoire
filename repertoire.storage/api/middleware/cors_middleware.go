@@ -1,9 +1,10 @@
 package middleware
 
 import (
+	"repertoire/storage/internal"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"repertoire/storage/internal"
 )
 
 type CorsMiddleware struct {

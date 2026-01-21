@@ -3,7 +3,9 @@ import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse
 import Artist, { BandMemberRole } from '../../types/models/Artist.ts'
 import {
   AddAlbumsToArtistRequest,
+  AddPerfectRehearsalsToArtistsRequest,
   AddSongsToArtistRequest,
+  BulkDeleteArtistsRequest,
   CreateArtistRequest,
   CreateBandMemberRequest,
   DeleteArtistRequest,
@@ -44,9 +46,28 @@ const artistsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Artists']
     }),
+    addPerfectRehearsalsToArtists: build.mutation<
+      HttpMessageResponse,
+      AddPerfectRehearsalsToArtistsRequest
+    >({
+      query: (body) => ({
+        url: 'artists/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Artists', 'Songs']
+    }),
     updateArtist: build.mutation<HttpMessageResponse, UpdateArtistRequest>({
       query: (body) => ({
         url: 'artists',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['Artists']
+    }),
+    bulkDeleteArtists: build.mutation<HttpMessageResponse, BulkDeleteArtistsRequest>({
+      query: (body) => ({
+        url: `artists/bulk-delete`,
         method: 'PUT',
         body: body
       }),
@@ -174,7 +195,9 @@ export const {
   useGetArtistFiltersMetadataQuery,
   useLazyGetArtistFiltersMetadataQuery,
   useCreateArtistMutation,
+  useAddPerfectRehearsalsToArtistsMutation,
   useUpdateArtistMutation,
+  useBulkDeleteArtistsMutation,
   useSaveImageToArtistMutation,
   useDeleteImageFromArtistMutation,
   useDeleteArtistMutation,

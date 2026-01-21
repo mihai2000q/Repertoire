@@ -26,7 +26,7 @@ import useSearchParamsState from '../hooks/useSearchParamsState.ts'
 import artistsSearchParamsState from '../state/searchParams/ArtistsSearchParamsState.ts'
 import AdvancedOrderMenu from '../components/@ui/menu/AdvancedOrderMenu.tsx'
 import useLocalStorage from '../hooks/useLocalStorage.ts'
-import LocalStorageKeys from '../types/enums/LocalStorageKeys.ts'
+import LocalStorageKeys from '../types/enums/keys/LocalStorageKeys.ts'
 import useOrderBy from '../hooks/api/useOrderBy.ts'
 import artistsOrders from '../data/artists/artistsOrders.ts'
 import { artistPropertyIcons } from '../data/icons/artistPropertyIcons.tsx'
@@ -34,7 +34,11 @@ import useSearchBy from '../hooks/api/useSearchBy.ts'
 import ArtistsFilters from '../components/artists/ArtistsFilters.tsx'
 import artistsFilters from '../data/artists/artistsFilters.ts'
 import useSearchParamFilters from '../hooks/filter/useSearchParamFilters.ts'
-import useMainScroll from '../hooks/useMainScroll.ts'
+import { DragSelectProvider } from '../context/DragSelectContext.tsx'
+import { useRef } from 'react'
+import ArtistsSelectionDrawer from '../components/artists/ArtistsSelectionDrawer.tsx'
+import ArtistsContextMenu from '../components/artists/ArtistsContextMenu.tsx'
+import { useMain } from '../context/MainContext.tsx'
 
 function Artists() {
   useFixedDocumentTitle('Artists')
@@ -79,17 +83,18 @@ function Artists() {
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
-  const { ref: mainScrollRef } = useMainScroll()
+  const artistsRef = useRef<HTMLDivElement>()
+  const { mainScroll } = useMain()
 
-  function handleCurrentPageChange (p: number) {
-    mainScrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+  function handleCurrentPageChange(p: number) {
+    mainScroll.ref.current?.scrollTo({ top: 0, behavior: 'instant' })
     if (currentPage === p) return
     setSearchParams({ ...searchParams, currentPage: p })
   }
 
   return (
-    <Stack h={'100%'} gap={'xs'} px={'xl'}>
-      <Group gap={'xxs'}>
+    <Stack h={'100%'} gap={0}>
+      <Group gap={'xxs'} pb={'xs'} px={'xl'}>
         <Title order={3} fw={800} fz={'max(2.5vw, 32px)'}>
           Artists
         </Title>
@@ -135,43 +140,56 @@ function Artists() {
           </ActionIcon>
         </Indicator>
       </Group>
+
       {!isLoading && (
-        <Text lh={'xxs'} mb={'xs'}>
+        <Text lh={'xxs'} px={'xl'}>
           {startCount} - {endCount} artists out of{' '}
           {(artists?.totalCount ?? 0) + (showUnknownArtist ? 1 : 0)}
         </Text>
       )}
 
       {artists?.totalCount === 0 && !showUnknownArtist && filtersSize === 0 && (
-        <Text mt={'sm'}>There are no artists yet. Try to add one</Text>
+        <Text p={'xl'}>There are no artists yet. Try to add one</Text>
       )}
       {artists?.totalCount === 0 && !showUnknownArtist && filtersSize > 0 && (
-        <Text mt={'sm'}>There are no artists with these filter properties</Text>
+        <Text p={'xl'}>There are no artists with these filter properties</Text>
       )}
-      <SimpleGrid
-        cols={{ base: 3, xs: 4, sm: 3, betweenSmMd: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}
-        verticalSpacing={{ base: 'lg', md: 'xl' }}
-        spacing={{ base: 'lg', md: 'xl' }}
-      >
-        {(isLoading || !artists) && <ArtistsLoader />}
-        {artists?.models.map((artist) => <ArtistCard key={artist.id} artist={artist} />)}
-        {!isFetching && showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
-        {!isFetching &&
-          ((artists?.totalCount > 0 && currentPage == totalPages) ||
-            (artists?.totalCount === 0 && showUnknownArtist)) && (
-            <Card
-              variant={'add-new'}
-              aria-label={'new-artist-card'}
-              radius={'50%'}
-              onClick={openAddNewArtistModal}
-              style={{ aspectRatio: 1 }}
-            >
-              <Center h={'100%'}>
-                <IconUserPlus size={'100%'} style={{ padding: '29%' }} />
-              </Center>
-            </Card>
-          )}
-      </SimpleGrid>
+      <DragSelectProvider settings={{ area: artistsRef.current }} data={artists}>
+        <ArtistsContextMenu>
+          <SimpleGrid
+            data-testid={'artists-area'}
+            ref={artistsRef}
+            cols={{ base: 3, xs: 4, sm: 3, betweenSmMd: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}
+            verticalSpacing={{ base: 'lg', md: 'xl' }}
+            spacing={{ base: 'lg', md: 'xl' }}
+            pt={'lg'}
+            pb={'xs'}
+            px={'xl'}
+          >
+            {(isLoading || !artists) && <ArtistsLoader />}
+            {artists?.models.map((artist) => (
+              <ArtistCard key={artist.id} artist={artist} />
+            ))}
+            {!isFetching && showUnknownArtist && currentPage == totalPages && <UnknownArtistCard />}
+            {!isFetching &&
+              ((artists?.totalCount > 0 && currentPage == totalPages) ||
+                (artists?.totalCount === 0 && showUnknownArtist)) && (
+                <Card
+                  variant={'add-new'}
+                  aria-label={'new-artist-card'}
+                  radius={'50%'}
+                  onClick={openAddNewArtistModal}
+                  style={{ aspectRatio: 1 }}
+                >
+                  <Center h={'100%'}>
+                    <IconUserPlus size={'100%'} style={{ padding: '29%' }} />
+                  </Center>
+                </Card>
+              )}
+          </SimpleGrid>
+        </ArtistsContextMenu>
+        <ArtistsSelectionDrawer />
+      </DragSelectProvider>
 
       <Space flex={1} />
 

@@ -1,8 +1,6 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -11,6 +9,9 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
@@ -67,18 +68,18 @@ func TestAlbumCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 			// then
 			assert.NoError(t, err)
 
-			assertion.AssertMessage(t, messages, func(documents []any) {
+			assertion.AssertMessage(t, messages, func(documents []map[string]any) {
 				if test.album.Artist != nil {
-					artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[1])
+					artistSearch := utils.UnmarshalDocument[model.ArtistSearch](documents[1])
 					assertion.ArtistSearch(t, artistSearch, *test.album.Artist)
 					assert.Len(t, documents, 2)
 				} else {
 					assert.Len(t, documents, 1)
 				}
-				albumSearch := utils.UnmarshallDocument[model.AlbumSearch](documents[0])
 				if test.album.ArtistID != nil {
 					test.album.Artist = &albumData.Artists[0]
 				}
+				albumSearch := utils.UnmarshalDocument[model.AlbumSearch](documents[0])
 				assertion.AlbumSearch(t, albumSearch, test.album)
 			})
 		})

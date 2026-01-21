@@ -1,7 +1,7 @@
 import { Divider, Grid, Group, Skeleton, Stack } from '@mantine/core'
 import ArtistAlbumsLoader from './ArtistAlbumsLoader.tsx'
 import ArtistSongsLoader from './ArtistSongsLoader.tsx'
-import BandMembersLoader from "./BandMembersLoader.tsx";
+import BandMembersLoader from './BandMembersLoader.tsx'
 
 function ArtistLoader() {
   return (

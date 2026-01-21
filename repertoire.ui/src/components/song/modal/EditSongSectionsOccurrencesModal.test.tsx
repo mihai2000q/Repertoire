@@ -157,7 +157,8 @@ describe('Edit Song Sections Occurrences Modal', () => {
         return HttpResponse.json({ message: 'OK' })
       }),
       http.put('/songs/sections/partial-occurrences', async (req) => {
-        capturedPartialRequest = (await req.request.json()) as UpdateSongSectionsPartialOccurrencesRequest
+        capturedPartialRequest =
+          (await req.request.json()) as UpdateSongSectionsPartialOccurrencesRequest
         return HttpResponse.json({ message: 'OK' })
       })
     )

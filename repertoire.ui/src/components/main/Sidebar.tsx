@@ -96,7 +96,7 @@ function Sidebar({ toggleSidebarOnMobile }: SidebarProps): ReactElement {
                 sidebarLink.subLinks.some((link) => location.pathname.startsWith(link))
               }
               onClick={() => {
-                navigate(sidebarLink.link)
+                if (location.pathname !== sidebarLink.link) navigate(sidebarLink.link)
                 if (isMobile) toggleSidebarOnMobile()
               }}
             />

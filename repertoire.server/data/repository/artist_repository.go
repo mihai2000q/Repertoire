@@ -1,21 +1,22 @@
 package repository
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ArtistRepository interface {
 	Get(artist *model.Artist, id uuid.UUID) error
 	GetWithAssociations(artist *model.Artist, id uuid.UUID) error
 	GetWithBandMembers(artist *model.Artist, id uuid.UUID) error
-	GetWithAlbums(artist *model.Artist, id uuid.UUID) error
-	GetWithSongs(artist *model.Artist, id uuid.UUID) error
-	GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error
+	GetWithSongsOrAlbums(artist *model.Artist, id uuid.UUID, withSongs bool, withAlbums bool) error
 	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error
+	GetAllByIDs(artists *[]model.Artist, ids []uuid.UUID, withSongs bool, withAlbums bool) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
+	GetAllByIDsWithSongSections(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.EnhancedArtist,
 		userID uuid.UUID,
@@ -28,9 +29,9 @@ type ArtistRepository interface {
 	Create(artist *model.Artist) error
 	Update(artist *model.Artist) error
 	UpdateWithAssociations(artist *model.Artist) error
-	Delete(id uuid.UUID) error
-	DeleteAlbums(id uuid.UUID) error
-	DeleteSongs(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
+	DeleteAlbums(ids []uuid.UUID) error
+	DeleteSongs(ids []uuid.UUID) error
 
 	GetBandMember(bandMember *model.BandMember, id uuid.UUID) error
 	GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error
@@ -76,28 +77,22 @@ func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID)
 		Error
 }
 
-func (a artistRepository) GetWithAlbums(artist *model.Artist, id uuid.UUID) error {
-	return a.client.
-		Preload("Albums").
-		Find(&artist, model.Artist{ID: id}).
-		Error
-}
+func (a artistRepository) GetWithSongsOrAlbums(
+	artist *model.Artist,
+	id uuid.UUID,
+	withSongs bool,
+	withAlbums bool,
+) error {
+	tx := a.client.Model(&model.Artist{})
 
-func (a artistRepository) GetWithSongs(artist *model.Artist, id uuid.UUID) error {
-	return a.client.
-		Preload("Songs").
-		Preload("Songs.Album").
-		Find(&artist, model.Artist{ID: id}).
-		Error
-}
+	if withAlbums {
+		tx = tx.Preload("Albums")
+	}
+	if withSongs {
+		tx = tx.Preload("Songs").Preload("Songs.Album")
+	}
 
-func (a artistRepository) GetWithAlbumsAndSongs(artist *model.Artist, id uuid.UUID) error {
-	return a.client.
-		Preload("Albums").
-		Preload("Songs").
-		Preload("Songs.Album").
-		Find(&artist, model.Artist{ID: id}).
-		Error
+	return tx.Find(&artist, id).Error
 }
 
 func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error {
@@ -129,9 +124,35 @@ func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetada
 	return tx.Scan(&metadata).Error
 }
 
+func (a artistRepository) GetAllByIDs(
+	artists *[]model.Artist,
+	ids []uuid.UUID,
+	withSongs bool,
+	withAlbums bool,
+) error {
+	tx := a.client.Model(&model.Artist{})
+
+	if withAlbums {
+		tx = tx.Preload("Albums")
+	}
+	if withSongs {
+		tx = tx.Preload("Songs").Preload("Songs.Album")
+	}
+
+	return tx.Find(&artists, ids).Error
+}
+
 func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
 	return a.client.Model(&model.Artist{}).
 		Preload("Songs").
+		Find(&artists, ids).
+		Error
+}
+
+func (a artistRepository) GetAllByIDsWithSongSections(artists *[]model.Artist, ids []uuid.UUID) error {
+	return a.client.Model(&model.Artist{}).
+		Preload("Songs").
+		Preload("Songs.Sections").
 		Find(&artists, ids).
 		Error
 }
@@ -196,16 +217,16 @@ func (a artistRepository) UpdateWithAssociations(artist *model.Artist) error {
 		Error
 }
 
-func (a artistRepository) Delete(id uuid.UUID) error {
-	return a.client.Delete(&model.Artist{}, id).Error
+func (a artistRepository) Delete(ids []uuid.UUID) error {
+	return a.client.Delete(&model.Artist{}, ids).Error
 }
 
-func (a artistRepository) DeleteAlbums(id uuid.UUID) error {
-	return a.client.Where("artist_id = ?", id).Delete(&model.Album{}).Error
+func (a artistRepository) DeleteAlbums(ids []uuid.UUID) error {
+	return a.client.Where("artist_id IN (?)", ids).Delete(&model.Album{}).Error
 }
 
-func (a artistRepository) DeleteSongs(id uuid.UUID) error {
-	return a.client.Where("artist_id = ?", id).Delete(&model.Song{}).Error
+func (a artistRepository) DeleteSongs(ids []uuid.UUID) error {
+	return a.client.Where("artist_id IN (?)", ids).Delete(&model.Song{}).Error
 }
 
 // Band Member

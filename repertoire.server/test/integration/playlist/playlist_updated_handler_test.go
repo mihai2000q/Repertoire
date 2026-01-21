@@ -1,13 +1,14 @@
 package playlist
 
 import (
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPlaylistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
@@ -22,9 +23,8 @@ func TestPlaylistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// then
 	assert.NoError(t, err)
 
-	assertion.AssertMessage(t, messages, func(documents []any) {
-		assert.Len(t, documents, 1)
-		playlistSearch := utils.UnmarshallDocument[model.PlaylistSearch](documents[0])
-		assertion.PlaylistSearch(t, playlistSearch, playlist)
+	assertion.AssertMessage(t, messages, func(playlists []model.PlaylistSearch) {
+		assert.Len(t, playlists, 1)
+		assertion.PlaylistSearch(t, playlists[0], playlist)
 	})
 }

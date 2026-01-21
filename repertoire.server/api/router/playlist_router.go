@@ -19,10 +19,9 @@ func (p PlaylistRouter) RegisterRoutes() {
 		api.POST("", p.handler.Create)
 		api.POST("/add-albums", p.handler.AddAlbums)
 		api.POST("/add-artists", p.handler.AddArtists)
-		api.POST("/add-songs", p.handler.AddSongs)
+		api.POST("/perfect-rehearsals", p.handler.AddPerfectRehearsals)
 		api.PUT("", p.handler.Update)
-		api.PUT("/move-song", p.handler.MoveSong)
-		api.PUT("/remove-songs", p.handler.RemoveSongs)
+		api.PUT("/bulk-delete", p.handler.BulkDelete)
 		api.DELETE("/:id", p.handler.Delete)
 	}
 
@@ -30,6 +29,15 @@ func (p PlaylistRouter) RegisterRoutes() {
 	{
 		imagesApi.PUT("", p.handler.SaveImage)
 		imagesApi.DELETE("/:id", p.handler.DeleteImage)
+	}
+
+	songsApi := api.Group("/songs")
+	{
+		songsApi.GET("/:id", p.handler.GetSongs)
+		songsApi.POST("/add", p.handler.AddSongs)
+		songsApi.POST("/shuffle", p.handler.Shuffle)
+		songsApi.PUT("/move", p.handler.MoveSong)
+		songsApi.PUT("/remove", p.handler.RemoveSongs)
 	}
 }
 

@@ -66,7 +66,27 @@ func (a *AlbumRepositoryMock) GetFiltersMetadata(
 	return args.Error(0)
 }
 
+func (a *AlbumRepositoryMock) GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error {
+	args := a.Called(albums, ids)
+
+	if len(args) > 1 {
+		*albums = *args.Get(1).(*[]model.Album)
+	}
+
+	return args.Error(0)
+}
+
 func (a *AlbumRepositoryMock) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {
+	args := a.Called(albums, ids)
+
+	if len(args) > 1 {
+		*albums = *args.Get(1).(*[]model.Album)
+	}
+
+	return args.Error(0)
+}
+
+func (a *AlbumRepositoryMock) GetAllByIDsWithSongSections(albums *[]model.Album, ids []uuid.UUID) error {
 	args := a.Called(albums, ids)
 
 	if len(args) > 1 {
@@ -133,13 +153,13 @@ func (a *AlbumRepositoryMock) UpdateAllWithSongs(albums *[]model.Album) error {
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) Delete(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *AlbumRepositoryMock) Delete(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) DeleteWithSongs(id uuid.UUID) error {
-	args := a.Called(id)
+func (a *AlbumRepositoryMock) DeleteWithSongs(ids []uuid.UUID) error {
+	args := a.Called(ids)
 	return args.Error(0)
 }
 

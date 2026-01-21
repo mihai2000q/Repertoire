@@ -15,7 +15,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![Oracle](https://img.shields.io/badge/Oracle-FF7900?logo=icloud&style=flat&logoColor=white)
 
-![Version](https://img.shields.io/badge/version-0.13.0-1098ad)
+![Version](https://img.shields.io/badge/version-0.14.0-1098ad)
  
 * [Repertoire](#repertoire)
   * [Abstract](#abstract)
@@ -41,7 +41,7 @@
 It is an application intended for beginner musicians to organize their '_repertoire_' (songs, albums, etc.).
 Its features include adding songs, organized in albums and artists.
 It is also possible to add those songs on playlists.
-Songs can be measured how rehearsed they have been, whether they have been recorded or not and other features.
+Songs can be measured by how rehearsed they have been, whether they have been recorded or not and other features.
 
 ## Get Started
 
@@ -52,7 +52,7 @@ To get started on the application, you need:
 - the UI 
 - and one of the platforms up and running
 
-IF you have Go and Node installed, you can take the shortest route. 
+If you have Go and Node installed, you can take the shortest route. 
 Fire the following shell script: `startup-web.sh` or `startup-desktop.sh`.
 
 Otherwise, a full setup on each project has to be made 
@@ -187,8 +187,8 @@ This Github Action will build and push the server docker image to **Docker Hub**
 
 Afterwards, the cloud server detects the latest docker images and pulls them.
 
-The _storage_ or the authentication services are not udnergoing changes so often, 
-so there is not benefit for automating the deploying process.
+The _storage_ or the authentication services are not undergoing changes so often, 
+so there is no benefit to automate the deploying process.
 
 ### Desktop
 

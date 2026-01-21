@@ -9,10 +9,11 @@ import { default as AlbumType } from './../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
 import { expect } from 'vitest'
 import { SearchBase } from '../types/models/Search.ts'
-import SongProperty from '../types/enums/SongProperty.ts'
+import SongProperty from '../types/enums/properties/SongProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
+import { createRef } from 'react'
 
 describe('Album', () => {
   const songs: Song[] = [
@@ -63,11 +64,25 @@ describe('Album', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
+
+  const render = (id = album.id) =>
+    reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${id}`])
 
   it('should render and display info from album when the album is not unknown', async () => {
     let songsOrderBy: string[]
@@ -80,11 +95,11 @@ describe('Album', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${album.id}`])
+    const [_, store] = render()
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect(screen.getByLabelText('songs-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(album.title)
 
     expect(songsOrderBy).toStrictEqual(['album_track_no asc'])
@@ -107,11 +122,11 @@ describe('Album', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Album />, '/album/:id', ['/album/unknown'])
+    const [_, store] = render('unknown')
 
     expect(screen.getByTestId('album-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('songs-card')).toBeInTheDocument()
+    expect(screen.getByLabelText('songs-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
 
     expect(songsSearchBy).toHaveLength(1)

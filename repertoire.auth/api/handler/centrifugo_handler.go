@@ -2,13 +2,14 @@ package handler
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"net/http"
 	"repertoire/auth/api/server"
 	"repertoire/auth/api/validation"
 	"repertoire/auth/domain/service"
 	"repertoire/auth/model"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type CentrifugoHandler struct {

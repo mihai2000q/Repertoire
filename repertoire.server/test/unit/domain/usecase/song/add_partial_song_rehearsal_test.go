@@ -2,9 +2,6 @@ package song
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
@@ -14,12 +11,16 @@ import (
 	"slices"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAddPartialSongRehearsal_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, nil)
+	_uut := song.NewAddPartialSongRehearsal(nil, songRepository, nil)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -42,7 +43,7 @@ func TestAddPartialSongRehearsal_WhenGetSongFails_ShouldReturnInternalServerErro
 func TestAddPartialSongRehearsal_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, nil)
+	_uut := song.NewAddPartialSongRehearsal(nil, songRepository, nil)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -63,8 +64,9 @@ func TestAddPartialSongRehearsal_WhenSongIsEmpty_ShouldReturnNotFoundError(t *te
 
 func TestAddPartialSongRehearsal_WhenCreateHistoryFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, nil)
+	_uut := song.NewAddPartialSongRehearsal(songSectionRepository, songRepository, nil)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -81,7 +83,7 @@ func TestAddPartialSongRehearsal_WhenCreateHistoryFails_ShouldReturnInternalServ
 	sectionsCount := len(mockSong.Sections)
 
 	internalError := errors.New("internal error")
-	songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+	songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 		Return(internalError).
 		Times(sectionsCount)
 
@@ -93,13 +95,15 @@ func TestAddPartialSongRehearsal_WhenCreateHistoryFails_ShouldReturnInternalServ
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
 func TestAddPartialSongRehearsal_WhenGetHistoryFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, nil)
+	_uut := song.NewAddPartialSongRehearsal(songSectionRepository, songRepository, nil)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -115,14 +119,14 @@ func TestAddPartialSongRehearsal_WhenGetHistoryFails_ShouldReturnInternalServerE
 
 	sectionsCount := len(mockSong.Sections)
 
-	songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+	songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 		Return(nil).
 		Times(sectionsCount)
 
 	internalError := errors.New("internal error")
-	songRepository.
+	songSectionRepository.
 		On(
-			"GetSongSectionHistory",
+			"GetHistory",
 			new([]model.SongSectionHistory),
 			mock.IsType(uuid.UUID{}),
 			model.RehearsalsProperty,
@@ -138,14 +142,16 @@ func TestAddPartialSongRehearsal_WhenGetHistoryFails_ShouldReturnInternalServerE
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 }
 
 func TestAddPartialSongRehearsal_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
 	progressProcessor := new(processor.ProgressProcessorMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, progressProcessor)
+	_uut := song.NewAddPartialSongRehearsal(songSectionRepository, songRepository, progressProcessor)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -161,14 +167,14 @@ func TestAddPartialSongRehearsal_WhenUpdateFails_ShouldReturnInternalServerError
 
 	sectionsCount := len(mockSong.Sections)
 
-	songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+	songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 		Return(nil).
 		Times(sectionsCount)
 
 	history := &[]model.SongSectionHistory{}
-	songRepository.
+	songSectionRepository.
 		On(
-			"GetSongSectionHistory",
+			"GetHistory",
 			new([]model.SongSectionHistory),
 			mock.IsType(uuid.UUID{}),
 			model.RehearsalsProperty,
@@ -196,6 +202,7 @@ func TestAddPartialSongRehearsal_WhenUpdateFails_ShouldReturnInternalServerError
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 	progressProcessor.AssertExpectations(t)
 }
@@ -203,8 +210,7 @@ func TestAddPartialSongRehearsal_WhenUpdateFails_ShouldReturnInternalServerError
 func TestAddPartialSongRehearsal_WhenSectionsHaveZeroPartialOccurrences_ShouldNotUpdateTheSong(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	progressProcessor := new(processor.ProgressProcessorMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, nil)
+	_uut := song.NewAddPartialSongRehearsal(nil, songRepository, nil)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -232,14 +238,14 @@ func TestAddPartialSongRehearsal_WhenSectionsHaveZeroPartialOccurrences_ShouldNo
 	assert.Nil(t, errCode)
 
 	songRepository.AssertExpectations(t)
-	progressProcessor.AssertExpectations(t)
 }
 
 func TestAddPartialSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *testing.T) {
 	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
 	progressProcessor := new(processor.ProgressProcessorMock)
-	_uut := song.NewAddPartialSongRehearsal(songRepository, progressProcessor)
+	_uut := song.NewAddPartialSongRehearsal(songSectionRepository, songRepository, progressProcessor)
 
 	request := requests.AddPartialSongRehearsalRequest{
 		ID: uuid.New(),
@@ -273,7 +279,7 @@ func TestAddPartialSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 		return section.PartialOccurrences == 0
 	}))
 
-	songRepository.On("CreateSongSectionHistory", mock.IsType(new(model.SongSectionHistory))).
+	songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
 		Run(func(args mock.Arguments) {
 			newHistory := args.Get(0).(*model.SongSectionHistory)
 			assert.NotEmpty(t, newHistory.ID)
@@ -291,9 +297,9 @@ func TestAddPartialSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 		Times(sectionsCountWithOcc)
 
 	history := &[]model.SongSectionHistory{}
-	songRepository.
+	songSectionRepository.
 		On(
-			"GetSongSectionHistory",
+			"GetHistory",
 			new([]model.SongSectionHistory),
 			mock.IsType(uuid.UUID{}),
 			model.RehearsalsProperty,
@@ -353,6 +359,7 @@ func TestAddPartialSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 	// then
 	assert.Nil(t, errCode)
 
+	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
 	progressProcessor.AssertExpectations(t)
 }

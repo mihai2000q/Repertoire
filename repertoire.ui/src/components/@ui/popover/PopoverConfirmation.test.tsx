@@ -1,16 +1,16 @@
-import {mantineRender} from "../../../test-utils.tsx";
-import PopoverConfirmation from "./PopoverConfirmation.tsx";
-import {Button} from "@mantine/core";
-import {screen} from "@testing-library/react";
-import {expect} from "vitest";
-import {userEvent} from "@testing-library/user-event";
+import { mantineRender } from '../../../test-utils.tsx'
+import PopoverConfirmation from './PopoverConfirmation.tsx'
+import { Button } from '@mantine/core'
+import { screen } from '@testing-library/react'
+import { expect } from 'vitest'
+import { userEvent } from '@testing-library/user-event'
 
 describe('Popover Confirmation', () => {
   it('should render and display popover', async () => {
     const user = userEvent.setup()
 
     const label = 'this is a label'
-    const childrenTestId = 'childrenTestId';
+    const childrenTestId = 'childrenTestId'
     const children = <Button data-testid={childrenTestId}>Button</Button>
 
     const { rerender } = mantineRender(
@@ -26,7 +26,12 @@ describe('Popover Confirmation', () => {
     const onConfirm = vi.fn()
 
     rerender(
-      <PopoverConfirmation label={label} popoverProps={{ opened: true }} onCancel={onCancel} onConfirm={onConfirm}>
+      <PopoverConfirmation
+        label={label}
+        popoverProps={{ opened: true }}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      >
         {children}
       </PopoverConfirmation>
     )

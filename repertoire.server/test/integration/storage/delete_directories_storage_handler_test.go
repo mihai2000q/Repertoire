@@ -1,10 +1,11 @@
 package storage
 
 import (
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteDirectoriesStorage_WhenSuccessful_ShouldDeleteDirectory(t *testing.T) {

@@ -28,6 +28,10 @@ type AddSongsToArtistRequest struct {
 	SongIDs []uuid.UUID `validate:"min=1"`
 }
 
+type AddPerfectRehearsalsToArtistsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
 type UpdateArtistRequest struct {
 	ID     uuid.UUID `validate:"required"`
 	Name   string    `validate:"required,max=100"`
@@ -42,6 +46,12 @@ type RemoveAlbumsFromArtistRequest struct {
 type RemoveSongsFromArtistRequest struct {
 	ID      uuid.UUID   `validate:"required"`
 	SongIDs []uuid.UUID `validate:"min=1"`
+}
+
+type BulkDeleteArtistsRequest struct {
+	IDs        []uuid.UUID `validate:"min=1"`
+	WithAlbums bool        `form:"withAlbums"`
+	WithSongs  bool        `form:"withSongs"`
 }
 
 type DeleteArtistRequest struct {

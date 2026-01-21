@@ -17,9 +17,10 @@ import Album from '../types/models/Album.ts'
 import { RootState } from '../state/store.ts'
 import artistsOrders from '../data/artists/artistsOrders.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
-import ArtistProperty from '../types/enums/ArtistProperty.ts'
+import ArtistProperty from '../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
 import Playlist from '../types/models/Playlist.ts'
+import { createRef } from 'react'
 
 describe('Artists', () => {
   const artists: Artist[] = [
@@ -124,14 +125,33 @@ describe('Artists', () => {
 
   beforeAll(() => {
     server.listen()
-    vi.mock('../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
+    // Mock Drag Select
+    vi.mock('dragselect', () => ({
+      default: vi.fn(
+        class {
+          start = vi.fn()
+          stop = vi.fn()
+          getSelection = vi.fn()
+          clearSelection = vi.fn()
+          setSettings = vi.fn()
+          subscribe = vi.fn()
+          unsubscribe = vi.fn()
+          addSelectables = vi.fn()
+          removeSelectables = vi.fn()
+        }
+      )
+    }))
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
       }))
     }))
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     window.location.search = ''
     server.resetHandlers()
   })
@@ -393,5 +413,25 @@ describe('Artists', () => {
       ])
       expect(window.location.search).toMatch(/&f=/)
     })
+  })
+
+  it.skip('should show the drawer when selecting artists, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<Artists />)
+
+    const artistsArea = screen.getByTestId('artists-area')
+    await user.pointer([
+      { keys: '[MouseLeft>]', target: artistsArea, coords: { x: 0, y: 0 } },
+      { coords: { x: 1000, y: 300 } },
+      { keys: '[/MouseLeft]' }
+    ])
+
+    expect(
+      await screen.findByRole('dialog', { name: 'artists-selection-drawer' })
+    ).toBeInTheDocument()
+
+    await user.pointer({ keys: '[MouseRight>]', target: artistsArea })
+    expect(await screen.findByRole('menu', { name: 'artists-context-menu' })).toBeInTheDocument()
   })
 })

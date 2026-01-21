@@ -2,13 +2,14 @@ package service
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"repertoire/auth/data/logger"
 	"repertoire/auth/internal"
 	"repertoire/auth/internal/wrapper"
 	"repertoire/auth/model"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type JwtService interface {

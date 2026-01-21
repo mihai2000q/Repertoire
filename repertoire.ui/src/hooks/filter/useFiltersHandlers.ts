@@ -88,9 +88,11 @@ export default function useFiltersHandlers(
 }
 
 function isSet(value: FilterValue, initialFilter: Filter): boolean {
-  return (!initialFilter || initialFilter.value !== value) &&
+  return (
+    (!initialFilter || initialFilter.value !== value) &&
     value !== '' &&
     (!Array.isArray(value) || value.length !== 0) &&
     value !== null &&
     value !== undefined
+  )
 }

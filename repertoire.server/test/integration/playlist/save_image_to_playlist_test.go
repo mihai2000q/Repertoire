@@ -2,8 +2,6 @@ package playlist
 
 import (
 	"bytes"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -14,6 +12,9 @@ import (
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSaveImageFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

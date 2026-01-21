@@ -27,14 +27,7 @@ describe('Main', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    vi.mock('../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   beforeEach(() => {
     const centrifugoUrl = 'wss://chat.example.com'

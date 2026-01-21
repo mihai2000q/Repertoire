@@ -1,11 +1,12 @@
 package main
 
 import (
-	"go.uber.org/fx"
 	"repertoire/server/api"
 	"repertoire/server/data"
 	"repertoire/server/domain"
 	"repertoire/server/internal"
+
+	"go.uber.org/fx"
 )
 
 func main() {

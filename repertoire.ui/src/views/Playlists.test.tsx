@@ -8,9 +8,11 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../state/store.ts'
 import playlistsOrders from '../data/playlists/playlistsOrders.ts'
-import PlaylistProperty from '../types/enums/PlaylistProperty.ts'
+import PlaylistProperty from '../types/enums/properties/PlaylistProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import OrderType from '../types/enums/OrderType.ts'
+import { expect } from 'vitest'
+import { createRef } from 'react'
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [
@@ -69,9 +71,25 @@ describe('Playlists', () => {
 
   beforeAll(() => {
     server.listen()
-    vi.mock('../hooks/useMainScroll.ts', () => ({
-      default: vi.fn(() => ({
-        ref: { current: document.createElement('div') }
+    // Mock Drag Select
+    vi.mock('dragselect', () => ({
+      default: vi.fn(class {
+        start= vi.fn()
+        stop = vi.fn()
+        getSelection = vi.fn()
+        clearSelection = vi.fn()
+        setSettings = vi.fn()
+        subscribe = vi.fn()
+        unsubscribe = vi.fn()
+        addSelectables = vi.fn()
+        removeSelectables = vi.fn()
+      })
+    }))
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef(),
+        mainScroll: { ref: createRef() }
       }))
     }))
   })
@@ -264,5 +282,25 @@ describe('Playlists', () => {
       ])
       expect(window.location.search).toMatch(/&f=/)
     })
+  })
+
+  it.skip('should show the drawer when selecting playlists, and the context menu when right-clicking after selection', async () => {
+    const user = userEvent.setup()
+
+    reduxRouterRender(<Playlists />)
+
+    const playlistsArea = screen.getByTestId('playlists-area')
+    await user.pointer([
+      { keys: '[MouseLeft>]', target: playlistsArea, coords: { x: 0, y: 0 } },
+      { coords: { x: 1000, y: 300 } },
+      { keys: '[/MouseLeft]' }
+    ])
+
+    expect(
+      await screen.findByRole('dialog', { name: 'playlists-selection-drawer' })
+    ).toBeInTheDocument()
+
+    await user.pointer({ keys: '[MouseRight>]', target: playlistsArea })
+    expect(await screen.findByRole('menu', { name: 'playlists-context-menu' })).toBeInTheDocument()
   })
 })

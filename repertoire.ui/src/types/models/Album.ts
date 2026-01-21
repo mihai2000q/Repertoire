@@ -10,9 +10,9 @@ export default interface Album {
   songs: Song[]
   songsCount: number
 
-  rehearsals: number,
-  confidence: number,
-  progress: number,
+  rehearsals: number
+  confidence: number
+  progress: number
   lastTimePlayed?: string
 
   createdAt: string

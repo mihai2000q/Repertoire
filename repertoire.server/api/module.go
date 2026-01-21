@@ -25,6 +25,7 @@ var handlers = fx.Options(
 	fx.Provide(handler.NewPlaylistHandler),
 	fx.Provide(handler.NewSearchHandler),
 	fx.Provide(handler.NewSongHandler),
+	fx.Provide(handler.NewSongSectionHandler),
 	fx.Provide(handler.NewUserDataHandler),
 	fx.Provide(handler.NewUserHandler),
 )
@@ -35,6 +36,7 @@ var routers = fx.Options(
 	fx.Provide(router.NewPlaylistRouter),
 	fx.Provide(router.NewSearchRouter),
 	fx.Provide(router.NewSongRouter),
+	fx.Provide(router.NewSongSectionRouter),
 	fx.Provide(router.NewUserDataRouter),
 	fx.Provide(router.NewUserRouter),
 )

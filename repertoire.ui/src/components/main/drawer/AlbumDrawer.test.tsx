@@ -10,7 +10,7 @@ import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { openAlbumDrawer, setDocumentTitle } from '../../../state/slice/globalSlice.ts'
+import { openAlbumDrawer } from '../../../state/slice/globalSlice.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../../types/models/Playlist.ts'
 
@@ -186,8 +186,8 @@ describe('Album Drawer', () => {
       )
     })
 
-    // change back the document title (as if the drawer closed)
-    await act(() => store.dispatch(setDocumentTitle(prevDocumentTitle)))
+    // click outside to close drawer
+    await userEvent.click(document.querySelector('.mantine-Drawer-overlay'))
 
     // make sure it doesn't use the old title when a new album is introduced
     server.use(getAlbum(newAlbum))
@@ -207,6 +207,7 @@ describe('Album Drawer', () => {
     await user.click(await screen.findByRole('button', { name: 'more-menu' }))
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

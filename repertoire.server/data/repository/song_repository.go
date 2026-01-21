@@ -2,12 +2,13 @@ package repository
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"repertoire/server/data/database"
 	"repertoire/server/model"
 	"slices"
 	"strings"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type SongRepository interface {
@@ -28,8 +29,10 @@ type SongRepository interface {
 	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
@@ -37,27 +40,13 @@ type SongRepository interface {
 	UpdateAll(songs *[]model.Song) error
 	UpdateWithAssociations(song *model.Song) error
 	UpdateAllWithAssociations(songs *[]model.Song) error
-	Delete(id uuid.UUID) error
+	Delete(ids []uuid.UUID) error
 
 	GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error
 	UpdateSettings(settings *model.SongSettings) error
 
 	GetGuitarTunings(tunings *[]model.GuitarTuning, userID uuid.UUID) error
 	GetInstruments(instruments *[]model.Instrument, userID uuid.UUID) error
-	GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error
-
-	GetSection(section *model.SongSection, id uuid.UUID) error
-	CountSectionsBySong(count *int64, songID uuid.UUID) error
-	CreateSection(section *model.SongSection) error
-	UpdateSection(section *model.SongSection) error
-	DeleteSection(id uuid.UUID) error
-
-	GetSongSectionHistory(
-		history *[]model.SongSectionHistory,
-		sectionID uuid.UUID,
-		property model.SongSectionProperty,
-	) error
-	CreateSongSectionHistory(history *model.SongSectionHistory) error
 }
 
 type songRepository struct {
@@ -77,7 +66,9 @@ func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
 func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error {
 	return s.client.
 		Preload("Playlists").
-		Preload("Playlists.PlaylistSongs").
+		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
 		Find(&song, model.Song{ID: id}).
 		Error
 }
@@ -238,6 +229,15 @@ func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error 
 	return s.client.Model(&model.Song{}).Find(&songs, ids).Error
 }
 
+func (s songRepository) GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Find(&songs, ids).
+		Error
+}
+
 func (s songRepository) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
 	return s.client.Model(&model.Song{}).
 		Find(&songs, model.Song{AlbumID: &albumID}).
@@ -264,6 +264,20 @@ func (s songRepository) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids [
 	return s.client.
 		Joins("Artist").
 		Joins("Album").
+		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Album").
+		Preload("Album.Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("album_track_no")
+		}).
+		Preload("Playlists").
+		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_track_no")
+		}).
 		Find(&songs, ids).
 		Error
 }
@@ -328,8 +342,8 @@ func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 	})
 }
 
-func (s songRepository) Delete(id uuid.UUID) error {
-	return s.client.Delete(&model.Song{}, id).Error
+func (s songRepository) Delete(ids []uuid.UUID) error {
+	return s.client.Delete(&model.Song{}, ids).Error
 }
 
 // Settings
@@ -360,58 +374,6 @@ func (s songRepository) GetInstruments(instruments *[]model.Instrument, userID u
 		Order("\"order\"").
 		Find(&instruments).
 		Error
-}
-
-// Section Types
-
-func (s songRepository) GetSectionTypes(types *[]model.SongSectionType, userID uuid.UUID) error {
-	return s.client.Model(&model.SongSectionType{}).
-		Where(model.SongSectionType{UserID: userID}).
-		Order("\"order\"").
-		Find(&types).
-		Error
-}
-
-// Sections
-
-func (s songRepository) GetSection(section *model.SongSection, id uuid.UUID) error {
-	return s.client.Find(&section, model.SongSection{ID: id}).Error
-}
-
-func (s songRepository) CountSectionsBySong(count *int64, songID uuid.UUID) error {
-	return s.client.Model(&model.SongSection{}).
-		Where(model.SongSection{SongID: songID}).
-		Count(count).
-		Error
-}
-
-func (s songRepository) CreateSection(section *model.SongSection) error {
-	return s.client.Create(&section).Error
-}
-
-func (s songRepository) UpdateSection(section *model.SongSection) error {
-	return s.client.Save(&section).Error
-}
-
-func (s songRepository) DeleteSection(id uuid.UUID) error {
-	return s.client.Delete(&model.SongSection{}, id).Error
-}
-
-// Song Section History
-
-func (s songRepository) GetSongSectionHistory(
-	history *[]model.SongSectionHistory,
-	sectionID uuid.UUID,
-	property model.SongSectionProperty,
-) error {
-	return s.client.
-		Order("created_at").
-		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
-		Error
-}
-
-func (s songRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
-	return s.client.Create(&history).Error
 }
 
 func (s songRepository) addSongSectionsSubQuery(tx *gorm.DB, userID uuid.UUID) {

@@ -79,6 +79,7 @@ describe('Add Existing Artist Albums Modal', () => {
     expect(await screen.findByRole('checkbox', { name: 'Select all' })).toBeInTheDocument()
     expect(screen.queryByText(/no albums/i)).not.toBeInTheDocument()
     expect(screen.getByRole('searchbox', { name: /search/i })).not.toBeDisabled()
+    expect(screen.getByRole('searchbox', { name: /search/i })).toHaveFocus()
 
     expect(screen.getAllByRole('checkbox')).toHaveLength(albums.length + 1) // plus the select all checkbox
 
@@ -112,6 +113,27 @@ describe('Add Existing Artist Albums Modal', () => {
     )
 
     reduxRender(<AddExistingArtistAlbumsModal opened={true} onClose={() => {}} artistId={''} />)
+
+    expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
+  })
+
+  it('should show text when searching and there are no results and hide select all checkbox', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.get('/search', () => {
+        const response: WithTotalCountResponse<AlbumSearch> = {
+          models: [],
+          totalCount: 0
+        }
+        return HttpResponse.json(response)
+      })
+    )
+
+    reduxRender(<AddExistingArtistAlbumsModal opened={true} onClose={() => {}} artistId={''} />)
+
+    await user.type(screen.getByRole('searchbox'), 'a')
 
     expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
     expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
@@ -238,38 +260,5 @@ describe('Add Existing Artist Albums Modal', () => {
     expect(await screen.findByText(/no albums/i)).toBeInTheDocument()
     expect(screen.queryByRole('checkbox', { name: 'Select all' })).not.toBeInTheDocument()
     expect(screen.queryAllByLabelText(/album-/i)).toHaveLength(0)
-  })
-
-  it('should deselect albums that do not match the search value, if they were previously selected', async () => {
-    const user = userEvent.setup()
-
-    const albumToNotDeselect = albums[0].title
-    const albumToDeselect = albums[1].title
-
-    reduxRender(<AddExistingArtistAlbumsModal opened={true} onClose={() => {}} artistId={''} />)
-
-    const searchBox = screen.getByRole('searchbox', { name: /search/i })
-
-    // check albums
-    await user.click(await screen.findByRole('checkbox', { name: albumToNotDeselect }))
-    await user.click(await screen.findByRole('checkbox', { name: albumToDeselect }))
-
-    // search for the first album, so that second one disappears
-    await user.type(searchBox, albumToNotDeselect)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('loading-overlay-fetching')).toBeVisible()
-    })
-    await waitFor(() => {
-      expect(screen.queryByTestId('loading-overlay-fetching')).not.toBeInTheDocument()
-    })
-
-    expect(screen.queryByRole('checkbox', { name: albumToDeselect })).not.toBeInTheDocument()
-
-    // clear the search so that the second album re-appears (unchecked)
-    await user.clear(searchBox)
-
-    expect(await screen.findByRole('checkbox', { name: albumToDeselect })).not.toBeChecked()
-    expect(await screen.findByRole('checkbox', { name: albumToNotDeselect })).toBeChecked()
   })
 })

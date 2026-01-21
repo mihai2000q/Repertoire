@@ -1,8 +1,6 @@
 package section
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +9,10 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"slices"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestDeleteSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -56,22 +58,21 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 
 	db := utils.GetDatabase(t)
 
-	var sections []model.SongSection
-	db.Order("\"order\"").Find(&sections, &model.SongSection{SongID: section.SongID})
+	var newSong model.Song
+	db.Preload("Sections", func(db gorm.DB) *gorm.DB {
+		return db.Order("\"order\"")
+	}).Find(&song, song.ID)
 
 	assert.True(t,
-		slices.IndexFunc(sections, func(t model.SongSection) bool {
+		slices.IndexFunc(newSong.Sections, func(t model.SongSection) bool {
 			return t.ID == section.ID
 		}) == -1,
 		"Song Section has not been deleted",
 	)
 
-	for i := range sections {
-		assert.Equal(t, uint(i), sections[i].Order)
+	for i, s := range newSong.Sections {
+		assert.Equal(t, uint(i), s.Order)
 	}
-
-	var newSong model.Song
-	db.Find(&song, song.ID)
 
 	assert.LessOrEqual(t, newSong.Confidence, song.Confidence)
 	assert.LessOrEqual(t, newSong.Rehearsals, song.Rehearsals)

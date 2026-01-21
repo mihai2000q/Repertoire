@@ -18,9 +18,11 @@ func (s SongRouter) RegisterRoutes() {
 		api.GET("/filters-metadata", s.handler.GetFiltersMetadata)
 		api.POST("", s.handler.Create)
 		api.POST("/perfect-rehearsal", s.handler.AddPerfectRehearsal)
+		api.POST("/perfect-rehearsals", s.handler.AddPerfectRehearsals)
 		api.POST("/partial-rehearsal", s.handler.AddPartialRehearsal)
 		api.PUT("", s.handler.Update)
 		api.PUT("/settings", s.handler.UpdateSettings)
+		api.PUT("/bulk-delete", s.handler.BulkDelete)
 		api.DELETE("/:id", s.handler.Delete)
 	}
 
@@ -32,19 +34,6 @@ func (s SongRouter) RegisterRoutes() {
 
 	api.Group("/guitar-tunings").GET("", s.handler.GetGuitarTunings)
 	api.Group("/instruments").GET("", s.handler.GetInstruments)
-
-	sectionsApi := api.Group("/sections")
-	{
-		sectionsApi.POST("", s.handler.CreateSection)
-		sectionsApi.PUT("", s.handler.UpdateSection)
-		sectionsApi.PUT("/occurrences", s.handler.UpdateSectionsOccurrences)
-		sectionsApi.PUT("/partial-occurrences", s.handler.UpdateSectionsPartialOccurrences)
-		sectionsApi.PUT("/all", s.handler.UpdateAllSections)
-		sectionsApi.PUT("/move", s.handler.MoveSection)
-		sectionsApi.DELETE("/:id/from/:songID", s.handler.DeleteSection)
-	}
-
-	sectionsApi.Group("/types").GET("", s.handler.GetSectionTypes)
 }
 
 func NewSongRouter(

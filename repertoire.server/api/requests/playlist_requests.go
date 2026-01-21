@@ -3,8 +3,7 @@ package requests
 import "github.com/google/uuid"
 
 type GetPlaylistRequest struct {
-	ID           uuid.UUID `validate:"required"`
-	SongsOrderBy []string  `form:"songsOrderBy" validate:"order_by"`
+	ID uuid.UUID `validate:"required"`
 }
 
 type GetPlaylistsRequest struct {
@@ -12,6 +11,13 @@ type GetPlaylistsRequest struct {
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
 	OrderBy     []string `form:"orderBy" validate:"order_by"`
 	SearchBy    []string `form:"searchBy" validate:"search_by"`
+}
+
+type GetPlaylistSongsRequest struct {
+	ID          uuid.UUID `validate:"required"`
+	CurrentPage *int      `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
+	PageSize    *int      `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
+	OrderBy     []string  `form:"orderBy" validate:"order_by"`
 }
 
 type GetPlaylistFiltersMetadataRequest struct {
@@ -35,16 +41,30 @@ type AddArtistsToPlaylistRequest struct {
 	ForceAdd  *bool
 }
 
-type AddSongsToPlaylistRequest struct {
-	ID       uuid.UUID   `validate:"required"`
-	SongIDs  []uuid.UUID `validate:"min=1"`
-	ForceAdd *bool
+type AddPerfectRehearsalsToPlaylistsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
 }
 
 type UpdatePlaylistRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`
 	Description string
+}
+
+type BulkDeletePlaylistsRequest struct {
+	IDs []uuid.UUID `validate:"min=1"`
+}
+
+// Songs
+
+type AddSongsToPlaylistRequest struct {
+	ID       uuid.UUID   `validate:"required"`
+	SongIDs  []uuid.UUID `validate:"min=1"`
+	ForceAdd *bool
+}
+
+type ShufflePlaylistSongsRequest struct {
+	ID uuid.UUID `validate:"required"`
 }
 
 type MoveSongFromPlaylistRequest struct {

@@ -2,10 +2,11 @@ package service
 
 import (
 	"encoding/json"
-	"github.com/ThreeDotsLabs/watermill"
-	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 	"repertoire/server/data/message"
 	"repertoire/server/internal/message/topics"
+
+	"github.com/ThreeDotsLabs/watermill"
+	watermillMessage "github.com/ThreeDotsLabs/watermill/message"
 )
 
 type MessagePublisherService interface {

@@ -1,8 +1,9 @@
 package logger
 
 import (
-	"go.uber.org/zap"
 	"repertoire/server/data/logger"
+
+	"go.uber.org/zap"
 )
 
 func NewLoggerMock() *logger.Logger {

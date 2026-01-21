@@ -2,11 +2,12 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"net/http"
 	"repertoire/server/data/http/auth"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type testAuthServer struct {

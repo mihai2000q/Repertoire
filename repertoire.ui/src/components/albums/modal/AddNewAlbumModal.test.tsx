@@ -8,7 +8,7 @@ import { CreateAlbumRequest } from '../../../types/requests/AlbumRequests.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { ArtistSearch } from '../../../types/models/Search.ts'
 import SearchType from '../../../types/enums/SearchType.ts'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
 
 describe('Add New Album Modal', () => {
   const artists: ArtistSearch[] = [
@@ -112,7 +112,7 @@ describe('Add New Album Modal', () => {
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
-      await user.click(screen.getByRole('button', { name : dayjs().format('D MMMM YYYY') }))
+      await user.click(screen.getByRole('button', { name: dayjs().format('D MMMM YYYY') }))
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
       await waitFor(() =>

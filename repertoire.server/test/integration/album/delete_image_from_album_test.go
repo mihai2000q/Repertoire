@@ -1,8 +1,6 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/message/topics"
@@ -11,6 +9,9 @@ import (
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteImageFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

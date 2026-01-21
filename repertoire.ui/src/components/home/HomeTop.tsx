@@ -11,19 +11,12 @@ import HomeSongCard from './top/HomeSongCard.tsx'
 import HomeSongsLoader from './top/loader/HomeSongsLoader.tsx'
 import HomeArtistsLoader from './top/loader/HomeArtistsLoader.tsx'
 import HomeArtistCard from './top/HomeArtistCard.tsx'
-import SongProperty from '../../types/enums/SongProperty.ts'
-import OrderType from '../../types/enums/OrderType.ts'
-import ArtistProperty from '../../types/enums/ArtistProperty.ts'
-import AlbumProperty from '../../types/enums/AlbumProperty.ts'
 import useOrderBy from '../../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../../hooks/useLocalStorage.ts'
-import LocalStorageKeys from '../../types/enums/LocalStorageKeys.ts'
-
-enum TopEntity {
-  Songs,
-  Albums,
-  Artists
-}
+import LocalStorageKeys from '../../types/enums/keys/LocalStorageKeys.ts'
+import HomeTopEntity from '../../types/enums/HomeTopEntity.ts'
+import { defaultHomeTopOrderEntities } from '../../data/home/homeTopOrderEntities.ts'
+import HomeTopEntityOrderButton from './top/HomeTopEntityOrderButton.tsx'
 
 const TabButton = ({
   children,
@@ -70,44 +63,67 @@ const TabButton = ({
 )
 
 const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
-  const songsOrderBy = useOrderBy([
-    { property: SongProperty.Progress, type: OrderType.Descending },
-    { property: SongProperty.Title }
-  ])
-  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery({
-    pageSize: 20,
-    currentPage: 1,
-    orderBy: songsOrderBy
+  const [topEntity, setHomeTopEntity] = useLocalStorage({
+    key: LocalStorageKeys.HomeTopEntity,
+    defaultValue: HomeTopEntity.Albums
+  })
+  const [orderEntities, setOrderEntities] = useLocalStorage({
+    key: LocalStorageKeys.HomeOrderTopEntities,
+    defaultValue: defaultHomeTopOrderEntities,
+    serialize: (val) => JSON.stringify([...val]),
+    deserialize: (val) => new Map(JSON.parse(val))
   })
 
-  const albumsOrderBy = useOrderBy([
-    { property: AlbumProperty.Progress, type: OrderType.Descending },
-    { property: AlbumProperty.Title }
-  ])
-  const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery({
-    pageSize: 20,
-    currentPage: 1,
-    orderBy: albumsOrderBy
-  })
+  const [artistsOrder, setArtistsOrder] = useState(orderEntities.get(HomeTopEntity.Artists))
+  const artistsOrderBy = useOrderBy([artistsOrder])
+  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery(
+    {
+      pageSize: 20,
+      currentPage: 1,
+      orderBy: artistsOrderBy
+    },
+    { skip: topEntity !== HomeTopEntity.Artists }
+  )
 
-  const artistsOrderBy = useOrderBy([
-    { property: ArtistProperty.Progress, type: OrderType.Descending },
-    { property: ArtistProperty.Name }
-  ])
-  const { data: artists, isLoading: isArtistsLoading } = useGetArtistsQuery({
-    pageSize: 20,
-    currentPage: 1,
-    orderBy: artistsOrderBy
-  })
+  const [albumsOrder, setAlbumsOrder] = useState(orderEntities.get(HomeTopEntity.Albums))
+  const albumsOrderBy = useOrderBy([albumsOrder])
+  const { data: albums, isLoading: isAlbumsLoading } = useGetAlbumsQuery(
+    {
+      pageSize: 20,
+      currentPage: 1,
+      orderBy: albumsOrderBy
+    },
+    { skip: topEntity !== HomeTopEntity.Albums }
+  )
 
+  const [songsOrder, setSongsOrder] = useState(orderEntities.get(HomeTopEntity.Songs))
+  const songsOrderBy = useOrderBy([songsOrder])
+  const { data: songs, isLoading: isSongsLoading } = useGetSongsQuery(
+    {
+      pageSize: 20,
+      currentPage: 1,
+      orderBy: songsOrderBy
+    },
+    { skip: topEntity !== HomeTopEntity.Songs }
+  )
+
+  useDidUpdate(() => {
+    setArtistsOrder(orderEntities.get(HomeTopEntity.Artists))
+    setAlbumsOrder(orderEntities.get(HomeTopEntity.Albums))
+    setSongsOrder(orderEntities.get(HomeTopEntity.Songs))
+  }, [JSON.stringify([...orderEntities])])
+
+  const totalCount =
+    (topEntity === HomeTopEntity.Artists
+      ? artists?.totalCount
+      : topEntity === HomeTopEntity.Albums
+        ? albums?.totalCount
+        : songs?.totalCount) ?? 0
+
+  // Navigation Buttons
   const topRef = useRef<HTMLDivElement>(null)
 
   const { width } = useViewportSize()
-
-  const [topEntity, setTopEntity] = useLocalStorage({
-    key: LocalStorageKeys.HomeTopEntity,
-    defaultValue: TopEntity.Albums
-  })
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
@@ -124,8 +140,7 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
   }, [albums, songs, artists])
 
   const handleTopNav = (direction: 'left' | 'right') => {
-    if (!topRef.current) return
-    topRef.current.scrollBy({ left: direction === 'left' ? -400 : 400, behavior: 'smooth' })
+    topRef.current?.scrollBy({ left: direction === 'left' ? -400 : 400, behavior: 'smooth' })
   }
 
   const handleOnScroll = () => {
@@ -143,29 +158,35 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
       <Group px={'xl'} gap={0} justify={'space-between'}>
         <Group gap={0}>
           <TabButton
-            selected={topEntity === TopEntity.Songs}
-            onClick={() => setTopEntity(TopEntity.Songs)}
+            selected={topEntity === HomeTopEntity.Artists}
+            onClick={() => setHomeTopEntity(HomeTopEntity.Artists)}
           >
-            Songs
+            Artists
           </TabButton>
           <TabButton
-            selected={topEntity === TopEntity.Albums}
-            onClick={() => setTopEntity(TopEntity.Albums)}
+            selected={topEntity === HomeTopEntity.Albums}
+            onClick={() => setHomeTopEntity(HomeTopEntity.Albums)}
           >
             Albums
           </TabButton>
           <TabButton
-            selected={topEntity === TopEntity.Artists}
-            onClick={() => setTopEntity(TopEntity.Artists)}
+            selected={topEntity === HomeTopEntity.Songs}
+            onClick={() => setHomeTopEntity(HomeTopEntity.Songs)}
           >
-            Artists
+            Songs
           </TabButton>
         </Group>
 
-        <Group gap={4}>
+        <Group gap={'xxs'}>
+          <HomeTopEntityOrderButton
+            topEntity={topEntity}
+            orderEntities={orderEntities}
+            setOrderEntities={setOrderEntities}
+            disabled={totalCount === 0}
+          />
+
           <ActionIcon
             aria-label={'back'}
-            size={'lg'}
             variant={'grey'}
             radius={'50%'}
             disabled={disableBack}
@@ -176,7 +197,6 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
 
           <ActionIcon
             aria-label={'forward'}
-            size={'lg'}
             variant={'grey'}
             radius={'50%'}
             disabled={disableForward}
@@ -187,24 +207,24 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
         </Group>
       </Group>
 
-      {topEntity === TopEntity.Songs && songs?.models.length === 0 && (
-        <Center h={170}>
-          <Text c={'gray.6'} fw={500}>
-            There are no songs yet to display
+      {topEntity === HomeTopEntity.Artists && artists?.models.length === 0 && (
+        <Center h={158}>
+          <Text c={'gray.6'} fw={500} pt={12}>
+            There are no artists yet to display
           </Text>
         </Center>
       )}
-      {topEntity === TopEntity.Albums && albums?.models.length === 0 && (
+      {topEntity === HomeTopEntity.Albums && albums?.models.length === 0 && (
         <Center h={170}>
           <Text c={'gray.6'} fw={500}>
             There are no albums yet to display
           </Text>
         </Center>
       )}
-      {topEntity === TopEntity.Artists && artists?.models.length === 0 && (
-        <Center h={158}>
-          <Text c={'gray.6'} fw={500} pt={12}>
-            There are no artists yet to display
+      {topEntity === HomeTopEntity.Songs && songs?.models.length === 0 && (
+        <Center h={170}>
+          <Text c={'gray.6'} fw={500}>
+            There are no songs yet to display
           </Text>
         </Center>
       )}
@@ -231,8 +251,8 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
           pl={'xl'}
           pr={'5vw'}
           pt={'lg'}
-          pb={topEntity === TopEntity.Artists ? 'md' : 'xxs'}
-          gap={topEntity === TopEntity.Artists ? 'sm' : 'lg'}
+          pb={topEntity === HomeTopEntity.Artists ? 'md' : 'xxs'}
+          gap={topEntity === HomeTopEntity.Artists ? 'sm' : 'lg'}
           style={{ transition: 'padding-bottom 0.3s' }}
           sx={(theme) => ({
             '&::after': {
@@ -250,23 +270,23 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
             }
           })}
         >
-          {topEntity === TopEntity.Songs &&
-            (isSongsLoading || !songs ? (
-              <HomeSongsLoader />
+          {topEntity === HomeTopEntity.Artists &&
+            (isArtistsLoading || !artists ? (
+              <HomeArtistsLoader />
             ) : (
-              songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
+              artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
             ))}
-          {topEntity === TopEntity.Albums &&
+          {topEntity === HomeTopEntity.Albums &&
             (isAlbumsLoading || !albums ? (
               <HomeAlbumsLoader />
             ) : (
               albums.models.map((album) => <HomeAlbumCard key={album.id} album={album} />)
             ))}
-          {topEntity === TopEntity.Artists &&
-            (isArtistsLoading || !artists ? (
-              <HomeArtistsLoader />
+          {topEntity === HomeTopEntity.Songs &&
+            (isSongsLoading || !songs ? (
+              <HomeSongsLoader />
             ) : (
-              artists.models.map((artist) => <HomeArtistCard key={artist.id} artist={artist} />)
+              songs.models.map((song) => <HomeSongCard key={song.id} song={song} />)
             ))}
         </Group>
       </ScrollArea.Autosize>

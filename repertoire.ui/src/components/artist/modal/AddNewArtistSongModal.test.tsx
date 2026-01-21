@@ -185,9 +185,7 @@ describe('Add New Artist Song Modal', () => {
       )
 
       await user.click(screen.getByRole('button', { name: 'release-date' }))
-      await user.click(
-        screen.getByRole('button', { name: newReleaseDate.format('D MMMM YYYY') })
-      )
+      await user.click(screen.getByRole('button', { name: newReleaseDate.format('D MMMM YYYY') }))
       expect(screen.getByRole('button', { name: 'release-date' })).toHaveAttribute(
         'aria-selected',
         'true'

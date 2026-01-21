@@ -2,7 +2,6 @@ import Song from '../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
-  Avatar,
   Center,
   Flex,
   Grid,
@@ -19,14 +18,14 @@ import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import Order from '../../types/Order.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import ProgressBar from '../@ui/bar/ProgressBar.tsx'
 import ConfidenceBar from '../@ui/bar/ConfidenceBar.tsx'
 import DifficultyBar from '../@ui/bar/DifficultyBar.tsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
@@ -37,6 +36,8 @@ import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import { toast } from 'react-toastify'
+import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
+import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
 
 interface AlbumSongCardProps {
   song: Song
@@ -59,8 +60,14 @@ function AlbumSongCard({
 }: AlbumSongCardProps) {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const {
+    ref: selectableRef,
+    isClickSelected,
+    isClickSelectionActive,
+    isLastInSelection
+  } = useClickSelectSelectable(song.id)
   const { ref: hoverRef, hovered } = useHover()
-  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef)
+  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
 
   const [removeSongsFromAlbum, { isLoading: isRemoveLoading }] = useRemoveSongsFromAlbumMutation()
   const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
@@ -68,7 +75,7 @@ function AlbumSongCard({
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
     useDoubleMenu()
 
-  const isSelected = hovered || openedMenu || openedContextMenu || isDragging
+  const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
 
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
@@ -76,7 +83,8 @@ function AlbumSongCard({
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleClick() {
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
     dispatch(openSongDrawer(song.id))
   }
 
@@ -113,9 +121,9 @@ function AlbumSongCard({
       <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
 
       <Menu.Divider />
-      <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenus} />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
       <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
-      <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
       <Menu.Divider />
 
       {!isUnknownAlbum && (
@@ -134,12 +142,17 @@ function AlbumSongCard({
   )
 
   return (
-    <ContextMenu shadow={'lg'} opened={openedContextMenu} onChange={toggleContextMenu}>
+    <ContextMenu
+      opened={openedContextMenu}
+      onChange={toggleContextMenu}
+      disabled={isClickSelectionActive}
+    >
       <ContextMenu.Target>
         <Group
-          aria-label={`song-card-${song.title}`}
-          wrap={'nowrap'}
           ref={ref}
+          aria-label={`song-card-${song.title}`}
+          aria-selected={isSelected}
+          wrap={'nowrap'}
           {...draggableProvided?.draggableProps}
           {...draggableProvided?.dragHandleProps}
           style={{
@@ -151,8 +164,20 @@ function AlbumSongCard({
             borderRadius: 0,
             border: '1px solid transparent',
             ...(isSelected && {
-              boxShadow: theme.shadows.xl,
+              boxShadow: theme.shadows.md,
               backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }),
+
+            ...(isClickSelected && {
+              boxShadow: 'none',
+              backgroundColor: alpha(theme.colors.primary[0], 0.15),
+              ...(hovered && {
+                boxShadow: theme.shadows.xs,
+                backgroundColor: alpha(theme.colors.primary[0], 0.35)
+              }),
+              ...(isLastInSelection && {
+                boxShadow: theme.shadows.lg
+              })
             }),
 
             ...(isDragging && {
@@ -181,7 +206,8 @@ function AlbumSongCard({
                     {song.albumTrackNo}
                   </Text>
                 )}
-                <Avatar
+                <SelectableAvatar
+                  isSelected={isClickSelected}
                   radius={'md'}
                   src={song.imageUrl ?? albumImageUrl}
                   alt={(song.imageUrl ?? albumImageUrl) && song.title}
@@ -193,7 +219,7 @@ function AlbumSongCard({
                       size={20}
                     />
                   </Center>
-                </Avatar>
+                </SelectableAvatar>
 
                 <Text fw={500} lineClamp={1}>
                   {song.title}
@@ -256,6 +282,7 @@ function AlbumSongCard({
                     aria-label={'more-menu'}
                     size={'md'}
                     variant={'grey'}
+                    disabled={isClickSelectionActive}
                     onClick={(e) => e.stopPropagation()}
                     style={{
                       transition: '0.3s',

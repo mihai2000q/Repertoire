@@ -1,10 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/server/data/service"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type JWTAuthMiddleware struct {
@@ -25,10 +26,10 @@ func (m JWTAuthMiddleware) Handler() gin.HandlerFunc {
 			if errorCode != nil {
 				_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 				return
-			} else {
-				c.Next()
-				return
 			}
+
+			c.Next()
+			return
 		}
 
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

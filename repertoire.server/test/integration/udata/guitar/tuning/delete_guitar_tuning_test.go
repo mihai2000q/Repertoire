@@ -1,8 +1,6 @@
 package tuning
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/model"
@@ -11,6 +9,9 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"slices"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteGuitarTuning_WhenTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {

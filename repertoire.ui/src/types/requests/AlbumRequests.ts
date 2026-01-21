@@ -19,11 +19,20 @@ export interface CreateAlbumRequest {
   artistName?: string
 }
 
+export interface AddPerfectRehearsalsToAlbumsRequest {
+  ids: string[]
+}
+
 export interface UpdateAlbumRequest {
   id: string
   title: string
   releaseDate?: Date | string
   artistId?: string
+}
+
+export interface BulkDeleteAlbumsRequest {
+  ids: string[]
+  withSongs?: boolean
 }
 
 export interface SaveImageToAlbumRequest {

@@ -56,7 +56,7 @@ describe('Edit Song Information Modal', () => {
     expect(screen.getByRole('heading', { name: /edit song information/i })).toBeInTheDocument()
 
     expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toHaveValue(
+    expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toHaveValue(
       song.guitarTuning.name
     )
     expect(screen.getByRole('textbox', { name: /difficulty/i })).toBeInTheDocument()

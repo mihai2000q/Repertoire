@@ -67,11 +67,7 @@ function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: Advan
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="dnd-list" direction="vertical">
               {(provided) => (
-                <Stack
-                  gap={'xxs'}
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
+                <Stack gap={2} ref={provided.innerRef} {...provided.droppableProps}>
                   {orders.map((order, index) => (
                     <Draggable key={order.label} index={index} draggableId={order.label}>
                       {(provided, snapshot) => {
@@ -94,9 +90,9 @@ function AdvancedOrderMenu({ children, orders, setOrders, propertyIcons }: Advan
                             sx={(theme) => ({
                               transition: '0.2s',
                               borderRadius: theme.radius.md,
-                              color: theme.colors.gray[7],
+                              color: theme.colors.gray[6],
                               '&:hover': {
-                                color: theme.colors.gray[7],
+                                color: theme.colors.gray[6],
                                 backgroundColor: theme.colors.gray[1]
                               },
 

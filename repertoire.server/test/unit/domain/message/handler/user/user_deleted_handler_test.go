@@ -3,15 +3,16 @@ package user
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/domain/message/handler/user"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/test/unit/data/service"
 	"repertoire/server/test/unit/domain/provider"
 	"testing"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestUserDeletedHandler_WhenGetDocumentsFails_ShouldReturnError(t *testing.T) {

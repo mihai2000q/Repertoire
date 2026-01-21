@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 )
 
 type SearchEngineServiceMock struct {
@@ -19,7 +20,7 @@ func (s *SearchEngineServiceMock) Search(
 	userID uuid.UUID,
 	filter []string,
 	sort []string,
-) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
+) (wrapper.WithTotalCount[map[string]any], *wrapper.ErrorCode) {
 	args := s.Called(query, currentPage, pageSize, searchType, userID, filter, sort)
 
 	var errCode *wrapper.ErrorCode
@@ -27,7 +28,7 @@ func (s *SearchEngineServiceMock) Search(
 		errCode = a.(*wrapper.ErrorCode)
 	}
 
-	return args.Get(0).(wrapper.WithTotalCount[any]), errCode
+	return args.Get(0).(wrapper.WithTotalCount[map[string]any]), errCode
 }
 
 func (s *SearchEngineServiceMock) GetDocument(id string) (map[string]any, error) {

@@ -344,6 +344,54 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 	}
 }
 
+func TestAddPerfectRehearsalsToArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.AddPerfectRehearsalsToArtistsRequest{
+		IDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.AddPerfectRehearsalsToArtistsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// IDs Test Cases
+		{
+			"IDs is invalid because it requires at least 1 ID",
+			requests.AddPerfectRehearsalsToArtistsRequest{IDs: []uuid.UUID{}},
+			"IDs",
+			"min",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "AddPerfectRehearsalsToArtistsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 func TestValidateUpdateArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -532,6 +580,56 @@ func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRet
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveSongsFromArtistRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateBulkDeleteArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.BulkDeleteArtistsRequest{
+		IDs:        []uuid.UUID{uuid.New()},
+		WithAlbums: false,
+		WithSongs:  true,
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.BulkDeleteArtistsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// IDs Test Cases
+		{
+			"IDs is invalid because it requires at least 1 ID",
+			requests.BulkDeleteArtistsRequest{IDs: []uuid.UUID{}},
+			"ID",
+			"min",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "BulkDeleteArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})

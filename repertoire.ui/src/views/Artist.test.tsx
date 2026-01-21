@@ -10,11 +10,12 @@ import { expect } from 'vitest'
 import { RootState } from '../state/store.ts'
 import Album from '../types/models/Album.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import AlbumProperty from '../types/enums/AlbumProperty.ts'
+import AlbumProperty from '../types/enums/properties/AlbumProperty.ts'
 import OrderType from '../types/enums/OrderType.ts'
-import SongProperty from '../types/enums/SongProperty.ts'
+import SongProperty from '../types/enums/properties/SongProperty.ts'
 import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
+import { createRef } from 'react'
 
 describe('Artist', () => {
   const artist: ArtistType = {
@@ -70,11 +71,25 @@ describe('Artist', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    // Mock Main Context
+    vi.mock('../context/MainContext.tsx', () => ({
+      useMain: vi.fn(() => ({
+        ref: createRef()
+      }))
+    }))
+  })
 
   afterEach(() => server.resetHandlers())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    server.close()
+    vi.clearAllMocks()
+  })
+
+  const render = (id = artist.id) =>
+    reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${id}`])
 
   it('should render and display artist info when the artist is not unknown', async () => {
     let albumsParams: URLSearchParams
@@ -95,13 +110,13 @@ describe('Artist', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${artist.id}`])
+    const [_, store] = render()
 
     expect(screen.getByTestId('artist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('albums-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()
-    expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
+    expect(await screen.findByLabelText('albums-widget')).toBeInTheDocument()
+    expect(await screen.findByLabelText('songs-widget')).toBeInTheDocument()
+    expect(screen.queryByLabelText('band-members-widget')).not.toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(artist.name)
 
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
@@ -138,13 +153,13 @@ describe('Artist', () => {
       })
     )
 
-    const [_, store] = reduxMemoryRouterRender(<Artist />, '/artist/:id', ['/artist/unknown'])
+    const [_, store] = render('unknown')
 
     expect((store.getState() as RootState).global.documentTitle).toMatch(/unknown/i)
     expect(screen.getByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('albums-card')).toBeInTheDocument()
-    expect(await screen.findByLabelText('songs-card')).toBeInTheDocument()
-    expect(screen.queryByLabelText('band-members-card')).not.toBeInTheDocument()
+    expect(await screen.findByLabelText('albums-widget')).toBeInTheDocument()
+    expect(await screen.findByLabelText('songs-widget')).toBeInTheDocument()
+    expect(screen.queryByLabelText('band-members-widget')).not.toBeInTheDocument()
 
     expect(albumsParams.getAll('orderBy')).toStrictEqual([
       AlbumProperty.ReleaseDate + ' ' + OrderType.Descending + ' nulls last',
@@ -165,8 +180,8 @@ describe('Artist', () => {
   it('should render and display band members when the artist is a band', async () => {
     server.use(getArtist({ ...artist, isBand: true }))
 
-    reduxMemoryRouterRender(<Artist />, '/artist/:id', [`/artist/${artist.id}`])
+    render()
 
-    expect(await screen.findByLabelText('band-members-card')).toBeInTheDocument()
+    expect(await screen.findByLabelText('band-members-widget')).toBeInTheDocument()
   })
 })

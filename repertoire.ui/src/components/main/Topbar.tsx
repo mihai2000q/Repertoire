@@ -5,8 +5,8 @@ import { useMediaQuery } from '@mantine/hooks'
 import useIsDesktop from '../../hooks/useIsDesktop.ts'
 import TopbarSearch from './topbar/TopbarSearch.tsx'
 import TopbarUser from './topbar/TopbarUser.tsx'
-import useMainScroll from '../../hooks/useMainScroll.ts'
 import TopbarNavigation from './topbar/TopbarNavigation.tsx'
+import { useMain } from '../../context/MainContext.tsx'
 
 interface TopbarProps {
   toggleSidebar: () => void
@@ -14,7 +14,7 @@ interface TopbarProps {
 
 function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
   const isDesktop = useIsDesktop()
-  const { isTopScrollPositionOver0 } = useMainScroll()
+  const { mainScroll } = useMain()
   const shiftOrder = isDesktop ? 0 : 1
 
   const theme = useMantineTheme()
@@ -27,7 +27,7 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
       top={'unset'}
       style={(theme) => ({
         transition: '0.35s',
-        ...(isTopScrollPositionOver0 && { boxShadow: theme.shadows.md })
+        ...(mainScroll.isPositionOver0 && { boxShadow: theme.shadows.md })
       })}
     >
       <Group h={'100%'} gap={0}>
@@ -63,16 +63,11 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
         <Space flex={1} style={{ order: 4 - shiftOrder }} />
 
         <ActionIcon
-          variant={'subtle'}
+          variant={'grey-primary'}
           size={'lg'}
+          radius={'50%'}
           sx={(theme) => ({
-            borderRadius: '50%',
-            color: theme.colors.gray[6],
-            '&:hover': {
-              boxShadow: theme.shadows.sm,
-              backgroundColor: theme.colors.primary[0],
-              color: theme.colors.primary[6]
-            }
+            '&:hover': { boxShadow: theme.shadows.sm }
           })}
           style={{ order: 5 - shiftOrder }}
         >

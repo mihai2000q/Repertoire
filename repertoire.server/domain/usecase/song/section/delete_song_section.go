@@ -12,12 +12,17 @@ import (
 )
 
 type DeleteSongSection struct {
-	songRepository repository.SongRepository
+	songSectionRepository repository.SongSectionRepository
+	songRepository        repository.SongRepository
 }
 
-func NewDeleteSongSection(repository repository.SongRepository) DeleteSongSection {
+func NewDeleteSongSection(
+	songSectionRepository repository.SongSectionRepository,
+	songRepository repository.SongRepository,
+) DeleteSongSection {
 	return DeleteSongSection{
-		songRepository: repository,
+		songSectionRepository: songSectionRepository,
+		songRepository:        songRepository,
 	}
 }
 
@@ -38,6 +43,7 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 		return wrapper.NotFoundError(errors.New("song section not found"))
 	}
 
+	// reorder the other sections
 	sectionsLength := len(song.Sections)
 	for i := index + 1; i < sectionsLength; i++ {
 		song.Sections[i].Order = song.Sections[i].Order - 1
@@ -58,7 +64,7 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	err = d.songRepository.DeleteSection(id)
+	err = d.songSectionRepository.Delete([]uuid.UUID{id})
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

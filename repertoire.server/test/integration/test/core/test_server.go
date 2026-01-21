@@ -3,9 +3,6 @@ package core
 import (
 	"context"
 	"fmt"
-	"github.com/meilisearch/meilisearch-go"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -18,6 +15,10 @@ import (
 	"repertoire/server/domain"
 	"repertoire/server/internal"
 	"time"
+
+	"github.com/meilisearch/meilisearch-go"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pressly/goose"
@@ -258,7 +259,7 @@ func (ts *TestServer) setupAuthServer() {
 
 func (ts *TestServer) setupCentrifugoContainer() {
 	containerRequest := testcontainers.ContainerRequest{
-		Image:        "centrifugo/centrifugo:v6",
+		Image:        "centrifugo/centrifugo:v6.6.0",
 		ExposedPorts: []string{"8003/tcp"},
 		Cmd:          []string{"centrifugo", "-c", "/centrifugo/config.json"},
 		Files: []testcontainers.ContainerFile{
@@ -287,7 +288,7 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 	// Setup Container
 	container, err := meilisearchTest.Run(
 		context.Background(),
-		"getmeili/meilisearch:v1.13.0",
+		"getmeili/meilisearch:v1.33.1",
 		meilisearchTest.WithMasterKey(env.MeiliMasterKey),
 	)
 	if err != nil {
@@ -312,7 +313,7 @@ func (ts *TestServer) setupMeiliContainer(env internal.Env) {
 		log.Println(err)
 	}
 
-	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{
+	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]interface{}{
 		"type", "userId", "album", "album.id", "artist", "artist.id",
 	})
 	if err != nil {

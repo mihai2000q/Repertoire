@@ -9,7 +9,6 @@ export interface GetPlaylistsRequest {
 
 export interface GetPlaylistRequest {
   id: string
-  songsOrderBy?: string[]
 }
 
 export interface CreatePlaylistRequest {
@@ -17,10 +16,18 @@ export interface CreatePlaylistRequest {
   description: string
 }
 
+export interface AddPerfectRehearsalsToPlaylistsRequest {
+  ids: string[]
+}
+
 export interface UpdatePlaylistRequest {
   id: string
   title: string
   description: string
+}
+
+export interface BulkDeletePlaylistsRequest {
+  ids: string[]
 }
 
 export interface SaveImageToPlaylistRequest {
@@ -40,10 +47,24 @@ export interface AddAlbumsToPlaylistRequest {
   forceAdd?: boolean
 }
 
+// songs
+
+export interface GetPlaylistSongsRequest {
+  id: string
+  currentPage?: number
+  pageSize?: number
+  orderBy?: string[]
+  searchBy?: string[]
+}
+
 export interface AddSongsToPlaylistRequest {
   id: string
   songIds: string[]
   forceAdd?: boolean
+}
+
+export interface ShufflePlaylistSongsRequest {
+  id: string
 }
 
 export interface MoveSongFromPlaylistRequest {

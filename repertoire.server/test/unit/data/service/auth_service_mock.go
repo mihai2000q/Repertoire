@@ -1,8 +1,9 @@
 package service
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/internal/wrapper"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type AuthServiceMock struct {

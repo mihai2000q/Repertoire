@@ -6,9 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-      "@ui/App": [
-        "../repertoire.ui/src/App"
-      ]
+      "@ui/App": ["../repertoire.ui/src/App"]
     },
 
     /* Bundler mode */

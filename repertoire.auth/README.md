@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This is the Authentication Service of the **Repertoire** application, 
+This is the Authentication Service of the **Repertoire** application,
 which is written completely in Go using the Gin Gonic Framework.
 
 ## Prerequisites
@@ -37,7 +37,6 @@ To run the application from the CLI, type the following command:
 ```sh
 go run main.go
 ```
-
 
 ## Build Executable
 
@@ -75,5 +74,5 @@ Next, use the following command to build and run the application and start the l
 air
 ```
 
-The above command will look in the directory for a `.air.toml` file for configuration, 
+The above command will look in the directory for a `.air.toml` file for configuration,
 but that's already included in the application.

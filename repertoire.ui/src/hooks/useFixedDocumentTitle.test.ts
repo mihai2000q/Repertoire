@@ -1,6 +1,6 @@
 import useFixedDocumentTitle from './useFixedDocumentTitle.ts'
-import {reduxRenderHook} from "../test-utils.tsx";
-import {RootState} from "../state/store.ts";
+import { reduxRenderHook } from '../test-utils.tsx'
+import { RootState } from '../state/store.ts'
 
 describe('use Fixed Document Title Once', () => {
   it('should accept parameter that changes the document title', () => {

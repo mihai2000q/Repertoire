@@ -1,10 +1,11 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"repertoire/server/api/handler"
 	"repertoire/server/api/middleware"
 	"repertoire/server/api/server"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SearchRouter struct {

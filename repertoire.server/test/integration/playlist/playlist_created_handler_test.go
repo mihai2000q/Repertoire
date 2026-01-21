@@ -1,14 +1,15 @@
 package playlist
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPlaylistCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
@@ -27,9 +28,8 @@ func TestPlaylistCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 	// then
 	assert.NoError(t, err)
 
-	assertion.AssertMessage(t, messages, func(documents []any) {
-		assert.Len(t, documents, 1)
-		playlistSearch := utils.UnmarshallDocument[model.PlaylistSearch](documents[0])
-		assertion.PlaylistSearch(t, playlistSearch, playlist)
+	assertion.AssertMessage(t, messages, func(playlistSearches []model.PlaylistSearch) {
+		assert.Len(t, playlistSearches, 1)
+		assertion.PlaylistSearch(t, playlistSearches[0], playlist)
 	})
 }

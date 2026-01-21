@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/stretchr/testify/mock"
 	"repertoire/server/model"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/google/uuid"
 )
@@ -95,6 +96,16 @@ func (s *SongRepositoryMock) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) e
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
@@ -106,6 +117,16 @@ func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uui
 }
 
 func (s *SongRepositoryMock) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
 	if len(args) > 1 {
@@ -182,8 +203,8 @@ func (s *SongRepositoryMock) UpdateAllWithAssociations(songs *[]model.Song) erro
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) Delete(id uuid.UUID) error {
-	args := s.Called(id)
+func (s *SongRepositoryMock) Delete(ids []uuid.UUID) error {
+	args := s.Called(ids)
 	return args.Error(0)
 }
 
@@ -270,8 +291,8 @@ func (s *SongRepositoryMock) UpdateSection(section *model.SongSection) error {
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) DeleteSection(id uuid.UUID) error {
-	args := s.Called(id)
+func (s *SongRepositoryMock) DeleteSections(ids []uuid.UUID) error {
+	args := s.Called(ids)
 	return args.Error(0)
 }
 

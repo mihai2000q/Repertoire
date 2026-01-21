@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/meilisearch/meilisearch-go"
 	"repertoire/server/data/database"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/search"
 	"repertoire/server/internal"
 	"repertoire/server/internal/migration/utils"
 	"repertoire/server/model"
+
+	"github.com/meilisearch/meilisearch-go"
 )
 
 var uid = "20250226172615"
@@ -31,7 +32,7 @@ func main() {
 		panic(err)
 	}
 
-	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]string{
+	_, err = meiliClient.Index("search").UpdateFilterableAttributes(&[]interface{}{
 		"type", "userId", "album", "album.id", "artist", "artist.id",
 	})
 	if err != nil {
@@ -79,7 +80,7 @@ func addArtists(dbClient database.Client, meiliClient search.MeiliClient) {
 	for _, artist := range artists {
 		meiliArtists = append(meiliArtists, artist.ToSearch())
 	}
-	_, err = meiliClient.Index("search").AddDocuments(meiliArtists)
+	_, err = meiliClient.Index("search").AddDocuments(meiliArtists, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +101,7 @@ func addAlbums(dbClient database.Client, meiliClient search.MeiliClient) {
 	for _, album := range albums {
 		meiliAlbums = append(meiliAlbums, album.ToSearch())
 	}
-	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums)
+	_, err = meiliClient.Index("search").AddDocuments(meiliAlbums, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -121,7 +122,7 @@ func addSongs(dbClient database.Client, meiliClient search.MeiliClient) {
 	for _, song := range songs {
 		meiliSongs = append(meiliSongs, song.ToSearch())
 	}
-	_, err = meiliClient.Index("search").AddDocuments(meiliSongs)
+	_, err = meiliClient.Index("search").AddDocuments(meiliSongs, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -142,7 +143,7 @@ func addPlaylists(dbClient database.Client, meiliClient search.MeiliClient) {
 	for _, playlist := range playlists {
 		meiliPlaylists = append(meiliPlaylists, playlist.ToSearch())
 	}
-	_, err = meiliClient.Index("search").AddDocuments(meiliPlaylists)
+	_, err = meiliClient.Index("search").AddDocuments(meiliPlaylists, nil)
 	if err != nil {
 		panic(err)
 	}

@@ -1,9 +1,6 @@
 package section
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -13,6 +10,10 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestUpdateSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -145,7 +146,7 @@ func TestUpdateSongSection_WhenSuccessfulWithRehearsals_ShouldUpdateSectionUpdat
 	var newSection model.SongSection
 	db.Preload("Song").
 		Preload("History", func(db *gorm.DB) *gorm.DB {
-			return db.Order("created_at")
+			return db.Order("created_at desc")
 		}).
 		Find(&newSection, &model.SongSection{ID: request.ID})
 
@@ -155,10 +156,10 @@ func TestUpdateSongSection_WhenSuccessfulWithRehearsals_ShouldUpdateSectionUpdat
 	assert.Greater(t, newSection.RehearsalsScore, section.RehearsalsScore)
 	assert.Greater(t, newSection.Progress, section.Progress)
 
-	assert.NotEmpty(t, newSection.History[len(newSection.History)-1].ID)
-	assert.Equal(t, section.Rehearsals, newSection.History[len(newSection.History)-1].From)
-	assert.Equal(t, request.Rehearsals, newSection.History[len(newSection.History)-1].To)
-	assert.Equal(t, model.RehearsalsProperty, newSection.History[len(newSection.History)-1].Property)
+	assert.NotEmpty(t, newSection.History[0].ID)
+	assert.Equal(t, section.Rehearsals, newSection.History[0].From)
+	assert.Equal(t, request.Rehearsals, newSection.History[0].To)
+	assert.Equal(t, model.RehearsalsProperty, newSection.History[0].Property)
 
 	assert.Greater(t, newSection.Song.Rehearsals, song.Rehearsals)
 	assert.Greater(t, newSection.Song.Progress, song.Progress)
@@ -193,7 +194,7 @@ func TestUpdateSongSection_WhenSuccessfulWithConfidenceIncreasing_ShouldUpdateSe
 	var newSection model.SongSection
 	db.Preload("Song").
 		Preload("History", func(db *gorm.DB) *gorm.DB {
-			return db.Order("created_at")
+			return db.Order("created_at desc")
 		}).
 		Find(&newSection, &model.SongSection{ID: request.ID})
 
@@ -203,10 +204,10 @@ func TestUpdateSongSection_WhenSuccessfulWithConfidenceIncreasing_ShouldUpdateSe
 	assert.Greater(t, newSection.ConfidenceScore, section.ConfidenceScore)
 	assert.Greater(t, newSection.Progress, section.Progress)
 
-	assert.NotEmpty(t, newSection.History[len(newSection.History)-1].ID)
-	assert.Equal(t, section.Confidence, newSection.History[len(newSection.History)-1].From)
-	assert.Equal(t, request.Confidence, newSection.History[len(newSection.History)-1].To)
-	assert.Equal(t, model.ConfidenceProperty, newSection.History[len(newSection.History)-1].Property)
+	assert.NotEmpty(t, newSection.History[0].ID)
+	assert.Equal(t, section.Confidence, newSection.History[0].From)
+	assert.Equal(t, request.Confidence, newSection.History[0].To)
+	assert.Equal(t, model.ConfidenceProperty, newSection.History[0].Property)
 
 	assert.Greater(t, newSection.Song.Confidence, song.Confidence)
 	assert.Greater(t, newSection.Song.Progress, song.Progress)

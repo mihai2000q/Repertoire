@@ -2,7 +2,6 @@ package assertion
 
 import (
 	"encoding/json"
-	"github.com/golang-jwt/jwt/v5"
 	"repertoire/server/internal"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
@@ -10,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -211,7 +211,7 @@ func ResponseEnhancedSong(
 	}
 
 	for i := range song.Playlists {
-		ResponsePlaylist(t, song.Playlists[i], response.Playlists[i], false)
+		ResponsePlaylist(t, song.Playlists[i], response.Playlists[i])
 	}
 
 	solos := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
@@ -279,7 +279,7 @@ func ResponseSong(
 		}
 
 		for i := range song.Playlists {
-			ResponsePlaylist(t, song.Playlists[i], response.Playlists[i], false)
+			ResponsePlaylist(t, song.Playlists[i], response.Playlists[i])
 		}
 	}
 }
@@ -352,30 +352,28 @@ func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response mo
 	assert.Equal(t, response.SongsCount, len(playlist.Songs))
 }
 
-func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist, withSongsMetadata bool) {
+func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Playlist) {
 	assert.Equal(t, playlist.ID, response.ID)
 	assert.Equal(t, playlist.Title, response.Title)
 	assert.Equal(t, playlist.Description, response.Description)
 	assert.Equal(t, playlist.ImageURL, response.ImageURL)
+}
 
-	for i := range playlist.Songs {
-		ResponseSong(
-			t,
-			playlist.Songs[i],
-			response.Songs[i],
-			withSongsMetadata,
-			withSongsMetadata,
-			false,
-			false,
-		)
-		if withSongsMetadata {
-			// making sure the After Find hook works
-			assert.Equal(t, playlist.PlaylistSongs[i].ID, response.Songs[i].PlaylistSongID)
-			assert.Equal(t, playlist.PlaylistSongs[i].SongID, response.Songs[i].ID)
-			assert.Equal(t, playlist.PlaylistSongs[i].SongTrackNo, response.Songs[i].PlaylistTrackNo)
-			Time(t, &playlist.PlaylistSongs[i].CreatedAt, &response.Songs[i].PlaylistCreatedAt)
-		}
-	}
+func ResponsePlaylistSong(t *testing.T, playlistSong model.PlaylistSong, responseSong model.Song) {
+	ResponseSong(
+		t,
+		playlistSong.Song,
+		responseSong,
+		true,
+		true,
+		false,
+		false,
+	)
+
+	assert.Equal(t, playlistSong.ID, responseSong.PlaylistSongID)
+	assert.Equal(t, playlistSong.SongID, responseSong.ID)
+	assert.Equal(t, playlistSong.SongTrackNo, responseSong.PlaylistTrackNo)
+	Time(t, &playlistSong.CreatedAt, &responseSong.PlaylistCreatedAt)
 }
 
 func ResponseUser(t *testing.T, user model.User, response model.User) {

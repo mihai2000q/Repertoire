@@ -2,10 +2,10 @@ import { ReactElement } from 'react'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { SimpleGrid, Stack } from '@mantine/core'
 import HomeTop from '../components/home/HomeTop.tsx'
-import HomeRecentlyPlayedSongs from '../components/home/HomeRecentlyPlayedSongs.tsx'
-import HomeGenres from '../components/home/HomeGenres.tsx'
-import HomeRecentPlaylists from '../components/home/HomeRecentPlaylists.tsx'
-import HomeRecentArtists from '../components/home/HomeRecentArtists.tsx'
+import HomeRecentlyPlayed from '../components/home/widgets/HomeRecentlyPlayed.tsx'
+import HomeGenres from '../components/home/widgets/HomeGenres.tsx'
+import HomeRecentPlaylists from '../components/home/widgets/HomeRecentPlaylists.tsx'
+import HomeRecentArtists from '../components/home/widgets/HomeRecentArtists.tsx'
 
 function Home(): ReactElement {
   useFixedDocumentTitle('Home')
@@ -16,7 +16,7 @@ function Home(): ReactElement {
 
       <SimpleGrid px={'xl'} cols={{ base: 1, md: 2, lg: 3 }} h={'100%'} pb={'lg'} mih={300}>
         <HomeGenres visibleFrom={'md'} />
-        <HomeRecentlyPlayedSongs />
+        <HomeRecentlyPlayed />
         <Stack visibleFrom={'lg'}>
           <HomeRecentArtists
             sx={{

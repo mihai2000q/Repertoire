@@ -1,8 +1,6 @@
 package playlist
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/message/topics"
@@ -12,6 +10,9 @@ import (
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeletePlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -46,7 +47,7 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
-			messages := utils.SubscribeToTopic(topics.PlaylistDeletedTopic)
+			messages := utils.SubscribeToTopic(topics.PlaylistsDeletedTopic)
 
 			// when
 			w := httptest.NewRecorder()
@@ -62,8 +63,9 @@ func TestDeletePlaylist_WhenSuccessful_ShouldDeletePlaylist(t *testing.T) {
 
 			assert.Empty(t, deletedPlaylist)
 
-			assertion.AssertMessage(t, messages, func(payloadPlaylist model.Playlist) {
-				assert.Equal(t, test.playlist.ID, payloadPlaylist.ID)
+			assertion.AssertMessage(t, messages, func(payloadPlaylists []model.Playlist) {
+				assert.Len(t, payloadPlaylists, 1)
+				assert.Equal(t, test.playlist.ID, payloadPlaylists[0].ID)
 			})
 		})
 	}

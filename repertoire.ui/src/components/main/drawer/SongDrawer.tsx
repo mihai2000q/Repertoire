@@ -28,18 +28,18 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useDisclosure } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import WarningModal from '../../@ui/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import RightSideEntityDrawer from '../../@ui/drawer/RightSideEntityDrawer.tsx'
-import { closeSongDrawer, deleteSongDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeSongDrawer } from '../../../state/slice/globalSlice.ts'
 import DifficultyBar from '../../@ui/bar/DifficultyBar.tsx'
 import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
-import PerfectRehearsalMenuItem from '../../@ui/menu/item/song/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
@@ -54,19 +54,24 @@ function SongDrawer() {
   const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
 
+  const isDocumentTitleSet = useRef(false)
+
   const { songId, open: opened } = useAppSelector((state) => state.global.songDrawer)
   const onClose = () => {
     dispatch(closeSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    isDocumentTitleSet.current = false
   }
 
   const { data: song, isFetching } = useGetSongQuery(songId, { skip: !songId })
   const [deleteSongMutation, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
 
   useEffect(() => {
-    if (song && opened && !isFetching)
+    if (song && opened && songId === song.id && !isDocumentTitleSet.current) {
       setDocumentTitle((prevTitle) => prevTitle + ' - ' + song.title)
-  }, [song, opened, isFetching])
+      isDocumentTitleSet.current = true
+    }
+  }, [song, opened])
 
   const [isHovered, setIsHovered] = useState(false)
   const [isMenuOpened, { open: openMenu, close: closeMenu }] = useDisclosure(false)
@@ -103,8 +108,7 @@ function SongDrawer() {
 
   async function handleDelete() {
     await deleteSongMutation(song.id).unwrap()
-    dispatch(deleteSongDrawer())
-    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+    onClose()
     toast.success(`${song.title} deleted!`)
   }
 
@@ -150,7 +154,7 @@ function SongDrawer() {
           </Avatar>
 
           <Box pos={'absolute'} top={0} right={0} p={7}>
-            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu}>
+            <Menu opened={isMenuOpened} onOpen={openMenu} onClose={closeMenu} zIndex={3000}>
               <Menu.Target>
                 <ActionIcon
                   variant={'grey-subtle'}
@@ -167,9 +171,9 @@ function SongDrawer() {
                 </Menu.Item>
 
                 <Menu.Divider />
-                <AddToPlaylistMenuItem ids={[song.id]} type={'song'} closeMenu={closeMenu} />
+                <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
                 <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-                <PerfectRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
+                <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
                 <Menu.Divider />
 
                 <Menu.Item
@@ -185,7 +189,7 @@ function SongDrawer() {
         </Box>
 
         <Stack px={'md'} pb={'xs'} gap={'xxs'}>
-          <Title order={5} fw={700} lineClamp={2} fz={'max(1.85vw, 24px)'}>
+          <Title order={5} fw={700} lh={'xs'} lineClamp={2} fz={'max(1.85vw, 24px)'}>
             {song.title}
           </Title>
 
@@ -378,7 +382,13 @@ function SongDrawer() {
                   </Text>
                 </Grid.Col>
                 <Grid.Col span={secondColumnSize}>
-                  <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMMM YYYY')}</Text>
+                  <Tooltip
+                    label={`Last time played on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                    openDelay={400}
+                    disabled={!song.lastTimePlayed}
+                  >
+                    <Text fw={600}>{dayjs(song.lastTimePlayed).format('D MMMM YYYY')}</Text>
+                  </Tooltip>
                 </Grid.Col>
               </>
             )}

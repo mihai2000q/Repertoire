@@ -1,9 +1,10 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"repertoire/server/internal"
 	"time"
+
+	"gorm.io/gorm"
 
 	"github.com/google/uuid"
 )
@@ -44,17 +45,5 @@ func (p *Playlist) BeforeSave(*gorm.DB) error {
 
 func (p *Playlist) AfterFind(*gorm.DB) error {
 	p.ImageURL = p.ImageURL.ToFullURL()
-
-	if len(p.PlaylistSongs) == 0 {
-		return nil
-	}
-
-	for _, playlistSong := range p.PlaylistSongs {
-		newSong := playlistSong.Song
-		newSong.PlaylistSongID = playlistSong.ID
-		newSong.PlaylistTrackNo = playlistSong.SongTrackNo
-		newSong.PlaylistCreatedAt = playlistSong.CreatedAt
-		p.Songs = append(p.Songs, newSong)
-	}
 	return nil
 }

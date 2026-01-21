@@ -2,7 +2,6 @@ package search
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/enums"
@@ -12,6 +11,8 @@ import (
 	searchData "repertoire/server/test/integration/test/data/search"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSearchGet_WhenSuccessful_ShouldReturnSearchResults(t *testing.T) {
@@ -43,11 +44,11 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResults(t *testing.T) {
 	assert.Equal(t, int64(expectedTotalCount), response.TotalCount)
 	assert.Len(t, response.Models, len(expectedResults))
 	for i, expectedResult := range expectedResults {
-		curr := response.Models[i]
-		expectedID := utils.UnmarshallDocument[map[string]any](expectedResult)["id"]
-		actualID := curr.(map[string]interface{})["id"]
+		curr := response.Models[i].(map[string]any)
+		expectedID := utils.UnmarshalDocument[map[string]any](expectedResult)["id"]
+		actualID := curr["id"].(string)
 		var prefix string
-		switch curr.(map[string]interface{})["type"] {
+		switch curr["type"] {
 		case string(enums.Artist):
 			prefix = "artist-"
 		case string(enums.Album):
@@ -58,6 +59,6 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResults(t *testing.T) {
 			prefix = "playlist-"
 		}
 
-		assert.Equal(t, expectedID, prefix+actualID.(string))
+		assert.Equal(t, expectedID, prefix+actualID)
 	}
 }

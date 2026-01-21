@@ -4,7 +4,6 @@ import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -13,7 +12,9 @@ import (
 
 type SongService interface {
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
+	AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode
 	AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode
+	BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
 	Delete(id uuid.UUID) *wrapper.ErrorCode
@@ -29,46 +30,32 @@ type SongService interface {
 
 	GetGuitarTunings(token string) ([]model.GuitarTuning, *wrapper.ErrorCode)
 	GetInstruments(token string) ([]model.Instrument, *wrapper.ErrorCode)
-	GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
-
-	CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
-	DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
-	MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
-	UpdateAllSections(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode
-	UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
-	UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
-	UpdateSectionsPartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode
 }
 
 type songService struct {
-	addPerfectSongRehearsal song.AddPerfectSongRehearsal
-	addPartialSongRehearsal song.AddPartialSongRehearsal
-	createSong              song.CreateSong
-	deleteImageFromSong     song.DeleteImageFromSong
-	deleteSong              song.DeleteSong
-	getAllSongs             song.GetAllSongs
-	getSong                 song.GetSong
-	getSongFiltersMetadata  song.GetSongFiltersMetadata
-	saveImageToSong         song.SaveImageToSong
-	updateSong              song.UpdateSong
-	updateSongSettings      song.UpdateSongSettings
+	addPerfectSongRehearsal  song.AddPerfectSongRehearsal
+	addPerfectSongRehearsals song.AddPerfectSongRehearsals
+	addPartialSongRehearsal  song.AddPartialSongRehearsal
+	bulkDeleteSongs          song.BulkDeleteSongs
+	createSong               song.CreateSong
+	deleteImageFromSong      song.DeleteImageFromSong
+	deleteSong               song.DeleteSong
+	getAllSongs              song.GetAllSongs
+	getSong                  song.GetSong
+	getSongFiltersMetadata   song.GetSongFiltersMetadata
+	saveImageToSong          song.SaveImageToSong
+	updateSong               song.UpdateSong
+	updateSongSettings       song.UpdateSongSettings
 
-	getGuitarTunings    song.GetGuitarTunings
-	getInstruments      song.GetInstruments
-	getSongSectionTypes section.GetSongSectionTypes
-
-	createSongSection                    section.CreateSongSection
-	deleteSongSection                    section.DeleteSongSection
-	moveSongSection                      section.MoveSongSection
-	updateAllSongSections                section.UpdateAllSongSections
-	updateSongSection                    section.UpdateSongSection
-	updateSongSectionsOccurrences        section.UpdateSongSectionsOccurrences
-	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences
+	getGuitarTunings song.GetGuitarTunings
+	getInstruments   song.GetInstruments
 }
 
 func NewSongService(
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
+	addPerfectSongRehearsals song.AddPerfectSongRehearsals,
 	addPartialSongRehearsal song.AddPartialSongRehearsal,
+	bulkDeleteSongs song.BulkDeleteSongs,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
 	deleteSong song.DeleteSong,
@@ -81,40 +68,24 @@ func NewSongService(
 
 	getGuitarTunings song.GetGuitarTunings,
 	getInstruments song.GetInstruments,
-	getSongSectionTypes section.GetSongSectionTypes,
-
-	createSongSection section.CreateSongSection,
-	deleteSongSection section.DeleteSongSection,
-	moveSongSection section.MoveSongSection,
-	updateAllSongSections section.UpdateAllSongSections,
-	updateSongSection section.UpdateSongSection,
-	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
-	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences,
 ) SongService {
 	return &songService{
-		addPerfectSongRehearsal: addPerfectSongRehearsal,
-		addPartialSongRehearsal: addPartialSongRehearsal,
-		createSong:              createSong,
-		deleteImageFromSong:     deleteImageFromSong,
-		deleteSong:              deleteSong,
-		getAllSongs:             getAllSongs,
-		getSong:                 getSong,
-		getSongFiltersMetadata:  getSongFiltersMetadata,
-		saveImageToSong:         saveImageToSong,
-		updateSong:              updateSong,
-		updateSongSettings:      updateSongSettings,
+		addPerfectSongRehearsal:  addPerfectSongRehearsal,
+		addPerfectSongRehearsals: addPerfectSongRehearsals,
+		addPartialSongRehearsal:  addPartialSongRehearsal,
+		bulkDeleteSongs:          bulkDeleteSongs,
+		createSong:               createSong,
+		deleteImageFromSong:      deleteImageFromSong,
+		deleteSong:               deleteSong,
+		getAllSongs:              getAllSongs,
+		getSong:                  getSong,
+		getSongFiltersMetadata:   getSongFiltersMetadata,
+		saveImageToSong:          saveImageToSong,
+		updateSong:               updateSong,
+		updateSongSettings:       updateSongSettings,
 
-		getGuitarTunings:    getGuitarTunings,
-		getInstruments:      getInstruments,
-		getSongSectionTypes: getSongSectionTypes,
-
-		createSongSection:                    createSongSection,
-		deleteSongSection:                    deleteSongSection,
-		moveSongSection:                      moveSongSection,
-		updateAllSongSections:                updateAllSongSections,
-		updateSongSection:                    updateSongSection,
-		updateSongSectionsOccurrences:        updateSongSectionsOccurrences,
-		updateSongSectionsPartialOccurrences: updateSongSectionsPartialOccurrences,
+		getGuitarTunings: getGuitarTunings,
+		getInstruments:   getInstruments,
 	}
 }
 
@@ -122,8 +93,16 @@ func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehears
 	return s.addPerfectSongRehearsal.Handle(request)
 }
 
+func (s *songService) AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode {
+	return s.addPerfectSongRehearsals.Handle(request)
+}
+
 func (s *songService) AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {
 	return s.addPartialSongRehearsal.Handle(request)
+}
+
+func (s *songService) BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode {
+	return s.bulkDeleteSongs.Handle(request)
 }
 
 func (s *songService) Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
@@ -171,38 +150,4 @@ func (s *songService) GetGuitarTunings(token string) ([]model.GuitarTuning, *wra
 
 func (s *songService) GetInstruments(token string) ([]model.Instrument, *wrapper.ErrorCode) {
 	return s.getInstruments.Handle(token)
-}
-
-func (s *songService) GetSectionTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode) {
-	return s.getSongSectionTypes.Handle(token)
-}
-
-// Sections
-
-func (s *songService) CreateSection(request requests.CreateSongSectionRequest) *wrapper.ErrorCode {
-	return s.createSongSection.Handle(request)
-}
-
-func (s *songService) DeleteSection(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	return s.deleteSongSection.Handle(id, songID)
-}
-
-func (s *songService) MoveSection(request requests.MoveSongSectionRequest) *wrapper.ErrorCode {
-	return s.moveSongSection.Handle(request)
-}
-
-func (s *songService) UpdateAllSections(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode {
-	return s.updateAllSongSections.Handle(request)
-}
-
-func (s *songService) UpdateSection(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
-	return s.updateSongSection.Handle(request)
-}
-
-func (s *songService) UpdateSectionsOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode {
-	return s.updateSongSectionsOccurrences.Handle(request)
-}
-
-func (s *songService) UpdateSectionsPartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode {
-	return s.updateSongSectionsPartialOccurrences.Handle(request)
 }

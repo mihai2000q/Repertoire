@@ -3,13 +3,14 @@ package search
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/stretchr/testify/assert"
 	"repertoire/server/domain/message/handler/storage"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"testing"
+
+	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturnError(t *testing.T) {

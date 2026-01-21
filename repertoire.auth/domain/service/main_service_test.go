@@ -2,8 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/auth/api/requests"
 	"repertoire/auth/data/logger"
@@ -13,6 +11,9 @@ import (
 	"repertoire/auth/model"
 	"strings"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRefresh_WhenValidateJwtFails_ShouldReturnError(t *testing.T) {

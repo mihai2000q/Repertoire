@@ -1,14 +1,14 @@
 package playlist
 
 import (
-	"errors"
-	"github.com/google/uuid"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"slices"
+
+	"github.com/google/uuid"
 )
 
 type AddArtistsToPlaylist struct {
@@ -74,9 +74,6 @@ func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistReques
 		duplicateSongIDs = append(duplicateSongIDs, currentSongIDs...)
 	}
 
-	if len(duplicateSongIDs) == 0 && request.ForceAdd != nil {
-		return nil, wrapper.BadRequestError(errors.New("force adding when there are no duplicates"))
-	}
 	if len(duplicateSongIDs) > 0 && request.ForceAdd == nil {
 		return &responses.AddArtistsToPlaylistResponse{
 			Success:            false,

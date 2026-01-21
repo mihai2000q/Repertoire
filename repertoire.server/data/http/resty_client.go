@@ -1,9 +1,10 @@
 package http
 
 import (
-	"github.com/go-resty/resty/v2"
 	"repertoire/server/data/logger"
 	"repertoire/server/internal"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type RestyClient struct {

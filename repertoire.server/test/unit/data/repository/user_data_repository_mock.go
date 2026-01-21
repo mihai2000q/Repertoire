@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"repertoire/server/model"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
-	"repertoire/server/model"
 )
 
 type UserDataRepositoryMock struct {

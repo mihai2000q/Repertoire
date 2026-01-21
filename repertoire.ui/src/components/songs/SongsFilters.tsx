@@ -8,7 +8,7 @@ import {
   useGetSongFiltersMetadataQuery,
   useLazyGetSongFiltersMetadataQuery
 } from '../../state/api/songsApi.ts'
-import SongProperty from '../../types/enums/SongProperty.ts'
+import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import { songsFiltersMetadataMap } from '../../data/songs/songsFilters.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../hooks/filter/useFiltersMetadata.ts'
@@ -414,7 +414,9 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         <DoubleCheckbox
           title={'Has Songsterr Link?'}
           label1={'Yes'}
-          checked1={internalFilters.get(SongProperty.SongsterrLink + FilterOperator.IsNotNull).isSet}
+          checked1={
+            internalFilters.get(SongProperty.SongsterrLink + FilterOperator.IsNotNull).isSet
+          }
           onChange1={(value) =>
             handleIsSetChange(SongProperty.SongsterrLink + FilterOperator.IsNotNull, value)
           }

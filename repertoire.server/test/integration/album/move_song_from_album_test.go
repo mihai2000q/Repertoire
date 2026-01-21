@@ -1,9 +1,6 @@
 package album
 
 import (
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -12,6 +9,10 @@ import (
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestMoveSongFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
