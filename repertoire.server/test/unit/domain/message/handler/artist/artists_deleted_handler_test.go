@@ -370,11 +370,11 @@ func TestArtistsDeletedHandler_WhenWithSongsAndOrAlbums_ShouldPublishMessageToDe
 			for _, art := range mockArtists {
 				assert.Equal(t, artistDirectoryPath, paths[index])
 				index++
-				for _ = range art.Albums {
+				for range art.Albums {
 					assert.Equal(t, albumDirectoryPath, paths[index])
 					index++
 				}
-				for _ = range art.Songs {
+				for range art.Songs {
 					assert.Equal(t, songDirectoryPath, paths[index])
 					index++
 				}

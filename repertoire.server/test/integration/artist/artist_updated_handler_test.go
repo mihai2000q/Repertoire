@@ -35,19 +35,19 @@ func TestArtistUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 		Preload("Songs.Album").
 		Find(&artist, artistID)
 
-	assertion.AssertMessage(t, messages, func(documents []any) {
+	assertion.AssertMessage(t, messages, func(documents []map[string]any) {
 		assert.Len(t, documents, len(artist.Albums)+len(artist.Songs)+1)
 
-		artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[0])
+		artistSearch := utils.UnmarshalDocument[model.ArtistSearch](documents[0])
 		assertion.ArtistSearch(t, artistSearch, artist)
 
 		for i, song := range artist.Songs {
-			songSearch := utils.UnmarshallDocument[model.SongSearch](documents[1+i])
+			songSearch := utils.UnmarshalDocument[model.SongSearch](documents[1+i])
 			assertion.SongSearch(t, songSearch, song)
 		}
 
 		for i, album := range artist.Albums {
-			albumSearch := utils.UnmarshallDocument[model.AlbumSearch](documents[1+len(artist.Songs)+i])
+			albumSearch := utils.UnmarshalDocument[model.AlbumSearch](documents[1+len(artist.Songs)+i])
 			assertion.AlbumSearch(t, albumSearch, album)
 		}
 	})

@@ -22,9 +22,9 @@ func (m MeiliAuthMiddleware) Handler() gin.HandlerFunc {
 		if authKey != m.env.MeiliAuthKey {
 			_ = c.AbortWithError(http.StatusUnauthorized, errors.New("you are unauthorized"))
 			return
-		} else {
-			c.Next()
-			return
 		}
+
+		c.Next()
+		return
 	}
 }

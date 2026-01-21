@@ -1,13 +1,14 @@
 package service
 
 import (
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/storage/data/logger"
 	"repertoire/storage/internal"
 	"testing"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 // Tests

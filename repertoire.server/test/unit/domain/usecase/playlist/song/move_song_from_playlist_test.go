@@ -203,8 +203,8 @@ func TestMoveSongFromPlaylist_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) 
 						assert.Equal(t, playlistSongs[tt.overIndex+1].ID, request.OverPlaylistSongID)
 					}
 					assert.Equal(t, playlistSongs[tt.overIndex].ID, request.PlaylistSongID)
-					for i, song := range playlistSongs {
-						assert.Equal(t, uint(i)+1, song.SongTrackNo)
+					for i, s := range playlistSongs {
+						assert.Equal(t, uint(i)+1, s.SongTrackNo)
 					}
 				}).
 				Return(nil).

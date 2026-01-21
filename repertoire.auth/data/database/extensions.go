@@ -1,8 +1,9 @@
 package database
 
 import (
-	"gorm.io/gorm"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 func Paginate(tx *gorm.DB, currentPage *int, pageSize *int) *gorm.DB {

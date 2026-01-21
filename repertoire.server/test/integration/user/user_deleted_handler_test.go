@@ -29,7 +29,7 @@ func TestUserDeleted_WhenSuccessful_ShouldPublishMessages(t *testing.T) {
 	assertion.AssertMessage(t, searchMessage, func(ids []string) {
 		assert.Len(t, ids, len(searches))
 		for i := range searches {
-			assert.Equal(t, ids[i], searches[i]["id"].(string))
+			assert.Equal(t, searches[i]["id"].(string), ids[i])
 		}
 	})
 	assertion.AssertMessage(t, storageMessage, func(paths []string) {

@@ -184,7 +184,7 @@ func TestAlbumsDeletedHandler_WhenDocumentsLengthIs0_ShouldNotReturnAnyError(t *
 		Times(len(mockAlbums))
 
 	var directoryPaths []string
-	for _ = range mockAlbums {
+	for range mockAlbums {
 		directoryPaths = append(directoryPaths, directoryPath)
 	}
 	messagePublisherService.On("Publish", topics.DeleteDirectoriesStorageTopic, directoryPaths).

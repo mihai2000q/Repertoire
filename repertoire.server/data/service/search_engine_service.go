@@ -19,7 +19,7 @@ type SearchEngineService interface {
 		userID uuid.UUID,
 		filter []string,
 		sort []string,
-	) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
+	) (wrapper.WithTotalCount[map[string]any], *wrapper.ErrorCode)
 	GetDocument(id string) (map[string]any, error)
 	GetDocuments(filter string) ([]map[string]any, error)
 	Add(items []map[string]any) (int64, error)
@@ -44,7 +44,7 @@ func (s searchEngineService) Search(
 	userID uuid.UUID,
 	filter []string,
 	sort []string,
-) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
+) (wrapper.WithTotalCount[map[string]any], *wrapper.ErrorCode) {
 	request := &meilisearch.SearchRequest{Sort: sort}
 
 	// pagination
@@ -67,11 +67,13 @@ func (s searchEngineService) Search(
 	// send search request
 	searchResult, err := s.client.Index("search").Search(query, request)
 	if err != nil {
-		return wrapper.WithTotalCount[any]{}, wrapper.InternalServerError(err)
+		return wrapper.WithTotalCount[map[string]any]{}, wrapper.InternalServerError(err)
 	}
 
-	result := wrapper.WithTotalCount[any]{
-		Models:     searchResult.Hits,
+	var results []map[string]any
+	_ = searchResult.Hits.DecodeInto(&results)
+	result := wrapper.WithTotalCount[map[string]any]{
+		Models:     results,
 		TotalCount: searchResult.EstimatedTotalHits,
 	}
 
@@ -80,7 +82,7 @@ func (s searchEngineService) Search(
 
 func (s searchEngineService) GetDocument(id string) (map[string]any, error) {
 	var result map[string]any
-	err := s.client.Index("search").GetDocument(id, &meilisearch.DocumentQuery{}, &result)
+	err := s.client.Index("search").GetDocument(id, nil, &result)
 	if err != nil {
 		return map[string]any{}, err
 	}
@@ -97,11 +99,13 @@ func (s searchEngineService) GetDocuments(filter string) ([]map[string]any, erro
 		return []map[string]any{}, err
 	}
 
-	return result.Results, nil
+	var results []map[string]any
+	_ = result.Results.DecodeInto(&results)
+	return results, nil
 }
 
 func (s searchEngineService) Add(items []map[string]any) (int64, error) {
-	task, err := s.client.Index("search").AddDocuments(&items)
+	task, err := s.client.Index("search").AddDocuments(&items, nil)
 	if err != nil {
 		return 0, err
 	}
@@ -109,7 +113,7 @@ func (s searchEngineService) Add(items []map[string]any) (int64, error) {
 }
 
 func (s searchEngineService) Update(items []map[string]any) (int64, error) {
-	task, err := s.client.Index("search").UpdateDocuments(&items)
+	task, err := s.client.Index("search").UpdateDocuments(&items, &meilisearch.DocumentOptions{SkipCreation: true})
 	if err != nil {
 		return 0, err
 	}
@@ -117,7 +121,7 @@ func (s searchEngineService) Update(items []map[string]any) (int64, error) {
 }
 
 func (s searchEngineService) Delete(ids []string) (int64, error) {
-	task, err := s.client.Index("search").DeleteDocuments(ids)
+	task, err := s.client.Index("search").DeleteDocuments(ids, nil)
 	if err != nil {
 		return 0, err
 	}

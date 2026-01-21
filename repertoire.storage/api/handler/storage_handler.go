@@ -3,11 +3,12 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"path/filepath"
 	"repertoire/storage/internal"
+
+	"github.com/gin-gonic/gin"
 )
 
 type StorageHandler struct {

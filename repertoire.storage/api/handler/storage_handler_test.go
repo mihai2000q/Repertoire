@@ -3,8 +3,6 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -12,6 +10,9 @@ import (
 	"path/filepath"
 	"repertoire/storage/internal"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 // Utils
@@ -199,7 +200,7 @@ func TestStorageHandler_DeleteDirectories_WhenSuccessful_ShouldDeleteDirectory(t
 		filePath := directoryPath + "/test-file.txt"
 		createFile(filePath, "asd", env.UploadDirectory)
 	}
-	
+
 	directoryPaths = append(directoryPaths, "one/more/directory-that-is-not-to-be-found")
 
 	// when

@@ -1,9 +1,10 @@
 package repository
 
 import (
-	"github.com/google/uuid"
 	"repertoire/auth/data/database"
 	"repertoire/auth/model"
+
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {

@@ -1,14 +1,13 @@
 package search
 
 import (
+	"encoding/json"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"strings"
-
-	"github.com/goccy/go-json"
 )
 
 type Get struct {
@@ -69,8 +68,11 @@ func (g Get) Handle(
 
 	var results []any
 	for _, curr := range searchResult.Models {
-		switch curr.(map[string]interface{})["type"] {
-		case string(enums.Artist):
+		var searchBase model.SearchBase
+		jr, _ := json.Marshal(curr)
+		_ = json.Unmarshal(jr, &searchBase)
+		switch searchBase.Type {
+		case enums.Artist:
 			var artist model.ArtistSearch
 			jsonRes, _ := json.Marshal(curr)
 			_ = json.Unmarshal(jsonRes, &artist)
@@ -80,7 +82,7 @@ func (g Get) Handle(
 
 			results = append(results, artist)
 
-		case string(enums.Album):
+		case enums.Album:
 			var album model.AlbumSearch
 			jsonRes, _ := json.Marshal(curr)
 			_ = json.Unmarshal(jsonRes, &album)
@@ -93,7 +95,7 @@ func (g Get) Handle(
 
 			results = append(results, album)
 
-		case string(enums.Song):
+		case enums.Song:
 			var song model.SongSearch
 			jsonRes, _ := json.Marshal(curr)
 			_ = json.Unmarshal(jsonRes, &song)
@@ -109,7 +111,7 @@ func (g Get) Handle(
 
 			results = append(results, song)
 
-		case string(enums.Playlist):
+		case enums.Playlist:
 			var playlist model.PlaylistSearch
 			jsonRes, _ := json.Marshal(curr)
 			_ = json.Unmarshal(jsonRes, &playlist)

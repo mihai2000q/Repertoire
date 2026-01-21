@@ -133,7 +133,7 @@ func TestSongCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 				if test.song.AlbumID != nil {
 					test.song.Album = &songData.Albums[0]
 				}
-				songSearch := utils.UnmarshallDocument[model.SongSearch](documents[0])
+				songSearch := utils.UnmarshalDocument[model.SongSearch](documents[0])
 				assertion.SongSearch(t, songSearch, test.song)
 				if test.song.ArtistID != nil {
 					assert.Equal(t, songSearch.Artist.ID, *test.song.ArtistID)
@@ -143,11 +143,11 @@ func TestSongCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 				}
 
 				if artistIndex != nil {
-					artistSearch := utils.UnmarshallDocument[model.ArtistSearch](documents[*artistIndex])
+					artistSearch := utils.UnmarshalDocument[model.ArtistSearch](documents[*artistIndex])
 					assertion.ArtistSearch(t, artistSearch, *test.song.Artist)
 				}
 				if albumIndex != nil {
-					albumSearch := utils.UnmarshallDocument[model.AlbumSearch](documents[*albumIndex])
+					albumSearch := utils.UnmarshalDocument[model.AlbumSearch](documents[*albumIndex])
 					assertion.AlbumSearch(t, albumSearch, *test.song.Album)
 				}
 			})

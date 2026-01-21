@@ -3,11 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
-	"go.uber.org/fx"
 	"log"
 	"net"
 	"net/http"
 	"repertoire/auth/internal"
+
+	"go.uber.org/fx"
 )
 
 func NewServer(lc fx.Lifecycle, handler *RequestHandler, env internal.Env) *http.Server {

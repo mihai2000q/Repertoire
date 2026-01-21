@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/google/uuid"
 	"repertoire/auth/data/service"
 	"repertoire/auth/internal/wrapper"
 	"repertoire/auth/model"
+
+	"github.com/google/uuid"
 )
 
 type StorageService interface {
