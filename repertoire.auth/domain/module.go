@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"go.uber.org/fx"
 	"repertoire/auth/domain/service"
+
+	"go.uber.org/fx"
 )
 
 var Module = fx.Options(

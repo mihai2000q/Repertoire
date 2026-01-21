@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/auth/data/service"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthMiddleware struct {
@@ -26,10 +27,10 @@ func (a AuthMiddleware) Handler() gin.HandlerFunc {
 			if errCode != nil {
 				_ = c.AbortWithError(errCode.Code, errors.New("invalid token"))
 				return
-			} else {
-				c.Next()
-				return
 			}
+
+			c.Next()
+			return
 		}
 
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

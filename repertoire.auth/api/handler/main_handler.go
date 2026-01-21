@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/auth/api/requests"
 	"repertoire/auth/api/server"
 	"repertoire/auth/api/validation"
 	"repertoire/auth/domain/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type MainHandler struct {

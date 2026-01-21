@@ -1,7 +1,6 @@
 package api
 
 import (
-	"go.uber.org/fx"
 	"net/http"
 	"repertoire/auth/api/handler"
 	"repertoire/auth/api/middleware"
@@ -9,6 +8,8 @@ import (
 	"repertoire/auth/api/routes"
 	"repertoire/auth/api/server"
 	"repertoire/auth/api/validation"
+
+	"go.uber.org/fx"
 )
 
 var middlewares = fx.Options(

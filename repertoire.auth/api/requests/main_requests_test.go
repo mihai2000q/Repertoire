@@ -1,11 +1,12 @@
 package requests
 
 import (
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"repertoire/auth/api/validation"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var validEmail = "someone@yahoo.com"

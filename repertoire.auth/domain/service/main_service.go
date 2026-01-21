@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"go.uber.org/zap"
 	"net/http"
 	"reflect"
 	"repertoire/auth/api/requests"
@@ -12,6 +11,8 @@ import (
 	"repertoire/auth/internal/wrapper"
 	"repertoire/auth/model"
 	"strings"
+
+	"go.uber.org/zap"
 )
 
 type MainService interface {

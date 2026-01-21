@@ -2,12 +2,13 @@ package service
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"repertoire/auth/data/service"
 	"repertoire/auth/internal/wrapper"
 	"repertoire/auth/model"
 	"testing"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStorageService_Token_WhenValidateCredentialsFails_ShouldReturnError(t *testing.T) {

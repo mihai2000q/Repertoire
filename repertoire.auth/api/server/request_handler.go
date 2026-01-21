@@ -1,8 +1,9 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
 	"repertoire/auth/api/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 type RequestHandler struct {
