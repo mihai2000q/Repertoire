@@ -1,7 +1,7 @@
 # 1. Build Environment
-FROM node:20.18 as build
+FROM node:24.13.0 as build
 
-# Set the working directiory
+# Set the working directory
 WORKDIR /app
 
 # Copy and install the dependencies

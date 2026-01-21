@@ -26,7 +26,7 @@ First, the application is written in Typescript (which compiles to JavaScript), 
 If you don't have it already installed, please download it from here:
 `https://nodejs.org/en/download/prebuilt-installer`.
 
-Note that the recommended version is: `v20.18.0` (**Nvm** <Node Version Manager> can be used to achieve that).
+Note that the recommended version is: `v24.13.0` (**Nvm** <Node Version Manager> can be used to achieve that).
 
 ## Get Started
 
