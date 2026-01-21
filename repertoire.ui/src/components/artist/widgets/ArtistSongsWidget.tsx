@@ -117,7 +117,7 @@ function ArtistSongsWidget({
               viewport: {
                 '> div': {
                   width: 0,
-                  minWidth: '100%'
+                  minWidth: '100% !important'
                 }
               }
             }}
