@@ -300,7 +300,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
               viewport: {
                 '> div': {
                   width: 0,
-                  minWidth: '100%'
+                  minWidth: '100% !important'
                 }
               }
             }}
