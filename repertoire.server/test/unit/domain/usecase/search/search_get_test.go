@@ -1,6 +1,7 @@
 package search
 
 import (
+	"encoding/json"
 	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/search"
@@ -11,7 +12,6 @@ import (
 	"repertoire/server/test/unit/data/service"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -67,7 +67,7 @@ func TestSearchGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) 
 			request.Filter,
 			request.Order,
 		).
-		Return(wrapper.WithTotalCount[any]{}, errorCode).
+		Return(wrapper.WithTotalCount[map[string]any]{}, errorCode).
 		Once()
 
 	// when
@@ -98,17 +98,17 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	modelsResult := []map[string]interface{}{
+	modelsResult := []map[string]any{
 		{
 			"id":     "artist-" + uuid.New().String(),
 			"type":   enums.Artist,
-			"title":  "Artist 1",
+			"name":   "Artist 1",
 			"userID": userID,
 		},
 		{
 			"id":       "artist-" + uuid.New().String(),
 			"type":     enums.Artist,
-			"title":    "Artist 1",
+			"name":     "Artist 2",
 			"imageUrl": "something.png",
 			"userID":   userID,
 		},
@@ -121,12 +121,11 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 		{
 			"id":       "album-" + uuid.New().String(),
 			"type":     enums.Album,
-			"title":    "Album 1",
+			"title":    "Album 2",
 			"imageUrl": "something.png",
 			"artist": model.AlbumArtistSearch{
-				ID:        uuid.New(),
-				Name:      "Album Artist",
-				UpdatedAt: time.Now(),
+				ID:   uuid.New(),
+				Name: "Album Artist",
 			},
 			"userID": userID,
 		},
@@ -139,17 +138,16 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 		{
 			"id":       "song-" + uuid.New().String(),
 			"type":     enums.Song,
-			"title":    "Song 1",
+			"title":    "Song 2",
 			"imageUrl": "something.png",
 			"artist": model.SongArtistSearch{
-				ID:        uuid.New(),
-				Name:      "Song Artist",
-				UpdatedAt: time.Now(),
+				ID:       uuid.New(),
+				Name:     "Song Artist",
+				ImageUrl: &[]internal.FilePath{"something.png"}[0],
 			},
 			"album": model.SongAlbumSearch{
-				ID:        uuid.New(),
-				Title:     "Song Album",
-				UpdatedAt: time.Now(),
+				ID:    uuid.New(),
+				Title: "Song Album",
 			},
 			"userID": userID,
 		},
@@ -161,13 +159,8 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 		},
 	}
 
-	var finalResult []any
-	for _, m := range modelsResult {
-		finalResult = append(finalResult, m)
-	}
-
-	searchResult := wrapper.WithTotalCount[any]{
-		Models:     finalResult,
+	searchResult := wrapper.WithTotalCount[map[string]any]{
+		Models:     modelsResult,
 		TotalCount: int64(len(modelsResult)),
 	}
 	searchEngineService.
@@ -193,25 +186,35 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 
 	assert.Equal(t, searchResult.TotalCount, result.TotalCount)
 	for i := range result.Models {
-		currBase := result.Models[i].(model.SearchBase)
-		expectedMap := searchResult.Models[i].(map[string]interface{})
+		var currBase model.SearchBase
+		jr, _ := json.Marshal(result.Models[i])
+		_ = json.Unmarshal(jr, &currBase)
+		expectedMap := searchResult.Models[i]
 
-		assert.Equal(t, searchResult.Models[i].(map[string]interface{})["type"], currBase.Type)
-		assert.Equal(t, searchResult.Models[i].(map[string]interface{})["userId"], currBase.UserID)
+		assert.Equal(t, expectedMap["type"], currBase.Type)
+		assert.Equal(t, expectedMap["userID"], currBase.UserID)
 
 		switch currBase.Type {
 		case enums.Artist:
 			curr := result.Models[i].(model.ArtistSearch)
-			assert.Equal(t, strings.Replace("artist-", (expectedMap["id"]).(string), "", 1), currBase.ID)
+			assert.Equal(t, strings.Replace((expectedMap["id"]).(string), "artist-", "", 1), currBase.ID)
 			assert.Equal(t, expectedMap["name"], curr.Name)
-			assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
-			assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
+			if expectedMap["imageUrl"] != nil {
+				filePath := internal.FilePath(expectedMap["imageUrl"].(string))
+				assert.Equal(t, filePath.StripURL(), curr.ImageUrl)
+			} else {
+				assert.Nil(t, curr.ImageUrl)
+			}
 		case enums.Album:
 			curr := result.Models[i].(model.AlbumSearch)
-			assert.Equal(t, strings.Replace("album-", (expectedMap["id"]).(string), "", 1), currBase.ID)
+			assert.Equal(t, strings.Replace((expectedMap["id"]).(string), "album-", "", 1), currBase.ID)
 			assert.Equal(t, expectedMap["title"], curr.Title)
-			assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
-			assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
+			if expectedMap["imageUrl"] != nil {
+				filePath := internal.FilePath(expectedMap["imageUrl"].(string))
+				assert.Equal(t, filePath.StripURL(), curr.ImageUrl)
+			} else {
+				assert.Nil(t, curr.ImageUrl)
+			}
 			if expectedMap["artist"] == nil {
 				assert.Nil(t, curr.Artist)
 			} else {
@@ -219,14 +222,17 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 				assert.Equal(t, expectedArtist.ID, curr.Artist.ID)
 				assert.Equal(t, expectedArtist.Name, curr.Artist.Name)
 				assert.Equal(t, expectedArtist.ImageUrl.StripURL(), curr.Artist.ImageUrl)
-				assert.Equal(t, expectedArtist.UpdatedAt, curr.Artist.UpdatedAt)
 			}
 		case enums.Song:
 			curr := result.Models[i].(model.SongSearch)
-			assert.Equal(t, strings.Replace("song-", (expectedMap["id"]).(string), "", 1), currBase.ID)
+			assert.Equal(t, strings.Replace((expectedMap["id"]).(string), "song-", "", 1), currBase.ID)
 			assert.Equal(t, expectedMap["title"], curr.Title)
-			assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
-			assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
+			if expectedMap["imageUrl"] != nil {
+				filePath := internal.FilePath(expectedMap["imageUrl"].(string))
+				assert.Equal(t, filePath.StripURL(), curr.ImageUrl)
+			} else {
+				assert.Nil(t, curr.ImageUrl)
+			}
 			if expectedMap["artist"] == nil {
 				assert.Nil(t, curr.Artist)
 			} else {
@@ -234,23 +240,25 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 				assert.Equal(t, expectedArtist.ID, curr.Artist.ID)
 				assert.Equal(t, expectedArtist.Name, curr.Artist.Name)
 				assert.Equal(t, expectedArtist.ImageUrl.StripURL(), curr.Artist.ImageUrl)
-				assert.Equal(t, expectedArtist.UpdatedAt, curr.Artist.UpdatedAt)
 			}
 			if expectedMap["album"] == nil {
 				assert.Nil(t, curr.Album)
 			} else {
 				expectedAlbum := expectedMap["album"].(model.SongAlbumSearch)
 				assert.Equal(t, expectedAlbum.ID, curr.Album.ID)
-				assert.Equal(t, expectedAlbum.Title, curr.Album.UpdatedAt)
+				assert.Equal(t, expectedAlbum.Title, curr.Album.Title)
 				assert.Equal(t, expectedAlbum.ImageUrl.StripURL(), curr.Album.ImageUrl)
-				assert.Equal(t, expectedAlbum.UpdatedAt, curr.Album.UpdatedAt)
 			}
 		case enums.Playlist:
 			curr := result.Models[i].(model.PlaylistSearch)
-			assert.Equal(t, strings.Replace("playlist-", (expectedMap["id"]).(string), "", 1), currBase.ID)
+			assert.Equal(t, strings.Replace((expectedMap["id"]).(string), "playlist-", "", 1), currBase.ID)
 			assert.Equal(t, expectedMap["title"], curr.Title)
-			assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
-			assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
+			if expectedMap["imageUrl"] != nil {
+				filePath := internal.FilePath(expectedMap["imageUrl"].(string))
+				assert.Equal(t, filePath.StripURL(), curr.ImageUrl)
+			} else {
+				assert.Nil(t, curr.ImageUrl)
+			}
 		}
 	}
 
@@ -278,25 +286,20 @@ func TestSearchGet_WhenArtistsWithIDsAndNotIDs_ShouldReturnSearchResult(t *testi
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	modelsResult := []map[string]interface{}{
+	modelsResult := []map[string]any{
 		{
 			"id":     "artist-" + uuid.New().String(),
 			"type":   enums.Artist,
-			"title":  "Artist 1",
+			"name":   "Artist 1",
 			"userID": userID,
 		},
 		{
 			"id":       "artist-" + uuid.New().String(),
 			"type":     enums.Artist,
-			"title":    "Artist 1",
+			"name":     "Artist 1",
 			"imageUrl": "something.png",
 			"userID":   userID,
 		},
-	}
-
-	var finalResult []any
-	for _, m := range modelsResult {
-		finalResult = append(finalResult, m)
 	}
 
 	idsFilter := "id IN ["
@@ -312,8 +315,8 @@ func TestSearchGet_WhenArtistsWithIDsAndNotIDs_ShouldReturnSearchResult(t *testi
 	notIDsFilter = strings.TrimSuffix(notIDsFilter, ", ") + "]"
 
 	filter := append(request.Filter, idsFilter, notIDsFilter)
-	searchResult := wrapper.WithTotalCount[any]{
-		Models:     finalResult,
+	searchResult := wrapper.WithTotalCount[map[string]any]{
+		Models:     modelsResult,
 		TotalCount: int64(len(modelsResult)),
 	}
 	searchEngineService.
@@ -339,17 +342,23 @@ func TestSearchGet_WhenArtistsWithIDsAndNotIDs_ShouldReturnSearchResult(t *testi
 
 	assert.Equal(t, searchResult.TotalCount, result.TotalCount)
 	for i := range result.Models {
-		currBase := result.Models[i].(model.SearchBase)
-		expectedMap := searchResult.Models[i].(map[string]interface{})
+		var currBase model.SearchBase
+		jr, _ := json.Marshal(result.Models[i])
+		_ = json.Unmarshal(jr, &currBase)
+		expectedMap := searchResult.Models[i]
 
-		assert.Equal(t, searchResult.Models[i].(map[string]interface{})["type"], currBase.Type)
-		assert.Equal(t, searchResult.Models[i].(map[string]interface{})["userId"], currBase.UserID)
+		assert.Equal(t, expectedMap["type"], currBase.Type)
+		assert.Equal(t, expectedMap["userID"], currBase.UserID)
 
 		curr := result.Models[i].(model.ArtistSearch)
-		assert.Equal(t, strings.Replace("artist-", (expectedMap["id"]).(string), "", 1), currBase.ID)
+		assert.Equal(t, strings.Replace((expectedMap["id"]).(string), "artist-", "", 1), currBase.ID)
 		assert.Equal(t, expectedMap["name"], curr.Name)
-		assert.Equal(t, expectedMap["imageUrl"].(*internal.FilePath).StripURL(), curr.ImageUrl)
-		assert.Equal(t, expectedMap["updatedAt"], curr.UpdatedAt)
+		if expectedMap["imageUrl"] != nil {
+			filePath := internal.FilePath(expectedMap["imageUrl"].(string))
+			assert.Equal(t, filePath.StripURL(), curr.ImageUrl)
+		} else {
+			assert.Nil(t, curr.ImageUrl)
+		}
 	}
 
 	jwtService.AssertExpectations(t)
