@@ -1,6 +1,6 @@
 enum OrderType {
   Ascending = 'asc',
-  Descending = 'desc',
+  Descending = 'desc'
 }
 
-export default OrderType;
+export default OrderType

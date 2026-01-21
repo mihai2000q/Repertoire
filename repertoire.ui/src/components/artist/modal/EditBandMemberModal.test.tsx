@@ -256,7 +256,7 @@ describe('Edit Band Member Header Modal', () => {
       id: bandMember.id,
       name: newName,
       color: bandMember.color,
-      roleIds: bandMember.roles.map(r => r.id)
+      roleIds: bandMember.roles.map((r) => r.id)
     })
     expect(capturedSaveImageFormData.get('id')).toBe(bandMember.id)
     expect(capturedSaveImageFormData.get('image')).toBeFormDataImage(newImage)

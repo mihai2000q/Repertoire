@@ -80,7 +80,7 @@ describe('Playlist', () => {
 
     expect(screen.getByTestId('playlist-loader')).toBeInTheDocument()
     expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
-    expect(screen.getByLabelText('songs-widget')).toBeInTheDocument()
+    expect(await screen.findByLabelText('songs-widget')).toBeInTheDocument() // loading separately
     expect((store.getState() as RootState).global.documentTitle).toBe(playlist.title)
   })
 })

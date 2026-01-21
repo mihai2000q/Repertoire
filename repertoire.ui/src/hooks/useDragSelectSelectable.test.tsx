@@ -30,7 +30,7 @@ describe('use Drag Select Selectable', () => {
 
   afterEach(() => vi.restoreAllMocks())
 
-  const TestComponent = ({ id = ''}: { id?: string }) => {
+  const TestComponent = ({ id = '' }: { id?: string }) => {
     const { ref } = useDragSelectSelectable<HTMLDivElement>(id)
     return <div ref={ref} data-testid={dataTestId} />
   }

@@ -13,7 +13,12 @@ interface PerfectRehearsalsMenuItemProps {
   onSuccess?: () => void
 }
 
-function PerfectRehearsalsMenuItem({ ids, type, closeMenu, onSuccess }: PerfectRehearsalsMenuItemProps) {
+function PerfectRehearsalsMenuItem({
+  ids,
+  type,
+  closeMenu,
+  onSuccess
+}: PerfectRehearsalsMenuItemProps) {
   const [addPerfectRehearsalsToArtists, { isLoading: isArtistsLoading }] =
     useAddPerfectRehearsalsToArtistsMutation()
   const [addPerfectRehearsalsToAlbums, { isLoading: isAlbumsLoading }] =

@@ -85,7 +85,7 @@ describe('Home Recently Played Song Card', () => {
     expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
   })
 
-  it("should open artist drawer by clicking the artist", async () => {
+  it('should open artist drawer by clicking the artist', async () => {
     const user = userEvent.setup()
 
     const [_, store] = reduxRouterRender(<HomeRecentlyPlayedSongCard song={song} />)

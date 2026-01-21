@@ -23,27 +23,30 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
-    "electron-updater": "^6.6.2"
+    "electron-updater": "^6.7.3"
   },
   "devDependencies": {
-    "@electron-toolkit/eslint-config-prettier": "^2.0.0",
-    "@electron-toolkit/tsconfig": "^1.0.1",
-    "@mantine/core": "^8.2.4",
-    "@mantine/emotion": "^8.2.4",
-    "@types/node": "^24.2.1",
-    "@types/react": "^18.3.23",
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
+    "@eslint/js": "^9.39.2",
+    "@mantine/core": "^8.3.13",
+    "@mantine/emotion": "^8.3.13",
+    "@types/node": "^25.0.9",
+    "@types/react": "^18.3.27",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
-    "electron": "^36.7.4",
-    "electron-builder": "^26.0.12",
-    "electron-vite": "^3.1.0",
-    "eslint": "^9.33.0",
+    "electron": "^40.0.0",
+    "electron-builder": "^26.5.0",
+    "electron-vite": "^5.0.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
-    "prettier": "^3.6.2",
+    "prettier": "^3.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "repertoire.ui": "file:../repertoire.ui",
-    "typescript": "^5.9.2",
-    "vite": "6.3.5"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1",
+    "vite": "^7.3.1"
   }
 }

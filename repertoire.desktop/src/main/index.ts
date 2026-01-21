@@ -79,13 +79,13 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html')).then()
   }
 
-  ipcMain.on('minimize', (_) =>
+  ipcMain.on('minimize', () =>
     mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.minimize()
   )
-  ipcMain.on('maximize', (_) =>
+  ipcMain.on('maximize', () =>
     mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize()
   )
-  ipcMain.on('close', (_) => mainWindow.close())
+  ipcMain.on('close', () => mainWindow.close())
 }
 
 // This method will be called when Electron has finished

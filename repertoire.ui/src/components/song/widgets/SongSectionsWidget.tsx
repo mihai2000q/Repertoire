@@ -287,7 +287,9 @@ function SongSectionsWidget({
                                 key={section.id}
                                 index={index}
                                 draggableId={section.id}
-                                isDragDisabled={isFetching || isMoveLoading || isClickSelectionActive}
+                                isDragDisabled={
+                                  isFetching || isMoveLoading || isClickSelectionActive
+                                }
                               >
                                 {(provided, snapshot) => (
                                   <SongSectionCard

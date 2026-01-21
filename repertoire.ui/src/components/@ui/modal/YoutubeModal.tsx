@@ -20,12 +20,7 @@ function YoutubeModal({ opened, onClose, title, link }: YoutubeModalProps) {
     .replace('watch?v=', 'embed/')
 
   return (
-    <Modal.Root
-      opened={opened}
-      onClose={onClose}
-      size={'min(80vw, 1000px)'}
-      centered
-    >
+    <Modal.Root opened={opened} onClose={onClose} size={'min(80vw, 1000px)'} centered>
       <Modal.Overlay />
       <Modal.Content>
         <Modal.Header>

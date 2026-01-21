@@ -390,8 +390,12 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
       section.rehearsals.toString()
     )
-    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(section.bandMember?.name ?? '')
-    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(section.instrument?.name ?? '')
+    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(
+      section.bandMember?.name ?? ''
+    )
+    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(
+      section.instrument?.name ?? ''
+    )
 
     const newSection = {
       ...section,

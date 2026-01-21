@@ -1,4 +1,4 @@
-import {Card, Divider, Group, Skeleton, Stack} from '@mantine/core'
+import { Card, Divider, Group, Skeleton, Stack } from '@mantine/core'
 
 function AlbumLoader() {
   return (

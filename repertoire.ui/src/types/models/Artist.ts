@@ -11,9 +11,9 @@ export default interface Artist {
   bandMembers: BandMember[]
 
   songsCount: number
-  rehearsals: number,
-  confidence: number,
-  progress: number,
+  rehearsals: number
+  confidence: number
+  progress: number
   lastTimePlayed?: string
 
   createdAt: string

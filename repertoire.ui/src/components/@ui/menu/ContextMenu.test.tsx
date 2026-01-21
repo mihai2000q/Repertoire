@@ -47,8 +47,7 @@ describe('Context Menu', () => {
           <button>{buttonName}</button>
         </ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
-        </ContextMenu.Dropdown>
+        <ContextMenu.Dropdown></ContextMenu.Dropdown>
       </ContextMenu>
     )
 
@@ -73,8 +72,7 @@ describe('Context Menu', () => {
           <button>{buttonName}</button>
         </ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
-        </ContextMenu.Dropdown>
+        <ContextMenu.Dropdown></ContextMenu.Dropdown>
       </ContextMenu>
     )
 
@@ -102,8 +100,7 @@ describe('Context Menu', () => {
           <button>{buttonName}</button>
         </ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
-        </ContextMenu.Dropdown>
+        <ContextMenu.Dropdown></ContextMenu.Dropdown>
       </ContextMenu>
     )
 

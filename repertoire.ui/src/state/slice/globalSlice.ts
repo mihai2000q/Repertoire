@@ -124,7 +124,7 @@ export const {
   deleteSongDrawer,
   openPlaylistDrawer,
   closePlaylistDrawer,
-  deletePlaylistDrawer,
+  deletePlaylistDrawer
 } = globalSlice.actions
 
 export default globalSlice.reducer

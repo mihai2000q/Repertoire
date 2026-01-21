@@ -1,6 +1,6 @@
 import { withToastify } from '../test-utils.tsx'
 import useNetworkDisconnected from './useNetworkDisconnected.tsx'
-import {act, renderHook, screen} from '@testing-library/react'
+import { act, renderHook, screen } from '@testing-library/react'
 import { ReactNode } from 'react'
 import { theme } from '../theme/theme.ts'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
@@ -15,15 +15,16 @@ describe('use Network Disconnected', () => {
       writable: true,
       value: {
         ...originalNavigator,
-        online: true,
+        online: true
       }
     })
 
     renderHook(() => useNetworkDisconnected(), {
-      wrapper: ({ children }: { children: ReactNode }) =>
-          <MantineProvider theme={theme} stylesTransform={emotionTransform}>
-            <MantineEmotionProvider>{withToastify(children)}</MantineEmotionProvider>
-          </MantineProvider>
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <MantineProvider theme={theme} stylesTransform={emotionTransform}>
+          <MantineEmotionProvider>{withToastify(children)}</MantineEmotionProvider>
+        </MantineProvider>
+      )
     })
 
     // go offline
@@ -51,7 +52,7 @@ describe('use Network Disconnected', () => {
     // restore
     Object.defineProperty(window, 'navigator', {
       writable: true,
-      value: originalNavigator,
+      value: originalNavigator
     })
 
     vi.restoreAllMocks()

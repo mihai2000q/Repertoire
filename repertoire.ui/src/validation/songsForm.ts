@@ -1,9 +1,6 @@
 import { z } from 'zod/v4'
 import { FileWithPath } from '@mantine/dropzone'
-import {
-  songsterrLinkValidator,
-  youtubeLinkValidator
-} from './custom/validators.ts'
+import { songsterrLinkValidator, youtubeLinkValidator } from './custom/validators.ts'
 
 export const addNewSongSchema = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank'),

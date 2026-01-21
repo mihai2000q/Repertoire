@@ -17,7 +17,12 @@ describe('Remove Songs From Playlist Modal', () => {
 
   it('should render', async () => {
     reduxRender(
-      <RemoveSongsFromPlaylistModal playlistId={''} ids={['1', '2']} opened={true} onClose={vi.fn()} />
+      <RemoveSongsFromPlaylistModal
+        playlistId={''}
+        ids={['1', '2']}
+        opened={true}
+        onClose={vi.fn()}
+      />
     )
 
     expect(screen.getByRole('dialog', { name: /remove songs from playlist/i })).toBeInTheDocument()
@@ -58,7 +63,9 @@ describe('Remove Songs From Playlist Modal', () => {
     await user.click(screen.getByRole('button', { name: /yes/i }))
     expect(onClose).toHaveBeenCalledOnce()
     expect(onRemove).toHaveBeenCalledOnce()
-    expect(screen.getByText(`${playlistSongIds.length} songs removed from playlist!`)).toBeInTheDocument()
+    expect(
+      screen.getByText(`${playlistSongIds.length} songs removed from playlist!`)
+    ).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({ id: playlistId, playlistSongIds: playlistSongIds })
   })
 })

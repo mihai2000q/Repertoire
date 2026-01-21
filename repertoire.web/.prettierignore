@@ -1,3 +1,6 @@
-node_modules/
+.env*
+out
+dist
+pnpm-lock.yaml
 tsconfig.json
 tsconfig.*.json

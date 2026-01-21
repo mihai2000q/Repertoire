@@ -1,14 +1,14 @@
 # Repertoire Desktop
 
-* [Repertoire Desktop](#repertoire-desktop)
-  * [Abstract](#abstract)
-  * [Prerequisites](#prerequisites)
-    * [NodeJs](#nodejs)
-  * [Get Started](#get-started)
-    * [Environment Variables](#environment-variables)
-    * [Restore dependencies](#restore-dependencies)
-    * [Run](#run)
-  * [Build](#build)
+- [Repertoire Desktop](#repertoire-desktop)
+  - [Abstract](#abstract)
+  - [Prerequisites](#prerequisites)
+    - [NodeJs](#nodejs)
+  - [Get Started](#get-started)
+    - [Environment Variables](#environment-variables)
+    - [Restore dependencies](#restore-dependencies)
+    - [Run](#run)
+  - [Build](#build)
 
 ## Abstract
 
@@ -26,7 +26,7 @@ First, the application is written in Typescript (which compiles to JavaScript), 
 If you don't have it already installed, please download it from here:
 `https://nodejs.org/en/download/prebuilt-installer`.
 
-Note that the recommended version is: `v20.18.0` (**Nvm** <Node Version Manager> can be used to achieve that).
+Note that the recommended version is: `v24.13.0` (**Nvm** <Node Version Manager> can be used to achieve that).
 
 ## Get Started
 

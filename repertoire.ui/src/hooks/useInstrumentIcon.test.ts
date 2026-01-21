@@ -1,6 +1,6 @@
-import {renderHook} from "@testing-library/react";
-import useInstrumentIcon from "./useInstrumentIcon.tsx";
-import {Instrument} from "../types/models/Song.ts";
+import { renderHook } from '@testing-library/react'
+import useInstrumentIcon from './useInstrumentIcon.tsx'
+import { Instrument } from '../types/models/Song.ts'
 
 describe('use Instrument Icon', () => {
   it('should return the icon of the instrument', () => {

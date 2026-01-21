@@ -97,7 +97,10 @@ describe('Image Dropzone With Preview', () => {
       )
 
       expect(screen.getByRole('img', { name: 'image-preview' })).toBeInTheDocument()
-      expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute('src', defaultImage)
+      expect(screen.getByRole('img', { name: 'image-preview' })).toHaveAttribute(
+        'src',
+        defaultImage
+      )
 
       await user.click(screen.getByRole('button', { name: 'image-options' }))
       let resetImageButton = screen.getByRole('menuitem', { name: /reset image/i })

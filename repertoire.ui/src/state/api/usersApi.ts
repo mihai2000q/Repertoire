@@ -1,8 +1,12 @@
-import {api} from "../api.ts";
-import User from "../../types/models/User.ts";
-import {SaveProfilePictureRequest, SignUpRequest, UpdateUserRequest} from "../../types/requests/UserRequests.ts";
-import HttpMessageResponse from "../../types/responses/HttpMessageResponse.ts";
-import createFormData from "../../utils/createFormData.ts";
+import { api } from '../api.ts'
+import User from '../../types/models/User.ts'
+import {
+  SaveProfilePictureRequest,
+  SignUpRequest,
+  UpdateUserRequest
+} from '../../types/requests/UserRequests.ts'
+import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
+import createFormData from '../../utils/createFormData.ts'
 
 const usersApi = api.injectEndpoints({
   endpoints: (build) => ({

@@ -113,17 +113,19 @@ describe('Albums', () => {
     server.listen()
     // Mock Drag Select
     vi.mock('dragselect', () => ({
-      default: vi.fn(() => ({
-        start: vi.fn(),
-        stop: vi.fn(),
-        getSelection: vi.fn(),
-        clearSelection: vi.fn(),
-        setSettings: vi.fn(),
-        subscribe: vi.fn(),
-        unsubscribe: vi.fn(),
-        addSelectables: vi.fn(),
-        removeSelectables: vi.fn()
-      }))
+      default: vi.fn(
+        class {
+          start = vi.fn()
+          stop = vi.fn()
+          getSelection = vi.fn()
+          clearSelection = vi.fn()
+          setSettings = vi.fn()
+          subscribe = vi.fn()
+          unsubscribe = vi.fn()
+          addSelectables = vi.fn()
+          removeSelectables = vi.fn()
+        }
+      )
     }))
     // Mock Main Context
     vi.mock('../context/MainContext.tsx', () => ({

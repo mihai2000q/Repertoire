@@ -3,7 +3,7 @@
 import 'vitest'
 
 interface CustomMatchers<R = unknown> {
-  toBeFormDataImage: (expected: File) => R,
+  toBeFormDataImage: (expected: File) => R
   toBeExternalLink: (link: string) => R
 }
 

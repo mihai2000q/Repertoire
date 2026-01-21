@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import {expect} from "vitest";
+import { expect } from 'vitest'
 
 describe('Playlist Header', () => {
   const playlist: Playlist = {

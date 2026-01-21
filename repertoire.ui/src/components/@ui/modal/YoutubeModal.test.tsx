@@ -35,10 +35,7 @@ describe('Youtube Modal', () => {
     ],
     ['https://youtu.be/tAGnKpE4NCI', 'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI'],
     ['https://www.youtu.be/tAGnKpE4NCI', 'https://www.youtube-nocookie.com/embed/tAGnKpE4NCI'],
-    [
-      'https://www.youtube.de/watch?v=tAGnKpE4NCI',
-      'https://www.youtube.de/embed/tAGnKpE4NCI',
-    ],
+    ['https://www.youtube.de/watch?v=tAGnKpE4NCI', 'https://www.youtube.de/embed/tAGnKpE4NCI']
   ])('should render', async (link, expectedLinkToRender) => {
     const title = 'Some Song'
 

@@ -1,7 +1,7 @@
 import { emptyUser, reduxRouterRender } from '../../../test-utils.tsx'
 import SettingsModalAccountTab from './SettingsModalAccountTab.tsx'
-import {screen} from "@testing-library/react";
-import {userEvent} from "@testing-library/user-event";
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 describe('Settings Modal Account Tab', () => {
   it('should render', () => {

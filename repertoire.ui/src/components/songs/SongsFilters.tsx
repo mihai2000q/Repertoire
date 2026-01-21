@@ -414,7 +414,9 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         <DoubleCheckbox
           title={'Has Songsterr Link?'}
           label1={'Yes'}
-          checked1={internalFilters.get(SongProperty.SongsterrLink + FilterOperator.IsNotNull).isSet}
+          checked1={
+            internalFilters.get(SongProperty.SongsterrLink + FilterOperator.IsNotNull).isSet
+          }
           onChange1={(value) =>
             handleIsSetChange(SongProperty.SongsterrLink + FilterOperator.IsNotNull, value)
           }
