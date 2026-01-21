@@ -47,7 +47,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 	}
 
 	searchClient := utils.GetSearchClient(t)
-	tasks, _ := searchClient.GetTasks(&meilisearch.TasksQuery{})
+	tasks, _ := searchClient.GetTasks(nil)
 
 	// when
 	err := utils.PublishToTopic(topics.UpdateFromSearchEngineTopic, newEntities)
@@ -58,7 +58,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 	utils.WaitForSearchTasksToStart(searchClient, tasks.Total)
 	utils.WaitForAllSearchTasks(searchClient)
 	for _, expectedEntity := range newEntities {
-		unmarshalledExpectedEntity := utils.UnmarshallDocument[map[string]any](expectedEntity)
+		unmarshalledExpectedEntity := utils.UnmarshalDocument[map[string]any](expectedEntity)
 		var actualEntity *map[string]any
 		getErr := searchClient.Index("search").GetDocument(
 			unmarshalledExpectedEntity["id"].(string),
@@ -70,7 +70,7 @@ func TestUpdateFromSearchEngine_WhenSuccessful_ShouldUpdateDataFromMeilisearch(t
 		assert.Equal(t, unmarshalledExpectedEntity, *actualEntity)
 	}
 
-	tasks, _ = searchClient.GetTasks(&meilisearch.TasksQuery{})
+	tasks, _ = searchClient.GetTasks(nil)
 	latestTaskID := strconv.FormatInt((*tasks).Results[0].UID, 10)
 	cachedUserID, _ := core.MeiliCache.Get("task-" + latestTaskID)
 	assert.Equal(t, userID.String(), cachedUserID)

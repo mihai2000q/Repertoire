@@ -17,7 +17,7 @@ func main() {
 		return
 	}
 
-	_, err := meiliClient.Index("search").UpdateFilterableAttributes(&[]string{
+	_, err := meiliClient.Index("search").UpdateFilterableAttributes(&[]interface{}{
 		"id", "type", "userId", "album", "album.id", "artist", "artist.id",
 	})
 	if err != nil {

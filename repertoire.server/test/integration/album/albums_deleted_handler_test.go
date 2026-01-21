@@ -160,10 +160,10 @@ func TestAlbumsDeleted_WhenWithRelatedSongs_ShouldPublishMessages(t *testing.T) 
 				assertion.AlbumSearchID(t, test.albums[0].ID, ids[0])
 			})
 
-			assertion.AssertMessage(t, updateMessages, func(documents []any) {
-				assert.Len(t, documents, len(albumData.SongSearches))
+			assertion.AssertMessage(t, updateMessages, func(songSearches []model.SongSearch) {
+				assert.Len(t, songSearches, len(albumData.SongSearches))
 				for i, songSearch := range albumData.SongSearches {
-					assert.Equal(t, documents[i].(model.SongSearch).ID, songSearch.(model.SongSearch).ID)
+					assert.Equal(t, songSearches[i].ID, songSearch.(model.SongSearch).ID)
 					assert.Nil(t, songSearch.(model.SongSearch).Album)
 				}
 			})

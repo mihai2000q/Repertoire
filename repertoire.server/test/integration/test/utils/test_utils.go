@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"mime/multipart"
 	"os"
 	"repertoire/server/internal"
@@ -61,7 +62,7 @@ func GetEnv() internal.Env {
 
 func WaitForSearchTasksToStart(client meilisearch.ServiceManager, totalTasks int64) {
 	for {
-		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
+		tasks, _ := client.GetTasks(nil)
 		if tasks.Total != totalTasks {
 			break
 		}
@@ -71,7 +72,7 @@ func WaitForSearchTasksToStart(client meilisearch.ServiceManager, totalTasks int
 func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 	for {
 		breakOuterFor := true
-		tasks, _ := client.GetTasks(&meilisearch.TasksQuery{})
+		tasks, _ := client.GetTasks(nil)
 		for _, taskResult := range tasks.Results {
 			if taskResult.Status == meilisearch.TaskStatusEnqueued ||
 				taskResult.Status == meilisearch.TaskStatusProcessing {
@@ -83,6 +84,7 @@ func WaitForAllSearchTasks(client meilisearch.ServiceManager) {
 			break
 		}
 	}
+	fmt.Print("letsgo")
 }
 
 func createCentrifugoToken() string {
@@ -140,11 +142,11 @@ func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
 func SeedAndCleanupSearchData(t *testing.T, items []any) {
 	searchClient := GetSearchClient(t)
 
-	_, _ = searchClient.Index("search").AddDocuments(items)
+	_, _ = searchClient.Index("search").AddDocuments(items, nil)
 	WaitForAllSearchTasks(searchClient)
 
 	t.Cleanup(func() {
-		_, _ = searchClient.Index("search").DeleteAllDocuments()
+		_, _ = searchClient.Index("search").DeleteAllDocuments(nil)
 	})
 }
 
@@ -166,7 +168,7 @@ func AttachFileToMultipartBody(fileName string, formName string, multiWriter *mu
 	_, _ = file.WriteTo(fileWriter)
 }
 
-func UnmarshallDocument[T any](document any) T {
+func UnmarshalDocument[T any](document any) T {
 	bytes, _ := json.Marshal(document)
 	var marshalledDocument T
 	_ = json.Unmarshal(bytes, &marshalledDocument)

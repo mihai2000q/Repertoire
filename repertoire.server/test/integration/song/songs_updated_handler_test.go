@@ -37,11 +37,10 @@ func TestSongsUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 		Joins("Album").
 		Find(&songs, ids)
 
-	assertion.AssertMessage(t, messages, func(documents []any) {
-		assert.Len(t, documents, len(songs))
+	assertion.AssertMessage(t, messages, func(songSearches []model.SongSearch) {
+		assert.Len(t, songSearches, len(songs))
 		for i := range songs {
-			songSearch := utils.UnmarshallDocument[model.SongSearch](documents[i])
-			assertion.SongSearch(t, songSearch, songs[i])
+			assertion.SongSearch(t, songSearches[i], songs[i])
 		}
 	})
 }

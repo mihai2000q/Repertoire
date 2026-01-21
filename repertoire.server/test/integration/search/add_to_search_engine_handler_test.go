@@ -14,22 +14,28 @@ import (
 
 func TestAddToSearchEngine_WhenSuccessful_ShouldAddDataToMeilisearch(t *testing.T) {
 	// given
-	userID := "some-user-id"
-	data := []map[string]any{
+	type TestStruct struct {
+		ID     string `json:"id"`
+		Name   string `json:"name"`
+		UserID string `json:"userId"`
+	}
+
+	userID := uuid.New().String()
+	data := []TestStruct{
 		{
-			"id":     uuid.New().String(),
-			"name":   "some name",
-			"userId": userID,
+			ID:     uuid.New().String(),
+			Name:   "some name",
+			UserID: userID,
 		},
 		{
-			"id":     uuid.New().String(),
-			"name":   "some-name-2",
-			"userId": userID,
+			ID:     uuid.New().String(),
+			Name:   "some-name-2",
+			UserID: userID,
 		},
 	}
 
 	searchClient := utils.GetSearchClient(t)
-	tasks, _ := searchClient.GetTasks(&meilisearch.TasksQuery{})
+	tasks, _ := searchClient.GetTasks(nil)
 
 	// when
 	err := utils.PublishToTopic(topics.AddToSearchEngineTopic, data)
@@ -40,17 +46,18 @@ func TestAddToSearchEngine_WhenSuccessful_ShouldAddDataToMeilisearch(t *testing.
 	utils.WaitForSearchTasksToStart(searchClient, tasks.Total)
 	utils.WaitForAllSearchTasks(searchClient)
 	var result meilisearch.DocumentsResult
-	_ = searchClient.Index("search").GetDocuments(&meilisearch.DocumentsQuery{}, &result)
+	_ = searchClient.Index("search").GetDocuments(nil, &result)
 	assert.Len(t, result.Results, len(data))
 	for i := range result.Results {
 		expected := data[i]
-		actual := result.Results[i]
-		assert.Equal(t, expected["id"], actual["id"])
-		assert.Equal(t, expected["name"], actual["name"])
-		assert.Equal(t, expected["userId"], actual["userId"])
+		var actual TestStruct
+		_ = result.Results[i].DecodeInto(&actual)
+		assert.Equal(t, expected.ID, actual.ID)
+		assert.Equal(t, expected.Name, actual.Name)
+		assert.Equal(t, expected.UserID, actual.UserID)
 	}
 
-	tasks, _ = searchClient.GetTasks(&meilisearch.TasksQuery{})
+	tasks, _ = searchClient.GetTasks(nil)
 	latestTaskID := strconv.FormatInt((*tasks).Results[0].UID, 10)
 	cachedUserID, _ := core.MeiliCache.Get("task-" + latestTaskID)
 	assert.Equal(t, userID, cachedUserID)
