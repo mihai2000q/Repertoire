@@ -114,7 +114,7 @@ describe('use Local Storage', () => {
       useLocalStorage<number | undefined>({
         key: 'testKey',
         serialize: (val) => (val - 10).toString(),
-        deserialize: (val) => (parseInt(val) + 10)
+        deserialize: (val) => parseInt(val) + 10
       })
     )
 

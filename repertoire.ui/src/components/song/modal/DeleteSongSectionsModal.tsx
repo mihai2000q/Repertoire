@@ -5,13 +5,19 @@ import plural from '../../../utils/plural.ts'
 
 interface DeleteSongSectionsModalProps {
   ids: string[]
-  songId: string,
+  songId: string
   opened: boolean
   onClose: () => void
   onDelete?: () => void
 }
 
-function DeleteSongSectionsModal({ ids, songId, opened, onClose, onDelete }: DeleteSongSectionsModalProps) {
+function DeleteSongSectionsModal({
+  ids,
+  songId,
+  opened,
+  onClose,
+  onDelete
+}: DeleteSongSectionsModalProps) {
   const [bulkDeleteSongSectionsMutation, { isLoading }] = useBulkDeleteSongSectionsMutation()
 
   async function handleDelete() {

@@ -5,6 +5,6 @@ export type FilterValue = string | string[] | number | boolean | null | undefine
 export default interface Filter {
   property: string
   operator: FilterOperator
-  value?: FilterValue,
+  value?: FilterValue
   isSet?: boolean
 }

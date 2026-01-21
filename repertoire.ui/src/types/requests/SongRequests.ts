@@ -83,7 +83,7 @@ export interface CreateSongSectionRequest {
 }
 
 export interface BulkRehearsalsSongSectionsRequest {
-  sections: { id: string, rehearsals: number }[]
+  sections: { id: string; rehearsals: number }[]
   songId: string
 }
 
@@ -99,12 +99,12 @@ export interface UpdateSongSectionRequest {
 
 export interface UpdateSongSectionsOccurrencesRequest {
   songId: string
-  sections: { id: string, occurrences: number }[]
+  sections: { id: string; occurrences: number }[]
 }
 
 export interface UpdateSongSectionsPartialOccurrencesRequest {
   songId: string
-  sections: { id: string, partialOccurrences: number }[]
+  sections: { id: string; partialOccurrences: number }[]
 }
 
 export interface UpdateAllSongSectionsRequest {

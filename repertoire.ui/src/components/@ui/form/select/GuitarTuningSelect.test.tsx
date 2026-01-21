@@ -1,5 +1,5 @@
 import { reduxRender } from '../../../../test-utils.tsx'
-import {screen, waitFor} from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'

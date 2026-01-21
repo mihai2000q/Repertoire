@@ -46,7 +46,12 @@ describe('Large Image Dropzone With Preview', () => {
     const image = new File([''], 'image.png', { type: 'image/png' })
 
     const { rerender } = mantineRender(
-      <LargeImageDropzoneWithPreview image={null} setImage={() => {}} label={label} ariaLabel={ariaLabel} />
+      <LargeImageDropzoneWithPreview
+        image={null}
+        setImage={() => {}}
+        label={label}
+        ariaLabel={ariaLabel}
+      />
     )
 
     // when image is null
@@ -55,7 +60,14 @@ describe('Large Image Dropzone With Preview', () => {
 
     await user.upload(screen.getByTestId(`${ariaLabel}-dropzone-input`), image)
 
-    rerender(<LargeImageDropzoneWithPreview image={image} setImage={() => {}} label={label} ariaLabel={ariaLabel} />)
+    rerender(
+      <LargeImageDropzoneWithPreview
+        image={image}
+        setImage={() => {}}
+        label={label}
+        ariaLabel={ariaLabel}
+      />
+    )
 
     // with image
     expect(screen.getByRole('img', { name: `${ariaLabel}-preview` })).toBeInTheDocument()

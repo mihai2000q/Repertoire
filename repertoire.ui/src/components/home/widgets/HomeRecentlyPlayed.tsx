@@ -260,7 +260,9 @@ function HomeRecentlyPlayed() {
               (!songs ? (
                 <HomeRecentlyPlayedLoader />
               ) : (
-                songs?.models.map((song) => <HomeRecentlyPlayedSongCard key={song.id} song={song} />)
+                songs?.models.map((song) => (
+                  <HomeRecentlyPlayedSongCard key={song.id} song={song} />
+                ))
               ))}
           </Stack>
         </ScrollArea>

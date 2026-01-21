@@ -35,7 +35,10 @@ describe('Band Member Card', () => {
 
     expect(screen.getByText(bandMember.name)).toBeInTheDocument()
     expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: bandMember.name })).toHaveAttribute('src', bandMember.imageUrl)
+    expect(screen.getByRole('img', { name: bandMember.name })).toHaveAttribute(
+      'src',
+      bandMember.imageUrl
+    )
   })
 
   it('should display band member details when clicking on it', async () => {

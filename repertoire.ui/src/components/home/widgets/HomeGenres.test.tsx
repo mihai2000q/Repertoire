@@ -1,6 +1,6 @@
-import {mantineRender} from "../../../test-utils.tsx";
-import HomeGenres from "./HomeGenres.tsx";
-import {screen} from "@testing-library/react";
+import { mantineRender } from '../../../test-utils.tsx'
+import HomeGenres from './HomeGenres.tsx'
+import { screen } from '@testing-library/react'
 
 describe('Home Genres', () => {
   it('should render', () => {

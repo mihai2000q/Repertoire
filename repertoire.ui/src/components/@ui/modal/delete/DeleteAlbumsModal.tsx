@@ -32,7 +32,9 @@ function DeleteAlbumsModal({ ids, opened, onClose, onDelete }: DeleteAlbumsModal
       title={`Delete Album${plural(ids)}`}
       description={
         <Stack gap={5}>
-          <Text fw={500}>Are you sure you want to delete {ids.length} album{plural(ids)}?</Text>
+          <Text fw={500}>
+            Are you sure you want to delete {ids.length} album{plural(ids)}?
+          </Text>
           <Checkbox
             checked={deleteWithSongs}
             onChange={(event) => setDeleteWithSongs(event.currentTarget.checked)}

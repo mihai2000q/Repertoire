@@ -11,7 +11,7 @@ function AlbumsLoader() {
       />
       <Stack gap={0} align={'center'}>
         <Skeleton w={{ base: 125, xs: 100, sm: 90, md: 105, xl: 120 }} h={15} mb={4} />
-        <Skeleton w={{ base: 68, xs: 50, sm: 43, md: 60, xl: 70  }} h={10} />
+        <Skeleton w={{ base: 68, xs: 50, sm: 43, md: 60, xl: 70 }} h={10} />
       </Stack>
     </Stack>
   ))

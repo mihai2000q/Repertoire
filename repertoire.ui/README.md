@@ -1,16 +1,16 @@
 # Repertoire UI
 
-* [Repertoire UI](#repertoire-ui)
-  * [Abstract](#abstract)
-  * [Prerequisites](#prerequisites)
-    * [NodeJs](#nodejs)
-  * [Get Started](#get-started)
-    * [Restore dependencies](#restore-dependencies)
-    * [Typecheck](#typecheck)
-  * [Platform Configuration](#platform-configuration)
-  * [Folder Structure](#folder-structure)
-  * [Testing](#testing)
-    * [Unit Testing](#unit-testing)
+- [Repertoire UI](#repertoire-ui)
+  - [Abstract](#abstract)
+  - [Prerequisites](#prerequisites)
+    - [NodeJs](#nodejs)
+  - [Get Started](#get-started)
+    - [Restore dependencies](#restore-dependencies)
+    - [Typecheck](#typecheck)
+  - [Platform Configuration](#platform-configuration)
+  - [Folder Structure](#folder-structure)
+  - [Testing](#testing)
+    - [Unit Testing](#unit-testing)
 
 ## Abstract
 

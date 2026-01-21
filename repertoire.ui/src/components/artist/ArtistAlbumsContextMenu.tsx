@@ -15,7 +15,11 @@ interface ArtistAlbumsContextMenuProps {
   isUnknownArtist: boolean
 }
 
-function ArtistAlbumsContextMenu({ children, artistId, isUnknownArtist: isUnknownArtist }: ArtistAlbumsContextMenuProps) {
+function ArtistAlbumsContextMenu({
+  children,
+  artistId,
+  isUnknownArtist: isUnknownArtist
+}: ArtistAlbumsContextMenuProps) {
   const { selectedIds, clearSelection } = useClickSelect()
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)

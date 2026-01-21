@@ -10,7 +10,12 @@ interface CompactOrderButtonProps {
   disabledOrders?: Order[]
 }
 
-function CompactOrderButton({ availableOrders, order, setOrder, disabledOrders }: CompactOrderButtonProps) {
+function CompactOrderButton({
+  availableOrders,
+  order,
+  setOrder,
+  disabledOrders
+}: CompactOrderButtonProps) {
   return (
     <Menu>
       <Menu.Target>

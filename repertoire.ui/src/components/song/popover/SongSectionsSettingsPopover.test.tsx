@@ -37,7 +37,7 @@ describe('Song Sections Settings Popover', () => {
       id: '2',
       name: 'Michael',
       roles: []
-    },
+    }
   ]
 
   const handlers = [

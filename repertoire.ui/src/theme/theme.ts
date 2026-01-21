@@ -53,7 +53,7 @@ export const theme = createTheme({
     betweenLgXl: '80em',
     xl: '88em',
     betweenXlXxl: '95em',
-    xxl: '105em',
+    xxl: '105em'
   },
   spacing: {
     xxs: rem(4)

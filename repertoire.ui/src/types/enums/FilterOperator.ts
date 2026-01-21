@@ -12,4 +12,4 @@ enum FilterOperator {
   PatternMatching = '~*'
 }
 
-export default FilterOperator;
+export default FilterOperator

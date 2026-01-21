@@ -1,7 +1,7 @@
 import { mantineRender } from '../../../../test-utils.tsx'
 import { Menu } from '@mantine/core'
 import { expect } from 'vitest'
-import {screen, waitFor} from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import MenuItemConfirmation from './MenuItemConfirmation.tsx'
 import { ReactNode } from 'react'

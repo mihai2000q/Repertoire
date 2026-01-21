@@ -2,8 +2,8 @@ import { ActionIcon, Avatar, Group, Space, Stack, Text } from '@mantine/core'
 import { IconArrowDownLeft, IconArrowsDiagonal, IconX } from '@tabler/icons-react'
 import useTitleBarHeight from '../../hooks/useTitleBarHeight'
 import logo from '../../assets/logo.png'
-import {useAppSelector} from "../../state/store.ts";
-import {useDocumentTitle} from "@mantine/hooks";
+import { useAppSelector } from '../../state/store.ts'
+import { useDocumentTitle } from '@mantine/hooks'
 
 function TitleBar() {
   function handleMinimize() {

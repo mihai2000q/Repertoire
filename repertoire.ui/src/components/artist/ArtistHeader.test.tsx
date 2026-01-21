@@ -96,7 +96,10 @@ describe('Artist Header', () => {
     )
 
     expect(screen.getByRole('img', { name: localArtist.name })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute('src', localArtist.imageUrl)
+    expect(screen.getByRole('img', { name: localArtist.name })).toHaveAttribute(
+      'src',
+      localArtist.imageUrl
+    )
     expect(screen.getByRole('heading', { name: localArtist.name })).toBeInTheDocument()
     expect(
       screen.getByText(

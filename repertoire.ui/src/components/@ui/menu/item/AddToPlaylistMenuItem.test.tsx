@@ -997,7 +997,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated artists and it adds them all', async () => {
@@ -1050,7 +1054,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated artists and it adds only the new ones', async () => {
@@ -1195,7 +1203,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated songs in the artists and it adds them all', async () => {
@@ -1248,7 +1260,11 @@ describe('Add To Playlist Menu Item', () => {
           )
         ).toBeInTheDocument()
         expect(closeMenu).toHaveBeenCalledOnce()
-        expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids, forceAdd: true })
+        expect(capturedRequest).toStrictEqual({
+          id: newPlaylist.id,
+          artistIds: ids,
+          forceAdd: true
+        })
       })
 
       it('when there are some duplicated songs in the artists and it adds only the new ones', async () => {

@@ -1,10 +1,10 @@
-import {http, HttpResponse} from "msw";
-import {setupServer} from "msw/node";
-import {reduxRender} from "../../../test-utils.tsx";
-import BandMembersWidget from "./BandMembersWidget.tsx";
-import {BandMember} from "../../../types/models/Artist.ts";
-import {screen} from "@testing-library/react";
-import {userEvent} from "@testing-library/user-event";
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
+import { reduxRender } from '../../../test-utils.tsx'
+import BandMembersWidget from './BandMembersWidget.tsx'
+import { BandMember } from '../../../types/models/Artist.ts'
+import { screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 describe('Band Members Widget', () => {
   const handlers = [
@@ -82,7 +82,9 @@ describe('Band Members Widget', () => {
 
       await user.click(screen.getByRole('button', { name: 'band-members-more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /add new member/i }))
-      expect(await screen.findByRole('dialog', { name: /add new band member/i })).toBeInTheDocument()
+      expect(
+        await screen.findByRole('dialog', { name: /add new band member/i })
+      ).toBeInTheDocument()
     })
   })
 })

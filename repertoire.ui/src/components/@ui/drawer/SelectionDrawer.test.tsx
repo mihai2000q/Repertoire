@@ -88,14 +88,7 @@ describe('Selection Drawer', () => {
 
     const onClose = vi.fn()
 
-    mantineRender(
-      <SelectionDrawer
-        opened={true}
-        text={''}
-        actionIcons={<></>}
-        onClose={onClose}
-      />
-    )
+    mantineRender(<SelectionDrawer opened={true} text={''} actionIcons={<></>} onClose={onClose} />)
 
     await user.click(screen.getByRole('button', { name: 'close-drawer' }))
 

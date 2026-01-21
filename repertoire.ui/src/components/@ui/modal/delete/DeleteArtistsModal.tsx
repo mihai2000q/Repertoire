@@ -33,7 +33,9 @@ function DeleteArtistsModal({ ids, opened, onClose, onDelete }: DeleteArtistsMod
       title={`Delete Artist${plural(ids)}`}
       description={
         <Stack gap={'xs'}>
-          <Text fw={500}>Are you sure you want to delete {ids.length} artist{plural(ids)}?</Text>
+          <Text fw={500}>
+            Are you sure you want to delete {ids.length} artist{plural(ids)}?
+          </Text>
           <Checkbox
             checked={deleteWithAssociations}
             onChange={(event) => setDeleteWithAssociations(event.currentTarget.checked)}

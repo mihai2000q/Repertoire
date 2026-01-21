@@ -31,6 +31,6 @@ export default function useDragSelectSelectable<T extends HTMLElement>(
   return {
     ref: ref,
     isDragSelected: isDragSelected,
-    isDragSelecting: isDragging,
+    isDragSelecting: isDragging
   }
 }

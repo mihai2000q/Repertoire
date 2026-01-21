@@ -58,17 +58,17 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
     setGuitarTuning(
       song.guitarTuning
         ? {
-          value: song.guitarTuning.id,
-          label: song.guitarTuning.name
-        }
+            value: song.guitarTuning.id,
+            label: song.guitarTuning.name
+          }
         : null
     )
     setDifficulty(
       song.difficulty
         ? {
-          value: song.difficulty,
-          label: Difficulty[song.difficulty]
-        }
+            value: song.difficulty,
+            label: Difficulty[song.difficulty]
+          }
         : null
     )
     setBpm(song.bpm)

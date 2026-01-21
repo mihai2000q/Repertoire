@@ -182,7 +182,10 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
-    bulkRehearsalsSongSections: build.mutation<HttpMessageResponse, BulkRehearsalsSongSectionsRequest>({
+    bulkRehearsalsSongSections: build.mutation<
+      HttpMessageResponse,
+      BulkRehearsalsSongSectionsRequest
+    >({
       query: (body) => ({
         url: 'songs/sections/bulk-rehearsals',
         method: 'POST',

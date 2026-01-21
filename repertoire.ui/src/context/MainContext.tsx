@@ -20,8 +20,8 @@ export const MainContext = createContext<MainContextReturnType>({
   ref: null,
   mainScroll: {
     ref: null,
-    isPositionOver0: false,
-  },
+    isPositionOver0: false
+  }
 })
 
 interface MainContextProps {

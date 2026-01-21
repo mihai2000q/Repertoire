@@ -140,7 +140,13 @@ interface AddToPlaylistMenuItemProps {
   disabled?: boolean
 }
 
-function AddToPlaylistMenuItem({ ids, type, closeMenu, onSuccess, disabled }: AddToPlaylistMenuItemProps) {
+function AddToPlaylistMenuItem({
+  ids,
+  type,
+  closeMenu,
+  onSuccess,
+  disabled
+}: AddToPlaylistMenuItemProps) {
   const [search, setSearch] = useSessionStorage({
     key: SessionStorageKeys.AddToPlaylist,
     defaultValue: ''

@@ -80,7 +80,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
               aspectRatio: 1,
               cursor: 'pointer',
               transition: '0.3s',
-              boxShadow: isSelected ? theme.shadows.xxl_hover : theme.shadows.xxl,
+              boxShadow: isSelected ? theme.shadows.xxl_hover : theme.shadows.xxl
             })}
             onClick={handleClick}
           >

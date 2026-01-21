@@ -118,14 +118,26 @@ describe('NumberInputRange', () => {
     )
 
     await user.clear(screen.getByRole('textbox', { name: `min ${label}` }))
-    await user.type(screen.getByRole('textbox', { name: `min ${label}` }), newNegativeValue.toString())
-    await user.type(screen.getByRole('textbox', { name: `min ${label}` }), newDecimalValue.toString())
+    await user.type(
+      screen.getByRole('textbox', { name: `min ${label}` }),
+      newNegativeValue.toString()
+    )
+    await user.type(
+      screen.getByRole('textbox', { name: `min ${label}` }),
+      newDecimalValue.toString()
+    )
     expect(onChange1).not.toHaveBeenCalledWith(newNegativeValue)
     expect(onChange1).not.toHaveBeenCalledWith(newDecimalValue)
 
     await user.clear(screen.getByRole('textbox', { name: `max ${label}` }))
-    await user.type(screen.getByRole('textbox', { name: `max ${label}` }), newNegativeValue.toString())
-    await user.type(screen.getByRole('textbox', { name: `max ${label}` }), newDecimalValue.toString())
+    await user.type(
+      screen.getByRole('textbox', { name: `max ${label}` }),
+      newNegativeValue.toString()
+    )
+    await user.type(
+      screen.getByRole('textbox', { name: `max ${label}` }),
+      newDecimalValue.toString()
+    )
     expect(onChange2).not.toHaveBeenCalledWith(newNegativeValue)
     expect(onChange2).not.toHaveBeenCalledWith(newDecimalValue)
   })

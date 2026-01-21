@@ -86,9 +86,7 @@ describe('Add New Artist Album Modal', () => {
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
       await user.click(screen.getByRole('button', { name: /release-date/i }))
-      await user.click(
-        screen.getByRole('button', { name: dayjs().format('D MMMM YYYY') })
-      )
+      await user.click(screen.getByRole('button', { name: dayjs().format('D MMMM YYYY') }))
       expect(screen.getByRole('button', { name: /release-date/i })).toHaveAttribute(
         'aria-selected',
         'true'

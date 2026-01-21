@@ -14,7 +14,14 @@ interface SelectionDrawerProps {
   }
 }
 
-function SelectionDrawer({ opened, text, actionIcons, onClose, menu, ...props }: SelectionDrawerProps) {
+function SelectionDrawer({
+  opened,
+  text,
+  actionIcons,
+  onClose,
+  menu,
+  ...props
+}: SelectionDrawerProps) {
   return (
     <Drawer
       opened={opened}
@@ -28,7 +35,7 @@ function SelectionDrawer({ opened, text, actionIcons, onClose, menu, ...props }:
         inner: {
           left: '50%',
           marginBottom: '32px',
-          width: 'fit-content',
+          width: 'fit-content'
         },
         content: {
           borderRadius: '24px',

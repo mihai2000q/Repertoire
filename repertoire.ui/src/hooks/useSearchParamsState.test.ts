@@ -30,7 +30,7 @@ describe('use Search Params State', () => {
     deserialize: testSearchParamsDeserializer
   }
 
-  afterEach(() => window.location.search = '')
+  afterEach(() => (window.location.search = ''))
 
   it('should update state with value', () => {
     const { result } = routerRenderHook(() => useSearchParamsState(testProps))

@@ -5,24 +5,26 @@ interface CustomIconElectricGuitarWarlockProps extends SVGProps<SVGSVGElement> {
   size?: number | string
 }
 
-const CustomIconElectricGuitarWarlock = forwardRef<SVGSVGElement, CustomIconElectricGuitarWarlockProps>(
-  ({ color, size = 24, ...props }, ref) => (
-    <svg
-      ref={ref}
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      fill={color || 'currentColor'}
-      stroke={color || 'currentColor'}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      viewBox="0 0 482.032 482.032"
-      xmlSpace="preserve"
-      {...props}
-    >
-      <g>
-        <path
-          d="M386.163,48.499L217.807,216.857c-7.646,1.901-15.05,1.533-20.277-3.687c-12.381-12.381,5.53-39.459,14.835-51.738
+const CustomIconElectricGuitarWarlock = forwardRef<
+  SVGSVGElement,
+  CustomIconElectricGuitarWarlockProps
+>(({ color, size = 24, ...props }, ref) => (
+  <svg
+    ref={ref}
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    fill={color || 'currentColor'}
+    stroke={color || 'currentColor'}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 482.032 482.032"
+    xmlSpace="preserve"
+    {...props}
+  >
+    <g>
+      <path
+        d="M386.163,48.499L217.807,216.857c-7.646,1.901-15.05,1.533-20.277-3.687c-12.381-12.381,5.53-39.459,14.835-51.738
 		c2.679-3.528,1.751-4.749-2.27-2.877l-36.834,17.142c-4.015,1.872-7.902,6.927-8.846,11.257
 		c-2.914,13.387-9.812,40.158-20.3,50.646c-11.8,11.798-82.429,25.519-106.325,29.892c-4.358,0.781-7.938,4.98-8.299,9.405
 		c-2.96,36.347-21.045,78.954-28.722,95.669c-1.855,4.023-0.254,5.582,3.767,3.719c52.676-24.389,89.847-12.383,98.364-3.859
@@ -35,11 +37,10 @@ const CustomIconElectricGuitarWarlock = forwardRef<SVGSVGElement, CustomIconElec
 		c3.132-3.138,8.209-3.138,11.349,0l24.119,24.108C158.339,322.765,158.339,327.839,155.207,330.984z M191.599,283.235
 		c3.136,3.131,3.136,8.204,0,11.346l-9.041,9.049c-3.132,3.126-8.211,3.126-11.351,0l-24.119-24.121
 		c-3.132-3.126-3.132-8.207,0-11.345l9.047-9.045c3.132-3.138,8.211-3.138,11.351,0l4.027,4.023l18.556,18.562L191.599,283.235z"
-        />
-      </g>
-    </svg>
-  )
-)
+      />
+    </g>
+  </svg>
+))
 
 CustomIconElectricGuitarWarlock.displayName = 'CustomIconElectricGuitarWarlock'
 
