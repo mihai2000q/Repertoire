@@ -39,20 +39,20 @@ func (l *GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 	return l
 }
 
-func (l *GormLogger) Info(ctx context.Context, str string, args ...interface{}) {
+func (l *GormLogger) Info(_ context.Context, str string, args ...interface{}) {
 	l.Logger.Sugar().Infof("[GORM] "+str, args...)
 }
 
-func (l *GormLogger) Warn(ctx context.Context, str string, args ...interface{}) {
+func (l *GormLogger) Warn(_ context.Context, str string, args ...interface{}) {
 	l.Logger.Sugar().Warnf("[GORM] "+str, args...)
 }
 
-func (l *GormLogger) Error(ctx context.Context, str string, args ...interface{}) {
+func (l *GormLogger) Error(_ context.Context, str string, args ...interface{}) {
 	l.Logger.Sugar().Errorf("[GORM] "+str, args...)
 }
 
 // Trace prints trace messages
-func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
+func (l *GormLogger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), err error) {
 	if l.LogLevel <= gormlogger.Silent {
 		return
 	}
