@@ -103,7 +103,7 @@ func NewRouter(
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			for _, handler := range handlers {
-				router.AddNoPublisherHandler(
+				router.AddConsumerHandler(
 					handler.GetName(),
 					string(topics.TopicToQueueMap[handler.GetTopic()]),
 					messagePublisherService.GetClient(),
