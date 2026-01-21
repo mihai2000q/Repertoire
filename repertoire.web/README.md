@@ -1,14 +1,14 @@
 # Repertoire Web
 
-* [Repertoire Web](#repertoire-web)
-  * [Abstract](#abstract)
-  * [Prerequisites](#prerequisites)
-    * [NodeJs](#nodejs)
-  * [Get Started](#get-started)
-    * [Environment Variables](#environment-variables)
-    * [Restore dependencies](#restore-dependencies)
-    * [Run](#run)
-  * [Build](#build)
+- [Repertoire Web](#repertoire-web)
+  - [Abstract](#abstract)
+  - [Prerequisites](#prerequisites)
+    - [NodeJs](#nodejs)
+  - [Get Started](#get-started)
+    - [Environment Variables](#environment-variables)
+    - [Restore dependencies](#restore-dependencies)
+    - [Run](#run)
+  - [Build](#build)
 
 ## Abstract
 
