@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"repertoire/storage/domain/service"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthMiddleware struct {

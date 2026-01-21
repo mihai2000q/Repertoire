@@ -1,13 +1,14 @@
 package api
 
 import (
-	"go.uber.org/fx"
 	"net/http"
 	"repertoire/storage/api/handler"
 	"repertoire/storage/api/middleware"
 	"repertoire/storage/api/router"
 	"repertoire/storage/api/routes"
 	"repertoire/storage/api/server"
+
+	"go.uber.org/fx"
 )
 
 var Module = fx.Options(

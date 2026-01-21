@@ -1,10 +1,11 @@
 package logger
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"os"
 	"repertoire/storage/internal"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var levelsMap = map[string]zapcore.Level{

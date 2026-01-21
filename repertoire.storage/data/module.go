@@ -1,9 +1,10 @@
 package data
 
 import (
+	"repertoire/storage/data/logger"
+
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
-	"repertoire/storage/data/logger"
 )
 
 var loggers = fx.Options(
