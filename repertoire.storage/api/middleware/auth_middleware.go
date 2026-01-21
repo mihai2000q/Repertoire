@@ -27,10 +27,10 @@ func (a AuthMiddleware) Handler() gin.HandlerFunc {
 			if err != nil {
 				_ = c.AbortWithError(http.StatusUnauthorized, errors.New("invalid token"))
 				return
-			} else {
-				c.Next()
-				return
 			}
+
+			c.Next()
+			return
 		}
 
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
