@@ -3,7 +3,20 @@ import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 
 function createWindow(): void {
-  // Create the browser window.
+  // Splash Screen/Window
+  const splashStartTime = Date.now()
+  const splash = new BrowserWindow({
+    center: true,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    titleBarStyle: 'hidden',
+    autoHideMenuBar: true,
+    webPreferences: { sandbox: false }
+  })
+  splash.removeMenu()
+
+  // Create the main browser window.
   const mainWindow = new BrowserWindow({
     width: 1120,
     height: 800,
@@ -18,9 +31,29 @@ function createWindow(): void {
     titleBarStyle: 'hidden'
   })
   mainWindow.removeMenu()
+  mainWindow.webContents.openDevTools()
+
+  // HMR for renderer base on electron-vite cli.
+  // Load the remote URL for development or the local HTML files for production.
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/index.html`).then()
+    splash.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/splash.html`).then()
+  } else {
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html')).then()
+    splash.loadFile(join(__dirname, '../renderer/splash.html')).then()
+  }
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    const splashElapsed = Date.now() - splashStartTime
+    const splashRemainingDelay = Math.max(
+      0,
+      parseInt(import.meta.env['SPLASH_SCREEN_MINIMUM_TIME']) - splashElapsed
+    )
+
+    setTimeout(() => {
+      splash.destroy()
+      mainWindow.show()
+    }, splashRemainingDelay)
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -57,6 +90,7 @@ function createWindow(): void {
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   )
 
+  // only 1 instance active at a time
   const gotTheLock = app.requestSingleInstanceLock()
 
   if (!gotTheLock) {
@@ -71,14 +105,7 @@ function createWindow(): void {
     })
   }
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local HTML file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']).then()
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html')).then()
-  }
-
+  // ipc handlers
   ipcMain.on('minimize', () =>
     mainWindow.isMinimized() ? mainWindow.restore() : mainWindow.minimize()
   )
