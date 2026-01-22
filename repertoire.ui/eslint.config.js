@@ -12,7 +12,8 @@ export default tsLint.config(
       jsLint.configs.recommended,
       ...tsLint.configs.recommended,
       reactLint.configs.flat.recommended,
-      reactLint.configs.flat['jsx-runtime']
+      reactLint.configs.flat['jsx-runtime'],
+      prettier
     ],
     ignores: ['node_modules', '.gitignore'],
     languageOptions: {
@@ -31,6 +32,5 @@ export default tsLint.config(
       'no-console': 'warn',
       '@typescript-eslint/no-require-imports': 'warn'
     }
-  },
-  prettier
+  }
 )
