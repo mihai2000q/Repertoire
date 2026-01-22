@@ -11,7 +11,7 @@ interface UseClickSelectSelectableReturnType<T> {
 export default function useClickSelectSelectable<T extends HTMLElement>(
   id: string
 ): UseClickSelectSelectableReturnType<T> {
-  const ref = useRef<T>(null)
+  const ref = useRef<T>(undefined)
   const { addSelectable, removeSelectable, selectedIds, selectables, isClickSelectionActive } =
     useClickSelect()
   const [isSelected, setIsSelected] = useState(false)
