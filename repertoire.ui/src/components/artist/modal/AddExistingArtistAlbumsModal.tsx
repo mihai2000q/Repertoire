@@ -140,7 +140,7 @@ function AddExistingArtistAlbumsModal({
 
   const searchRef = useFocusTrap(!albumsIsLoading)
 
-  const scrollRef = useRef<HTMLDivElement>()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastAlbumRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

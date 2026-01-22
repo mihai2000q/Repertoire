@@ -10,7 +10,7 @@ interface UseDragSelectSelectableReturnType<T> {
 export default function useDragSelectSelectable<T extends HTMLElement>(
   id: string
 ): UseDragSelectSelectableReturnType<T> {
-  const ref = useRef<T>()
+  const ref = useRef<T>(null)
   const { dragSelect, selectedIds } = useDragSelect()
   const [isDragSelected, setIsDragSelected] = useState(false)
   const [isDragging, setIsDragging] = useState(false)

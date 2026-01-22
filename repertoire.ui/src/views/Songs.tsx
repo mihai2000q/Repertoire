@@ -80,7 +80,7 @@ function Songs(): ReactElement {
   const [openedAddNewSongModal, { open: openAddNewSongModal, close: closeAddNewSongModal }] =
     useDisclosure(false)
 
-  const songsRef = useRef()
+  const songsRef = useRef<HTMLDivElement>(null)
   const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {

@@ -34,7 +34,7 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
   const lastSelectedId = useRef('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isSelectionActive, setIsSelectionActive] = useState(false)
-  const areaRef = useRef<HTMLSpanElement>()
+  const areaRef = useRef<HTMLSpanElement>(undefined)
   const { ref: appRef } = useMain()
 
   useEffect(() => handleClearSelection(), [data])
