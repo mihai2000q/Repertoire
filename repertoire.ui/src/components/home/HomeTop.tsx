@@ -62,7 +62,7 @@ const TabButton = ({
   </Button>
 )
 
-function HomeTop({ ref }: { ref: RefObject<HTMLDivElement> }) {
+function HomeTop({ ref }: { ref?: RefObject<HTMLDivElement> }) {
   const [topEntity, setHomeTopEntity] = useLocalStorage({
     key: LocalStorageKeys.HomeTopEntity,
     defaultValue: HomeTopEntity.Albums

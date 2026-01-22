@@ -21,7 +21,7 @@ interface BandMemberCompactSelectProps extends ComboboxProps {
   bandMember: BandMember | null
   setBandMember: (bandMember: BandMember | null) => void
   bandMembers: BandMember[] | undefined
-  ref: RefObject<HTMLButtonElement>
+  ref?: RefObject<HTMLButtonElement>
   tooltipLabel?: string
 }
 

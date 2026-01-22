@@ -22,7 +22,7 @@ import { useInputState } from '@mantine/hooks'
 interface InstrumentCompactSelectProps extends ComboboxProps {
   instrument: Instrument | null
   setInstrument: (instrument: Instrument | null) => void
-  ref: RefObject<HTMLButtonElement>
+  ref?: RefObject<HTMLButtonElement>
   tooltipLabel?: string
 }
 

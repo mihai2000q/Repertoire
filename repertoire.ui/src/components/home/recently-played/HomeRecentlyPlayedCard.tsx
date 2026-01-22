@@ -22,7 +22,6 @@ interface AdditionalTextProps {
 }
 
 interface HomeRecentlyPlayedCardProps extends GroupProps {
-  ref: RefObject<HTMLDivElement>
   imageUrl: string | null | undefined
   title: string
   progress: number
@@ -30,18 +29,19 @@ interface HomeRecentlyPlayedCardProps extends GroupProps {
   openedMenu: boolean
   defaultIcon: ReactNode
   onClick: () => void
+  ref?: RefObject<HTMLDivElement>
   isArtist?: boolean
   additionalText?: AdditionalTextProps
 }
 
 function HomeRecentlyPlayedCard({
-  ref: refProp,
   imageUrl,
   title,
   progress,
   lastPlayed,
   openedMenu,
   defaultIcon,
+  ref: refProp,
   isArtist,
   onClick,
   additionalText,

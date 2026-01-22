@@ -16,19 +16,19 @@ import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.
 import { RefObject } from 'react'
 
 interface ArtistHeaderProps {
-  ref: RefObject<HTMLDivElement>
   artist: Artist | undefined
   songsTotalCount: number | undefined
   albumsTotalCount: number | undefined
   isUnknownArtist: boolean
+  ref?: RefObject<HTMLDivElement>
 }
 
 function ArtistHeader({
-  ref,
   artist,
   songsTotalCount,
   albumsTotalCount,
-  isUnknownArtist
+  isUnknownArtist,
+  ref
 }: ArtistHeaderProps) {
   const navigate = useNavigate()
 

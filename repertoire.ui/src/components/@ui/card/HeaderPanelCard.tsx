@@ -10,7 +10,7 @@ interface HeaderPanelCardProps {
   openMenu: () => void
   closeMenu: () => void
   menuDropdown: ReactNode
-  ref: RefObject<HTMLDivElement>
+  ref?: RefObject<HTMLDivElement>
   hideIcons?: boolean
 }
 
