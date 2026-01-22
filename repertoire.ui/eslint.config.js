@@ -3,7 +3,6 @@ import jsLint from '@eslint/js'
 import tsLint from 'typescript-eslint'
 import reactLint from 'eslint-plugin-react'
 import prettier from 'eslint-config-prettier'
-import react from '@vitejs/plugin-react'
 
 export default tsLint.config(
   {
@@ -24,7 +23,6 @@ export default tsLint.config(
         ...globals.node
       }
     },
-    plugins: { viteJs_react: react() },
     settings: { react: { version: 'detect' } },
     rules: {
       'react/react-in-jsx-scope': 'off',
