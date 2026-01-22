@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react'
+import { MouseEvent, RefCallback, RefObject } from 'react'
 import { alpha, Avatar, AvatarProps, Box, Center } from '@mantine/core'
 import { IconCheck } from '@tabler/icons-react'
 
@@ -7,6 +7,7 @@ interface SelectableAvatarProps extends AvatarProps {
   id?: string
   onClick?: (e: MouseEvent) => void
   checkmarkSize?: string | number
+  ref?: RefObject<HTMLDivElement> | RefCallback<HTMLDivElement>
 }
 
 function SelectableAvatar({
@@ -14,11 +15,12 @@ function SelectableAvatar({
   id,
   onClick,
   checkmarkSize = '63%',
+  ref,
   ...others
 }: SelectableAvatarProps) {
   return (
     <Box pos={'relative'}>
-      <Avatar id={id} onClick={onClick} {...others} />
+      <Avatar ref={ref} id={id} onClick={onClick} {...others} />
 
       <Center
         data-testid={'selected-overlay'}
