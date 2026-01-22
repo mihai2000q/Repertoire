@@ -1,6 +1,5 @@
 import {
   createContext,
-  MutableRefObject,
   ReactNode,
   RefObject,
   useContext,
@@ -11,7 +10,7 @@ import {
 interface MainContextReturnType {
   ref: RefObject<HTMLDivElement>
   mainScroll: {
-    ref: MutableRefObject<HTMLDivElement>
+    ref: RefObject<HTMLDivElement>
     isPositionOver0: boolean
   }
 }
