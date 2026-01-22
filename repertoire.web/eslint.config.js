@@ -3,7 +3,6 @@ import globals from 'globals'
 import tslint from 'typescript-eslint'
 import reactLint from 'eslint-plugin-react'
 import prettier from 'eslint-config-prettier'
-import react from "@vitejs/plugin-react";
 
 export default tslint.config({
   files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
@@ -23,6 +22,5 @@ export default tslint.config({
       ...globals.browser
     }
   },
-  plugins: { viteJs_react: react() },
   settings: { react: { version: 'detect' } }
 })
