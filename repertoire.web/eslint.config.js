@@ -1,19 +1,26 @@
-import js from "@eslint/js";
-import globals from "globals";
-import tslint from "typescript-eslint";
+import js from '@eslint/js'
+import globals from 'globals'
+import tslint from 'typescript-eslint'
+import reactLint from 'eslint-plugin-react'
+import prettier from 'eslint-config-prettier'
 
 export default tslint.config({
-  files: ["**/*.{ts,tsx}"],
-  ignores: ["node_modules", "dist", ".gitignore", "README.md"],
-  extends: [js.configs.recommended, ...tslint.configs.recommended],
+  files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+  ignores: ['node_modules', 'dist', '.gitignore'],
+  extends: [
+    js.configs.recommended,
+    ...tslint.configs.recommended,
+    reactLint.configs.flat.recommended,
+    reactLint.configs.flat['jsx-runtime'],
+    prettier
+  ],
   languageOptions: {
-    ecmaVersion: 2020,
-    globals: globals.browser,
+    ...reactLint.configs.flat.recommended.languageOptions,
+    ecmaVersion: 2022,
+    globals: {
+      ...globals.serviceworker,
+      ...globals.browser
+    }
   },
-  rules: {
-    "react-refresh/only-export-components": [
-      "warn",
-      { allowConstantExport: true },
-    ],
-  },
-});
+  settings: { react: { version: 'detect' } }
+})

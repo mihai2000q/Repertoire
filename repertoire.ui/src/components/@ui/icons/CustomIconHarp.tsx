@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconHarpProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconHarp = forwardRef<SVGSVGElement, CustomIconHarpProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconHarp({ color, size = 24, ...props }: CustomIconHarpProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -37,8 +36,6 @@ const CustomIconHarp = forwardRef<SVGSVGElement, CustomIconHarpProps>(
       </g>
     </svg>
   )
-)
-
-CustomIconHarp.displayName = 'CustomIconHarp'
+}
 
 export default CustomIconHarp

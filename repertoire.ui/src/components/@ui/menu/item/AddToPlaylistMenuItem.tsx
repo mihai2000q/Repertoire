@@ -186,7 +186,7 @@ function AddToPlaylistMenuItem({
     models: dataPlaylists?.pages.flatMap((x) => x.models ?? []),
     totalCount: dataPlaylists?.pages[0].totalCount
   }
-  const scrollRef = useRef()
+  const scrollRef = useRef(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

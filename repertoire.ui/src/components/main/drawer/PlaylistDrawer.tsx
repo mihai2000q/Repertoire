@@ -132,7 +132,7 @@ function PlaylistDrawer() {
     }
   }, [playlist, opened])
 
-  const scrollRef = useRef()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

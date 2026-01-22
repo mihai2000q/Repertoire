@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 import DragSelect, { DSInputElement } from 'dragselect'
 import { createStyles } from '@mantine/emotion'
 import { alpha } from '@mantine/core'
@@ -13,7 +13,7 @@ const useStyles = createStyles((theme) => ({
 }))
 
 interface DragSelectProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   settings?: ConstructorParameters<typeof DragSelect<DSInputElement>>[0]
   data?: unknown
 }

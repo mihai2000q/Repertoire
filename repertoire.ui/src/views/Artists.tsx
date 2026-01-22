@@ -83,7 +83,7 @@ function Artists() {
   const [openedAddNewArtistModal, { open: openAddNewArtistModal, close: closeAddNewArtistModal }] =
     useDisclosure(false)
 
-  const artistsRef = useRef<HTMLDivElement>()
+  const artistsRef = useRef<HTMLDivElement>(null)
   const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {

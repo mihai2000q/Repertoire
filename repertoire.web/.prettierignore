@@ -4,3 +4,4 @@ dist
 pnpm-lock.yaml
 tsconfig.json
 tsconfig.*.json
+package-lock.json

@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconPianoProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconPiano = forwardRef<SVGSVGElement, CustomIconPianoProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconPiano({ color, size = 24, ...props }: CustomIconPianoProps) {
+  return (
     <svg
-      ref={ref}
       width={size}
       height={size}
       fill={color || 'currentColor'}
@@ -39,8 +38,6 @@ const CustomIconPiano = forwardRef<SVGSVGElement, CustomIconPianoProps>(
       </g>
     </svg>
   )
-)
-
-CustomIconPiano.displayName = 'CustomIconPiano'
+}
 
 export default CustomIconPiano

@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconMetronomeProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconMetronome = forwardRef<SVGSVGElement, CustomIconMetronomeProps>(
-  ({ color, size = 24, strokeWidth = 2, ...props }, ref) => (
+function CustomIconMetronome({ color, size = 24, strokeWidth = 2, ...props }: CustomIconMetronomeProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -57,8 +56,6 @@ const CustomIconMetronome = forwardRef<SVGSVGElement, CustomIconMetronomeProps>(
       </g>
     </svg>
   )
-)
-
-CustomIconMetronome.displayName = 'CustomIconMetronome'
+}
 
 export default CustomIconMetronome

@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconAcousticGuitarProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconAcousticGuitar = forwardRef<SVGSVGElement, CustomIconAcousticGuitarProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconAcousticGuitar({ color, size = 24, ...props }: CustomIconAcousticGuitarProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -49,8 +48,6 @@ const CustomIconAcousticGuitar = forwardRef<SVGSVGElement, CustomIconAcousticGui
       </g>
     </svg>
   )
-)
-
-CustomIconAcousticGuitar.displayName = 'CustomIconAcousticGuitar'
+}
 
 export default CustomIconAcousticGuitar

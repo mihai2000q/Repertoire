@@ -212,7 +212,7 @@ function ArtistDrawer() {
     }
   }, [artist, opened])
 
-  const scrollRef = useRef()
+  const scrollRef = useRef(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1
