@@ -1,4 +1,4 @@
-import { forwardRef, ReactNode } from 'react'
+import { ReactNode, RefObject } from 'react'
 import { ActionIcon, Box, Menu, Tooltip } from '@mantine/core'
 import { IconDots, IconPencil } from '@tabler/icons-react'
 import { useHover, useMergedRef } from '@mantine/hooks'
@@ -10,55 +10,61 @@ interface HeaderPanelCardProps {
   openMenu: () => void
   closeMenu: () => void
   menuDropdown: ReactNode
+  ref: RefObject<HTMLDivElement>
   hideIcons?: boolean
 }
 
-const HeaderPanelCard = forwardRef<HTMLDivElement, HeaderPanelCardProps>(
-  ({ children, onEditClick, menuOpened, openMenu, closeMenu, menuDropdown, hideIcons }, ref) => {
-    const { ref: hoverRef, hovered } = useHover()
-    const mergedRef = useMergedRef(ref, hoverRef)
+function HeaderPanelCard({
+  children,
+  onEditClick,
+  menuOpened,
+  openMenu,
+  closeMenu,
+  menuDropdown,
+  ref,
+  hideIcons
+}: HeaderPanelCardProps) {
+  const { ref: hoverRef, hovered } = useHover()
+  const mergedRef = useMergedRef(ref, hoverRef)
 
-    return (
-      <Box aria-label={'header-panel-card'} ref={mergedRef} pos={'relative'}>
-        {children}
+  return (
+    <Box aria-label={'header-panel-card'} ref={mergedRef} pos={'relative'}>
+      {children}
 
-        {hideIcons !== true && (
-          <Box pos={'absolute'} right={0} top={0} p={0}>
-            <Menu shadow={'lg'} opened={menuOpened} onOpen={openMenu} onClose={closeMenu}>
-              <Menu.Target>
-                <ActionIcon
-                  aria-label={'more-menu'}
-                  variant={'grey'}
-                  style={{ transition: '0.25s', opacity: hovered || menuOpened ? 1 : 0 }}
-                >
-                  <IconDots size={18} />
-                </ActionIcon>
-              </Menu.Target>
-
-              <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
-            </Menu>
-          </Box>
-        )}
-
-        {hideIcons !== true && (
-          <Box pos={'absolute'} right={0} bottom={-12} p={0}>
-            <Tooltip label={'Edit Header'} openDelay={500}>
+      {hideIcons !== true && (
+        <Box pos={'absolute'} right={0} top={0} p={0}>
+          <Menu shadow={'lg'} opened={menuOpened} onOpen={openMenu} onClose={closeMenu}>
+            <Menu.Target>
               <ActionIcon
-                aria-label={'edit-header'}
+                aria-label={'more-menu'}
                 variant={'grey'}
-                style={{ transition: '0.25s', opacity: hovered ? 1 : 0 }}
-                onClick={onEditClick}
+                style={{ transition: '0.25s', opacity: hovered || menuOpened ? 1 : 0 }}
               >
-                <IconPencil size={18} />
+                <IconDots size={18} />
               </ActionIcon>
-            </Tooltip>
-          </Box>
-        )}
-      </Box>
-    )
-  }
-)
+            </Menu.Target>
 
-HeaderPanelCard.displayName = 'HeaderPanelCard'
+            <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+          </Menu>
+        </Box>
+      )}
+
+      {hideIcons !== true && (
+        <Box pos={'absolute'} right={0} bottom={-12} p={0}>
+          <Tooltip label={'Edit Header'} openDelay={500}>
+            <ActionIcon
+              aria-label={'edit-header'}
+              variant={'grey'}
+              style={{ transition: '0.25s', opacity: hovered ? 1 : 0 }}
+              onClick={onEditClick}
+            >
+              <IconPencil size={18} />
+            </ActionIcon>
+          </Tooltip>
+        </Box>
+      )}
+    </Box>
+  )
+}
 
 export default HeaderPanelCard

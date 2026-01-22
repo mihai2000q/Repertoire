@@ -57,6 +57,8 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const onContextMenu = createEventHandler(children.props.onContextMenu, (e: React.MouseEvent) => {
     if (ctx.trigger === 'context') {
       e.preventDefault()
@@ -65,6 +67,8 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
   })
 
   return cloneElement(children, {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     onContextMenu,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

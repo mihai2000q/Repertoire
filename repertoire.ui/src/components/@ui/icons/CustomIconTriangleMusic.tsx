@@ -1,14 +1,18 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconTriangleMusicProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconTriangleMusic = forwardRef<SVGSVGElement, CustomIconTriangleMusicProps>(
-  ({ color, size = 24, strokeWidth = 12, ...props }, ref) => (
+function CustomIconTriangleMusic({
+  color,
+  size = 24,
+  strokeWidth = 12,
+  ...props
+}: CustomIconTriangleMusicProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -42,8 +46,6 @@ const CustomIconTriangleMusic = forwardRef<SVGSVGElement, CustomIconTriangleMusi
       </g>
     </svg>
   )
-)
-
-CustomIconTriangleMusic.displayName = 'CustomIconTriangleMusic'
+}
 
 export default CustomIconTriangleMusic
