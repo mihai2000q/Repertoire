@@ -7,9 +7,10 @@ import electronToolkitPrettier from '@electron-toolkit/eslint-config-prettier'
 export default tsLint.config(
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   { ignores: ['node_modules', 'dist', 'out', '.gitignore'] },
+  { settings: { react: { version: 'detect' } } },
   reactLint.configs.flat.recommended,
   jsLint.configs.recommended,
   ...tsLint.configs.recommended,
-  prettier,
-  electronToolkitPrettier
+  electronToolkitPrettier,
+  prettier
 )
