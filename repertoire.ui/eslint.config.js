@@ -17,6 +17,7 @@ export default tsLint.config(
         ...globals.node
       }
     },
+    plugins: { viteJs_react: react() },
     rules: {
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
