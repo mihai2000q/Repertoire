@@ -76,7 +76,7 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
 
-  const shuffleToastId = useRef<Id>()
+  const shuffleToastId = useRef<Id>(undefined)
   async function handleShuffle() {
     await shufflePlaylistSongs({ id: playlistId }).unwrap()
     if (shuffleToastId.current) toast.dismiss(shuffleToastId.current)

@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconSaxophoneProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconSaxophone = forwardRef<SVGSVGElement, CustomIconSaxophoneProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconSaxophone({ color, size = 24, ...props }: CustomIconSaxophoneProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -57,8 +56,6 @@ const CustomIconSaxophone = forwardRef<SVGSVGElement, CustomIconSaxophoneProps>(
       </g>
     </svg>
   )
-)
-
-CustomIconSaxophone.displayName = 'CustomIconSaxophone'
+}
 
 export default CustomIconSaxophone

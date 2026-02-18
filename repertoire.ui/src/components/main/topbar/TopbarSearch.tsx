@@ -141,7 +141,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
     totalCount: dataSearchResults?.pages[0].totalCount
   }
 
-  const scrollRef = useRef<HTMLDivElement>()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

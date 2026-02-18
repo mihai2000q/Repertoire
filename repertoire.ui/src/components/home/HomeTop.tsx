@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState } from 'react'
+import { RefObject, useRef, useState } from 'react'
 import { ActionIcon, Button, Center, Group, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useDidUpdate, useViewportSize } from '@mantine/hooks'
@@ -62,7 +62,7 @@ const TabButton = ({
   </Button>
 )
 
-const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
+function HomeTop({ ref }: { ref?: RefObject<HTMLDivElement> }) {
   const [topEntity, setHomeTopEntity] = useLocalStorage({
     key: LocalStorageKeys.HomeTopEntity,
     defaultValue: HomeTopEntity.Albums
@@ -292,8 +292,6 @@ const HomeTop = forwardRef<HTMLDivElement>((_, ref) => {
       </ScrollArea.Autosize>
     </Stack>
   )
-})
-
-HomeTop.displayName = 'HomeTop'
+}
 
 export default HomeTop

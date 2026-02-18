@@ -58,7 +58,7 @@ function ArtistSongsWidget({
   const [openedAddExistingSongs, { open: openAddExistingSongs, close: closeAddExistingSongs }] =
     useDisclosure(false)
 
-  const scrollRef = useRef()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

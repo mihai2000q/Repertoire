@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconAlbumMusicNoteProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconAlbumMusicNote = forwardRef<SVGSVGElement, CustomIconAlbumMusicNoteProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconAlbumMusicNote({ color, size = 24, ...props }: CustomIconAlbumMusicNoteProps) {
+  return (
     <svg
-      ref={ref}
       width={size}
       height={size}
       fill={color || 'currentColor'}
@@ -55,8 +54,6 @@ const CustomIconAlbumMusicNote = forwardRef<SVGSVGElement, CustomIconAlbumMusicN
       </g>
     </svg>
   )
-)
-
-CustomIconAlbumMusicNote.displayName = 'CustomIconAlbumMusicNote'
+}
 
 export default CustomIconAlbumMusicNote
