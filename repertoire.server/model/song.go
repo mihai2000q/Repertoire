@@ -93,3 +93,28 @@ type SongSettings struct {
 
 	SongID uuid.UUID `gorm:"not null" json:"-"`
 }
+
+// Official
+
+type OfficialSong struct {
+	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title         string             `gorm:"size:100; not null" json:"title"`
+	ReleaseDate   *internal.Date     `json:"releaseDate"`
+	ImageURL      *internal.FilePath `json:"imageUrl"`
+	Bpm           *uint              `json:"bpm"`
+	Difficulty    *enums.Difficulty  `json:"difficulty"`
+	SongsterrLink *string            `json:"songsterrLink"`
+	YoutubeLink   *string            `json:"youtubeLink"`
+	AlbumTrackNo  *uint              `json:"albumTrackNo"`
+
+	AlbumID        *uuid.UUID     `json:"albumId"`
+	ArtistID       *uuid.UUID     `json:"artistId"`
+	GuitarTuningID *uuid.UUID     `json:"-"`
+	Artist         OfficialArtist `gorm:"not null" json:"artist"`
+	Album          *OfficialAlbum `json:"album"`
+	GuitarTuning   *GuitarTuning  `json:"guitarTuning"`
+	Sections       []SongSection  `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
+
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+}

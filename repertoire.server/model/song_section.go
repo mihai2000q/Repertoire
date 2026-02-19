@@ -53,3 +53,40 @@ const (
 )
 
 var DefaultSongSectionConfidence uint = 0
+
+// Official
+
+type OfficialSongSection struct {
+	ID          uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name        string    `gorm:"size:30" json:"name"`
+	Order       uint      `gorm:"not null" json:"-"`
+	Occurrences uint      `gorm:"not null" json:"occurrences"`
+
+	UserStats []OfficialSongSectionUserStats `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+
+	SongID            uuid.UUID  `gorm:"not null" json:"-"`
+	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
+	InstrumentID      *uuid.UUID `json:"-"`
+	BandMemberID      *uuid.UUID `json:"-"`
+
+	Song            OfficialSong        `json:"-"`
+	SongSectionType SongSectionType     `json:"songSectionType"`
+	BandMember      *OfficialBandMember `json:"bandMember"`
+	Instrument      *Instrument         `json:"instrument"`
+
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+}
+
+type OfficialSongSectionUserStats struct {
+	ID              uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Rehearsals      uint      `gorm:"not null" json:"rehearsals"`
+	Confidence      uint      `gorm:"not null; size:100" json:"confidence"`
+	RehearsalsScore uint64    `gorm:"not null" json:"rehearsalsScore"`
+	ConfidenceScore uint      `gorm:"not null" json:"confidenceScore"`
+	Progress        uint64    `gorm:"not null" json:"progress"`
+
+	SongSectionID uuid.UUID `gorm:"not null" json:"-"`
+
+	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+}

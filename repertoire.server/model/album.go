@@ -19,13 +19,14 @@ type EnhancedAlbum struct {
 }
 
 type Album struct {
-	ID          uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Title       string             `gorm:"size:100; not null" json:"title"`
-	ReleaseDate *internal.Date     `json:"releaseDate"`
-	ImageURL    *internal.FilePath `json:"imageUrl"`
-	ArtistID    *uuid.UUID         `json:"artistId"`
-	Artist      *Artist            `json:"artist"`
-	Songs       []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
+	ID            uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title         string             `gorm:"size:100; not null" json:"title"`
+	ReleaseDate   *internal.Date     `json:"releaseDate"`
+	ImageURL      *internal.FilePath `json:"imageUrl"`
+	ArtistID      *uuid.UUID         `json:"artistId"`
+	Artist        *Artist            `json:"artist"`
+	OfficialAlbum *OfficialAlbum     `json:"officialAlbum"`
+	Songs         []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
@@ -44,4 +45,19 @@ func (a *Album) AfterFind(*gorm.DB) error {
 		a.Artist.ImageURL = a.Artist.ImageURL.ToFullURL()
 	}
 	return nil
+}
+
+// Official
+
+type OfficialAlbum struct {
+	ID          uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Title       string             `gorm:"size:100; not null" json:"title"`
+	ReleaseDate *internal.Date     `json:"releaseDate"`
+	ImageURL    *internal.FilePath `json:"imageUrl"`
+	ArtistID    *uuid.UUID         `json:"artistId"`
+	Artist      *Artist            `json:"artist"`
+	Songs       []Song             `gorm:"constraint:OnDelete:SET NULL" json:"songs"`
+
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
+	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
 }
