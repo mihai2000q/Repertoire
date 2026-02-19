@@ -19,7 +19,7 @@ type SongSection struct {
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
 
-	SongID            uuid.UUID  `gorm:"not null" json:"-"`
+	SongID            uuid.UUID  `gorm:"not null; index: idx_song_sections_song_id" json:"-"`
 	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
 	InstrumentID      *uuid.UUID `json:"-"`
 	BandMemberID      *uuid.UUID `json:"-"`
@@ -40,7 +40,7 @@ type SongSectionHistory struct {
 	Property      SongSectionProperty `gorm:"size:255; not null"`
 	From          uint                `gorm:"not null"`
 	To            uint                `gorm:"not null"`
-	SongSectionID uuid.UUID           `gorm:"not null"`
+	SongSectionID uuid.UUID           `gorm:"not null; index:idx_song_section_histories_section_id"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 }
