@@ -7,11 +7,9 @@ import (
 )
 
 type SongSection struct {
-	ID                 uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name               string    `gorm:"size:30" json:"name"`
-	Order              uint      `gorm:"not null" json:"-"`
-	Occurrences        uint      `gorm:"not null" json:"occurrences"`
-	PartialOccurrences uint      `gorm:"not null" json:"partialOccurrences"`
+	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name  string    `gorm:"size:30" json:"name"`
+	Order uint      `gorm:"not null" json:"-"`
 
 	Rehearsals      uint   `gorm:"not null" json:"rehearsals"`
 	Confidence      uint   `gorm:"not null; size:100" json:"confidence"`
