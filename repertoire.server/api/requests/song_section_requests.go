@@ -20,16 +20,6 @@ type UpdateSongSectionRequest struct {
 	InstrumentID *uuid.UUID
 }
 
-type UpdateSongSectionsOccurrencesRequest struct {
-	SongID   uuid.UUID                         `validate:"required"`
-	Sections []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
-}
-
-type UpdateSongSectionsPartialOccurrencesRequest struct {
-	SongID   uuid.UUID                                `validate:"required"`
-	Sections []UpdateSectionPartialOccurrencesRequest `validate:"min=1,dive"`
-}
-
 type UpdateAllSongSectionsRequest struct {
 	SongID       uuid.UUID `validate:"required"`
 	InstrumentID *uuid.UUID
@@ -50,16 +40,6 @@ type BulkRehearsalsSongSectionsRequest struct {
 type BulkDeleteSongSectionsRequest struct {
 	IDs    []uuid.UUID `validate:"min=1"`
 	SongID uuid.UUID   `validate:"required"`
-}
-
-type UpdateSectionOccurrencesRequest struct {
-	ID          uuid.UUID `validate:"required"`
-	Occurrences uint
-}
-
-type UpdateSectionPartialOccurrencesRequest struct {
-	ID                 uuid.UUID `validate:"required"`
-	PartialOccurrences uint
 }
 
 type BulkRehearsalsSongSectionRequest struct {
