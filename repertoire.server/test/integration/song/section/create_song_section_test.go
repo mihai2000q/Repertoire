@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestCreateSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -111,6 +112,10 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 				InstrumentID: test.instrumentID,
 			}
 
+			db := utils.GetDatabase(t)
+			var oldArrangements []model.SongArrangement
+			db.Preload("Occurrences").Order("\"order\"").Find(&oldArrangements)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().POST(w, "/api/songs/sections", request)
@@ -118,14 +123,29 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db := utils.GetDatabase(t)
+			db = db.Session(&gorm.Session{NewDB: true})
 
 			var section model.SongSection
-			db.Preload("Song").Find(&section, &model.SongSection{Name: request.Name})
+			db.Preload("Song").
+				Preload("Song.Arrangements", func(db *gorm.DB) *gorm.DB { return db.Order("\"order\"") }).
+				Preload("Song.Arrangements.Occurrences", func(db *gorm.DB) *gorm.DB {
+					return db.
+						Joins("LEFT JOIN song_sections ON song_sections.song_id = song_arrangements.song_id").
+						Order("song_sections.order")
+				}).
+				Find(&section, &model.SongSection{Name: request.Name})
 
 			assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
 			assert.LessOrEqual(t, section.Song.Rehearsals, song.Rehearsals)
 			assert.LessOrEqual(t, section.Song.Progress, song.Progress)
+
+			for i, arrangement := range section.Song.Arrangements {
+				assert.Len(t, arrangement.Occurrences, len(oldArrangements[i].Occurrences)+1)
+				newOccurrence := arrangement.Occurrences[len(section.Song.Arrangements)-1]
+				assert.Equal(t, section.ID, newOccurrence.SectionID)
+				assert.Equal(t, arrangement.ID, newOccurrence.ArrangementID)
+				assert.Zero(t, newOccurrence.Occurrences)
+			}
 
 			assertCreatedSongSection(t, section, request, len(song.Sections))
 		})

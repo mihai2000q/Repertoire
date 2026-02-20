@@ -12,17 +12,20 @@ import (
 )
 
 type CreateSongSection struct {
-	songSectionRepository repository.SongSectionRepository
-	songRepository        repository.SongRepository
+	songSectionRepository     repository.SongSectionRepository
+	songRepository            repository.SongRepository
+	songArrangementRepository repository.SongArrangementRepository
 }
 
 func NewCreateSongSection(
 	songSectionRepository repository.SongSectionRepository,
 	songRepository repository.SongRepository,
+	songArrangementRepository repository.SongArrangementRepository,
 ) CreateSongSection {
 	return CreateSongSection{
-		songSectionRepository: songSectionRepository,
-		songRepository:        songRepository,
+		songSectionRepository:     songSectionRepository,
+		songRepository:            songRepository,
+		songArrangementRepository: songArrangementRepository,
 	}
 }
 
@@ -41,6 +44,7 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
+
 	if request.BandMemberID != nil {
 		res, err := c.songRepository.IsBandMemberAssociatedWithSong(request.SongID, *request.BandMemberID)
 		if err != nil {
@@ -72,6 +76,36 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 	song.Progress = (song.Progress*float64(sectionsCount) + float64(section.Progress)) / float64(sectionsCount+1)
 
 	err = c.songRepository.Update(&song)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	errCode := c.updateArrangements(section.ID, request.SongID)
+	if errCode != nil {
+		return errCode
+	}
+
+	return nil
+}
+
+// Add one new section occurrence on each song arrangement
+func (c CreateSongSection) updateArrangements(sectionID uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+	var arrangements []model.SongArrangement
+	err := c.songArrangementRepository.GetAllBySong(&arrangements, songID)
+	if err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	for i := range arrangements {
+		occurrence := model.SongSectionOccurrences{
+			SectionID:     sectionID,
+			Occurrences:   0,
+			ArrangementID: arrangements[i].ID,
+		}
+		arrangements[i].Occurrences = append(arrangements[i].Occurrences, occurrence)
+	}
+
+	err = c.songArrangementRepository.UpdateAllWithAssociations(&arrangements)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
