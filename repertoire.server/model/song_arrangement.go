@@ -11,11 +11,10 @@ type SongArrangement struct {
 }
 
 type SongSectionOccurrences struct {
-	ID            uuid.UUID   `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Occurrences   uint        `gorm:"not null" json:"occurrences"`
-	SectionID     uuid.UUID   `gorm:"not null" json:"-"`
 	Section       SongSection `gorm:"not null" json:"section"`
-	ArrangementID uuid.UUID   `gorm:"not null" json:"-"`
+	SectionID     uuid.UUID   `gorm:"primaryKey; type:uuid; <-:create;" json:"-"`
+	ArrangementID uuid.UUID   `gorm:"primaryKey; type:uuid; <-:create;" json:"-"`
 }
 
 var DefaultSongArrangementName = "Perfect Rehearsal"

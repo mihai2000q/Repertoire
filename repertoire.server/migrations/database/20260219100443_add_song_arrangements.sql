@@ -10,12 +10,12 @@ CREATE TABLE public.song_arrangements
 );
 CREATE TABLE public.song_section_occurrences
 (
-    id             uuid   not null primary key,
     occurrences    bigint not null,
     arrangement_id uuid   not null
         constraint fk_song_arrangements_song_section_occurrences references public.song_arrangements on delete cascade,
     section_id     uuid   not null
-        constraint fk_song_sections_song_section_occurrences references public.song_sections on delete cascade
+        constraint fk_song_sections_song_section_occurrences references public.song_sections on delete cascade,
+    primary key (arrangement_id, section_id)
 );
 
 ALTER TABLE public.songs
@@ -39,13 +39,18 @@ $$
     BEGIN
         FOR current_song_id IN (SELECT id FROM public.songs)
             LOOP
-                -- if all song sections' have 0 partial occurrences,
-                -- then the user must have not set them,
-                -- so there is no point to migrate them to a partial rehearsal arrangement
-                SELECT COUNT(*) INTO sections_count
-                                FROM public.song_sections WHERE song_id = current_song_id;
-                SELECT COUNT(*) INTO partial_sections_count
-                                FROM public.song_sections WHERE song_id = current_song_id AND partial_occurrences = 0;
+            -- if all song sections' have 0 partial occurrences,
+            -- then the user must have not set them,
+            -- so there is no point to migrate them to a partial rehearsal arrangement
+                SELECT COUNT(*)
+                INTO sections_count
+                FROM public.song_sections
+                WHERE song_id = current_song_id;
+                SELECT COUNT(*)
+                INTO partial_sections_count
+                FROM public.song_sections
+                WHERE song_id = current_song_id
+                  AND partial_occurrences = 0;
 
                 -- Insert perfect rehearsal arrangements
                 perfect_arrangement_id = gen_random_uuid();
@@ -71,15 +76,13 @@ $$
                      WHERE song_id = current_song_id)
                     LOOP
                         INSERT INTO public.song_section_occurrences
-                        VALUES (gen_random_uuid(),
-                                current_occurrences,
+                        VALUES (current_occurrences,
                                 perfect_arrangement_id,
                                 current_song_section_id);
 
                         IF NOT skip_partial_occurrences THEN
                             INSERT INTO public.song_section_occurrences
-                            VALUES (gen_random_uuid(),
-                                    current_partial_occurrences,
+                            VALUES (current_partial_occurrences,
                                     partial_arrangement_id,
                                     current_song_section_id);
                         END IF;
