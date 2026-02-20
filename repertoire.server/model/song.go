@@ -34,8 +34,9 @@ type Song struct {
 	Confidence     float64            `gorm:"not null" json:"confidence"`
 	Progress       float64            `gorm:"not null" json:"progress"`
 
-	Settings           SongSettings     `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
-	DefaultArrangement *SongArrangement `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangement"`
+	Settings             SongSettings     `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
+	DefaultArrangement   *SongArrangement `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangement"`
+	DefaultArrangementID *uuid.UUID       `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 
 	AlbumID        *uuid.UUID    `json:"albumId"`
 	ArtistID       *uuid.UUID    `json:"artistId"`
