@@ -25,6 +25,7 @@ var services = fx.Options(
 	fx.Provide(service.NewArtistService),
 	fx.Provide(service.NewPlaylistService),
 	fx.Provide(service.NewSearchService),
+	fx.Provide(service.NewSongArrangementService),
 	fx.Provide(service.NewSongSectionService),
 	fx.Provide(service.NewSongService),
 	fx.Provide(service.NewUserDataService),
