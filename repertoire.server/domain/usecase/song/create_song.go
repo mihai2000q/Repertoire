@@ -40,9 +40,8 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		return uuid.Nil, errCode
 	}
 
-	songID := uuid.New()
 	song := model.Song{
-		ID:             songID,
+		ID:             uuid.New(),
 		Title:          request.Title,
 		Description:    request.Description,
 		Bpm:            request.Bpm,
@@ -53,11 +52,12 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		GuitarTuningID: request.GuitarTuningID,
 		AlbumID:        request.AlbumID,
 		ArtistID:       request.ArtistID,
-		Sections:       c.createSections(request.Sections, songID),
 		Settings:       model.SongSettings{ID: uuid.New()},
 		UserID:         userID,
 	}
 
+	c.createSections(&song, request)
+	c.createArrangement(&song)
 	c.createArtist(&song, request)
 	c.createAlbum(&song, request)
 
@@ -79,6 +79,42 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 	return song.ID, nil
 }
 
+func (c CreateSong) createSections(song *model.Song, request requests.CreateSongRequest) {
+	var sections []model.SongSection
+	for i, sectionRequest := range request.Sections {
+		sections = append(sections, model.SongSection{
+			ID:                uuid.New(),
+			Name:              sectionRequest.Name,
+			Confidence:        model.DefaultSongSectionConfidence,
+			SongSectionTypeID: sectionRequest.TypeID,
+			Order:             uint(i),
+			SongID:            song.ID,
+		})
+	}
+	song.Sections = sections
+}
+
+func (c CreateSong) createArrangement(song *model.Song) {
+	arrangement := model.SongArrangement{
+		ID:     uuid.New(),
+		Name:   model.DefaultSongArrangementName,
+		Order:  0,
+		SongID: song.ID,
+	}
+
+	for _, section := range song.Sections {
+		occurrences := model.SongSectionOccurrences{
+			Occurrences:   0,
+			SectionID:     section.ID,
+			ArrangementID: arrangement.ID,
+		}
+		arrangement.Occurrences = append(arrangement.Occurrences, occurrences)
+	}
+
+	song.DefaultArrangement = &arrangement
+	song.Arrangements = []model.SongArrangement{arrangement}
+}
+
 func (c CreateSong) createArtist(song *model.Song, request requests.CreateSongRequest) {
 	if request.ArtistName == nil {
 		return
@@ -90,21 +126,6 @@ func (c CreateSong) createArtist(song *model.Song, request requests.CreateSongRe
 		UserID: song.UserID,
 	}
 	song.ArtistID = &song.Artist.ID
-}
-
-func (c CreateSong) createSections(request []requests.CreateSectionRequest, songID uuid.UUID) []model.SongSection {
-	var sections []model.SongSection
-	for i, sectionRequest := range request {
-		sections = append(sections, model.SongSection{
-			ID:                uuid.New(),
-			Name:              sectionRequest.Name,
-			Confidence:        model.DefaultSongSectionConfidence,
-			SongSectionTypeID: sectionRequest.TypeID,
-			Order:             uint(i),
-			SongID:            songID,
-		})
-	}
-	return sections
 }
 
 func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongRequest) {
