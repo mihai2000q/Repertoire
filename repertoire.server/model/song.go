@@ -34,16 +34,20 @@ type Song struct {
 	Confidence     float64            `gorm:"not null" json:"confidence"`
 	Progress       float64            `gorm:"not null" json:"progress"`
 
-	Settings       SongSettings   `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
-	AlbumID        *uuid.UUID     `json:"albumId"`
-	ArtistID       *uuid.UUID     `json:"artistId"`
-	GuitarTuningID *uuid.UUID     `json:"-"`
-	Artist         *Artist        `json:"artist"`
-	Album          *Album         `json:"album"`
-	GuitarTuning   *GuitarTuning  `json:"guitarTuning"`
-	Sections       []SongSection  `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
-	Playlists      []Playlist     `gorm:"many2many:playlist_songs" json:"playlists"`
-	PlaylistSongs  []PlaylistSong `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"-"`
+	Settings           SongSettings     `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
+	DefaultArrangement *SongArrangement `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangement"`
+
+	AlbumID        *uuid.UUID    `json:"albumId"`
+	ArtistID       *uuid.UUID    `json:"artistId"`
+	GuitarTuningID *uuid.UUID    `json:"-"`
+	Artist         *Artist       `json:"artist"`
+	Album          *Album        `json:"album"`
+	GuitarTuning   *GuitarTuning `json:"guitarTuning"`
+
+	Sections      []SongSection     `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
+	Arrangements  []SongArrangement `gorm:"constraint:OnDelete:CASCADE" json:"arrangements"`
+	Playlists     []Playlist        `gorm:"many2many:playlist_songs" json:"playlists"`
+	PlaylistSongs []PlaylistSong    `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
