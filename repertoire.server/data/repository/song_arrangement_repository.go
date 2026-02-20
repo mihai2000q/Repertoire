@@ -14,6 +14,7 @@ type SongArrangementRepository interface {
 	CountBySong(count *int64, songID uuid.UUID) error
 	Create(arrangement *model.SongArrangement) error
 	UpdateWithAssociations(arrangement *model.SongArrangement) error
+	UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error
 	Delete(id uuid.UUID) error
 }
 
@@ -63,6 +64,18 @@ func (s songArrangementRepository) UpdateWithAssociations(arrangement *model.Son
 		Session(&gorm.Session{FullSaveAssociations: true}).
 		Updates(&arrangement).
 		Error
+}
+
+func (s songArrangementRepository) UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error {
+	return s.client.Transaction(func(tx *gorm.DB) error {
+		for _, arrangement := range *arrangements {
+			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&arrangement).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func (s songArrangementRepository) Delete(id uuid.UUID) error {
