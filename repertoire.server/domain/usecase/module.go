@@ -8,6 +8,7 @@ import (
 	playlistSong "repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/domain/usecase/song"
+	"repertoire/server/domain/usecase/song/arrangement"
 	"repertoire/server/domain/usecase/song/section"
 	"repertoire/server/domain/usecase/udata/band/member/role"
 	"repertoire/server/domain/usecase/udata/guitar/tuning"
@@ -89,7 +90,6 @@ var searchUseCases = fx.Options(
 var songUseCases = fx.Options(
 	fx.Provide(song.NewAddPerfectSongRehearsal),
 	fx.Provide(song.NewAddPerfectSongRehearsals),
-	fx.Provide(song.NewAddPartialSongRehearsal),
 	fx.Provide(song.NewBulkDeleteSongs),
 	fx.Provide(song.NewCreateSong),
 	fx.Provide(song.NewDeleteSong),
@@ -105,6 +105,14 @@ var songUseCases = fx.Options(
 	fx.Provide(song.NewGetInstruments),
 	fx.Provide(section.NewGetSongSectionTypes),
 
+	// Arrangements
+	fx.Provide(arrangement.NewCreateSongArrangement),
+	fx.Provide(arrangement.NewDeleteSongArrangement),
+	fx.Provide(arrangement.NewGetAllSongArrangements),
+	fx.Provide(arrangement.NewMoveSongArrangement),
+	fx.Provide(arrangement.NewUpdateDefaultSongArrangement),
+	fx.Provide(arrangement.NewUpdateSongArrangement),
+
 	// Sections
 	fx.Provide(section.NewBulkRehearsalsSongSections),
 	fx.Provide(section.NewBulkDeleteSongSections),
@@ -113,8 +121,6 @@ var songUseCases = fx.Options(
 	fx.Provide(section.NewMoveSongSection),
 	fx.Provide(section.NewUpdateAllSongSections),
 	fx.Provide(section.NewUpdateSongSection),
-	fx.Provide(section.NewUpdateSongSectionsOccurrences),
-	fx.Provide(section.NewUpdateSongSectionsPartialOccurrences),
 )
 
 var userDataUseCases = fx.Options(

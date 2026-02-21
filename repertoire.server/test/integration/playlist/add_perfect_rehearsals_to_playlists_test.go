@@ -65,8 +65,11 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 	db = db.Session(&gorm.Session{NewDB: true})
 	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB { return db.Order("song_track_no") }).
 		Preload("PlaylistSongs.Song").
-		Preload("PlaylistSongs.Song.Sections").
+		Preload("PlaylistSongs.Song.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
 		Preload("PlaylistSongs.Song.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+		Preload("PlaylistSongs.Song.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
+		}).
 		Find(&playlists, request.IDs)
 
 	for i, playlist := range newPlaylists {
@@ -75,7 +78,7 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 			newSong := newPlaylists[i].PlaylistSongs[j].Song
 			totalOccurrences := uint(0)
 			for _, section := range newSong.Sections {
-				totalOccurrences += section.Occurrences
+				totalOccurrences += section.ArrangementOccurrences[0].Occurrences
 			}
 
 			if totalOccurrences > 0 {

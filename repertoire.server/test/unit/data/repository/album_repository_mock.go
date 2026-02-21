@@ -86,7 +86,7 @@ func (a *AlbumRepositoryMock) GetAllByIDsWithSongs(albums *[]model.Album, ids []
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) GetAllByIDsWithSongSections(albums *[]model.Album, ids []uuid.UUID) error {
+func (a *AlbumRepositoryMock) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error {
 	args := a.Called(albums, ids)
 
 	if len(args) > 1 {
@@ -96,7 +96,7 @@ func (a *AlbumRepositoryMock) GetAllByIDsWithSongSections(albums *[]model.Album,
 	return args.Error(0)
 }
 
-func (a *AlbumRepositoryMock) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error {
+func (a *AlbumRepositoryMock) GetAllByIDsWithSongSectionsAndOccurrences(albums *[]model.Album, ids []uuid.UUID) error {
 	args := a.Called(albums, ids)
 
 	if len(args) > 1 {

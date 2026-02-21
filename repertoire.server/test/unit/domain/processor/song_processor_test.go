@@ -15,14 +15,37 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestAddPerfectRehearsal_WhenSongHasNoDefaultArrangement_ShouldReturnFalse(t *testing.T) {
+	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	_uut := processor.NewSongProcessor(nil)
+
+	mockSong := &model.Song{ID: uuid.New()}
+
+	// when
+	errCode, updated := _uut.AddPerfectRehearsal(mockSong, songSectionRepository)
+
+	// then
+	assert.False(t, updated)
+	assert.Nil(t, errCode)
+
+	songSectionRepository.AssertExpectations(t)
+}
+
 func TestAddPerfectRehearsal_WhenCreateHistoryFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	_uut := processor.NewSongProcessor(nil)
 
 	mockSong := &model.Song{
-		ID:       uuid.New(),
-		Sections: []model.SongSection{{ID: uuid.New(), Occurrences: 2}},
+		ID:                   uuid.New(),
+		DefaultArrangementID: &[]uuid.UUID{uuid.New()}[0],
+		Sections: []model.SongSection{
+			{
+				ID:                     uuid.New(),
+				ArrangementOccurrences: []model.SongSectionOccurrences{{SectionID: uuid.New(), Occurrences: 1}},
+			},
+		},
 	}
 	sectionsCount := len(mockSong.Sections)
 
@@ -49,8 +72,14 @@ func TestAddPerfectRehearsal_WhenGetHistoryFails_ShouldReturnInternalServerError
 	_uut := processor.NewSongProcessor(nil)
 
 	mockSong := &model.Song{
-		ID:       uuid.New(),
-		Sections: []model.SongSection{{ID: uuid.New(), Occurrences: 2}},
+		ID:                   uuid.New(),
+		DefaultArrangementID: &[]uuid.UUID{uuid.New()}[0],
+		Sections: []model.SongSection{
+			{
+				ID:                     uuid.New(),
+				ArrangementOccurrences: []model.SongSectionOccurrences{{Occurrences: 1}},
+			},
+		},
 	}
 	sectionsCount := len(mockSong.Sections)
 
@@ -88,13 +117,16 @@ func TestAddPerfectRehearsal_WhenSectionsHaveZeroOccurrences_ShouldNotUpdateTheS
 	_uut := processor.NewSongProcessor(progressProcessor)
 
 	mockSong := &model.Song{
+		ID:                   uuid.New(),
+		DefaultArrangementID: &[]uuid.UUID{uuid.New()}[0],
 		Sections: []model.SongSection{
 			{
-				ID:         uuid.New(),
-				Rehearsals: 23,
+				ID:                     uuid.New(),
+				ArrangementOccurrences: []model.SongSectionOccurrences{{Occurrences: 0}},
 			},
 			{
-				ID: uuid.New(),
+				ID:                     uuid.New(),
+				ArrangementOccurrences: []model.SongSectionOccurrences{{Occurrences: 0}},
 			},
 		},
 	}
@@ -117,19 +149,21 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *testi
 	_uut := processor.NewSongProcessor(progressProcessor)
 
 	mockSong := &model.Song{
+		ID:                   uuid.New(),
+		DefaultArrangementID: &[]uuid.UUID{uuid.New()}[0],
 		Sections: []model.SongSection{
 			{
-				ID:          uuid.New(),
-				Rehearsals:  23,
-				Occurrences: 2,
+				ID:                     uuid.New(),
+				Rehearsals:             23,
+				ArrangementOccurrences: []model.SongSectionOccurrences{{Occurrences: 23}},
 			},
 			{
-				ID:         uuid.New(),
-				Rehearsals: 10,
+				ID:                     uuid.New(),
+				ArrangementOccurrences: []model.SongSectionOccurrences{{Occurrences: 0}},
 			},
 			{
-				ID:          uuid.New(),
-				Occurrences: 4,
+				ID:                     uuid.New(),
+				ArrangementOccurrences: []model.SongSectionOccurrences{{Occurrences: 4}},
 			},
 		},
 	}
@@ -138,7 +172,7 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *testi
 	sectionsCount := len(mockSong.Sections)
 
 	sectionsCountWithOcc := len(slices.DeleteFunc(slices.Clone(mockSong.Sections), func(section model.SongSection) bool {
-		return section.Occurrences == 0
+		return section.ArrangementOccurrences[0].Occurrences == 0
 	}))
 
 	songSectionRepository.On("CreateHistory", mock.IsType(new(model.SongSectionHistory))).
@@ -153,7 +187,7 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *testi
 			})
 
 			assert.Equal(t, sections[0].Rehearsals, newHistory.From)
-			assert.Equal(t, sections[0].Rehearsals+sections[0].Occurrences, newHistory.To)
+			assert.Equal(t, sections[0].Rehearsals+sections[0].ArrangementOccurrences[0].Occurrences, newHistory.To)
 		}).
 		Return(nil).
 		Times(sectionsCountWithOcc)
@@ -202,11 +236,11 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *testi
 	var newSongRehearsals uint = 0
 	var newSongProgress uint64 = 0
 	for i, section := range mockSong.Sections {
-		if section.Occurrences == 0 {
+		if section.ArrangementOccurrences[0].Occurrences == 0 {
 			assert.Equal(t, oldSections[i], section)
 			continue
 		}
-		assert.Equal(t, oldSections[i].Rehearsals+section.Occurrences, section.Rehearsals)
+		assert.Equal(t, oldSections[i].Rehearsals+section.ArrangementOccurrences[0].Occurrences, section.Rehearsals)
 		assert.Equal(t, newRehearsalScore, section.RehearsalsScore)
 		assert.Equal(t, newProgress, section.Progress)
 		newSongRehearsals += section.Rehearsals

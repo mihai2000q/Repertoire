@@ -357,7 +357,18 @@ func assertCreatedSong(
 	assert.Equal(t, userID, song.UserID)
 	assert.Len(t, request.Sections, len(song.Sections))
 
+	// assert settings
 	assert.NotEmpty(t, song.Settings.ID)
+
+	// assert arrangement
+	assert.NotEmpty(t, song.DefaultArrangementID)
+
+	assert.Len(t, song.Arrangements, 1)
+	assert.Equal(t, song.Arrangements[0].ID, *song.DefaultArrangementID)
+	assert.NotEmpty(t, song.Arrangements[0].ID)
+	assert.Equal(t, model.DefaultSongArrangementName, song.Arrangements[0].Name)
+	assert.Equal(t, uint(0), song.Arrangements[0].Order)
+	assert.Equal(t, song.ID, song.Arrangements[0].SongID)
 
 	for i, section := range request.Sections {
 		assert.NotEmpty(t, song.Sections[i].ID)
@@ -370,6 +381,11 @@ func assertCreatedSong(
 		assert.Equal(t, uint(i), song.Sections[i].Order)
 		assert.Equal(t, section.TypeID, song.Sections[i].SongSectionTypeID)
 		assert.Equal(t, song.ID, song.Sections[i].SongID)
+
+		// assert section occurrences on arrangement
+		assert.Zero(t, song.Arrangements[0].SectionOccurrences[i].Occurrences)
+		assert.Equal(t, song.Sections[i].ID, song.Arrangements[0].SectionOccurrences[i].SectionID)
+		assert.Equal(t, song.Arrangements[0].ID, song.Arrangements[0].SectionOccurrences[i].ArrangementID)
 	}
 	if request.AlbumTitle != nil {
 		assert.NotNil(t, song.Album)

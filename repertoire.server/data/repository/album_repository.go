@@ -17,8 +17,8 @@ type AlbumRepository interface {
 	GetFiltersMetadata(metadata *model.AlbumFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
-	GetAllByIDsWithSongSections(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
+	GetAllByIDsWithSongSectionsAndOccurrences(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.EnhancedAlbum,
 		userID uuid.UUID,
@@ -125,21 +125,26 @@ func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.
 		Error
 }
 
-func (a albumRepository) GetAllByIDsWithSongSections(albums *[]model.Album, ids []uuid.UUID) error {
-	return a.client.Model(&model.Album{}).
-		Preload("Songs", func(db *gorm.DB) *gorm.DB {
-			return db.Order("songs.album_track_no")
-		}).
-		Preload("Songs.Sections").
-		Find(&albums, ids).
-		Error
-}
-
 func (a albumRepository) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error {
 	return a.client.Model(&model.Album{}).
 		Joins("Artist").
 		Preload("Songs").
 		Preload("Songs.Artist").
+		Find(&albums, ids).
+		Error
+}
+
+func (a albumRepository) GetAllByIDsWithSongSectionsAndOccurrences(albums *[]model.Album, ids []uuid.UUID) error {
+	return a.client.Model(&model.Album{}).
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Order("songs.album_track_no")
+		}).
+		Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
+		}).
 		Find(&albums, ids).
 		Error
 }

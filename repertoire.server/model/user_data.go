@@ -8,7 +8,7 @@ type BandMemberRole struct {
 	Order       uint         `gorm:"not null" json:"-"`
 	BandMembers []BandMember `gorm:"many2many:band_member_has_roles" json:"-"`
 
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; not null; <-:create; index:idx_band_member_roles_user_id" json:"-"`
 }
 
 var DefaultBandMemberRoles = []string{
@@ -21,7 +21,7 @@ type GuitarTuning struct {
 	Order uint      `gorm:"not null" json:"-"`
 	Songs []Song    `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; not null; <-:create; index:idx_guitar_tunings_user_id" json:"-"`
 }
 
 var DefaultGuitarTunings = []string{
@@ -36,7 +36,7 @@ type Instrument struct {
 	SongSections []SongSection  `gorm:"constraint:OnDelete:SET NULL" json:"-"`
 	SongSettings []SongSettings `gorm:"foreignKey:DefaultInstrumentID; references:ID; constraint:OnDelete:SET NULL" json:"-"`
 
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; not null; <-:create; index:idx_instruments_user_id" json:"-"`
 }
 
 var DefaultInstruments = []string{
@@ -50,7 +50,7 @@ type SongSectionType struct {
 	Order    uint          `gorm:"not null" json:"-"`
 	Sections []SongSection `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
-	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"-"`
+	UserID uuid.UUID `gorm:"foreignKey:UserID; references:ID; not null; <-:create; index:idx_song_section_types_user_id" json:"-"`
 }
 
 var DefaultSongSectionTypes = []string{

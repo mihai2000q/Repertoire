@@ -7,11 +7,9 @@ import (
 )
 
 type SongSection struct {
-	ID                 uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
-	Name               string    `gorm:"size:30" json:"name"`
-	Order              uint      `gorm:"not null" json:"-"`
-	Occurrences        uint      `gorm:"not null" json:"occurrences"`
-	PartialOccurrences uint      `gorm:"not null" json:"partialOccurrences"`
+	ID    uuid.UUID `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
+	Name  string    `gorm:"size:30" json:"name"`
+	Order uint      `gorm:"not null" json:"-"`
 
 	Rehearsals      uint   `gorm:"not null" json:"rehearsals"`
 	Confidence      uint   `gorm:"not null; size:100" json:"confidence"`
@@ -19,7 +17,7 @@ type SongSection struct {
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
 
-	SongID            uuid.UUID  `gorm:"not null" json:"-"`
+	SongID            uuid.UUID  `gorm:"not null; index: idx_song_sections_song_id" json:"-"`
 	SongSectionTypeID uuid.UUID  `gorm:"not null" json:"-"`
 	InstrumentID      *uuid.UUID `json:"-"`
 	BandMemberID      *uuid.UUID `json:"-"`
@@ -29,7 +27,8 @@ type SongSection struct {
 	BandMember      *BandMember     `json:"bandMember"`
 	Instrument      *Instrument     `json:"instrument"`
 
-	History []SongSectionHistory `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	History                []SongSectionHistory     `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	ArrangementOccurrences []SongSectionOccurrences `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
@@ -40,7 +39,7 @@ type SongSectionHistory struct {
 	Property      SongSectionProperty `gorm:"size:255; not null"`
 	From          uint                `gorm:"not null"`
 	To            uint                `gorm:"not null"`
-	SongSectionID uuid.UUID           `gorm:"not null"`
+	SongSectionID uuid.UUID           `gorm:"not null; index:idx_song_section_histories_section_id"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 }
