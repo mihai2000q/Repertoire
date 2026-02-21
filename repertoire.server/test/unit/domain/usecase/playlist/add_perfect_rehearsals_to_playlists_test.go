@@ -27,7 +27,7 @@ func TestAddPerfectPlaylistRehearsals_WhenGetPlaylistsFails_ShouldReturnInternal
 	}
 
 	internalError := errors.New("internal error")
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
 		Return(internalError).
 		Once()
 
@@ -42,17 +42,20 @@ func TestAddPerfectPlaylistRehearsals_WhenGetPlaylistsFails_ShouldReturnInternal
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestAddPerfectPlaylistRehearsals_WhenPlaylistsLenIs0_ShouldReturnNotFoundError(t *testing.T) {
+func TestAddPerfectPlaylistRehearsals_WhenPlaylistsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewAddPerfectRehearsalsToPlaylists(playlistRepository, nil, nil)
 
 	request := requests.AddPerfectRehearsalsToPlaylistsRequest{
-		IDs: []uuid.UUID{uuid.New()},
+		IDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
-		Return(nil).
+	playlists := []model.Playlist{
+		{ID: request.IDs[0]},
+	}
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
+		Return(nil, &playlists).
 		Once()
 
 	// when
@@ -78,7 +81,7 @@ func TestAddPerfectPlaylistRehearsals_WhenTransactionExecuteFails_ShouldReturnEr
 	}
 
 	mockPlaylists := []model.Playlist{{ID: request.IDs[0]}}
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
 		Return(nil, &mockPlaylists).
 		Once()
 
@@ -117,7 +120,7 @@ func TestAddPerfectPlaylistRehearsals_WhenProcessorFails_ShouldReturnInternalSer
 		ID:            request.IDs[0],
 		PlaylistSongs: []model.PlaylistSong{{ID: uuid.New(), Song: model.Song{ID: uuid.New()}}},
 	}}
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
 		Return(nil, &mockPlaylists).
 		Once()
 
@@ -164,7 +167,7 @@ func TestAddPerfectPlaylistRehearsals_WhenUpdateFails_ShouldReturnInternalServer
 		ID:            request.IDs[0],
 		PlaylistSongs: []model.PlaylistSong{{ID: uuid.New(), Song: model.Song{ID: uuid.New()}}},
 	}}
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
 		Return(nil, &mockPlaylists).
 		Once()
 
@@ -221,7 +224,7 @@ func TestAddPerfectPlaylistRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSong
 			},
 		},
 	}
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
 		Return(nil, &mockPlaylists).
 		Once()
 
@@ -282,7 +285,7 @@ func TestAddPerfectPlaylistRehearsals_WhenSuccessful_ShouldUpdatePlaylists(t *te
 		},
 		{ID: request.IDs[2]},
 	}
-	playlistRepository.On("GetAllByIDsWithSongSections", new([]model.Playlist), request.IDs).
+	playlistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Playlist), request.IDs).
 		Return(nil, &mockPlaylists).
 		Once()
 

@@ -42,6 +42,26 @@ func (s *SongRepositoryMock) GetWithSections(song *model.Song, id uuid.UUID) err
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetWithSectionsAndOccurrences(song *model.Song, id uuid.UUID) error {
+	args := s.Called(song, id)
+
+	if len(args) > 1 {
+		*song = *args.Get(1).(*model.Song)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetWithArrangements(song *model.Song, id uuid.UUID) error {
+	args := s.Called(song, id)
+
+	if len(args) > 1 {
+		*song = *args.Get(1).(*model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetWithAssociations(song *model.Song, id uuid.UUID) error {
 	args := s.Called(song, id)
 
@@ -96,16 +116,6 @@ func (s *SongRepositoryMock) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) e
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error {
-	args := s.Called(songs, ids)
-
-	if len(args) > 1 {
-		*songs = *args.Get(1).(*[]model.Song)
-	}
-
-	return args.Error(0)
-}
-
 func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
@@ -127,6 +137,16 @@ func (s *SongRepositoryMock) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, 
 }
 
 func (s *SongRepositoryMock) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongRepositoryMock) GetAllByIDsWithSectionsAndOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
 	if len(args) > 1 {
@@ -208,6 +228,8 @@ func (s *SongRepositoryMock) Delete(ids []uuid.UUID) error {
 	return args.Error(0)
 }
 
+// Settings
+
 func (s *SongRepositoryMock) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
 	args := s.Called(settings, settingsID)
 
@@ -244,75 +266,5 @@ func (s *SongRepositoryMock) GetInstruments(instruments *[]model.Instrument, use
 		*instruments = *args.Get(1).(*[]model.Instrument)
 	}
 
-	return args.Error(0)
-}
-
-// Section Types
-
-func (s *SongRepositoryMock) GetSectionTypes(sectionTypes *[]model.SongSectionType, userID uuid.UUID) error {
-	args := s.Called(sectionTypes, userID)
-
-	if len(args) > 1 {
-		*sectionTypes = *args.Get(1).(*[]model.SongSectionType)
-	}
-
-	return args.Error(0)
-}
-
-// Sections
-
-func (s *SongRepositoryMock) GetSection(section *model.SongSection, id uuid.UUID) error {
-	args := s.Called(section, id)
-
-	if len(args) > 1 {
-		*section = *args.Get(1).(*model.SongSection)
-	}
-
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) CountSectionsBySong(count *int64, songID uuid.UUID) error {
-	args := s.Called(count, songID)
-
-	if len(args) > 1 {
-		*count = *args.Get(1).(*int64)
-	}
-
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) CreateSection(section *model.SongSection) error {
-	args := s.Called(section)
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) UpdateSection(section *model.SongSection) error {
-	args := s.Called(section)
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) DeleteSections(ids []uuid.UUID) error {
-	args := s.Called(ids)
-	return args.Error(0)
-}
-
-// History
-
-func (s *SongRepositoryMock) GetSongSectionHistory(
-	history *[]model.SongSectionHistory,
-	sectionID uuid.UUID,
-	property model.SongSectionProperty,
-) error {
-	args := s.Called(history, sectionID, property)
-
-	if len(args) > 1 {
-		*history = *args.Get(1).(*[]model.SongSectionHistory)
-	}
-
-	return args.Error(0)
-}
-
-func (s *SongRepositoryMock) CreateSongSectionHistory(history *model.SongSectionHistory) error {
-	args := s.Called(history)
 	return args.Error(0)
 }

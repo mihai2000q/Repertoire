@@ -31,12 +31,15 @@ func NewAddPerfectSongRehearsal(
 
 func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.GetWithSections(&song, request.ID)
+	err := a.repository.GetWithSectionsAndOccurrences(&song, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
+	}
+	if song.DefaultArrangementID == nil {
+		return wrapper.BadRequestError(errors.New("song has no default arrangement set"))
 	}
 
 	var errCode *wrapper.ErrorCode

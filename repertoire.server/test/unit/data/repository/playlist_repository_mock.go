@@ -82,7 +82,7 @@ func (p *PlaylistRepositoryMock) GetAllByIDs(playlists *[]model.Playlist, ids []
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error {
+func (p *PlaylistRepositoryMock) GetAllByIDsWithSongSectionsAndOccurrences(playlists *[]model.Playlist, ids []uuid.UUID) error {
 	args := p.Called(playlists, ids)
 
 	if len(args) > 1 {

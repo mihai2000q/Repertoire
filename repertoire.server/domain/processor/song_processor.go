@@ -28,14 +28,18 @@ func (s *songProcessor) AddPerfectRehearsal(
 	song *model.Song,
 	songSectionRepository repository.SongSectionRepository,
 ) (*wrapper.ErrorCode, bool) {
+	if song.DefaultArrangementID == nil {
+		return nil, false
+	}
+
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
 	for i, section := range song.Sections {
-		if section.Occurrences == 0 {
+		if section.ArrangementOccurrences[0].Occurrences == 0 {
 			continue
 		}
 
-		newRehearsals := section.Rehearsals + section.Occurrences
+		newRehearsals := section.Rehearsals + section.ArrangementOccurrences[0].Occurrences
 		// add history of the rehearsals change
 		newHistory := model.SongSectionHistory{
 			ID:            uuid.New(),

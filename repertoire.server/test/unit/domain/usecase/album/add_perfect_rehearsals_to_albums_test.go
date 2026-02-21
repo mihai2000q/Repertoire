@@ -27,7 +27,7 @@ func TestAddPerfectAlbumRehearsals_WhenGetAlbumsFails_ShouldReturnInternalServer
 	}
 
 	internalError := errors.New("internal error")
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(internalError).
 		Once()
 
@@ -42,7 +42,7 @@ func TestAddPerfectAlbumRehearsals_WhenGetAlbumsFails_ShouldReturnInternalServer
 	albumRepository.AssertExpectations(t)
 }
 
-func TestAddPerfectAlbumRehearsals_WhenAlbumsLenIs0_ShouldReturnNotFoundError(t *testing.T) {
+func TestAddPerfectAlbumRehearsals_WhenAlbumsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewAddPerfectRehearsalsToAlbums(albumRepository, nil, nil)
@@ -51,7 +51,7 @@ func TestAddPerfectAlbumRehearsals_WhenAlbumsLenIs0_ShouldReturnNotFoundError(t 
 		IDs: []uuid.UUID{uuid.New()},
 	}
 
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(nil).
 		Once()
 
@@ -78,7 +78,7 @@ func TestAddPerfectAlbumRehearsals_WhenTransactionExecuteFails_ShouldReturnError
 	}
 
 	mockAlbums := []model.Album{{ID: request.IDs[0]}}
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(nil, &mockAlbums).
 		Once()
 
@@ -117,7 +117,7 @@ func TestAddPerfectAlbumRehearsals_WhenProcessorFails_ShouldReturnInternalServer
 		ID:    request.IDs[0],
 		Songs: []model.Song{{ID: uuid.New()}},
 	}}
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(nil, &mockAlbums).
 		Once()
 
@@ -164,7 +164,7 @@ func TestAddPerfectAlbumRehearsals_WhenUpdateFails_ShouldReturnInternalServerErr
 		ID:    request.IDs[0],
 		Songs: []model.Song{{ID: uuid.New()}},
 	}}
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(nil, &mockAlbums).
 		Once()
 
@@ -221,7 +221,7 @@ func TestAddPerfectAlbumRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSongs(t
 			},
 		},
 	}
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(nil, &mockAlbums).
 		Once()
 
@@ -282,7 +282,7 @@ func TestAddPerfectAlbumRehearsals_WhenSuccessful_ShouldUpdateAlbums(t *testing.
 		},
 		{ID: request.IDs[2]},
 	}
-	albumRepository.On("GetAllByIDsWithSongSections", new([]model.Album), request.IDs).
+	albumRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Album), request.IDs).
 		Return(nil, &mockAlbums).
 		Once()
 

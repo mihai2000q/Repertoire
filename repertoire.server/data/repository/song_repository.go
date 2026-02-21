@@ -15,6 +15,8 @@ type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
+	GetWithSectionsAndOccurrences(song *model.Song, id uuid.UUID) error
+	GetWithArrangements(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByUser(
@@ -29,10 +31,10 @@ type SongRepository interface {
 	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
-	GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithSectionsAndOccurrences(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
@@ -77,6 +79,27 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 	return s.client.
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_sections.order")
+		}).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithSectionsAndOccurrences(song *model.Song, id uuid.UUID) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
+		}).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithArrangements(song *model.Song, id uuid.UUID) error {
+	return s.client.
+		Preload("Arrangements", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_arrangements.order")
 		}).
 		Find(&song, model.Song{ID: id}).
 		Error
@@ -229,15 +252,6 @@ func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error 
 	return s.client.Model(&model.Song{}).Find(&songs, ids).Error
 }
 
-func (s songRepository) GetAllByIDsWithSections(songs *[]model.Song, ids []uuid.UUID) error {
-	return s.client.
-		Preload("Sections", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_sections.order")
-		}).
-		Find(&songs, ids).
-		Error
-}
-
 func (s songRepository) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
 	return s.client.Model(&model.Song{}).
 		Find(&songs, model.Song{AlbumID: &albumID}).
@@ -277,6 +291,18 @@ func (s songRepository) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, i
 		Preload("Playlists").
 		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_track_no")
+		}).
+		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithSectionsAndOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
 		}).
 		Find(&songs, ids).
 		Error

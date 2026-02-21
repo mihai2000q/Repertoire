@@ -30,11 +30,11 @@ func NewAddPerfectRehearsalsToArtists(
 
 func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehearsalsToArtistsRequest) *wrapper.ErrorCode {
 	var artists []model.Artist
-	err := a.repository.GetAllByIDsWithSongSections(&artists, request.IDs)
+	err := a.repository.GetAllByIDsWithSongSectionsAndOccurrences(&artists, request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
-	if len(artists) == 0 {
+	if len(artists) != len(request.IDs) {
 		return wrapper.NotFoundError(errors.New("artists not found"))
 	}
 

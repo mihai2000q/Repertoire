@@ -10,12 +10,12 @@ import (
 
 func PerfectSongRehearsal(t *testing.T, song model.Song, newSong model.Song) {
 	for i, section := range newSong.Sections {
-		if section.Occurrences == 0 { // nothing changed
+		if section.ArrangementOccurrences[0].Occurrences == 0 { // nothing changed
 			assert.Equal(t, song.Sections[i], newSong.Sections[i])
 			continue
 		}
 
-		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].Occurrences)
+		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].ArrangementOccurrences[0].Occurrences)
 		assert.Greater(t, section.RehearsalsScore, song.Sections[i].RehearsalsScore)
 		assert.GreaterOrEqual(t, section.Progress, song.Sections[i].Progress)
 
