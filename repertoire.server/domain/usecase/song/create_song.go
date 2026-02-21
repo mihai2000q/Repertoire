@@ -108,10 +108,10 @@ func (c CreateSong) createArrangement(song *model.Song) {
 			SectionID:     section.ID,
 			ArrangementID: arrangement.ID,
 		}
-		arrangement.Occurrences = append(arrangement.Occurrences, occurrences)
+		arrangement.SectionOccurrences = append(arrangement.SectionOccurrences, occurrences)
 	}
 
-	song.DefaultArrangement = &arrangement
+	song.DefaultArrangementID = &arrangement.ID
 	song.Arrangements = []model.SongArrangement{arrangement}
 }
 

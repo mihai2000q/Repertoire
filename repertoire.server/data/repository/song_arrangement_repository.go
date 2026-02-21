@@ -30,20 +30,21 @@ func NewSongArrangementRepository(client database.Client) SongArrangementReposit
 
 func (s songArrangementRepository) GetWithAssociations(arrangement *model.SongArrangement, id uuid.UUID) error {
 	return s.client.
-		Preload("Occurrences").
+		Preload("SectionOccurrences").
 		Find(&arrangement, model.SongArrangement{ID: id}).
 		Error
 }
 
 func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrangement, songID uuid.UUID) error {
 	return s.client.Model(&model.SongArrangement{}).
-		Preload("Occurrences", func(db *gorm.DB) *gorm.DB {
+		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.
 				Joins("LEFT JOIN song_sections ON song_sections.song_id = song_arrangements.song_id").
 				Order("song_sections.order")
 		}).
-		Preload("Occurrences.Section"). // Try Joins
+		Preload("SectionOccurrences.Section"). // Try Joins
 		Where(model.SongArrangement{SongID: songID}).
+		Order("\"order\"").
 		Find(arrangements).
 		Error
 }

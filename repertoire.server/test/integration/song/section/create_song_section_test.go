@@ -114,7 +114,7 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 
 			db := utils.GetDatabase(t)
 			var oldArrangements []model.SongArrangement
-			db.Preload("Occurrences").Order("\"order\"").Find(&oldArrangements)
+			db.Preload("SectionOccurrences").Order("\"order\"").Find(&oldArrangements)
 
 			// when
 			w := httptest.NewRecorder()
@@ -128,7 +128,7 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			var section model.SongSection
 			db.Preload("Song").
 				Preload("Song.Arrangements", func(db *gorm.DB) *gorm.DB { return db.Order("\"order\"") }).
-				Preload("Song.Arrangements.Occurrences", func(db *gorm.DB) *gorm.DB {
+				Preload("Song.Arrangements.SectionOccurrences", func(db *gorm.DB) *gorm.DB {
 					return db.
 						Joins("LEFT JOIN song_sections ON song_sections.song_id = song_arrangements.song_id").
 						Order("song_sections.order")
@@ -140,8 +140,8 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			assert.LessOrEqual(t, section.Song.Progress, song.Progress)
 
 			for i, arrangement := range section.Song.Arrangements {
-				assert.Len(t, arrangement.Occurrences, len(oldArrangements[i].Occurrences)+1)
-				newOccurrence := arrangement.Occurrences[len(section.Song.Arrangements)-1]
+				assert.Len(t, arrangement.SectionOccurrences, len(oldArrangements[i].SectionOccurrences)+1)
+				newOccurrence := arrangement.SectionOccurrences[len(section.Song.Arrangements)-1]
 				assert.Equal(t, section.ID, newOccurrence.SectionID)
 				assert.Equal(t, arrangement.ID, newOccurrence.ArrangementID)
 				assert.Zero(t, newOccurrence.Occurrences)

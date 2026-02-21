@@ -102,7 +102,7 @@ func (c CreateSongSection) updateArrangements(sectionID uuid.UUID, songID uuid.U
 			Occurrences:   0,
 			ArrangementID: arrangements[i].ID,
 		}
-		arrangements[i].Occurrences = append(arrangements[i].Occurrences, occurrence)
+		arrangements[i].SectionOccurrences = append(arrangements[i].SectionOccurrences, occurrence)
 	}
 
 	err = c.songArrangementRepository.UpdateAllWithAssociations(&arrangements)

@@ -69,5 +69,5 @@ func (c CreateSongArrangement) CreateSectionOccurrences(arrangement *model.SongA
 		}
 		occurrences = append(occurrences, occurrence)
 	}
-	arrangement.Occurrences = occurrences
+	arrangement.SectionOccurrences = occurrences
 }

@@ -481,10 +481,10 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 
 			arrangements := []model.SongArrangement{
 				{
-					ID:          uuid.New(),
-					Name:        "Perfect Rehearsal",
-					Order:       0,
-					Occurrences: []model.SongSectionOccurrences{{SectionID: uuid.New(), Occurrences: 1}},
+					ID:                 uuid.New(),
+					Name:               "Perfect Rehearsal",
+					Order:              0,
+					SectionOccurrences: []model.SongSectionOccurrences{{SectionID: uuid.New(), Occurrences: 1}},
 				},
 				{ID: uuid.New(), Name: "Partial Rehearsal", Order: 1},
 			}
@@ -497,8 +497,8 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 				Run(func(args mock.Arguments) {
 					newArrangements := args.Get(0).(*[]model.SongArrangement)
 					for i, arr := range *newArrangements {
-						assert.Len(t, arr.Occurrences, len(oldArrangements[i].Occurrences)+1)
-						newOccurrence := arr.Occurrences[len(arr.Occurrences)-1]
+						assert.Len(t, arr.SectionOccurrences, len(oldArrangements[i].SectionOccurrences)+1)
+						newOccurrence := arr.SectionOccurrences[len(arr.SectionOccurrences)-1]
 						assert.Equal(t, newSectionID, newOccurrence.SectionID)
 						assert.Equal(t, arr.ID, newOccurrence.ArrangementID)
 						assert.Zero(t, newOccurrence.Occurrences)

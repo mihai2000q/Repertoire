@@ -34,16 +34,15 @@ type Song struct {
 	Confidence     float64            `gorm:"not null" json:"confidence"`
 	Progress       float64            `gorm:"not null" json:"progress"`
 
-	Settings             SongSettings     `gorm:"constraint:OnDelete:CASCADE" json:"settings"`
-	DefaultArrangement   *SongArrangement `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangement"`
-	DefaultArrangementID *uuid.UUID       `gorm:"constraint:OnDelete:SET NULL" json:"-"`
+	AlbumID              *uuid.UUID `json:"albumId"`
+	ArtistID             *uuid.UUID `json:"artistId"`
+	GuitarTuningID       *uuid.UUID `json:"-"`
+	DefaultArrangementID *uuid.UUID `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangementID"`
 
-	AlbumID        *uuid.UUID    `json:"albumId"`
-	ArtistID       *uuid.UUID    `json:"artistId"`
-	GuitarTuningID *uuid.UUID    `json:"-"`
-	Artist         *Artist       `json:"artist"`
-	Album          *Album        `json:"album"`
-	GuitarTuning   *GuitarTuning `json:"guitarTuning"`
+	Artist       *Artist       `json:"artist"`
+	Album        *Album        `json:"album"`
+	GuitarTuning *GuitarTuning `json:"guitarTuning"`
+	Settings     SongSettings  `json:"settings"`
 
 	Sections      []SongSection     `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Arrangements  []SongArrangement `gorm:"constraint:OnDelete:CASCADE" json:"arrangements"`
@@ -96,5 +95,5 @@ type SongSettings struct {
 	DefaultBandMemberID *uuid.UUID  `json:"-"`
 	DefaultBandMember   *BandMember `json:"defaultBandMember"`
 
-	SongID uuid.UUID `gorm:"not null" json:"-"`
+	SongID uuid.UUID `gorm:"constraint:OnDelete:CASCADE; not null" json:"-"`
 }

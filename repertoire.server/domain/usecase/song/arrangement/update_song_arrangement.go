@@ -38,10 +38,10 @@ func (u UpdateSongArrangement) Handle(request requests.UpdateSongArrangementRequ
 	}
 
 	// propagate the occurrences on the arrangement
-	for i := range arrangement.Occurrences {
-		occurrences, ok := sectionsOccurrencesMap[arrangement.Occurrences[i].SectionID]
+	for i := range arrangement.SectionOccurrences {
+		occurrences, ok := sectionsOccurrencesMap[arrangement.SectionOccurrences[i].SectionID]
 		if ok {
-			arrangement.Occurrences[i].Occurrences = occurrences
+			arrangement.SectionOccurrences[i].Occurrences = occurrences
 		}
 	}
 
