@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/message/topics"
@@ -15,22 +16,22 @@ import (
 
 type CreateSong struct {
 	jwtService              service.JwtService
-	repository              repository.SongRepository
 	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
+	transactionManager      transaction.Manager
 }
 
 func NewCreateSong(
 	jwtService service.JwtService,
-	repository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
+	transactionManager transaction.Manager,
 ) CreateSong {
 	return CreateSong{
 		jwtService:              jwtService,
-		repository:              repository,
 		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
+		transactionManager:      transactionManager,
 	}
 }
 
@@ -66,7 +67,23 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		return uuid.Nil, errCode
 	}
 
-	err := c.repository.Create(&song)
+	err := c.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		songRepository := factory.NewSongRepository()
+		err := songRepository.Create(&song)
+		if err != nil {
+			return err
+		}
+
+		// update the sole arrangement to default arrangement
+		// GORM cannot create the song, arrangements and assign it as default at the same time
+		// The song and arrangement must exist before the arrangement can be set as default
+		song.DefaultArrangementID = &song.Arrangements[0].ID
+		err = songRepository.Update(&song)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
@@ -111,7 +128,6 @@ func (c CreateSong) createArrangement(song *model.Song) {
 		arrangement.SectionOccurrences = append(arrangement.SectionOccurrences, occurrences)
 	}
 
-	song.DefaultArrangementID = &arrangement.ID
 	song.Arrangements = []model.SongArrangement{arrangement}
 }
 

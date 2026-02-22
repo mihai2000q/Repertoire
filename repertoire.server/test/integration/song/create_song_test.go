@@ -82,7 +82,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			},
 		},
 		{
-			"With SectionOccurrences",
+			"With Sections",
 			requests.CreateSongRequest{
 				Title: "New Song with new Artist and album",
 				Sections: []requests.CreateSectionRequest{
@@ -131,6 +131,8 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Preload("Album.Songs").
 				Preload("Sections").
 				Preload("Sections.SongSectionType").
+				Preload("Arrangements").
+				Preload("Arrangements.SectionOccurrences").
 				Find(&song, response.ID)
 			assertCreatedSong(t, test.request, song, user.ID)
 
@@ -165,7 +167,7 @@ func assertCreatedSong(
 	// assert settings
 	assert.NotEmpty(t, song.Settings.ID)
 
-	// assert arrangement
+	// assert arrangements
 	assert.NotEmpty(t, song.DefaultArrangementID)
 
 	assert.Len(t, song.Arrangements, 1)
