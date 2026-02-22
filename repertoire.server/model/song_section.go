@@ -28,7 +28,7 @@ type SongSection struct {
 	Instrument      *Instrument     `json:"instrument"`
 
 	History                []SongSectionHistory     `gorm:"constraint:OnDelete:CASCADE" json:"-"`
-	ArrangementOccurrences []SongSectionOccurrences `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	ArrangementOccurrences []SongSectionOccurrences `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`

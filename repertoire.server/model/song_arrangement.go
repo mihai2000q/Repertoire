@@ -7,7 +7,7 @@ type SongArrangement struct {
 	Name               string                   `gorm:"size:30; not null" json:"name"`
 	Order              uint                     `gorm:"not null" json:"-"`
 	SongID             uuid.UUID                `gorm:"not null" json:"-"`
-	SectionOccurrences []SongSectionOccurrences `gorm:"constraint:OnDelete:CASCADE" json:"sectionOccurrences"`
+	SectionOccurrences []SongSectionOccurrences `gorm:"foreignKey:ArrangementID; constraint:OnDelete:CASCADE" json:"sectionOccurrences"`
 }
 
 type SongSectionOccurrences struct {
