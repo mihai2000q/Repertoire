@@ -19,7 +19,7 @@ func TestGetAllSongArrangements_WhenSuccessful_ShouldReturnSongArrangements(t *t
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	songID := songData.SongArrangements[0].SongID
+	songID := songData.SongArrangements[1].SongID
 
 	// when
 	w := httptest.NewRecorder()

@@ -37,7 +37,7 @@ func TestUpdateSongArrangement_WhenSuccessful_ShouldUpdateArrangement(t *testing
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateSongArrangementRequest{
-		ID:   songData.SongArrangements[0].ID,
+		ID:   songData.SongArrangements[1].ID,
 		Name: "New Chorus Name",
 		Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
 			{

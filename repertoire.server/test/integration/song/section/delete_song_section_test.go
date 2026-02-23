@@ -47,7 +47,7 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 
 	// song with sections and previous stats
 	song := songData.Songs[0]
-	section := song.Sections[1]
+	section := songData.SongSections[1]
 
 	// when
 	w := httptest.NewRecorder()
@@ -61,7 +61,7 @@ func TestDeleteSongSection_WhenSuccessful_ShouldDeleteSection(t *testing.T) {
 	var newSong model.Song
 	db.Preload("Sections", func(db gorm.DB) *gorm.DB {
 		return db.Order("\"order\"")
-	}).Find(&song, song.ID)
+	}).Find(&newSong, song.ID)
 
 	assert.True(t,
 		slices.IndexFunc(newSong.Sections, func(t model.SongSection) bool {

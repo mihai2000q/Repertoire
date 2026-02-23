@@ -38,7 +38,7 @@ func TestUpdateSongSection_WhenRehearsalsAreDecreasing_ShouldReturnConflictError
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	section := songData.Songs[0].Sections[0]
+	section := songData.SongSections[0]
 
 	request := requests.UpdateSongSectionRequest{
 		ID:         section.ID,
@@ -57,16 +57,16 @@ func TestUpdateSongSection_WhenRehearsalsAreDecreasing_ShouldReturnConflictError
 
 func TestUpdateSongSection_WhenRequestChangesBandMemberIDButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
 	tests := []struct {
-		name string
-		song model.Song
+		name    string
+		section model.SongSection
 	}{
 		{
 			"Song without artist",
-			songData.Songs[4],
+			songData.SongSections[4],
 		},
 		{
 			"Song with artist but without that member",
-			songData.Songs[0],
+			songData.SongSections[0],
 		},
 	}
 
@@ -75,12 +75,11 @@ func TestUpdateSongSection_WhenRequestChangesBandMemberIDButItIsNotAssociated_Sh
 			// given
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-			section := test.song.Sections[0]
 			request := requests.UpdateSongSectionRequest{
-				ID:           section.ID,
-				TypeID:       section.SongSectionTypeID,
-				Rehearsals:   section.Rehearsals,
-				Confidence:   section.Confidence,
+				ID:           test.section.ID,
+				TypeID:       test.section.SongSectionTypeID,
+				Rehearsals:   test.section.Rehearsals,
+				Confidence:   test.section.Confidence,
 				Name:         "Chorus 1-New",
 				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 			}
@@ -100,7 +99,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSection(t *testing.T) {
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateSongSectionRequest{
-		ID:     songData.Songs[0].Sections[2].ID,
+		ID:     songData.SongSections[2].ID,
 		Name:   "New Chorus Name",
 		TypeID: songData.Users[0].SongSectionTypes[0].ID,
 	}
@@ -125,7 +124,7 @@ func TestUpdateSongSection_WhenSuccessfulWithRehearsals_ShouldUpdateSectionUpdat
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	song := songData.Songs[0]
-	section := song.Sections[0]
+	section := songData.SongSections[0]
 	request := requests.UpdateSongSectionRequest{
 		ID:         section.ID,
 		Name:       "New Chorus Name",
@@ -173,7 +172,7 @@ func TestUpdateSongSection_WhenSuccessfulWithConfidenceIncreasing_ShouldUpdateSe
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	song := songData.Songs[0]
-	section := song.Sections[0]
+	section := songData.SongSections[0]
 	request := requests.UpdateSongSectionRequest{
 		ID:         section.ID,
 		Name:       "New Chorus Name",
@@ -221,17 +220,17 @@ func TestUpdateSongSection_WhenSuccessfulWithBandMember_ShouldUpdateSection(t *t
 	}{
 		{
 			"to Nil Band Member",
-			songData.Songs[0].Sections[1],
+			songData.SongSections[1],
 			nil,
 		},
 		{
 			"from member to Another Band Member",
-			songData.Songs[0].Sections[1],
+			songData.SongSections[1],
 			&songData.Artists[0].BandMembers[1].ID,
 		},
 		{
 			"from nil to Another Band Member",
-			songData.Songs[0].Sections[2],
+			songData.SongSections[2],
 			&songData.Artists[0].BandMembers[1].ID,
 		},
 	}

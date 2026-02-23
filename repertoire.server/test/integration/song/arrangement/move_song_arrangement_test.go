@@ -55,7 +55,7 @@ func TestMoveSongArrangement_WhenOverArrangementIsNotFound_ShouldReturnNotFoundE
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	songArrangement := songData.SongArrangements[0]
+	songArrangement := songData.SongArrangements[1]
 	request := requests.MoveSongArrangementRequest{
 		SongID: songArrangement.SongID,
 		ID:     songArrangement.ID,
@@ -80,9 +80,9 @@ func TestMoveSongArrangementType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 		{
 			"From upper position to lower",
 			requests.MoveSongArrangementRequest{
-				SongID: songData.SongArrangements[0].SongID,
-				ID:     songData.SongArrangements[2].ID,
-				OverID: songData.SongArrangements[0].ID,
+				SongID: songData.SongArrangements[1].SongID,
+				ID:     songData.SongArrangements[3].ID,
+				OverID: songData.SongArrangements[1].ID,
 			},
 			2,
 			0,
@@ -90,9 +90,9 @@ func TestMoveSongArrangementType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 		{
 			"From lower position to upper",
 			requests.MoveSongArrangementRequest{
-				SongID: songData.SongArrangements[0].SongID,
-				ID:     songData.SongArrangements[0].ID,
-				OverID: songData.SongArrangements[2].ID,
+				SongID: songData.SongArrangements[1].SongID,
+				ID:     songData.SongArrangements[1].ID,
+				OverID: songData.SongArrangements[3].ID,
 			},
 			0,
 			2,

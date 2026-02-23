@@ -46,7 +46,7 @@ func TestDeleteSongArrangement_WhenSuccessful_ShouldDeleteArrangement(t *testing
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	// song with arrangements
-	arrangement := songData.SongArrangements[1]
+	arrangement := songData.SongArrangements[2]
 	songID := arrangement.SongID
 
 	// when

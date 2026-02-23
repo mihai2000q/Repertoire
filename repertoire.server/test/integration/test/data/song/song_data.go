@@ -16,6 +16,11 @@ func SeedData(db *gorm.DB) {
 	db.Create(&Artists)
 	db.Create(&Albums)
 	db.Create(&Songs)
+	db.Create(&SongSections)
+	db.Create(&SongArrangements)
+	// Default Song Arrangements (due to cache, when restoring the data, it fails)
+	db.Model(&model.Song{ID: Songs[0].ID}).Update("default_arrangement_id", SongArrangements[0].ID)
+	db.Model(&model.Song{ID: Songs[4].ID}).Update("default_arrangement_id", SongArrangements[1].ID)
 	db.Create(&PlaylistSongs)
 }
 
@@ -163,68 +168,6 @@ var Albums = []model.Album{
 	},
 }
 
-var songSections = []model.SongSection{
-	{
-		ID:                uuid.New(),
-		Name:              "Verse 1 - used on update",
-		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
-		BandMemberID:      &Artists[0].BandMembers[0].ID,
-		InstrumentID:      &Users[0].Instruments[1].ID,
-		Order:             0,
-		Confidence:        10,
-		Rehearsals:        10,
-		ConfidenceScore:   12,
-		RehearsalsScore:   45,
-		Progress:          5,
-		History: []model.SongSectionHistory{
-			{
-				ID:       uuid.New(),
-				From:     0,
-				To:       5,
-				Property: model.RehearsalsProperty,
-			},
-			{
-				ID:       uuid.New(),
-				From:     5,
-				To:       10,
-				Property: model.RehearsalsProperty,
-			},
-			{
-				ID:       uuid.New(),
-				From:     0,
-				To:       10,
-				Property: model.ConfidenceProperty,
-			},
-		},
-	},
-	{
-		ID:                uuid.New(),
-		Name:              "Chorus 1 - used on delete",
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-		BandMemberID:      &Artists[0].BandMembers[1].ID,
-		Order:             1,
-		Confidence:        25,
-		Rehearsals:        50,
-		ConfidenceScore:   30,
-		RehearsalsScore:   550,
-		Progress:          99,
-		InstrumentID:      &Users[0].Instruments[0].ID,
-	},
-	{
-		ID:                uuid.New(),
-		Name:              "Verse 2",
-		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
-		Order:             2,
-	},
-	{
-		ID:                uuid.New(),
-		Name:              "Solo",
-		SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
-		Rehearsals:        10,
-		Order:             3,
-	},
-}
-
 var Songs = []model.Song{
 	{
 		ID:            uuid.New(),
@@ -247,8 +190,7 @@ var Songs = []model.Song{
 		AlbumID:        &[]uuid.UUID{Albums[0].ID}[0],
 		AlbumTrackNo:   &[]uint{1}[0],
 
-		Sections: songSections,
-		UserID:   Users[0].ID,
+		UserID: Users[0].ID,
 	},
 	{
 		ID:           uuid.New(),
@@ -282,39 +224,6 @@ var Songs = []model.Song{
 		ID:     uuid.New(),
 		Title:  "Test Song 5 - No Album - But Has Section Occurrences",
 		UserID: Users[0].ID,
-		Sections: []model.SongSection{
-			{
-				ID:                 uuid.New(),
-				Name:               "Test Song Section 1",
-				Order:              0,
-				Rehearsals:         15,
-				Occurrences:        2,
-				PartialOccurrences: 1,
-				SongSectionTypeID:  Users[0].SongSectionTypes[1].ID,
-				History: []model.SongSectionHistory{
-					{
-						ID:       uuid.New(),
-						From:     0,
-						To:       15,
-						Property: model.RehearsalsProperty,
-					},
-				},
-			},
-			{
-				ID:                uuid.New(),
-				Name:              "Test Song Section 2",
-				Order:             1,
-				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-			},
-			{
-				ID:                 uuid.New(),
-				Name:               "Test Song Section 3",
-				Order:              2,
-				Occurrences:        10,
-				PartialOccurrences: 7,
-				SongSectionTypeID:  Users[0].SongSectionTypes[0].ID,
-			},
-		},
 	},
 
 	{
@@ -344,6 +253,186 @@ var Songs = []model.Song{
 		UserID:       Users[0].ID,
 		AlbumID:      &[]uuid.UUID{Albums[2].ID}[0],
 		AlbumTrackNo: &[]uint{1}[0],
+	},
+}
+
+var SongSections = []model.SongSection{
+	{
+		ID:                uuid.New(),
+		Name:              "Verse 1 - used on update",
+		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
+		BandMemberID:      &Artists[0].BandMembers[0].ID,
+		InstrumentID:      &Users[0].Instruments[1].ID,
+		Order:             0,
+		Confidence:        10,
+		Rehearsals:        10,
+		ConfidenceScore:   12,
+		RehearsalsScore:   45,
+		Progress:          5,
+		SongID:            Songs[0].ID,
+		History: []model.SongSectionHistory{
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       5,
+				Property: model.RehearsalsProperty,
+			},
+			{
+				ID:       uuid.New(),
+				From:     5,
+				To:       10,
+				Property: model.RehearsalsProperty,
+			},
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       10,
+				Property: model.ConfidenceProperty,
+			},
+		},
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Chorus 1 - used on delete",
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		BandMemberID:      &Artists[0].BandMembers[1].ID,
+		Order:             1,
+		Confidence:        25,
+		Rehearsals:        50,
+		ConfidenceScore:   30,
+		RehearsalsScore:   550,
+		Progress:          99,
+		SongID:            Songs[0].ID,
+		InstrumentID:      &Users[0].Instruments[0].ID,
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Verse 2",
+		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
+		Order:             2,
+		SongID:            Songs[0].ID,
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Solo",
+		SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
+		Rehearsals:        10,
+		Order:             3,
+		SongID:            Songs[0].ID,
+	},
+
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song Section 1",
+		Order:             0,
+		Rehearsals:        15,
+		SongID:            Songs[4].ID,
+		SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
+		History: []model.SongSectionHistory{
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       15,
+				Property: model.RehearsalsProperty,
+			},
+		},
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song Section 2",
+		Order:             1,
+		SongID:            Songs[4].ID,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song Section 3",
+		Order:             2,
+		SongID:            Songs[4].ID,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+	},
+}
+
+var SongArrangements = []model.SongArrangement{
+	{
+		ID:     uuid.New(),
+		Name:   "Perfect Rehearsal",
+		Order:  0,
+		SongID: Songs[0].ID,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{SectionID: SongSections[0].ID},
+			{SectionID: SongSections[1].ID},
+			{SectionID: SongSections[2].ID},
+			{SectionID: SongSections[3].ID},
+		},
+	},
+
+	{
+		ID:     uuid.New(),
+		Name:   "Perfect Rehearsal",
+		Order:  0,
+		SongID: Songs[4].ID,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{
+				SectionID:   SongSections[4].ID,
+				Occurrences: 2,
+			},
+			{
+				SectionID:   SongSections[5].ID,
+				Occurrences: 0,
+			},
+			{
+				SectionID:   SongSections[6].ID,
+				Occurrences: 10,
+			},
+		},
+	},
+	{
+		ID:     uuid.New(),
+		Name:   "Partial Rehearsal",
+		Order:  1,
+		SongID: Songs[4].ID,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{
+				SectionID:   SongSections[4].ID,
+				Occurrences: 1,
+			},
+			{
+				SectionID:   SongSections[5].ID,
+				Occurrences: 1,
+			},
+			{
+				SectionID:   SongSections[6].ID,
+				Occurrences: 2,
+			},
+		},
+	},
+	{
+		ID:     uuid.New(),
+		Name:   "Perfect Rehearsal 2",
+		Order:  2,
+		SongID: Songs[4].ID,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{
+				SectionID:   SongSections[4].ID,
+				Occurrences: 5,
+			},
+			{
+				SectionID:   SongSections[5].ID,
+				Occurrences: 10,
+			},
+			{
+				SectionID:   SongSections[6].ID,
+				Occurrences: 1,
+			},
+		},
+	},
+
+	{
+		ID:     uuid.New(),
+		Name:   "Perfect Rehearsal",
+		Order:  0,
+		SongID: Songs[5].ID,
 	},
 }
 

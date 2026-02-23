@@ -37,7 +37,7 @@ func TestUpdateDefaultSongArrangement_WhenArrangementIsNotFound_ShouldReturnInte
 
 	request := requests.UpdateDefaultSongArrangementRequest{
 		ID:     uuid.New(),
-		SongID: songData.SongArrangements[1].SongID,
+		SongID: songData.SongArrangements[2].SongID,
 	}
 
 	// when
@@ -53,8 +53,8 @@ func TestUpdateDefaultSongArrangement_WhenSuccessful_ShouldUpdateDefaultArrangem
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     songData.SongArrangements[1].ID,
-		SongID: songData.SongArrangements[1].SongID,
+		ID:     songData.SongArrangements[2].ID,
+		SongID: songData.SongArrangements[2].SongID,
 	}
 
 	// when
