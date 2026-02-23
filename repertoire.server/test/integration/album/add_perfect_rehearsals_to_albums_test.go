@@ -46,12 +46,21 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 		},
 	}
 
+	getAlbumsQuery := func(db *gorm.DB, albums *[]model.Album) {
+		db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
+			Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
+			Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+			Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+				return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
+					Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+					Where("arrangement_id = default_arrangement_id")
+			}).
+			Find(&albums, request.IDs)
+	}
+
 	var albums []model.Album
 	db := utils.GetDatabase(t)
-	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
-		Preload("Songs.Sections").
-		Preload("Songs.Sections.History").
-		Find(&albums, request.IDs)
+	getAlbumsQuery(db, &albums)
 
 	// when
 	w := httptest.NewRecorder()
@@ -62,13 +71,7 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 
 	var newAlbums []model.Album
 	db = db.Session(&gorm.Session{NewDB: true})
-	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
-		Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-		Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
-		Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
-		}).
-		Find(&newAlbums, request.IDs)
+	getAlbumsQuery(db, &newAlbums)
 
 	for i, album := range newAlbums {
 		for j := range album.Songs {

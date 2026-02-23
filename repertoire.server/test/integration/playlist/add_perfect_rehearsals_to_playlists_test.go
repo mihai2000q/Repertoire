@@ -46,13 +46,22 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 		},
 	}
 
+	getPlaylistsQuery := func(db *gorm.DB, playlists *[]model.Playlist) {
+		db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB { return db.Order("song_track_no") }).
+			Preload("PlaylistSongs.Song", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
+			Preload("PlaylistSongs.Song.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
+			Preload("PlaylistSongs.Song.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+			Preload("PlaylistSongs.Song.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+				return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
+					Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+					Where("arrangement_id = default_arrangement_id")
+			}).
+			Find(&playlists, request.IDs)
+	}
+
 	var playlists []model.Playlist
 	db := utils.GetDatabase(t)
-	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB { return db.Order("song_track_no") }).
-		Preload("PlaylistSongs.Song").
-		Preload("PlaylistSongs.Song.Sections").
-		Preload("PlaylistSongs.Song.Sections.History").
-		Find(&playlists, request.IDs)
+	getPlaylistsQuery(db, &playlists)
 
 	// when
 	w := httptest.NewRecorder()
@@ -63,14 +72,7 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 
 	var newPlaylists []model.Playlist
 	db = db.Session(&gorm.Session{NewDB: true})
-	db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB { return db.Order("song_track_no") }).
-		Preload("PlaylistSongs.Song").
-		Preload("PlaylistSongs.Song.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-		Preload("PlaylistSongs.Song.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
-		Preload("PlaylistSongs.Song.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
-		}).
-		Find(&playlists, request.IDs)
+	getPlaylistsQuery(db, &newPlaylists)
 
 	for i, playlist := range newPlaylists {
 		for j := range playlist.PlaylistSongs {

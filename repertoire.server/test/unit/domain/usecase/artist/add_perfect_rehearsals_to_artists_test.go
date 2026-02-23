@@ -27,7 +27,7 @@ func TestAddPerfectArtistRehearsals_WhenGetArtistsFails_ShouldReturnInternalServ
 	}
 
 	internalError := errors.New("internal error")
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(internalError).
 		Once()
 
@@ -51,7 +51,7 @@ func TestAddPerfectArtistRehearsals_WhenArtistsLenIsNotTheSameAsRequest_ShouldRe
 		IDs: []uuid.UUID{uuid.New()},
 	}
 
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(nil).
 		Once()
 
@@ -78,7 +78,7 @@ func TestAddPerfectArtistRehearsals_WhenTransactionExecuteFails_ShouldReturnErro
 	}
 
 	mockArtists := []model.Artist{{ID: request.IDs[0]}}
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(nil, &mockArtists).
 		Once()
 
@@ -117,7 +117,7 @@ func TestAddPerfectArtistRehearsals_WhenProcessorFails_ShouldReturnInternalServe
 		ID:    request.IDs[0],
 		Songs: []model.Song{{ID: uuid.New()}},
 	}}
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(nil, &mockArtists).
 		Once()
 
@@ -164,7 +164,7 @@ func TestAddPerfectArtistRehearsals_WhenUpdateFails_ShouldReturnInternalServerEr
 		ID:    request.IDs[0],
 		Songs: []model.Song{{ID: uuid.New()}},
 	}}
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(nil, &mockArtists).
 		Once()
 
@@ -221,7 +221,7 @@ func TestAddPerfectArtistRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSongs(
 			},
 		},
 	}
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(nil, &mockArtists).
 		Once()
 
@@ -282,7 +282,7 @@ func TestAddPerfectArtistRehearsals_WhenSuccessful_ShouldUpdateArtists(t *testin
 		},
 		{ID: request.IDs[2]},
 	}
-	artistRepository.On("GetAllByIDsWithSongSectionsAndOccurrences", new([]model.Artist), request.IDs).
+	artistRepository.On("GetAllByIDsWithSongSectionsAndDefaultOccurrences", new([]model.Artist), request.IDs).
 		Return(nil, &mockArtists).
 		Once()
 

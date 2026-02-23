@@ -42,7 +42,7 @@ func (s *SongRepositoryMock) GetWithSections(song *model.Song, id uuid.UUID) err
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetWithSectionsAndOccurrences(song *model.Song, id uuid.UUID) error {
+func (s *SongRepositoryMock) GetWithSectionsAndDefaultOccurrences(song *model.Song, id uuid.UUID) error {
 	args := s.Called(song, id)
 
 	if len(args) > 1 {
@@ -146,7 +146,7 @@ func (s *SongRepositoryMock) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.So
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetAllByIDsWithSectionsAndOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
+func (s *SongRepositoryMock) GetAllByIDsWithSectionsAndDefaultOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
 	if len(args) > 1 {

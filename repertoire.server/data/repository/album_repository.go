@@ -18,7 +18,7 @@ type AlbumRepository interface {
 	GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error
-	GetAllByIDsWithSongSectionsAndOccurrences(albums *[]model.Album, ids []uuid.UUID) error
+	GetAllByIDsWithSongSectionsAndDefaultOccurrences(albums *[]model.Album, ids []uuid.UUID) error
 	GetAllByUser(
 		albums *[]model.EnhancedAlbum,
 		userID uuid.UUID,
@@ -134,7 +134,7 @@ func (a albumRepository) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, id
 		Error
 }
 
-func (a albumRepository) GetAllByIDsWithSongSectionsAndOccurrences(albums *[]model.Album, ids []uuid.UUID) error {
+func (a albumRepository) GetAllByIDsWithSongSectionsAndDefaultOccurrences(albums *[]model.Album, ids []uuid.UUID) error {
 	return a.client.Model(&model.Album{}).
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
@@ -143,7 +143,10 @@ func (a albumRepository) GetAllByIDsWithSongSectionsAndOccurrences(albums *[]mod
 			return db.Order("song_sections.order")
 		}).
 		Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
+			return db.
+				Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
+				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+				Where("arrangement_id = default_arrangement_id")
 		}).
 		Find(&albums, ids).
 		Error

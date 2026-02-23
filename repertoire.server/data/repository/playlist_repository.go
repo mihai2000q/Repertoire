@@ -21,7 +21,7 @@ type PlaylistRepository interface {
 	GetPlaylistSongsCount(count *int64, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.PlaylistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(playlists *[]model.Playlist, ids []uuid.UUID) error
-	GetAllByIDsWithSongSectionsAndOccurrences(playlists *[]model.Playlist, ids []uuid.UUID) error
+	GetAllByIDsWithSongSectionsAndDefaultOccurrences(playlists *[]model.Playlist, ids []uuid.UUID) error
 	GetAllByUser(
 		playlists *[]model.EnhancedPlaylist,
 		userID uuid.UUID,
@@ -108,7 +108,7 @@ func (p playlistRepository) GetAllByIDs(playlists *[]model.Playlist, ids []uuid.
 	return p.client.Model(&model.Playlist{}).Find(&playlists, ids).Error
 }
 
-func (p playlistRepository) GetAllByIDsWithSongSectionsAndOccurrences(playlists *[]model.Playlist, ids []uuid.UUID) error {
+func (p playlistRepository) GetAllByIDsWithSongSectionsAndDefaultOccurrences(playlists *[]model.Playlist, ids []uuid.UUID) error {
 	return p.client.Model(&model.Playlist{}).
 		Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_track_no")
@@ -118,7 +118,9 @@ func (p playlistRepository) GetAllByIDsWithSongSectionsAndOccurrences(playlists 
 			return db.Order("song_sections.order")
 		}).
 		Preload("PlaylistSongs.Song.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
+			return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
+				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+				Where("arrangement_id = default_arrangement_id")
 		}).
 		Find(&playlists, ids).
 		Error

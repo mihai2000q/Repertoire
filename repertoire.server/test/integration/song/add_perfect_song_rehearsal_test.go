@@ -58,7 +58,10 @@ func TestAddPerfectSongRehearsal_WhenSectionsHaveNoOccurrences_ShouldNotMakeAnyU
 	}
 
 	db := utils.GetDatabase(t)
-	db.Preload("Sections").Preload("Sections.History").Find(&song, song.ID)
+	db.Preload("Sections").
+		Preload("Sections.History").
+		Preload("Sections.ArrangementOccurrences").
+		Find(&song, song.ID)
 
 	// when
 	w := httptest.NewRecorder()
@@ -69,7 +72,10 @@ func TestAddPerfectSongRehearsal_WhenSectionsHaveNoOccurrences_ShouldNotMakeAnyU
 
 	var newSong model.Song
 	db = db.Session(&gorm.Session{NewDB: true})
-	db.Preload("Sections").Preload("Sections.History").Find(&newSong, song.ID)
+	db.Preload("Sections").
+		Preload("Sections.History").
+		Preload("Sections.ArrangementOccurrences").
+		Find(&newSong, song.ID)
 
 	assert.Equal(t, song, newSong)
 }
@@ -82,9 +88,20 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 		ID: songData.Songs[4].ID,
 	}
 
+	getSongQuery := func(db *gorm.DB, song *model.Song) {
+		db.Preload("Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
+			Preload("Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+			Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+				return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
+					Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+					Where("arrangement_id = default_arrangement_id")
+			}).
+			Find(&song, request.ID)
+	}
+
 	var song model.Song
 	db := utils.GetDatabase(t)
-	db.Preload("Sections").Preload("Sections.History").Find(&song, request.ID)
+	getSongQuery(db, &song)
 
 	// when
 	w := httptest.NewRecorder()
@@ -95,12 +112,7 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 
 	var newSong model.Song
 	db = db.Session(&gorm.Session{NewDB: true})
-	db.Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-		Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
-		Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Where("song_section_occurrences.arrangement_id = songs.default_arrangement_id")
-		}).
-		Find(&newSong, request.ID)
+	getSongQuery(db, &newSong)
 
 	assertion.PerfectSongRehearsal(t, song, newSong)
 }

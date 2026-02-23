@@ -30,7 +30,7 @@ func NewAddPerfectRehearsalsToAlbums(
 
 func (a AddPerfectRehearsalsToAlbums) Handle(request requests.AddPerfectRehearsalsToAlbumsRequest) *wrapper.ErrorCode {
 	var albums []model.Album
-	err := a.repository.GetAllByIDsWithSongSectionsAndOccurrences(&albums, request.IDs)
+	err := a.repository.GetAllByIDsWithSongSectionsAndDefaultOccurrences(&albums, request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
