@@ -9,7 +9,6 @@ import (
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
@@ -48,7 +47,7 @@ func TestCreateSong_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := song.NewCreateSong(jwtService, albumRepository, nil, nil)
+	_uut := song.NewCreateSong(jwtService, nil, albumRepository, nil)
 
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
@@ -81,7 +80,7 @@ func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	jwtService := new(service.JwtServiceMock)
-	_uut := song.NewCreateSong(jwtService, albumRepository, nil, nil)
+	_uut := song.NewCreateSong(jwtService, nil, albumRepository, nil)
 
 	request := requests.CreateSongRequest{
 		Title:   "Some Song",
@@ -109,44 +108,11 @@ func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	albumRepository.AssertExpectations(t)
 }
 
-func TestCreateSong_WhenTransactionExecuteFails_ShouldReturnError(t *testing.T) {
-	// given
-	jwtService := new(service.JwtServiceMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := song.NewCreateSong(jwtService, nil, nil, transactionManager)
-
-	request := requests.CreateSongRequest{
-		Title: "Some Song",
-	}
-	token := "this is a token"
-	userID := uuid.New()
-
-	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
-
-	internalError := errors.New("internal error")
-	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
-
-	// when
-	id, errCode := _uut.Handle(request, token)
-
-	// then
-	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	jwtService.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-}
-
 func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := song.NewCreateSong(jwtService, nil, nil, transactionManager)
-
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionSongRepository := new(repository.SongRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := song.NewCreateSong(jwtService, songRepository, nil, nil)
 
 	request := requests.CreateSongRequest{
 		Title: "Some Song",
@@ -156,11 +122,8 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
 	internalError := errors.New("internal error")
-	transactionSongRepository.On("Create", mock.IsType(new(model.Song))).
+	songRepository.On("Create", mock.IsType(new(model.Song))).
 		Return(internalError).
 		Once()
 
@@ -174,65 +137,15 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	transactionSongRepository.AssertExpectations(t)
-}
-
-func TestCreateSong_WhenUpdateFails_ShouldReturnBadRequestError(t *testing.T) {
-	// given
-	jwtService := new(service.JwtServiceMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := song.NewCreateSong(jwtService, nil, nil, transactionManager)
-
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionSongRepository := new(repository.SongRepositoryMock)
-
-	request := requests.CreateSongRequest{
-		Title: "Some Song",
-	}
-	token := "this is a token"
-	userID := uuid.New()
-
-	// given - mocks
-	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
-
-	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	transactionSongRepository.On("Create", mock.IsType(new(model.Song))).
-		Return(nil).
-		Once()
-
-	internalError := errors.New("internal error")
-	transactionSongRepository.On("Update", mock.IsType(new(model.Song))).
-		Return(internalError).
-		Once()
-
-	// when
-	id, errCode := _uut.Handle(request, token)
-
-	// then
-	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	jwtService.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	transactionSongRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
 }
 
 func TestCreateSong_WhenPublishFails_ShouldReturnBadRequestError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
+	songRepository := new(repository.SongRepositoryMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := song.NewCreateSong(jwtService, nil, messagePublisherService, transactionManager)
-
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionSongRepository := new(repository.SongRepositoryMock)
+	_uut := song.NewCreateSong(jwtService, songRepository, nil, messagePublisherService)
 
 	request := requests.CreateSongRequest{
 		Title: "Some Song",
@@ -240,17 +153,9 @@ func TestCreateSong_WhenPublishFails_ShouldReturnBadRequestError(t *testing.T) {
 	token := "this is a token"
 	userID := uuid.New()
 
-	// given - mocks
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	transactionSongRepository.On("Create", mock.IsType(new(model.Song))).
-		Return(nil).
-		Once()
-
-	transactionSongRepository.On("Update", mock.IsType(new(model.Song))).
+	songRepository.On("Create", mock.IsType(new(model.Song))).
 		Return(nil).
 		Once()
 
@@ -269,10 +174,8 @@ func TestCreateSong_WhenPublishFails_ShouldReturnBadRequestError(t *testing.T) {
 	assert.Equal(t, internalError, errCode.Error)
 
 	jwtService.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	transactionSongRepository.AssertExpectations(t)
 }
 
 func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
@@ -367,18 +270,15 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			jwtService := new(service.JwtServiceMock)
+			songRepository := new(repository.SongRepositoryMock)
 			albumRepository := new(repository.AlbumRepositoryMock)
 			messagePublisherService := new(service.MessagePublisherServiceMock)
-			transactionManager := new(transaction.ManagerMock)
 			_uut := song.NewCreateSong(
 				jwtService,
+				songRepository,
 				albumRepository,
 				messagePublisherService,
-				transactionManager,
 			)
-
-			repositoryFactory := new(transaction.RepositoryFactoryMock)
-			transactionSongRepository := new(repository.SongRepositoryMock)
 
 			token := "this is a token"
 
@@ -392,26 +292,12 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 					Once()
 			}
 
-			repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
-			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
 			var createdSong model.Song
-			transactionSongRepository.On("Create", mock.IsType(new(model.Song))).
+			songRepository.On("Create", mock.IsType(new(model.Song))).
 				Run(func(args mock.Arguments) {
 					newSong := args.Get(0).(*model.Song)
 					assertCreatedSong(t, tt.request, *newSong, userID, tt.album)
 					createdSong = *newSong
-				}).
-				Return(nil).
-				Once()
-
-			transactionSongRepository.On("Update", mock.IsType(new(model.Song))).
-				Run(func(args mock.Arguments) {
-					newSong := args.Get(0).(*model.Song)
-					assert.NotEmpty(t, newSong.DefaultArrangementID)
-					assert.Equal(t, newSong.Arrangements[0].ID, *newSong.DefaultArrangementID)
-					newSong.DefaultArrangementID = nil
-					assert.Equal(t, *newSong, createdSong)
 				}).
 				Return(nil).
 				Once()
@@ -431,11 +317,9 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			assert.Equal(t, id, createdSong.ID)
 
 			jwtService.AssertExpectations(t)
+			songRepository.AssertExpectations(t)
 			albumRepository.AssertExpectations(t)
 			messagePublisherService.AssertExpectations(t)
-			transactionManager.AssertExpectations(t)
-			transactionSongRepository.AssertExpectations(t)
-			repositoryFactory.AssertExpectations(t)
 		})
 	}
 }
@@ -469,6 +353,7 @@ func assertCreatedSong(
 
 	// assert arrangements
 	assert.Len(t, song.Arrangements, 1)
+	assert.Equal(t, &song, song.Arrangements[0].DefaultSong)
 	assert.NotEmpty(t, song.Arrangements[0].ID)
 	assert.Equal(t, model.DefaultSongArrangementName, song.Arrangements[0].Name)
 	assert.Equal(t, uint(0), song.Arrangements[0].Order)
