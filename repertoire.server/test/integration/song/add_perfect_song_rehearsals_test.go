@@ -52,9 +52,7 @@ func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTh
 		db.Preload("Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
 			Preload("Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
 			Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-				return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
-					Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
-					Where("arrangement_id = default_arrangement_id")
+				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).
 			Find(&songs, request.IDs)
 	}
@@ -76,8 +74,10 @@ func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTh
 
 	for i := range newSongs {
 		totalOccurrences := uint(0)
-		for _, section := range newSongs[i].Sections {
-			totalOccurrences += section.ArrangementOccurrences[0].Occurrences
+		if newSongs[i].DefaultArrangementID != nil {
+			for _, section := range newSongs[i].Sections {
+				totalOccurrences += section.ArrangementOccurrences[0].Occurrences
+			}
 		}
 
 		if totalOccurrences > 0 {

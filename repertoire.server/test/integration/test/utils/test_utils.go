@@ -130,7 +130,7 @@ func SubscribeToTopic(topic topics.Topic) SubscribedToTopic {
 // Seeding
 
 func SeedAndCleanupData(t *testing.T, users []model.User, seed func(*gorm.DB)) {
-	db := GetDatabase(t)
+	db := GetDatabase(t).Session(&gorm.Session{NewDB: true})
 	seed(db)
 	t.Cleanup(func() {
 		for _, user := range users {

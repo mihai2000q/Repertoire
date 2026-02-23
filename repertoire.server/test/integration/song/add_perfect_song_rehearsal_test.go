@@ -92,9 +92,7 @@ func TestAddPerfectSongRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *t
 		db.Preload("Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
 			Preload("Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
 			Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-				return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
-					Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
-					Where("arrangement_id = default_arrangement_id")
+				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).
 			Find(&song, request.ID)
 	}

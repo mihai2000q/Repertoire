@@ -37,7 +37,7 @@ type Song struct {
 	AlbumID              *uuid.UUID `json:"albumId"`
 	ArtistID             *uuid.UUID `json:"artistId"`
 	GuitarTuningID       *uuid.UUID `json:"-"`
-	DefaultArrangementID *uuid.UUID `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangementID"`
+	DefaultArrangementID *uuid.UUID `gorm:"constraint:OnDelete:SET NULL" json:"defaultArrangementId"`
 
 	Artist       *Artist       `json:"artist"`
 	Album        *Album        `json:"album"`

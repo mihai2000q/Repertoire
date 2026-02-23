@@ -38,11 +38,8 @@ func (s songArrangementRepository) GetWithAssociations(arrangement *model.SongAr
 func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrangement, songID uuid.UUID) error {
 	return s.client.Model(&model.SongArrangement{}).
 		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.
-				Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
-				Order("song_sections.order")
+			return db.Joins("Section").Order("song_sections.order")
 		}).
-		Preload("SectionOccurrences.Section"). // Try Joins
 		Where(model.SongArrangement{SongID: songID}).
 		Order("\"order\"").
 		Find(arrangements).
@@ -51,7 +48,7 @@ func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrang
 
 func (s songArrangementRepository) CountBySong(count *int64, songID uuid.UUID) error {
 	return s.client.Model(&model.SongArrangement{}).
-		Where("song_id = ?", songID).
+		Where(model.SongArrangement{SongID: songID}).
 		Count(count).
 		Error
 }

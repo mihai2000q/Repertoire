@@ -2,6 +2,7 @@ package assertion
 
 import (
 	"repertoire/server/model"
+	"slices"
 	"testing"
 	"time"
 
@@ -9,20 +10,26 @@ import (
 )
 
 func PerfectSongRehearsal(t *testing.T, song model.Song, newSong model.Song) {
-	for i, section := range newSong.Sections {
-		if section.ArrangementOccurrences[0].Occurrences == 0 { // nothing changed
-			assert.Equal(t, song.Sections[i], newSong.Sections[i])
+	for i, newSection := range newSong.Sections {
+		oldSection := song.Sections[i]
+		defaultArrangementOccurrences := slices.DeleteFunc(
+			slices.Clone(oldSection.ArrangementOccurrences),
+			func(occ model.SongSectionOccurrences) bool {
+				return occ.ArrangementID != *song.DefaultArrangementID
+			})[0]
+		if defaultArrangementOccurrences.Occurrences == 0 { // nothing changed
+			assert.Equal(t, oldSection, newSection)
 			continue
 		}
 
-		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].ArrangementOccurrences[0].Occurrences)
-		assert.Greater(t, section.RehearsalsScore, song.Sections[i].RehearsalsScore)
-		assert.GreaterOrEqual(t, section.Progress, song.Sections[i].Progress)
+		assert.Equal(t, newSection.Rehearsals, oldSection.Rehearsals+defaultArrangementOccurrences.Occurrences)
+		assert.Greater(t, newSection.RehearsalsScore, oldSection.RehearsalsScore)
+		assert.GreaterOrEqual(t, newSection.Progress, oldSection.Progress)
 
-		assert.NotEmpty(t, section.History[0].ID)
-		assert.Equal(t, song.Sections[i].Rehearsals, section.History[0].From)
-		assert.Equal(t, section.Rehearsals, section.History[0].To)
-		assert.Equal(t, model.RehearsalsProperty, section.History[0].Property)
+		assert.NotEmpty(t, newSection.History[0].ID)
+		assert.Equal(t, oldSection.Rehearsals, newSection.History[0].From)
+		assert.Equal(t, newSection.Rehearsals, newSection.History[0].To)
+		assert.Equal(t, model.RehearsalsProperty, newSection.History[0].Property)
 	}
 
 	assert.Greater(t, newSong.Rehearsals, song.Rehearsals)

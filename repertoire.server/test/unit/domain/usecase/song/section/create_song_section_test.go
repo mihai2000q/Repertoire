@@ -524,7 +524,7 @@ func assertCreatedSongSection(
 	t *testing.T,
 	request requests.CreateSongSectionRequest,
 	section model.SongSection,
-	count int64,
+	sectionsCount int64,
 ) {
 	assert.NotEmpty(t, section.ID)
 	assert.Equal(t, request.Name, section.Name)
@@ -533,7 +533,7 @@ func assertCreatedSongSection(
 	assert.Zero(t, section.RehearsalsScore)
 	assert.Zero(t, section.ConfidenceScore)
 	assert.Zero(t, section.Progress)
-	assert.Equal(t, uint(count), section.Order)
+	assert.Equal(t, uint(sectionsCount), section.Order)
 	assert.Equal(t, request.TypeID, section.SongSectionTypeID)
 	assert.Equal(t, request.BandMemberID, section.BandMemberID)
 	assert.Equal(t, request.InstrumentID, section.InstrumentID)
