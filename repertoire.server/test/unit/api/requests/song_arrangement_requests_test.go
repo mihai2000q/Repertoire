@@ -135,24 +135,43 @@ func TestValidateCreateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 }
 
 func TestValidateUpdateSongArrangementRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.UpdateSongArrangementRequest{
-		ID:   uuid.New(),
-		Name: validArrangementName,
-		Occurrences: []requests.UpdateSectionOccurrencesRequest{
-			{SectionID: uuid.New(), Occurrences: 1},
-			{SectionID: uuid.New(), Occurrences: 0},
-			{SectionID: uuid.New(), Occurrences: 3},
+	tests := []struct {
+		name    string
+		request requests.UpdateSongArrangementRequest
+	}{
+		{
+			"Minimal",
+			requests.UpdateSongArrangementRequest{
+				ID:   uuid.New(),
+				Name: validArrangementName,
+			},
+		},
+		{
+			"Maximal",
+			requests.UpdateSongArrangementRequest{
+				ID:   uuid.New(),
+				Name: validArrangementName,
+				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
+					{SectionID: uuid.New(), Occurrences: 1},
+					{SectionID: uuid.New(), Occurrences: 0},
+					{SectionID: uuid.New(), Occurrences: 3},
+				},
+			},
 		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -168,7 +187,7 @@ func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 			requests.UpdateSongArrangementRequest{
 				ID:          uuid.Nil,
 				Name:        validArrangementName,
-				Occurrences: []requests.UpdateSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
+				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
 			},
 			"ID",
 			"required",
@@ -179,7 +198,7 @@ func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 			requests.UpdateSongArrangementRequest{
 				ID:          uuid.New(),
 				Name:        "",
-				Occurrences: []requests.UpdateSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
+				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
 			},
 			"Name",
 			"required",
@@ -189,7 +208,7 @@ func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 			requests.UpdateSongArrangementRequest{
 				ID:          uuid.New(),
 				Name:        strings.Repeat("a", 31),
-				Occurrences: []requests.UpdateSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
+				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
 			},
 			"Name",
 			"max",
@@ -200,7 +219,7 @@ func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 			requests.UpdateSongArrangementRequest{
 				ID:          uuid.New(),
 				Name:        validArrangementName,
-				Occurrences: []requests.UpdateSectionOccurrencesRequest{{SectionID: uuid.Nil, Occurrences: 1}},
+				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.Nil, Occurrences: 1}},
 			},
 			"Occurrences[0].SectionID",
 			"required",

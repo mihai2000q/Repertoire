@@ -12,12 +12,12 @@ type CreateSongArrangementRequest struct {
 }
 
 type UpdateSongArrangementRequest struct {
-	ID          uuid.UUID                         `validate:"required"`
-	Name        string                            `validate:"required,max=30"`
-	Occurrences []UpdateSectionOccurrencesRequest `validate:"min=1,dive"`
+	ID          uuid.UUID                             `validate:"required"`
+	Name        string                                `validate:"required,max=30"`
+	Occurrences []UpdateSongSectionOccurrencesRequest `validate:"omitempty,dive"`
 }
 
-type UpdateSectionOccurrencesRequest struct {
+type UpdateSongSectionOccurrencesRequest struct {
 	SectionID   uuid.UUID `validate:"required"`
 	Occurrences uint
 }
