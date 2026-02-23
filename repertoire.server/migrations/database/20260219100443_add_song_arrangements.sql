@@ -20,7 +20,7 @@ CREATE TABLE public.song_section_occurrences
 
 ALTER TABLE public.songs
     ADD COLUMN default_arrangement_id uuid,
-    ADD CONSTRAINT fk_song_arrangements_songs
+    ADD CONSTRAINT fk_song_default_arrangement
         foreign key (default_arrangement_id) references song_arrangements (id) on delete set null;
 
 -- Migrate song sections occurrences and partial occurrences to song arrangements and set default arrangement
