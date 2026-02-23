@@ -73,20 +73,7 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 
 	for i, album := range newAlbums {
 		for j := range album.Songs {
-			totalOccurrences := uint(0)
-			if album.Songs[j].DefaultArrangementID != nil {
-				for _, section := range newAlbums[i].Songs[j].Sections {
-					totalOccurrences += section.ArrangementOccurrences[0].Occurrences
-				}
-			}
-
-			if totalOccurrences > 0 {
-				assertion.PerfectSongRehearsal(t, albums[i].Songs[j], newAlbums[i].Songs[j])
-			} else {
-				assert.Equal(t, albums[i].Songs[j].Rehearsals, newAlbums[i].Songs[j].Rehearsals)
-				assert.Equal(t, albums[i].Songs[j].Progress, newAlbums[i].Songs[j].Progress)
-				assert.Equal(t, albums[i].Songs[j].LastTimePlayed, newAlbums[i].Songs[j].LastTimePlayed)
-			}
+			assertion.PerfectSongRehearsal(t, albums[i].Songs[j], newAlbums[i].Songs[j])
 		}
 	}
 }

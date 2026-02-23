@@ -6,23 +6,42 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func PerfectSongRehearsal(t *testing.T, song model.Song, newSong model.Song) {
-	for i, newSection := range newSong.Sections {
-		oldSection := song.Sections[i]
+	if newSong.DefaultArrangementID == nil { // nothing changed overall on the song
+		assert.Equal(t, song, newSong)
+		return
+	}
+
+	totalOccurrences := uint(0)
+	defaultArrangementOccurrencesMap := make(map[uuid.UUID]uint)
+	for _, section := range song.Sections {
 		defaultArrangementOccurrences := slices.DeleteFunc(
-			slices.Clone(oldSection.ArrangementOccurrences),
+			slices.Clone(section.ArrangementOccurrences),
 			func(occ model.SongSectionOccurrences) bool {
 				return occ.ArrangementID != *song.DefaultArrangementID
-			})[0]
-		if defaultArrangementOccurrences.Occurrences == 0 { // nothing changed
+			})
+		totalOccurrences += defaultArrangementOccurrences[0].Occurrences
+		defaultArrangementOccurrencesMap[section.ID] = defaultArrangementOccurrences[0].Occurrences
+	}
+
+	if totalOccurrences == 0 { // also nothing changed
+		assert.Equal(t, song, newSong)
+		return
+	}
+
+	for i, newSection := range newSong.Sections {
+		oldSection := song.Sections[i]
+
+		if defaultArrangementOccurrencesMap[newSection.ID] == 0 { // nothing changed on this section
 			assert.Equal(t, oldSection, newSection)
 			continue
 		}
 
-		assert.Equal(t, newSection.Rehearsals, oldSection.Rehearsals+defaultArrangementOccurrences.Occurrences)
+		assert.Equal(t, newSection.Rehearsals, oldSection.Rehearsals+defaultArrangementOccurrencesMap[newSection.ID])
 		assert.Greater(t, newSection.RehearsalsScore, oldSection.RehearsalsScore)
 		assert.GreaterOrEqual(t, newSection.Progress, oldSection.Progress)
 
