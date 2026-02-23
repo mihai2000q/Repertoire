@@ -39,7 +39,7 @@ func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrang
 	return s.client.Model(&model.SongArrangement{}).
 		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("LEFT JOIN song_sections ON song_sections.song_id = song_arrangements.song_id").
+				Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
 				Order("song_sections.order")
 		}).
 		Preload("SectionOccurrences.Section"). // Try Joins

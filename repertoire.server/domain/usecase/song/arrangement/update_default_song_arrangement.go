@@ -1,6 +1,8 @@
 package arrangement
 
 import (
+	"errors"
+	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -20,6 +22,9 @@ func (g UpdateDefaultSongArrangement) Handle(request requests.UpdateDefaultSongA
 	err := g.songRepository.Get(&song, request.SongID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
+	}
+	if reflect.ValueOf(song).IsZero() {
+		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
 	song.DefaultArrangementID = &request.ID

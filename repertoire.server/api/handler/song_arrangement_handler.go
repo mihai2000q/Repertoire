@@ -29,13 +29,16 @@ func NewSongArrangementHandler(
 }
 
 func (s SongArrangementHandler) GetAll(c *gin.Context) {
-	var request requests.GetSongArrangementsRequest
-	err := c.BindQuery(&request)
+	// TODO: When Gin fixes it, replace with BindQuery
+	querySongId := c.Query("songId")
+	songId, err := uuid.Parse(querySongId)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
+	var request requests.GetSongArrangementsRequest
+	request.SongID = songId
 	errorCode := s.Validator.Validate(&request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)

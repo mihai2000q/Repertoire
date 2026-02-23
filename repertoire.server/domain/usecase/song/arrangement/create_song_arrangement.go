@@ -64,7 +64,7 @@ func (c CreateSongArrangement) CreateSectionOccurrences(arrangement *model.SongA
 	for _, section := range sections {
 		occurrence := model.SongSectionOccurrences{
 			Occurrences:   0,
-			Section:       section,
+			SectionID:     section.ID,
 			ArrangementID: arrangement.ID,
 		}
 		occurrences = append(occurrences, occurrence)
