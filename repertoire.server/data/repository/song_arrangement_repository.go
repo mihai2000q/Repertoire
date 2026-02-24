@@ -38,7 +38,7 @@ func (s songArrangementRepository) GetWithAssociations(arrangement *model.SongAr
 func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrangement, songID uuid.UUID) error {
 	return s.client.Model(&model.SongArrangement{}).
 		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Joins("Section").Order("song_sections.order")
+			return db.Joins("Section").Order("\"order\"")
 		}).
 		Where(model.SongArrangement{SongID: songID}).
 		Order("\"order\"").
