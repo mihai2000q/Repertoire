@@ -46,9 +46,9 @@ func PerfectSongRehearsal(t *testing.T, song model.Song, newSong model.Song) {
 		assert.Greater(t, newSection.RehearsalsScore, oldSection.RehearsalsScore)
 		assert.GreaterOrEqual(t, newSection.Progress, oldSection.Progress)
 
-		assert.NotEmpty(t, newSection.History[i].ID)
-		assert.Equal(t, oldSection.Rehearsals, newSection.History[i].From)
-		assert.Equal(t, newSection.Rehearsals, newSection.History[i].To)
+		assert.NotEmpty(t, newSection.History[0].ID)
+		assert.Equal(t, oldSection.Rehearsals, newSection.History[0].From)
+		assert.Equal(t, newSection.Rehearsals, newSection.History[0].To)
 		assert.Equal(t, model.RehearsalsProperty, newSection.History[0].Property)
 	}
 
