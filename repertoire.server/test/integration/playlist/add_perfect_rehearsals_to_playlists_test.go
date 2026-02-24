@@ -43,14 +43,19 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 		IDs: []uuid.UUID{
 			playlistData.Playlists[0].ID,
 			playlistData.Playlists[1].ID,
+			playlistData.Playlists[2].ID,
 		},
 	}
 
 	getPlaylistsQuery := func(db *gorm.DB, playlists *[]model.Playlist) {
 		db.Preload("PlaylistSongs", func(db *gorm.DB) *gorm.DB { return db.Order("song_track_no") }).
-			Preload("PlaylistSongs.Song", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
-			Preload("PlaylistSongs.Song.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-			Preload("PlaylistSongs.Song.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+			Preload("PlaylistSongs.Song").
+			Preload("PlaylistSongs.Song.Sections", func(db *gorm.DB) *gorm.DB {
+				return db.Order("song_sections.order")
+			}).
+			Preload("PlaylistSongs.Song.Sections.History", func(db *gorm.DB) *gorm.DB {
+				return db.Order("created_at desc, property desc")
+			}).
 			Preload("PlaylistSongs.Song.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
 				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).
@@ -72,25 +77,26 @@ func TestAddPerfectRehearsalsToPlaylists_WhenSuccessful_ShouldUpdateSongsAndSect
 	db = db.Session(&gorm.Session{NewDB: true})
 	getPlaylistsQuery(db, &newPlaylists)
 
+	songDuplicatesMap := make(map[uuid.UUID]int)
+	for _, playlist := range newPlaylists {
+		for _, playlistSong := range playlist.PlaylistSongs {
+			_, ok := songDuplicatesMap[playlistSong.SongID]
+			if ok {
+				songDuplicatesMap[playlistSong.SongID] += 1
+			} else {
+				songDuplicatesMap[playlistSong.SongID] = 0
+			}
+		}
+	}
+
 	for i, playlist := range newPlaylists {
 		for j := range playlist.PlaylistSongs {
-			song := playlists[i].PlaylistSongs[j].Song
-			newSong := newPlaylists[i].PlaylistSongs[j].Song
-
-			totalOccurrences := uint(0)
-			if newSong.DefaultArrangementID != nil {
-				for _, section := range newSong.Sections {
-					totalOccurrences += section.ArrangementOccurrences[0].Occurrences
-				}
-			}
-
-			if totalOccurrences > 0 {
-				assertion.PerfectSongRehearsal(t, song, newSong)
-			} else {
-				assert.Equal(t, song.Rehearsals, newSong.Rehearsals)
-				assert.Equal(t, song.Progress, newSong.Progress)
-				assert.Equal(t, song.LastTimePlayed, newSong.LastTimePlayed)
-			}
+			assertion.PerfectSongRehearsalWithDuplicates(
+				t,
+				playlists[i].PlaylistSongs[j].Song,
+				newPlaylists[i].PlaylistSongs[j].Song,
+				songDuplicatesMap[playlists[i].PlaylistSongs[j].SongID],
+			)
 		}
 	}
 }

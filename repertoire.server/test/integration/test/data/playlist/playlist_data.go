@@ -17,7 +17,7 @@ func SeedData(db *gorm.DB) {
 	db.Create(&SongSections)
 	db.Create(&SongArrangements)
 	// Default Song Arrangements
-	db.Model(&model.Song{ID: Artists[1].Songs[0].ID}).Update("default_arrangement_id", SongArrangements[0].ID)
+	db.Model(&model.Song{ID: Songs[0].ID}).Update("default_arrangement_id", SongArrangements[0].ID)
 	db.Create(&PlaylistsSongs)
 }
 
@@ -127,12 +127,12 @@ var SongSections = []model.SongSection{
 		Name:              "Test Song Section 1",
 		Order:             0,
 		SongID:            Songs[0].ID,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 		Rehearsals:        15,
 		Confidence:        10,
 		ConfidenceScore:   12,
 		RehearsalsScore:   45,
 		Progress:          5,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 		History: []model.SongSectionHistory{
 			{
 				ID:       uuid.New(),
@@ -153,12 +153,12 @@ var SongSections = []model.SongSection{
 		Name:              "Test Song Section 2",
 		Order:             1,
 		SongID:            Songs[0].ID,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 		Rehearsals:        20,
 		Confidence:        30,
 		ConfidenceScore:   25,
 		RehearsalsScore:   45,
 		Progress:          10,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 		History: []model.SongSectionHistory{
 			{
 				ID:       uuid.New(),
@@ -178,12 +178,12 @@ var SongSections = []model.SongSection{
 	{
 		ID:                uuid.New(),
 		Name:              "Test Song Section 1",
-		SongID:            Songs[1].ID,
 		Order:             0,
+		SongID:            Songs[1].ID,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 		Rehearsals:        15,
 		RehearsalsScore:   45,
 		Progress:          1,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
 		History: []model.SongSectionHistory{
 			{
 				ID:       uuid.New(),
@@ -244,11 +244,24 @@ var PlaylistsSongs = []model.PlaylistSong{
 		SongID:      Songs[3].ID,
 		SongTrackNo: 4,
 	},
+	{
+		ID:          uuid.New(),
+		PlaylistID:  Playlists[0].ID,
+		SongID:      Songs[0].ID,
+		SongTrackNo: 5,
+	},
 
 	// Playlist 2
 	{
 		ID:          uuid.New(),
 		PlaylistID:  Playlists[1].ID,
+		SongID:      Songs[0].ID,
+		SongTrackNo: 1,
+	},
+	// Playlist 3
+	{
+		ID:          uuid.New(),
+		PlaylistID:  Playlists[2].ID,
 		SongID:      Songs[0].ID,
 		SongTrackNo: 1,
 	},
