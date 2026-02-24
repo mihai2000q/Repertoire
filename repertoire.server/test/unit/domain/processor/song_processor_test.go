@@ -188,6 +188,7 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndSections(t *testi
 
 			assert.Equal(t, sections[0].Rehearsals, newHistory.From)
 			assert.Equal(t, sections[0].Rehearsals+sections[0].ArrangementOccurrences[0].Occurrences, newHistory.To)
+			assert.WithinDuration(t, newHistory.CreatedAt, time.Now().UTC(), time.Minute)
 		}).
 		Return(nil).
 		Times(sectionsCountWithOcc)

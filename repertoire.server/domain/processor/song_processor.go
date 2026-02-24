@@ -47,6 +47,7 @@ func (s *songProcessor) AddPerfectRehearsal(
 			From:          section.Rehearsals,
 			To:            newRehearsals,
 			SongSectionID: section.ID,
+			CreatedAt:     time.Now().UTC(),
 		}
 		err := songSectionRepository.CreateHistory(&newHistory)
 		if err != nil {
