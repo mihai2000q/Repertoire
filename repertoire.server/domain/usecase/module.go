@@ -75,7 +75,9 @@ var playlistUseCases = fx.Options(
 	fx.Provide(playlist.NewSaveImageToPlaylist),
 	fx.Provide(playlist.NewUpdatePlaylist),
 
+	// Songs
 	fx.Provide(playlistSong.NewAddSongsToPlaylist),
+	fx.Provide(playlistSong.NewAddPerfectPlaylistSongRehearsals),
 	fx.Provide(playlistSong.NewGetPlaylistSongs),
 	fx.Provide(playlistSong.NewMoveSongFromPlaylist),
 	fx.Provide(playlistSong.NewRemoveSongsFromPlaylist),

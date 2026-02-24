@@ -319,6 +319,23 @@ func (p PlaylistHandler) AddSongs(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (p PlaylistHandler) AddPerfectSongRehearsals(c *gin.Context) {
+	var request requests.AddPerfectPlaylistSongRehearsalsRequest
+	errorCode := p.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = p.service.AddPerfectSongRehearsals(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	p.SendMessage(c, "perfect rehearsals have been added successfully to the playlist songs!")
+}
+
 func (p PlaylistHandler) Shuffle(c *gin.Context) {
 	var request requests.ShufflePlaylistSongsRequest
 	errorCode := p.BindAndValidate(c, &request)

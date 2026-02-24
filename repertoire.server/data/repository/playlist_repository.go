@@ -11,6 +11,11 @@ import (
 type PlaylistRepository interface {
 	Get(playlist *model.Playlist, id uuid.UUID) error
 	GetPlaylistSongs(playlistSongs *[]model.PlaylistSong, id uuid.UUID) error
+	GetPlaylistSongsByIDsWithSectionsAndDefaultOccurrences(
+		playlistSongs *[]model.PlaylistSong,
+		ids []uuid.UUID,
+		playlistID uuid.UUID,
+	) error
 	GetPlaylistSongsWithSongs(
 		playlistSongs *[]model.PlaylistSong,
 		id uuid.UUID,
@@ -57,6 +62,27 @@ func (p playlistRepository) GetPlaylistSongs(playlistSongs *[]model.PlaylistSong
 	return p.client.
 		Order("song_track_no").
 		Find(&playlistSongs, model.PlaylistSong{PlaylistID: id}).
+		Error
+}
+
+func (p playlistRepository) GetPlaylistSongsByIDsWithSectionsAndDefaultOccurrences(
+	playlistSongs *[]model.PlaylistSong,
+	ids []uuid.UUID,
+	playlistID uuid.UUID,
+) error {
+	return p.client.Model(&model.PlaylistSong{}).
+		Preload("Song").
+		Preload("Song.Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Song.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
+				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+				Where("arrangement_id = default_arrangement_id")
+		}).
+		Where(model.PlaylistSong{PlaylistID: playlistID}).
+		Order("song_track_no").
+		Find(&playlistSongs, ids).
 		Error
 }
 

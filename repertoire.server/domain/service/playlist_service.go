@@ -30,6 +30,7 @@ type PlaylistService interface {
 	Update(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode
 
 	AddSongs(request requests.AddSongsToPlaylistRequest) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode)
+	AddPerfectSongRehearsals(request requests.AddPerfectPlaylistSongRehearsalsRequest) *wrapper.ErrorCode
 	GetSongs(request requests.GetPlaylistSongsRequest) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode)
 	MoveSong(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode
 	RemoveSongs(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode
@@ -50,11 +51,12 @@ type playlistService struct {
 	saveImageToPlaylist             playlist.SaveImageToPlaylist
 	updatePlaylist                  playlist.UpdatePlaylist
 
-	addSongsToPlaylist      song.AddSongsToPlaylist
-	getPlaylistSongs        song.GetPlaylistSongs
-	moveSongFromPlaylist    song.MoveSongFromPlaylist
-	removeSongsFromPlaylist song.RemoveSongsFromPlaylist
-	shufflePlaylistSongs    song.ShufflePlaylistSongs
+	addSongsToPlaylist               song.AddSongsToPlaylist
+	addPerfectPlaylistSongRehearsals song.AddPerfectPlaylistSongRehearsals
+	getPlaylistSongs                 song.GetPlaylistSongs
+	moveSongFromPlaylist             song.MoveSongFromPlaylist
+	removeSongsFromPlaylist          song.RemoveSongsFromPlaylist
+	shufflePlaylistSongs             song.ShufflePlaylistSongs
 }
 
 func NewPlaylistService(
@@ -72,6 +74,7 @@ func NewPlaylistService(
 	updatePlaylist playlist.UpdatePlaylist,
 
 	addSongsToPlaylist song.AddSongsToPlaylist,
+	addPerfectPlaylistSongRehearsals song.AddPerfectPlaylistSongRehearsals,
 	getPlaylistSongs song.GetPlaylistSongs,
 	moveSongFromPlaylist song.MoveSongFromPlaylist,
 	removeSongFromPlaylist song.RemoveSongsFromPlaylist,
@@ -91,11 +94,12 @@ func NewPlaylistService(
 		saveImageToPlaylist:             saveImageToPlaylist,
 		updatePlaylist:                  updatePlaylist,
 
-		addSongsToPlaylist:      addSongsToPlaylist,
-		getPlaylistSongs:        getPlaylistSongs,
-		moveSongFromPlaylist:    moveSongFromPlaylist,
-		removeSongsFromPlaylist: removeSongFromPlaylist,
-		shufflePlaylistSongs:    shufflePlaylistSongs,
+		addSongsToPlaylist:               addSongsToPlaylist,
+		addPerfectPlaylistSongRehearsals: addPerfectPlaylistSongRehearsals,
+		getPlaylistSongs:                 getPlaylistSongs,
+		moveSongFromPlaylist:             moveSongFromPlaylist,
+		removeSongsFromPlaylist:          removeSongFromPlaylist,
+		shufflePlaylistSongs:             shufflePlaylistSongs,
 	}
 }
 
@@ -158,6 +162,12 @@ func (p *playlistService) AddSongs(
 	request requests.AddSongsToPlaylistRequest,
 ) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode) {
 	return p.addSongsToPlaylist.Handle(request)
+}
+
+func (p *playlistService) AddPerfectSongRehearsals(
+	request requests.AddPerfectPlaylistSongRehearsalsRequest,
+) *wrapper.ErrorCode {
+	return p.addPerfectPlaylistSongRehearsals.Handle(request)
 }
 
 func (p *playlistService) GetSongs(request requests.GetPlaylistSongsRequest) (wrapper.WithTotalCount[model.Song], *wrapper.ErrorCode) {
