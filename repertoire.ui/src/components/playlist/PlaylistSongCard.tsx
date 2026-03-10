@@ -21,7 +21,6 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import { useRemoveSongsFromPlaylistMutation } from '../../state/api/playlistsApi.ts'
 import SongProperty from '../../types/enums/properties/SongProperty.ts'
@@ -141,7 +140,6 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
 
         <Menu.Divider />
         <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
-        <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
         <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
         <Menu.Divider />
 

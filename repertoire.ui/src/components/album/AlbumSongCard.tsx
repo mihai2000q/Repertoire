@@ -26,7 +26,6 @@ import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
 import { useRemoveSongsFromAlbumMutation } from '../../state/api/albumsApi.ts'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
@@ -122,7 +121,6 @@ function AlbumSongCard({
 
       <Menu.Divider />
       <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
-      <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenus} />
       <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
       <Menu.Divider />
 

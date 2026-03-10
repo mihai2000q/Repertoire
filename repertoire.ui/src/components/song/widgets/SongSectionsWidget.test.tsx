@@ -12,7 +12,6 @@ import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import {
-  AddPartialSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
   MoveSongSectionRequest
 } from '../../../types/requests/SongRequests.ts'

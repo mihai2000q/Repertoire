@@ -341,8 +341,6 @@ export const emptySongSection: SongSection = {
   confidence: 0,
   progress: 0,
   rehearsals: 0,
-  occurrences: 0,
-  partialOccurrences: 0,
   songSectionType: {
     id: '',
     name: ''
