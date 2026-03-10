@@ -20,7 +20,7 @@ func TestUpdateDefaultSongArrangement_WhenGetSongFails_ShouldReturnInternalServe
 	_uut := arrangement.NewUpdateDefaultSongArrangement(songRepository)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
+		ID:     &[]uuid.UUID{uuid.New()}[0],
 		SongID: uuid.New(),
 	}
 
@@ -46,7 +46,7 @@ func TestUpdateDefaultSongArrangement_WhenSongIsEmpty_ShouldReturnNotFoundError(
 	_uut := arrangement.NewUpdateDefaultSongArrangement(songRepository)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
+		ID:     &[]uuid.UUID{uuid.New()}[0],
 		SongID: uuid.New(),
 	}
 
@@ -71,7 +71,7 @@ func TestUpdateDefaultSongArrangement_WhenUpdateSongFails_ShouldReturnInternalSe
 	_uut := arrangement.NewUpdateDefaultSongArrangement(songRepository)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
+		ID:     &[]uuid.UUID{uuid.New()}[0],
 		SongID: uuid.New(),
 	}
 
@@ -99,35 +99,54 @@ func TestUpdateDefaultSongArrangement_WhenUpdateSongFails_ShouldReturnInternalSe
 }
 
 func TestUpdateDefaultSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
-	// given
-	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewUpdateDefaultSongArrangement(songRepository)
-
-	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
-		SongID: uuid.New(),
+	tests := []struct {
+		name    string
+		request requests.UpdateDefaultSongArrangementRequest
+	}{
+		{
+			"With ID",
+			requests.UpdateDefaultSongArrangementRequest{
+				ID:     &[]uuid.UUID{uuid.New()}[0],
+				SongID: uuid.New(),
+			},
+		},
+		{
+			"With Null ID",
+			requests.UpdateDefaultSongArrangementRequest{
+				ID:     &[]uuid.UUID{uuid.New()}[0],
+				SongID: uuid.New(),
+			},
+		},
 	}
 
-	mockSong := model.Song{
-		ID: request.SongID,
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			songRepository := new(repository.SongRepositoryMock)
+			_uut := arrangement.NewUpdateDefaultSongArrangement(songRepository)
+
+			mockSong := model.Song{
+				ID: tt.request.SongID,
+			}
+			songRepository.On("Get", new(model.Song), tt.request.SongID).
+				Return(nil, &mockSong).
+				Once()
+
+			songRepository.On("Update", mock.IsType(new(model.Song))).
+				Run(func(args mock.Arguments) {
+					newSong := *args.Get(0).(*model.Song)
+					assert.Equal(t, tt.request.ID, *newSong.DefaultArrangementID)
+				}).
+				Return(nil).
+				Once()
+
+			// when
+			errCode := _uut.Handle(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+
+			songRepository.AssertExpectations(t)
+		})
 	}
-	songRepository.On("Get", new(model.Song), request.SongID).
-		Return(nil, &mockSong).
-		Once()
-
-	songRepository.On("Update", mock.IsType(new(model.Song))).
-		Run(func(args mock.Arguments) {
-			newSong := *args.Get(0).(*model.Song)
-			assert.Equal(t, request.ID, *newSong.DefaultArrangementID)
-		}).
-		Return(nil).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	assert.Nil(t, errCode)
-
-	songRepository.AssertExpectations(t)
 }

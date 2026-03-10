@@ -248,7 +248,7 @@ func TestValidateUpdateDefaultSongArrangementRequest_WhenIsValid_ShouldReturnNil
 	_uut := validation.NewValidator(nil)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
+		ID:     &[]uuid.UUID{uuid.New()}[0],
 		SongID: uuid.New(),
 	}
 
@@ -266,21 +266,11 @@ func TestValidateUpdateDefaultSongArrangementRequest_WhenSingleFieldIsInvalid_Sh
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// ID Test Cases
-		{
-			"ID is invalid because it's required",
-			requests.UpdateDefaultSongArrangementRequest{
-				ID:     uuid.Nil,
-				SongID: uuid.New(),
-			},
-			"ID",
-			"required",
-		},
 		// Song ID Test Cases
 		{
 			"Song ID is invalid because it's required",
 			requests.UpdateDefaultSongArrangementRequest{
-				ID:     uuid.New(),
+				ID:     &[]uuid.UUID{uuid.New()}[0],
 				SongID: uuid.Nil,
 			},
 			"SongID",

@@ -27,7 +27,7 @@ func (g UpdateDefaultSongArrangement) Handle(request requests.UpdateDefaultSongA
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	song.DefaultArrangementID = &request.ID
+	song.DefaultArrangementID = request.ID
 
 	err = g.songRepository.Update(&song)
 	if err != nil {

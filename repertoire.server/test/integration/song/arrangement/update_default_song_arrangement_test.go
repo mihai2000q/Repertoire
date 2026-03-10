@@ -19,7 +19,7 @@ func TestUpdateDefaultSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundErr
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
+		ID:     nil,
 		SongID: uuid.New(),
 	}
 
@@ -36,7 +36,7 @@ func TestUpdateDefaultSongArrangement_WhenArrangementIsNotFound_ShouldReturnInte
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     uuid.New(),
+		ID:     &[]uuid.UUID{uuid.New()}[0],
 		SongID: songData.SongArrangements[2].SongID,
 	}
 
@@ -48,12 +48,12 @@ func TestUpdateDefaultSongArrangement_WhenArrangementIsNotFound_ShouldReturnInte
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
-func TestUpdateDefaultSongArrangement_WhenSuccessful_ShouldUpdateDefaultArrangementOnSong(t *testing.T) {
+func TestUpdateDefaultSongArrangement_WhenSuccessfulWithArrangement_ShouldUpdateDefaultArrangementOnSongWithTheArrangement(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.UpdateDefaultSongArrangementRequest{
-		ID:     songData.SongArrangements[2].ID,
+		ID:     &[]uuid.UUID{songData.SongArrangements[2].ID}[0],
 		SongID: songData.SongArrangements[2].SongID,
 	}
 
@@ -69,4 +69,27 @@ func TestUpdateDefaultSongArrangement_WhenSuccessful_ShouldUpdateDefaultArrangem
 	var newSong model.Song
 	db.Find(&newSong, &model.Song{ID: request.SongID})
 	assert.Equal(t, &request.ID, newSong.DefaultArrangementID)
+}
+
+func TestUpdateDefaultSongArrangement_WhenSuccessfulWithNullID_ShouldUpdateDefaultArrangementOnSongWithNull(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateDefaultSongArrangementRequest{
+		ID:     nil,
+		SongID: songData.SongArrangements[0].SongID,
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/arrangements/default", request)
+
+	// then
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	db := utils.GetDatabase(t)
+
+	var newSong model.Song
+	db.Find(&newSong, &model.Song{ID: request.SongID})
+	assert.Nil(t, newSong.DefaultArrangementID)
 }

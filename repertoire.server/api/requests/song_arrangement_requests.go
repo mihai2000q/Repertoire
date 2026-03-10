@@ -23,7 +23,7 @@ type UpdateSongSectionOccurrencesRequest struct {
 }
 
 type UpdateDefaultSongArrangementRequest struct {
-	ID     uuid.UUID `validate:"required"`
+	ID     *uuid.UUID
 	SongID uuid.UUID `validate:"required"`
 }
 
