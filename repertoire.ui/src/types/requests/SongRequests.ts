@@ -93,16 +93,6 @@ export interface UpdateSongSectionRequest {
   instrumentId?: string
 }
 
-export interface UpdateSongSectionsOccurrencesRequest {
-  songId: string
-  sections: { id: string; occurrences: number }[]
-}
-
-export interface UpdateSongSectionsPartialOccurrencesRequest {
-  songId: string
-  sections: { id: string; partialOccurrences: number }[]
-}
-
 export interface UpdateAllSongSectionsRequest {
   songId: string
   bandMemberId?: string
@@ -121,6 +111,48 @@ export interface BulkDeleteSongSectionsRequest {
 }
 
 export interface DeleteSongSectionRequest {
+  id: string
+  songId: string
+}
+
+// Arrangements
+
+export interface GetSongArrangementsRequest {
+  songId: string
+}
+
+export interface CreateSongArrangementRequest {
+  songId: string
+  name: string
+}
+
+export interface BulkUpdateSongArrangementsRequest {
+  requests: UpdateSongArrangementRequest[]
+}
+
+export interface UpdateSongArrangementRequest {
+  id: string
+  name: string
+  occurrences: UpdateSongSectionOccurrencesRequest[]
+}
+
+export interface UpdateSongSectionOccurrencesRequest {
+  sectionId: string
+  occurrences: number
+}
+
+export interface UpdateDefaultSongArrangementRequest {
+  id: string | null
+  songId: string
+}
+
+export interface MoveSongArrangementRequest {
+  id: string
+  overId: string
+  songId: string
+}
+
+export interface DeleteSongArrangementRequest {
   id: string
   songId: string
 }

@@ -1,23 +1,32 @@
 import { api } from '../api.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import Song, { GuitarTuning, Instrument, SongSectionType } from '../../types/models/Song.ts'
+import Song, {
+  GuitarTuning,
+  Instrument,
+  SongArrangement,
+  SongSectionType
+} from '../../types/models/Song.ts'
 import {
   AddPerfectSongRehearsalRequest,
   AddPerfectSongRehearsalsRequest,
   BulkDeleteSongSectionsRequest,
   BulkDeleteSongsRequest,
   BulkRehearsalsSongSectionsRequest,
+  CreateSongArrangementRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
+  DeleteSongArrangementRequest,
   DeleteSongSectionRequest,
+  GetSongArrangementsRequest,
   GetSongsRequest,
+  MoveSongArrangementRequest,
   MoveSongSectionRequest,
   SaveImageToSongRequest,
   UpdateAllSongSectionsRequest,
+  UpdateDefaultSongArrangementRequest,
+  BulkUpdateSongArrangementsRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
-  UpdateSongSectionsOccurrencesRequest,
-  UpdateSongSectionsPartialOccurrencesRequest,
   UpdateSongSettingsRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
@@ -165,7 +174,7 @@ const songsApi = api.injectEndpoints({
     }),
 
     // sections
-    createSongSection: build.mutation<{ id: string }, CreateSongSectionRequest>({
+    createSongSection: build.mutation<HttpMessageResponse, CreateSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections',
         method: 'POST',
@@ -187,28 +196,6 @@ const songsApi = api.injectEndpoints({
     updateSongSection: build.mutation<HttpMessageResponse, UpdateSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    updateSongSectionsOccurrences: build.mutation<
-      HttpMessageResponse,
-      UpdateSongSectionsOccurrencesRequest
-    >({
-      query: (body) => ({
-        url: 'songs/sections/occurrences',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    updateSongSectionsPartialOccurrences: build.mutation<
-      HttpMessageResponse,
-      UpdateSongSectionsPartialOccurrencesRequest
-    >({
-      query: (body) => ({
-        url: 'songs/sections/partial-occurrences',
         method: 'PUT',
         body: body
       }),
@@ -244,6 +231,54 @@ const songsApi = api.injectEndpoints({
         method: 'DELETE'
       }),
       invalidatesTags: ['Songs']
+    }),
+
+    // arrangements
+    getSongArrangements: build.query<SongArrangement[], GetSongArrangementsRequest>({
+      query: (arg) => `songs/arrangements${createQueryParams(arg)}`,
+      providesTags: ['SongArrangements', 'Songs']
+    }),
+    createSongArrangement: build.mutation<HttpMessageResponse, CreateSongArrangementRequest>({
+      query: (body) => ({
+        url: 'songs/arrangements',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['SongArrangements']
+    }),
+    moveSongArrangement: build.mutation<HttpMessageResponse, MoveSongArrangementRequest>({
+      query: (body) => ({
+        url: 'songs/arrangements/move',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['SongArrangements']
+    }),
+    bulkUpdateSongArrangements: build.mutation<HttpMessageResponse, BulkUpdateSongArrangementsRequest>({
+      query: (body) => ({
+        url: 'songs/arrangements/bulk',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['SongArrangements']
+    }),
+    updateDefaultSongArrangement: build.mutation<
+      HttpMessageResponse,
+      UpdateDefaultSongArrangementRequest
+    >({
+      query: (body) => ({
+        url: 'songs/arrangements/default',
+        method: 'PUT',
+        body: body
+      }),
+      invalidatesTags: ['SongArrangements', 'Songs']
+    }),
+    deleteSongArrangement: build.mutation<HttpMessageResponse, DeleteSongArrangementRequest>({
+      query: (arg) => ({
+        url: `songs/arrangements/${arg.id}/from/${arg.songId}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: ['SongArrangements']
     }),
 
     // sections - types
@@ -287,10 +322,14 @@ export const {
   useCreateSongSectionMutation,
   useBulkRehearsalsSongSectionsMutation,
   useUpdateSongSectionMutation,
-  useUpdateSongSectionsOccurrencesMutation,
-  useUpdateSongSectionsPartialOccurrencesMutation,
   useUpdateAllSongSectionsMutation,
   useMoveSongSectionMutation,
   useBulkDeleteSongSectionsMutation,
-  useDeleteSongSectionMutation
+  useDeleteSongSectionMutation,
+  useGetSongArrangementsQuery,
+  useCreateSongArrangementMutation,
+  useBulkUpdateSongArrangementsMutation,
+  useUpdateDefaultSongArrangementMutation,
+  useMoveSongArrangementMutation,
+  useDeleteSongArrangementMutation
 } = songsApi
