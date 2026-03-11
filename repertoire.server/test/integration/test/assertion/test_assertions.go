@@ -352,7 +352,13 @@ func ResponseSongArrangement(
 
 	for i := range songArrangement.SectionOccurrences {
 		assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, response.SectionOccurrences[i].Occurrences)
-		assert.Equal(t, songArrangement.SectionOccurrences[i].Section.ID, response.SectionOccurrences[i].Section.ID)
+
+		ResponseSongSection(
+			t,
+			songArrangement.SectionOccurrences[i].Section,
+			response.SectionOccurrences[i].Section,
+			false,
+		)
 	}
 }
 

@@ -41,6 +41,7 @@ func TestGetAllSongArrangements_WhenSuccessful_ShouldReturnSongArrangements(t *t
 				Order("song_sections.order")
 		}).
 		Preload("SectionOccurrences.Section").
+		Preload("SectionOccurrences.Section.SongSectionType").
 		Where(model.SongArrangement{SongID: songID}).
 		Order("\"order\"").
 		Find(&songs)
