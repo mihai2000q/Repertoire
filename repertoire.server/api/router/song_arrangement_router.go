@@ -15,7 +15,7 @@ func (s SongArrangementRouter) RegisterRoutes() {
 	{
 		api.GET("", s.handler.GetAll)
 		api.POST("", s.handler.Create)
-		api.PUT("", s.handler.Update)
+		api.PUT("/bulk", s.handler.BulkUpdate)
 		api.PUT("/default", s.handler.UpdateDefault)
 		api.PUT("/move", s.handler.Move)
 		api.DELETE("/:id/from/:songID", s.handler.Delete)

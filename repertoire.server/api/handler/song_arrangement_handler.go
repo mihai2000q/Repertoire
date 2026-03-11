@@ -71,15 +71,15 @@ func (s SongArrangementHandler) Create(c *gin.Context) {
 	s.SendMessage(c, "song arrangement has been created successfully!")
 }
 
-func (s SongArrangementHandler) Update(c *gin.Context) {
-	var request requests.UpdateSongArrangementRequest
+func (s SongArrangementHandler) BulkUpdate(c *gin.Context) {
+	var request requests.BulkUpdateSongArrangementsRequest
 	errorCode := s.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	errorCode = s.service.Update(request)
+	errorCode = s.service.BulkUpdate(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

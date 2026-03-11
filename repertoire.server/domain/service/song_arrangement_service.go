@@ -10,12 +10,12 @@ import (
 )
 
 type SongArrangementService interface {
+	BulkUpdate(request requests.BulkUpdateSongArrangementsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongArrangementRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetSongArrangementsRequest) ([]model.SongArrangement, *wrapper.ErrorCode)
 	Move(request requests.MoveSongArrangementRequest) *wrapper.ErrorCode
 	UpdateDefault(request requests.UpdateDefaultSongArrangementRequest) *wrapper.ErrorCode
-	Update(request requests.UpdateSongArrangementRequest) *wrapper.ErrorCode
 }
 
 type songArrangementService struct {
@@ -24,7 +24,7 @@ type songArrangementService struct {
 	getAllSongArrangements       arrangement.GetAllSongArrangements
 	moveSongArrangement          arrangement.MoveSongArrangement
 	updateDefaultSongArrangement arrangement.UpdateDefaultSongArrangement
-	updateSongArrangement        arrangement.UpdateSongArrangement
+	bulkUpdateSongArrangement    arrangement.BulkUpdateSongArrangements
 }
 
 func NewSongArrangementService(
@@ -33,7 +33,7 @@ func NewSongArrangementService(
 	getAllSongArrangements arrangement.GetAllSongArrangements,
 	moveSongArrangement arrangement.MoveSongArrangement,
 	updateDefaultSongArrangement arrangement.UpdateDefaultSongArrangement,
-	updateSongArrangement arrangement.UpdateSongArrangement,
+	bulkUpdateSongArrangement arrangement.BulkUpdateSongArrangements,
 ) SongArrangementService {
 	return &songArrangementService{
 		createSongArrangement:        createSongArrangement,
@@ -41,8 +41,12 @@ func NewSongArrangementService(
 		getAllSongArrangements:       getAllSongArrangements,
 		moveSongArrangement:          moveSongArrangement,
 		updateDefaultSongArrangement: updateDefaultSongArrangement,
-		updateSongArrangement:        updateSongArrangement,
+		bulkUpdateSongArrangement:    bulkUpdateSongArrangement,
 	}
+}
+
+func (s *songArrangementService) BulkUpdate(request requests.BulkUpdateSongArrangementsRequest) *wrapper.ErrorCode {
+	return s.bulkUpdateSongArrangement.Handle(request)
 }
 
 func (s *songArrangementService) Create(request requests.CreateSongArrangementRequest) *wrapper.ErrorCode {
@@ -63,8 +67,4 @@ func (s *songArrangementService) Move(request requests.MoveSongArrangementReques
 
 func (s *songArrangementService) UpdateDefault(request requests.UpdateDefaultSongArrangementRequest) *wrapper.ErrorCode {
 	return s.updateDefaultSongArrangement.Handle(request)
-}
-
-func (s *songArrangementService) Update(request requests.UpdateSongArrangementRequest) *wrapper.ErrorCode {
-	return s.updateSongArrangement.Handle(request)
 }

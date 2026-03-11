@@ -9,11 +9,14 @@ import (
 )
 
 type SongArrangementRepository interface {
-	GetWithAssociations(arrangement *model.SongArrangement, id uuid.UUID) error
+	GetAllBySongWithSectionOccurrences(
+		arrangements *[]model.SongArrangement,
+		ids []uuid.UUID,
+		songID uuid.UUID,
+	) error
 	GetAllBySong(arrangements *[]model.SongArrangement, songID uuid.UUID) error
 	CountBySong(count *int64, songID uuid.UUID) error
 	Create(arrangement *model.SongArrangement) error
-	UpdateWithAssociations(arrangement *model.SongArrangement) error
 	UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error
 	Delete(id uuid.UUID) error
 }
@@ -28,10 +31,15 @@ func NewSongArrangementRepository(client database.Client) SongArrangementReposit
 	}
 }
 
-func (s songArrangementRepository) GetWithAssociations(arrangement *model.SongArrangement, id uuid.UUID) error {
+func (s songArrangementRepository) GetAllBySongWithSectionOccurrences(
+	arrangements *[]model.SongArrangement,
+	ids []uuid.UUID,
+	songID uuid.UUID,
+) error {
 	return s.client.
 		Preload("SectionOccurrences").
-		Find(&arrangement, model.SongArrangement{ID: id}).
+		Where("song_id = ?", songID).
+		Find(&arrangements, ids).
 		Error
 }
 
@@ -55,13 +63,6 @@ func (s songArrangementRepository) CountBySong(count *int64, songID uuid.UUID) e
 
 func (s songArrangementRepository) Create(arrangement *model.SongArrangement) error {
 	return s.client.Create(&arrangement).Error
-}
-
-func (s songArrangementRepository) UpdateWithAssociations(arrangement *model.SongArrangement) error {
-	return s.client.
-		Session(&gorm.Session{FullSaveAssociations: true}).
-		Updates(&arrangement).
-		Error
 }
 
 func (s songArrangementRepository) UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error {

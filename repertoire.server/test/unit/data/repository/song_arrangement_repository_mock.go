@@ -12,11 +12,15 @@ type SongArrangementRepositoryMock struct {
 	mock.Mock
 }
 
-func (s *SongArrangementRepositoryMock) GetWithAssociations(arrangement *model.SongArrangement, id uuid.UUID) error {
-	args := s.Called(arrangement, id)
+func (s *SongArrangementRepositoryMock) GetAllBySongWithSectionOccurrences(
+	arrangements *[]model.SongArrangement,
+	ids []uuid.UUID,
+	songID uuid.UUID,
+) error {
+	args := s.Called(arrangements, ids, songID)
 
 	if len(args) > 1 {
-		*arrangement = *args.Get(1).(*model.SongArrangement)
+		*arrangements = *args.Get(1).(*[]model.SongArrangement)
 	}
 
 	return args.Error(0)
@@ -43,11 +47,6 @@ func (s *SongArrangementRepositoryMock) CountBySong(count *int64, songID uuid.UU
 }
 
 func (s *SongArrangementRepositoryMock) Create(arrangement *model.SongArrangement) error {
-	args := s.Called(arrangement)
-	return args.Error(0)
-}
-
-func (s *SongArrangementRepositoryMock) UpdateWithAssociations(arrangement *model.SongArrangement) error {
 	args := s.Called(arrangement)
 	return args.Error(0)
 }

@@ -134,27 +134,37 @@ func TestValidateCreateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 	}
 }
 
-func TestValidateUpdateSongArrangementRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+func TestValidateBulkUpdateSongArrangementsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
 		name    string
-		request requests.UpdateSongArrangementRequest
+		request requests.BulkUpdateSongArrangementsRequest
 	}{
 		{
 			"Minimal",
-			requests.UpdateSongArrangementRequest{
-				ID:   uuid.New(),
-				Name: validArrangementName,
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: validArrangementName,
+					},
+				},
 			},
 		},
 		{
 			"Maximal",
-			requests.UpdateSongArrangementRequest{
-				ID:   uuid.New(),
-				Name: validArrangementName,
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
-					{SectionID: uuid.New(), Occurrences: 1},
-					{SectionID: uuid.New(), Occurrences: 0},
-					{SectionID: uuid.New(), Occurrences: 3},
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: validArrangementName,
+						Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
+							{SectionID: uuid.New(), Occurrences: 1},
+							{SectionID: uuid.New(), Occurrences: 0},
+							{SectionID: uuid.New(), Occurrences: 3},
+						},
+					},
 				},
 			},
 		},
@@ -174,54 +184,96 @@ func TestValidateUpdateSongArrangementRequest_WhenIsValid_ShouldReturnNil(t *tes
 	}
 }
 
-func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
 		name                 string
-		request              requests.UpdateSongArrangementRequest
+		request              requests.BulkUpdateSongArrangementsRequest
 		expectedInvalidField string
 		expectedFailedTag    string
 	}{
-		// ID Test Cases
+		// Song ID Test Cases
 		{
-			"ID is invalid because it's required",
-			requests.UpdateSongArrangementRequest{
-				ID:          uuid.Nil,
-				Name:        validArrangementName,
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
+			"Song ID invalid because it's required",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.Nil,
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: validArrangementName,
+					},
+				},
 			},
-			"ID",
+			"SongID",
 			"required",
 		},
-		// Name Test Cases
+		// Requests Test Cases
+		{
+			"Requests are invalid because it requires at least 1 element",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID:   uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{},
+			},
+			"Requests",
+			"min",
+		},
+		// Requests - ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.Nil,
+						Name: validArrangementName,
+					},
+				},
+			},
+			"Requests[0].ID",
+			"required",
+		},
+		// Requests - Name Test Cases
 		{
 			"Name is invalid because it's required",
-			requests.UpdateSongArrangementRequest{
-				ID:          uuid.New(),
-				Name:        "",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: "",
+					},
+				},
 			},
-			"Name",
+			"Requests[0].Name",
 			"required",
 		},
 		{
 			"Name is invalid because it has too many characters",
-			requests.UpdateSongArrangementRequest{
-				ID:          uuid.New(),
-				Name:        strings.Repeat("a", 31),
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.New(), Occurrences: 1}},
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: strings.Repeat("a", 31),
+					},
+				},
 			},
-			"Name",
+			"Requests[0].Name",
 			"max",
 		},
-		// Occurrences - ID Test Cases
+		// Requests - Occurrences - ID Test Cases
 		{
 			"Occurrences are invalid because the first element has an empty SectionID",
-			requests.UpdateSongArrangementRequest{
-				ID:          uuid.New(),
-				Name:        validArrangementName,
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.Nil, Occurrences: 1}},
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:          uuid.New(),
+						Name:        validArrangementName,
+						Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.Nil, Occurrences: 1}},
+					},
+				},
 			},
-			"Occurrences[0].SectionID",
+			"Requests[0].Occurrences[0].SectionID",
 			"required",
 		},
 	}
@@ -236,7 +288,7 @@ func TestValidateUpdateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 			// then
 			assert.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "UpdateSongArrangementRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "BulkUpdateSongArrangementsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})

@@ -108,12 +108,12 @@ var songUseCases = fx.Options(
 	fx.Provide(section.NewGetSongSectionTypes),
 
 	// Arrangements
+	fx.Provide(arrangement.NewBulkUpdateSongArrangements),
 	fx.Provide(arrangement.NewCreateSongArrangement),
 	fx.Provide(arrangement.NewDeleteSongArrangement),
 	fx.Provide(arrangement.NewGetAllSongArrangements),
 	fx.Provide(arrangement.NewMoveSongArrangement),
 	fx.Provide(arrangement.NewUpdateDefaultSongArrangement),
-	fx.Provide(arrangement.NewUpdateSongArrangement),
 
 	// Sections
 	fx.Provide(section.NewBulkRehearsalsSongSections),

@@ -11,6 +11,11 @@ type CreateSongArrangementRequest struct {
 	Name   string    `validate:"required,max=30"`
 }
 
+type BulkUpdateSongArrangementsRequest struct {
+	Requests []UpdateSongArrangementRequest `validate:"min=1,dive"`
+	SongID   uuid.UUID                      `validate:"required"`
+}
+
 type UpdateSongArrangementRequest struct {
 	ID          uuid.UUID                             `validate:"required"`
 	Name        string                                `validate:"required,max=30"`
