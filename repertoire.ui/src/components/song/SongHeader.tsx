@@ -69,7 +69,12 @@ function SongHeader({ song }: SongHeaderProps) {
 
           <Menu.Divider />
           <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
-          <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
+          <PerfectRehearsalMenuItem
+            id={song.id}
+            closeMenu={closeMenu}
+            type={'song'}
+            defaultSongArrangementId={song.defaultArrangementId}
+          />
           <Menu.Divider />
 
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>

@@ -140,7 +140,12 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
 
         <Menu.Divider />
         <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
-        <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenus} type={'song'} />
+        <PerfectRehearsalMenuItem
+          id={song.id}
+          closeMenu={closeMenus}
+          type={'song'}
+          defaultSongArrangementId={song.defaultArrangementId}
+        />
         <Menu.Divider />
 
         <Menu.Item

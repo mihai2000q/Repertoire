@@ -171,7 +171,12 @@ function SongDrawer() {
 
                 <Menu.Divider />
                 <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
-                <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
+                <PerfectRehearsalMenuItem
+                  id={song.id}
+                  closeMenu={closeMenu}
+                  type={'song'}
+                  defaultSongArrangementId={song.defaultArrangementId}
+                />
                 <Menu.Divider />
 
                 <Menu.Item
