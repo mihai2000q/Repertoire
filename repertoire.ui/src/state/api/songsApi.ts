@@ -238,7 +238,7 @@ const songsApi = api.injectEndpoints({
       query: (arg) => `songs/arrangements${createQueryParams(arg)}`,
       providesTags: ['SongArrangements', 'Songs']
     }),
-    createSongArrangement: build.mutation<HttpMessageResponse, CreateSongArrangementRequest>({
+    createSongArrangement: build.mutation<{ id: string }, CreateSongArrangementRequest>({
       query: (body) => ({
         url: 'songs/arrangements',
         method: 'POST',

@@ -127,6 +127,7 @@ export interface CreateSongArrangementRequest {
 }
 
 export interface BulkUpdateSongArrangementsRequest {
+  songId: string
   requests: UpdateSongArrangementRequest[]
 }
 
