@@ -11,7 +11,7 @@ import (
 
 type SongArrangementService interface {
 	BulkUpdate(request requests.BulkUpdateSongArrangementsRequest) *wrapper.ErrorCode
-	Create(request requests.CreateSongArrangementRequest) *wrapper.ErrorCode
+	Create(request requests.CreateSongArrangementRequest) (uuid.UUID, *wrapper.ErrorCode)
 	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	GetAll(request requests.GetSongArrangementsRequest) ([]model.SongArrangement, *wrapper.ErrorCode)
 	Move(request requests.MoveSongArrangementRequest) *wrapper.ErrorCode
@@ -49,7 +49,7 @@ func (s *songArrangementService) BulkUpdate(request requests.BulkUpdateSongArran
 	return s.bulkUpdateSongArrangement.Handle(request)
 }
 
-func (s *songArrangementService) Create(request requests.CreateSongArrangementRequest) *wrapper.ErrorCode {
+func (s *songArrangementService) Create(request requests.CreateSongArrangementRequest) (uuid.UUID, *wrapper.ErrorCode) {
 	return s.createSongArrangement.Handle(request)
 }
 

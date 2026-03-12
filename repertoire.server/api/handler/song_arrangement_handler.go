@@ -62,13 +62,15 @@ func (s SongArrangementHandler) Create(c *gin.Context) {
 		return
 	}
 
-	errorCode = s.service.Create(request)
+	id, errorCode := s.service.Create(request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return
 	}
 
-	s.SendMessage(c, "song arrangement has been created successfully!")
+	c.JSON(http.StatusOK, gin.H{
+		"id": id,
+	})
 }
 
 func (s SongArrangementHandler) BulkUpdate(c *gin.Context) {

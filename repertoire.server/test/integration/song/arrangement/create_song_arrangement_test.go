@@ -1,6 +1,7 @@
 package arrangement
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
@@ -52,6 +53,9 @@ func TestCreateSongArrangement_WhenSuccessful_ShouldCreateArrangement(t *testing
 	core.NewTestHandler().POST(w, "/api/songs/arrangements", request)
 
 	// then
+	var response struct{ ID uuid.UUID }
+	_ = json.Unmarshal(w.Body.Bytes(), &response)
+
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	db = db.Session(&gorm.Session{NewDB: true})
@@ -64,7 +68,7 @@ func TestCreateSongArrangement_WhenSuccessful_ShouldCreateArrangement(t *testing
 				Order("song_sections.order")
 		}).
 		Order("\"order\"").
-		Find(&arrangement, &model.SongArrangement{Name: request.Name})
+		Find(&arrangement, response.ID)
 
 	var songSections []model.SongSection
 	db.Where(&model.SongSection{SongID: song.ID}).Order("\"order\"").Find(&songSections)

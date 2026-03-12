@@ -30,9 +30,10 @@ func TestCreateSongArrangement_WhenCountSectionsBySongFails_ShouldReturnInternal
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	id, errCode := _uut.Handle(request)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -61,9 +62,10 @@ func TestCreateSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	id, errCode := _uut.Handle(request)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -92,9 +94,10 @@ func TestCreateSongArrangement_WhenSongIsEmpty_ShouldReturnNotFoundError(t *test
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	id, errCode := _uut.Handle(request)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
@@ -131,9 +134,10 @@ func TestCreateSongArrangement_WhenCreateFails_ShouldReturnInternalServerError(t
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	id, errCode := _uut.Handle(request)
 
 	// then
+	assert.Empty(t, id)
 	assert.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
@@ -169,18 +173,21 @@ func TestCreateSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 		Return(nil, &mockSong).
 		Once()
 
+	var newId uuid.UUID
 	songArrangementRepository.On("Create", mock.IsType(new(model.SongArrangement))).
 		Run(func(args mock.Arguments) {
 			newArrangement := *args.Get(0).(*model.SongArrangement)
+			newId = newArrangement.ID
 			assertCreatedSongArrangement(t, request, newArrangement, arrangementsCount, mockSong.Sections)
 		}).
 		Return(nil).
 		Once()
 
 	// when
-	errCode := _uut.Handle(request)
+	id, errCode := _uut.Handle(request)
 
 	// then
+	assert.Equal(t, id, newId)
 	assert.Nil(t, errCode)
 
 	songArrangementRepository.AssertExpectations(t)

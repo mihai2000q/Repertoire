@@ -26,20 +26,20 @@ func NewCreateSongArrangement(
 	}
 }
 
-func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequest) *wrapper.ErrorCode {
+func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequest) (uuid.UUID, *wrapper.ErrorCode) {
 	var arrangementsCount int64
 	err := c.songArrangementRepository.CountBySong(&arrangementsCount, request.SongID)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
 	var song model.Song
 	err = c.songRepository.GetWithSections(&song, request.SongID)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return uuid.Nil, wrapper.NotFoundError(errors.New("song not found"))
 	}
 
 	arrangement := model.SongArrangement{
@@ -53,10 +53,10 @@ func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequ
 
 	err = c.songArrangementRepository.Create(&arrangement)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return uuid.Nil, wrapper.InternalServerError(err)
 	}
 
-	return nil
+	return arrangement.ID, nil
 }
 
 func (c CreateSongArrangement) CreateSectionOccurrences(arrangement *model.SongArrangement, sections []model.SongSection) {
