@@ -12,8 +12,8 @@ import {
 } from '@mantine/core'
 import Artist from '../../../types/models/Artist.ts'
 import { useGetArtistsQuery } from '../../../state/api/artistsApi.ts'
-import { useRef, useState } from 'react'
-import { useDidUpdate, useDisclosure, useHover, useViewportSize } from '@mantine/hooks'
+import { useEffect, useRef, useState } from 'react'
+import { useDisclosure, useHover, useViewportSize } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconEye } from '@tabler/icons-react'
 import { useAppDispatch } from '../../../state/store.ts'
 import { openArtistDrawer } from '../../../state/slice/globalSlice.ts'
@@ -122,11 +122,11 @@ function HomeRecentArtists({ ...others }: CardProps) {
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
-  useDidUpdate(() => {
+  useEffect(() => {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
   }, [viewportRef.current, width])
-  useDidUpdate(() => {
+  useEffect(() => {
     const frame = requestAnimationFrame(() => {
       setDisableBack(viewportRef.current?.scrollLeft === 0)
       setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)

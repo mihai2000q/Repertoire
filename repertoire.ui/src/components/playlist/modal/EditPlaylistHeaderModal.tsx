@@ -13,7 +13,6 @@ import {
   editPlaylistHeaderSchema
 } from '../../../validation/playlistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
-import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 
@@ -56,7 +55,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
   const [image, setImage] = useState<string | FileWithPath>(playlist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
 
-  useDidUpdate(() => {
+  useEffect(() => {
     form.setValues({
       title: playlist.title,
       description: playlist.description,

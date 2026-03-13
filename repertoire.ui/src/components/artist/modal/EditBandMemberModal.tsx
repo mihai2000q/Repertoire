@@ -13,7 +13,6 @@ import {
 } from '../../../state/api/artistsApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../@ui/form/select/multi/BandMemberRoleMultiSelect.tsx'
-import { useDidUpdate } from '@mantine/hooks'
 import { BandMember } from '../../../types/models/Artist.ts'
 import ColorInputButton from '../../@ui/form/input/button/ColorInputButton.tsx'
 import bandMemberColorSwatches from '../../../data/artist/bandMemberColorSwatches.ts'
@@ -69,14 +68,14 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
   useEffect(() => form.setFieldValue('color', color), [color])
 
   const [roleIds, setRoleIds] = useState<string[]>(bandMember.roles.map((r) => r.id))
-  useDidUpdate(() => {
+  useEffect(() => {
     form.setFieldValue('roleIds', roleIds)
     if (opened) form.validateField('roleIds')
   }, [roleIds])
 
   const [image, setImage] = useState<FileWithPath | string>(bandMember.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
-  useDidUpdate(() => setImage(bandMember.imageUrl), [bandMember])
+  useEffect(() => setImage(bandMember.imageUrl), [bandMember])
 
   async function addBandMember({ name, color, image, roleIds }: EditBandMemberForm) {
     if (memberHasChanged)

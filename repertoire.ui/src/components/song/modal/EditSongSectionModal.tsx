@@ -73,7 +73,7 @@ function EditSongSectionModal({
       else setRehearsalsError(null)
     }
   })
-  useDidUpdate(() => {
+  useEffect(() => {
     form.setFieldValue('rehearsals', section.rehearsals)
   }, [section])
 

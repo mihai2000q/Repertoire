@@ -10,8 +10,8 @@ import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection, SongSettings } from '../../../types/models/Song.ts'
 import SongSectionCard from '../SongSectionCard.tsx'
-import { useMemo, useRef, useState } from 'react'
 import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
@@ -50,7 +50,7 @@ function SongSectionsWidget({
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
-  useDidUpdate(() => setShowDetails(false), [songId])
+  useEffect(() => setShowDetails(false), [songId])
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)

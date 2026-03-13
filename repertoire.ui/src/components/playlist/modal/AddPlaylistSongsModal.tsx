@@ -194,7 +194,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   useEffect(() => {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
-  useDidUpdate(
+  useEffect(
     () => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }),
     [searchValue, isShowAllChecked]
   )

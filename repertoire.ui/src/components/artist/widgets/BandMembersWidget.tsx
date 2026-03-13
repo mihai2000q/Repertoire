@@ -14,7 +14,7 @@ import { IconChevronLeft, IconChevronRight, IconDots, IconUserPlus } from '@tabl
 import { useDidUpdate, useDisclosure, useListState, useViewportSize } from '@mantine/hooks'
 import AddNewBandMemberModal from '../modal/AddNewBandMemberModal.tsx'
 import BandMemberCard from '../BandMemberCard.tsx'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMoveBandMemberMutation } from '../../../state/api/artistsApi.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
@@ -34,11 +34,11 @@ function BandMembersWidget({ bandMembers, artistId, isFetching }: BandMembersWid
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
-  useDidUpdate(() => {
+  useEffect(() => {
     setDisableBack(viewportRef.current?.scrollLeft === 0)
     setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)
   }, [viewportRef.current, width])
-  useDidUpdate(() => {
+  useEffect(() => {
     const frame = requestAnimationFrame(() => {
       setDisableBack(viewportRef.current?.scrollLeft === 0)
       setDisableForward(viewportRef.current?.scrollWidth === viewportRef.current?.clientWidth)

@@ -25,7 +25,7 @@ import {
   IconUser
 } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import { useDidUpdate, useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import {
   useDeleteSongSectionMutation,
@@ -35,7 +35,7 @@ import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../@ui/modal/WarningModal.tsx'
 import { BandMember } from '../../types/models/Artist.ts'
 import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
@@ -96,7 +96,7 @@ function SongSectionCard({
   const [rehearsalsWidth, setRehearsalsWidth] = useState(
     getRehearsalsWidth(maxSectionRehearsals.toString().length)
   )
-  useDidUpdate(() => {
+  useEffect(() => {
     const rehearsalsMaxLength = maxSectionRehearsals.toString().length
     setRehearsalsMarginLeft(getRehearsalsMarginLeft(rehearsalsMaxLength))
     setRehearsalsWidth(getRehearsalsWidth(rehearsalsMaxLength))

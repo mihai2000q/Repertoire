@@ -23,10 +23,10 @@ import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
-import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
 import { ArtistSearch } from '../../../types/models/Search.ts'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface EditAlbumHeaderModalProps {
   album: Album
@@ -71,7 +71,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
   useEffect(() => form.setFieldValue('image', image), [image])
 
   const [artist, setArtist] = useState(album.artist as unknown as ArtistSearch)
-  useDidUpdate(() => form.setFieldValue('artistId', artist?.id), [artist])
+  useEffect(() => form.setFieldValue('artistId', artist?.id), [artist])
 
   useDidUpdate(() => {
     form.setValues({

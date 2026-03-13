@@ -1,5 +1,5 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
@@ -14,7 +14,6 @@ import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../@ui/form/select/multi/BandMemberRoleMultiSelect.tsx'
 import ColorInputButton from '../../@ui/form/input/button/ColorInputButton.tsx'
 import bandMemberColorSwatches from '../../../data/artist/bandMemberColorSwatches.ts'
-import { useDidUpdate } from '@mantine/hooks'
 
 interface AddNewBandMemberModalProps {
   opened: boolean
@@ -30,7 +29,7 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
   const [image, setImage] = useState<FileWithPath>(null)
   const [color, setColor] = useState<string>()
   const [roleIds, setRoleIds] = useState<string[]>([])
-  useDidUpdate(() => {
+  useEffect(() => {
     form.setFieldValue('roleIds', roleIds)
     if (opened) form.validateField('roleIds')
   }, [roleIds])
