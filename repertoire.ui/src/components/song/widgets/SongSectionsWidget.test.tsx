@@ -99,10 +99,7 @@ describe('Song Sections Widget', () => {
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
-    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'edit-occurrences' })).not.toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'manage-song-arrangements' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
@@ -118,8 +115,6 @@ describe('Song Sections Widget', () => {
     reduxRender(<SongSectionsWidget sections={[]} songId={''} settings={emptySongSettings} />)
 
     expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'edit-occurrences' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-partial-rehearsal' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
