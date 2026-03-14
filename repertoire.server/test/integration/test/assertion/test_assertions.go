@@ -349,6 +349,7 @@ func ResponseSongArrangement(
 ) {
 	assert.Equal(t, songArrangement.ID, response.ID)
 	assert.Equal(t, songArrangement.Name, response.Name)
+	assert.Equal(t, songArrangement.SongID, response.SongID)
 
 	for i := range songArrangement.SectionOccurrences {
 		assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, response.SectionOccurrences[i].Occurrences)
