@@ -166,7 +166,9 @@ function SongSectionsWidget({
               </Tooltip>
 
               <PopoverConfirmation
-                label={"Increase sections' rehearsals based on occurrences"}
+                label={
+                  "Increase sections' rehearsals based on occurrences from default arrangement"
+                }
                 popoverProps={{
                   opened: openedPerfectRehearsalPopover,
                   onChange: setOpenedPerfectRehearsalPopover,
@@ -179,8 +181,10 @@ function SongSectionsWidget({
                 <Tooltip
                   label={
                     sections.length === 0
-                      ? 'To add a perfect rehearsal you need sections'
-                      : 'Add Perfect Rehearsal'
+                      ? 'To add a perfect rehearsal, you need sections'
+                      : !defaultSongArrangementId
+                        ? 'To add a perfect rehearsal, you need a default arrangement'
+                        : 'Add Perfect Rehearsal'
                   }
                   disabled={openedPerfectRehearsalPopover}
                 >
@@ -188,7 +192,7 @@ function SongSectionsWidget({
                     aria-label={'add-perfect-rehearsal'}
                     variant={'grey'}
                     size={'sm'}
-                    disabled={sections.length === 0}
+                    disabled={sections.length === 0 || !defaultSongArrangementId}
                     onClick={() =>
                       setOpenedPerfectRehearsalPopover(
                         isPerfectRehearsalLoading || !openedPerfectRehearsalPopover

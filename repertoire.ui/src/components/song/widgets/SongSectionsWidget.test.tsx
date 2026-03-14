@@ -93,7 +93,14 @@ describe('Song Sections Widget', () => {
   })
 
   it('should render', () => {
-    reduxRender(<SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />)
+    reduxRender(
+      <SongSectionsWidget
+        sections={sections}
+        songId={''}
+        settings={emptySongSettings}
+        defaultSongArrangementId={'id'}
+      />
+    )
 
     expect(screen.getByText(/sections/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
@@ -112,9 +119,29 @@ describe('Song Sections Widget', () => {
   })
 
   it('should disable a few options when there are no sections', () => {
-    reduxRender(<SongSectionsWidget sections={[]} songId={''} settings={emptySongSettings} />)
+    reduxRender(
+      <SongSectionsWidget
+        sections={[]}
+        songId={''}
+        settings={emptySongSettings}
+        defaultSongArrangementId={'id'}
+      />
+    )
 
     expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
+  })
+
+  it('should disable perfect rehearsal when a default arrangement is not set', () => {
+    reduxRender(
+      <SongSectionsWidget
+        sections={sections}
+        songId={''}
+        settings={emptySongSettings}
+        defaultSongArrangementId={null}
+      />
+    )
+
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 
@@ -174,7 +201,12 @@ describe('Song Sections Widget', () => {
 
       reduxRender(
         withToastify(
-          <SongSectionsWidget sections={sections} songId={songId} settings={emptySongSettings} />
+          <SongSectionsWidget
+            sections={sections}
+            songId={songId}
+            settings={emptySongSettings}
+            defaultSongArrangementId={'id'}
+          />
         )
       )
 
