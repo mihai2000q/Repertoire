@@ -68,7 +68,7 @@ func TestUpdateDefaultSongArrangement_WhenSuccessfulWithArrangement_ShouldUpdate
 
 	var newSong model.Song
 	db.Find(&newSong, &model.Song{ID: request.SongID})
-	assert.Equal(t, &request.ID, newSong.DefaultArrangementID)
+	assert.Equal(t, request.ID, newSong.DefaultArrangementID)
 }
 
 func TestUpdateDefaultSongArrangement_WhenSuccessfulWithNullID_ShouldUpdateDefaultArrangementOnSongWithNull(t *testing.T) {

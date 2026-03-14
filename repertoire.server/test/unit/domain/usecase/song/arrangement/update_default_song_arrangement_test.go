@@ -135,7 +135,7 @@ func TestUpdateDefaultSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *
 			songRepository.On("Update", mock.IsType(new(model.Song))).
 				Run(func(args mock.Arguments) {
 					newSong := *args.Get(0).(*model.Song)
-					assert.Equal(t, tt.request.ID, *newSong.DefaultArrangementID)
+					assert.Equal(t, tt.request.ID, newSong.DefaultArrangementID)
 				}).
 				Return(nil).
 				Once()
