@@ -69,8 +69,9 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
   const { ref, height } = useElementSize()
 
-  const hasChanged = useMap<string, boolean>([])
+  const hasChanged = useMap<string, boolean>()
   function refreshHasChanged(internalArrangements: Map<string, SongArrangement>) {
+    hasChanged.clear()
     for (const arrangement of arrangements) {
       if (
         arrangement.name !== internalArrangements.get(arrangement.id).name.trim() ||
@@ -84,8 +85,9 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     }
   }
 
-  const arrangementErrors = useMap<string, boolean>([])
+  const arrangementErrors = useMap<string, boolean>()
   function refreshHasError(internalArrangements: Map<string, SongArrangement>) {
+    arrangementErrors.clear()
     for (const [_, arrangement] of internalArrangements) {
       if (arrangement.name.trim() === '') {
         arrangementErrors.set(arrangement.id, true)
@@ -100,22 +102,29 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   useEffect(() => {
     if (!arrangements) return
     if (arrangements.length > 0) {
-      if (!selectedArrangement) {
+      // on first render and when the song changes with another (upon navigation)
+      if (!selectedArrangement || selectedArrangement.songId !== songId) {
         setSelectedArrangement(arrangements[0])
       } else {
+        // when it is updated, we want the latest
         const newArrangement = arrangements.find((a) => a.id === selectedArrangement.id)
         setSelectedArrangement(newArrangement)
       }
     }
-    const newArrangements = new Map<string, SongArrangement>([...internalArrangements])
-    arrangements.forEach((a) => newArrangements.set(a.id, a))
-    setInternalArrangements(newArrangements)
-    refreshHasChanged(newArrangements)
-    refreshHasError(newArrangements)
+
+    // on first render and when the song changes with another (upon navigation)
+    if (internalArrangements.size === 0 || selectedArrangement.songId !== songId) {
+      const newArrangements = new Map<string, SongArrangement>()
+      arrangements.forEach((a) => newArrangements.set(a.id, a))
+      setInternalArrangements(newArrangements)
+    }
 
     // when a new arrangement has just been created
     if (justCreatedId) {
       const newArrangement = arrangements.find((a) => a.id === justCreatedId)
+      const newArrangements = new Map<string, SongArrangement>([...internalArrangements])
+      newArrangements.set(newArrangement.id, newArrangement)
+      setInternalArrangements(newArrangements)
       setSelectedArrangement(newArrangement)
       setJustCreatedId(null)
     }
@@ -198,7 +207,6 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   }
 
   async function handleDelete() {
-    console.log('pula')
     await deleteArrangement({
       id: selectedArrangement.id,
       songId: songId
@@ -206,6 +214,9 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
     toast.success('Song arrangement deleted!')
     setSelectedArrangement(arrangements.find((a) => a.id !== selectedArrangement.id))
+    internalArrangements.delete(selectedArrangement.id)
+    hasChanged.delete(selectedArrangement.id)
+    arrangementErrors.delete(selectedArrangement.id)
   }
 
   async function handleUpdate() {
@@ -227,6 +238,8 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     }).unwrap()
 
     toast.info(`Song arrangement${plural(updateArrangementRequests)} updated!`)
+    hasChanged.clear()
+    arrangementErrors.clear()
   }
 
   if (isLoading || !arrangements)
@@ -273,7 +286,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                 onCreate={onCreate}
               />
             </Group>
-            <Group gap={'xxs'} wrap={'nowrap'} align={'center'}>
+            <Group gap={'xxs'} wrap={'nowrap'}>
               <ActionIcon
                 aria-label={isDefault ? 'unset-default' : 'set-default'}
                 variant={'subtle'}

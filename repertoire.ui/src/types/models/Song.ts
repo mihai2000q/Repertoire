@@ -75,6 +75,7 @@ export interface SongArrangement {
   id: string
   name: string
   sectionOccurrences: SongSectionOccurrences[]
+  songId: string
 }
 
 export interface SongSectionOccurrences {

@@ -338,7 +338,8 @@ export const emptySongSettings: SongSettings = {
 export const emptySongArrangement: SongArrangement = {
   id: '',
   name: '',
-  sectionOccurrences: []
+  sectionOccurrences: [],
+  songId: ''
 }
 
 export const emptySongSection: SongSection = {

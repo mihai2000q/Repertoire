@@ -93,16 +93,17 @@ function SongArrangementsMenu({
                             {...provided.draggableProps}
                             style={(theme) => ({
                               ...fixDraggableInMenu(provided.draggableProps, snapshot, 47).style,
-                              cursor: 'pointer',
                               ...(snapshot.isDragging && {
                                 cursor: 'grabbing',
-                                borderColor: `${theme.colors.primary[3]}`
+                                borderColor: theme.colors.primary[3]
                               })
                             })}
                             sx={(theme) => ({
                               transition: '0.2s',
-                              border: '1px solid transparent',
+                              cursor: 'pointer',
                               color: theme.colors.gray[7],
+                              border: '1px solid transparent',
+                              backgroundColor: alpha(theme.white, 0.7),
                               fontSize: theme.fontSizes.xs,
                               '.mantine-Menu-itemLabel': { display: 'flex', gap: 8 },
                               '.DefaultIcon': { color: theme.colors.gray[6] },
