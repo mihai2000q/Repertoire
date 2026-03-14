@@ -278,7 +278,7 @@ const songsApi = api.injectEndpoints({
         url: `songs/arrangements/${arg.id}/from/${arg.songId}`,
         method: 'DELETE'
       }),
-      invalidatesTags: ['SongArrangements']
+      invalidatesTags: ['SongArrangements', 'Songs']
     }),
 
     // sections - types
