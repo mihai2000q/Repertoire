@@ -147,7 +147,7 @@ function AddExistingArtistAlbumsModal({
   useEffect(() => {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
-  useEffect(() => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
 
   function checkAllAlbums(check: boolean) {
     if (check) {

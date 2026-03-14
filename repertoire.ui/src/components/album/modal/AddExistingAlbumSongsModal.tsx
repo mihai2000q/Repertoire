@@ -161,7 +161,7 @@ function AddExistingAlbumSongsModal({
   useEffect(() => {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
-  useEffect(() => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
 
   function checkAllSongs(check: boolean) {
     if (check) {
