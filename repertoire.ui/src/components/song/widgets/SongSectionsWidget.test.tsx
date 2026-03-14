@@ -64,6 +64,9 @@ describe('Song Sections Widget', () => {
     http.get('/songs/instruments', () => {
       return HttpResponse.json([])
     }),
+    http.get(`/songs/arrangements`, () => {
+      return HttpResponse.json([])
+    }),
     http.put(`/songs/sections`, () => {
       return HttpResponse.json({ message: 'it worked' })
     })
@@ -150,49 +153,15 @@ describe('Song Sections Widget', () => {
       expect(screen.queryByRole('button', { name: 'hide-details' })).not.toBeInTheDocument()
     })
 
-    it("should open edit song sections' occurrences when clicking on edit sections' occurrences button", async () => {
+    it('should open song arrangements modal when clicking on song arrangements button', async () => {
       const user = userEvent.setup()
 
       reduxRender(
         <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
       )
 
-      await user.click(screen.getByRole('button', { name: 'edit-occurrences' }))
-      expect(
-        await screen.findByRole('dialog', { name: /edit sections' occurrences/i })
-      ).toBeInTheDocument()
-    })
-
-    it('should open add partial rehearsal popover when on clicking add partial rehearsal button and send request', async () => {
-      const user = userEvent.setup()
-
-      let capturedRequest: AddPartialSongRehearsalRequest
-      server.use(
-        http.post('/songs/partial-rehearsal', async (req) => {
-          capturedRequest = (await req.request.json()) as AddPartialSongRehearsalRequest
-          return HttpResponse.json({ message: 'it worked' })
-        })
-      )
-
-      const songId = 'some-id'
-
-      reduxRender(
-        withToastify(
-          <SongSectionsWidget sections={sections} songId={songId} settings={emptySongSettings} />
-        )
-      )
-
-      await user.click(screen.getByRole('button', { name: 'add-partial-rehearsal' }))
-
-      expect(await screen.findByRole('dialog')).toBeInTheDocument()
-      expect(
-        screen.getByText(/increase sections' rehearsals .* partial occurrences/i)
-      ).toBeInTheDocument()
-
-      await user.click(screen.getByRole('button', { name: 'confirm' }))
-
-      expect(await screen.findByText(/partial rehearsal added/i)).toBeInTheDocument()
-      expect(capturedRequest).toStrictEqual({ id: songId })
+      await user.click(screen.getByRole('button', { name: /song-arrangements/i }))
+      expect(await screen.findByRole('dialog', { name: /song arrangements/i })).toBeInTheDocument()
     })
 
     it('should open add perfect rehearsal popover when on clicking add perfect rehearsal button and send request', async () => {

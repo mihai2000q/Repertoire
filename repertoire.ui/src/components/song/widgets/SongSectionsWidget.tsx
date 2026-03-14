@@ -10,8 +10,8 @@ import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection, SongSettings } from '../../../types/models/Song.ts'
 import SongSectionCard from '../SongSectionCard.tsx'
-import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import SongArrangementsModal from '../modal/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
@@ -26,6 +26,7 @@ interface SongSectionsWidgetProps {
   sections: SongSection[]
   settings: SongSettings
   songId: string
+  defaultSongArrangementId?: string
   isFetching?: boolean
   bandMembers?: BandMember[]
   isArtistBand?: boolean
@@ -35,6 +36,7 @@ function SongSectionsWidget({
   sections,
   settings,
   songId,
+  defaultSongArrangementId,
   isFetching,
   bandMembers,
   isArtistBand
@@ -46,7 +48,7 @@ function SongSectionsWidget({
   const [showDetails, setShowDetails] = useState(false)
   const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
 
-  const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
+  const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
@@ -152,19 +154,12 @@ function SongSectionsWidget({
                 </ActionIcon>
               </Tooltip>
 
-              <Tooltip
-                label={
-                  sections.length === 0
-                    ? "To edit sections' occurrences you need sections"
-                    : "Edit Sections' Occurrences"
-                }
-              >
+              <Tooltip label={'Manage Song Arrangements'}>
                 <ActionIcon
-                  aria-label={'edit-occurrences'}
+                  aria-label={'manage-song-arrangements'}
                   variant={'grey'}
                   size={'sm'}
-                  disabled={sections.length === 0}
-                  onClick={openOccurrences}
+                  onClick={openArrangements}
                 >
                   <IconListNumbers size={16} />
                 </ActionIcon>
@@ -286,11 +281,11 @@ function SongSectionsWidget({
           </ScrollArea.Autosize>
         </Stack>
 
-        <EditSongSectionsOccurrencesModal
-          opened={openedOccurrences}
-          onClose={closeOccurrences}
-          sections={sections}
+        <SongArrangementsModal
+          opened={openedArrangements}
+          onClose={closeArrangements}
           songId={songId}
+          defaultId={defaultSongArrangementId}
         />
       </Card>
     </ClickSelectProvider>
