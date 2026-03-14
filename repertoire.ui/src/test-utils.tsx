@@ -9,7 +9,7 @@ import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { ToastContainer } from 'react-toastify'
 import Album from './types/models/Album.ts'
-import Song, { SongSection, SongSettings } from './types/models/Song.ts'
+import Song, { SongArrangement, SongSection, SongSettings } from './types/models/Song.ts'
 import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
 import User from './types/models/User.ts'
@@ -333,6 +333,12 @@ export const emptyPlaylist: Playlist = {
 
 export const emptySongSettings: SongSettings = {
   id: ''
+}
+
+export const emptySongArrangement: SongArrangement = {
+  id: '',
+  name: '',
+  sectionOccurrences: []
 }
 
 export const emptySongSection: SongSection = {
