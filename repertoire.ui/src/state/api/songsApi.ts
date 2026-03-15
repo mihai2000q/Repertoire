@@ -7,11 +7,13 @@ import Song, {
   SongSectionType
 } from '../../types/models/Song.ts'
 import {
+  AddCustomSongRehearsalRequest,
   AddPerfectSongRehearsalRequest,
   AddPerfectSongRehearsalsRequest,
   BulkDeleteSongSectionsRequest,
   BulkDeleteSongsRequest,
   BulkRehearsalsSongSectionsRequest,
+  BulkUpdateSongArrangementsRequest,
   CreateSongArrangementRequest,
   CreateSongRequest,
   CreateSongSectionRequest,
@@ -24,7 +26,6 @@ import {
   SaveImageToSongRequest,
   UpdateAllSongSectionsRequest,
   UpdateDefaultSongArrangementRequest,
-  BulkUpdateSongArrangementsRequest,
   UpdateSongRequest,
   UpdateSongSectionRequest,
   UpdateSongSettingsRequest
@@ -108,6 +109,14 @@ const songsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Songs', 'Artists', 'Albums']
+    }),
+    addCustomSongRehearsal: build.mutation<HttpMessageResponse, AddCustomSongRehearsalRequest>({
+      query: (body) => ({
+        url: 'songs/custom-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
     }),
     addPerfectSongRehearsal: build.mutation<HttpMessageResponse, AddPerfectSongRehearsalRequest>({
       query: (body) => ({
@@ -254,7 +263,10 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['SongArrangements']
     }),
-    bulkUpdateSongArrangements: build.mutation<HttpMessageResponse, BulkUpdateSongArrangementsRequest>({
+    bulkUpdateSongArrangements: build.mutation<
+      HttpMessageResponse,
+      BulkUpdateSongArrangementsRequest
+    >({
       query: (body) => ({
         url: 'songs/arrangements/bulk',
         method: 'PUT',
@@ -308,6 +320,7 @@ export const {
   useLazyGetSongFiltersMetadataQuery,
   useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
+  useAddCustomSongRehearsalMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPerfectSongRehearsalsMutation,
   useUpdateSongMutation,
