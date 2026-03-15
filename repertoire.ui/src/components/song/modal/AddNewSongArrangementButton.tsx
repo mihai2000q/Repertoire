@@ -55,6 +55,7 @@ function AddNewSongArrangementButton({
       position={'bottom'}
       shadow={'md'}
       withArrow
+      trapFocus
     >
       <Popover.Target>
         <ActionIcon

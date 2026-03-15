@@ -112,8 +112,15 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
       }
     }
 
-    // on first render and when the song changes with another (upon navigation)
-    if (internalArrangements.size === 0 || selectedArrangement.songId !== songId) {
+    // on first render
+    // when the song changes with another (upon navigation)
+    // and when the sections change
+    if (
+      internalArrangements.size === 0 ||
+      selectedArrangement?.songId !== songId ||
+      selectedArrangement?.sectionOccurrences.length !==
+        arrangements.find((a) => a.id === selectedArrangement?.id)?.sectionOccurrences.length
+    ) {
       const newArrangements = new Map<string, SongArrangement>()
       arrangements.forEach((a) => newArrangements.set(a.id, a))
       setInternalArrangements(newArrangements)
@@ -313,7 +320,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
             <LoadingOverlayDebounced visible={isFetching} loaderProps={{ type: 'bars' }} />
 
             <Stack>
-              {internalArrangements.size > 0 && selectedArrangement && (
+              {selectedArrangement && internalArrangements.get(selectedArrangement.id) && (
                 <Stack px={'sm'}>
                   <Center w={'100%'} pos={'relative'}>
                     <TextInput

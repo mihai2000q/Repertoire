@@ -4,12 +4,15 @@ import { useAddPerfectSongRehearsalsMutation } from '../../../../state/api/songs
 import MenuItemConfirmation from './MenuItemConfirmation.tsx'
 import { useAddPerfectRehearsalsToArtistsMutation } from '../../../../state/api/artistsApi.ts'
 import { useAddPerfectRehearsalsToAlbumsMutation } from '../../../../state/api/albumsApi.ts'
-import { useAddPerfectRehearsalsToPlaylistsMutation } from '../../../../state/api/playlistsApi.ts'
+import {
+  useAddPerfectPlaylistSongRehearsalsMutation,
+  useAddPerfectRehearsalsToPlaylistsMutation
+} from '../../../../state/api/playlistsApi.ts'
 
 interface PerfectRehearsalsMenuItemProps {
   ids: string[]
   closeMenu: () => void
-  type: 'artists' | 'albums' | 'songs' | 'playlists'
+  type: 'artists' | 'albums' | 'songs' | 'playlists' | 'playlist-songs'
   onSuccess?: () => void
 }
 
@@ -27,7 +30,14 @@ function PerfectRehearsalsMenuItem({
     useAddPerfectSongRehearsalsMutation()
   const [addPerfectRehearsalsToPlaylists, { isLoading: isPlaylistsLoading }] =
     useAddPerfectRehearsalsToPlaylistsMutation()
-  const isLoading = isArtistsLoading || isAlbumsLoading || isSongsLoading || isPlaylistsLoading
+  const [addPerfectPlaylistSongRehearsals, { isLoading: isPlaylistSongsLoading }] =
+    useAddPerfectPlaylistSongRehearsalsMutation()
+  const isLoading =
+    isArtistsLoading ||
+    isAlbumsLoading ||
+    isSongsLoading ||
+    isPlaylistsLoading ||
+    isPlaylistSongsLoading
 
   async function handleAddPerfectRehearsals() {
     switch (type) {
@@ -42,6 +52,9 @@ function PerfectRehearsalsMenuItem({
         break
       case 'playlists':
         await addPerfectRehearsalsToPlaylists({ ids: ids }).unwrap()
+        break
+      case 'playlist-songs':
+        await addPerfectPlaylistSongRehearsals({ ids: ids }).unwrap()
         break
     }
     toast.success(`Perfect rehearsals added!`)
