@@ -11,6 +11,7 @@ import {
   Menu,
   Modal,
   ScrollArea,
+  Space,
   Stack,
   Text,
   TextInput
@@ -23,7 +24,14 @@ import {
   useGetInfinitePlaylistsInfiniteQuery
 } from '../../../../state/api/playlistsApi.ts'
 import Playlist from '../../../../types/models/Playlist.ts'
-import { useDebouncedValue, useDidUpdate, useIntersection, useSessionStorage } from '@mantine/hooks'
+import {
+  useDebouncedValue,
+  useDidUpdate,
+  useDisclosure,
+  useFocusTrap,
+  useIntersection,
+  useSessionStorage
+} from '@mantine/hooks'
 import useOrderBy from '../../../../hooks/api/useOrderBy.ts'
 import OrderType from '../../../../types/enums/OrderType.ts'
 import useFilters from '../../../../hooks/filter/useFilters.ts'
@@ -147,6 +155,9 @@ function AddToPlaylistMenuItem({
   onSuccess,
   disabled
 }: AddToPlaylistMenuItemProps) {
+  const [opened, { open, close }] = useDisclosure(false)
+  const searchRef = useFocusTrap(opened)
+
   const [search, setSearch] = useSessionStorage({
     key: SessionStorageKeys.AddToPlaylist,
     defaultValue: ''
@@ -178,10 +189,13 @@ function AddToPlaylistMenuItem({
     isFetching,
     isFetchingNextPage,
     fetchNextPage
-  } = useGetInfinitePlaylistsInfiniteQuery({
-    orderBy: orderBy,
-    searchBy: searchBy
-  })
+  } = useGetInfinitePlaylistsInfiniteQuery(
+    {
+      orderBy: orderBy,
+      searchBy: searchBy
+    },
+    { skip: !opened }
+  )
   const playlists: WithTotalCountResponse<Playlist> = {
     models: dataPlaylists?.pages.flatMap((x) => x.models ?? []),
     totalCount: dataPlaylists?.pages[0].totalCount
@@ -343,13 +357,11 @@ function AddToPlaylistMenuItem({
 
   return (
     <>
-      <Menu.Sub>
+      <Menu.Sub onOpen={open} onClose={close} openDelay={100} closeDelay={250}>
         <Menu.Sub.Target>
           <Menu.Sub.Item
             leftSection={<IconPlaylistAdd size={14} />}
-            disabled={
-              disabled === true || isLoading || (playlists.totalCount === 0 && activeFilters === 0)
-            }
+            disabled={disabled}
             onClick={(e) => e.stopPropagation()} // TODO: Remove when mantine updates
           >
             Add To Playlist
@@ -358,12 +370,15 @@ function AddToPlaylistMenuItem({
 
         <Menu.Sub.Dropdown miw={150} maw={200} p={0}>
           <TextInput
+            ref={searchRef}
+            role={'searchbox'}
             aria-label={'search'}
             variant={'unstyled'}
             size={'xs'}
             maxLength={100}
             placeholder={'Search'}
             leftSection={<IconSearch size={12} />}
+            disabled={playlists?.totalCount === 0 && activeFilters === 0}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -376,9 +391,10 @@ function AddToPlaylistMenuItem({
             viewportRef={scrollRef}
           >
             <Stack gap={0} align={'center'} py={7} px={'xxs'} style={{ transition: '0.16s' }}>
+              {isLoading && <Space mih={100} />}
               <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
 
-              <Stack gap={'xxs'}>
+              <Stack w={'100%'} gap={'xxs'}>
                 {playlists?.models?.map((playlist) => (
                   <PlaylistOption
                     key={playlist.id}

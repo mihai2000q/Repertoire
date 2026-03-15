@@ -5,7 +5,7 @@ import { setupServer } from 'msw/node'
 import { emptyPlaylist, reduxRender, withToastify } from '../../../../test-utils.tsx'
 import { Menu } from '@mantine/core'
 import AddToPlaylistMenuItem from './AddToPlaylistMenuItem.tsx'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import plural from '../../../../utils/plural.ts'
 import { describe, expect } from 'vitest'
@@ -19,6 +19,7 @@ import {
   AddArtistsToPlaylistResponse,
   AddSongsToPlaylistResponse
 } from '../../../../types/responses/PlaylistResponses.ts'
+import { api } from '../../../../state/api.ts'
 
 describe('Add To Playlist Menu Item', () => {
   const playlists: Playlist[] = [
@@ -70,9 +71,15 @@ describe('Add To Playlist Menu Item', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => server.listen())
+  beforeAll(() => {
+    server.listen()
+    sessionStorage.clear()
+  })
 
-  afterEach(() => server.resetHandlers())
+  afterEach(() => {
+    server.resetHandlers()
+    sessionStorage.clear()
+  })
 
   afterAll(() => server.close())
 
@@ -82,15 +89,17 @@ describe('Add To Playlist Menu Item', () => {
     render({ ids: [], type: 'songs', closeMenu: vi.fn() })
 
     await user.click(screen.getByTestId(menuTargetId))
-    const menuItem = screen.getByRole('menuitem', { name: /add to playlist/i })
+    const menuItem = await screen.findByRole('menuitem', { name: /add to playlist/i })
     expect(menuItem).toBeInTheDocument()
 
     await user.hover(menuItem)
-    expect(screen.getByRole('textbox', { name: /search/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /search/i })).toHaveValue('')
+    expect(await screen.findByRole('searchbox', { name: /search/i })).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: /search/i })).toHaveValue('')
+    // expect(screen.getByRole('searchbox', { name: /search/i })).toHaveFocus() // not working
+    expect(screen.getByRole('searchbox', { name: /search/i })).not.toBeDisabled()
 
     for (const playlist of playlists) {
-      expect(screen.getByRole('menuitem', { name: playlist.title })).toBeInTheDocument()
+      expect(await screen.findByRole('menuitem', { name: playlist.title })).toBeInTheDocument()
 
       if (playlist.imageUrl)
         expect(screen.getByRole('img', { name: playlist.title })).toBeInTheDocument()
@@ -113,33 +122,54 @@ describe('Add To Playlist Menu Item', () => {
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).not.toBeDisabled()
   })
 
-  describe('should be disabled', () => {
-    it('when there are no playlists', async () => {
-      const user = userEvent.setup()
+  it('should be disabled when the props contain disabled', async () => {
+    const user = userEvent.setup()
 
-      server.use(
-        http.get('/playlists', async () => {
-          const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
-          return HttpResponse.json(response)
-        })
-      )
+    render({ ids: [], type: 'songs', closeMenu: vi.fn(), disabled: true })
 
-      render({ ids: [], type: 'songs', closeMenu: vi.fn() })
+    await user.click(screen.getByTestId(menuTargetId))
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeDisabled()
+  })
 
-      await user.click(screen.getByTestId(menuTargetId))
-      expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
-      expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeDisabled()
-    })
+  it('should display message when there are no playlists', async () => {
+    const user = userEvent.setup()
 
-    it('when the props contain disabled', async () => {
-      const user = userEvent.setup()
+    server.use(
+      http.get('/playlists', async () => {
+        const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+        return HttpResponse.json(response)
+      })
+    )
 
-      render({ ids: [], type: 'songs', closeMenu: vi.fn(), disabled: true })
+    render({ ids: [], type: 'songs', closeMenu: vi.fn() })
 
-      await user.click(screen.getByTestId(menuTargetId))
-      expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
-      expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeDisabled()
-    })
+    await user.click(screen.getByTestId(menuTargetId))
+    await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
+
+    expect(await screen.findByText(/there are no playlists/i)).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: /search/i })).toBeDisabled()
+  })
+
+  it('should display message when no playlist is found', async () => {
+    const user = userEvent.setup()
+
+    const [_, store] = render({ ids: [], type: 'songs', closeMenu: vi.fn() })
+
+    await user.click(screen.getByTestId(menuTargetId))
+    await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
+    await user.type(await screen.findByRole('searchbox', { name: /search/i }), 's')
+
+    server.use(
+      http.get('/playlists', async () => {
+        const response: WithTotalCountResponse<Playlist> = { models: [], totalCount: 0 }
+        return HttpResponse.json(response)
+      })
+    )
+
+    await act(() => store.dispatch(api.util.resetApiState()))
+
+    expect(await screen.findByText(/no playlists found/i)).toBeInTheDocument()
   })
 
   describe('should send add request when selecting a playlist with success', () => {
@@ -167,7 +197,7 @@ describe('Add To Playlist Menu Item', () => {
 
       await user.click(screen.getByTestId(menuTargetId))
       await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-      fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+      fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
       expect(
         await screen.findByText(new RegExp(`successfully added ${ids.length} song`, 'i'))
@@ -203,7 +233,7 @@ describe('Add To Playlist Menu Item', () => {
 
       await user.click(screen.getByTestId(menuTargetId))
       await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-      fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+      fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
       expect(
         await screen.findByText(new RegExp(`successfully added ${addedSongIds.length} songs`, 'i'))
@@ -239,7 +269,7 @@ describe('Add To Playlist Menu Item', () => {
 
       await user.click(screen.getByTestId(menuTargetId))
       await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-      fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+      fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
       expect(
         await screen.findByText(new RegExp(`successfully added ${addedSongIds.length} songs`, 'i'))
@@ -275,7 +305,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, songIds: ids })
@@ -318,7 +348,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, songIds: ids })
@@ -366,7 +396,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, songIds: ids })
@@ -415,7 +445,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, songIds: ids })
@@ -454,7 +484,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, songIds: ids })
@@ -497,7 +527,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, songIds: ids })
@@ -539,7 +569,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -585,7 +615,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -638,7 +668,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -691,7 +721,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -737,7 +767,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -783,7 +813,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -836,7 +866,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -889,7 +919,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, albumIds: ids })
@@ -937,7 +967,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -983,7 +1013,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -1040,7 +1070,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -1097,7 +1127,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -1143,7 +1173,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -1189,7 +1219,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -1246,7 +1276,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
@@ -1303,7 +1333,7 @@ describe('Add To Playlist Menu Item', () => {
 
         await user.click(screen.getByTestId(menuTargetId))
         await user.hover(screen.getByRole('menuitem', { name: /add to playlist/i }))
-        fireEvent.click(screen.getByRole('menuitem', { name: newPlaylist.title }))
+        fireEvent.click(await screen.findByRole('menuitem', { name: newPlaylist.title }))
 
         expect(await screen.findByRole('dialog', { name: /already added/i })).toBeInTheDocument()
         expect(capturedRequest).toStrictEqual({ id: newPlaylist.id, artistIds: ids })
