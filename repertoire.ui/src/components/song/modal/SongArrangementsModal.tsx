@@ -55,7 +55,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     data: arrangements,
     isLoading,
     isFetching
-  } = useGetSongArrangementsQuery({ songId: songId })
+  } = useGetSongArrangementsQuery({ songId: songId }, { skip: !opened })
 
   const [selectedArrangement, setSelectedArrangement] = useState<SongArrangement>(null)
   const [internalArrangements, setInternalArrangements] = useState<Map<string, SongArrangement>>(
