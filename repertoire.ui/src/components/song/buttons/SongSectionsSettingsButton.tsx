@@ -12,19 +12,19 @@ import {
 import { IconSettings } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
 
-interface SongSectionsSettingsPopoverProps {
+interface SongSectionsSettingsButtonProps {
   settings: SongSettings
   sections: SongSection[]
   songId: string
   bandMembers?: BandMember[]
 }
 
-function SongSectionsSettingsPopover({
+function SongSectionsSettingsButton({
   sections,
   settings,
   songId,
   bandMembers
-}: SongSectionsSettingsPopoverProps) {
+}: SongSectionsSettingsButtonProps) {
   const [updateSettings] = useUpdateSongSettingsMutation()
   const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongSectionsMutation()
 
@@ -156,4 +156,4 @@ function SongSectionsSettingsPopover({
   )
 }
 
-export default SongSectionsSettingsPopover
+export default SongSectionsSettingsButton

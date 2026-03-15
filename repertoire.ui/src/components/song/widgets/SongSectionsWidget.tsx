@@ -15,7 +15,7 @@ import SongArrangementsModal from '../modal/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
-import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
+import SongSectionsSettingsButton from '../buttons/SongSectionsSettingsButton.tsx'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../context/MainContext.tsx'
 import SongSectionsContextMenu from '../SongSectionsContextMenu.tsx'
@@ -204,7 +204,7 @@ function SongSectionsWidget({
                 </Tooltip>
               </PopoverConfirmation>
 
-              <SongSectionsSettingsPopover
+              <SongSectionsSettingsButton
                 settings={settings}
                 sections={sections}
                 songId={songId}
