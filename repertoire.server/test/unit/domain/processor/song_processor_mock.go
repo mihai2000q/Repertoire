@@ -12,6 +12,20 @@ type SongProcessorMock struct {
 	mock.Mock
 }
 
+func (s *SongProcessorMock) AddCustomRehearsal(
+	song *model.Song,
+	songSectionRepository repository.SongSectionRepository,
+) (*wrapper.ErrorCode, bool) {
+	args := s.Called(song, songSectionRepository)
+
+	var errCode *wrapper.ErrorCode
+	if e := args.Get(0); e != nil {
+		errCode = e.(*wrapper.ErrorCode)
+	}
+
+	return errCode, args.Bool(1)
+}
+
 func (s *SongProcessorMock) AddPerfectRehearsal(
 	song *model.Song,
 	songSectionRepository repository.SongSectionRepository,

@@ -16,6 +16,7 @@ type SongRepository interface {
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithSectionsAndDefaultOccurrences(song *model.Song, id uuid.UUID) error
+	GetWithSectionsAndArrangementOccurrences(song *model.Song, id uuid.UUID, arrangementID uuid.UUID) error
 	GetWithArrangements(song *model.Song, id uuid.UUID) error
 	GetWithAssociations(song *model.Song, id uuid.UUID) error
 	GetFiltersMetadata(metadata *model.SongFiltersMetadata, userID uuid.UUID, searchBy []string) error
@@ -93,6 +94,22 @@ func (s songRepository) GetWithSectionsAndDefaultOccurrences(song *model.Song, i
 			return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
 				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
 				Where("arrangement_id = default_arrangement_id")
+		}).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithSectionsAndArrangementOccurrences(
+	song *model.Song,
+	id uuid.UUID,
+	arrangementID uuid.UUID,
+) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Where(model.SongSectionOccurrences{ArrangementID: arrangementID})
 		}).
 		Find(&song, model.Song{ID: id}).
 		Error

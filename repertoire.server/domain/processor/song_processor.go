@@ -10,6 +10,10 @@ import (
 )
 
 type SongProcessor interface {
+	AddCustomRehearsal(
+		song *model.Song,
+		songSectionRepository repository.SongSectionRepository,
+	) (errCode *wrapper.ErrorCode, updatedSong bool)
 	AddPerfectRehearsal(
 		song *model.Song,
 		songSectionRepository repository.SongSectionRepository,
@@ -24,6 +28,16 @@ func NewSongProcessor(progressProcessor ProgressProcessor) SongProcessor {
 	return &songProcessor{progressProcessor: progressProcessor}
 }
 
+func (s *songProcessor) AddCustomRehearsal(
+	song *model.Song,
+	songSectionRepository repository.SongSectionRepository,
+) (*wrapper.ErrorCode, bool) {
+	if len(song.Sections[0].ArrangementOccurrences) == 0 {
+		return nil, false
+	}
+	return s.addRehearsal(song, songSectionRepository)
+}
+
 func (s *songProcessor) AddPerfectRehearsal(
 	song *model.Song,
 	songSectionRepository repository.SongSectionRepository,
@@ -31,15 +45,23 @@ func (s *songProcessor) AddPerfectRehearsal(
 	if song.DefaultArrangementID == nil {
 		return nil, false
 	}
+	return s.addRehearsal(song, songSectionRepository)
+}
 
+func (s *songProcessor) addRehearsal(
+	song *model.Song,
+	songSectionRepository repository.SongSectionRepository,
+) (*wrapper.ErrorCode, bool) {
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
 	for i, section := range song.Sections {
-		if section.ArrangementOccurrences[0].Occurrences == 0 {
+		arrangementOccurrence := section.ArrangementOccurrences[0]
+
+		if arrangementOccurrence.Occurrences == 0 {
 			continue
 		}
 
-		newRehearsals := section.Rehearsals + section.ArrangementOccurrences[0].Occurrences
+		newRehearsals := section.Rehearsals + arrangementOccurrence.Occurrences
 		// add history of the rehearsals change
 		newHistory := model.SongSectionHistory{
 			ID:            uuid.New(),
