@@ -114,7 +114,9 @@ const MantineProviderComponent = ({ children }: { children: ReactNode }) => (
         }),
         Tooltip: Tooltip.extend({
           defaultProps: {
-            transitionProps: { duration: 0 }
+            transitionProps: { duration: 0 },
+            openDelay: 0,
+            closeDelay: 0
           }
         })
       }
