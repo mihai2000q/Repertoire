@@ -46,12 +46,19 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 		},
 	}
 
+	getAlbumsQuery := func(db *gorm.DB, albums *[]model.Album) {
+		db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
+			Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
+			Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+			Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
+			}).
+			Find(&albums, request.IDs)
+	}
+
 	var albums []model.Album
 	db := utils.GetDatabase(t)
-	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
-		Preload("Songs.Sections").
-		Preload("Songs.Sections.History").
-		Find(&albums, request.IDs)
+	getAlbumsQuery(db, &albums)
 
 	// when
 	w := httptest.NewRecorder()
@@ -62,25 +69,11 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 
 	var newAlbums []model.Album
 	db = db.Session(&gorm.Session{NewDB: true})
-	db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
-		Preload("Songs.Sections").
-		Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
-		Find(&newAlbums, request.IDs)
+	getAlbumsQuery(db, &newAlbums)
 
 	for i, album := range newAlbums {
 		for j := range album.Songs {
-			totalOccurrences := uint(0)
-			for _, section := range newAlbums[i].Songs[j].Sections {
-				totalOccurrences += section.Occurrences
-			}
-
-			if totalOccurrences > 0 {
-				assertion.PerfectSongRehearsal(t, albums[i].Songs[j], newAlbums[i].Songs[j])
-			} else {
-				assert.Equal(t, albums[i].Songs[j].Rehearsals, newAlbums[i].Songs[j].Rehearsals)
-				assert.Equal(t, albums[i].Songs[j].Progress, newAlbums[i].Songs[j].Progress)
-				assert.Equal(t, albums[i].Songs[j].LastTimePlayed, newAlbums[i].Songs[j].LastTimePlayed)
-			}
+			assertion.PerfectSongRehearsal(t, albums[i].Songs[j], newAlbums[i].Songs[j])
 		}
 	}
 }

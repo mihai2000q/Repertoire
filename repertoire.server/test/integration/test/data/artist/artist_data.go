@@ -14,6 +14,11 @@ func SeedData(db *gorm.DB) {
 	db.Create(&Artists)
 	db.Create(&Albums)
 	db.Create(&Songs)
+	db.Create(&SongSections)
+	db.Create(&SongArrangements)
+	// Default Song Arrangements
+	db.Model(&model.Song{ID: Artists[1].Songs[0].ID}).Update("default_arrangement_id", SongArrangements[0].ID)
+	db.Model(&model.Song{ID: Artists[1].Songs[1].ID}).Update("default_arrangement_id", SongArrangements[2].ID)
 }
 
 var Users = []model.User{
@@ -123,74 +128,11 @@ var Artists = []model.Artist{
 				Rehearsals: 10,
 				Confidence: 10,
 				Progress:   5,
-				Sections: []model.SongSection{
-					{
-						ID:                uuid.New(),
-						Name:              "Test Song Section 1",
-						Order:             0,
-						Rehearsals:        16,
-						Confidence:        10,
-						ConfidenceScore:   12,
-						RehearsalsScore:   45,
-						Progress:          5,
-						Occurrences:       2,
-						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-						History: []model.SongSectionHistory{
-							{
-								ID:       uuid.New(),
-								From:     0,
-								To:       16,
-								Property: model.RehearsalsProperty,
-							},
-							{
-								ID:       uuid.New(),
-								From:     0,
-								To:       10,
-								Property: model.ConfidenceProperty,
-							},
-						},
-					},
-					{
-						ID:                uuid.New(),
-						Name:              "Test Song Section 2",
-						Order:             1,
-						Rehearsals:        20,
-						Confidence:        30,
-						ConfidenceScore:   25,
-						RehearsalsScore:   45,
-						Progress:          10,
-						Occurrences:       5,
-						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-						History: []model.SongSectionHistory{
-							{
-								ID:       uuid.New(),
-								From:     0,
-								To:       20,
-								Property: model.RehearsalsProperty,
-							},
-							{
-								ID:       uuid.New(),
-								From:     0,
-								To:       30,
-								Property: model.ConfidenceProperty,
-							},
-						},
-					},
-				},
 			},
 			{
 				ID:     uuid.New(),
 				Title:  "Test Song 2",
 				UserID: Users[0].ID,
-				Sections: []model.SongSection{
-					{
-						ID:                uuid.New(),
-						Name:              "Test Song Section 1",
-						Order:             0,
-						Occurrences:       2,
-						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-					},
-				},
 			},
 			{
 				ID:     uuid.New(),
@@ -209,15 +151,6 @@ var Artists = []model.Artist{
 				ID:     uuid.New(),
 				Title:  "Test Song",
 				UserID: Users[0].ID,
-				Sections: []model.SongSection{
-					{
-						ID:                uuid.New(),
-						Name:              "Test Song Section 1",
-						Order:             0,
-						Occurrences:       2,
-						SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-					},
-				},
 			},
 		},
 	},
@@ -316,5 +249,109 @@ var Songs = []model.Song{
 		UserID:   Users[0].ID,
 		ArtistID: &[]uuid.UUID{Artists[0].ID}[0],
 		AlbumID:  &[]uuid.UUID{Artists[0].Albums[3].ID}[0],
+	},
+}
+
+var SongSections = []model.SongSection{
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song 1 Section 1",
+		Order:             0,
+		Rehearsals:        16,
+		Confidence:        10,
+		ConfidenceScore:   12,
+		RehearsalsScore:   45,
+		Progress:          5,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		SongID:            Artists[1].Songs[0].ID,
+		History: []model.SongSectionHistory{
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       16,
+				Property: model.RehearsalsProperty,
+			},
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       10,
+				Property: model.ConfidenceProperty,
+			},
+		},
+	},
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song Section 2",
+		Order:             1,
+		Rehearsals:        20,
+		Confidence:        30,
+		ConfidenceScore:   25,
+		RehearsalsScore:   45,
+		Progress:          10,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		SongID:            Artists[1].Songs[0].ID,
+		History: []model.SongSectionHistory{
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       20,
+				Property: model.RehearsalsProperty,
+			},
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       30,
+				Property: model.ConfidenceProperty,
+			},
+		},
+	},
+
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song 2 Section 1",
+		Order:             0,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		SongID:            Artists[1].Songs[1].ID,
+	},
+
+	{
+		ID:                uuid.New(),
+		Name:              "Test Song 3 Section 1",
+		Order:             0,
+		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
+		SongID:            Artists[2].Songs[0].ID,
+	},
+}
+
+var SongArrangements = []model.SongArrangement{
+	{
+		ID:     uuid.New(),
+		Name:   "Test SongArrangement 1",
+		SongID: Artists[1].Songs[0].ID,
+		Order:  0,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{SectionID: SongSections[0].ID, Occurrences: 7},
+			{SectionID: SongSections[1].ID, Occurrences: 0},
+		},
+	},
+	{
+		ID:     uuid.New(),
+		Name:   "Test SongArrangement 2",
+		SongID: Artists[1].Songs[0].ID,
+		Order:  1,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{SectionID: SongSections[0].ID, Occurrences: 5},
+			{SectionID: SongSections[1].ID, Occurrences: 11},
+		},
+	},
+
+	{
+		ID:     uuid.New(),
+		Name:   "Test SongArrangement 1",
+		SongID: Artists[1].Songs[1].ID,
+		Order:  0,
+		SectionOccurrences: []model.SongSectionOccurrences{
+			{SectionID: SongSections[2].ID, Occurrences: 7},
+		},
 	},
 }

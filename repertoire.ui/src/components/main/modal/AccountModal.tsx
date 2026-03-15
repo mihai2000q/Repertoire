@@ -16,7 +16,6 @@ import { zod4Resolver } from 'mantine-form-zod-resolver'
 import User from '../../../types/models/User.ts'
 import { AccountForm, accountSchema } from '../../../validation/mainForm.ts'
 import { toast } from 'react-toastify'
-import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 import dayjs from 'dayjs'
 import {
@@ -63,7 +62,7 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     user.profilePictureUrl
   )
   useEffect(() => form.setFieldValue('profilePicture', profilePicture), [profilePicture])
-  useDidUpdate(() => setProfilePicture(user.profilePictureUrl), [user])
+  useEffect(() => setProfilePicture(user.profilePictureUrl), [user])
 
   async function updateUser({ name, profilePicture }: AccountForm) {
     if (userHasChanged)

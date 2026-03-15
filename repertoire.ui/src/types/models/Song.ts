@@ -14,6 +14,7 @@ export default interface Song {
   difficulty?: Difficulty
   imageUrl?: string
   lastTimePlayed?: string
+  defaultArrangementId?: string
 
   rehearsals: number
   confidence: number
@@ -50,8 +51,6 @@ export interface SongSection {
   rehearsals: number
   confidence: number
   progress: number
-  occurrences: number
-  partialOccurrences: number
   songSectionType: SongSectionType
   bandMember?: BandMember
   instrument?: Instrument
@@ -70,4 +69,16 @@ export interface GuitarTuning {
 export interface Instrument {
   id: string
   name: string
+}
+
+export interface SongArrangement {
+  id: string
+  name: string
+  sectionOccurrences: SongSectionOccurrences[]
+  songId: string
+}
+
+export interface SongSectionOccurrences {
+  section: SongSection
+  occurrences: number | string // string, for front end purposes and transformations
 }

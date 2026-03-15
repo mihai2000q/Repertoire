@@ -15,7 +15,6 @@ import WarningModal from '../@ui/modal/WarningModal.tsx'
 import ImageModal from '../@ui/modal/ImageModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
 import titleFontSize from '../../utils/style/titleFontSize.ts'
-import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
@@ -70,8 +69,12 @@ function SongHeader({ song }: SongHeaderProps) {
 
           <Menu.Divider />
           <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
-          <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-          <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
+          <PerfectRehearsalMenuItem
+            id={song.id}
+            closeMenu={closeMenu}
+            type={'song'}
+            defaultSongArrangementId={song.defaultArrangementId}
+          />
           <Menu.Divider />
 
           <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>

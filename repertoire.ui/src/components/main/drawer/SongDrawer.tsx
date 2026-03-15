@@ -40,7 +40,6 @@ import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import ConfidenceBar from '../../@ui/bar/ConfidenceBar.tsx'
 import ProgressBar from '../../@ui/bar/ProgressBar.tsx'
 import PerfectRehearsalMenuItem from '../../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
@@ -172,8 +171,12 @@ function SongDrawer() {
 
                 <Menu.Divider />
                 <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
-                <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-                <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
+                <PerfectRehearsalMenuItem
+                  id={song.id}
+                  closeMenu={closeMenu}
+                  type={'song'}
+                  defaultSongArrangementId={song.defaultArrangementId}
+                />
                 <Menu.Divider />
 
                 <Menu.Item

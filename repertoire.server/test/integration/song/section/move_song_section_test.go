@@ -58,7 +58,7 @@ func TestMoveSongSection_WhenOverSectionIsNotFound_ShouldReturnNotFoundError(t *
 	song := songData.Songs[0]
 	request := requests.MoveSongSectionRequest{
 		SongID: song.ID,
-		ID:     song.Sections[0].ID,
+		ID:     songData.SongSections[0].ID,
 		OverID: uuid.New(),
 	}
 
@@ -70,22 +70,30 @@ func TestMoveSongSection_WhenOverSectionIsNotFound_ShouldReturnNotFoundError(t *
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
+func TestMoveSongSection_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 	tests := []struct {
 		name      string
-		song      model.Song
+		request   requests.MoveSongSectionRequest
 		index     int
 		overIndex int
 	}{
 		{
 			"From upper position to lower",
-			songData.Songs[0],
+			requests.MoveSongSectionRequest{
+				SongID: songData.SongSections[0].SongID,
+				ID:     songData.SongSections[2].ID,
+				OverID: songData.SongSections[0].ID,
+			},
 			2,
 			0,
 		},
 		{
 			"From lower position to upper",
-			songData.Songs[0],
+			requests.MoveSongSectionRequest{
+				SongID: songData.SongSections[0].SongID,
+				ID:     songData.SongSections[0].ID,
+				OverID: songData.SongSections[2].ID,
+			},
 			0,
 			2,
 		},
@@ -96,24 +104,18 @@ func TestMoveSongSectionType_WhenSuccessful_ShouldMoveTypes(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-			request := requests.MoveSongSectionRequest{
-				SongID: test.song.ID,
-				ID:     test.song.Sections[test.index].ID,
-				OverID: test.song.Sections[test.overIndex].ID,
-			}
-
 			// when
 			w := httptest.NewRecorder()
-			core.NewTestHandler().PUT(w, "/api/songs/sections/move", request)
+			core.NewTestHandler().PUT(w, "/api/songs/sections/move", test.request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			var sections []model.SongSection
 			db := utils.GetDatabase(t)
-			db.Order("\"order\"").Find(&sections, &model.SongSection{SongID: test.song.ID})
+			db.Where(&model.SongSection{SongID: test.request.SongID}).Order("\"order\"").Find(&sections)
 
-			assertMovedSections(t, request, sections, test.index, test.overIndex)
+			assertMovedSections(t, test.request, sections, test.index, test.overIndex)
 		})
 	}
 }

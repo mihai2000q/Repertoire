@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestCreateSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -111,6 +112,15 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 				InstrumentID: test.instrumentID,
 			}
 
+			db := utils.GetDatabase(t)
+			var oldArrangements []model.SongArrangement
+			var sectionsCount int64
+			db.Preload("SectionOccurrences").
+				Where(&model.SongArrangement{SongID: song.ID}).
+				Order("\"order\"").
+				Find(&oldArrangements)
+			db.Model(&model.SongSection{}).Where(&model.SongSection{SongID: song.ID}).Count(&sectionsCount)
+
 			// when
 			w := httptest.NewRecorder()
 			core.NewTestHandler().POST(w, "/api/songs/sections", request)
@@ -118,16 +128,32 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db := utils.GetDatabase(t)
+			db = db.Session(&gorm.Session{NewDB: true})
 
 			var section model.SongSection
-			db.Preload("Song").Find(&section, &model.SongSection{Name: request.Name})
+			db.Preload("Song").
+				Preload("Song.Arrangements", func(db *gorm.DB) *gorm.DB { return db.Order("\"order\"") }).
+				Preload("Song.Arrangements.SectionOccurrences", func(db *gorm.DB) *gorm.DB {
+					return db.
+						Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
+						Order("song_sections.order DESC")
+				}).
+				Preload("Song.Arrangements.SectionOccurrences.Section").
+				Find(&section, &model.SongSection{Name: request.Name})
 
 			assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
 			assert.LessOrEqual(t, section.Song.Rehearsals, song.Rehearsals)
 			assert.LessOrEqual(t, section.Song.Progress, song.Progress)
 
-			assertCreatedSongSection(t, section, request, len(song.Sections))
+			for i, arrangement := range section.Song.Arrangements {
+				assert.Len(t, arrangement.SectionOccurrences, len(oldArrangements[i].SectionOccurrences)+1)
+				newOccurrence := arrangement.SectionOccurrences[0]
+				assert.Equal(t, section.ID, newOccurrence.SectionID)
+				assert.Equal(t, arrangement.ID, newOccurrence.ArrangementID)
+				assert.Zero(t, newOccurrence.Occurrences)
+			}
+
+			assertCreatedSongSection(t, section, request, sectionsCount)
 		})
 	}
 }
@@ -136,7 +162,7 @@ func assertCreatedSongSection(
 	t *testing.T,
 	songSection model.SongSection,
 	request requests.CreateSongSectionRequest,
-	order int,
+	order int64,
 ) {
 	assert.NotEmpty(t, songSection.ID)
 	assert.Equal(t, request.SongID, songSection.SongID)

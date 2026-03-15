@@ -316,7 +316,6 @@ func ResponseSongSection(
 ) {
 	assert.Equal(t, songSection.ID, response.ID)
 	assert.Equal(t, songSection.Name, response.Name)
-	assert.Equal(t, songSection.Occurrences, response.Occurrences)
 	assert.Equal(t, songSection.Rehearsals, response.Rehearsals)
 	assert.Equal(t, songSection.Confidence, response.Confidence)
 	assert.Equal(t, songSection.RehearsalsScore, response.RehearsalsScore)
@@ -341,6 +340,27 @@ func ResponseSongSection(
 func ResponseSongSectionType(t *testing.T, songSectionType model.SongSectionType, response model.SongSectionType) {
 	assert.Equal(t, songSectionType.ID, response.ID)
 	assert.Equal(t, songSectionType.Name, response.Name)
+}
+
+func ResponseSongArrangement(
+	t *testing.T,
+	songArrangement model.SongArrangement,
+	response model.SongArrangement,
+) {
+	assert.Equal(t, songArrangement.ID, response.ID)
+	assert.Equal(t, songArrangement.Name, response.Name)
+	assert.Equal(t, songArrangement.SongID, response.SongID)
+
+	for i := range songArrangement.SectionOccurrences {
+		assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, response.SectionOccurrences[i].Occurrences)
+
+		ResponseSongSection(
+			t,
+			songArrangement.SectionOccurrences[i].Section,
+			response.SectionOccurrences[i].Section,
+			false,
+		)
+	}
 }
 
 func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response model.EnhancedPlaylist) {

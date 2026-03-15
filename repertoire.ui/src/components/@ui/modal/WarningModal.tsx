@@ -1,7 +1,7 @@
-import { Button, Group, Modal, Stack, Text } from '@mantine/core'
+import { Button, Group, Modal, ModalProps, Stack, Text } from '@mantine/core'
 import { ReactNode } from 'react'
 
-interface WarningModalProps {
+interface WarningModalProps extends ModalProps {
   opened: boolean
   onClose: () => void
   title: string
@@ -16,7 +16,8 @@ function WarningModal({
   title,
   description,
   onYes,
-  isLoading
+  isLoading,
+  ...props
 }: WarningModalProps) {
   function internalOnYes() {
     onYes()
@@ -24,7 +25,7 @@ function WarningModal({
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={title} centered>
+    <Modal opened={opened} onClose={onClose} title={title} centered {...props}>
       <Stack px={'xs'} py={0}>
         {typeof description === 'string' ? <Text fw={500}>{description}</Text> : description}
         <Group gap={'xxs'} style={{ alignSelf: 'end' }}>

@@ -13,7 +13,6 @@ import (
 type SongService interface {
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
 	AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode
-	AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -35,7 +34,6 @@ type SongService interface {
 type songService struct {
 	addPerfectSongRehearsal  song.AddPerfectSongRehearsal
 	addPerfectSongRehearsals song.AddPerfectSongRehearsals
-	addPartialSongRehearsal  song.AddPartialSongRehearsal
 	bulkDeleteSongs          song.BulkDeleteSongs
 	createSong               song.CreateSong
 	deleteImageFromSong      song.DeleteImageFromSong
@@ -54,7 +52,6 @@ type songService struct {
 func NewSongService(
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
 	addPerfectSongRehearsals song.AddPerfectSongRehearsals,
-	addPartialSongRehearsal song.AddPartialSongRehearsal,
 	bulkDeleteSongs song.BulkDeleteSongs,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
@@ -72,7 +69,6 @@ func NewSongService(
 	return &songService{
 		addPerfectSongRehearsal:  addPerfectSongRehearsal,
 		addPerfectSongRehearsals: addPerfectSongRehearsals,
-		addPartialSongRehearsal:  addPartialSongRehearsal,
 		bulkDeleteSongs:          bulkDeleteSongs,
 		createSong:               createSong,
 		deleteImageFromSong:      deleteImageFromSong,
@@ -95,10 +91,6 @@ func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehears
 
 func (s *songService) AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode {
 	return s.addPerfectSongRehearsals.Handle(request)
-}
-
-func (s *songService) AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {
-	return s.addPartialSongRehearsal.Handle(request)
 }
 
 func (s *songService) BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode {

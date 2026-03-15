@@ -42,10 +42,6 @@ type AddPerfectSongRehearsalsRequest struct {
 	IDs []uuid.UUID `validate:"min=1"`
 }
 
-type AddPartialSongRehearsalRequest struct {
-	ID uuid.UUID `validate:"required"`
-}
-
 type UpdateSongRequest struct {
 	ID             uuid.UUID `validate:"required"`
 	Title          string    `validate:"required,max=100"`

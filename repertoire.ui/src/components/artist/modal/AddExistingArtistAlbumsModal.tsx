@@ -19,7 +19,6 @@ import {
 } from '@mantine/core'
 import {
   useDebouncedValue,
-  useDidUpdate,
   useFocusTrap,
   useInputState,
   useIntersection,
@@ -148,7 +147,7 @@ function AddExistingArtistAlbumsModal({
   useEffect(() => {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
-  useDidUpdate(() => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
 
   function checkAllAlbums(check: boolean) {
     if (check) {

@@ -38,21 +38,21 @@ describe('Advanced Order Menu', () => {
     await user.click(screen.getByTestId(testId))
     expect(await screen.findByRole('menu')).toBeInTheDocument()
     initialOrders.forEach((order) => {
-      expect(screen.getByRole('button', { name: order.label })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: order.label })).toHaveAttribute(
+      expect(screen.getByRole('menuitem', { name: order.label })).toBeInTheDocument()
+      expect(screen.getByRole('menuitem', { name: order.label })).toHaveAttribute(
         'data-active',
         order.checked === true ? 'true' : 'false'
       )
       if (order.checked === true) {
         if (order.type !== OrderType.Descending)
           expect(
-            within(screen.getByRole('button', { name: order.label })).getByRole('button', {
+            within(screen.getByRole('menuitem', { name: order.label })).getByRole('button', {
               name: 'change-order-ascending'
             })
           ).toBeInTheDocument()
         else
           expect(
-            within(screen.getByRole('button', { name: order.label })).getByRole('button', {
+            within(screen.getByRole('menuitem', { name: order.label })).getByRole('button', {
               name: 'change-order-descending'
             })
           ).toBeInTheDocument()
@@ -71,7 +71,7 @@ describe('Advanced Order Menu', () => {
     render({ setOrders })
 
     await user.click(screen.getByTestId(childrenTestId))
-    await user.click(screen.getByRole('button', { name: newOrder.label }))
+    await user.click(screen.getByRole('menuitem', { name: newOrder.label }))
 
     const newOrders = [...initialOrders]
     newOrders[orderIndex] = { ...newOrder, checked: true }
@@ -88,7 +88,7 @@ describe('Advanced Order Menu', () => {
     render({ setOrders })
 
     await user.click(screen.getByTestId(childrenTestId))
-    await user.click(screen.getByRole('button', { name: order.label }))
+    await user.click(screen.getByRole('menuitem', { name: order.label }))
 
     expect(setOrders).not.toHaveBeenCalled()
   })
@@ -106,7 +106,7 @@ describe('Advanced Order Menu', () => {
     render({ orders, setOrders })
 
     await user.click(screen.getByTestId(childrenTestId))
-    await user.click(screen.getByRole('button', { name: orderToRemove.label }))
+    await user.click(screen.getByRole('menuitem', { name: orderToRemove.label }))
 
     const newOrders = [...initialOrders]
     newOrders[orderIndex] = { ...orderToRemove, checked: false }
@@ -126,7 +126,7 @@ describe('Advanced Order Menu', () => {
 
     await user.click(screen.getByTestId(childrenTestId))
     await user.click(
-      within(screen.getByRole('button', { name: order.label })).getByRole('button', {
+      within(screen.getByRole('menuitem', { name: order.label })).getByRole('button', {
         name: 'change-order-ascending'
       })
     )

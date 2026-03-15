@@ -41,6 +41,21 @@ export const components = {
     styles: (theme) => ({
       root: {
         transition: '0.16s',
+        '&[data-variant="subtle-red"]': {
+          color: theme.colors.red[4],
+          backgroundColor: 'transparent',
+
+          '&:hover': {
+            color: theme.colors.red[5],
+            backgroundColor: theme.colors.red[1]
+          },
+
+          '&[data-disabled="true"]': {
+            color: theme.colors.red[3],
+            backgroundColor: 'transparent'
+          }
+        },
+
         '&[data-variant="grey"]': {
           color: theme.colors.gray[5],
           backgroundColor: 'transparent',
@@ -448,6 +463,7 @@ declare module '@mantine/core' {
   interface ActionIconProps {
     variant?:
       | StylesApiProps<ActionIconFactory>['variant']
+      | 'subtle-red'
       | 'grey'
       | 'grey-subtle'
       | 'grey-primary'

@@ -46,7 +46,7 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldAddSongsToArtist(t *testing.T) {
 	artist := artistData.Artists[0]
 	db := utils.GetDatabase(t) // too many nested songs on albums on artist and so on...
 	var oldSongsLength int64
-	db.Model(&model.Song{}).Where("artist_id = ?", artist.ID).Count(&oldSongsLength)
+	db.Model(&model.Song{}).Where(&model.Song{ArtistID: &artist.ID}).Count(&oldSongsLength)
 
 	request := requests.AddSongsToArtistRequest{
 		ID: artist.ID,

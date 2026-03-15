@@ -47,6 +47,7 @@ function Song() {
 
             <SongSectionsWidget
               songId={songId}
+              defaultSongArrangementId={song.defaultArrangementId}
               settings={song.settings}
               sections={song.sections}
               isFetching={isFetching}

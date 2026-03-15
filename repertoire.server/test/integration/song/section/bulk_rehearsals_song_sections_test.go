@@ -57,14 +57,16 @@ func TestBulkRehearsalsSongSections_WhenSuccessful_ShouldDeleteSections(t *testi
 
 	// song with sections and previous stats
 	song := songData.Songs[0]
-	oldSections := slices.Clone(song.Sections)
+	oldSections := slices.Clone(slices.DeleteFunc(slices.Clone(songData.SongSections), func(section model.SongSection) bool {
+		return section.SongID != song.ID
+	}))
 	request := requests.BulkRehearsalsSongSectionsRequest{
 		Sections: []requests.BulkRehearsalsSongSectionRequest{
-			{ID: song.Sections[0].ID, Rehearsals: 10},
-			{ID: song.Sections[1].ID, Rehearsals: 0},
-			{ID: song.Sections[2].ID, Rehearsals: 5},
+			{ID: songData.SongSections[0].ID, Rehearsals: 10},
+			{ID: songData.SongSections[1].ID, Rehearsals: 0},
+			{ID: songData.SongSections[2].ID, Rehearsals: 5},
 		},
-		SongID: songData.Songs[0].ID,
+		SongID: song.ID,
 	}
 
 	// when

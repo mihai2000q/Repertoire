@@ -16,8 +16,6 @@ func (s SongSectionRouter) RegisterRoutes() {
 		api.POST("", s.handler.Create)
 		api.POST("bulk-rehearsals", s.handler.BulkRehearsals)
 		api.PUT("", s.handler.Update)
-		api.PUT("/occurrences", s.handler.UpdateOccurrences)
-		api.PUT("/partial-occurrences", s.handler.UpdatePartialOccurrences)
 		api.PUT("/all", s.handler.UpdateAll)
 		api.PUT("/move", s.handler.Move)
 		api.PUT("/bulk-delete", s.handler.BulkDelete)

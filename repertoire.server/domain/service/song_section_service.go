@@ -17,8 +17,6 @@ type SongSectionService interface {
 	Move(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
 	UpdateAll(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode
 	Update(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
-	UpdateOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode
-	UpdatePartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode
 
 	GetTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 }
@@ -31,8 +29,6 @@ type songSectionService struct {
 	moveSongSection                      section.MoveSongSection
 	updateAllSongSections                section.UpdateAllSongSections
 	updateSongSection                    section.UpdateSongSection
-	updateSongSectionsOccurrences        section.UpdateSongSectionsOccurrences
-	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences
 	getSongSectionTypes                  section.GetSongSectionTypes
 }
 
@@ -44,8 +40,6 @@ func NewSongSectionService(
 	moveSongSection section.MoveSongSection,
 	updateAllSongSections section.UpdateAllSongSections,
 	updateSongSection section.UpdateSongSection,
-	updateSongSectionsOccurrences section.UpdateSongSectionsOccurrences,
-	updateSongSectionsPartialOccurrences section.UpdateSongSectionsPartialOccurrences,
 
 	getSongSectionTypes section.GetSongSectionTypes,
 ) SongSectionService {
@@ -57,8 +51,6 @@ func NewSongSectionService(
 		moveSongSection:                      moveSongSection,
 		updateAllSongSections:                updateAllSongSections,
 		updateSongSection:                    updateSongSection,
-		updateSongSectionsOccurrences:        updateSongSectionsOccurrences,
-		updateSongSectionsPartialOccurrences: updateSongSectionsPartialOccurrences,
 
 		getSongSectionTypes: getSongSectionTypes,
 	}
@@ -90,14 +82,6 @@ func (s *songSectionService) UpdateAll(request requests.UpdateAllSongSectionsReq
 
 func (s *songSectionService) Update(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
 	return s.updateSongSection.Handle(request)
-}
-
-func (s *songSectionService) UpdateOccurrences(request requests.UpdateSongSectionsOccurrencesRequest) *wrapper.ErrorCode {
-	return s.updateSongSectionsOccurrences.Handle(request)
-}
-
-func (s *songSectionService) UpdatePartialOccurrences(request requests.UpdateSongSectionsPartialOccurrencesRequest) *wrapper.ErrorCode {
-	return s.updateSongSectionsPartialOccurrences.Handle(request)
 }
 
 // Types

@@ -24,7 +24,7 @@ type Playlist struct {
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
-	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; notnull" json:"userId"`
+	UserID    uuid.UUID `gorm:"foreignKey:UserID; references:ID; not null; <-:create; index:idx_playlists_user_id" json:"userId"`
 }
 
 type PlaylistSong struct {

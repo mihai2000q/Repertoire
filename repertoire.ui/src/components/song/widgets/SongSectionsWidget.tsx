@@ -1,25 +1,17 @@
 import {
-  useAddPartialSongRehearsalMutation,
   useAddPerfectSongRehearsalMutation,
   useMoveSongSectionMutation
 } from '../../../state/api/songsApi.ts'
 import { ActionIcon, Box, Card, Group, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
-import {
-  IconCheck,
-  IconChecks,
-  IconEye,
-  IconEyeOff,
-  IconListNumbers,
-  IconPlus
-} from '@tabler/icons-react'
+import { IconChecks, IconEye, IconEyeOff, IconListNumbers, IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../../@ui/card/NewHorizontalCard.tsx'
 import AddNewSongSection from '../AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection, SongSettings } from '../../../types/models/Song.ts'
 import SongSectionCard from '../SongSectionCard.tsx'
-import { useMemo, useRef, useState } from 'react'
-import EditSongSectionsOccurrencesModal from '../modal/EditSongSectionsOccurrencesModal.tsx'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import SongArrangementsModal from '../modal/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
@@ -34,6 +26,7 @@ interface SongSectionsWidgetProps {
   sections: SongSection[]
   settings: SongSettings
   songId: string
+  defaultSongArrangementId?: string
   isFetching?: boolean
   bandMembers?: BandMember[]
   isArtistBand?: boolean
@@ -43,25 +36,23 @@ function SongSectionsWidget({
   sections,
   settings,
   songId,
+  defaultSongArrangementId,
   isFetching,
   bandMembers,
   isArtistBand
 }: SongSectionsWidgetProps) {
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
-  const [addPartialRehearsal, { isLoading: isPartialRehearsalLoading }] =
-    useAddPartialSongRehearsalMutation()
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
 
   const [showDetails, setShowDetails] = useState(false)
-  const [openedPartialRehearsalPopover, setOpenedPartialRehearsalPopover] = useState(false)
   const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
 
-  const [openedOccurrences, { open: openOccurrences, close: closeOccurrences }] =
+  const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
     useDisclosure(false)
   const [openedAdd, { open: openAdd, close: closeAdd }] = useDisclosure(false)
 
-  useDidUpdate(() => setShowDetails(false), [songId])
+  useEffect(() => setShowDetails(false), [songId])
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
@@ -100,12 +91,6 @@ function SongSectionsWidget({
   function handleShowDetails() {
     setShowDetails(!showDetails)
     if (!showDetails) setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 250)
-  }
-
-  async function handleAddPartialRehearsal() {
-    await addPartialRehearsal({ id: songId }).unwrap()
-    toast.info('Partial rehearsal added!')
-    setOpenedPartialRehearsalPopover(false)
   }
 
   async function handleAddPerfectRehearsal() {
@@ -169,61 +154,21 @@ function SongSectionsWidget({
                 </ActionIcon>
               </Tooltip>
 
-              <Tooltip
-                label={
-                  sections.length === 0
-                    ? "To edit sections' occurrences you need sections"
-                    : "Edit Sections' Occurrences"
-                }
-              >
+              <Tooltip label={'Manage Song Arrangements'}>
                 <ActionIcon
-                  aria-label={'edit-occurrences'}
+                  aria-label={'manage-song-arrangements'}
                   variant={'grey'}
                   size={'sm'}
-                  disabled={sections.length === 0}
-                  onClick={openOccurrences}
+                  onClick={openArrangements}
                 >
                   <IconListNumbers size={16} />
                 </ActionIcon>
               </Tooltip>
 
               <PopoverConfirmation
-                label={"Increase sections' rehearsals based on partial occurrences"}
-                popoverProps={{
-                  opened: openedPartialRehearsalPopover,
-                  onChange: setOpenedPartialRehearsalPopover,
-                  closeOnClickOutside: !isPartialRehearsalLoading
-                }}
-                isLoading={isPartialRehearsalLoading}
-                onCancel={() => setOpenedPartialRehearsalPopover(false)}
-                onConfirm={handleAddPartialRehearsal}
-              >
-                <Tooltip
-                  label={
-                    sections.length === 0
-                      ? 'To add a partial rehearsal you need sections'
-                      : 'Add Partial Rehearsal'
-                  }
-                  disabled={openedPartialRehearsalPopover}
-                >
-                  <ActionIcon
-                    aria-label={'add-partial-rehearsal'}
-                    variant={'grey'}
-                    size={'sm'}
-                    disabled={sections.length === 0}
-                    onClick={() =>
-                      setOpenedPartialRehearsalPopover(
-                        isPartialRehearsalLoading || !openedPartialRehearsalPopover
-                      )
-                    }
-                  >
-                    <IconCheck size={16} />
-                  </ActionIcon>
-                </Tooltip>
-              </PopoverConfirmation>
-
-              <PopoverConfirmation
-                label={"Increase sections' rehearsals based on occurrences"}
+                label={
+                  "Increase sections' rehearsals based on occurrences from default arrangement"
+                }
                 popoverProps={{
                   opened: openedPerfectRehearsalPopover,
                   onChange: setOpenedPerfectRehearsalPopover,
@@ -236,8 +181,10 @@ function SongSectionsWidget({
                 <Tooltip
                   label={
                     sections.length === 0
-                      ? 'To add a perfect rehearsal you need sections'
-                      : 'Add Perfect Rehearsal'
+                      ? 'To add a perfect rehearsal, you need sections'
+                      : !defaultSongArrangementId
+                        ? 'To add a perfect rehearsal, you need a default arrangement'
+                        : 'Add Perfect Rehearsal'
                   }
                   disabled={openedPerfectRehearsalPopover}
                 >
@@ -245,7 +192,7 @@ function SongSectionsWidget({
                     aria-label={'add-perfect-rehearsal'}
                     variant={'grey'}
                     size={'sm'}
-                    disabled={sections.length === 0}
+                    disabled={sections.length === 0 || !defaultSongArrangementId}
                     onClick={() =>
                       setOpenedPerfectRehearsalPopover(
                         isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
@@ -338,11 +285,11 @@ function SongSectionsWidget({
           </ScrollArea.Autosize>
         </Stack>
 
-        <EditSongSectionsOccurrencesModal
-          opened={openedOccurrences}
-          onClose={closeOccurrences}
-          sections={sections}
+        <SongArrangementsModal
+          opened={openedArrangements}
+          onClose={closeArrangements}
           songId={songId}
+          defaultId={defaultSongArrangementId}
         />
       </Card>
     </ClickSelectProvider>

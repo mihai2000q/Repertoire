@@ -63,6 +63,7 @@ export const api = createApi({
     'Search',
 
     'Songs',
+    'SongArrangements',
     'SongSectionTypes',
     'GuitarTunings',
     'Instruments',
