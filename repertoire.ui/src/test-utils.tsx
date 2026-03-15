@@ -320,8 +320,6 @@ export const emptySong: Song = {
   settings: {
     id: ''
   },
-  solosCount: 0,
-  riffsCount: 0
 }
 
 export const emptyPlaylist: Playlist = {
