@@ -64,7 +64,7 @@ function PlaylistSongsSelectionDrawer({ playlistId, songs }: PlaylistSongsSelect
                 ids={selectedSongsIds}
                 closeMenu={closeMenu}
                 onSuccess={clearSelection}
-                type={'songs'}
+                type={'playlist-songs'}
               />
             </Menu.Dropdown>
           )

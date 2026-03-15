@@ -55,7 +55,7 @@ function PlaylistSongsContextMenu({ children, playlistId, songs }: PlaylistSongs
             ids={selectedSongsIds}
             closeMenu={closeMenu}
             onSuccess={clearSelection}
-            type={'songs'}
+            type={'playlist-songs'}
           />
           <Menu.Divider />
           <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={openRemoveWarning}>

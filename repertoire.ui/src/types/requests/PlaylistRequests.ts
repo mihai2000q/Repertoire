@@ -63,6 +63,10 @@ export interface AddSongsToPlaylistRequest {
   forceAdd?: boolean
 }
 
+export interface AddPerfectPlaylistSongRehearsalsRequest {
+  ids: string[]
+}
+
 export interface ShufflePlaylistSongsRequest {
   id: string
 }

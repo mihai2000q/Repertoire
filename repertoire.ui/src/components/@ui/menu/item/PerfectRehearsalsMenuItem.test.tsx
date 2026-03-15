@@ -9,7 +9,10 @@ import { http, HttpResponse } from 'msw'
 import { expect } from 'vitest'
 import { AddPerfectRehearsalsToArtistsRequest } from '../../../../types/requests/ArtistRequests.ts'
 import { AddPerfectRehearsalsToAlbumsRequest } from '../../../../types/requests/AlbumRequests.ts'
-import { AddPerfectRehearsalsToPlaylistsRequest } from '../../../../types/requests/PlaylistRequests.ts'
+import {
+  AddPerfectPlaylistSongRehearsalsRequest,
+  AddPerfectRehearsalsToPlaylistsRequest
+} from '../../../../types/requests/PlaylistRequests.ts'
 
 describe('Perfect Rehearsals Menu Item', () => {
   const server = setupServer()
@@ -178,6 +181,42 @@ describe('Perfect Rehearsals Menu Item', () => {
 
       expect(await screen.findByText(/perfect rehearsals added/i)).toBeInTheDocument()
       expect(capturedRequest).toStrictEqual({ ids: playlistIds })
+      expect(closeMenu).toHaveBeenCalledOnce()
+    })
+
+    it('should send playlist songs request', async () => {
+      const user = userEvent.setup()
+
+      let capturedRequest: AddPerfectPlaylistSongRehearsalsRequest
+      server.use(
+        http.post('/playlists/songs/perfect-rehearsals', async (req) => {
+          capturedRequest = (await req.request.json()) as AddPerfectPlaylistSongRehearsalsRequest
+          return HttpResponse.json({ message: 'it worked' })
+        })
+      )
+
+      const playlistSongIds = ['some-id-1', 'some-id-2']
+      const closeMenu = vi.fn()
+
+      reduxRender(
+        withToastify(
+          <Menu opened={true}>
+            <Menu.Dropdown>
+              <PerfectRehearsalsMenuItem
+                ids={playlistSongIds}
+                closeMenu={closeMenu}
+                type={'playlist-songs'}
+              />
+            </Menu.Dropdown>
+          </Menu>
+        )
+      )
+
+      await user.click(screen.getByRole('menuitem', { name: /perfect rehearsals/i }))
+      await user.click(await screen.findByRole('button', { name: 'confirm' }))
+
+      expect(await screen.findByText(/perfect rehearsals added/i)).toBeInTheDocument()
+      expect(capturedRequest).toStrictEqual({ ids: playlistSongIds })
       expect(closeMenu).toHaveBeenCalledOnce()
     })
   })
