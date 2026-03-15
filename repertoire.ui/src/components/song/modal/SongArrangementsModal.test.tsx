@@ -8,19 +8,22 @@ import {
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import SongArrangementsModal from './SongArrangementsModal.tsx'
-import { screen, waitFor, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import {
   BulkUpdateSongArrangementsRequest,
   UpdateDefaultSongArrangementRequest
 } from '../../../types/requests/SongRequests.ts'
+import { api } from '../../../state/api.ts'
 
 describe('Song Arrangements Modal', () => {
+  const songId = 'song-id'
   const arrangements: SongArrangement[] = [
     {
       ...emptySongArrangement,
       id: '1',
       name: 'Partial Rehearsal',
+      songId: songId,
       sectionOccurrences: [
         {
           section: {
@@ -55,6 +58,7 @@ describe('Song Arrangements Modal', () => {
       ...emptySongArrangement,
       id: '2',
       name: 'Perfect Rehearsal',
+      songId: songId,
       sectionOccurrences: [
         {
           section: {
@@ -106,7 +110,7 @@ describe('Song Arrangements Modal', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     // header title
     expect(screen.getByTestId('song-arrangements-loader')).toBeInTheDocument()
@@ -184,7 +188,7 @@ describe('Song Arrangements Modal', () => {
       })
     )
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     expect(screen.getByTestId('song-arrangements-loader')).toBeInTheDocument()
     expect(await screen.findByRole('dialog', { name: /song arrangements/i })).toBeInTheDocument()
@@ -200,7 +204,7 @@ describe('Song Arrangements Modal', () => {
       })
     )
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     // normal render as expected but without the sections
     expect(await screen.findByText(/there are no sections/i)).toBeInTheDocument()
@@ -258,7 +262,7 @@ describe('Song Arrangements Modal', () => {
 
     const newName = 'Arr'
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     const nameTextBox = await screen.findByRole('textbox', { name: 'name' })
 
@@ -274,7 +278,7 @@ describe('Song Arrangements Modal', () => {
   it('should reset the values to initial state when clicking on the reset button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     const nameTextBox = await screen.findByRole('textbox', { name: 'name' })
     const section = screen.getByLabelText(
@@ -331,7 +335,7 @@ describe('Song Arrangements Modal', () => {
   it('should disable the save button and reset, when no change has been made', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     const nameTextBox = await screen.findByRole('textbox', { name: 'name' })
     const saveButton = screen.getByRole('button', { name: /save/i })
@@ -378,7 +382,7 @@ describe('Song Arrangements Modal', () => {
 
     const newName = 'Arr'
 
-    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={''} />)
+    reduxRender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
 
     const nameTextBox = await screen.findByRole('textbox', { name: 'name' })
     const saveButton = screen.getByRole('button', { name: /save/i })
@@ -567,6 +571,272 @@ describe('Song Arrangements Modal', () => {
           }))
         }
       ]
+    })
+  })
+
+  describe('should re-render accordingly', () => {
+    it('when an arrangement is added', async () => {
+      const user = userEvent.setup()
+
+      const newArrangementName = 'Arr'
+      const newArrangementId = 'newId'
+
+      server.use(
+        http.post(`/songs/arrangements`, () => {
+          return HttpResponse.json({ id: newArrangementId })
+        })
+      )
+
+      const [_, store] = reduxRender(
+        withToastify(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
+      )
+
+      // first render check
+      await user.click(await screen.findByRole('button', { name: selectedArrangement.name }))
+      for (const arrangement of arrangements) {
+        expect(await screen.findByRole('menuitem', { name: arrangement.name }))
+      }
+
+      // add
+      await user.click(await screen.findByRole('button', { name: 'add-new-arrangement' }))
+      await user.type(
+        within(await screen.findByRole('dialog', { name: 'add-new-arrangement' })).getByRole(
+          'textbox',
+          { name: /name/i }
+        ),
+        newArrangementName
+      )
+      await user.click(screen.getByRole('button', { name: /submit/i }))
+
+      expect(await screen.findByText(/song arrangement added/i)).toBeInTheDocument()
+
+      // prepare second render
+      const newArrangement: SongArrangement = {
+        id: newArrangementId,
+        name: newArrangementName,
+        sectionOccurrences: selectedArrangement.sectionOccurrences.map((so) => ({
+          ...so,
+          occurrences: 0
+        })),
+        songId: songId
+      }
+      const newArrangements = [...arrangements, newArrangement]
+      server.use(
+        http.get('/songs/arrangements', async () => {
+          return HttpResponse.json(newArrangements)
+        })
+      )
+
+      // rerender
+      await act(() => store.dispatch(api.util.resetApiState()))
+
+      // recheck
+      expect(await screen.findByRole('button', { name: newArrangement.name })).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: newArrangement.name }))
+      for (const arrangement of newArrangements) {
+        expect(await screen.findByRole('menuitem', { name: arrangement.name }))
+      }
+
+      expect(screen.getByRole('textbox', { name: 'name' })).toHaveValue(newArrangement.name)
+    })
+
+    it('when an arrangement is deleted', async () => {
+      const user = userEvent.setup()
+
+      const songId = 'songId'
+
+      server.use(
+        http.delete(`/songs/arrangements/${selectedArrangement.id}/from/${songId}`, () => {
+          return HttpResponse.json('it worked!')
+        })
+      )
+
+      const [_, store] = reduxRender(
+        withToastify(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />)
+      )
+
+      // first render check
+      await user.click(await screen.findByRole('button', { name: selectedArrangement.name }))
+      for (const arrangement of arrangements) {
+        expect(await screen.findByRole('menuitem', { name: arrangement.name }))
+      }
+
+      // delete
+      await user.click(await screen.findByRole('button', { name: 'delete' }))
+      expect(
+        await screen.findByRole('dialog', { name: /delete.* arrangement/i })
+      ).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /yes/i }))
+      expect(await screen.findByText(/song arrangement deleted/i)).toBeInTheDocument()
+
+      // prepare second render
+      const newArrangements = arrangements.filter((a) => a.id !== selectedArrangement.id)
+      const newSelectedArrangement = arrangements[1]
+      server.use(
+        http.get('/songs/arrangements', async () => {
+          return HttpResponse.json(newArrangements)
+        })
+      )
+
+      // rerender
+      await act(() => store.dispatch(api.util.resetApiState()))
+
+      // recheck
+      expect(
+        await screen.findByRole('button', { name: newSelectedArrangement.name })
+      ).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: newSelectedArrangement.name }))
+      for (const arrangement of newArrangements) {
+        expect(await screen.findByRole('menuitem', { name: arrangement.name }))
+      }
+      expect(
+        screen.queryByRole('menuitem', { name: selectedArrangement.name })
+      ).not.toBeInTheDocument()
+
+      expect(screen.getByRole('textbox', { name: 'name' })).toHaveValue(newSelectedArrangement.name)
+    })
+
+    it('when the song changes', async () => {
+      const user = userEvent.setup()
+
+      const [{ rerender }, store] = reduxRender(
+        <SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />
+      )
+
+      // first render check
+      await user.click(await screen.findByRole('button', { name: selectedArrangement.name }))
+      for (const arrangement of arrangements) {
+        expect(await screen.findByRole('menuitem', { name: arrangement.name }))
+      }
+
+      // prepare second render
+      const newSongId = 'new-song-id'
+      const newArrangements: SongArrangement[] = arrangements.map((a) => ({
+        id: a.id + 'new',
+        name: a.name + '-New',
+        sectionOccurrences: a.sectionOccurrences,
+        songId: newSongId
+      }))
+      const newSelectedArrangement = newArrangements[0]
+
+      server.use(
+        http.get('/songs/arrangements', async () => {
+          return HttpResponse.json(newArrangements)
+        })
+      )
+
+      // rerender
+      await act(() => store.dispatch(api.util.resetApiState()))
+      rerender(<SongArrangementsModal opened={true} onClose={vi.fn()} songId={newSongId} />)
+
+      // recheck
+      await user.click(await screen.findByRole('button', { name: newSelectedArrangement.name }))
+      for (const arrangement of newArrangements) {
+        expect(await screen.findByRole('menuitem', { name: arrangement.name }))
+      }
+    })
+
+    it('when a section is added', async () => {
+      const [_, store] = reduxRender(
+        <SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />
+      )
+
+      // first render check
+      for (const sectionOccurrence of selectedArrangement.sectionOccurrences) {
+        expect(
+          await screen.findByLabelText(`section-${sectionOccurrence.section.name}`)
+        ).toBeInTheDocument()
+      }
+
+      // prepare second render
+      const newSectionOccurrence = {
+        section: {
+          ...emptySongSection,
+          id: '4',
+          name: 'The new Section',
+          songSectionType: { id: '1', name: 'Verse' }
+        },
+        occurrences: 0
+      }
+      const newSectionOccurrences: SongSectionOccurrences[] = [
+        ...selectedArrangement.sectionOccurrences,
+        newSectionOccurrence
+      ]
+
+      server.use(
+        http.get('/songs/arrangements', async () => {
+          return HttpResponse.json([
+            {
+              ...arrangements[0],
+              sectionOccurrences: newSectionOccurrences
+            },
+            {
+              ...arrangements[1],
+              sectionOccurrences: [...arrangements[1].sectionOccurrences, newSectionOccurrence]
+            }
+          ])
+        })
+      )
+
+      // rerender
+      await act(() => store.dispatch(api.util.resetApiState()))
+
+      // recheck
+      for (const sectionOccurrence of newSectionOccurrences) {
+        expect(
+          await screen.findByLabelText(`section-${sectionOccurrence.section.name}`)
+        ).toBeInTheDocument()
+      }
+    })
+
+    it('when a section is deleted', async () => {
+      const [_, store] = reduxRender(
+        <SongArrangementsModal opened={true} onClose={vi.fn()} songId={songId} />
+      )
+
+      // first render check
+      for (const sectionOccurrence of selectedArrangement.sectionOccurrences) {
+        expect(
+          await screen.findByLabelText(`section-${sectionOccurrence.section.name}`)
+        ).toBeInTheDocument()
+      }
+
+      // prepare second render
+      const deletedSectionOccurrence = selectedArrangement.sectionOccurrences[2]
+      const newSectionOccurrences: SongSectionOccurrences[] =
+        selectedArrangement.sectionOccurrences.filter(
+          (so) => so.section.id !== deletedSectionOccurrence.section.id
+        )
+
+      server.use(
+        http.get('/songs/arrangements', async () => {
+          return HttpResponse.json([
+            {
+              ...arrangements[0],
+              sectionOccurrences: newSectionOccurrences
+            },
+            {
+              ...arrangements[1],
+              sectionOccurrences: arrangements[1].sectionOccurrences.filter(
+                (so) => so.section.id !== deletedSectionOccurrence.section.id
+              )
+            }
+          ])
+        })
+      )
+
+      // rerender
+      await act(() => store.dispatch(api.util.resetApiState()))
+
+      // check
+      for (const sectionOccurrence of newSectionOccurrences) {
+        expect(
+          await screen.findByLabelText(`section-${sectionOccurrence.section.name}`)
+        ).toBeInTheDocument()
+      }
+      expect(
+        screen.queryByLabelText(`section-${deletedSectionOccurrence.section.name}`)
+      ).not.toBeInTheDocument()
     })
   })
 })
