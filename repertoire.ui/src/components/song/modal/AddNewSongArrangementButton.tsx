@@ -79,6 +79,7 @@ function AddNewSongArrangementButton({
               size={'xs'}
               aria-label={'name'}
               placeholder={'Enter a name'}
+              maxLength={30}
               value={name}
               onChange={(e) => handleChangeName(e.currentTarget.value)}
               error={error}
