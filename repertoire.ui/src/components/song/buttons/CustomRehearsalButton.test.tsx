@@ -42,6 +42,7 @@ describe('Custom Rehearsal Button', () => {
     reduxRender(<CustomRehearsalButton songId={''} sectionsCount={1} />)
 
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
     await user.click(screen.getByRole('button', { name: 'add-custom-rehearsal' }))
 
     for (const arrangement of arrangements) {

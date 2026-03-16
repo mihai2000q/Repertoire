@@ -100,7 +100,7 @@ describe('Song Sections Widget', () => {
     vi.clearAllMocks()
   })
 
-  it('should render', () => {
+  it('should render', async () => {
     reduxRender(
       <SongSectionsWidget
         sections={sections}
@@ -116,7 +116,7 @@ describe('Song Sections Widget', () => {
     expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'manage-song-arrangements' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
+    expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()

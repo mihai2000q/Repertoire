@@ -58,11 +58,13 @@ function CustomRehearsalButton({
       <Menu.Target>
         <Tooltip
           label={
-            arrangements?.length === 0
-              ? 'To add a custom rehearsal, you need arrangements'
-              : sectionsCount === 0
-                ? 'To add a custom rehearsal, you need sections'
-                : 'Add Custom Rehearsal'
+            isLoading
+              ? 'Loading arrangements...'
+              : arrangements?.length === 0
+                ? 'To add a custom rehearsal, you need arrangements'
+                : sectionsCount === 0
+                  ? 'To add a custom rehearsal, you need sections'
+                  : 'Add Custom Rehearsal'
           }
           disabled={opened}
         >
