@@ -21,6 +21,7 @@ import { useMain } from '../../../context/MainContext.tsx'
 import SongSectionsContextMenu from '../SongSectionsContextMenu.tsx'
 import SongSectionsSelectionDrawer from '../SongSectionsSelectionDrawer.tsx'
 import { ClickSelectProvider, useClickSelect } from '../../../context/ClickSelectContext.tsx'
+import CustomRehearsalButton from '../buttons/CustomRehearsalButton.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
@@ -164,6 +165,12 @@ function SongSectionsWidget({
                   <IconListNumbers size={16} />
                 </ActionIcon>
               </Tooltip>
+
+              <CustomRehearsalButton
+                songId={songId}
+                defaultSongArrangementId={defaultSongArrangementId}
+                sectionsCount={sections.length}
+              />
 
               <PopoverConfirmation
                 label={
