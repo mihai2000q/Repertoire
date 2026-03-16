@@ -279,7 +279,7 @@ function AddExistingAlbumSongsModal({
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={selectedSongs.length > 0} label="Select songs">
-              <Button data-disabled={selectedSongs.length === 0} onClick={addSongs}>
+              <Button disabled={selectedSongs.length === 0} onClick={addSongs}>
                 Add
               </Button>
             </Tooltip>

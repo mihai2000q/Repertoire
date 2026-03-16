@@ -46,7 +46,7 @@ describe('Edit Playlist Header Modal', () => {
     expect(screen.getByRole('textbox', { name: /description/i })).toHaveValue(playlist.description)
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -83,7 +83,7 @@ describe('Edit Playlist Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/playlist updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -117,7 +117,7 @@ describe('Edit Playlist Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/playlist updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('id')).toBe(playlist.id)
@@ -154,7 +154,7 @@ describe('Edit Playlist Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/playlist updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('id')).toBe(playlist.id)
@@ -182,7 +182,7 @@ describe('Edit Playlist Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/playlist updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
   })
@@ -220,7 +220,7 @@ describe('Edit Playlist Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/playlist updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -245,35 +245,35 @@ describe('Edit Playlist Header Modal', () => {
 
     // change image
     await user.upload(screen.getByTestId('upload-image-input'), newImage)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset image
     await user.click(screen.getByRole('button', { name: 'reset-image' }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change title
     await user.type(titleField, '1')
     act(() => titleField.blur())
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset title
     await user.clear(titleField)
     await user.type(titleField, playlist.title)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change description
     await user.type(descriptionField, '1')
     act(() => descriptionField.blur())
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset description
     await user.clear(descriptionField)
     await user.type(descriptionField, playlist.description)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // remove image
     await user.click(screen.getByRole('button', { name: 'remove-image' }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
   })
 
   it('should validate the title textbox', async () => {

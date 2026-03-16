@@ -196,11 +196,7 @@ function EditSongSectionModal({
             label={'You need to make a change before saving'}
             position="bottom"
           >
-            <Button
-              type={'submit'}
-              data-disabled={!hasChanged}
-              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-            >
+            <Button type={'submit'} disabled={!hasChanged}>
               Save
             </Button>
           </Tooltip>

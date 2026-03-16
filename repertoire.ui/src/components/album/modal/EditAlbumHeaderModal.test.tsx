@@ -83,7 +83,7 @@ describe('Edit Album Header Modal', () => {
     )
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -124,7 +124,7 @@ describe('Edit Album Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -159,7 +159,7 @@ describe('Edit Album Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('id')).toBe(album.id)
@@ -196,7 +196,7 @@ describe('Edit Album Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('id')).toBe(album.id)
@@ -224,7 +224,7 @@ describe('Edit Album Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
   })
@@ -262,7 +262,7 @@ describe('Edit Album Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(/album updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -291,45 +291,45 @@ describe('Edit Album Header Modal', () => {
 
     // change image
     await user.upload(screen.getByTestId('upload-image-input'), newImage)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset image
     await user.click(screen.getByRole('button', { name: 'reset-image' }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change title
     await user.type(titleField, '1')
     act(() => titleField.blur())
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset title
     await user.clear(titleField)
     await user.type(titleField, album.title)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change artist
     await user.click(artistField)
     await user.click(await screen.findByRole('option', { name: newArtist.name }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset artist
     await user.click(artistField)
     await user.click(await screen.findByRole('option', { name: newArtist.name }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change release date
     await user.click(releaseDateField)
     await user.click(screen.getByText(newDay.toString()))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset release date
     await user.click(releaseDateField)
     await user.click(screen.getByText(day.toString()))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // remove image
     await user.click(screen.getByRole('button', { name: 'remove-image' }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
   })
 
   it('should display info message when image changes', async () => {

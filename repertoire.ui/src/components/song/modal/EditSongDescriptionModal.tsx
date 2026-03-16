@@ -69,7 +69,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
           label={'You need to make a change before saving'}
           position="bottom"
         >
-          <Button data-disabled={!hasChanged} onClick={updateSong}>
+          <Button disabled={!hasChanged} onClick={updateSong}>
             Save
           </Button>
         </Tooltip>

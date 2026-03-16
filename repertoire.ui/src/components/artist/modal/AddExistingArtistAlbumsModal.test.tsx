@@ -70,7 +70,7 @@ describe('Add Existing Artist Albums Modal', () => {
     expect(screen.getByRole('searchbox', { name: /search/i })).toBeDisabled()
     expect(screen.getByRole('searchbox', { name: /search/i })).toHaveValue('')
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /add/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /add/i })).toBeDisabled()
     expect(screen.getByTestId('albums-loader')).toBeInTheDocument()
 
     await user.hover(screen.getByRole('button', { name: /add/i }))
@@ -206,7 +206,7 @@ describe('Add Existing Artist Albums Modal', () => {
     }
 
     const addButton = screen.getByRole('button', { name: /add/i })
-    expect(addButton).not.toHaveAttribute('data-disabled')
+    expect(addButton).not.toBeDisabled()
     await user.click(addButton)
 
     expect(await screen.findByText(/albums added to artist/i)).toBeInTheDocument()

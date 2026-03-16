@@ -490,7 +490,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
               >
                 <Button
                   mx={'md'}
-                  data-disabled={hasChanged.size === 0 || arrangementErrors.size > 0}
+                  disabled={hasChanged.size === 0 || arrangementErrors.size > 0}
                   loading={isUpdateLoading}
                   onClick={handleUpdate}
                 >

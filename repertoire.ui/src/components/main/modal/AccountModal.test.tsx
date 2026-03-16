@@ -58,7 +58,7 @@ describe('Account Modal', () => {
     ).toBeInTheDocument()
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await userEventDispatcher.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -101,7 +101,7 @@ describe('Account Modal', () => {
     await userEventDispatcher.click(saveButton)
 
     expect(await screen.findByText(/account updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -131,7 +131,7 @@ describe('Account Modal', () => {
     await userEventDispatcher.click(saveButton)
 
     expect(await screen.findByText(/account updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('profile_pic')).toBeFormDataImage(newImage)
@@ -167,7 +167,7 @@ describe('Account Modal', () => {
     await userEventDispatcher.click(saveButton)
 
     expect(await screen.findByText(/account updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('profile_pic')).toBeFormDataImage(newImage)
@@ -192,7 +192,7 @@ describe('Account Modal', () => {
     await userEventDispatcher.click(saveButton)
 
     expect(await screen.findByText(/account updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
   })
@@ -228,7 +228,7 @@ describe('Account Modal', () => {
     await userEventDispatcher.click(saveButton)
 
     expect(await screen.findByText(/account updated/i)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -249,25 +249,25 @@ describe('Account Modal', () => {
 
     // change profile picture
     await userEventDispatcher.upload(screen.getByTestId('upload-profile-picture-input'), newImage)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset profile picture
     await userEventDispatcher.click(screen.getByRole('button', { name: 'reset-profile-picture' }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change name
     await userEventDispatcher.type(nameField, '1')
     act(() => nameField.blur())
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset name
     await userEventDispatcher.clear(nameField)
     await userEventDispatcher.type(nameField, user.name)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // remove profile picture
     await userEventDispatcher.click(screen.getByRole('button', { name: 'remove-profile-picture' }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
   })
 
   it('should validate the name textbox', async () => {
