@@ -63,6 +63,30 @@ describe('Custom Rehearsal Menu Item', () => {
     expect(await screen.findByRole('button', { name: 'confirm' })).toBeInTheDocument()
   })
 
+  it('should display message when there are no arrangements', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.get(`/songs/arrangements`, () => {
+        return HttpResponse.json([])
+      })
+    )
+
+    reduxRender(
+      withToastify(
+        <Menu opened={true}>
+          <Menu.Dropdown>
+            <CustomRehearsalMenuItem id={''} closeMenu={vi.fn()} />
+          </Menu.Dropdown>
+        </Menu>
+      )
+    )
+
+    await user.hover(screen.getByRole('menuitem', { name: /custom rehearsal/i }))
+
+    expect(await screen.findByText(/no arrangements found/i)).toBeInTheDocument()
+  })
+
   it('should send custom rehearsal request when confirming on an arrangement', async () => {
     const user = userEvent.setup()
 

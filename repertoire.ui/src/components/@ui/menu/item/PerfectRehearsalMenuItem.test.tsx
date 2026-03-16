@@ -41,6 +41,29 @@ describe('Perfect Rehearsal Menu Item', () => {
     expect(await screen.findByRole('button', { name: 'confirm' })).toBeInTheDocument()
   })
 
+  it('should disable when the song does not have a default arrangement', () => {
+    reduxRender(
+      withToastify(
+        <Menu opened={true}>
+          <Menu.Dropdown>
+            <PerfectRehearsalMenuItem
+              id={''}
+              closeMenu={vi.fn()}
+              type={'song'}
+              defaultSongArrangementId={null}
+            />
+          </Menu.Dropdown>
+        </Menu>
+      )
+    )
+
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toHaveAttribute(
+      'data-disabled',
+      'true'
+    )
+  })
+
   describe('on confirmation', () => {
     it('should send artists request', async () => {
       const user = userEvent.setup()
