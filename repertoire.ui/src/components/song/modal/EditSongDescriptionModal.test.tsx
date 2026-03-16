@@ -32,7 +32,7 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /description/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /description/i })).toHaveValue(song.description)
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -57,7 +57,7 @@ describe('Edit Song Description Modal', () => {
 
     await user.clear(screen.getByRole('textbox', { name: /description/i }))
     await user.type(screen.getByRole('textbox', { name: /description/i }), newDescription)
-    expect(screen.getByRole('button', { name: /save/i })).not.toHaveAttribute('data-disabled')
+    expect(screen.getByRole('button', { name: /save/i })).not.toBeDisabled()
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     expect(capturedRequest).toStrictEqual({
@@ -75,7 +75,7 @@ describe('Edit Song Description Modal', () => {
         song={{ ...song, description: newDescription }}
       />
     )
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
   })
 
   it('should send update request when the description has changed to empty', async () => {
@@ -109,10 +109,10 @@ describe('Edit Song Description Modal', () => {
 
     await user.clear(screen.getByRole('textbox', { name: /description/i }))
     await user.type(screen.getByRole('textbox', { name: /description/i }), song.description + '1')
-    expect(screen.getByRole('button', { name: /save/i })).not.toHaveAttribute('data-disabled')
+    expect(screen.getByRole('button', { name: /save/i })).not.toBeDisabled()
 
     await user.clear(screen.getByRole('textbox', { name: /description/i }))
     await user.type(screen.getByRole('textbox', { name: /description/i }), song.description)
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
   })
 })

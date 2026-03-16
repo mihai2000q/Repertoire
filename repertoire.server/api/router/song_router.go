@@ -17,6 +17,7 @@ func (s SongRouter) RegisterRoutes() {
 		api.GET("", s.handler.GetAll)
 		api.GET("/filters-metadata", s.handler.GetFiltersMetadata)
 		api.POST("", s.handler.Create)
+		api.POST("/custom-rehearsal", s.handler.AddCustomRehearsal)
 		api.POST("/perfect-rehearsal", s.handler.AddPerfectRehearsal)
 		api.POST("/perfect-rehearsals", s.handler.AddPerfectRehearsals)
 		api.PUT("", s.handler.Update)

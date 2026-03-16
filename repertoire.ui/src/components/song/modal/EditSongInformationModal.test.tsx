@@ -69,7 +69,7 @@ describe('Edit Song Information Modal', () => {
     expect(screen.getByRole('checkbox', { name: /recorded/i })).toBeChecked()
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -111,7 +111,7 @@ describe('Edit Song Information Modal', () => {
 
     await user.click(recordedField)
 
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
     await user.click(saveButton)
 
     expect(capturedRequest).toStrictEqual({
@@ -138,10 +138,7 @@ describe('Edit Song Information Modal', () => {
         }}
       />
     )
-    expect(await screen.findByRole('button', { name: /save/i })).toHaveAttribute(
-      'data-disabled',
-      'true'
-    )
+    expect(await screen.findByRole('button', { name: /save/i })).toBeDisabled()
   })
 
   it('should send update request when all the information has changed to empty values', async () => {
@@ -187,39 +184,39 @@ describe('Edit Song Information Modal', () => {
     // clear guitar tuning
     await user.click(guitarTuningField)
     await user.click(await screen.findByRole('option', { name: song.guitarTuning.name }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reselect guitar tuning
     await user.click(guitarTuningField)
     await user.click(await screen.findByRole('option', { name: song.guitarTuning.name }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // clear difficulty
     await user.click(difficultyField)
     await user.click(await screen.findByText(new RegExp(song.difficulty, 'i')))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reselect difficulty
     await user.click(difficultyField)
     await user.click(await screen.findByText(new RegExp(song.difficulty, 'i')))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change bpm
     await user.clear(bpmField)
     await user.type(bpmField, '123')
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset bpm
     await user.clear(bpmField)
     await user.type(bpmField, song.bpm.toString())
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change recorded
     await user.click(recordedField)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset recorded
     await user.click(recordedField)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
   })
 })

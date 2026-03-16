@@ -176,7 +176,7 @@ describe('Song Arrangements Modal', () => {
 
     // bottom
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -347,18 +347,18 @@ describe('Song Arrangements Modal', () => {
 
     // arrangement 1
     await user.type(nameTextBox, 's')
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-    expect(resetButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
+    expect(resetButton).not.toBeDisabled()
     await user.type(nameTextBox, '{backspace}')
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
-    expect(resetButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
+    expect(resetButton).toBeDisabled()
 
     await user.click(within(section).getByRole('button', { name: 'increase-section-occurrences' }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-    expect(resetButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
+    expect(resetButton).not.toBeDisabled()
     await user.click(within(section).getByRole('button', { name: 'decrease-section-occurrences' }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
-    expect(resetButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
+    expect(resetButton).toBeDisabled()
 
     // switch
     await user.click(screen.getByRole('button', { name: selectedArrangement.name }))
@@ -366,15 +366,15 @@ describe('Song Arrangements Modal', () => {
 
     // arrangement 2
     await user.type(nameTextBox, 's')
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-    expect(resetButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
+    expect(resetButton).not.toBeDisabled()
     await user.type(nameTextBox, '{backspace}')
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
-    expect(resetButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
+    expect(resetButton).toBeDisabled()
 
     await user.click(within(section).getByRole('button', { name: 'increase-section-occurrences' }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-    expect(resetButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
+    expect(resetButton).not.toBeDisabled()
   })
 
   it('should re-enable the save button when changes are made, even if the selected arrangement changes', async () => {
@@ -395,15 +395,15 @@ describe('Song Arrangements Modal', () => {
     await user.clear(nameTextBox)
     await user.type(nameTextBox, newName)
     await user.click(within(section).getByRole('button', { name: 'increase-section-occurrences' }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-    expect(resetButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
+    expect(resetButton).not.toBeDisabled()
 
     // switch
     await user.click(screen.getByRole('button', { name: newName }))
     await user.click(await screen.findByRole('menuitem', { name: arrangements[1].name }))
 
-    expect(saveButton).not.toHaveAttribute('data-disabled')
-    expect(resetButton).toHaveAttribute('data-disabled', 'true') // hence, they are not related
+    expect(saveButton).not.toBeDisabled()
+    expect(resetButton).toBeDisabled() // hence, they are not related
   })
 
   it('should send update request with the selected arrangement when making changes and saving them', async () => {

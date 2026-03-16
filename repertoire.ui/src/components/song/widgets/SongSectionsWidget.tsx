@@ -15,12 +15,13 @@ import SongArrangementsModal from '../modal/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
-import SongSectionsSettingsPopover from '../popover/SongSectionsSettingsPopover.tsx'
+import SongSectionsSettingsButton from '../buttons/SongSectionsSettingsButton.tsx'
 import LoadingOverlayDebounced from '../../@ui/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../context/MainContext.tsx'
 import SongSectionsContextMenu from '../SongSectionsContextMenu.tsx'
 import SongSectionsSelectionDrawer from '../SongSectionsSelectionDrawer.tsx'
 import { ClickSelectProvider, useClickSelect } from '../../../context/ClickSelectContext.tsx'
+import CustomRehearsalButton from '../buttons/CustomRehearsalButton.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
@@ -165,6 +166,12 @@ function SongSectionsWidget({
                 </ActionIcon>
               </Tooltip>
 
+              <CustomRehearsalButton
+                songId={songId}
+                defaultSongArrangementId={defaultSongArrangementId}
+                sectionsCount={sections.length}
+              />
+
               <PopoverConfirmation
                 label={
                   "Increase sections' rehearsals based on occurrences from default arrangement"
@@ -204,7 +211,7 @@ function SongSectionsWidget({
                 </Tooltip>
               </PopoverConfirmation>
 
-              <SongSectionsSettingsPopover
+              <SongSectionsSettingsButton
                 settings={settings}
                 sections={sections}
                 songId={songId}

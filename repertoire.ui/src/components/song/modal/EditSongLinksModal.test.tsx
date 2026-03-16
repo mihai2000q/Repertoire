@@ -43,7 +43,7 @@ describe('Edit Song Links Modal', () => {
     expect(screen.getByRole('textbox', { name: /songsterr/i })).toHaveValue(song.songsterrLink)
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -76,7 +76,7 @@ describe('Edit Song Links Modal', () => {
     await user.clear(songsterrTextBox)
     await user.click(songsterrTextBox)
     await user.paste(newSongsterrLink)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
     await user.click(saveButton)
 
     expect(capturedRequest).toStrictEqual({
@@ -95,7 +95,7 @@ describe('Edit Song Links Modal', () => {
         song={{ ...song, youtubeLink: newYoutubeLink, songsterrLink: newSongsterrLink }}
       />
     )
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
   })
 
   it('should send update request when the links have changed to null', async () => {
@@ -135,25 +135,25 @@ describe('Edit Song Links Modal', () => {
     await user.click(youtubeTextBox)
     await user.paste(newYoutubeLink)
 
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
     await user.hover(saveButton)
     expect(screen.queryByText(/need to make a change/i)).not.toBeInTheDocument()
 
     await user.clear(songsterrTextBox)
     await user.click(songsterrTextBox)
     await user.paste(newSongsterrLink)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     await user.clear(youtubeTextBox)
     await user.click(youtubeTextBox)
     await user.paste(song.youtubeLink)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     await user.clear(songsterrTextBox)
     await user.click(songsterrTextBox)
     await user.paste(song.songsterrLink)
 
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
   })
 
   it('should validate links fields', async () => {

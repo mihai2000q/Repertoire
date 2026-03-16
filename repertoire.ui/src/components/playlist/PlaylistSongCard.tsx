@@ -37,6 +37,7 @@ import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import { toast } from 'react-toastify'
 import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
 import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
+import CustomRehearsalMenuItem from '../@ui/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 interface PlaylistSongCardProps {
   song: Song
@@ -144,6 +145,11 @@ const PlaylistSongCard = forwardRef<HTMLElement, PlaylistSongCardProps>(
           id={song.id}
           closeMenu={closeMenus}
           type={'song'}
+          defaultSongArrangementId={song.defaultArrangementId}
+        />
+        <CustomRehearsalMenuItem
+          id={song.id}
+          closeMenu={closeMenus}
           defaultSongArrangementId={song.defaultArrangementId}
         />
         <Menu.Divider />

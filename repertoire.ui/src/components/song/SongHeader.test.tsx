@@ -167,6 +167,7 @@ describe('Song Header', () => {
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /custom rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

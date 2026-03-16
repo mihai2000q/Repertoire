@@ -286,6 +286,7 @@ describe('Song Drawer', () => {
     expect(screen.getByRole('menuitem', { name: /view details/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /custom rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 

@@ -19,6 +19,7 @@ import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.ts
 import CustomIconAlbumVinyl from '../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import CustomRehearsalMenuItem from '../@ui/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 interface SongHeaderProps {
   song: Song
@@ -73,6 +74,11 @@ function SongHeader({ song }: SongHeaderProps) {
             id={song.id}
             closeMenu={closeMenu}
             type={'song'}
+            defaultSongArrangementId={song.defaultArrangementId}
+          />
+          <CustomRehearsalMenuItem
+            id={song.id}
+            closeMenu={closeMenu}
             defaultSongArrangementId={song.defaultArrangementId}
           />
           <Menu.Divider />

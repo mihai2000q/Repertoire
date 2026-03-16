@@ -11,6 +11,7 @@ import (
 )
 
 type SongService interface {
+	AddCustomRehearsal(request requests.AddCustomSongRehearsalRequest) *wrapper.ErrorCode
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
 	AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode
@@ -32,6 +33,7 @@ type SongService interface {
 }
 
 type songService struct {
+	addCustomSongRehearsal   song.AddCustomSongRehearsal
 	addPerfectSongRehearsal  song.AddPerfectSongRehearsal
 	addPerfectSongRehearsals song.AddPerfectSongRehearsals
 	bulkDeleteSongs          song.BulkDeleteSongs
@@ -50,6 +52,7 @@ type songService struct {
 }
 
 func NewSongService(
+	addCustomSongRehearsal song.AddCustomSongRehearsal,
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
 	addPerfectSongRehearsals song.AddPerfectSongRehearsals,
 	bulkDeleteSongs song.BulkDeleteSongs,
@@ -67,6 +70,7 @@ func NewSongService(
 	getInstruments song.GetInstruments,
 ) SongService {
 	return &songService{
+		addCustomSongRehearsal:   addCustomSongRehearsal,
 		addPerfectSongRehearsal:  addPerfectSongRehearsal,
 		addPerfectSongRehearsals: addPerfectSongRehearsals,
 		bulkDeleteSongs:          bulkDeleteSongs,
@@ -83,6 +87,10 @@ func NewSongService(
 		getGuitarTunings: getGuitarTunings,
 		getInstruments:   getInstruments,
 	}
+}
+
+func (s *songService) AddCustomRehearsal(request requests.AddCustomSongRehearsalRequest) *wrapper.ErrorCode {
+	return s.addCustomSongRehearsal.Handle(request)
 }
 
 func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {

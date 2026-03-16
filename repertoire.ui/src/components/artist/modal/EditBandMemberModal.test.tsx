@@ -69,7 +69,7 @@ describe('Edit Band Member Header Modal', () => {
     )
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -108,7 +108,7 @@ describe('Edit Band Member Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(`${newName} updated!`)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -144,7 +144,7 @@ describe('Edit Band Member Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(`${bandMember.name} updated!`)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('id')).toBe(bandMember.id)
@@ -181,7 +181,7 @@ describe('Edit Band Member Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(`${bandMember.name} updated!`)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedSaveImageFormData.get('id')).toBe(bandMember.id)
@@ -210,7 +210,7 @@ describe('Edit Band Member Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(`${bandMember.name} updated!`)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
   })
@@ -249,7 +249,7 @@ describe('Edit Band Member Header Modal', () => {
     await user.click(saveButton)
 
     expect(await screen.findByText(`${newName} updated!`)).toBeInTheDocument()
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     expect(onClose).toHaveBeenCalledOnce()
     expect(capturedRequest).toStrictEqual({
@@ -276,22 +276,22 @@ describe('Edit Band Member Header Modal', () => {
     // change image
     await user.click(screen.getByRole('button', { name: 'image-options' }))
     await user.upload(screen.getByTestId('upload-image-input'), newImage)
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset image
     await user.click(screen.getByRole('button', { name: 'image-options' }))
     await user.click(screen.getByRole('menuitem', { name: /reset image/i }))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change name
     await user.type(nameField, '1')
     act(() => nameField.blur())
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset name
     await user.clear(nameField)
     await user.type(nameField, bandMember.name)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change roles
     await user.click(rolesField)
@@ -299,7 +299,7 @@ describe('Edit Band Member Header Modal', () => {
       await user.click(screen.getByRole('option', { name: role.name }))
     }
     act(() => rolesField.blur())
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset roles
     await user.click(rolesField)
@@ -307,12 +307,12 @@ describe('Edit Band Member Header Modal', () => {
       await user.click(screen.getByRole('option', { name: role.name }))
     }
     act(() => rolesField.blur())
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // remove image
     await user.click(screen.getByRole('button', { name: 'image-options' }))
     await user.click(screen.getByRole('menuitem', { name: /remove image/i }))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
   })
 
   it('should validate the name and roles textbox', async () => {

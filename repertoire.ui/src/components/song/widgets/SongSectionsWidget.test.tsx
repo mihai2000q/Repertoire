@@ -1,11 +1,12 @@
 import {
+  emptySongArrangement,
   emptySongSection,
   emptySongSettings,
   reduxRender,
   withToastify
 } from '../../../test-utils.tsx'
 import SongSectionsWidget from './SongSectionsWidget.tsx'
-import { SongSection } from '../../../types/models/Song.ts'
+import { SongArrangement, SongSection } from '../../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
@@ -57,6 +58,13 @@ describe('Song Sections Widget', () => {
     }
   ]
 
+  const arrangements: SongArrangement[] = [
+    {
+      ...emptySongArrangement,
+      id: '1'
+    }
+  ]
+
   const handlers = [
     http.get('/songs/sections/types', () => {
       return HttpResponse.json([])
@@ -65,7 +73,7 @@ describe('Song Sections Widget', () => {
       return HttpResponse.json([])
     }),
     http.get(`/songs/arrangements`, () => {
-      return HttpResponse.json([])
+      return HttpResponse.json(arrangements)
     }),
     http.put(`/songs/sections`, () => {
       return HttpResponse.json({ message: 'it worked' })
@@ -92,7 +100,7 @@ describe('Song Sections Widget', () => {
     vi.clearAllMocks()
   })
 
-  it('should render', () => {
+  it('should render', async () => {
     reduxRender(
       <SongSectionsWidget
         sections={sections}
@@ -107,6 +115,8 @@ describe('Song Sections Widget', () => {
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'manage-song-arrangements' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
@@ -129,6 +139,7 @@ describe('Song Sections Widget', () => {
     )
 
     expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
 

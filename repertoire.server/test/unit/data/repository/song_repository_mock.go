@@ -52,6 +52,20 @@ func (s *SongRepositoryMock) GetWithSectionsAndDefaultOccurrences(song *model.So
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetWithSectionsAndArrangementOccurrences(
+	song *model.Song,
+	id uuid.UUID,
+	arrangementID uuid.UUID,
+) error {
+	args := s.Called(song, id, arrangementID)
+
+	if len(args) > 1 {
+		*song = *args.Get(1).(*model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetWithArrangements(song *model.Song, id uuid.UUID) error {
 	args := s.Called(song, id)
 
