@@ -61,9 +61,7 @@ describe('Custom Rehearsal Button', () => {
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
   })
 
-  it('should display message when there are no arrangements', async () => {
-    const user = userEvent.setup()
-
+  it('should be disabled when there are no arrangements', async () => {
     server.use(
       http.get(`/songs/arrangements`, () => {
         return HttpResponse.json([])
@@ -72,9 +70,7 @@ describe('Custom Rehearsal Button', () => {
 
     reduxRender(<CustomRehearsalButton songId={''} sectionsCount={1} />)
 
-    await user.click(screen.getByRole('button', { name: 'add-custom-rehearsal' }))
-
-    expect(await screen.findByText(/no arrangements found/i)).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
   })
 
   it('should send custom rehearsal request when confirming on an arrangement', async () => {

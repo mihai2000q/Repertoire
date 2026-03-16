@@ -34,10 +34,11 @@ function CustomRehearsalButton({
 
   const [addCustomRehearsal, { isLoading: isCustomLoading }] = useAddCustomSongRehearsalMutation()
 
-  const { data: arrangements, isFetching } = useGetSongArrangementsQuery(
-    { songId: songId },
-    { skip: !opened }
-  )
+  const {
+    data: arrangements,
+    isFetching,
+    isLoading
+  } = useGetSongArrangementsQuery({ songId: songId })
 
   async function handleAddCustomRehearsal(arrangementId: string) {
     await addCustomRehearsal({ id: songId, arrangementId: arrangementId }).unwrap()
@@ -68,6 +69,7 @@ function CustomRehearsalButton({
           <ActionIcon
             aria-label={'add-custom-rehearsal'}
             disabled={sectionsCount === 0 || arrangements?.length === 0}
+            loading={isLoading}
             variant={'grey'}
             size={'sm'}
             onClick={toggle}
