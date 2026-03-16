@@ -44,6 +44,7 @@ import CustomIconMusicNote from '../../@ui/icons/CustomIconMusicNote.tsx'
 import CustomIconAlbumVinyl from '../../@ui/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconUserAlt from '../../@ui/icons/CustomIconUserAlt.tsx'
 import AddToPlaylistMenuItem from '../../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import CustomRehearsalMenuItem from '../../@ui/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8
@@ -175,6 +176,11 @@ function SongDrawer() {
                   id={song.id}
                   closeMenu={closeMenu}
                   type={'song'}
+                  defaultSongArrangementId={song.defaultArrangementId}
+                />
+                <CustomRehearsalMenuItem
+                  id={song.id}
+                  closeMenu={closeMenu}
                   defaultSongArrangementId={song.defaultArrangementId}
                 />
                 <Menu.Divider />
