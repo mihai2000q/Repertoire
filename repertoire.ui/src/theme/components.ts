@@ -68,7 +68,8 @@ export const components = {
           '&[data-disabled="true"]': {
             color: theme.colors.gray[3],
             backgroundColor: 'transparent'
-          }
+          },
+          '&[data-loading="true"]': { '--ai-color': theme.colors.gray[5] }
         },
 
         '&[data-variant="grey-subtle"]': {
