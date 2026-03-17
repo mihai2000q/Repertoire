@@ -30,6 +30,10 @@ export interface AddCustomSongRehearsalRequest {
   arrangementId: string
 }
 
+export interface AddCustomSongRehearsalsRequest {
+  requests: AddCustomSongRehearsalRequest[]
+}
+
 export interface AddPerfectSongRehearsalRequest {
   id: string
 }
