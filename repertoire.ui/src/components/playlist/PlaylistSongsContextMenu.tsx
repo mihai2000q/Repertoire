@@ -1,5 +1,5 @@
 import { Menu } from '@mantine/core'
-import { IconCircleMinus } from '@tabler/icons-react'
+import { IconChecklist, IconCircleMinus } from '@tabler/icons-react'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -8,6 +8,7 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 import RemoveSongsFromPlaylistModal from './modal/RemoveSongsFromPlaylistModal.tsx'
 import Song from '../../types/models/Song.ts'
+import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
 
 interface PlaylistSongsContextMenuProps {
   children: ReactNode
@@ -17,15 +18,17 @@ interface PlaylistSongsContextMenuProps {
 
 function PlaylistSongsContextMenu({ children, playlistId, songs }: PlaylistSongsContextMenuProps) {
   const { selectedIds, clearSelection } = useClickSelect()
-  const [selectedSongsIds, setSelectedSongsIds] = useState<string[]>([])
+  const [selectedSongIds, setSelectedSongIds] = useState<string[]>([])
   useEffect(() => {
-    setSelectedSongsIds(
+    setSelectedSongIds(
       songs.filter((s) => selectedIds.some((psId) => psId === s.playlistSongId)).map((s) => s.id)
     )
   }, [selectedIds])
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
+  const [openedCustomRehearsals, { open: openCustomRehearsals, close: closeCustomRehearsals }] =
+    useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
 
@@ -46,17 +49,20 @@ function PlaylistSongsContextMenu({ children, playlistId, songs }: PlaylistSongs
 
         <ContextMenu.Dropdown>
           <AddToPlaylistMenuItem
-            ids={selectedSongsIds}
+            ids={selectedSongIds}
             type={'songs'}
             closeMenu={closeMenu}
             onSuccess={clearSelection}
           />
           <PerfectRehearsalsMenuItem
-            ids={selectedSongsIds}
+            ids={selectedIds}
             closeMenu={closeMenu}
             onSuccess={clearSelection}
             type={'playlist-songs'}
           />
+          <Menu.Item leftSection={<IconChecklist size={14} />} onClick={openCustomRehearsals}>
+            Custom Rehearsals
+          </Menu.Item>
           <Menu.Divider />
           <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={openRemoveWarning}>
             Remove from Playlist
@@ -64,6 +70,12 @@ function PlaylistSongsContextMenu({ children, playlistId, songs }: PlaylistSongs
         </ContextMenu.Dropdown>
       </ContextMenu>
 
+      <CustomRehearsalsModal
+        opened={openedCustomRehearsals}
+        onClose={closeCustomRehearsals}
+        ids={selectedSongIds}
+        onSuccess={clearSelection}
+      />
       <RemoveSongsFromPlaylistModal
         playlistId={playlistId}
         ids={selectedIds}

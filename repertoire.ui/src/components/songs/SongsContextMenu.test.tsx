@@ -1,19 +1,29 @@
-import { reduxRender } from '../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../test-utils.tsx'
 import SongsContextMenu from './SongsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
+import Song from '../../types/models/Song.ts'
 
 describe('Songs Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
   const clearSelection = vi.fn()
 
+  const songs: Song[] = [
+    { ...emptySong, id: selectedIds[0] },
+    { ...emptySong, id: selectedIds[1] },
+    { ...emptySong, id: selectedIds[2] }
+  ]
+
   const handlers = [
     http.get('/playlists', async () => {
       return HttpResponse.json([])
+    }),
+    http.get('/songs', async () => {
+      return HttpResponse.json({ models: songs, totalCount: songs.length })
     })
   ]
 
@@ -63,6 +73,7 @@ describe('Songs Context Menu', () => {
     expect(await screen.findByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsals/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /custom rehearsals/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -113,17 +124,33 @@ describe('Songs Context Menu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should open warning when clicking on delete menu item', async () => {
-    const user = userEvent.setup()
+  describe('on menu', () => {
+    it('should open custom rehearsals modal when clicking on custom rehearsal', async () => {
+      const user = userEvent.setup()
 
-    render()
+      render()
 
-    await user.pointer({
-      keys: '[MouseRight>]',
-      target: screen.getByTestId(dataTestId)
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByTestId(dataTestId)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /custom rehearsal/i }))
+
+      expect(await screen.findByRole('dialog', { name: /custom rehearsal/i })).toBeInTheDocument()
     })
-    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-    expect(await screen.findByRole('dialog', { name: /delete songs/i })).toBeInTheDocument()
+    it('should open warning when clicking on delete menu item', async () => {
+      const user = userEvent.setup()
+
+      render()
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByTestId(dataTestId)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+      expect(await screen.findByRole('dialog', { name: /delete songs/i })).toBeInTheDocument()
+    })
   })
 })

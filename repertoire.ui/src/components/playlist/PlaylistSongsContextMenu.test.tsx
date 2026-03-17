@@ -22,6 +22,9 @@ describe('Playlists Songs Context Menu', () => {
   const handlers = [
     http.get('/playlists', async () => {
       return HttpResponse.json([])
+    }),
+    http.get('/songs', async () => {
+      return HttpResponse.json({ models: songs, totalCount: songs.length })
     })
   ]
 
@@ -74,6 +77,7 @@ describe('Playlists Songs Context Menu', () => {
     expect(await screen.findByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsals/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /custom rehearsals/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /remove from playlist/i })).toBeInTheDocument()
   })
 
@@ -131,6 +135,20 @@ describe('Playlists Songs Context Menu', () => {
   })
 
   describe('on menu', () => {
+    it('should open custom rehearsals modal when clicking on custom rehearsals', async () => {
+      const user = userEvent.setup()
+
+      render()
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByTestId(dataTestId)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /custom rehearsals/i }))
+
+      expect(await screen.findByRole('dialog', { name: /custom rehearsals/i })).toBeInTheDocument()
+    })
+
     it('should open warning when clicking on remove from playlist menu item', async () => {
       const user = userEvent.setup()
 
