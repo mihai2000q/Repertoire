@@ -6,6 +6,7 @@ export interface GetSongsRequest {
   pageSize?: number
   orderBy?: string[]
   searchBy?: string[]
+  with?: string[]
 }
 
 export interface CreateSongRequest {

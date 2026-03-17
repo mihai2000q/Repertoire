@@ -31,6 +31,7 @@ export default interface Song {
   artist?: Artist
   guitarTuning?: GuitarTuning
   sections: SongSection[]
+  arrangements: SongArrangement[]
 
   solosCount?: number
   riffsCount?: number
