@@ -10,6 +10,7 @@ enum SongProperty {
   Difficulty = 'difficulty',
   GuitarTuningId = 'guitar_tuning_id',
   GuitarTuningOrder = '"GuitarTuning"."order"',
+  Id = 'songs.id',
   InstrumentId = 'instrument_id',
   IsRecorded = 'is_recorded',
   LastModified = 'songs.updated_at',
