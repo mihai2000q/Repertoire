@@ -3,10 +3,11 @@ import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
 import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconTrash } from '@tabler/icons-react'
+import { IconChecklist, IconTrash } from '@tabler/icons-react'
 import plural from '../../utils/plural.ts'
 import DeleteSongsModal from '../@ui/modal/delete/DeleteSongsModal.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
 
 function SongsSelectionDrawer() {
   const { selectedIds, clearSelection } = useDragSelect()
@@ -14,6 +15,9 @@ function SongsSelectionDrawer() {
   const [openedMenu, { close: closeMenu, toggle: toggleMenu }] = useDisclosure(false)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
+
+  const [openedCustomRehearsals, { open: openCustomRehearsals, close: closeCustomRehearsals }] =
     useDisclosure(false)
 
   return (
@@ -53,6 +57,9 @@ function SongsSelectionDrawer() {
                 onSuccess={clearSelection}
                 type={'songs'}
               />
+              <Menu.Item leftSection={<IconChecklist size={14} />} onClick={openCustomRehearsals}>
+                Custom Rehearsals
+              </Menu.Item>
             </Menu.Dropdown>
           )
         }}
@@ -63,6 +70,13 @@ function SongsSelectionDrawer() {
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         onDelete={clearSelection}
+      />
+
+      <CustomRehearsalsModal
+        opened={openedCustomRehearsals}
+        onClose={closeCustomRehearsals}
+        ids={selectedIds}
+        onSuccess={clearSelection}
       />
     </>
   )

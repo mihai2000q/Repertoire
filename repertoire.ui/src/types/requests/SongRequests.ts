@@ -6,6 +6,7 @@ export interface GetSongsRequest {
   pageSize?: number
   orderBy?: string[]
   searchBy?: string[]
+  with?: string[]
 }
 
 export interface CreateSongRequest {
@@ -28,6 +29,10 @@ export interface CreateSongRequest {
 export interface AddCustomSongRehearsalRequest {
   id: string
   arrangementId: string
+}
+
+export interface AddCustomSongRehearsalsRequest {
+  requests: AddCustomSongRehearsalRequest[]
 }
 
 export interface AddPerfectSongRehearsalRequest {

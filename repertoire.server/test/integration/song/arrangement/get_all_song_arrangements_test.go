@@ -47,6 +47,6 @@ func TestGetAllSongArrangements_WhenSuccessful_ShouldReturnSongArrangements(t *t
 		Find(&songs)
 
 	for i := range responseSongArrangements {
-		assertion.ResponseSongArrangement(t, songs[i], responseSongArrangements[i])
+		assertion.ResponseSongArrangement(t, songs[i], responseSongArrangements[i], true)
 	}
 }

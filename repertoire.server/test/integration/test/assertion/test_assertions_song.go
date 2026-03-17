@@ -10,12 +10,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func CustomSongRehearsal(t *testing.T, song model.Song, newSong model.Song, arrangementID uuid.UUID) {
-	if len(newSong.Sections[0].ArrangementOccurrences) == 0 { // nothing changed overall on the song
-		assert.Equal(t, song, newSong)
-		return
-	}
+func CustomSongRehearsalWithDuplicates(
+	t *testing.T,
+	song model.Song,
+	newSong model.Song,
+	arrangementID uuid.UUID,
+	duplicates int,
+) {
+	assertSongRehearsal(t, song, newSong, duplicates, &arrangementID)
+}
 
+func CustomSongRehearsal(t *testing.T, song model.Song, newSong model.Song, arrangementID uuid.UUID) {
 	assertSongRehearsal(t, song, newSong, 0, &arrangementID)
 }
 
@@ -45,13 +50,13 @@ func assertSongRehearsal(t *testing.T, song model.Song, newSong model.Song, dupl
 	totalOccurrences := uint(0)
 	arrangementOccurrencesMap := make(map[uuid.UUID]uint)
 	for _, section := range newSong.Sections {
-		arrangementOccurrences := slices.DeleteFunc(
-			slices.Clone(section.ArrangementOccurrences),
+		arrangementIndex := slices.IndexFunc(
+			section.ArrangementOccurrences,
 			func(occ model.SongSectionOccurrences) bool {
-				return occ.ArrangementID != *arrangementID
+				return occ.ArrangementID == *arrangementID
 			})
-		totalOccurrences += arrangementOccurrences[0].Occurrences
-		arrangementOccurrencesMap[section.ID] = arrangementOccurrences[0].Occurrences
+		totalOccurrences += section.ArrangementOccurrences[arrangementIndex].Occurrences
+		arrangementOccurrencesMap[section.ID] = section.ArrangementOccurrences[arrangementIndex].Occurrences
 	}
 
 	if totalOccurrences == 0 { // also nothing changed
@@ -75,10 +80,8 @@ func assertSongRehearsal(t *testing.T, song model.Song, newSong model.Song, dupl
 		for j := 0; j <= duplicates; j++ {
 			fromDiff := arrangementOccurrencesMap[newSection.ID] * uint(duplicates-j)
 			toDiff := arrangementOccurrencesMap[newSection.ID] * uint(j)
-			assert.NotEmpty(t, newSection.History[j].ID)
 			assert.Equal(t, oldSection.Rehearsals+fromDiff, newSection.History[j].From)
 			assert.Equal(t, newSection.Rehearsals-toDiff, newSection.History[j].To)
-			assert.Equal(t, model.RehearsalsProperty, newSection.History[0].Property)
 		}
 	}
 

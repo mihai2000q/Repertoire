@@ -1,5 +1,5 @@
 import { Menu } from '@mantine/core'
-import { IconCircleMinus, IconTrash } from '@tabler/icons-react'
+import { IconChecklist, IconCircleMinus, IconTrash } from '@tabler/icons-react'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -8,6 +8,7 @@ import { ReactNode, useEffect } from 'react'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 import DeleteSongsModal from '../@ui/modal/delete/DeleteSongsModal.tsx'
 import RemoveSongsFromAlbumModal from './modal/RemoveSongsFromAlbumModal.tsx'
+import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
 
 interface AlbumSongsContextMenuProps {
   children: ReactNode
@@ -24,6 +25,8 @@ function AlbumSongsContextMenu({
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
+  const [openedCustomRehearsals, { open: openCustomRehearsals, close: closeCustomRehearsals }] =
+    useDisclosure(false)
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -57,6 +60,9 @@ function AlbumSongsContextMenu({
             onSuccess={clearSelection}
             type={'songs'}
           />
+          <Menu.Item leftSection={<IconChecklist size={14} />} onClick={openCustomRehearsals}>
+            Custom Rehearsals
+          </Menu.Item>
           <Menu.Divider />
 
           {!isUnknownAlbum && (
@@ -70,6 +76,12 @@ function AlbumSongsContextMenu({
         </ContextMenu.Dropdown>
       </ContextMenu>
 
+      <CustomRehearsalsModal
+        opened={openedCustomRehearsals}
+        onClose={closeCustomRehearsals}
+        ids={selectedIds}
+        onSuccess={clearSelection}
+      />
       <RemoveSongsFromAlbumModal
         albumId={albumId}
         ids={selectedIds}

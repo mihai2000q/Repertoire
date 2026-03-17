@@ -2,12 +2,13 @@ import { ActionIcon, Menu, Tooltip } from '@mantine/core'
 import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
 import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconCircleMinus, IconTrash } from '@tabler/icons-react'
+import { IconChecklist, IconCircleMinus, IconTrash } from '@tabler/icons-react'
 import plural from '../../utils/plural.ts'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import DeleteSongsModal from '../@ui/modal/delete/DeleteSongsModal.tsx'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 import RemoveSongsFromAlbumModal from './modal/RemoveSongsFromAlbumModal.tsx'
+import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
 
 interface AlbumSongsSelectionDrawerProps {
   albumId: string
@@ -25,6 +26,9 @@ function AlbumSongsSelectionDrawer({
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
+
+  const [openedCustomRehearsals, { open: openCustomRehearsals, close: closeCustomRehearsals }] =
     useDisclosure(false)
 
   return (
@@ -75,6 +79,9 @@ function AlbumSongsSelectionDrawer({
                 onSuccess={clearSelection}
                 type={'songs'}
               />
+              <Menu.Item leftSection={<IconChecklist size={14} />} onClick={openCustomRehearsals}>
+                Custom Rehearsals
+              </Menu.Item>
             </Menu.Dropdown>
           )
         }}
@@ -92,6 +99,13 @@ function AlbumSongsSelectionDrawer({
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
         onDelete={clearSelection}
+      />
+
+      <CustomRehearsalsModal
+        opened={openedCustomRehearsals}
+        onClose={closeCustomRehearsals}
+        ids={selectedIds}
+        onSuccess={clearSelection}
       />
     </>
   )

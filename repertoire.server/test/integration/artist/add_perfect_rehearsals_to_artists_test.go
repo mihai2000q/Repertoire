@@ -49,7 +49,11 @@ func TestAddPerfectRehearsalsToArtists_WhenSuccessful_ShouldUpdateSongsAndSectio
 	getArtistsQuery := func(db *gorm.DB, artists *[]model.Artist) {
 		db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.title") }).
 			Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-			Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB { return db.Order("created_at desc") }).
+			Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB {
+				return db.
+					Where(&model.SongSectionHistory{Property: model.RehearsalsProperty}).
+					Order("created_at desc")
+			}).
 			Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
 				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).

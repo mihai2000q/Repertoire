@@ -31,8 +31,9 @@ func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (res
 		userID,
 		request.CurrentPage,
 		request.PageSize,
-		request.OrderBy,
 		request.SearchBy,
+		request.OrderBy,
+		request.With,
 	)
 	if err != nil {
 		return result, wrapper.InternalServerError(err)

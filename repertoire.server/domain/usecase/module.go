@@ -91,6 +91,7 @@ var searchUseCases = fx.Options(
 
 var songUseCases = fx.Options(
 	fx.Provide(song.NewAddCustomSongRehearsal),
+	fx.Provide(song.NewAddCustomSongRehearsals),
 	fx.Provide(song.NewAddPerfectSongRehearsal),
 	fx.Provide(song.NewAddPerfectSongRehearsals),
 	fx.Provide(song.NewBulkDeleteSongs),

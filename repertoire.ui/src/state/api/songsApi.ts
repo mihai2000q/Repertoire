@@ -8,6 +8,7 @@ import Song, {
 } from '../../types/models/Song.ts'
 import {
   AddCustomSongRehearsalRequest,
+  AddCustomSongRehearsalsRequest,
   AddPerfectSongRehearsalRequest,
   AddPerfectSongRehearsalsRequest,
   BulkDeleteSongSectionsRequest,
@@ -113,6 +114,14 @@ const songsApi = api.injectEndpoints({
     addCustomSongRehearsal: build.mutation<HttpMessageResponse, AddCustomSongRehearsalRequest>({
       query: (body) => ({
         url: 'songs/custom-rehearsal',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
+    addCustomSongRehearsals: build.mutation<HttpMessageResponse, AddCustomSongRehearsalsRequest>({
+      query: (body) => ({
+        url: 'songs/custom-rehearsals',
         method: 'POST',
         body: body
       }),
@@ -321,6 +330,7 @@ export const {
   useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddCustomSongRehearsalMutation,
+  useAddCustomSongRehearsalsMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPerfectSongRehearsalsMutation,
   useUpdateSongMutation,

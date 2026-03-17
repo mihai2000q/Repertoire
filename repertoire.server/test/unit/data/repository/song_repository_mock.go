@@ -170,6 +170,16 @@ func (s *SongRepositoryMock) GetAllByIDsWithSectionsAndDefaultOccurrences(songs 
 	return args.Error(0)
 }
 
+func (s *SongRepositoryMock) GetAllByIDsWithSectionsAndArrangementOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
+	args := s.Called(songs, ids)
+
+	if len(args) > 1 {
+		*songs = *args.Get(1).(*[]model.Song)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongRepositoryMock) GetAllByUser(
 	songs *[]model.EnhancedSong,
 	userID uuid.UUID,
@@ -177,8 +187,9 @@ func (s *SongRepositoryMock) GetAllByUser(
 	pageSize *int,
 	orderBy []string,
 	searchBy []string,
+	with []string,
 ) error {
-	args := s.Called(songs, userID, currentPage, pageSize, orderBy, searchBy)
+	args := s.Called(songs, userID, currentPage, pageSize, orderBy, searchBy, with)
 
 	if len(args) > 1 {
 		*songs = *args.Get(1).(*[]model.EnhancedSong)

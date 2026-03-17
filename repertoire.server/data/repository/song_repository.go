@@ -27,6 +27,7 @@ type SongRepository interface {
 		pageSize *int,
 		orderBy []string,
 		searchBy []string,
+		with []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
@@ -36,6 +37,7 @@ type SongRepository interface {
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSectionsAndDefaultOccurrences(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithSectionsAndArrangementOccurrences(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
@@ -228,17 +230,27 @@ func (s songRepository) GetAllByUser(
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
-	orderBy []string,
 	searchBy []string,
+	orderBy []string,
+	with []string,
 ) error {
 	tx := s.client.Model(&model.Song{}).
-		Preload("Sections").
-		Preload("Sections.SongSectionType").
-		Preload("Sections.Instrument").
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
 		Where(model.Song{UserID: userID})
+
+	database.WithPreload(
+		tx,
+		with,
+		map[string]database.EnhancedFunc{
+			"Arrangements": func(tx *gorm.DB) *gorm.DB {
+				return tx.Preload("Arrangements", func(db *gorm.DB) *gorm.DB {
+					return db.Order("song_arrangements.order")
+				})
+			},
+		},
+	)
 
 	s.addSongSectionsSubQuery(tx, userID)
 	searchBy = s.addPlaylistsFilter(tx, searchBy)
@@ -326,6 +338,16 @@ func (s songRepository) GetAllByIDsWithSectionsAndDefaultOccurrences(songs *[]mo
 				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
+		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithSectionsAndArrangementOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Sections.ArrangementOccurrences").
 		Find(&songs, ids).
 		Error
 }

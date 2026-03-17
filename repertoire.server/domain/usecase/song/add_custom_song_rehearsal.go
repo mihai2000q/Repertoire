@@ -47,7 +47,7 @@ func (a AddCustomSongRehearsal) Handle(request requests.AddCustomSongRehearsalRe
 		transactionSongSectionRepository := factory.NewSongSectionRepository()
 		transactionSongRepository := factory.NewSongRepository()
 
-		errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, transactionSongSectionRepository)
+		errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, transactionSongSectionRepository, nil)
 		if errC != nil {
 			errCode = errC
 			return errCode.Error
