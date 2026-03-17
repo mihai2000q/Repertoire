@@ -320,6 +320,7 @@ export const emptySong: Song = {
   settings: {
     id: ''
   },
+  arrangements: []
 }
 
 export const emptyPlaylist: Playlist = {
