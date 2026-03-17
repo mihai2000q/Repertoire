@@ -94,7 +94,7 @@ function CustomRehearsalsModal({ opened, onClose, ids, onSuccess }: CustomRehear
     onSuccess?.()
   }
 
-  if (isLoading)
+  if (isLoading || !songs)
     return (
       <Modal.Root opened={opened} onClose={onClose}>
         <Modal.Overlay />
