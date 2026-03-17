@@ -42,87 +42,87 @@ export const components = {
       root: {
         transition: '0.16s',
         '&[data-variant="subtle-red"]': {
-          '--ai-color': theme.colors.red[4],
+          color: theme.colors.red[4],
           backgroundColor: 'transparent',
 
           '&:hover': {
-            '--ai-color': theme.colors.red[5],
+            color: theme.colors.red[5],
             backgroundColor: theme.colors.red[1]
           },
 
           '&[data-disabled="true"]': {
-            '--ai-color': theme.colors.red[3],
+            color: theme.colors.red[3],
             backgroundColor: 'transparent'
           }
         },
 
         '&[data-variant="grey"]': {
-          '--ai-color': theme.colors.gray[5],
+          color: theme.colors.gray[5],
           backgroundColor: 'transparent',
 
           '&:hover': {
-            '--ai-color': theme.colors.gray[6],
+            color: theme.colors.gray[6],
             backgroundColor: theme.colors.gray[2]
           },
 
           '&[data-disabled="true"]': {
-            '--ai-color': theme.colors.gray[3],
+            color: theme.colors.gray[3],
             backgroundColor: 'transparent'
           }
         },
 
         '&[data-variant="grey-subtle"]': {
-          '--ai-color': theme.colors.gray[2],
+          color: theme.colors.gray[2],
           backgroundColor: alpha(theme.colors.gray[6], 0.3),
 
           '&:hover': {
-            '--ai-color': theme.white,
+            color: theme.white,
             backgroundColor: alpha(theme.colors.gray[4], 0.3),
             shadows: theme.shadows.lg
           }
         },
 
         '&[data-variant="grey-primary"]': {
-          '--ai-color': theme.colors.gray[5],
+          color: theme.colors.gray[5],
           backgroundColor: 'transparent',
 
           '&:hover': {
-            '--ai-color': theme.colors.primary[4],
+            color: theme.colors.primary[4],
             backgroundColor: theme.colors.primary[0]
           }
         },
 
         '&[data-variant="form"]': {
-          '--ai-color': theme.colors.gray[5],
+          color: theme.colors.gray[5],
           backgroundColor: 'transparent',
 
           '&:hover': {
-            '--ai-color': theme.colors.gray[6],
+            color: theme.colors.gray[6],
             backgroundColor: theme.colors.gray[2]
           },
 
           '&[data-disabled="true"]': {
-            '--ai-color': theme.colors.gray[3],
+            color: theme.colors.gray[3],
             backgroundColor: 'transparent'
           },
 
           '&[aria-selected="true"]': {
-            '--ai-color': theme.colors.green[5],
+            color: theme.colors.green[5],
             backgroundColor: alpha(theme.colors.green[1], 0.5),
 
             '&:hover': {
-              '--ai-color': theme.colors.green[6],
+              color: theme.colors.green[6],
               backgroundColor: theme.colors.green[1]
             }
           },
 
           '&[aria-invalid="true"]': {
             border: `2px solid ${theme.colors.red[5]}`,
-            '--ai-color': theme.colors.red[7],
+            color: theme.colors.red[7],
             backgroundColor: alpha(theme.colors.red[2], 0.75),
 
             '&:hover': {
-              '--ai-color': theme.colors.red[8],
+              color: theme.colors.red[8],
               backgroundColor: theme.colors.red[2]
             }
           }
@@ -157,10 +157,10 @@ export const components = {
           transition: '0.3s',
           padding: 0,
           boxShadow: theme.shadows.xxl,
-          '--ai-color': theme.colors.primary[7],
+          color: theme.colors.primary[7],
           '&:hover': {
             boxShadow: theme.shadows.xxl_hover,
-            '--ai-color': theme.colors.primary[8],
+            color: theme.colors.primary[8],
             backgroundColor: alpha(theme.colors.primary[0], 0.2),
             transform: 'scale(1.1)'
           }
