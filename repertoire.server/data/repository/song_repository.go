@@ -36,6 +36,7 @@ type SongRepository interface {
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithSectionsAndDefaultOccurrences(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithSectionsAndArrangementOccurrences(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
 	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
@@ -326,6 +327,16 @@ func (s songRepository) GetAllByIDsWithSectionsAndDefaultOccurrences(songs *[]mo
 				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
+		Find(&songs, ids).
+		Error
+}
+
+func (s songRepository) GetAllByIDsWithSectionsAndArrangementOccurrences(songs *[]model.Song, ids []uuid.UUID) error {
+	return s.client.
+		Preload("Sections", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_sections.order")
+		}).
+		Preload("Sections.ArrangementOccurrences").
 		Find(&songs, ids).
 		Error
 }

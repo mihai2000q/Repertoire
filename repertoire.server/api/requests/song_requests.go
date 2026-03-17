@@ -34,17 +34,21 @@ type CreateSongRequest struct {
 	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
+type AddCustomSongRehearsalRequest struct {
+	ID            uuid.UUID `validate:"required"`
+	ArrangementID uuid.UUID `validate:"required"`
+}
+
+type AddCustomSongRehearsalsRequest struct {
+	Requests []AddCustomSongRehearsalRequest `validate:"min=1,dive"`
+}
+
 type AddPerfectSongRehearsalRequest struct {
 	ID uuid.UUID `validate:"required"`
 }
 
 type AddPerfectSongRehearsalsRequest struct {
 	IDs []uuid.UUID `validate:"min=1"`
-}
-
-type AddCustomSongRehearsalRequest struct {
-	ID            uuid.UUID `validate:"required"`
-	ArrangementID uuid.UUID `validate:"required"`
 }
 
 type UpdateSongRequest struct {

@@ -115,6 +115,40 @@ func (s SongHandler) Create(c *gin.Context) {
 	})
 }
 
+func (s SongHandler) AddCustomRehearsal(c *gin.Context) {
+	var request requests.AddCustomSongRehearsalRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.AddCustomRehearsal(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "custom rehearsal has been added successfully!")
+}
+
+func (s SongHandler) AddCustomRehearsals(c *gin.Context) {
+	var request requests.AddCustomSongRehearsalsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.AddCustomRehearsals(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "custom rehearsals have been added successfully!")
+}
+
 func (s SongHandler) AddPerfectRehearsal(c *gin.Context) {
 	var request requests.AddPerfectSongRehearsalRequest
 	errorCode := s.BindAndValidate(c, &request)
@@ -147,23 +181,6 @@ func (s SongHandler) AddPerfectRehearsals(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "perfect rehearsals have been added successfully!")
-}
-
-func (s SongHandler) AddCustomRehearsal(c *gin.Context) {
-	var request requests.AddCustomSongRehearsalRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	errorCode = s.service.AddCustomRehearsal(request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "custom rehearsal has been added successfully!")
 }
 
 func (s SongHandler) Update(c *gin.Context) {

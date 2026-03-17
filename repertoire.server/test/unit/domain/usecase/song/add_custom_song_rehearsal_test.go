@@ -192,7 +192,7 @@ func TestAddCustomSongRehearsal_WhenProcessorFails_ShouldReturnInternalServerErr
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := wrapper.InternalServerError(errors.New("internal error"))
-	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository).
+	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository, []*uuid.UUID{nil}[0]).
 		Return(internalError, false).
 		Once()
 
@@ -246,7 +246,7 @@ func TestAddCustomSongRehearsal_WhenUpdateFails_ShouldReturnInternalServerError(
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository).
+	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository, []*uuid.UUID{nil}[0]).
 		Return(nil, true).
 		Once()
 
@@ -306,7 +306,7 @@ func TestAddCustomSongRehearsal_WhenSongIsNotUpdated_ShouldNotUpdateSong(t *test
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository).
+	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository, []*uuid.UUID{nil}[0]).
 		Return(nil, false).
 		Once()
 
@@ -359,7 +359,7 @@ func TestAddCustomSongRehearsal_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository).
+	songProcessor.On("AddCustomRehearsal", &mockSong, transactionSongSectionRepository, []*uuid.UUID{nil}[0]).
 		Return(nil, true).
 		Once()
 
