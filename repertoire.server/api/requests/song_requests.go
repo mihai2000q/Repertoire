@@ -12,6 +12,7 @@ type GetSongsRequest struct {
 	PageSize    *int     `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
 	OrderBy     []string `form:"orderBy" validate:"order_by"`
 	SearchBy    []string `form:"searchBy" validate:"search_by"`
+	With        []string `form:"with" validate:"dive,oneof=Arrangements"`
 }
 
 type GetSongFiltersMetadataRequest struct {

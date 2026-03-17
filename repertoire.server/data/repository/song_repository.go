@@ -27,6 +27,7 @@ type SongRepository interface {
 		pageSize *int,
 		orderBy []string,
 		searchBy []string,
+		with []string,
 	) error
 	GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error
 	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
@@ -229,17 +230,27 @@ func (s songRepository) GetAllByUser(
 	userID uuid.UUID,
 	currentPage *int,
 	pageSize *int,
-	orderBy []string,
 	searchBy []string,
+	orderBy []string,
+	with []string,
 ) error {
 	tx := s.client.Model(&model.Song{}).
-		Preload("Sections").
-		Preload("Sections.SongSectionType").
-		Preload("Sections.Instrument").
 		Joins("GuitarTuning").
 		Joins("Artist").
 		Joins("Album").
 		Where(model.Song{UserID: userID})
+
+	database.WithPreload(
+		tx,
+		with,
+		map[string]database.EnhancedFunc{
+			"Arrangements": func(tx *gorm.DB) *gorm.DB {
+				return tx.Preload("Arrangements", func(db *gorm.DB) *gorm.DB {
+					return db.Order("song_arrangements.order")
+				})
+			},
+		},
+	)
 
 	s.addSongSectionsSubQuery(tx, userID)
 	searchBy = s.addPlaylistsFilter(tx, searchBy)

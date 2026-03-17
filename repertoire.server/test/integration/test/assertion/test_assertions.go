@@ -170,7 +170,12 @@ func ResponseEnhancedSong(
 	t *testing.T,
 	song model.Song,
 	response model.EnhancedSong,
+	with []string,
 ) {
+	if with == nil {
+		with = make([]string, 0)
+	}
+
 	assert.Equal(t, song.ID, response.ID)
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
@@ -206,10 +211,6 @@ func ResponseEnhancedSong(
 		assert.Nil(t, response.GuitarTuning)
 	}
 
-	for i := range song.Sections {
-		ResponseSongSection(t, song.Sections[i], response.Sections[i], false)
-	}
-
 	for i := range song.Playlists {
 		ResponsePlaylist(t, song.Playlists[i], response.Playlists[i])
 	}
@@ -223,6 +224,14 @@ func ResponseEnhancedSong(
 	assert.Equal(t, len(song.Sections), response.SectionsCount)
 	assert.Equal(t, solos, response.SolosCount)
 	assert.Equal(t, riffs, response.RiffsCount)
+
+	for _, w := range with {
+		if w == "Arrangements" {
+			for i := range song.Arrangements {
+				ResponseSongArrangement(t, song.Arrangements[i], response.Arrangements[i], false)
+			}
+		}
+	}
 }
 
 func ResponseSong(
@@ -346,20 +355,23 @@ func ResponseSongArrangement(
 	t *testing.T,
 	songArrangement model.SongArrangement,
 	response model.SongArrangement,
+	withSectionOccurrences bool,
 ) {
 	assert.Equal(t, songArrangement.ID, response.ID)
 	assert.Equal(t, songArrangement.Name, response.Name)
 	assert.Equal(t, songArrangement.SongID, response.SongID)
 
-	for i := range songArrangement.SectionOccurrences {
-		assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, response.SectionOccurrences[i].Occurrences)
+	if withSectionOccurrences {
+		for i := range songArrangement.SectionOccurrences {
+			assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, response.SectionOccurrences[i].Occurrences)
 
-		ResponseSongSection(
-			t,
-			songArrangement.SectionOccurrences[i].Section,
-			response.SectionOccurrences[i].Section,
-			false,
-		)
+			ResponseSongSection(
+				t,
+				songArrangement.SectionOccurrences[i].Section,
+				response.SectionOccurrences[i].Section,
+				false,
+			)
+		}
 	}
 }
 

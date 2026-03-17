@@ -30,6 +30,7 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc nulls first", "created_at desc"},
 				SearchBy:    []string{"title ~* something entirely different", "is_recorded <> false"},
+				With:        []string{"Arrangements"},
 			},
 		},
 	}
@@ -94,6 +95,13 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			requests.GetSongsRequest{SearchBy: []string{"title != okay", "songs is not nullish"}},
 			"SearchBy",
 			"search_by",
+		},
+		// With Test Cases
+		{
+			"With is invalid because it has an invalid value",
+			requests.GetSongsRequest{With: []string{"Invalid"}},
+			"With",
+			"oneof",
 		},
 	}
 	for _, tt := range tests {

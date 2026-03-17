@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
@@ -35,11 +36,42 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 		Joins("Artist").
 		Joins("GuitarTuning").
 		Preload("Sections").
-		Preload("Sections.Instrument").
 		Preload("Sections.SongSectionType").
 		Find(&songs)
 
 	for i := range responseSongs {
-		assertion.ResponseEnhancedSong(t, songs[i], responseSongs[i])
+		assertion.ResponseEnhancedSong(t, songs[i], responseSongs[i], nil)
+	}
+}
+
+func TestGetAllSongs_WhenSuccessfulWithArrangements_ShouldReturnSongsWithArrangements(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().GET(w, "/api/songs?with=Arrangements")
+
+	// then
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var responseSongs []model.EnhancedSong
+	_ = json.Unmarshal(w.Body.Bytes(), &responseSongs)
+
+	db := utils.GetDatabase(t)
+
+	var songs []model.Song
+	db.Joins("Album").
+		Joins("Artist").
+		Joins("GuitarTuning").
+		Preload("Sections").
+		Preload("Sections.SongSectionType").
+		Preload("Arrangements", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_arrangements.order")
+		}).
+		Find(&songs)
+
+	for i := range responseSongs {
+		assertion.ResponseEnhancedSong(t, songs[i], responseSongs[i], []string{"Arrangements"})
 	}
 }
