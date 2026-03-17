@@ -2,13 +2,14 @@ import { ActionIcon, Menu, Tooltip } from '@mantine/core'
 import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
 import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconCircleMinus } from '@tabler/icons-react'
+import { IconChecklist, IconCircleMinus } from '@tabler/icons-react'
 import plural from '../../utils/plural.ts'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 import RemoveSongsFromPlaylistModal from './modal/RemoveSongsFromPlaylistModal.tsx'
 import Song from '../../types/models/Song.ts'
 import { useEffect, useState } from 'react'
+import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
 
 interface PlaylistSongsSelectionDrawerProps {
   playlistId: string
@@ -17,9 +18,9 @@ interface PlaylistSongsSelectionDrawerProps {
 
 function PlaylistSongsSelectionDrawer({ playlistId, songs }: PlaylistSongsSelectionDrawerProps) {
   const { selectedIds, clearSelection } = useClickSelect()
-  const [selectedSongsIds, setSelectedSongsIds] = useState<string[]>([])
+  const [selectedSongIds, setSelectedSongIds] = useState<string[]>([])
   useEffect(() => {
-    setSelectedSongsIds(
+    setSelectedSongIds(
       songs.filter((s) => selectedIds.some((psId) => psId === s.playlistSongId)).map((s) => s.id)
     )
   }, [selectedIds])
@@ -27,6 +28,9 @@ function PlaylistSongsSelectionDrawer({ playlistId, songs }: PlaylistSongsSelect
   const [openedMenu, { close: closeMenu, toggle: toggleMenu }] = useDisclosure(false)
 
   const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
+    useDisclosure(false)
+
+  const [openedCustomRehearsals, { open: openCustomRehearsals, close: closeCustomRehearsals }] =
     useDisclosure(false)
 
   return (
@@ -55,17 +59,20 @@ function PlaylistSongsSelectionDrawer({ playlistId, songs }: PlaylistSongsSelect
           dropdown: (
             <Menu.Dropdown>
               <AddToPlaylistMenuItem
-                ids={selectedSongsIds}
+                ids={selectedSongIds}
                 type={'songs'}
                 closeMenu={closeMenu}
                 onSuccess={clearSelection}
               />
               <PerfectRehearsalsMenuItem
-                ids={selectedSongsIds}
+                ids={selectedIds}
                 closeMenu={closeMenu}
                 onSuccess={clearSelection}
-                type={'songs'}
+                type={'playlist-songs'}
               />
+              <Menu.Item leftSection={<IconChecklist size={14} />} onClick={openCustomRehearsals}>
+                Custom Rehearsals
+              </Menu.Item>
             </Menu.Dropdown>
           )
         }}
@@ -77,6 +84,13 @@ function PlaylistSongsSelectionDrawer({ playlistId, songs }: PlaylistSongsSelect
         opened={openedRemoveWarning}
         onClose={closeRemoveWarning}
         onRemove={clearSelection}
+      />
+
+      <CustomRehearsalsModal
+        opened={openedCustomRehearsals}
+        onClose={closeCustomRehearsals}
+        ids={selectedSongIds}
+        onSuccess={clearSelection}
       />
     </>
   )

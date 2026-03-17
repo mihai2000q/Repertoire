@@ -194,8 +194,8 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
   useEffect(() => {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
-  useDidUpdate(
-    () => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }),
+  useEffect(
+    () => scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' }),
     [searchValue, isShowAllChecked]
   )
 
@@ -333,7 +333,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={selectedSongs.length > 0} label="Select songs">
-              <Button data-disabled={selectedSongs.length === 0} onClick={addSongs}>
+              <Button disabled={selectedSongs.length === 0} onClick={addSongs}>
                 Add
               </Button>
             </Tooltip>

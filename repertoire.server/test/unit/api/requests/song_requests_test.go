@@ -30,6 +30,7 @@ func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				PageSize:    &[]int{1}[0],
 				OrderBy:     []string{"title asc nulls first", "created_at desc"},
 				SearchBy:    []string{"title ~* something entirely different", "is_recorded <> false"},
+				With:        []string{"Arrangements"},
 			},
 		},
 	}
@@ -94,6 +95,13 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			requests.GetSongsRequest{SearchBy: []string{"title != okay", "songs is not nullish"}},
 			"SearchBy",
 			"search_by",
+		},
+		// With Test Cases
+		{
+			"With is invalid because it has an invalid value",
+			requests.GetSongsRequest{With: []string{"Invalid"}},
+			"With",
+			"oneof",
 		},
 	}
 	for _, tt := range tests {
@@ -416,6 +424,249 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			for _, expectedFailedTag := range tt.expectedFailedTags {
 				assert.Contains(t, errCode.Error.Error(), "'"+expectedFailedTag+"' tag")
 			}
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateAddCustomSongRehearsalRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.AddCustomSongRehearsalRequest{
+		ID:            uuid.New(),
+		ArrangementID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+
+}
+
+func TestValidateAddCustomSongRehearsalRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.AddCustomSongRehearsalRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.AddCustomSongRehearsalRequest{
+				ID:            uuid.Nil,
+				ArrangementID: uuid.New(),
+			},
+			"ID",
+			"required",
+		},
+		// Arrangement ID Test Cases
+		{
+			"Arrangement ID is invalid because it's required",
+			requests.AddCustomSongRehearsalRequest{
+				ID:            uuid.New(),
+				ArrangementID: uuid.Nil,
+			},
+			"ArrangementID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "AddCustomSongRehearsalRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateAddCustomSongRehearsalsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.AddCustomSongRehearsalsRequest{
+		Requests: []requests.AddCustomSongRehearsalRequest{
+			{
+				ID:            uuid.New(),
+				ArrangementID: uuid.New(),
+			},
+		},
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+
+}
+
+func TestValidateAddCustomSongRehearsalsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.AddCustomSongRehearsalsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Requests Test Cases
+		{
+			"Requests is invalid because it requires at least one Request",
+			requests.AddCustomSongRehearsalsRequest{Requests: []requests.AddCustomSongRehearsalRequest{}},
+			"Requests",
+			"min",
+		},
+		// Requests - ID Test Cases
+		{
+			"Requests' ID is invalid because it is required",
+			requests.AddCustomSongRehearsalsRequest{
+				Requests: []requests.AddCustomSongRehearsalRequest{
+					{
+						ID:            uuid.Nil,
+						ArrangementID: uuid.New(),
+					},
+				},
+			},
+			"Requests[0].ID",
+			"required",
+		},
+		// Requests - Arrangement ID Test Cases
+		{
+			"Requests' Arrangement ID is invalid because it is required",
+			requests.AddCustomSongRehearsalsRequest{
+				Requests: []requests.AddCustomSongRehearsalRequest{
+					{
+						ID:            uuid.New(),
+						ArrangementID: uuid.Nil,
+					},
+				},
+			},
+			"Requests[0].ArrangementID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "AddCustomSongRehearsalsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateAddPerfectSongRehearsalRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.AddPerfectSongRehearsalRequest{
+		ID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+
+}
+
+func TestValidateAddPerfectSongRehearsalRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.AddPerfectSongRehearsalRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// ID Test Cases
+		{
+			"ID is invalid because it's required",
+			requests.AddPerfectSongRehearsalRequest{ID: uuid.Nil},
+			"ID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "AddPerfectSongRehearsalRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
+func TestValidateAddPerfectSongRehearsalsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.AddPerfectSongRehearsalsRequest{
+		IDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+
+}
+
+func TestValidateAddPerfectSongRehearsalsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.AddPerfectSongRehearsalsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// IDs Test Cases
+		{
+			"IDs is invalid because it requires at least one ID",
+			requests.AddPerfectSongRehearsalsRequest{IDs: []uuid.UUID{}},
+			"ID",
+			"min",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "AddPerfectSongRehearsalsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}

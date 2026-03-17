@@ -1,15 +1,22 @@
 package processor
 
 import (
+	"errors"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+	"slices"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type SongProcessor interface {
+	AddCustomRehearsal(
+		song *model.Song,
+		songSectionRepository repository.SongSectionRepository,
+		arrangementID *uuid.UUID,
+	) (errCode *wrapper.ErrorCode, updatedSong bool)
 	AddPerfectRehearsal(
 		song *model.Song,
 		songSectionRepository repository.SongSectionRepository,
@@ -24,18 +31,59 @@ func NewSongProcessor(progressProcessor ProgressProcessor) SongProcessor {
 	return &songProcessor{progressProcessor: progressProcessor}
 }
 
+func (s *songProcessor) AddCustomRehearsal(
+	song *model.Song,
+	songSectionRepository repository.SongSectionRepository,
+	arrangementID *uuid.UUID,
+) (*wrapper.ErrorCode, bool) {
+	if len(song.Sections) == 0 || (arrangementID == nil && len(song.Sections[0].ArrangementOccurrences) == 0) {
+		return nil, false
+	}
+	if arrangementID != nil {
+		index := slices.IndexFunc(song.Sections[0].ArrangementOccurrences, func(o model.SongSectionOccurrences) bool {
+			return o.ArrangementID == *arrangementID
+		})
+		if index == -1 {
+			return wrapper.NotFoundError(errors.New("song arrangement not found")), false
+		}
+	}
+
+	return s.addRehearsal(song, songSectionRepository, arrangementID)
+}
+
 func (s *songProcessor) AddPerfectRehearsal(
 	song *model.Song,
 	songSectionRepository repository.SongSectionRepository,
 ) (*wrapper.ErrorCode, bool) {
+	if song.DefaultArrangementID == nil {
+		return nil, false
+	}
+	return s.addRehearsal(song, songSectionRepository, nil)
+}
+
+func (s *songProcessor) addRehearsal(
+	song *model.Song,
+	songSectionRepository repository.SongSectionRepository,
+	arrangementID *uuid.UUID,
+) (*wrapper.ErrorCode, bool) {
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
 	for i, section := range song.Sections {
-		if section.Occurrences == 0 {
+		var arrangementOccurrence model.SongSectionOccurrences
+		if arrangementID != nil {
+			index := slices.IndexFunc(section.ArrangementOccurrences, func(o model.SongSectionOccurrences) bool {
+				return o.ArrangementID == *arrangementID
+			})
+			arrangementOccurrence = section.ArrangementOccurrences[index]
+		} else {
+			arrangementOccurrence = section.ArrangementOccurrences[0]
+		}
+
+		if arrangementOccurrence.Occurrences == 0 {
 			continue
 		}
 
-		newRehearsals := section.Rehearsals + section.Occurrences
+		newRehearsals := section.Rehearsals + arrangementOccurrence.Occurrences
 		// add history of the rehearsals change
 		newHistory := model.SongSectionHistory{
 			ID:            uuid.New(),
@@ -43,6 +91,7 @@ func (s *songProcessor) AddPerfectRehearsal(
 			From:          section.Rehearsals,
 			To:            newRehearsals,
 			SongSectionID: section.ID,
+			CreatedAt:     time.Now().UTC(),
 		}
 		err := songSectionRepository.CreateHistory(&newHistory)
 		if err != nil {

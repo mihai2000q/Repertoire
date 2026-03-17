@@ -20,7 +20,6 @@ import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
-import { useDidUpdate } from '@mantine/hooks'
 import { FileWithPath } from '@mantine/dropzone'
 
 interface EditArtistHeaderModalProps {
@@ -60,7 +59,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
   const [image, setImage] = useState<string | FileWithPath>(artist.imageUrl)
   useEffect(() => form.setFieldValue('image', image), [image])
 
-  useDidUpdate(() => {
+  useEffect(() => {
     form.setValues({
       name: artist.name,
       image: artist.imageUrl,
@@ -128,11 +127,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
             label={'You need to make a change before saving'}
             position="bottom"
           >
-            <Button
-              type={'submit'}
-              data-disabled={!hasChanged}
-              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-            >
+            <Button type={'submit'} disabled={!hasChanged}>
               Save
             </Button>
           </Tooltip>

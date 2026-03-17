@@ -259,7 +259,7 @@ describe('Songs', () => {
     )
 
     await user.click(screen.getByRole('button', { name: 'order-songs' }))
-    await user.click(screen.getByRole('button', { name: newOrder.label }))
+    await user.click(screen.getByRole('menuitem', { name: newOrder.label }))
 
     await waitFor(() =>
       expect(orderBy).toStrictEqual([

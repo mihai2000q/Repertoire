@@ -57,8 +57,8 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T
 	// song with sections and previous stats
 	song := songData.Songs[0]
 	request := requests.BulkDeleteSongSectionsRequest{
-		IDs:    []uuid.UUID{songData.Songs[0].Sections[0].ID, songData.Songs[0].Sections[1].ID},
-		SongID: songData.Songs[0].ID,
+		IDs:    []uuid.UUID{songData.SongSections[0].ID, songData.SongSections[1].ID},
+		SongID: song.ID,
 	}
 
 	// when

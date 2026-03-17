@@ -32,13 +32,13 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
     onDropdownClose: () => combobox.resetSelectedOption()
   })
 
-  const [value, setValue] = useState('')
-  const [search, setSearch] = useState('')
+  const [value, setValue] = useState(album?.title ?? '')
+  const [search, setSearch] = useState(album?.title ?? '')
   const [searchQuery] = useDebouncedValue(search, 200)
 
   useEffect(() => {
-    setSearch(album?.title ?? '')
     setValue(album?.title ?? '')
+    setSearch(album?.title ?? '')
   }, [album])
 
   const { data: albums, isFetching } = useGetSearchQuery({

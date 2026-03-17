@@ -32,11 +32,11 @@ function AddNewSongSection({
 
   const [name, setName] = useInputState('')
   const [nameError, setNameError] = useState(false)
-  useDidUpdate(() => setNameError(name.trim().length === 0), [name])
+  useEffect(() => setNameError(name.trim().length === 0), [name])
 
   const [typeError, setTypeError] = useState(false)
   const [type, setType] = useState<ComboboxItem>(null)
-  useDidUpdate(() => setTypeError(!type), [type])
+  useEffect(() => setTypeError(!type), [type])
 
   useEffect(() => {
     setNameError(false)

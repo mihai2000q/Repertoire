@@ -35,6 +35,7 @@ func (p PlaylistRouter) RegisterRoutes() {
 	{
 		songsApi.GET("/:id", p.handler.GetSongs)
 		songsApi.POST("/add", p.handler.AddSongs)
+		songsApi.POST("/perfect-rehearsals", p.handler.AddPerfectSongRehearsals)
 		songsApi.POST("/shuffle", p.handler.Shuffle)
 		songsApi.PUT("/move", p.handler.MoveSong)
 		songsApi.PUT("/remove", p.handler.RemoveSongs)

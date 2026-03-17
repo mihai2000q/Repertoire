@@ -32,6 +32,20 @@ func (p *PlaylistRepositoryMock) GetPlaylistSongs(playlistSongs *[]model.Playlis
 	return args.Error(0)
 }
 
+func (p *PlaylistRepositoryMock) GetPlaylistSongsByIDsWithSectionsAndDefaultOccurrences(
+	playlistSongs *[]model.PlaylistSong,
+	ids []uuid.UUID,
+	playlistID uuid.UUID,
+) error {
+	args := p.Called(playlistSongs, ids, playlistID)
+
+	if len(args) > 1 {
+		*playlistSongs = *args.Get(1).(*[]model.PlaylistSong)
+	}
+
+	return args.Error(0)
+}
+
 func (p *PlaylistRepositoryMock) GetPlaylistSongsWithSongs(
 	playlistSongs *[]model.PlaylistSong,
 	id uuid.UUID,
@@ -82,7 +96,7 @@ func (p *PlaylistRepositoryMock) GetAllByIDs(playlists *[]model.Playlist, ids []
 	return args.Error(0)
 }
 
-func (p *PlaylistRepositoryMock) GetAllByIDsWithSongSections(playlists *[]model.Playlist, ids []uuid.UUID) error {
+func (p *PlaylistRepositoryMock) GetAllByIDsWithSongSectionsAndDefaultOccurrences(playlists *[]model.Playlist, ids []uuid.UUID) error {
 	args := p.Called(playlists, ids)
 
 	if len(args) > 1 {

@@ -19,7 +19,6 @@ import {
 } from '@mantine/core'
 import {
   useDebouncedValue,
-  useDidUpdate,
   useFocusTrap,
   useInputState,
   useIntersection,
@@ -160,7 +159,7 @@ function AddExistingArtistSongsModal({
   useEffect(() => {
     if (entry?.isIntersecting === true) fetchNextPage()
   }, [entry?.isIntersecting])
-  useDidUpdate(() => scrollRef.current.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
+  useEffect(() => scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' }), [searchValue])
 
   function checkAllSongs(check: boolean) {
     if (check) {
@@ -271,7 +270,7 @@ function AddExistingArtistSongsModal({
 
           <Box p={'md'} style={{ alignSelf: 'end' }}>
             <Tooltip disabled={selectedSongs.length > 0} label="Select songs">
-              <Button data-disabled={selectedSongs.length === 0} onClick={addSongs}>
+              <Button disabled={selectedSongs.length === 0} onClick={addSongs}>
                 Add
               </Button>
             </Tooltip>

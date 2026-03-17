@@ -220,7 +220,7 @@ func getAlbumSongs(t *testing.T, albumIDs []uuid.UUID) []model.Song {
 	var albumSongs []model.Song
 	for _, albumID := range albumIDs {
 		var songs []model.Song
-		db.Model(model.Song{}).Where("album_id = ?", albumID).Find(&songs)
+		db.Where(&model.Song{AlbumID: &albumID}).Find(&songs)
 		albumSongs = append(albumSongs, songs...)
 	}
 	return albumSongs

@@ -21,6 +21,9 @@ describe('Playlist Songs Selection Drawer', () => {
   const handlers = [
     http.get('/playlists', async () => {
       return HttpResponse.json([])
+    }),
+    http.get('/songs', async () => {
+      return HttpResponse.json({ models: songs, totalCount: songs.length })
     })
   ]
 
@@ -78,6 +81,19 @@ describe('Playlist Songs Selection Drawer', () => {
       expect(
         await screen.findByRole('dialog', { name: /remove songs from playlist/i })
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('on more menu', () => {
+    it('should open custom rehearsals when clicking on custom rehearsals', async () => {
+      const user = userEvent.setup()
+
+      reduxRender(<PlaylistSongsSelectionDrawer playlistId={playlistId} songs={songs} />)
+
+      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.click(screen.getByRole('menuitem', { name: /custom rehearsals/i }))
+
+      expect(await screen.findByRole('dialog', { name: /custom rehearsals/i })).toBeInTheDocument()
     })
   })
 })

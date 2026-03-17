@@ -1,5 +1,5 @@
 import { emptySongSection, emptySongSettings, reduxRender } from '../../../test-utils.tsx'
-import SongSectionsSettingsPopover from './SongSectionsSettingsPopover.tsx'
+import SongSectionsSettingsButton from './SongSectionsSettingsButton.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -11,7 +11,7 @@ import {
   UpdateSongSettingsRequest
 } from '../../../types/requests/SongRequests.ts'
 
-describe('Song Sections Settings Popover', () => {
+describe('Song Sections Settings Button', () => {
   const instruments: Instrument[] = [
     {
       id: '1',
@@ -61,7 +61,7 @@ describe('Song Sections Settings Popover', () => {
     const user = userEvent.setup()
 
     const [{ rerender }] = reduxRender(
-      <SongSectionsSettingsPopover settings={emptySongSettings} sections={[]} songId={''} />
+      <SongSectionsSettingsButton settings={emptySongSettings} sections={[]} songId={''} />
     )
 
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
@@ -73,7 +73,7 @@ describe('Song Sections Settings Popover', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
 
     rerender(
-      <SongSectionsSettingsPopover
+      <SongSectionsSettingsButton
         settings={emptySongSettings}
         sections={[]}
         songId={''}
@@ -92,7 +92,7 @@ describe('Song Sections Settings Popover', () => {
     const defaultBandMember = bandMembers[1]
 
     reduxRender(
-      <SongSectionsSettingsPopover
+      <SongSectionsSettingsButton
         settings={{ ...emptySongSettings, defaultInstrument, defaultBandMember }}
         sections={[]}
         songId={''}
@@ -127,7 +127,7 @@ describe('Song Sections Settings Popover', () => {
       const sections: SongSection[] = [{ ...emptySongSection, bandMember: bandMembers[0] }]
 
       reduxRender(
-        <SongSectionsSettingsPopover
+        <SongSectionsSettingsButton
           settings={songSettings}
           sections={sections}
           songId={''}
@@ -166,7 +166,7 @@ describe('Song Sections Settings Popover', () => {
       const sections: SongSection[] = [{ ...emptySongSection, bandMember: bandMembers[0] }]
 
       reduxRender(
-        <SongSectionsSettingsPopover
+        <SongSectionsSettingsButton
           settings={emptySongSettings}
           sections={sections}
           songId={songId}
@@ -196,7 +196,7 @@ describe('Song Sections Settings Popover', () => {
       const sections: SongSection[] = [{ ...emptySongSection, bandMember: newBandMember }]
 
       reduxRender(
-        <SongSectionsSettingsPopover
+        <SongSectionsSettingsButton
           settings={emptySongSettings}
           sections={sections}
           songId={songId}
@@ -233,7 +233,7 @@ describe('Song Sections Settings Popover', () => {
       const sections: SongSection[] = [{ ...emptySongSection, instrument: instruments[0] }]
 
       reduxRender(
-        <SongSectionsSettingsPopover settings={songSettings} sections={sections} songId={''} />
+        <SongSectionsSettingsButton settings={songSettings} sections={sections} songId={''} />
       )
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
@@ -267,7 +267,7 @@ describe('Song Sections Settings Popover', () => {
       const sections: SongSection[] = [{ ...emptySongSection, instrument: instruments[0] }]
 
       reduxRender(
-        <SongSectionsSettingsPopover
+        <SongSectionsSettingsButton
           settings={emptySongSettings}
           sections={sections}
           songId={songId}
@@ -296,7 +296,7 @@ describe('Song Sections Settings Popover', () => {
       const sections: SongSection[] = [{ ...emptySongSection, instrument: newInstrument }]
 
       reduxRender(
-        <SongSectionsSettingsPopover
+        <SongSectionsSettingsButton
           settings={emptySongSettings}
           sections={sections}
           songId={songId}

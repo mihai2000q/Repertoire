@@ -10,9 +10,15 @@ interface PerfectRehearsalMenuItemProps {
   id: string
   closeMenu: () => void
   type: 'artist' | 'album' | 'song' | 'playlist'
+  defaultSongArrangementId?: string
 }
 
-function PerfectRehearsalMenuItem({ id, closeMenu, type }: PerfectRehearsalMenuItemProps) {
+function PerfectRehearsalMenuItem({
+  id,
+  closeMenu,
+  type,
+  defaultSongArrangementId
+}: PerfectRehearsalMenuItemProps) {
   const [addPerfectRehearsalsToArtists, { isLoading: isArtistLoading }] =
     useAddPerfectRehearsalsToArtistsMutation()
   const [addPerfectRehearsalsToAlbums, { isLoading: isAlbumLoading }] =
@@ -47,6 +53,7 @@ function PerfectRehearsalMenuItem({ id, closeMenu, type }: PerfectRehearsalMenuI
       isLoading={isLoading}
       onConfirm={handleAddPerfectRehearsal}
       leftSection={<IconChecks size={14} />}
+      disabled={type === 'song' && !defaultSongArrangementId}
     >
       Perfect Rehearsal
     </MenuItemConfirmation>

@@ -1,8 +1,8 @@
 import Song from '../../../types/models/Song.ts'
 import { Button, LoadingOverlay, Modal, Stack, Textarea, Tooltip } from '@mantine/core'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import { useDidUpdate, useInputState } from '@mantine/hooks'
-import { MouseEvent } from 'react'
+import { useInputState } from '@mantine/hooks'
+import { MouseEvent, useEffect } from 'react'
 import { toast } from 'react-toastify'
 
 interface EditSongDescriptionModalProps {
@@ -15,7 +15,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
   const [updateSongMutation, { isLoading }] = useUpdateSongMutation()
 
   const [description, setDescription] = useInputState(song.description)
-  useDidUpdate(() => setDescription(song.description), [song])
+  useEffect(() => setDescription(song.description), [song])
 
   const hasChanged = description !== song.description
 
@@ -69,7 +69,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
           label={'You need to make a change before saving'}
           position="bottom"
         >
-          <Button data-disabled={!hasChanged} onClick={updateSong}>
+          <Button disabled={!hasChanged} onClick={updateSong}>
             Save
           </Button>
         </Tooltip>

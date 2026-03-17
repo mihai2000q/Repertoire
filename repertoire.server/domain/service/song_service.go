@@ -11,9 +11,10 @@ import (
 )
 
 type SongService interface {
+	AddCustomRehearsal(request requests.AddCustomSongRehearsalRequest) *wrapper.ErrorCode
+	AddCustomRehearsals(request requests.AddCustomSongRehearsalsRequest) *wrapper.ErrorCode
 	AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode
 	AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode
-	AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode)
 	DeleteImage(id uuid.UUID) *wrapper.ErrorCode
@@ -33,9 +34,10 @@ type SongService interface {
 }
 
 type songService struct {
+	addCustomSongRehearsal   song.AddCustomSongRehearsal
+	addCustomSongRehearsals  song.AddCustomSongRehearsals
 	addPerfectSongRehearsal  song.AddPerfectSongRehearsal
 	addPerfectSongRehearsals song.AddPerfectSongRehearsals
-	addPartialSongRehearsal  song.AddPartialSongRehearsal
 	bulkDeleteSongs          song.BulkDeleteSongs
 	createSong               song.CreateSong
 	deleteImageFromSong      song.DeleteImageFromSong
@@ -52,9 +54,10 @@ type songService struct {
 }
 
 func NewSongService(
+	addCustomSongRehearsal song.AddCustomSongRehearsal,
+	addCustomSongRehearsals song.AddCustomSongRehearsals,
 	addPerfectSongRehearsal song.AddPerfectSongRehearsal,
 	addPerfectSongRehearsals song.AddPerfectSongRehearsals,
-	addPartialSongRehearsal song.AddPartialSongRehearsal,
 	bulkDeleteSongs song.BulkDeleteSongs,
 	createSong song.CreateSong,
 	deleteImageFromSong song.DeleteImageFromSong,
@@ -70,9 +73,10 @@ func NewSongService(
 	getInstruments song.GetInstruments,
 ) SongService {
 	return &songService{
+		addCustomSongRehearsal:   addCustomSongRehearsal,
+		addCustomSongRehearsals:  addCustomSongRehearsals,
 		addPerfectSongRehearsal:  addPerfectSongRehearsal,
 		addPerfectSongRehearsals: addPerfectSongRehearsals,
-		addPartialSongRehearsal:  addPartialSongRehearsal,
 		bulkDeleteSongs:          bulkDeleteSongs,
 		createSong:               createSong,
 		deleteImageFromSong:      deleteImageFromSong,
@@ -89,16 +93,20 @@ func NewSongService(
 	}
 }
 
+func (s *songService) AddCustomRehearsal(request requests.AddCustomSongRehearsalRequest) *wrapper.ErrorCode {
+	return s.addCustomSongRehearsal.Handle(request)
+}
+
+func (s *songService) AddCustomRehearsals(request requests.AddCustomSongRehearsalsRequest) *wrapper.ErrorCode {
+	return s.addCustomSongRehearsals.Handle(request)
+}
+
 func (s *songService) AddPerfectRehearsal(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
 	return s.addPerfectSongRehearsal.Handle(request)
 }
 
 func (s *songService) AddPerfectRehearsals(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode {
 	return s.addPerfectSongRehearsals.Handle(request)
-}
-
-func (s *songService) AddPartialRehearsal(request requests.AddPartialSongRehearsalRequest) *wrapper.ErrorCode {
-	return s.addPartialSongRehearsal.Handle(request)
 }
 
 func (s *songService) BulkDelete(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode {

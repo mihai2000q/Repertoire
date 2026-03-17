@@ -13,13 +13,13 @@ import { useForm } from '@mantine/form'
 import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
 import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
 import AddNewSongModalFinalStep from './AddNewSongModalFinalStep.tsx'
-import { useDidUpdate, useListState } from '@mantine/hooks'
+import { useListState } from '@mantine/hooks'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
 
 export interface AddNewSongModalSongSection {
@@ -54,7 +54,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   }
 
   const [isArtistDisabled, setIsArtistDisabled] = useState(false)
-  useDidUpdate(() => setIsArtistDisabled(album !== null), [album])
+  useEffect(() => setIsArtistDisabled(album !== null), [album])
 
   const form = useForm<AddNewSongForm>({
     mode: 'uncontrolled',

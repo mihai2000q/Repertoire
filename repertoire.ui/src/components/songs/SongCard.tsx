@@ -25,12 +25,12 @@ import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
 import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
 import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
 import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import PartialRehearsalMenuItem from '../@ui/menu/item/song/PartialRehearsalMenuItem.tsx'
 import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
 import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
 import useDragSelectSelectable from '../../hooks/useDragSelectSelectable.ts'
 import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
+import CustomRehearsalMenuItem from '../@ui/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 const iconSize = 18
 
@@ -279,8 +279,17 @@ function SongCard({ song }: SongCardProps) {
 
         <ContextMenu.Divider />
         <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenu} />
-        <PartialRehearsalMenuItem songId={song.id} closeMenu={closeMenu} />
-        <PerfectRehearsalMenuItem id={song.id} closeMenu={closeMenu} type={'song'} />
+        <PerfectRehearsalMenuItem
+          id={song.id}
+          closeMenu={closeMenu}
+          type={'song'}
+          defaultSongArrangementId={song.defaultArrangementId}
+        />
+        <CustomRehearsalMenuItem
+          id={song.id}
+          closeMenu={closeMenu}
+          defaultSongArrangementId={song.defaultArrangementId}
+        />
         <ContextMenu.Divider />
 
         <ContextMenu.Item

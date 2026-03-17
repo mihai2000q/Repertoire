@@ -83,7 +83,7 @@ function PlaylistSongsWidget({ playlistId }: PlaylistSongsWidgetProps) {
     shuffleToastId.current = toast.info('Playlist shuffled!')
   }
 
-  if (isLoading) return <PlaylistSongsLoader />
+  if (isLoading || !songs) return <PlaylistSongsLoader />
 
   return (
     <ClickSelectProvider data={songs}>

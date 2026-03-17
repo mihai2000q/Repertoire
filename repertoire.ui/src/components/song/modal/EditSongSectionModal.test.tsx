@@ -115,7 +115,7 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('slider', { name: /confidence/i })).toHaveValue(section.confidence)
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
     await user.hover(screen.getByRole('button', { name: /save/i }))
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
   })
@@ -167,7 +167,7 @@ describe('Edit Song Description Modal', () => {
       fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
     }
 
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     expect(capturedRequest).toStrictEqual({
@@ -195,7 +195,7 @@ describe('Edit Song Description Modal', () => {
         bandMembers={bandMembers}
       />
     )
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
   })
 
   it('should send update request when the band member and instruments changed', async () => {
@@ -234,7 +234,7 @@ describe('Edit Song Description Modal', () => {
     await user.click(instrumentField)
     await user.click(await screen.findByText(newInstrument.name))
 
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     expect(capturedRequest).toStrictEqual({
@@ -262,7 +262,7 @@ describe('Edit Song Description Modal', () => {
         bandMembers={bandMembers}
       />
     )
-    expect(screen.getByRole('button', { name: /save/i })).toHaveAttribute('data-disabled', 'true')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
   })
 
   it('should keep the save button disabled when the field values have not changed', async () => {
@@ -288,60 +288,60 @@ describe('Edit Song Description Modal', () => {
     // change name
     await user.clear(nameField)
     await user.type(nameField, section.name + '1')
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset name
     await user.clear(nameField)
     await user.type(nameField, section.name)
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change type
     await user.click(typeField)
     await user.click(await screen.findByText(sectionTypes[0].name))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset type
     await user.click(typeField)
     await user.click(await screen.findByText(section.songSectionType.name))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change rehearsals
     await user.clear(rehearsalsField)
     await user.type(rehearsalsField, section.rehearsals.toString() + '1')
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset rehearsals
     await user.clear(rehearsalsField)
     await user.type(rehearsalsField, section.rehearsals.toString())
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change band member
     await user.click(bandMemberField)
     await user.click(await screen.findByText(bandMembers[0].name))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset band member
     await user.click(bandMemberField)
     await user.click(await screen.findByText(section.bandMember?.name ?? bandMembers[0].name))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change an instrument
     await user.click(instrumentField)
     await user.click(await screen.findByText(instruments[0].name))
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset instrument
     await user.click(instrumentField)
     await user.click(await screen.findByText(section.instrument?.name ?? instruments[0].name))
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
 
     // change confidence
     fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
-    expect(saveButton).not.toHaveAttribute('data-disabled')
+    expect(saveButton).not.toBeDisabled()
 
     // reset confidence
     fireEvent.keyDown(confidenceField, { key: 'ArrowLeft' })
-    expect(saveButton).toHaveAttribute('data-disabled', 'true')
+    expect(saveButton).toBeDisabled()
   })
 
   it('should validate fields', async () => {

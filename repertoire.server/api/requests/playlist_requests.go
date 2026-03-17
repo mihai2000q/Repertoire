@@ -13,13 +13,6 @@ type GetPlaylistsRequest struct {
 	SearchBy    []string `form:"searchBy" validate:"search_by"`
 }
 
-type GetPlaylistSongsRequest struct {
-	ID          uuid.UUID `validate:"required"`
-	CurrentPage *int      `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
-	PageSize    *int      `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
-	OrderBy     []string  `form:"orderBy" validate:"order_by"`
-}
-
 type GetPlaylistFiltersMetadataRequest struct {
 	SearchBy []string `form:"searchBy" validate:"search_by"`
 }
@@ -57,10 +50,22 @@ type BulkDeletePlaylistsRequest struct {
 
 // Songs
 
+type GetPlaylistSongsRequest struct {
+	ID          uuid.UUID `validate:"required"`
+	CurrentPage *int      `form:"currentPage" validate:"required_with=PageSize,omitempty,gt=0"`
+	PageSize    *int      `form:"pageSize" validate:"required_with=CurrentPage,omitempty,gt=0"`
+	OrderBy     []string  `form:"orderBy" validate:"order_by"`
+}
+
 type AddSongsToPlaylistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
 	SongIDs  []uuid.UUID `validate:"min=1"`
 	ForceAdd *bool
+}
+
+type AddPerfectPlaylistSongRehearsalsRequest struct {
+	PlaylistID uuid.UUID   `validate:"required"`
+	IDs        []uuid.UUID `validate:"min=1"`
 }
 
 type ShufflePlaylistSongsRequest struct {

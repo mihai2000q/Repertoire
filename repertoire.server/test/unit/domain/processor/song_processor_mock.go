@@ -5,11 +5,27 @@ import (
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 )
 
 type SongProcessorMock struct {
 	mock.Mock
+}
+
+func (s *SongProcessorMock) AddCustomRehearsal(
+	song *model.Song,
+	songSectionRepository repository.SongSectionRepository,
+	arrangementID *uuid.UUID,
+) (*wrapper.ErrorCode, bool) {
+	args := s.Called(song, songSectionRepository, arrangementID)
+
+	var errCode *wrapper.ErrorCode
+	if e := args.Get(0); e != nil {
+		errCode = e.(*wrapper.ErrorCode)
+	}
+
+	return errCode, args.Bool(1)
 }
 
 func (s *SongProcessorMock) AddPerfectRehearsal(

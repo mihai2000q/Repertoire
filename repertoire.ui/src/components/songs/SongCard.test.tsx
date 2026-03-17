@@ -208,8 +208,8 @@ describe('Song Card', () => {
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /view album/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add to playlist/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /partial rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /perfect rehearsal/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /custom rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
 
     expect(screen.getByRole('menuitem', { name: /view artist/i })).toBeDisabled()

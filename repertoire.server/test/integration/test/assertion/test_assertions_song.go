@@ -2,27 +2,87 @@ package assertion
 
 import (
 	"repertoire/server/model"
+	"slices"
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
+func CustomSongRehearsalWithDuplicates(
+	t *testing.T,
+	song model.Song,
+	newSong model.Song,
+	arrangementID uuid.UUID,
+	duplicates int,
+) {
+	assertSongRehearsal(t, song, newSong, duplicates, &arrangementID)
+}
+
+func CustomSongRehearsal(t *testing.T, song model.Song, newSong model.Song, arrangementID uuid.UUID) {
+	assertSongRehearsal(t, song, newSong, 0, &arrangementID)
+}
+
 func PerfectSongRehearsal(t *testing.T, song model.Song, newSong model.Song) {
-	for i, section := range newSong.Sections {
-		if section.Occurrences == 0 { // nothing changed
-			assert.Equal(t, song.Sections[i], newSong.Sections[i])
+	if newSong.DefaultArrangementID == nil { // nothing changed overall on the song
+		assert.Equal(t, song, newSong)
+		return
+	}
+
+	assertSongRehearsal(t, song, newSong, 0, nil)
+}
+
+func PerfectSongRehearsalWithDuplicates(t *testing.T, song model.Song, newSong model.Song, duplicates int) {
+	if newSong.DefaultArrangementID == nil { // nothing changed overall on the song
+		assert.Equal(t, song, newSong)
+		return
+	}
+
+	assertSongRehearsal(t, song, newSong, duplicates, nil)
+}
+
+func assertSongRehearsal(t *testing.T, song model.Song, newSong model.Song, duplicates int, arrangementID *uuid.UUID) {
+	if arrangementID == nil {
+		arrangementID = newSong.DefaultArrangementID
+	}
+
+	totalOccurrences := uint(0)
+	arrangementOccurrencesMap := make(map[uuid.UUID]uint)
+	for _, section := range newSong.Sections {
+		arrangementIndex := slices.IndexFunc(
+			section.ArrangementOccurrences,
+			func(occ model.SongSectionOccurrences) bool {
+				return occ.ArrangementID == *arrangementID
+			})
+		totalOccurrences += section.ArrangementOccurrences[arrangementIndex].Occurrences
+		arrangementOccurrencesMap[section.ID] = section.ArrangementOccurrences[arrangementIndex].Occurrences
+	}
+
+	if totalOccurrences == 0 { // also nothing changed
+		assert.Equal(t, song, newSong)
+		return
+	}
+
+	for i, newSection := range newSong.Sections {
+		oldSection := song.Sections[i]
+
+		if arrangementOccurrencesMap[newSection.ID] == 0 { // nothing changed on this section
+			assert.Equal(t, oldSection, newSection)
 			continue
 		}
 
-		assert.Equal(t, section.Rehearsals, song.Sections[i].Rehearsals+song.Sections[i].Occurrences)
-		assert.Greater(t, section.RehearsalsScore, song.Sections[i].RehearsalsScore)
-		assert.GreaterOrEqual(t, section.Progress, song.Sections[i].Progress)
+		newRehearsals := oldSection.Rehearsals + arrangementOccurrencesMap[newSection.ID]*uint(duplicates+1)
+		assert.Equal(t, newRehearsals, newSection.Rehearsals)
+		assert.Greater(t, newSection.RehearsalsScore, oldSection.RehearsalsScore)
+		assert.GreaterOrEqual(t, newSection.Progress, oldSection.Progress)
 
-		assert.NotEmpty(t, section.History[0].ID)
-		assert.Equal(t, song.Sections[i].Rehearsals, section.History[0].From)
-		assert.Equal(t, section.Rehearsals, section.History[0].To)
-		assert.Equal(t, model.RehearsalsProperty, section.History[0].Property)
+		for j := 0; j <= duplicates; j++ {
+			fromDiff := arrangementOccurrencesMap[newSection.ID] * uint(duplicates-j)
+			toDiff := arrangementOccurrencesMap[newSection.ID] * uint(j)
+			assert.Equal(t, oldSection.Rehearsals+fromDiff, newSection.History[j].From)
+			assert.Equal(t, newSection.Rehearsals-toDiff, newSection.History[j].To)
+		}
 	}
 
 	assert.Greater(t, newSong.Rehearsals, song.Rehearsals)

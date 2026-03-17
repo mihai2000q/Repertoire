@@ -5,9 +5,8 @@ import { zod4Resolver } from 'mantine-form-zod-resolver'
 import { EditSongLinksForm, editSongLinksSchema } from '../../../validation/songsForm.ts'
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import { useDidUpdate } from '@mantine/hooks'
 
 interface EditSongLinksModalProps {
   song: Song
@@ -37,7 +36,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
     }
   })
 
-  useDidUpdate(() => {
+  useEffect(() => {
     form.setValues({
       songsterrLink: song.songsterrLink,
       youtubeLink: song.youtubeLink
@@ -89,11 +88,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
             label={'You need to make a change before saving'}
             position="bottom"
           >
-            <Button
-              type={'submit'}
-              data-disabled={!hasChanged}
-              onClick={(e) => (!hasChanged ? e.preventDefault() : {})}
-            >
+            <Button type={'submit'} disabled={!hasChanged}>
               Save
             </Button>
           </Tooltip>

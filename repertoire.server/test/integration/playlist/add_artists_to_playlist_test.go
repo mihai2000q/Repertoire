@@ -220,7 +220,7 @@ func getArtistSongs(t *testing.T, artistIDs []uuid.UUID) []model.Song {
 	var artistSongs []model.Song
 	for _, artistID := range artistIDs {
 		var songs []model.Song
-		db.Model(model.Song{}).Where("artist_id = ?", artistID).Find(&songs)
+		db.Where(&model.Song{ArtistID: &artistID}).Find(&songs)
 		artistSongs = append(artistSongs, songs...)
 	}
 	return artistSongs

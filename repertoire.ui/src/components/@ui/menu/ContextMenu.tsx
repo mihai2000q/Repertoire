@@ -9,9 +9,8 @@ type TriggerEvent = 'click' | 'context'
 
 interface ContextMenuContext {
   opened: boolean
-
+  closeDropdown(): void
   toggleDropdown(e: React.MouseEvent): void
-
   trigger?: TriggerEvent
 }
 
@@ -66,10 +65,15 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
     }
   })
 
+  const onClick = createEventHandler(children.props.onClick, () => {
+    ctx.closeDropdown()
+  })
+
   return cloneElement(children, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     onContextMenu,
+    onClick,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     [refProp]: mergeRefs(ref, children.ref)
@@ -135,29 +139,30 @@ export const ContextMenu = (props: ContextMenuProps) => {
     onChange
   })
 
-  const close = () => {
+  const _close = () => {
     if (disabled) return
     setOpened(false)
     if (_opened) onClose?.()
   }
 
-  const open = () => {
+  const _open = () => {
     if (disabled) return
     setOpened(true)
     if (!_opened) onOpen?.()
   }
 
-  const lastEventRef = useRef<React.MouseEvent | null>(null)
-  const toggleDropdown = (e: React.MouseEvent) => {
-    lastEventRef.current = e
-    if (_opened) close()
-    else open()
+  const _lastEventRef = useRef<React.MouseEvent | null>(null)
+  const _toggleDropdown = (e: React.MouseEvent) => {
+    _lastEventRef.current = e
+    if (_opened) _close()
+    else _open()
   }
 
   const ctx: ContextMenuContext = {
     opened: _opened,
-    toggleDropdown,
-    trigger
+    closeDropdown: _close,
+    toggleDropdown: _toggleDropdown,
+    trigger: trigger
   }
 
   return (
@@ -168,8 +173,8 @@ export const ContextMenu = (props: ContextMenuProps) => {
         opened={_opened}
         offset={0}
         onChange={setOpened}
-        onClose={close}
-        onOpen={open}
+        onClose={_close}
+        onOpen={_open}
         defaultOpened={defaultOpened}
         disabled={disabled}
         // with default values

@@ -4,6 +4,7 @@ import Playlist from '../../types/models/Playlist.ts'
 import {
   AddAlbumsToPlaylistRequest,
   AddArtistsToPlaylistRequest,
+  AddPerfectPlaylistSongRehearsalsRequest,
   AddPerfectRehearsalsToPlaylistsRequest,
   AddSongsToPlaylistRequest,
   BulkDeletePlaylistsRequest,
@@ -203,6 +204,17 @@ const playlistsApi = api.injectEndpoints({
       },
       providesTags: ['Songs', 'Albums', 'Artists']
     }),
+    addPerfectPlaylistSongRehearsals: build.mutation<
+      HttpMessageResponse,
+      AddPerfectPlaylistSongRehearsalsRequest
+    >({
+      query: (body) => ({
+        url: 'playlists/songs/perfect-rehearsals',
+        method: 'POST',
+        body: body
+      }),
+      invalidatesTags: ['Songs']
+    }),
     addSongsToPlaylist: build.mutation<AddSongsToPlaylistResponse, AddSongsToPlaylistRequest>({
       query: (body) => ({
         url: `playlists/songs/add`,
@@ -255,6 +267,7 @@ export const {
   useAddArtistsToPlaylistMutation,
   useAddAlbumsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
+  useAddPerfectPlaylistSongRehearsalsMutation,
   useShufflePlaylistMutation,
   useMoveSongFromPlaylistMutation,
   useRemoveSongsFromPlaylistMutation

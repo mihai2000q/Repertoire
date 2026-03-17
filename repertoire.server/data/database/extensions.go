@@ -9,6 +9,24 @@ import (
 	"gorm.io/gorm"
 )
 
+type EnhancedFunc = func(*gorm.DB) *gorm.DB
+
+func WithPreload(tx *gorm.DB, with []string, enhancements map[string]EnhancedFunc) *gorm.DB {
+	if enhancements == nil {
+		enhancements = make(map[string]EnhancedFunc)
+	}
+
+	for _, w := range with {
+		enhancedFunc, ok := enhancements[w]
+		if ok {
+			tx = enhancedFunc(tx)
+		} else {
+			tx = tx.Preload(w)
+		}
+	}
+	return tx
+}
+
 func AddCoalesceToCompoundFields(str []string, compoundFields []string) []string {
 	var newStr = slices.Clone(str)
 	for i, s := range newStr {

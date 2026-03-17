@@ -4,8 +4,8 @@ import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
 import AlbumAutocomplete from '../../@ui/form/input/AlbumAutocomplete.tsx'
 import { AddNewSongForm } from '../../../validation/songsForm.ts'
 import { IconInfoCircleFilled } from '@tabler/icons-react'
-import { useDidUpdate } from '@mantine/hooks'
 import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import { useDidUpdate } from '@mantine/hooks'
 
 interface AddNewSongModalFirstStepProps {
   form: UseFormReturnType<AddNewSongForm>

@@ -50,7 +50,7 @@ function MenuItemConfirmation({
       })}
       {...props}
     >
-      <Box pos={'relative'}>
+      <Box pos={'relative'} miw={100} w={'100%'}>
         {children}
         <Transition
           mounted={openedControls}

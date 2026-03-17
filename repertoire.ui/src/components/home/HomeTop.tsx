@@ -1,4 +1,4 @@
-import { RefObject, useRef, useState } from 'react'
+import { RefObject, useEffect, useRef, useState } from 'react'
 import { ActionIcon, Button, Center, Group, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useDidUpdate, useViewportSize } from '@mantine/hooks'
@@ -127,11 +127,11 @@ function HomeTop({ ref }: { ref?: RefObject<HTMLDivElement> }) {
 
   const [disableBack, setDisableBack] = useState(false)
   const [disableForward, setDisableForward] = useState(false)
-  useDidUpdate(() => {
+  useEffect(() => {
     setDisableBack(topRef.current?.scrollLeft === 0)
     setDisableForward(topRef.current?.scrollWidth === topRef.current?.clientWidth)
   }, [topRef.current, width, topEntity])
-  useDidUpdate(() => {
+  useEffect(() => {
     const frame = requestAnimationFrame(() => {
       setDisableBack(topRef.current?.scrollLeft === 0)
       setDisableForward(topRef.current?.scrollWidth === topRef.current?.clientWidth)
