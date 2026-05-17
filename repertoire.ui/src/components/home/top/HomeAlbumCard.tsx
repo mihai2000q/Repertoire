@@ -54,7 +54,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',

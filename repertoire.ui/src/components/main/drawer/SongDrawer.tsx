@@ -141,7 +141,7 @@ function SongDrawer() {
             h={'unset'}
             src={song.imageUrl ?? song.album?.imageUrl}
             alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'white'}>
@@ -210,7 +210,7 @@ function SongDrawer() {
                   src={song.artist.imageUrl}
                   alt={song.artist.imageUrl && song.artist.name}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                  bg={'gray.0'}
+                  color={'gray.0'}
                 >
                   <Center c={'gray.7'}>
                     <CustomIconUserAlt aria-label={`default-icon-${song.artist.name}`} size={13} />
@@ -262,7 +262,7 @@ function SongDrawer() {
                         size={45}
                         src={song.album.imageUrl}
                         alt={song.album.imageUrl && song.album.title}
-                        bg={'gray.5'}
+                        color={'gray.5'}
                       >
                         <Center c={'white'}>
                           <CustomIconAlbumVinyl

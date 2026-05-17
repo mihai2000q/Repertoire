@@ -80,7 +80,7 @@ const AvatarIndicator = ({
       radius={'md'}
       src={src}
       alt={alt}
-      bg={'gray.5'}
+      color={'gray.5'}
       style={(theme) => ({ boxShadow: theme.shadows.sm })}
       imageProps={{ loading: 'lazy' }}
     >
@@ -163,7 +163,7 @@ function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: Top
           src={artist.imageUrl}
           alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          bg={'gray.0'}
+          color={'gray.0'}
           imageProps={{ loading: 'lazy' }}
         >
           <Center c={'gray.7'}>

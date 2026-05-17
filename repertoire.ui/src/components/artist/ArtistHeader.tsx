@@ -82,7 +82,7 @@ function ArtistHeader({
           src={isUnknownArtist ? null : artist.imageUrl}
           alt={!isUnknownArtist && artist.imageUrl ? artist.name : null}
           size={'max(11vw, 125px)'}
-          bg={'white'}
+          color={'white'}
           style={(theme) => ({
             boxShadow: theme.shadows.lg,
             ...(!isUnknownArtist && artist.imageUrl && { cursor: 'pointer' })

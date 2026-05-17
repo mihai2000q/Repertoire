@@ -57,7 +57,7 @@ function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => 
           size={28}
           src={song.imageUrl ?? song.album?.imageUrl}
           alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-          bg={'gray.5'}
+          color={'gray.5'}
           sx={(theme) => ({
             transition: '0.18s',
             cursor: 'pointer',
@@ -202,7 +202,7 @@ function PlaylistDrawer() {
               h={'unset'}
               src={playlist.imageUrl}
               alt={playlist.imageUrl && playlist.title}
-              bg={'gray.5'}
+              color={'gray.5'}
               style={{ aspectRatio: 4 / 3 }}
             >
               <Center c={'white'}>

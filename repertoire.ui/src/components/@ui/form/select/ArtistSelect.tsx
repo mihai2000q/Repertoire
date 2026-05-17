@@ -57,7 +57,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
           src={artist.imageUrl}
           alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          bg={'gray.0'}
+          color={'gray.0'}
         >
           <Center c={'gray.7'}>
             <CustomIconUserAlt size={12} />
@@ -71,7 +71,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
             src={artist.imageUrl}
             alt={artist.imageUrl && artist.name}
             style={(theme) => ({ boxShadow: theme.shadows.sm })}
-            bg={'gray.0'}
+            color={'gray.0'}
           >
             <Center c={'gray.7'}>
               <CustomIconUserAlt size={18} />
@@ -98,7 +98,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
           src={localArtist.imageUrl}
           alt={localArtist.imageUrl && localArtist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          bg={'gray.0'}
+          color={'gray.0'}
         >
           <Center c={'gray.7'}>
             <CustomIconUserAlt size={13} />

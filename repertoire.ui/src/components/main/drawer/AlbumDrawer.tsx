@@ -61,7 +61,7 @@ function AlbumDrawerSongCard({
           radius={'md'}
           size={28}
           src={song.imageUrl ?? albumImageUrl}
-          alt={(song.imageUrl ?? albumImageUrl) && song.title}
+          color={(song.imageUrl ?? albumImageUrl) && song.title}
           bg={'gray.5'}
           sx={(theme) => ({
             transition: '0.18s',
@@ -156,7 +156,7 @@ function AlbumDrawer() {
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'white'}>
@@ -221,7 +221,7 @@ function AlbumDrawer() {
                     src={album.artist.imageUrl}
                     alt={album.artist.imageUrl && album.artist.name}
                     style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                    bg={'gray.0'}
+                    color={'gray.0'}
                   >
                     <Center c={'gray.7'}>
                       <CustomIconUserAlt

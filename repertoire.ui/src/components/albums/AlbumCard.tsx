@@ -79,7 +79,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             checkmarkSize={'28%'}
             isSelected={isDragSelected}
             sx={(theme) => ({

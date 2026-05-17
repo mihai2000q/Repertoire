@@ -59,7 +59,7 @@ function ArtistDrawerAlbumCard({ album, onClose }: { album: Album; onClose: () =
         size={28}
         src={album.imageUrl}
         alt={album.imageUrl && album.title}
-        bg={'gray.5'}
+        color={'gray.5'}
         sx={(theme) => ({
           transition: '0.18s',
           cursor: 'pointer',
@@ -104,7 +104,7 @@ function ArtistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => vo
         size={28}
         src={song.imageUrl ?? song.album?.imageUrl}
         alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-        bg={'gray.5'}
+        color={'gray.5'}
         sx={(theme) => ({
           transition: '0.18s',
           cursor: 'pointer',
@@ -280,7 +280,7 @@ function ArtistDrawer() {
               radius={0}
               src={artist.imageUrl}
               alt={artist.imageUrl && artist.name}
-              bg={'gray.0'}
+              color={'gray.0'}
               style={{ aspectRatio: 4 / 3 }}
             >
               <Center c={'gray.7'}>

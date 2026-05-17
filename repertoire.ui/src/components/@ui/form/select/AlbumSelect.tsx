@@ -58,7 +58,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
           size={23}
           src={album.imageUrl}
           alt={album.imageUrl && album.title}
-          bg={'gray.5'}
+          color={'gray.5'}
         >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={11} />
@@ -72,7 +72,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
             size={'lg'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
           >
             <Center c={'white'}>
               <CustomIconAlbumVinyl size={25} />
@@ -111,7 +111,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
           size={'sm'}
           src={localAlbum.imageUrl}
           alt={localAlbum.imageUrl && localAlbum.title}
-          bg={'gray.5'}
+          color={'gray.5'}
         >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={12} />

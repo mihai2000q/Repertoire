@@ -135,7 +135,7 @@ function SongCard({ song }: SongCardProps) {
               alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
               w={'100%'}
               h={'unset'}
-              bg={'gray.5'}
+              color={'gray.5'}
               checkmarkSize={'28%'}
               style={(theme) => ({
                 aspectRatio: 8 / 7,

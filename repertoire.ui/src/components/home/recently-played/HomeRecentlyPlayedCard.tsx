@@ -82,7 +82,7 @@ function HomeRecentlyPlayedCard({
         radius={isArtist === true ? '50%' : 'md'}
         src={imageUrl}
         alt={imageUrl && title}
-        bg={isArtist === true ? 'gray.0' : 'gray.5'}
+        color={isArtist === true ? 'gray.0' : 'gray.5'}
         sx={(theme) => ({
           aspectRatio: 1,
           boxShadow: theme.shadows.sm

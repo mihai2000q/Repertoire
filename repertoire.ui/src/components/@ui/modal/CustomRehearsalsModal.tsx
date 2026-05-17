@@ -149,7 +149,7 @@ function CustomRehearsalsModal({ opened, onClose, ids, onSuccess }: CustomRehear
                       size={'md'}
                       src={song.imageUrl ?? song.album?.imageUrl}
                       alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-                      bg={'gray.5'}
+                      color={'gray.5'}
                     >
                       <Center c={'white'}>
                         <CustomIconMusicNoteEighth

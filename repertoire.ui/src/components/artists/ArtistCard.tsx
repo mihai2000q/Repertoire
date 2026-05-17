@@ -70,7 +70,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
             alt={artist.imageUrl && artist.name}
             w={'100%'}
             h={'unset'}
-            bg={'gray.0'}
+            color={'gray.0'}
             checkmarkSize={'28%'}
             isSelected={isDragSelected}
             style={(theme) => ({

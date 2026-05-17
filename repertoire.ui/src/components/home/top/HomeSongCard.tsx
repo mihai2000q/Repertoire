@@ -64,7 +64,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
             h={'unset'}
             src={song.imageUrl ?? song.album?.imageUrl}
             alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',

@@ -61,7 +61,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
           size={23}
           src={album.imageUrl}
           alt={album.imageUrl && album.title}
-          bg={'gray.5'}
+          color={'gray.5'}
         >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={11} />
@@ -75,7 +75,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
             size={'lg'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
           >
             <Center c={'white'}>
               <CustomIconAlbumVinyl size={25} />
@@ -162,7 +162,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
                         size={'sm'}
                         src={album.imageUrl}
                         alt={album.imageUrl && album.title}
-                        bg={'gray.5'}
+                        color={'gray.5'}
                       >
                         <Center c={'white'}>
                           <CustomIconAlbumVinyl size={12} />

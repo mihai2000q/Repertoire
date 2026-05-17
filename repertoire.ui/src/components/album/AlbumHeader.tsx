@@ -82,7 +82,7 @@ function AlbumHeader({ album, isUnknownAlbum, songsTotalCount }: AlbumHeaderProp
           alt={!isUnknownAlbum && album.imageUrl ? album.title : null}
           radius={'10%'}
           size={'max(12vw, 150px)'}
-          bg={isUnknownAlbum ? 'white' : 'gray.5'}
+          color={isUnknownAlbum ? 'white' : 'gray.5'}
           style={(theme) => ({
             aspectRatio: 1,
             boxShadow: theme.shadows.lg,
@@ -131,7 +131,7 @@ function AlbumHeader({ album, isUnknownAlbum, songsTotalCount }: AlbumHeaderProp
                     src={album.artist.imageUrl}
                     alt={album.artist.imageUrl && album.artist.name}
                     style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                    bg={'gray.0'}
+                    color={'gray.0'}
                   >
                     <Center c={'gray.7'}>
                       <CustomIconUserAlt

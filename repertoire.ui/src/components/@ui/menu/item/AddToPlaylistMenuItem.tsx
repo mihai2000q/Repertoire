@@ -119,7 +119,7 @@ function PlaylistOption({
         radius={'md'}
         src={playlist.imageUrl}
         alt={playlist.imageUrl && playlist.title}
-        bg={'gray.5'}
+        color={'gray.5'}
         style={(theme) => ({ aspectRatio: 1, boxShadow: theme.shadows.sm })}
         imageProps={{ loading: 'lazy' }}
       >

@@ -71,7 +71,7 @@ function LocalPlaylistCard({ playlist }: { playlist: Playlist }) {
             size={60}
             src={playlist.imageUrl}
             alt={playlist.imageUrl && playlist.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',

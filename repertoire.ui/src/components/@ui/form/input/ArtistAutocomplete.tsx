@@ -66,7 +66,7 @@ function ArtistAutocomplete({
           src={artist.imageUrl}
           alt={artist.imageUrl && artist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          bg={'gray.0'}
+          color={'gray.0'}
         >
           <Center c={'gray.7'}>
             <CustomIconUserAlt size={12} />
@@ -80,7 +80,7 @@ function ArtistAutocomplete({
             src={artist.imageUrl}
             alt={artist.imageUrl && artist.name}
             style={(theme) => ({ boxShadow: theme.shadows.sm })}
-            bg={'gray.0'}
+            color={'gray.0'}
           >
             <Center c={'gray.7'}>
               <CustomIconUserAlt size={18} />
@@ -158,7 +158,7 @@ function ArtistAutocomplete({
                         src={artist.imageUrl}
                         alt={artist.imageUrl && artist.name}
                         style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                        bg={'gray.0'}
+                        color={'gray.0'}
                       >
                         <Center c={'gray.7'}>
                           <CustomIconUserAlt size={13} />
