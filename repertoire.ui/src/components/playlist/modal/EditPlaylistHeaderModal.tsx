@@ -6,8 +6,7 @@ import {
   useUpdatePlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import {
   EditPlaylistHeaderForm,
   editPlaylistHeaderSchema
@@ -43,7 +42,7 @@ function EditPlaylistHeaderModal({ playlist, opened, onClose }: EditPlaylistHead
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(editPlaylistHeaderSchema),
+    validate: schemaResolver(editPlaylistHeaderSchema),
     onValuesChange: (values) => {
       setPlaylistHasChanged(
         values.title !== playlist.title || values.description !== playlist.description

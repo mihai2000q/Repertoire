@@ -81,7 +81,7 @@ function AddNewSongSection({
   }
 
   return (
-    <Collapse in={opened} onTransitionEnd={handleOnTransitionEnd}>
+    <Collapse expanded={opened} onTransitionEnd={handleOnTransitionEnd}>
       <Group gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-section'}>
         <Group gap={8}>
           <BandMemberCompactSelect

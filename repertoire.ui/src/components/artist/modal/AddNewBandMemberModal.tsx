@@ -1,8 +1,7 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import { AddNewBandMemberForm, addNewBandMemberSchema } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
@@ -49,7 +48,7 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(addNewBandMemberSchema)
+    validate: schemaResolver(addNewBandMemberSchema)
   })
 
   async function addBandMember({ name, roleIds }: AddNewBandMemberForm) {

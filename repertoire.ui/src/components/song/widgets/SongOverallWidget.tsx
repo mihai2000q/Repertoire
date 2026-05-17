@@ -21,7 +21,7 @@ function SongOverallWidget({ song }: SongOverallWidgetProps) {
           </Text>
         </Tooltip>
 
-        <Grid align={'center'} gutter={'sm'}>
+        <Grid align={'center'} gap={'sm'}>
           <Grid.Col span={6}>
             <Flex>
               <Tooltip

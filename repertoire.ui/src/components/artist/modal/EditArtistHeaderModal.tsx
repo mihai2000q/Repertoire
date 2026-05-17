@@ -15,8 +15,7 @@ import {
   useUpdateArtistMutation
 } from '../../../state/api/artistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
@@ -49,7 +48,7 @@ function EditArtistHeaderModal({ artist, opened, onClose }: EditArtistHeaderModa
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(editArtistHeaderSchema),
+    validate: schemaResolver(editArtistHeaderSchema),
     onValuesChange: (values) => {
       setArtistHasChanged(values.name !== artist.name || values.isBand !== artist.isBand)
       setImageHasChanged(values.image !== artist.imageUrl)

@@ -9,8 +9,7 @@ import {
   Stepper,
   Text
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
@@ -65,7 +64,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(addNewSongSchema),
+    validate: schemaResolver(addNewSongSchema),
     enhanceGetInputProps: (payload) => ({
       disabled: isArtistDisabled && payload.field === 'artistName'
     })

@@ -14,8 +14,7 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../state/store.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse.ts'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import { signIn } from '../state/slice/authSlice.ts'
 import { signUpSchema, SignUpForm } from '../validation/signUpForm.ts'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
@@ -43,7 +42,7 @@ function SignUp(): ReactElement {
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(signUpSchema)
+    validate: schemaResolver(signUpSchema)
   })
 
   async function signUp({ name, email, password }): Promise<void> {

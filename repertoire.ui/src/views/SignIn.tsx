@@ -15,8 +15,7 @@ import { useAppDispatch } from '../state/store'
 import { signIn } from '../state/slice/authSlice.ts'
 import HttpErrorResponse from '../types/responses/HttpErrorResponse'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import { signInSchema, SignInForm } from '../validation/signInForm'
 import useFixedDocumentTitle from '../hooks/useFixedDocumentTitle.ts'
 import { authApi, useSignInMutation } from '../state/authApi.ts'
@@ -41,7 +40,7 @@ function SignIn(): ReactElement {
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(signInSchema)
+    validate: schemaResolver(signInSchema)
   })
 
   async function handleSignIn({ email, password }: SignInForm): Promise<void> {

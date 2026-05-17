@@ -44,7 +44,7 @@ function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => 
   }
 
   return (
-    <Grid align={'center'} gutter={'xs'} px={'xs'}>
+    <Grid align={'center'} gap={'xs'} px={'xs'}>
       <Grid.Col span={1}>
         <Text fw={500} ta={'center'}>
           {song.playlistTrackNo}

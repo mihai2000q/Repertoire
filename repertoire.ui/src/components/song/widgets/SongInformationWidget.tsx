@@ -27,7 +27,7 @@ function SongInformationWidget({ song }: SongInformationWidgetProps) {
     <EditWidget p={'md'} ariaLabel={'information-widget'} onEditClick={openEdit}>
       <Stack gap={'xs'}>
         <Text fw={600}>Information</Text>
-        <Grid align={'center'} gutter={'sm'}>
+        <Grid align={'center'} gap={'sm'}>
           <Grid.Col span={firstColSize}>
             <Text fw={500} c={'dimmed'}>
               Difficulty:

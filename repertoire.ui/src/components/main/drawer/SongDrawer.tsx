@@ -318,7 +318,7 @@ function SongDrawer() {
 
           {showInfo && <Divider mt={'xs'} />}
 
-          <Grid align={'center'} gutter={'sm'} p={showInfo ? 'xs' : 0}>
+          <Grid align={'center'} gap={'sm'} p={showInfo ? 'xs' : 0}>
             {song.difficulty && (
               <>
                 <Grid.Col span={firstColumnSize}>

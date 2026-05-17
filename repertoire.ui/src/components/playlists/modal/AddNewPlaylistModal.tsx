@@ -4,8 +4,7 @@ import {
   useSaveImageToPlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { useForm, schemaResolver } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
@@ -39,7 +38,7 @@ function AddNewPlaylistModal({ opened, onClose }: AddNewPlaylistModalProps) {
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(addNewPlaylistSchema)
+    validate: schemaResolver(addNewPlaylistSchema)
   })
 
   async function addPlaylist({ title, description }: AddNewPlaylistForm) {
