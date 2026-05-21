@@ -11,7 +11,7 @@ import {
 } from '@mantine/core'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import User from '../../../types/models/User.ts'
 import { AccountForm, accountSchema } from '../../../validation/mainForm.ts'
 import { toast } from 'react-toastify'

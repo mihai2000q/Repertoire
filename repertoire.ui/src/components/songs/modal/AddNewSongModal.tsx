@@ -9,7 +9,7 @@ import {
   Stepper,
   Text
 } from '@mantine/core'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'

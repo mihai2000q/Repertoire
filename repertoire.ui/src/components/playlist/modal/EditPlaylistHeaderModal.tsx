@@ -6,7 +6,7 @@ import {
   useUpdatePlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import {
   EditPlaylistHeaderForm,
   editPlaylistHeaderSchema

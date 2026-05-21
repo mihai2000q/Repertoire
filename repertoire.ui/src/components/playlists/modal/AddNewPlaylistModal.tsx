@@ -4,7 +4,7 @@ import {
   useSaveImageToPlaylistMutation
 } from '../../../state/api/playlistsApi.ts'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'

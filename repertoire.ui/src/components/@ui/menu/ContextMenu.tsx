@@ -9,9 +9,11 @@ type TriggerEvent = 'click' | 'context'
 
 interface ContextMenuContext {
   opened: boolean
-  closeDropdown(): void
-  toggleDropdown(e: React.MouseEvent): void
   trigger?: TriggerEvent
+
+  closeDropdown(): void
+
+  toggleDropdown(e: React.MouseEvent): void
 }
 
 const [ContextMenuProvider, useContextMenuContext] = createSafeContext<ContextMenuContext>(

@@ -16,7 +16,7 @@ import {
   useUpdateAlbumMutation
 } from '../../../state/api/albumsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderSchema } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'

@@ -1,7 +1,7 @@
 import { Button, Group, Modal, ScrollArea, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewAlbumForm, addNewAlbumSchema } from '../../../validation/albumsForm.ts'
 import {

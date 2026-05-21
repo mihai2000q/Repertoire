@@ -14,7 +14,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { SongSection } from '../../../types/models/Song.ts'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditSongSectionForm, editSongSectionSchema } from '../../../validation/songsForm.ts'
 import SongSectionTypeSelect from '../../@ui/form/select/compact/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'

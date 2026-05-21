@@ -15,7 +15,7 @@ import {
   useUpdateArtistMutation
 } from '../../../state/api/artistsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm, schemaResolver } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../../validation/artistsForm.ts'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
