@@ -51,8 +51,6 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
         handleClearSelection()
     }
 
-    console.log(appRef)
-    console.log(areaRef)
     appRef.current?.addEventListener('click', clickOutside)
     return () => appRef.current?.removeEventListener('click', clickOutside)
   }, [appRef, areaRef])
