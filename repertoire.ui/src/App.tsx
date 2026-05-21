@@ -6,7 +6,7 @@ import { emotionCache } from './cache.ts'
 import CustomizedToastContainer from './components/@ui/toast/CustomizedToastContainer.tsx'
 import { ReactElement } from 'react'
 import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { MantineProvider } from '@mantine/core'
+import { MantineProvider, v8CssVariablesResolver } from '@mantine/core'
 import { theme } from './theme/theme'
 import { Provider } from 'react-redux'
 import { store } from './state/store'
@@ -47,6 +47,8 @@ function App(): ReactElement {
           theme={theme}
           forceColorScheme={'light'}
           stylesTransform={emotionTransform}
+          cssVariablesResolver={v8CssVariablesResolver} // TODO: Remove and adapt styling
+          deduplicateInlineStyles
         >
           <MantineEmotionProvider cache={emotionCache}>
             <Router>
