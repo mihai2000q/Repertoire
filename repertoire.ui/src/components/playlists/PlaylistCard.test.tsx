@@ -1,4 +1,4 @@
-import Playlist from 'src/types/models/Playlist.ts'
+import Playlist from '../../types/models/Playlist.ts'
 import { emptyPlaylist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import PlaylistCard from './PlaylistCard.tsx'
 import { screen } from '@testing-library/react'

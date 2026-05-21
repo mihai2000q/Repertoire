@@ -1,4 +1,4 @@
-import Artist from 'src/types/models/Artist.ts'
+import Artist from '../../types/models/Artist.ts'
 import { emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import ArtistCard from './ArtistCard.tsx'
 import { screen } from '@testing-library/react'
