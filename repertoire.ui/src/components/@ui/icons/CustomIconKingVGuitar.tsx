@@ -5,7 +5,12 @@ interface CustomIconKingVGuitarProps extends SVGProps<SVGSVGElement> {
   size?: number | string
 }
 
-function CustomIconKingVGuitar({ color, size = 24, strokeWidth = 2, ...props }: CustomIconKingVGuitarProps) {
+function CustomIconKingVGuitar({
+  color,
+  size = 24,
+  strokeWidth = 2,
+  ...props
+}: CustomIconKingVGuitarProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

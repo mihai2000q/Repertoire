@@ -166,9 +166,7 @@ describe('Albums Context Menu', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /custom rehearsals/i }))
 
-      expect(
-        await screen.findByRole('dialog', { name: /custom rehearsals/i })
-      ).toBeInTheDocument()
+      expect(await screen.findByRole('dialog', { name: /custom rehearsals/i })).toBeInTheDocument()
     })
 
     it('should open warning when clicking on remove from album menu item', async () => {

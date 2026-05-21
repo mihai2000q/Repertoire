@@ -1,5 +1,5 @@
 enum SongWithProperty {
-  Arrangements = 'Arrangements',
+  Arrangements = 'Arrangements'
 }
 
 export default SongWithProperty

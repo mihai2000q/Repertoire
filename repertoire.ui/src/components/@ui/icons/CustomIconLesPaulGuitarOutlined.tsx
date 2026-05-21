@@ -5,7 +5,11 @@ interface CustomIconLesPaulGuitarOutlinedProps extends SVGProps<SVGSVGElement> {
   size?: number | string
 }
 
-function CustomIconLesPaulGuitarOutlined({ color, size = 24, ...props }: CustomIconLesPaulGuitarOutlinedProps) {
+function CustomIconLesPaulGuitarOutlined({
+  color,
+  size = 24,
+  ...props
+}: CustomIconLesPaulGuitarOutlinedProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -1,11 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  RefObject,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import { createContext, ReactNode, RefObject, useContext, useEffect, useState } from 'react'
 
 interface MainContextReturnType {
   ref: RefObject<HTMLDivElement>

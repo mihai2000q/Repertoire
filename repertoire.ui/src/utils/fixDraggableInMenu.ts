@@ -1,4 +1,8 @@
-export default function fixDraggableInMenu(draggableProps, snapshot: { isDragging: boolean }, offset = 160) {
+export default function fixDraggableInMenu(
+  draggableProps,
+  snapshot: { isDragging: boolean },
+  offset = 160
+) {
   if (snapshot.isDragging) {
     if ('left' in draggableProps.style) {
       draggableProps.style.left = 0

@@ -5,7 +5,12 @@ interface CustomIconMetronomeProps extends SVGProps<SVGSVGElement> {
   size?: number | string
 }
 
-function CustomIconMetronome({ color, size = 24, strokeWidth = 2, ...props }: CustomIconMetronomeProps) {
+function CustomIconMetronome({
+  color,
+  size = 24,
+  strokeWidth = 2,
+  ...props
+}: CustomIconMetronomeProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
