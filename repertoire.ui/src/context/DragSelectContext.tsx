@@ -50,7 +50,7 @@ export function DragSelectProvider({ children, data, settings = {} }: DragSelect
   // Initialize DragSelect instance
   useEffect(() => {
     const areaElement = resolveArea()
-    if (!(areaElement instanceof HTMLElement)) return
+    if (!(areaElement instanceof HTMLElement)) return () => {}
 
     const fullSettings = {
       draggability: false,
@@ -85,12 +85,13 @@ export function DragSelectProvider({ children, data, settings = {} }: DragSelect
       selectorClass: classes.selector,
       ...updatableSettings
     })
+    return
   }, [settings, classes.selector])
 
   // Selection changes
   useEffect(() => {
     const ds = dragSelectRef.current
-    if (!ds) return
+    if (!ds) return () => {}
 
     const selectionChange = () => {
       const newIds = ds.getSelection().map((el) => el.id)

@@ -43,13 +43,13 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
 
   // Event delegation for clicks on selectable elements
   useEffect(() => {
-    const container = areaRef.current
-    if (!container) return
+    const area = areaRef.current
+    if (!area) return () => {}
 
     const handleClick = (ev: MouseEvent) => {
       // Find the closest element with data-selectable-id
       let target = ev.target as HTMLElement | null
-      while (target && target !== container) {
+      while (target && target !== area) {
         const id = target.getAttribute('data-selectable-id')
         if (id) {
           if (ev.ctrlKey) ctrlClick(id)
@@ -60,8 +60,8 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
       }
     }
 
-    container.addEventListener('click', handleClick)
-    return () => container.removeEventListener('click', handleClick)
+    area.addEventListener('click', handleClick)
+    return () => area.removeEventListener('click', handleClick)
   }, [])
 
   // Click outside detection
