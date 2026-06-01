@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react'
 import DragSelect, { DSInputElement } from 'dragselect'
 import { createStyles } from '@mantine/emotion'
 import { alpha } from '@mantine/core'
@@ -32,75 +32,109 @@ const DragSelectContext = createContext<DragSelectReturnType>({
 
 export function DragSelectProvider({ children, data, settings = {} }: DragSelectProviderProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [dragSelect, setDragSelect] = useState<DragSelect<DSInputElement>>()
+  const dragSelectRef = useRef<DragSelect<DSInputElement>>(null)
   const { classes } = useStyles()
   const { ref: appRef } = useMain()
 
+  // Helper: resolve area element from settings.area (supports HTMLElement, ref, or function)
+  const resolveArea = (): HTMLElement | null => {
+    const area = settings.area
+    if (!area) return document.body
+    if (area instanceof HTMLElement) return area
+    if (area && 'current' in area && area.current instanceof HTMLElement) {
+      return area.current
+    }
+    return document.body
+  }
+
+  // Initialize DragSelect instance
   useEffect(() => {
-    const clearOutside = (event: PointerEvent) => {
-      if (
-        appRef.current?.contains(event.target as Node) &&
-        !settings.area?.contains(event.target as Node)
-      )
-        handleClearSelection()
+    const areaElement = resolveArea()
+    if (!(areaElement instanceof HTMLElement)) return
+
+    const fullSettings = {
+      draggability: false,
+      immediateDrag: false,
+      keyboardDrag: false,
+      multiSelectKeys: ['Control', 'Shift'],
+      selectorClass: classes.selector,
+      ...settings,
+      area: areaElement
     }
 
-    appRef.current?.addEventListener('click', clearOutside)
-    return () => appRef.current?.removeEventListener('click', clearOutside)
-  }, [appRef, settings, dragSelect])
-
-  useEffect(() => {
-    setDragSelect((prevState) => {
-      if (prevState) return prevState
-      return new DragSelect({})
-    })
+    const ds = new DragSelect(fullSettings)
+    dragSelectRef.current = ds
 
     return () => {
-      if (dragSelect) {
-        dragSelect.stop()
-        setDragSelect(undefined)
+      ds.stop()
+      dragSelectRef.current = undefined
+    }
+  }, [])
+
+  // sync settings
+  useEffect(() => {
+    const ds = dragSelectRef.current
+    if (!ds) return
+
+    const { area: _area, ...updatableSettings } = settings
+    ds.setSettings({
+      draggability: false,
+      immediateDrag: false,
+      keyboardDrag: false,
+      multiSelectKeys: ['Control', 'Shift'],
+      selectorClass: classes.selector,
+      ...updatableSettings
+    })
+  }, [settings, classes.selector])
+
+  // Selection changes
+  useEffect(() => {
+    const ds = dragSelectRef.current
+    if (!ds) return
+
+    const selectionChange = () => {
+      const newIds = ds.getSelection().map((el) => el.id)
+      setSelectedIds(newIds)
+    }
+
+    ds.subscribe('DS:start', selectionChange)
+    ds.subscribe('DS:select', selectionChange)
+    ds.subscribe('DS:unselect', selectionChange)
+
+    return () => {
+      ds.unsubscribe('DS:start', selectionChange)
+      ds.unsubscribe('DS:select', selectionChange)
+      ds.unsubscribe('DS:unselect', selectionChange)
+    }
+  }, [dragSelectRef.current])
+
+  // Click outside detection
+  useEffect(() => {
+    const clickOutside = (event: MouseEvent) => {
+      const areaElement = resolveArea()
+      if (
+        selectedIds.length > 0 &&
+        appRef.current?.contains(event.target as Node) &&
+        !areaElement.contains(event.target as Node)
+      ) {
+        dragSelectRef.current?.clearSelection()
       }
     }
-  }, [dragSelect])
+    const appNode = appRef.current
+    appNode?.addEventListener('click', clickOutside)
+    return () => appNode?.removeEventListener('click', clickOutside)
+  }, [appRef, selectedIds.length, settings.area])
 
-  useEffect(() => {
-    const handleSelectionChange = () => {
-      if (dragSelect?.getSelection().map((el) => el.id) !== selectedIds)
-        setSelectedIds(dragSelect?.getSelection().map((el) => el.id))
-    }
-    dragSelect?.subscribe('DS:start', handleSelectionChange)
-    dragSelect?.subscribe('DS:select', handleSelectionChange)
-    dragSelect?.subscribe('DS:unselect', handleSelectionChange)
-    return () => {
-      dragSelect?.unsubscribe('DS:start', handleSelectionChange)
-      dragSelect?.unsubscribe('DS:select', handleSelectionChange)
-      dragSelect?.unsubscribe('DS:unselect', handleSelectionChange)
-    }
-  }, [dragSelect])
-
-  useEffect(
-    () =>
-      dragSelect?.setSettings({
-        draggability: false,
-        immediateDrag: false,
-        keyboardDrag: false,
-        multiSelectKeys: ['Control', 'Shift'],
-        selectorClass: classes.selector,
-        ...settings
-      }),
-    [dragSelect, settings]
-  )
-
-  useEffect(() => handleClearSelection(), [data])
+  useEffect(() => handleClearSelection, [data])
 
   function handleClearSelection() {
-    dragSelect?.clearSelection()
+    dragSelectRef.current?.clearSelection()
   }
 
   return (
     <DragSelectContext.Provider
       value={{
-        dragSelect: dragSelect,
+        dragSelect: dragSelectRef.current,
         selectedIds: selectedIds,
         clearSelection: handleClearSelection
       }}
