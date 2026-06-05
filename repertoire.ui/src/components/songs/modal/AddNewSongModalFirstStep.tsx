@@ -73,7 +73,7 @@ function AddNewSongModalFirstStep({
       <Textarea
         label="Description"
         placeholder="Enter Description"
-        autosize={true}
+        autosize
         minRows={3}
         maxRows={6}
         key={form.key('description')}
