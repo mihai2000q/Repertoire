@@ -2,7 +2,6 @@ import { reduxRender } from '../../test-utils.tsx'
 import TitleBar from './TitleBar.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { afterEach } from 'vitest'
 import { ElectronAPI, IpcRenderer } from '@electron-toolkit/preload'
 
 describe('Title Bar', () => {

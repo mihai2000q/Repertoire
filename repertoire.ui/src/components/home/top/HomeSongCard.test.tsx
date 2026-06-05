@@ -10,7 +10,6 @@ import Song from '../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
-import { afterEach, expect } from 'vitest'
 
 describe('Home Song Card', () => {
   const song: Song = {

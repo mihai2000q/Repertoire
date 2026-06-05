@@ -4,7 +4,6 @@ import Artist from '../../../types/models/Artist.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
-import { afterEach } from 'vitest'
 
 describe('Home Artist Card', () => {
   const artist: Artist = {

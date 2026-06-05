@@ -7,7 +7,6 @@ import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
 import { BandMember } from '../../types/models/Artist.ts'
-import { beforeEach, expect } from 'vitest'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
 // Mock Context

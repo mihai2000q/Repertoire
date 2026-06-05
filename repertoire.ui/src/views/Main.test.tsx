@@ -6,7 +6,6 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse, ws } from 'msw'
 import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
 import { SearchBase } from '../types/models/Search.ts'
-import { beforeEach } from 'vitest'
 
 describe('Main', () => {
   const handlers = [

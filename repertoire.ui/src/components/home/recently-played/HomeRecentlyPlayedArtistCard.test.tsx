@@ -1,6 +1,5 @@
 import { emptyArtist, reduxRouterRender } from '../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
-import { afterEach, expect } from 'vitest'
 import { RootState } from '../../../state/store.ts'
 import Artist from '../../../types/models/Artist.ts'
 import HomeRecentlyPlayedArtistCard from './HomeRecentlyPlayedArtistCard.tsx'
