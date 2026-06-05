@@ -54,7 +54,7 @@ function EditSongDescriptionModal({ song, opened, onClose }: EditSongDescription
           placeholder={'Enter a description'}
           value={description}
           onChange={setDescription}
-          autosize
+          autosize={import.meta.env.MODE !== 'test'} // TODO: Remove when Mantine fixes it
           minRows={4}
           styles={{
             input: {
