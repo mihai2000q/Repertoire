@@ -9,7 +9,7 @@ import {
   Stepper,
   Text
 } from '@mantine/core'
-import { schemaResolver, useForm } from '@mantine/form'
+import { FormValidationResult, schemaResolver, useForm } from '@mantine/form'
 import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
@@ -71,7 +71,7 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
   })
 
   const [activeStep, setActiveStep] = useState(0)
-  const handleActiveStepChange = (activeStep: ((prevState: number) => number) | number) => {
+  const handleActiveStepChange = async (activeStep: ((prevState: number) => number) | number) => {
     const localSections = sections.map((s) => ({
       ...s,
       errors: [
@@ -80,7 +80,11 @@ function AddNewSongModal({ opened, onClose }: AddNewSongModalProps) {
       ]
     }))
     sectionsHandlers.setState(localSections)
-    if (form.validate().hasErrors || localSections.some((s) => s.errors.length > 0)) return
+    if (
+      (await (form.validate() as unknown as Promise<FormValidationResult>)).hasErrors ||
+      localSections.some((s) => s.errors.length > 0)
+    )
+      return
     setActiveStep(activeStep)
   }
   const prevStep = () => handleActiveStepChange((current) => current - 1)
