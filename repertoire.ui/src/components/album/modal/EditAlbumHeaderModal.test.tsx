@@ -299,7 +299,7 @@ describe('Edit Album Header Modal', () => {
 
     // change title
     await user.type(titleField, '1')
-    act(() => titleField.blur())
+    await act(async () => titleField.blur())
     expect(saveButton).not.toBeDisabled()
 
     // reset title
@@ -363,7 +363,7 @@ describe('Edit Album Header Modal', () => {
     // reset artist
     await user.click(screen.getByRole('combobox', { name: /artist/i }))
     await user.click(screen.getByRole('option', { name: newArtist.name }))
-    await waitFor(() =>
+    await waitFor(async () =>
       expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
     )
   })
