@@ -1,9 +1,9 @@
-import { reduxRender } from '../../../../../test-utils.tsx'
+import { reduxRender } from '../../../../test-utils.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { SongSectionType } from '../../../../../types/models/Song.ts'
+import { SongSectionType } from '../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import SongSectionTypeSelect from './SongSectionTypeSelect.tsx'
 
@@ -51,7 +51,7 @@ describe('Song Section Type Select', () => {
       <SongSectionTypeSelect label={label} option={null} onOptionChange={onChange} />
     )
 
-    const select = screen.getByRole('textbox', { name: label })
+    const select = screen.getByRole('combobox', { name: label })
     expect(select).toHaveValue('')
     expect(select).toBeDisabled()
     await waitFor(() => expect(select).not.toBeDisabled())
@@ -69,6 +69,6 @@ describe('Song Section Type Select', () => {
 
     rerender(<SongSectionTypeSelect label={label} option={newOption} onOptionChange={onChange} />)
 
-    expect(screen.getByRole('textbox', { name: label })).toHaveValue(type.name)
+    expect(screen.getByRole('combobox', { name: label })).toHaveValue(type.name)
   })
 })

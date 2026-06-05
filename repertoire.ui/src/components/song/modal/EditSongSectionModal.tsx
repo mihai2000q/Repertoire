@@ -16,7 +16,7 @@ import {
 import { SongSection } from '../../../types/models/Song.ts'
 import { schemaResolver, useForm } from '@mantine/form'
 import { EditSongSectionForm, editSongSectionSchema } from '../../../validation/songsForm.ts'
-import SongSectionTypeSelect from '../../@ui/form/select/compact/SongSectionTypeSelect.tsx'
+import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../types/models/Artist.ts'
