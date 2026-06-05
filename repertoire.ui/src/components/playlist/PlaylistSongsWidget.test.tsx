@@ -19,6 +19,14 @@ import { ShufflePlaylistSongsRequest } from '../../types/requests/PlaylistReques
 import { createRef } from 'react'
 import { expect } from 'vitest'
 
+// Mock Main Context
+vi.mock('../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
 describe('Playlist Songs Card', () => {
   const songs: Song[] = [
     {
@@ -98,23 +106,14 @@ describe('Playlist Songs Card', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef(),
-        mainScroll: { ref: createRef() }
-      }))
-    }))
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen())
 
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
-  })
+  afterAll(() => server.close())
 
   it("should render and display playlist's songs", async () => {
     reduxRouterRender(<PlaylistSongsWidget playlistId={playlist.id} />)

@@ -14,6 +14,30 @@ import OrderType from '../types/enums/OrderType.ts'
 import { expect } from 'vitest'
 import { createRef } from 'react'
 
+// Mock Drag Select
+vi.mock('dragselect', () => ({
+  default: vi.fn(
+    class {
+      start = vi.fn()
+      stop = vi.fn()
+      getSelection = vi.fn()
+      clearSelection = vi.fn()
+      setSettings = vi.fn()
+      subscribe = vi.fn()
+      unsubscribe = vi.fn()
+      addSelectables = vi.fn()
+      removeSelectables = vi.fn()
+    }
+  )
+}))
+// Mock Main Context
+vi.mock('../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
 describe('Playlists', () => {
   const playlists: Playlist[] = [
     {
@@ -69,42 +93,15 @@ describe('Playlists', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Drag Select
-    vi.mock('dragselect', () => ({
-      default: vi.fn(
-        class {
-          start = vi.fn()
-          stop = vi.fn()
-          getSelection = vi.fn()
-          clearSelection = vi.fn()
-          setSettings = vi.fn()
-          subscribe = vi.fn()
-          unsubscribe = vi.fn()
-          addSelectables = vi.fn()
-          removeSelectables = vi.fn()
-        }
-      )
-    }))
-    // Mock Main Context
-    vi.mock('../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef(),
-        mainScroll: { ref: createRef() }
-      }))
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterEach(() => {
+    vi.restoreAllMocks()
     window.location.search = ''
     server.resetHandlers()
   })
 
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
-  })
+  afterAll(() => server.close())
 
   it('should render and display relevant info when there are playlists', async () => {
     const [_, store] = reduxRouterRender(<Playlists />)

@@ -8,6 +8,11 @@ import { http, HttpResponse } from 'msw'
 import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
+
 describe('Artist Card', () => {
   const artist: Artist = {
     ...emptyArtist,
@@ -38,13 +43,7 @@ describe('Artist Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

@@ -59,12 +59,12 @@ describe('Artist Albums Widget', () => {
     }))
   })
 
-  afterEach(() => server.resetHandlers())
-
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
+
+  afterAll(() => server.close())
 
   const render = (props?: {
     isUnknownArtist?: boolean

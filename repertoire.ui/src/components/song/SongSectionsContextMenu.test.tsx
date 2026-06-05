@@ -7,6 +7,11 @@ import { http, HttpResponse } from 'msw'
 import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequests.ts'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
+
 describe('Song Sections Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
@@ -27,17 +32,11 @@ describe('Song Sections Context Menu', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

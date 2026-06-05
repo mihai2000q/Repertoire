@@ -10,6 +10,11 @@ import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { expect } from 'vitest'
 
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
+
 describe('Album Card', () => {
   const album: Album = {
     ...emptyAlbum,
@@ -46,13 +51,7 @@ describe('Album Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

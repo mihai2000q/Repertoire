@@ -10,6 +10,11 @@ import { BandMember } from '../../types/models/Artist.ts'
 import { beforeEach, expect } from 'vitest'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
+// Mock Context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
+
 describe('Song Section Card', () => {
   const section: SongSection = {
     ...emptySongSection,
@@ -48,18 +53,16 @@ describe('Song Section Card', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-    server.listen()
-  })
+  beforeAll(() => server.listen())
 
-  afterAll(() => server.close())
+  afterAll(() => {
+    vi.restoreAllMocks()
+    server.close()
+  })
 
   it('should render and display minimal info', () => {
     reduxRender(

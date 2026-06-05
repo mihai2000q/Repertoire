@@ -12,6 +12,13 @@ import { expect } from 'vitest'
 import { SongSearch } from '../../types/models/Search.ts'
 import { createRef } from 'react'
 
+// Mock the context
+vi.mock('../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef()
+  }))
+}))
+
 describe('Album Songs Widget', () => {
   const songs: Song[] = [
     {
@@ -86,22 +93,14 @@ describe('Album Songs Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef()
-      }))
-    }))
+  beforeAll(() => server.listen())
+
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  afterEach(() => server.resetHandlers())
-
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
-  })
+  afterAll(() => server.close())
 
   const render = (props?: {
     album?: Album

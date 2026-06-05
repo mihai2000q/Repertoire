@@ -18,6 +18,14 @@ import {
 } from '../../../types/requests/SongRequests.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
 describe('Song Sections Widget', () => {
   const sections: SongSection[] = [
     {
@@ -82,23 +90,14 @@ describe('Song Sections Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef(),
-        mainScroll: { ref: createRef() }
-      }))
-    }))
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen())
 
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
-  })
+  afterAll(() => server.close())
 
   it('should render', async () => {
     reduxRender(

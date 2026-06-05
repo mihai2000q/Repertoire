@@ -22,6 +22,11 @@ import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse
 import Playlist from '../../types/models/Playlist.ts'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
+
 describe('Artist Song Card', () => {
   const song: Song = {
     ...emptySong,
@@ -62,12 +67,7 @@ describe('Artist Song Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-    server.listen()
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

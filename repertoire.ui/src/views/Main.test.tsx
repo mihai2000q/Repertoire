@@ -40,7 +40,6 @@ describe('Main', () => {
 
   afterAll(() => {
     vi.unstubAllEnvs()
-    vi.clearAllMocks()
     server.close()
   })
 

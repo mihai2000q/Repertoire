@@ -11,6 +11,11 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
+
 describe('Artist Album Card', () => {
   const album: Album = {
     ...emptyAlbum,
@@ -44,12 +49,7 @@ describe('Artist Album Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-    server.listen()
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

@@ -10,18 +10,14 @@ import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse
 import { SearchBase } from '../../types/models/Search.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
 describe('Topbar', () => {
-  beforeAll(() => {
-    // Mock Main Context
-    vi.mock('../../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        mainScroll: { ref: createRef() }
-      }))
-    }))
-  })
-
-  afterAll(() => vi.clearAllMocks())
-
   const render = (token: string | null = 'some token', toggleSidebar: () => void = () => {}) =>
     reduxRouterRender(
       <AppShell>
@@ -57,12 +53,12 @@ describe('Topbar', () => {
     server.use(search.addEventListener('connection', () => {}))
   })
 
-  afterEach(() => server.resetHandlers())
-
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
+
+  afterAll(() => server.close())
 
   it('should display just the search bar, when token is not available', async () => {
     server.use(

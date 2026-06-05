@@ -9,6 +9,11 @@ import { expect } from 'vitest'
 import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
+
 describe('Playlist Card', () => {
   const playlist: Playlist = {
     ...emptyPlaylist,
@@ -28,17 +33,11 @@ describe('Playlist Card', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

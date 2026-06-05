@@ -9,6 +9,14 @@ import { default as PlaylistType } from './../types/models/Playlist.ts'
 import { RootState } from '../state/store.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
 describe('Playlist', () => {
   const songs: Song[] = [
     {
@@ -55,23 +63,14 @@ describe('Playlist', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef(),
-        mainScroll: { ref: createRef() }
-      }))
-    }))
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen())
 
-  afterAll(() => {
-    vi.clearAllMocks()
-    server.close()
-  })
+  afterAll(() => server.close())
 
   it('should render and display playlist info and songs', async () => {
     const [_, store] = reduxMemoryRouterRender(<Playlist />, '/playlist/:id', [

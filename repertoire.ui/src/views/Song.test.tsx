@@ -9,6 +9,14 @@ import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts
 import { SearchBase } from '../types/models/Search.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
 describe('Song', () => {
   const song: SongType = {
     ...emptySong,
@@ -40,23 +48,14 @@ describe('Song', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef(),
-        mainScroll: { ref: createRef() }
-      }))
-    }))
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen())
 
-  afterAll(() => {
-    vi.clearAllMocks()
-    server.close()
-  })
+  afterAll(() => server.close())
 
   it('should render', async () => {
     const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
