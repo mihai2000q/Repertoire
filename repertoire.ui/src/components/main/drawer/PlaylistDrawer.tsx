@@ -44,7 +44,7 @@ function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => 
   }
 
   return (
-    <Grid align={'center'} gutter={'xs'} px={'xs'}>
+    <Grid align={'center'} gap={'xs'} px={'xs'}>
       <Grid.Col span={1}>
         <Text fw={500} ta={'center'}>
           {song.playlistTrackNo}
@@ -57,7 +57,7 @@ function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => 
           size={28}
           src={song.imageUrl ?? song.album?.imageUrl}
           alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-          bg={'gray.5'}
+          color={'gray.5'}
           sx={(theme) => ({
             transition: '0.18s',
             cursor: 'pointer',
@@ -132,7 +132,7 @@ function PlaylistDrawer() {
     }
   }, [playlist, opened])
 
-  const scrollRef = useRef()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1
@@ -147,6 +147,16 @@ function PlaylistDrawer() {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
+  if (!playlist || !songs)
+    return (
+      <RightSideEntityDrawer
+        opened={opened}
+        onClose={onClose}
+        isLoading={true}
+        loader={<PlaylistDrawerLoader />}
+      />
+    )
+
   function handleViewDetails() {
     onClose()
     navigate(`/playlist/${playlist.id}`)
@@ -157,16 +167,6 @@ function PlaylistDrawer() {
     onClose()
     toast.success(`${playlist.title} deleted!`)
   }
-
-  if (!playlist || !songs)
-    return (
-      <RightSideEntityDrawer
-        opened={opened}
-        onClose={onClose}
-        isLoading={true}
-        loader={<PlaylistDrawerLoader />}
-      />
-    )
 
   return (
     <RightSideEntityDrawer
@@ -202,7 +202,7 @@ function PlaylistDrawer() {
               h={'unset'}
               src={playlist.imageUrl}
               alt={playlist.imageUrl && playlist.title}
-              bg={'gray.5'}
+              color={'gray.5'}
               style={{ aspectRatio: 4 / 3 }}
             >
               <Center c={'white'}>

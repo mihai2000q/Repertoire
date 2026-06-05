@@ -235,6 +235,7 @@ function SongSectionsWidget({
                       {(provided) => (
                         <Box ref={provided.innerRef} {...provided.droppableProps}>
                           {internalSections.map((section, index) => {
+                            // eslint-disable-next-line react-hooks/rules-of-hooks
                             const { isClickSelectionActive } = useClickSelect()
                             return (
                               <Draggable

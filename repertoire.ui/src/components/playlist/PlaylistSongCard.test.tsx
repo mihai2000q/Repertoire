@@ -13,7 +13,6 @@ import { userEvent } from '@testing-library/user-event'
 import Artist from '../../types/models/Artist.ts'
 import Album from '../../types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
-import { afterEach, beforeEach, expect } from 'vitest'
 import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -23,6 +22,11 @@ import dayjs from 'dayjs'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
 
 describe('Playlist Song Card', () => {
   const song: Song = {
@@ -72,12 +76,7 @@ describe('Playlist Song Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-    server.listen()
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

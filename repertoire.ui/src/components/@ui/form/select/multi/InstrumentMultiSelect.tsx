@@ -85,6 +85,7 @@ function InstrumentMultiSelect({
 
             <Combobox.EventsTarget>
               <PillsInput.Field
+                role={'combobox'}
                 type="hidden"
                 onBlur={() => combobox.closeDropdown()}
                 onKeyDown={(event) => {

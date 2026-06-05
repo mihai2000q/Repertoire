@@ -83,7 +83,7 @@ function Albums() {
   const [openedAddNewAlbumModal, { open: openAddNewAlbumModal, close: closeAddNewAlbumModal }] =
     useDisclosure(false)
 
-  const albumsRef = useRef<HTMLDivElement>()
+  const albumsRef = useRef<HTMLDivElement>(null)
   const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {

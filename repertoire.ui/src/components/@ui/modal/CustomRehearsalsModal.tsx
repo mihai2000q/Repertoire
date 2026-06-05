@@ -138,18 +138,14 @@ function CustomRehearsalsModal({ opened, onClose, ids, onSuccess }: CustomRehear
             {Array.from(songArrangementsMap.keys())
               .map((songId) => songsMap.get(songId))
               .map((song) => (
-                <Group
-                  key={song.id}
-                  justify={'space-between'}
-                  wrap={'nowrap'}
-                >
+                <Group key={song.id} justify={'space-between'} wrap={'nowrap'}>
                   <Group gap={'xs'} wrap={'nowrap'}>
                     <Avatar
                       radius={'md'}
                       size={'md'}
                       src={song.imageUrl ?? song.album?.imageUrl}
                       alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-                      bg={'gray.5'}
+                      color={'gray.5'}
                     >
                       <Center c={'white'}>
                         <CustomIconMusicNoteEighth

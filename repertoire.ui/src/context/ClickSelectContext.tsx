@@ -34,15 +34,39 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
   const lastSelectedId = useRef('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [isSelectionActive, setIsSelectionActive] = useState(false)
-  const areaRef = useRef<HTMLSpanElement>()
+  const areaRef = useRef<HTMLSpanElement>(null)
   const { ref: appRef } = useMain()
 
   useEffect(() => handleClearSelection(), [data])
 
   useEffect(() => setIsSelectionActive(selectedIds.length > 0), [selectedIds])
 
+  // Event delegation for clicks on selectable elements
   useEffect(() => {
-    const clickOutside = (event: PointerEvent) => {
+    const area = areaRef.current
+    if (!area) return () => {}
+
+    const handleClick = (ev: MouseEvent) => {
+      // Find the closest element with data-selectable-id
+      let target = ev.target as HTMLElement | null
+      while (target && target !== area) {
+        const id = target.getAttribute('data-selectable-id')
+        if (id) {
+          if (ev.ctrlKey) ctrlClick(id)
+          if (ev.shiftKey) shiftClick(id)
+          return
+        }
+        target = target.parentElement
+      }
+    }
+
+    area.addEventListener('click', handleClick)
+    return () => area.removeEventListener('click', handleClick)
+  }, [])
+
+  // Click outside detection
+  useEffect(() => {
+    const clickOutside = (event: MouseEvent) => {
       if (
         isSelectionActive &&
         !areaRef.current?.contains(event.target as Node) &&
@@ -51,9 +75,10 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
         handleClearSelection()
     }
 
-    appRef.current?.addEventListener('click', clickOutside)
-    return () => appRef.current?.removeEventListener('click', clickOutside)
-  }, [appRef, areaRef])
+    const appNode = appRef.current
+    appNode?.addEventListener('click', clickOutside)
+    return () => appNode?.removeEventListener('click', clickOutside)
+  }, [isSelectionActive, appRef])
 
   function setNewIds(id: string) {
     const newIds = selectables.current.filter((s) => s.selected).map((s) => s.id)
@@ -71,6 +96,7 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
     )
     setNewIds(id)
   }
+
   function shiftClick(id: string) {
     const currIndex = selectables.current.findIndex((s) => s.id === id)
     const currState = selectables.current[currIndex].selected
@@ -84,21 +110,20 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
     setNewIds(id)
   }
 
-  // handlers
   function handleAddSelectable(id: string, el: HTMLElement) {
-    selectables.current.push({ id: id, selected: false })
+    // Avoid duplicates
+    if (selectables.current.some((s) => s.id === id)) return
+    selectables.current.push({ id, selected: false })
     resetLastSelectedId()
-
-    el.onclick = (ev) => {
-      if (ev.ctrlKey) ctrlClick(id)
-      if (ev.shiftKey) shiftClick(id)
-    }
+    // Mark the element with a data attribute for event delegation
+    el.setAttribute('data-selectable-id', id)
   }
 
   function handleRemoveSelectable(id: string) {
     selectables.current = selectables.current.filter((s) => s.id !== id)
-    setSelectedIds((prevState) => [...prevState.filter((id) => id !== id)])
+    setSelectedIds((prev) => prev.filter((i) => i !== id))
     resetLastSelectedId()
+    // Optionally remove the data attribute from the element, but not strictly necessary
   }
 
   function handleClearSelection() {
@@ -111,7 +136,7 @@ export function ClickSelectProvider({ children, data }: ClickSelectProviderProps
     <ClickSelectContext.Provider
       value={{
         selectables: selectables.current,
-        selectedIds: selectedIds,
+        selectedIds,
         isClickSelectionActive: isSelectionActive,
         addSelectable: handleAddSelectable,
         removeSelectable: handleRemoveSelectable,

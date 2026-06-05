@@ -91,6 +91,16 @@ function SongDrawer() {
     useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
+  if (!song)
+    return (
+      <RightSideEntityDrawer
+        opened={opened}
+        onClose={onClose}
+        isLoading={true}
+        loader={<SongDrawerLoader />}
+      />
+    )
+
   function handleArtistClick() {
     onClose()
     navigate(`/artist/${song.artist.id}`)
@@ -112,16 +122,6 @@ function SongDrawer() {
     toast.success(`${song.title} deleted!`)
   }
 
-  if (!song)
-    return (
-      <RightSideEntityDrawer
-        opened={opened}
-        onClose={onClose}
-        isLoading={true}
-        loader={<SongDrawerLoader />}
-      />
-    )
-
   return (
     <RightSideEntityDrawer
       opened={opened}
@@ -141,7 +141,7 @@ function SongDrawer() {
             h={'unset'}
             src={song.imageUrl ?? song.album?.imageUrl}
             alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'white'}>
@@ -210,7 +210,7 @@ function SongDrawer() {
                   src={song.artist.imageUrl}
                   alt={song.artist.imageUrl && song.artist.name}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                  bg={'gray.0'}
+                  color={'gray.0'}
                 >
                   <Center c={'gray.7'}>
                     <CustomIconUserAlt aria-label={`default-icon-${song.artist.name}`} size={13} />
@@ -262,7 +262,7 @@ function SongDrawer() {
                         size={45}
                         src={song.album.imageUrl}
                         alt={song.album.imageUrl && song.album.title}
-                        bg={'gray.5'}
+                        color={'gray.5'}
                       >
                         <Center c={'white'}>
                           <CustomIconAlbumVinyl
@@ -318,7 +318,7 @@ function SongDrawer() {
 
           {showInfo && <Divider mt={'xs'} />}
 
-          <Grid align={'center'} gutter={'sm'} p={showInfo ? 'xs' : 0}>
+          <Grid align={'center'} gap={'sm'} p={showInfo ? 'xs' : 0}>
             {song.difficulty && (
               <>
                 <Grid.Col span={firstColumnSize}>

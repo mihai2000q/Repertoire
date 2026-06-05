@@ -22,12 +22,13 @@ function Topbar({ toggleSidebar }: TopbarProps): ReactElement {
 
   return (
     <AppShell.Header
+      ref={mainScroll.topbarRef}
       px={'md'}
       withBorder={false}
       top={'unset'}
-      style={(theme) => ({
+      sx={(theme) => ({
         transition: '0.35s',
-        ...(mainScroll.isPositionOver0 && { boxShadow: theme.shadows.md })
+        '&.scrolled': { boxShadow: theme.shadows.md }
       })}
     >
       <Group h={'100%'} gap={0}>

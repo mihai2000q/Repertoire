@@ -54,7 +54,7 @@ describe('Add New Album Modal', () => {
     expect(screen.getByRole('heading', { name: /add new album/i })).toBeInTheDocument()
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /title/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /artist/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /release date/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
@@ -110,7 +110,7 @@ describe('Add New Album Modal', () => {
       reduxRender(withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />))
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-      await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
+      await user.type(screen.getByRole('combobox', { name: /artist/i }), newArtistName)
       await user.click(screen.getByRole('button', { name: /release date/i }))
       await user.click(screen.getByRole('button', { name: dayjs().format('D MMMM YYYY') }))
       await user.click(screen.getByRole('button', { name: /submit/i }))
@@ -126,7 +126,7 @@ describe('Add New Album Modal', () => {
 
       expect(screen.getByText(`${newTitle} added!`))
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue('')
       expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(/choose/i) // the placeholder
     })
 
@@ -149,7 +149,7 @@ describe('Add New Album Modal', () => {
       reduxRender(withToastify(<AddNewAlbumModal opened={true} onClose={onClose} />))
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-      await user.click(screen.getByRole('textbox', { name: /artist/i }))
+      await user.click(screen.getByRole('combobox', { name: /artist/i }))
       await user.click(await screen.findByText(artist.name))
       await user.click(screen.getByRole('button', { name: /submit/i }))
 
@@ -163,7 +163,7 @@ describe('Add New Album Modal', () => {
 
       expect(screen.getByText(`${newTitle} added!`))
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue('')
     })
   })
 
@@ -244,7 +244,7 @@ describe('Add New Album Modal', () => {
     expect(title).not.toBeInvalid()
 
     await user.clear(title)
-    act(() => title.blur())
+    await act(async () => title.blur())
     expect(title).toBeInvalid()
   })
 })

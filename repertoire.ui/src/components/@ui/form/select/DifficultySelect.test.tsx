@@ -16,9 +16,9 @@ describe('Difficulty Select', () => {
 
     const { rerender } = mantineRender(<DifficultySelect option={null} onChange={onChange} />)
 
-    expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue('')
+    expect(screen.getByRole('combobox', { name: /difficulty/i })).toHaveValue('')
 
-    const select = screen.getByRole('textbox', { name: /difficulty/i })
+    const select = screen.getByRole('combobox', { name: /difficulty/i })
     await user.click(select)
 
     Object.entries(Difficulty).forEach(([key]) => {
@@ -33,6 +33,6 @@ describe('Difficulty Select', () => {
 
     rerender(<DifficultySelect option={newOption} onChange={onChange} />)
 
-    expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue(difficultyLabel)
+    expect(screen.getByRole('combobox', { name: /difficulty/i })).toHaveValue(difficultyLabel)
   })
 })

@@ -71,7 +71,7 @@ function PlaylistHeader({ playlist }: PlaylistHeaderProps) {
           alt={playlist.imageUrl && playlist.title}
           size={'max(12vw, 150px)'}
           radius={'10%'}
-          bg={'gray.5'}
+          color={'gray.5'}
           style={(theme) => ({
             boxShadow: theme.shadows.lg,
             ...(playlist.imageUrl && { cursor: 'pointer' })

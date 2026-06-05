@@ -162,7 +162,7 @@ function ArtistAlbumCard({ album, artistId, isUnknownArtist, order }: ArtistAlbu
             radius={'md'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
           >
             <Center c={'white'}>
               <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={15} />

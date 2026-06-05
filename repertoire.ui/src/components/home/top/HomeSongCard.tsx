@@ -29,7 +29,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(song.artist.id))
+    if (song.artist) dispatch(openArtistDrawer(song.artist.id))
   }
 
   function handleViewDetails() {
@@ -37,11 +37,11 @@ function HomeSongCard({ song }: HomeSongCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`/artist/${song.artist.id}`)
+    if (song.artist) navigate(`/artist/${song.artist.id}`)
   }
 
   function handleViewAlbum() {
-    navigate(`/album/${song.album.id}`)
+    if (song.album) navigate(`/album/${song.album.id}`)
   }
 
   return (
@@ -64,7 +64,7 @@ function HomeSongCard({ song }: HomeSongCardProps) {
             h={'unset'}
             src={song.imageUrl ?? song.album?.imageUrl}
             alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             sx={(theme) => ({
               aspectRatio: 1,
               cursor: 'pointer',

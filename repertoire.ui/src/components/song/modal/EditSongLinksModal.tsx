@@ -1,7 +1,6 @@
 import Song from '../../../types/models/Song.ts'
 import { Button, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditSongLinksForm, editSongLinksSchema } from '../../../validation/songsForm.ts'
 import { IconBrandYoutubeFilled, IconGuitarPickFilled } from '@tabler/icons-react'
 import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
@@ -28,7 +27,7 @@ function EditSongLinksModal({ song, opened, onClose }: EditSongLinksModalProps) 
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(editSongLinksSchema),
+    validate: schemaResolver(editSongLinksSchema),
     onValuesChange: (values) => {
       setHasChanged(
         song.songsterrLink !== values.songsterrLink || song.youtubeLink !== values.youtubeLink

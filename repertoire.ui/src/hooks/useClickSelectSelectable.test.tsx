@@ -1,7 +1,11 @@
 import { render, renderHook, screen } from '@testing-library/react'
-import { afterEach, beforeAll } from 'vitest'
 import useClickSelectSelectable from './useClickSelectSelectable.ts'
 import { useClickSelect } from '../context/ClickSelectContext.tsx'
+
+// Mock the context
+vi.mock('../context/ClickSelectContext.tsx', () => ({
+  useClickSelect: vi.fn()
+}))
 
 describe('use Click Select Selectable', () => {
   const mockAddSelectables = vi.fn()
@@ -19,13 +23,6 @@ describe('use Click Select Selectable', () => {
       isClickSelectionActive: false,
       clearSelection: vi.fn()
     })
-  })
-
-  beforeAll(() => {
-    // Mock the context
-    vi.mock('../context/ClickSelectContext.tsx', () => ({
-      useClickSelect: vi.fn()
-    }))
   })
 
   afterEach(() => vi.restoreAllMocks())

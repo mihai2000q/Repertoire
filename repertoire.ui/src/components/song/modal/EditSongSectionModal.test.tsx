@@ -89,9 +89,9 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(section.name)
 
-    expect(await screen.findByRole('textbox', { name: /type/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /type/i })).not.toBeInvalid()
-    expect(await screen.findByRole('textbox', { name: /type/i })).toHaveValue(
+    expect(await screen.findByRole('combobox', { name: /type/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /type/i })).not.toBeInvalid()
+    expect(await screen.findByRole('combobox', { name: /type/i })).toHaveValue(
       section.songSectionType.name
     )
 
@@ -101,13 +101,13 @@ describe('Edit Song Description Modal', () => {
       section.rehearsals.toString()
     )
 
-    expect(screen.getByRole('textbox', { name: /band member/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(
+    expect(screen.getByRole('combobox', { name: /band member/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(
       section.bandMember?.name ?? ''
     )
 
-    expect(screen.getByRole('textbox', { name: /instrument/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(
+    expect(screen.getByRole('combobox', { name: /instrument/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /instrument/i })).toHaveValue(
       section.instrument?.name ?? ''
     )
 
@@ -149,7 +149,7 @@ describe('Edit Song Description Modal', () => {
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const typeField = screen.getByRole('textbox', { name: /type/i })
+    const typeField = screen.getByRole('combobox', { name: /type/i })
     const rehearsalsField = screen.getByRole('textbox', { name: /rehearsals/i })
     const confidenceField = screen.getByRole('slider', { name: /confidence/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
@@ -224,8 +224,8 @@ describe('Edit Song Description Modal', () => {
       )
     )
 
-    const bandMemberField = screen.getByRole('textbox', { name: /band member/i })
-    const instrumentField = screen.getByRole('textbox', { name: /instrument/i })
+    const bandMemberField = screen.getByRole('combobox', { name: /band member/i })
+    const instrumentField = screen.getByRole('combobox', { name: /instrument/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     await user.click(bandMemberField)
@@ -278,10 +278,10 @@ describe('Edit Song Description Modal', () => {
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const typeField = screen.getByRole('textbox', { name: /type/i })
+    const typeField = screen.getByRole('combobox', { name: /type/i })
     const rehearsalsField = screen.getByRole('textbox', { name: /rehearsals/i })
-    const bandMemberField = screen.getByRole('textbox', { name: /band member/i })
-    const instrumentField = screen.getByRole('textbox', { name: /instrument/i })
+    const bandMemberField = screen.getByRole('combobox', { name: /band member/i })
+    const instrumentField = screen.getByRole('combobox', { name: /instrument/i })
     const confidenceField = screen.getByRole('slider', { name: /confidence/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
@@ -390,10 +390,10 @@ describe('Edit Song Description Modal', () => {
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
       section.rehearsals.toString()
     )
-    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(
+    expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(
       section.bandMember?.name ?? ''
     )
-    expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(
+    expect(screen.getByRole('combobox', { name: /instrument/i })).toHaveValue(
       section.instrument?.name ?? ''
     )
 
@@ -417,12 +417,12 @@ describe('Edit Song Description Modal', () => {
       newSection.rehearsals.toString()
     )
     await waitFor(() =>
-      expect(screen.getByRole('textbox', { name: /instrument/i })).toHaveValue(
+      expect(screen.getByRole('combobox', { name: /instrument/i })).toHaveValue(
         newSection.instrument.name
       )
     )
     await waitFor(() =>
-      expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(
+      expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(
         newSection.bandMember.name
       )
     )

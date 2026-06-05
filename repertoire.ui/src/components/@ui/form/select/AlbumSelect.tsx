@@ -21,6 +21,54 @@ import { useGetSearchQuery } from '../../../../state/api/searchApi.ts'
 import SearchType from '../../../../types/enums/SearchType.ts'
 import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 
+const AlbumHoverCard = ({ album }: { album: AlbumSearch }) => (
+  <HoverCard openDelay={200}>
+    <HoverCard.Target>
+      <Avatar
+        radius={'md'}
+        size={23}
+        src={album.imageUrl}
+        alt={album.imageUrl && album.title}
+        color={'gray.5'}
+      >
+        <Center c={'white'}>
+          <CustomIconAlbumVinyl size={11} />
+        </Center>
+      </Avatar>
+    </HoverCard.Target>
+    <HoverCard.Dropdown>
+      <Group gap={'xs'} maw={200} wrap={'nowrap'}>
+        <Avatar
+          radius={'md'}
+          size={'lg'}
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          color={'gray.5'}
+        >
+          <Center c={'white'}>
+            <CustomIconAlbumVinyl size={25} />
+          </Center>
+        </Avatar>
+        <Stack gap={'xxs'}>
+          <Text lh={'xxs'} fw={500} lineClamp={2}>
+            {album.title}
+          </Text>
+          {album.artist && (
+            <Text inline fw={500} fz={'xs'} c={'dimmed'}>
+              {album.artist.name}
+            </Text>
+          )}
+          {album.releaseDate && (
+            <Text inline fz={'xxs'} c={'dimmed'}>
+              {dayjs(album.releaseDate).format('D MMM YYYY')}
+            </Text>
+          )}
+        </Stack>
+      </Group>
+    </HoverCard.Dropdown>
+  </HoverCard>
+)
+
 interface AlbumSelectProps extends TextInputProps {
   album: AlbumSearch | null
   setAlbum: (album: AlbumSearch | null) => void
@@ -50,54 +98,6 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
     ids: ids
   })
 
-  const AlbumHoverCard = () => (
-    <HoverCard openDelay={200}>
-      <HoverCard.Target>
-        <Avatar
-          radius={'md'}
-          size={23}
-          src={album.imageUrl}
-          alt={album.imageUrl && album.title}
-          bg={'gray.5'}
-        >
-          <Center c={'white'}>
-            <CustomIconAlbumVinyl size={11} />
-          </Center>
-        </Avatar>
-      </HoverCard.Target>
-      <HoverCard.Dropdown>
-        <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar
-            radius={'md'}
-            size={'lg'}
-            src={album.imageUrl}
-            alt={album.imageUrl && album.title}
-            bg={'gray.5'}
-          >
-            <Center c={'white'}>
-              <CustomIconAlbumVinyl size={25} />
-            </Center>
-          </Avatar>
-          <Stack gap={'xxs'}>
-            <Text lh={'xxs'} fw={500} lineClamp={2}>
-              {album.title}
-            </Text>
-            {album.artist && (
-              <Text inline fw={500} fz={'xs'} c={'dimmed'}>
-                {album.artist.name}
-              </Text>
-            )}
-            {album.releaseDate && (
-              <Text inline fz={'xxs'} c={'dimmed'}>
-                {dayjs(album.releaseDate).format('D MMM YYYY')}
-              </Text>
-            )}
-          </Stack>
-        </Group>
-      </HoverCard.Dropdown>
-    </HoverCard>
-  )
-
   const AlbumOption = ({ localAlbum }: { localAlbum: AlbumSearch }) => (
     <Combobox.Option
       key={localAlbum.id}
@@ -111,7 +111,7 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
           size={'sm'}
           src={localAlbum.imageUrl}
           alt={localAlbum.imageUrl && localAlbum.title}
-          bg={'gray.5'}
+          color={'gray.5'}
         >
           <Center c={'white'}>
             <CustomIconAlbumVinyl size={12} />
@@ -147,11 +147,12 @@ function AlbumSelect({ album, setAlbum, ids, ...others }: AlbumSelectProps) {
     <Combobox onOptionSubmit={handleSubmit} store={combobox}>
       <Combobox.Target>
         <TextInput
+          role={'combobox'}
           flex={1}
           maxLength={100}
           label={'Album'}
           placeholder={'Choose an album'}
-          leftSection={album ? <AlbumHoverCard /> : <IconDiscFilled size={20} />}
+          leftSection={album ? <AlbumHoverCard album={album} /> : <IconDiscFilled size={20} />}
           rightSection={
             album ? <Combobox.ClearButton onClear={handleClear} /> : <Combobox.Chevron />
           }

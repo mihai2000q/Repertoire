@@ -95,7 +95,7 @@ function SongOption({
         radius={'md'}
         src={song.imageUrl ?? song.album?.imageUrl}
         alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
-        bg={'gray.5'}
+        color={'gray.5'}
       >
         <Center c={'white'}>
           <CustomIconMusicNoteEighth aria-label={`default-icon-${song.title}`} size={18} />
@@ -186,7 +186,7 @@ function AddPlaylistSongsModal({ opened, onClose, playlistId }: AddPlaylistSongs
 
   const searchRef = useFocusTrap(!songsIsLoading)
 
-  const scrollRef = useRef<HTMLDivElement>()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

@@ -11,8 +11,7 @@ import {
 } from '@mantine/core'
 import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import User from '../../../types/models/User.ts'
 import { AccountForm, accountSchema } from '../../../validation/mainForm.ts'
 import { toast } from 'react-toastify'
@@ -51,7 +50,7 @@ function AccountModal({ opened, onClose, user }: AccountModalProps) {
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(accountSchema),
+    validate: schemaResolver(accountSchema),
     onValuesChange: (values) => {
       setUserHasChanged(values.name !== user.name)
       setPictureHasChanged(values.profilePicture !== user.profilePictureUrl)

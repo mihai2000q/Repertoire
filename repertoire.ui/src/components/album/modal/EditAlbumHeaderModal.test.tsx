@@ -74,8 +74,8 @@ describe('Edit Album Header Modal', () => {
     expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue(album.title)
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue(album.artist?.name ?? '')
+    expect(screen.getByRole('combobox', { name: /artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue(album.artist?.name ?? '')
 
     expect(screen.getByRole('button', { name: /release date/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(
@@ -118,7 +118,7 @@ describe('Edit Album Header Modal', () => {
     await user.click(screen.getByRole('button', { name: /release date/i }))
     await user.click(screen.getByText(newDay.toString()))
 
-    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('combobox', { name: /artist/i }))
     await user.click(screen.getByRole('option', { name: newArtist.name }))
 
     await user.click(saveButton)
@@ -286,7 +286,7 @@ describe('Edit Album Header Modal', () => {
 
     const titleField = screen.getByRole('textbox', { name: /title/i })
     const releaseDateField = screen.getByRole('button', { name: /release date/i })
-    const artistField = screen.getByRole('textbox', { name: /artist/i })
+    const artistField = screen.getByRole('combobox', { name: /artist/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     // change image
@@ -299,7 +299,7 @@ describe('Edit Album Header Modal', () => {
 
     // change title
     await user.type(titleField, '1')
-    act(() => titleField.blur())
+    await act(async () => titleField.blur())
     expect(saveButton).not.toBeDisabled()
 
     // reset title
@@ -356,14 +356,14 @@ describe('Edit Album Header Modal', () => {
     reduxRender(<EditAlbumHeaderModal opened={true} onClose={() => {}} album={album} />)
 
     // change artist
-    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('combobox', { name: /artist/i }))
     await user.click(screen.getByRole('option', { name: newArtist.name }))
     expect(await screen.findByText(/update all the associated songs/i)).toBeInTheDocument()
 
     // reset artist
-    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('combobox', { name: /artist/i }))
     await user.click(screen.getByRole('option', { name: newArtist.name }))
-    await waitFor(() =>
+    await waitFor(async () =>
       expect(screen.queryByText(/update all the associated songs/i)).not.toBeInTheDocument()
     )
   })

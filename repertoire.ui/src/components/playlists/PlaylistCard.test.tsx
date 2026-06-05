@@ -1,4 +1,4 @@
-import Playlist from 'src/types/models/Playlist.ts'
+import Playlist from '../../types/models/Playlist.ts'
 import { emptyPlaylist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import PlaylistCard from './PlaylistCard.tsx'
 import { screen } from '@testing-library/react'
@@ -8,6 +8,11 @@ import { http, HttpResponse } from 'msw'
 import { expect } from 'vitest'
 import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
+
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
 
 describe('Playlist Card', () => {
   const playlist: Playlist = {
@@ -28,17 +33,11 @@ describe('Playlist Card', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

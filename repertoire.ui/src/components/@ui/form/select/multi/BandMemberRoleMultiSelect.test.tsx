@@ -46,7 +46,7 @@ describe('Band Member Role Multi Select', () => {
 
     reduxRender(<BandMemberRoleMultiSelect ids={[]} setIds={setIds} label={label} />)
 
-    const multiSelect = screen.getByRole('textbox', { name: label })
+    const multiSelect = screen.getByRole('combobox', { name: label })
     expect(multiSelect).toHaveValue('')
     expect(multiSelect).toBeDisabled()
     await waitFor(() => expect(multiSelect).not.toBeDisabled())

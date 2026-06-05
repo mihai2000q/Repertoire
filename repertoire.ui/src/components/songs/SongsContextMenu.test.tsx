@@ -7,6 +7,11 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Song from '../../types/models/Song.ts'
 
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
+
 describe('Songs Context Menu', () => {
   const dataTestId = 'dataTestId'
   const selectedIds = ['1', '2', '3']
@@ -39,17 +44,11 @@ describe('Songs Context Menu', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

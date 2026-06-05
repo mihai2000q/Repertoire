@@ -1,8 +1,7 @@
 import { alpha, Button, Center, Group, Modal, Stack, Text, TextInput, Tooltip } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
@@ -58,7 +57,7 @@ function AddNewAlbumSongModal({ opened, onClose, album }: AddNewAlbumSongModalPr
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(addNewAlbumSongSchema),
+    validate: schemaResolver(addNewAlbumSongSchema),
     onValuesChange: (values) => {
       setIsSongsterrLinkSelected(
         values.songsterrLink !== '' &&

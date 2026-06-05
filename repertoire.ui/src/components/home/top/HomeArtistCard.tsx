@@ -44,7 +44,7 @@ function HomeArtistCard({ artist }: HomeArtistCardProps) {
             size={'max(calc(9vw - 25px), 125px)'}
             src={artist.imageUrl}
             alt={artist.imageUrl && artist.name}
-            bg={'gray.0'}
+            color={'gray.0'}
             sx={(theme) => ({
               cursor: 'pointer',
               transition: '0.25s',

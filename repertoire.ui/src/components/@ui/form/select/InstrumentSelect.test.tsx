@@ -51,7 +51,7 @@ describe('Instrument Select', () => {
       <InstrumentSelect label={label} option={null} onOptionChange={onChange} />
     )
 
-    const select = screen.getByRole('textbox', { name: label })
+    const select = screen.getByRole('combobox', { name: label })
     expect(select).toHaveValue('')
     expect(select).toBeDisabled()
     await waitFor(() => expect(select).not.toBeDisabled())
@@ -69,6 +69,6 @@ describe('Instrument Select', () => {
 
     rerender(<InstrumentSelect label={label} option={newOption} onOptionChange={onChange} />)
 
-    expect(screen.getByRole('textbox', { name: label })).toHaveValue(newInstrument.name)
+    expect(screen.getByRole('combobox', { name: label })).toHaveValue(newInstrument.name)
   })
 })

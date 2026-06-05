@@ -16,8 +16,7 @@ import {
   useUpdateSongMutation
 } from '../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditSongHeaderForm, editSongHeaderSchema } from '../../../validation/songsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
@@ -58,7 +57,7 @@ function EditSongHeaderModal({ song, opened, onClose }: EditSongHeaderModalProps
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(editSongHeaderSchema),
+    validate: schemaResolver(editSongHeaderSchema),
     onValuesChange: (values) => {
       setSongHasChanged(
         values.title !== song.title ||

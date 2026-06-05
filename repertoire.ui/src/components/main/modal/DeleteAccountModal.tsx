@@ -17,8 +17,7 @@ import { useAppDispatch } from '../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import HttpErrorResponse from '../../../types/responses/HttpErrorResponse.ts'
 import User from '../../../types/models/User.ts'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { DeleteAccountForm, deleteAccountSchema } from '../../../validation/mainForm.ts'
 import { useSignInMutation } from '../../../state/authApi.ts'
 import { useDeleteUserMutation } from '../../../state/api/usersApi.ts'
@@ -55,7 +54,7 @@ function DeleteAccountModal({
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(deleteAccountSchema)
+    validate: schemaResolver(deleteAccountSchema)
   })
 
   const onCloseWithStep = () => {

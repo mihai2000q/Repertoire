@@ -1,8 +1,7 @@
 import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { AddNewBandMemberForm, addNewBandMemberSchema } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
@@ -30,10 +29,6 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
   const [image, setImage] = useState<FileWithPath>(null)
   const [color, setColor] = useState<string>()
   const [roleIds, setRoleIds] = useState<string[]>([])
-  useDidUpdate(() => {
-    form.setFieldValue('roleIds', roleIds)
-    if (opened) form.validateField('roleIds')
-  }, [roleIds])
 
   const onCloseWithImage = () => {
     onClose()
@@ -49,8 +44,13 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(addNewBandMemberSchema)
+    validate: schemaResolver(addNewBandMemberSchema)
   })
+
+  useDidUpdate(() => {
+    form.setFieldValue('roleIds', roleIds)
+    if (opened) form.validateField('roleIds')
+  }, [roleIds])
 
   async function addBandMember({ name, roleIds }: AddNewBandMemberForm) {
     name = name.trim()

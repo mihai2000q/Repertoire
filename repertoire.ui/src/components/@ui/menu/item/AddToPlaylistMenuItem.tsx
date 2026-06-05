@@ -119,7 +119,7 @@ function PlaylistOption({
         radius={'md'}
         src={playlist.imageUrl}
         alt={playlist.imageUrl && playlist.title}
-        bg={'gray.5'}
+        color={'gray.5'}
         style={(theme) => ({ aspectRatio: 1, boxShadow: theme.shadows.sm })}
         imageProps={{ loading: 'lazy' }}
       >
@@ -200,7 +200,7 @@ function AddToPlaylistMenuItem({
     models: dataPlaylists?.pages.flatMap((x) => x.models ?? []),
     totalCount: dataPlaylists?.pages[0].totalCount
   }
-  const scrollRef = useRef()
+  const scrollRef = useRef(null)
   const { ref: lastSongRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1
@@ -359,11 +359,7 @@ function AddToPlaylistMenuItem({
     <>
       <Menu.Sub onOpen={open} onClose={close} openDelay={100} closeDelay={250}>
         <Menu.Sub.Target>
-          <Menu.Sub.Item
-            leftSection={<IconPlaylistAdd size={14} />}
-            disabled={disabled}
-            onClick={(e) => e.stopPropagation()} // TODO: Remove when mantine updates
-          >
+          <Menu.Sub.Item leftSection={<IconPlaylistAdd size={14} />} disabled={disabled}>
             Add To Playlist
           </Menu.Sub.Item>
         </Menu.Sub.Target>

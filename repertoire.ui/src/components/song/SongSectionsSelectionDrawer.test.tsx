@@ -7,6 +7,11 @@ import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequ
 import { http, HttpResponse } from 'msw'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
+
 describe('Song Sections Selection Drawer', () => {
   const selectedIds = ['1', '2', '3']
   const clearSelection = vi.fn()
@@ -26,17 +31,11 @@ describe('Song Sections Selection Drawer', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

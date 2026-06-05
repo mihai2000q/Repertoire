@@ -3,7 +3,7 @@ import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import SongSectionTypeSelect from '../@ui/form/select/compact/SongSectionTypeSelect.tsx'
+import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
 import { BandMember } from '../../types/models/Artist.ts'
 import BandMemberCompactSelect from '../@ui/form/select/compact/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../@ui/form/select/compact/InstrumentCompactSelect.tsx'
@@ -81,7 +81,7 @@ function AddNewSongSection({
   }
 
   return (
-    <Collapse in={opened} onTransitionEnd={handleOnTransitionEnd}>
+    <Collapse expanded={opened} onTransitionEnd={handleOnTransitionEnd}>
       <Group gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-section'}>
         <Group gap={8}>
           <BandMemberCompactSelect

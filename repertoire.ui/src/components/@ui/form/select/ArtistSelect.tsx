@@ -20,6 +20,42 @@ import SearchType from '../../../../types/enums/SearchType.ts'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
 import CustomIconUserAlt from '../../icons/CustomIconUserAlt.tsx'
 
+const ArtistHoverCard = ({ artist }: { artist: ArtistSearch }) => (
+  <HoverCard openDelay={200}>
+    <HoverCard.Target>
+      <Avatar
+        size={23}
+        src={artist.imageUrl}
+        alt={artist.imageUrl && artist.name}
+        style={(theme) => ({ boxShadow: theme.shadows.sm })}
+        color={'gray.0'}
+      >
+        <Center c={'gray.7'}>
+          <CustomIconUserAlt size={12} />
+        </Center>
+      </Avatar>
+    </HoverCard.Target>
+    <HoverCard.Dropdown>
+      <Group gap={'xs'} maw={200} wrap={'nowrap'}>
+        <Avatar
+          size={'md'}
+          src={artist.imageUrl}
+          alt={artist.imageUrl && artist.name}
+          style={(theme) => ({ boxShadow: theme.shadows.sm })}
+          color={'gray.0'}
+        >
+          <Center c={'gray.7'}>
+            <CustomIconUserAlt size={18} />
+          </Center>
+        </Avatar>
+        <Text lh={'xxs'} fw={500} lineClamp={2}>
+          {artist.name}
+        </Text>
+      </Group>
+    </HoverCard.Dropdown>
+  </HoverCard>
+)
+
 interface ArtistSelectProps extends TextInputProps {
   artist: ArtistSearch | null
   setArtist: (artist: ArtistSearch | null) => void
@@ -49,42 +85,6 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
     ids: ids
   })
 
-  const ArtistHoverCard = () => (
-    <HoverCard openDelay={200}>
-      <HoverCard.Target>
-        <Avatar
-          size={23}
-          src={artist.imageUrl}
-          alt={artist.imageUrl && artist.name}
-          style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          bg={'gray.0'}
-        >
-          <Center c={'gray.7'}>
-            <CustomIconUserAlt size={12} />
-          </Center>
-        </Avatar>
-      </HoverCard.Target>
-      <HoverCard.Dropdown>
-        <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar
-            size={'md'}
-            src={artist.imageUrl}
-            alt={artist.imageUrl && artist.name}
-            style={(theme) => ({ boxShadow: theme.shadows.sm })}
-            bg={'gray.0'}
-          >
-            <Center c={'gray.7'}>
-              <CustomIconUserAlt size={18} />
-            </Center>
-          </Avatar>
-          <Text lh={'xxs'} fw={500} lineClamp={2}>
-            {artist.name}
-          </Text>
-        </Group>
-      </HoverCard.Dropdown>
-    </HoverCard>
-  )
-
   const ArtistOption = ({ localArtist }: { localArtist: ArtistSearch }) => (
     <Combobox.Option
       key={localArtist.id}
@@ -98,7 +98,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
           src={localArtist.imageUrl}
           alt={localArtist.imageUrl && localArtist.name}
           style={(theme) => ({ boxShadow: theme.shadows.sm })}
-          bg={'gray.0'}
+          color={'gray.0'}
         >
           <Center c={'gray.7'}>
             <CustomIconUserAlt size={13} />
@@ -127,11 +127,12 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
     <Combobox onOptionSubmit={handleSubmit} store={combobox}>
       <Combobox.Target>
         <TextInput
+          role={'combobox'}
           flex={1}
           maxLength={100}
           label={'Artist'}
           placeholder={'Choose an artist'}
-          leftSection={artist ? <ArtistHoverCard /> : <IconUserFilled size={20} />}
+          leftSection={artist ? <ArtistHoverCard artist={artist} /> : <IconUserFilled size={20} />}
           rightSection={
             artist && others.disabled !== true ? (
               <Combobox.ClearButton onClear={handleClear} />

@@ -134,12 +134,12 @@ describe('Add New Song Modal', () => {
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
       expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
 
-      expect(screen.getByRole('textbox', { name: /album/i })).toBeInTheDocument()
-      expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /album/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /album/i })).toHaveValue('')
 
-      expect(screen.getByRole('textbox', { name: /artist/i })).toBeInTheDocument()
-      expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /artist/i })).not.toBeDisabled()
+      expect(screen.getByRole('combobox', { name: /artist/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /artist/i })).not.toBeDisabled()
 
       expect(screen.getByRole('textbox', { name: /description/i })).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: /description/i })).toHaveValue('')
@@ -158,11 +158,11 @@ describe('Add New Song Modal', () => {
 
       shouldRender()
 
-      expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toBeInTheDocument()
-      expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /guitar tuning/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /guitar tuning/i })).toHaveValue('')
 
-      expect(screen.getByRole('textbox', { name: /difficulty/i })).toBeInTheDocument()
-      expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /difficulty/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /difficulty/i })).toHaveValue('')
 
       expect(screen.getByRole('textbox', { name: /bpm/i })).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: /bpm/i })).toHaveValue('')
@@ -204,7 +204,7 @@ describe('Add New Song Modal', () => {
     })
   })
 
-  describe('first step', () => {
+  describe('first step - validation', () => {
     it('should validate title on blur', async () => {
       const user = userEvent.setup()
 
@@ -216,7 +216,7 @@ describe('Add New Song Modal', () => {
       expect(titleField).not.toBeInvalid()
 
       await user.clear(titleField)
-      act(() => titleField.blur())
+      await act(async () => titleField.blur())
       expect(titleField).toBeInvalid()
     })
 
@@ -255,7 +255,7 @@ describe('Add New Song Modal', () => {
     })
   })
 
-  describe('second step', () => {
+  describe('second step - validation', () => {
     async function goToSecondStep() {
       const user = userEvent.setup()
 
@@ -279,9 +279,9 @@ describe('Add New Song Modal', () => {
 
       expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
 
-      expect(screen.getByRole('textbox', { name: /type/i })).toBeInTheDocument()
-      expect(screen.getByRole('textbox', { name: /type/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /type/i })).not.toBeInvalid()
+      expect(screen.getByRole('combobox', { name: /type/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /type/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /type/i })).not.toBeInvalid()
 
       expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
@@ -317,7 +317,7 @@ describe('Add New Song Modal', () => {
       expect(nameField).not.toBeInvalid()
 
       await user.clear(nameField)
-      act(() => nameField.blur())
+      await act(async () => nameField.blur())
       expect(nameField).toBeInvalid()
     })
 
@@ -334,7 +334,7 @@ describe('Add New Song Modal', () => {
       await user.click(screen.getByRole('button', { name: /add section/i }))
 
       const nameField = screen.getByRole('textbox', { name: /name/i })
-      const typeField = screen.getByRole('textbox', { name: /type/i })
+      const typeField = screen.getByRole('combobox', { name: /type/i })
 
       await user.click(screen.getByRole('button', { name: /first step/i }))
       expect(nameField).toBeInvalid()
@@ -365,7 +365,7 @@ describe('Add New Song Modal', () => {
       await user.click(screen.getByRole('button', { name: /add section/i }))
 
       const nameField = screen.getByRole('textbox', { name: /name/i })
-      const typeField = screen.getByRole('textbox', { name: /type/i })
+      const typeField = screen.getByRole('combobox', { name: /type/i })
 
       await user.click(screen.getByRole('button', { name: /previous/i }))
       expect(nameField).toBeInvalid()
@@ -389,7 +389,7 @@ describe('Add New Song Modal', () => {
     it.skip('should be able to reorder sections', () => {})
   })
 
-  describe('final step', () => {
+  describe('final step - validation', () => {
     async function goToFinalStep() {
       const user = userEvent.setup()
 
@@ -409,7 +409,7 @@ describe('Add New Song Modal', () => {
 
       // songsterr
       await user.type(songsterrField, 'something')
-      act(() => songsterrField.blur())
+      await act(async () => songsterrField.blur())
       expect(songsterrField).toBeInvalid()
 
       await user.click(songsterrField)
@@ -421,7 +421,7 @@ describe('Add New Song Modal', () => {
 
       // youtube
       await user.type(youtubeField, 'something')
-      act(() => youtubeField.blur())
+      await act(async () => youtubeField.blur())
       expect(youtubeField).toBeInvalid()
 
       await user.click(youtubeField)
@@ -500,14 +500,14 @@ describe('Add New Song Modal', () => {
 
     function expectSecondStep() {
       expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument()
-      expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toBeInTheDocument()
+      expect(screen.getByRole('combobox', { name: /guitar tuning/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /next/i })).toBeInTheDocument()
     }
 
     function expectFinalStep() {
       expect(screen.queryByRole('textbox', { name: /title/i })).not.toBeInTheDocument()
-      expect(screen.queryByRole('textbox', { name: /guitar tuning/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('combobox', { name: /guitar tuning/i })).not.toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: /songsterr/i })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /previous/i })).toBeInTheDocument()
       expect(screen.queryByRole('button', { name: /next/i })).not.toBeInTheDocument()
@@ -551,9 +551,9 @@ describe('Add New Song Modal', () => {
 
     reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(screen.getByRole('combobox', { name: /album/i }))
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
-    expect(screen.getByRole('textbox', { name: /artist/i })).toBeDisabled()
+    expect(screen.getByRole('combobox', { name: /artist/i })).toBeDisabled()
   })
 
   it('should show artist info icon that it will be inherited from album, when album is selected and it does not have an artist', async () => {
@@ -563,7 +563,7 @@ describe('Add New Song Modal', () => {
 
     reduxRender(<AddNewSongModal opened={true} onClose={() => {}} />)
 
-    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(screen.getByRole('combobox', { name: /album/i }))
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
     expect(await screen.findByLabelText('artist-info')).toBeInTheDocument()
   })
@@ -577,7 +577,7 @@ describe('Add New Song Modal', () => {
 
     await user.type(screen.getByRole('textbox', { name: /title/i }), 'something') // so that validation passes
 
-    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(screen.getByRole('combobox', { name: /album/i }))
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
     expect(await screen.findByLabelText('artist-info')).toBeInTheDocument()
 
@@ -594,16 +594,16 @@ describe('Add New Song Modal', () => {
 
       // first step
       expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /album/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue('')
       expect(screen.getByRole('textbox', { name: /description/i })).toHaveValue('')
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), 'something') // pass validation
 
       // second step
       await user.click(screen.getByRole('button', { name: /second step/i }))
-      expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toHaveValue('')
-      expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /guitar tuning/i })).toHaveValue('')
+      expect(screen.getByRole('combobox', { name: /difficulty/i })).toHaveValue('')
       expect(screen.getByRole('textbox', { name: /bpm/i })).toHaveValue('')
       expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(
         new RegExp('release date', 'i')
@@ -669,7 +669,7 @@ describe('Add New Song Modal', () => {
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
 
-      await user.click(screen.getByRole('textbox', { name: /album/i }))
+      await user.click(screen.getByRole('combobox', { name: /album/i }))
       await user.click(await screen.findByRole('option', { name: newAlbum.title }))
 
       await user.click(screen.getByRole('button', { name: /final step/i }))
@@ -707,9 +707,9 @@ describe('Add New Song Modal', () => {
       reduxRender(withToastify(<AddNewSongModal opened={true} onClose={onClose} />))
 
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-      await user.type(screen.getByRole('textbox', { name: /album/i }), newAlbumTitle)
+      await user.type(screen.getByRole('combobox', { name: /album/i }), newAlbumTitle)
 
-      await user.click(screen.getByRole('textbox', { name: /artist/i }))
+      await user.click(screen.getByRole('combobox', { name: /artist/i }))
       await user.click(await screen.findByRole('option', { name: newArtist.name }))
 
       await user.click(screen.getByRole('button', { name: /final step/i }))
@@ -761,17 +761,17 @@ describe('Add New Song Modal', () => {
 
       // first step
       await user.type(screen.getByRole('textbox', { name: /title/i }), newTitle)
-      await user.type(screen.getByRole('textbox', { name: /album/i }), newAlbumTitle)
-      await user.type(screen.getByRole('textbox', { name: /artist/i }), newArtistName)
+      await user.type(screen.getByRole('combobox', { name: /album/i }), newAlbumTitle)
+      await user.type(screen.getByRole('combobox', { name: /artist/i }), newArtistName)
       await user.type(screen.getByRole('textbox', { name: /description/i }), newDescription)
 
       // second step
       await user.click(screen.getByRole('button', { name: /next/i }))
 
-      await user.click(screen.getByRole('textbox', { name: /guitar tuning/i }))
+      await user.click(screen.getByRole('combobox', { name: /guitar tuning/i }))
       await user.click(await screen.findByRole('option', { name: newGuitarTuning.name }))
 
-      await user.click(screen.getByRole('textbox', { name: /difficulty/i }))
+      await user.click(screen.getByRole('combobox', { name: /difficulty/i }))
       await user.click(await screen.findByRole('option', { name: new RegExp(newDifficulty, 'i') }))
 
       await user.type(screen.getByRole('textbox', { name: /bpm/i }), newBpm.toString())
@@ -782,7 +782,7 @@ describe('Add New Song Modal', () => {
       // sections
       await user.click(screen.getByRole('button', { name: /add section/i }))
 
-      await user.click(screen.getByRole('textbox', { name: /type/i }))
+      await user.click(screen.getByRole('combobox', { name: /type/i }))
       await user.click(await screen.findByRole('option', { name: newSectionType.name }))
 
       await user.type(screen.getByRole('textbox', { name: /name/i }), newSectionName)

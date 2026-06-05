@@ -1,8 +1,7 @@
 import { Button, Group, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditBandMemberForm, editBandMemberSchema } from '../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import ImageDropzoneWithPreview from '../../@ui/image/ImageDropzoneWithPreview.tsx'
@@ -55,7 +54,7 @@ function EditBandMemberModal({ opened, onClose, bandMember }: EditBandMemberModa
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(editBandMemberSchema),
+    validate: schemaResolver(editBandMemberSchema),
     onValuesChange: (values) => {
       setMemberHasChanged(
         values.name !== bandMember.name || values.color !== bandMember.color || !areRolesEqual()

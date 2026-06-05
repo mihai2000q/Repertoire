@@ -117,7 +117,7 @@ function HomeGenres({ ...others }: CardProps) {
             }
           })}
         >
-          <Grid columns={10} px={'md'} pt={'sm'} pb={'md'} gutter={'sm'}>
+          <Grid columns={10} px={'md'} pt={'sm'} pb={'md'} gap={'sm'}>
             {mockGenres.map((genre) => (
               <Grid.Col span={genre.isSmall ? 4 : 6} key={genre.genre}>
                 <Card

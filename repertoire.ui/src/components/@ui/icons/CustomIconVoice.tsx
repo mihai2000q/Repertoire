@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconVoiceProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconVoice = forwardRef<SVGSVGElement, CustomIconVoiceProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconVoice({ color, size = 24, ...props }: CustomIconVoiceProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -26,8 +25,6 @@ const CustomIconVoice = forwardRef<SVGSVGElement, CustomIconVoiceProps>(
       <path d="M60.484 28.766l-2.024-4.282l-15.331 13.651z"></path>
     </svg>
   )
-)
-
-CustomIconVoice.displayName = 'CustomIconVoice'
+}
 
 export default CustomIconVoice

@@ -298,7 +298,7 @@ function SongSectionCard({
             </Group>
           </Group>
 
-          <Collapse in={showDetails}>
+          <Collapse expanded={showDetails}>
             <Group
               aria-label={`song-section-details-${section.name}`}
               pt={'md'}

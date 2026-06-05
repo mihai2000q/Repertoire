@@ -1,4 +1,4 @@
-import Artist from 'src/types/models/Artist.ts'
+import Artist from '../../types/models/Artist.ts'
 import { emptyArtist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import ArtistCard from './ArtistCard.tsx'
 import { screen } from '@testing-library/react'
@@ -7,6 +7,11 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
+
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
 
 describe('Artist Card', () => {
   const artist: Artist = {
@@ -38,13 +43,7 @@ describe('Artist Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

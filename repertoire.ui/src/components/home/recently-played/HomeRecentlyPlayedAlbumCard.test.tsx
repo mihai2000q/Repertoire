@@ -1,6 +1,5 @@
 import { emptyAlbum, emptyArtist, reduxRouterRender } from '../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
-import { afterEach, expect } from 'vitest'
 import { RootState } from '../../../state/store.ts'
 import Album from '../../../types/models/Album.ts'
 import HomeRecentlyPlayedAlbumCard from './HomeRecentlyPlayedAlbumCard.tsx'

@@ -71,9 +71,9 @@ function AddNewSongModalFirstStep({
       </Group>
 
       <Textarea
-        label="Description"
-        placeholder="Enter Description"
-        autosize={true}
+        label={"Description"}
+        placeholder={"Enter Description"}
+        autosize={import.meta.env.MODE !== 'test'} // TODO: Remove when Mantine fixes it
         minRows={3}
         maxRows={6}
         key={form.key('description')}

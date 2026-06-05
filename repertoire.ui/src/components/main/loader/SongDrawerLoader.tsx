@@ -22,7 +22,7 @@ function SongDrawerLoader() {
 
         <Divider />
 
-        <Grid gutter={'md'} p={'xs'}>
+        <Grid gap={'md'} p={'xs'}>
           <Grid.Col span={4}>
             <Skeleton w={100} h={12} />
           </Grid.Col>

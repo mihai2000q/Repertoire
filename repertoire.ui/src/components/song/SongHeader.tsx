@@ -40,11 +40,11 @@ function SongHeader({ song }: SongHeaderProps) {
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   function handleAlbumClick() {
-    dispatch(openAlbumDrawer(song.album.id))
+    if (song.album) dispatch(openAlbumDrawer(song.album.id))
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(song.artist.id))
+    if (song.artist) dispatch(openArtistDrawer(song.artist.id))
   }
 
   async function handleDelete() {
@@ -95,7 +95,7 @@ function SongHeader({ song }: SongHeaderProps) {
           src={song.imageUrl ?? song.album?.imageUrl}
           alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
           size={'max(12vw, 150px)'}
-          bg={'gray.5'}
+          color={'gray.5'}
           style={(theme) => ({
             aspectRatio: 1,
             boxShadow: theme.shadows.lg,
@@ -127,7 +127,7 @@ function SongHeader({ song }: SongHeaderProps) {
                   src={song.artist.imageUrl}
                   alt={song.artist.imageUrl && song.artist.name}
                   style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                  bg={'gray.0'}
+                  color={'gray.0'}
                 >
                   <Center c={'gray.7'}>
                     <CustomIconUserAlt aria-label={`default-icon-${song.artist.name}`} size={15} />
@@ -179,7 +179,7 @@ function SongHeader({ song }: SongHeaderProps) {
                         size={45}
                         src={song.album.imageUrl}
                         alt={song.album.imageUrl && song.album.title}
-                        bg={'gray.5'}
+                        color={'gray.5'}
                       >
                         <Center c={'white'}>
                           <CustomIconAlbumVinyl

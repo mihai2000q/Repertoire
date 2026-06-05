@@ -20,7 +20,7 @@ describe('Difficulty Multi Select', () => {
 
     reduxRender(<DifficultyMultiSelect difficulties={[]} setDifficulties={setIds} label={label} />)
 
-    const multiSelect = screen.getByRole('textbox', { name: label })
+    const multiSelect = screen.getByRole('combobox', { name: label })
     expect(multiSelect).toHaveValue('')
 
     await user.click(multiSelect)

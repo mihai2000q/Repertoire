@@ -137,10 +137,13 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     }
   }, [arrangements])
 
+  if (isLoading || !arrangements)
+    return <SongArrangementsModalLoader opened={opened} onClose={onClose} />
+
   // Handlers
   async function handleUpdateDefault() {
     await updateDefaultArrangement({
-      id: isDefault ? null : selectedArrangement.id,
+      id: isDefault ? null : selectedArrangement?.id,
       songId: songId
     }).unwrap()
   }
@@ -148,10 +151,10 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   function handleChangeName(value: string) {
     const newArrangements = new Map<string, SongArrangement>([...internalArrangements])
     const newArrangement = {
-      ...internalArrangements.get(selectedArrangement.id),
+      ...internalArrangements.get(selectedArrangement?.id),
       name: value
     }
-    newArrangements.set(selectedArrangement.id, newArrangement)
+    newArrangements.set(selectedArrangement?.id, newArrangement)
     setInternalArrangements(newArrangements)
     refreshHasChanged(newArrangements)
     refreshHasError(newArrangements)
@@ -159,7 +162,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
   function handleDecreaseOccurrence(sectionId: string) {
     const sectionOccurrences = internalArrangements
-      .get(selectedArrangement.id)
+      .get(selectedArrangement?.id)
       .sectionOccurrences.find((so) => so.section.id === sectionId)
     if (typeof sectionOccurrences.occurrences === 'number') {
       handleChangeOccurrence(sectionId, sectionOccurrences.occurrences - 1)
@@ -168,7 +171,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
   function handleIncreaseOccurrence(sectionId: string) {
     const sectionOccurrences = internalArrangements
-      .get(selectedArrangement.id)
+      .get(selectedArrangement?.id)
       .sectionOccurrences.find((so) => so.section.id === sectionId)
     if (typeof sectionOccurrences.occurrences === 'number') {
       handleChangeOccurrence(sectionId, sectionOccurrences.occurrences + 1)
@@ -176,7 +179,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   }
 
   function handleChangeOccurrence(sectionId: string, occurrence: number | string) {
-    const arrangement = internalArrangements.get(selectedArrangement.id)
+    const arrangement = internalArrangements.get(selectedArrangement?.id)
     const newArrangement: SongArrangement = {
       ...arrangement,
       sectionOccurrences: [
@@ -191,14 +194,14 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
       ]
     }
     const newArrangements = new Map<string, SongArrangement>([...internalArrangements])
-    newArrangements.set(selectedArrangement.id, newArrangement)
+    newArrangements.set(selectedArrangement?.id, newArrangement)
     setInternalArrangements(newArrangements)
     refreshHasChanged(newArrangements)
   }
 
   function handleOnBlurOccurrence(sectionId: string) {
     const sectionOccurrences = internalArrangements
-      .get(selectedArrangement.id)
+      .get(selectedArrangement?.id)
       .sectionOccurrences.find((so) => so.section.id === sectionId)
     if (sectionOccurrences.occurrences.toString().trim() === '') {
       handleChangeOccurrence(sectionId, 0)
@@ -207,7 +210,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
   function handleReset() {
     const newArrangements = new Map<string, SongArrangement>([...internalArrangements])
-    newArrangements.set(selectedArrangement.id, selectedArrangement)
+    newArrangements.set(selectedArrangement?.id, selectedArrangement)
     setInternalArrangements(newArrangements)
     refreshHasChanged(newArrangements)
     refreshHasError(newArrangements)
@@ -215,15 +218,15 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
   async function handleDelete() {
     await deleteArrangement({
-      id: selectedArrangement.id,
+      id: selectedArrangement?.id,
       songId: songId
     }).unwrap()
 
     toast.success('Song arrangement deleted!')
-    setSelectedArrangement(arrangements.find((a) => a.id !== selectedArrangement.id))
-    internalArrangements.delete(selectedArrangement.id)
-    hasChanged.delete(selectedArrangement.id)
-    arrangementErrors.delete(selectedArrangement.id)
+    setSelectedArrangement(arrangements.find((a) => a.id !== selectedArrangement?.id))
+    internalArrangements.delete(selectedArrangement?.id)
+    hasChanged.delete(selectedArrangement?.id)
+    arrangementErrors.delete(selectedArrangement?.id)
   }
 
   async function handleUpdate() {
@@ -248,9 +251,6 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     hasChanged.clear()
     arrangementErrors.clear()
   }
-
-  if (isLoading || !arrangements)
-    return <SongArrangementsModalLoader opened={opened} onClose={onClose} />
 
   if (arrangements.length === 0) {
     return (

@@ -1,4 +1,4 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconViolinProps extends SVGProps<SVGSVGElement> {
   color?: string
@@ -6,10 +6,9 @@ interface CustomIconViolinProps extends SVGProps<SVGSVGElement> {
   strokeWidth?: number
 }
 
-const CustomIconViolin = forwardRef<SVGSVGElement, CustomIconViolinProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconViolin({ color, size = 24, ...props }: CustomIconViolinProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -51,8 +50,6 @@ const CustomIconViolin = forwardRef<SVGSVGElement, CustomIconViolinProps>(
       </g>
     </svg>
   )
-)
-
-CustomIconViolin.displayName = 'CustomIconViolin'
+}
 
 export default CustomIconViolin

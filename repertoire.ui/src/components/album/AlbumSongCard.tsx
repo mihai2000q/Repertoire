@@ -220,7 +220,7 @@ function AlbumSongCard({
                   radius={'md'}
                   src={song.imageUrl ?? albumImageUrl}
                   alt={(song.imageUrl ?? albumImageUrl) && song.title}
-                  bg={'gray.5'}
+                  color={'gray.5'}
                 >
                   <Center c={'white'}>
                     <CustomIconMusicNoteEighth

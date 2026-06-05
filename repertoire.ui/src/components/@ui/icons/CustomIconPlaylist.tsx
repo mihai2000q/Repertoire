@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconPlaylistProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconPlaylist = forwardRef<SVGSVGElement, CustomIconPlaylistProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconPlaylist({ color, size = 24, ...props }: CustomIconPlaylistProps) {
+  return (
     <svg
-      ref={ref}
       width={size}
       height={size}
       fill={color || 'currentColor'}
@@ -23,8 +22,6 @@ const CustomIconPlaylist = forwardRef<SVGSVGElement, CustomIconPlaylistProps>(
       <path d="M2 9h14v2H2zm0 4h9v2H2zm0 4h9v2H2z" />
     </svg>
   )
-)
-
-CustomIconPlaylist.displayName = 'CustomIconPlaylist'
+}
 
 export default CustomIconPlaylist

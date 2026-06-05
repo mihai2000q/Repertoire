@@ -56,9 +56,9 @@ describe('Artist Autocomplete', () => {
 
     reduxRender(<ArtistAutocomplete artist={null} setArtist={setArtist} setValue={setValue} />)
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue('')
+    expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue('')
 
-    const autocomplete = screen.getByRole('textbox', { name: /artist/i })
+    const autocomplete = screen.getByRole('combobox', { name: /artist/i })
     await user.click(autocomplete)
 
     for (const artist of artists) {

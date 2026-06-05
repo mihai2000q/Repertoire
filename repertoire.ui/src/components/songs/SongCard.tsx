@@ -75,7 +75,7 @@ function SongCard({ song }: SongCardProps) {
   function handleArtistClick(e: MouseEvent) {
     if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
-    dispatch(openArtistDrawer(song.artist.id))
+    if (song.artist) dispatch(openArtistDrawer(song.artist.id))
   }
 
   function handleOpenYoutube(e: MouseEvent) {
@@ -89,11 +89,11 @@ function SongCard({ song }: SongCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`/artist/${song.artist.id}`)
+    if (song.artist) navigate(`/artist/${song.artist.id}`)
   }
 
   function handleViewAlbum() {
-    navigate(`/album/${song.album.id}`)
+    if (song.album) navigate(`/album/${song.album.id}`)
   }
 
   async function handleDelete() {
@@ -135,7 +135,7 @@ function SongCard({ song }: SongCardProps) {
               alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
               w={'100%'}
               h={'unset'}
-              bg={'gray.5'}
+              color={'gray.5'}
               checkmarkSize={'28%'}
               style={(theme) => ({
                 aspectRatio: 8 / 7,

@@ -83,7 +83,12 @@ function AlbumOption({
         onClick={(e) => e.stopPropagation()}
         pr={'sm'}
       />
-      <Avatar radius={'md'} src={album.imageUrl} alt={album.imageUrl && album.title} bg={'gray.5'}>
+      <Avatar
+        radius={'md'}
+        src={album.imageUrl}
+        alt={album.imageUrl && album.title}
+        color={'gray.5'}
+      >
         <Center c={'white'}>
           <CustomIconAlbumVinyl aria-label={`default-icon-${album.title}`} size={14} />
         </Center>
@@ -139,7 +144,7 @@ function AddExistingArtistAlbumsModal({
 
   const searchRef = useFocusTrap(!albumsIsLoading)
 
-  const scrollRef = useRef<HTMLDivElement>()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { ref: lastAlbumRef, entry } = useIntersection({
     root: scrollRef.current,
     threshold: 0.1

@@ -6,6 +6,11 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
 
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
+
 describe('Artist Albums Context Menu', () => {
   const artistId = 'artist-id'
   const dataTestId = 'dataTestId'
@@ -33,17 +38,11 @@ describe('Artist Albums Context Menu', () => {
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
     server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

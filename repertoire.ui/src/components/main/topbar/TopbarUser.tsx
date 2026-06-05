@@ -69,7 +69,7 @@ function TopbarUser({ ...others }: UnstyledButtonProps) {
           {...others}
         >
           <Group gap={'xxs'}>
-            <Avatar src={user.profilePictureUrl} bg={'gray.0'}>
+            <Avatar src={user.profilePictureUrl} color={'gray.0'}>
               <Center c={'gray.7'}>
                 <IconUserFilled size={20} />
               </Center>

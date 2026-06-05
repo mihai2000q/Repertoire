@@ -82,7 +82,7 @@ function Playlists() {
     { open: openAddNewPlaylistModal, close: closeAddNewPlaylistModal }
   ] = useDisclosure(false)
 
-  const playlistsRef = useRef()
+  const playlistsRef = useRef<HTMLDivElement>(null)
   const { mainScroll } = useMain()
 
   function handleCurrentPageChange(p: number) {

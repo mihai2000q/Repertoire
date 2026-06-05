@@ -94,7 +94,7 @@ describe('Edit Band Member Header Modal', () => {
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const rolesField = screen.getByRole('textbox', { name: /roles/i })
+    const rolesField = screen.getByRole('combobox', { name: /roles/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     await user.clear(nameField)
@@ -103,7 +103,7 @@ describe('Edit Band Member Header Modal', () => {
     for (const role of [...bandMember.roles, ...newRoles]) {
       await user.click(screen.getByRole('option', { name: role.name })) // remove old roles and add new ones
     }
-    act(() => rolesField.blur())
+    await act(async () => rolesField.blur())
 
     await user.click(saveButton)
 
@@ -270,7 +270,7 @@ describe('Edit Band Member Header Modal', () => {
     reduxRender(<EditBandMemberModal opened={true} onClose={() => {}} bandMember={bandMember} />)
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const rolesField = screen.getByRole('textbox', { name: /roles/i })
+    const rolesField = screen.getByRole('combobox', { name: /roles/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     // change image
@@ -285,7 +285,7 @@ describe('Edit Band Member Header Modal', () => {
 
     // change name
     await user.type(nameField, '1')
-    act(() => nameField.blur())
+    await act(async () => nameField.blur())
     expect(saveButton).not.toBeDisabled()
 
     // reset name
@@ -298,7 +298,7 @@ describe('Edit Band Member Header Modal', () => {
     for (const role of bandMemberRoles) {
       await user.click(screen.getByRole('option', { name: role.name }))
     }
-    act(() => rolesField.blur())
+    await act(async () => rolesField.blur())
     expect(saveButton).not.toBeDisabled()
 
     // reset roles
@@ -306,7 +306,7 @@ describe('Edit Band Member Header Modal', () => {
     for (const role of bandMemberRoles) {
       await user.click(screen.getByRole('option', { name: role.name }))
     }
-    act(() => rolesField.blur())
+    await act(async () => rolesField.blur())
     expect(saveButton).toBeDisabled()
 
     // remove image
@@ -321,7 +321,7 @@ describe('Edit Band Member Header Modal', () => {
     reduxRender(<EditBandMemberModal opened={true} onClose={() => {}} bandMember={bandMember} />)
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const rolesField = screen.getByRole('textbox', { name: /roles/i })
+    const rolesField = screen.getByRole('combobox', { name: /roles/i })
 
     await user.clear(nameField)
     expect(nameField).toBeInvalid()

@@ -16,8 +16,7 @@ import {
   useUpdateAlbumMutation
 } from '../../../state/api/albumsApi.ts'
 import { useEffect, useState } from 'react'
-import { useForm } from '@mantine/form'
-import { zod4Resolver } from 'mantine-form-zod-resolver'
+import { schemaResolver, useForm } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderSchema } from '../../../validation/albumsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
@@ -56,7 +55,7 @@ function EditAlbumHeaderModal({ album, opened, onClose }: EditAlbumHeaderModalPr
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: zod4Resolver(editAlbumHeaderSchema),
+    validate: schemaResolver(editAlbumHeaderSchema),
     onValuesChange: (values) => {
       setAlbumHasChanged(
         values.title !== album.title ||

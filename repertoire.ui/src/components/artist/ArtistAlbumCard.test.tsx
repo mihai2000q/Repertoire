@@ -1,15 +1,19 @@
 import { emptyAlbum, emptyOrder, reduxRouterRender, withToastify } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Album from 'src/types/models/Album.ts'
+import Album from '../../types/models/Album.ts'
 import ArtistAlbumCard from './ArtistAlbumCard.tsx'
 import dayjs from 'dayjs'
-import { beforeEach, expect } from 'vitest'
 import AlbumProperty from '../../types/enums/properties/AlbumProperty.ts'
 import { RemoveAlbumsFromArtistRequest } from '../../types/requests/ArtistRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
 
 describe('Artist Album Card', () => {
   const album: Album = {
@@ -44,12 +48,7 @@ describe('Artist Album Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-    server.listen()
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

@@ -33,7 +33,7 @@ function DifficultyMultiSelect({
   availableDifficulties,
   ...others
 }: DifficultyMultiSelectProps) {
-  availableDifficulties = availableDifficulties
+  const _availableDifficulties = availableDifficulties
     ? allDifficulties.filter(
         (diff) => availableDifficulties.includes(diff) || difficulties.includes(diff)
       )
@@ -92,6 +92,7 @@ function DifficultyMultiSelect({
 
             <Combobox.EventsTarget>
               <PillsInput.Field
+                role={'combobox'}
                 type="hidden"
                 onBlur={() => combobox.closeDropdown()}
                 onKeyDown={(event) => {
@@ -109,7 +110,7 @@ function DifficultyMultiSelect({
       <Combobox.Dropdown>
         <Combobox.Options>
           <ScrollArea.Autosize mah={150} scrollbarSize={5}>
-            {availableDifficulties.map((diff) => (
+            {_availableDifficulties.map((diff) => (
               <Combobox.Option value={diff} key={diff} active={difficulties.includes(diff)}>
                 <Group gap={6}>
                   {difficulties.includes(diff) && <IconCheck size={14} />}

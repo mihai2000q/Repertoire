@@ -13,7 +13,6 @@ import {
 } from '../../../types/models/Search.ts'
 import SearchType from '../../../types/enums/SearchType.ts'
 import { userEvent } from '@testing-library/user-event'
-import { beforeEach } from 'vitest'
 
 describe('Topbar Search', () => {
   const artists: ArtistSearch[] = [

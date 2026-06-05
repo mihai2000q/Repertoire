@@ -10,12 +10,11 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "allowImportingTsExtensions": true,
     "strict": false,
     "paths": {
       "@renderer/*": [
-        "src/renderer/src/*"
+        "./src/renderer/src/*"
       ],
       "@ui/App": [
         "../repertoire.ui/src/App.tsx"

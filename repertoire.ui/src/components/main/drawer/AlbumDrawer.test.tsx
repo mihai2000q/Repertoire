@@ -159,8 +159,11 @@ describe('Album Drawer', () => {
       expect(screen.getByRole('img', { name: song.title })).toBeInTheDocument()
       if (song.imageUrl) {
         expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', song.imageUrl)
-      } else if (album?.imageUrl) {
-        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute('src', album.imageUrl)
+      } else if (localAlbum.imageUrl) {
+        expect(screen.getByRole('img', { name: song.title })).toHaveAttribute(
+          'src',
+          localAlbum.imageUrl
+        )
       }
     })
   })

@@ -7,12 +7,12 @@ services:
       args:
         VITE_APPLICATION_PORT: ${VITE_APPLICATION_PORT}
     container_name: Repertoire-Web
-    env_file: ".env"
+    env_file: '.env'
     environment:
       - VITE_AUTH_URL=http://Repertoire-Auth:8030/auth
       - VITE_BACKEND_URL=http://Repertoire-Server:8000/api
     ports:
-      - "${VITE_APPLICATION_PORT}:${VITE_APPLICATION_PORT}"
+      - '${VITE_APPLICATION_PORT}:${VITE_APPLICATION_PORT}'
     networks:
       - repertoire_repertoire_network
 

@@ -9,18 +9,22 @@ import ArtistSongCard from './ArtistSongCard.tsx'
 import Song from '../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Album from 'src/types/models/Album.ts'
+import Album from '../../types/models/Album.ts'
 import { RootState } from '../../state/store.ts'
 import dayjs from 'dayjs'
 import SongProperty from '../../types/enums/properties/SongProperty.ts'
 import Difficulty from '../../types/enums/Difficulty.ts'
-import { beforeEach, expect } from 'vitest'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { RemoveSongsFromArtistRequest } from '../../types/requests/ArtistRequests.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+
+// Mock the context
+vi.mock('../../context/ClickSelectContext', () => ({
+  useClickSelect: vi.fn()
+}))
 
 describe('Artist Song Card', () => {
   const song: Song = {
@@ -62,12 +66,7 @@ describe('Artist Song Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    vi.mock('../../context/ClickSelectContext', () => ({
-      useClickSelect: vi.fn()
-    }))
-    server.listen()
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

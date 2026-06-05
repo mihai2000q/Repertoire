@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import Artist from 'src/types/models/Artist.ts'
+import Artist from '../../types/models/Artist.ts'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../types/models/Playlist.ts'
 

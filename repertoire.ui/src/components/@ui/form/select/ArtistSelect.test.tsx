@@ -55,7 +55,7 @@ describe('Band Member Select', () => {
 
     const [{ rerender }] = reduxRender(<ArtistSelect artist={null} setArtist={setArtist} />)
 
-    const select = screen.getByRole('textbox', { name: /artist/i })
+    const select = screen.getByRole('combobox', { name: /artist/i })
     expect(select).toHaveValue('')
     await user.click(select)
 
@@ -71,6 +71,6 @@ describe('Band Member Select', () => {
 
     rerender(<ArtistSelect artist={newArtist} setArtist={setArtist} />)
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue(newArtist.name)
+    expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue(newArtist.name)
   })
 })

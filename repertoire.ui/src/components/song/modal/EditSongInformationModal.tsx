@@ -118,7 +118,7 @@ function EditSongInformationModal({ song, opened, onClose }: EditSongInformation
             label="Bpm"
             placeholder="Enter Bpm"
             value={bpm}
-            onChange={setBpm}
+            onChange={setBpm as (value: string | number) => void}
           />
 
           <Space flex={0.4} />

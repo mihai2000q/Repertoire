@@ -16,7 +16,7 @@ function AlbumDrawerLoader() {
         <Divider my={'xs'} />
         <Stack gap={'md'}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <Grid key={i} align={'center'} gutter={'xs'} px={'sm'}>
+            <Grid key={i} align={'center'} gap={'xs'} px={'sm'}>
               <Grid.Col span={1}>
                 <Skeleton radius={'sm'} w={18} h={18} />
               </Grid.Col>

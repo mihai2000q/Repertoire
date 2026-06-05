@@ -32,7 +32,13 @@ export default defineConfig(({ mode }) => {
           '@ui': resolve('../repertoire.ui/src')
         }
       },
-      plugins: [react()],
+      plugins: [
+        react({
+          babel: {
+            plugins: [['babel-plugin-react-compiler', {}]]
+          }
+        })
+      ],
       server: {
         port: parseInt(env.VITE_APPLICATION_PORT)
       }

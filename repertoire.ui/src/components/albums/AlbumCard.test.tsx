@@ -1,14 +1,19 @@
-import Album from 'src/types/models/Album.ts'
+import Album from '../../types/models/Album.ts'
 import { emptyAlbum, emptyArtist, reduxRouterRender } from '../../test-utils.tsx'
 import AlbumCard from './AlbumCard.tsx'
 import { screen } from '@testing-library/react'
-import Artist from 'src/types/models/Artist.ts'
+import Artist from '../../types/models/Artist.ts'
 import userEvent from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { RootState } from 'src/state/store.ts'
+import { RootState } from '../../state/store.ts'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import { expect } from 'vitest'
+
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
 
 describe('Album Card', () => {
   const album: Album = {
@@ -46,13 +51,7 @@ describe('Album Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

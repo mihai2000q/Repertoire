@@ -49,7 +49,7 @@ function AlbumDrawerSongCard({
   }
 
   return (
-    <Grid align={'center'} gutter={'xs'} px={'xs'}>
+    <Grid align={'center'} gap={'xs'} px={'xs'}>
       <Grid.Col span={1}>
         <Text fw={500} ta={'center'}>
           {song.albumTrackNo}
@@ -62,7 +62,7 @@ function AlbumDrawerSongCard({
           size={28}
           src={song.imageUrl ?? albumImageUrl}
           alt={(song.imageUrl ?? albumImageUrl) && song.title}
-          bg={'gray.5'}
+          color={'gray.5'}
           sx={(theme) => ({
             transition: '0.18s',
             cursor: 'pointer',
@@ -117,16 +117,6 @@ function AlbumDrawer() {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleArtistClick() {
-    onClose()
-    navigate(`/artist/${album.artist.id}`)
-  }
-
-  function handleViewDetails() {
-    onClose()
-    navigate(`/album/${album.id}`)
-  }
-
   if (!album)
     return (
       <RightSideEntityDrawer
@@ -136,6 +126,16 @@ function AlbumDrawer() {
         loader={<AlbumDrawerLoader />}
       />
     )
+
+  function handleArtistClick() {
+    onClose()
+    if (album.artist) navigate(`/artist/${album.artist.id}`)
+  }
+
+  function handleViewDetails() {
+    onClose()
+    navigate(`/album/${album.id}`)
+  }
 
   return (
     <RightSideEntityDrawer
@@ -156,7 +156,7 @@ function AlbumDrawer() {
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             style={{ aspectRatio: 4 / 3 }}
           >
             <Center c={'white'}>
@@ -221,7 +221,7 @@ function AlbumDrawer() {
                     src={album.artist.imageUrl}
                     alt={album.artist.imageUrl && album.artist.name}
                     style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                    bg={'gray.0'}
+                    color={'gray.0'}
                   >
                     <Center c={'gray.7'}>
                       <CustomIconUserAlt

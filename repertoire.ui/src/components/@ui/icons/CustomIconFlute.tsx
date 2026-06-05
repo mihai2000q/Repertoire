@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconFluteProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconFlute = forwardRef<SVGSVGElement, CustomIconFluteProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconFlute({ color, size = 24, ...props }: CustomIconFluteProps) {
+  return (
     <svg
-      ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink={'http://www.w3.org/1999/xlink'}
       width={size}
@@ -50,8 +49,6 @@ const CustomIconFlute = forwardRef<SVGSVGElement, CustomIconFluteProps>(
       </g>
     </svg>
   )
-)
-
-CustomIconFlute.displayName = 'CustomIconFlute'
+}
 
 export default CustomIconFlute

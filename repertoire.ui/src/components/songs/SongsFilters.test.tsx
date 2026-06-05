@@ -177,7 +177,7 @@ describe('Songs Filters', () => {
       within(screen.getByLabelText(/has bpm/i)).getByRole('checkbox', { name: /no/i })
     ).toBeDisabled()
 
-    expect(screen.getByRole('textbox', { name: /difficulties/i })).toBeDisabled()
+    expect(screen.getByRole('combobox', { name: /difficulties/i })).toBeDisabled()
     expect(
       within(screen.getByLabelText(/has difficulty/i)).getByRole('checkbox', { name: /yes/i })
     ).toBeDisabled()
@@ -185,7 +185,7 @@ describe('Songs Filters', () => {
       within(screen.getByLabelText(/has difficulty/i)).getByRole('checkbox', { name: /no/i })
     ).toBeDisabled()
 
-    expect(screen.getByRole('textbox', { name: /guitar tunings/i })).toBeDisabled()
+    expect(screen.getByRole('combobox', { name: /guitar tunings/i })).toBeDisabled()
     expect(
       within(screen.getByLabelText(/has guitar tuning/i)).getByRole('checkbox', { name: /yes/i })
     ).toBeDisabled()
@@ -193,7 +193,7 @@ describe('Songs Filters', () => {
       within(screen.getByLabelText(/has guitar tuning/i)).getByRole('checkbox', { name: /no/i })
     ).toBeDisabled()
 
-    expect(screen.getByRole('textbox', { name: /instruments/i })).toBeDisabled()
+    expect(screen.getByRole('combobox', { name: /instruments/i })).toBeDisabled()
 
     expect(
       within(screen.getByLabelText(/is recorded/i)).getByRole('checkbox', { name: /yes/i })
@@ -657,7 +657,7 @@ describe('Songs Filters', () => {
         expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
       )
 
-      await user.click(screen.getByRole('textbox', { name: /difficulties/i }))
+      await user.click(screen.getByRole('combobox', { name: /difficulties/i }))
       for (const difficulty of newDifficulties) {
         await user.click(await screen.findByRole('option', { name: difficulty }))
       }
@@ -732,7 +732,7 @@ describe('Songs Filters', () => {
         expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
       )
 
-      await user.click(screen.getByRole('textbox', { name: /guitar tunings/i }))
+      await user.click(screen.getByRole('combobox', { name: /guitar tunings/i }))
       for (const tuning of newGuitarTunings) {
         await user.click(await screen.findByRole('option', { name: tuning.name }))
       }
@@ -809,7 +809,7 @@ describe('Songs Filters', () => {
         expect(screen.getByRole('textbox', { name: /min sections/i })).not.toBeDisabled()
       )
 
-      await user.click(screen.getByRole('textbox', { name: /instruments/i }))
+      await user.click(screen.getByRole('combobox', { name: /instruments/i }))
       for (const instrument of newInstruments) {
         await user.click(await screen.findByRole('option', { name: instrument.name }))
       }

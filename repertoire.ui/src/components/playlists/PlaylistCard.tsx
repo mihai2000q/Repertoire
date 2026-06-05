@@ -73,7 +73,7 @@ function PlaylistCard({ playlist }: PlaylistCardProps) {
             h={'unset'}
             src={playlist.imageUrl}
             alt={playlist.imageUrl && playlist.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             checkmarkSize={'28%'}
             isSelected={isDragSelected}
             sx={(theme) => ({

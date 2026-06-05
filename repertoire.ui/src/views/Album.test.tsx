@@ -15,6 +15,13 @@ import FilterOperator from '../types/enums/FilterOperator.ts'
 import Playlist from '../types/models/Playlist.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef()
+  }))
+}))
+
 describe('Album', () => {
   const songs: Song[] = [
     {
@@ -64,22 +71,14 @@ describe('Album', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef()
-      }))
-    }))
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
   })
 
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen())
 
-  afterAll(() => {
-    server.close()
-    vi.clearAllMocks()
-  })
+  afterAll(() => server.close())
 
   const render = (id = album.id) =>
     reduxMemoryRouterRender(<Album />, '/album/:id', [`/album/${id}`])

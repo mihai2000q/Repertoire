@@ -2,7 +2,6 @@ import { reduxRender } from '../../test-utils.tsx'
 import TitleBar from './TitleBar.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { afterEach } from 'vitest'
 import { ElectronAPI, IpcRenderer } from '@electron-toolkit/preload'
 
 describe('Title Bar', () => {
@@ -30,22 +29,23 @@ describe('Title Bar', () => {
 
   it('should have 3 action buttons that trigger the electron Api', async () => {
     const user = userEvent.setup()
+    const send = vi.fn()
     window.electron = {
       ipcRenderer: {
-        send: vi.fn()
+        send: send
       } as unknown as IpcRenderer
     } as unknown as ElectronAPI
 
     reduxRender(<TitleBar />)
 
     await user.click(screen.getByRole('button', { name: 'minimize' }))
-    expect(window.electron.ipcRenderer.send).toHaveBeenCalledWith('minimize')
+    expect(send).toHaveBeenCalledWith('minimize')
 
     await user.click(screen.getByRole('button', { name: 'maximize' }))
-    expect(window.electron.ipcRenderer.send).toHaveBeenCalledWith('maximize')
+    expect(send).toHaveBeenCalledWith('maximize')
 
     await user.click(screen.getByRole('button', { name: 'close' }))
-    expect(window.electron.ipcRenderer.send).toHaveBeenCalledWith('close')
-    expect(window.electron.ipcRenderer.send).toHaveBeenCalledTimes(3)
+    expect(send).toHaveBeenCalledWith('close')
+    expect(send).toHaveBeenCalledTimes(3)
   })
 })

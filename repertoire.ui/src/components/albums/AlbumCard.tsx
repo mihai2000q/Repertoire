@@ -42,7 +42,7 @@ function AlbumCard({ album }: AlbumCardProps) {
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(album.artist.id))
+    if (album.artist) dispatch(openArtistDrawer(album.artist.id))
   }
 
   function handleOpenDrawer() {
@@ -50,7 +50,7 @@ function AlbumCard({ album }: AlbumCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`/artist/${album.artist.id}`)
+    if (album.artist) navigate(`/artist/${album.artist.id}`)
   }
 
   return (
@@ -79,7 +79,7 @@ function AlbumCard({ album }: AlbumCardProps) {
             h={'unset'}
             src={album.imageUrl}
             alt={album.imageUrl && album.title}
-            bg={'gray.5'}
+            color={'gray.5'}
             checkmarkSize={'28%'}
             isSelected={isDragSelected}
             sx={(theme) => ({

@@ -1,14 +1,13 @@
-import { forwardRef, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 interface CustomIconQuestionMarkProps extends SVGProps<SVGSVGElement> {
   color?: string
   size?: number | string
 }
 
-const CustomIconQuestionMark = forwardRef<SVGSVGElement, CustomIconQuestionMarkProps>(
-  ({ color, size = 24, ...props }, ref) => (
+function CustomIconQuestionMark({ color, size = 24, ...props }: CustomIconQuestionMarkProps) {
+  return (
     <svg
-      ref={ref}
       width={size}
       height={size}
       fill={color || 'currentColor'}
@@ -24,8 +23,6 @@ const CustomIconQuestionMark = forwardRef<SVGSVGElement, CustomIconQuestionMarkP
       </g>
     </svg>
   )
-)
-
-CustomIconQuestionMark.displayName = 'CustomIconQuestionMark'
+}
 
 export default CustomIconQuestionMark

@@ -20,6 +20,11 @@ import { expect } from 'vitest'
 import { useDragSelect } from '../../context/DragSelectContext.tsx'
 import ArtistCard from '../artists/ArtistCard.tsx'
 
+// Mock the context
+vi.mock('../../context/DragSelectContext', () => ({
+  useDragSelect: vi.fn()
+}))
+
 describe('Song Card', () => {
   const song: Song = {
     ...emptySong,
@@ -57,13 +62,7 @@ describe('Song Card', () => {
     window.location.pathname = '/'
   })
 
-  beforeAll(() => {
-    server.listen()
-    // Mock the context
-    vi.mock('../../context/DragSelectContext', () => ({
-      useDragSelect: vi.fn()
-    }))
-  })
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 
