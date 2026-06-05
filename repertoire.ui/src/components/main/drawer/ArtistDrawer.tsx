@@ -227,15 +227,6 @@ function ArtistDrawer() {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleViewDetails() {
-    onClose()
-    navigate(`/artist/${artist.id}`)
-  }
-
-  function onDelete() {
-    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
-  }
-
   if (!artist || !songs || !albums)
     return (
       <RightSideEntityDrawer
@@ -245,6 +236,15 @@ function ArtistDrawer() {
         loader={<ArtistDrawerLoader />}
       />
     )
+
+  function handleViewDetails() {
+    onClose()
+    navigate(`/artist/${artist.id}`)
+  }
+
+  function onDelete() {
+    setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])
+  }
 
   return (
     <RightSideEntityDrawer

@@ -40,11 +40,11 @@ function SongHeader({ song }: SongHeaderProps) {
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
   function handleAlbumClick() {
-    dispatch(openAlbumDrawer(song.album.id))
+    if (song.album) dispatch(openAlbumDrawer(song.album.id))
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(song.artist.id))
+    if (song.artist) dispatch(openArtistDrawer(song.artist.id))
   }
 
   async function handleDelete() {

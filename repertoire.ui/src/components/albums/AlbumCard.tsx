@@ -42,7 +42,7 @@ function AlbumCard({ album }: AlbumCardProps) {
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(album.artist.id))
+    if (album.artist) dispatch(openArtistDrawer(album.artist.id))
   }
 
   function handleOpenDrawer() {
@@ -50,7 +50,7 @@ function AlbumCard({ album }: AlbumCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`/artist/${album.artist.id}`)
+    if (album.artist) navigate(`/artist/${album.artist.id}`)
   }
 
   return (

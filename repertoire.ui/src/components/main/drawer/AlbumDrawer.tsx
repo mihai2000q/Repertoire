@@ -117,16 +117,6 @@ function AlbumDrawer() {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  function handleArtistClick() {
-    onClose()
-    navigate(`/artist/${album.artist.id}`)
-  }
-
-  function handleViewDetails() {
-    onClose()
-    navigate(`/album/${album.id}`)
-  }
-
   if (!album)
     return (
       <RightSideEntityDrawer
@@ -136,6 +126,16 @@ function AlbumDrawer() {
         loader={<AlbumDrawerLoader />}
       />
     )
+
+  function handleArtistClick() {
+    onClose()
+    navigate(`/artist/${album.artist.id}`)
+  }
+
+  function handleViewDetails() {
+    onClose()
+    navigate(`/album/${album.id}`)
+  }
 
   return (
     <RightSideEntityDrawer

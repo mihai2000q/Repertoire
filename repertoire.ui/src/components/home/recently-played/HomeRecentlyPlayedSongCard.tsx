@@ -28,7 +28,7 @@ function HomeRecentlyPlayedSongCard({ song }: HomeRecentlyPlayedSongCardProps) {
 
   function handleArtistClick(e: MouseEvent) {
     e.stopPropagation()
-    dispatch(openArtistDrawer(song.artist.id))
+    if (song.artist) dispatch(openArtistDrawer(song.artist.id))
   }
 
   function handleViewDetails() {
@@ -36,11 +36,11 @@ function HomeRecentlyPlayedSongCard({ song }: HomeRecentlyPlayedSongCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`/artist/${song.artist.id}`)
+    if (song.artist) navigate(`/artist/${song.artist.id}`)
   }
 
   function handleViewAlbum() {
-    navigate(`/album/${song.album.id}`)
+    if (song.album) navigate(`/album/${song.album.id}`)
   }
 
   return (

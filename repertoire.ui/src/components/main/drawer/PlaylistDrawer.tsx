@@ -147,6 +147,16 @@ function PlaylistDrawer() {
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
+  if (!playlist || !songs)
+    return (
+      <RightSideEntityDrawer
+        opened={opened}
+        onClose={onClose}
+        isLoading={true}
+        loader={<PlaylistDrawerLoader />}
+      />
+    )
+
   function handleViewDetails() {
     onClose()
     navigate(`/playlist/${playlist.id}`)
@@ -157,16 +167,6 @@ function PlaylistDrawer() {
     onClose()
     toast.success(`${playlist.title} deleted!`)
   }
-
-  if (!playlist || !songs)
-    return (
-      <RightSideEntityDrawer
-        opened={opened}
-        onClose={onClose}
-        isLoading={true}
-        loader={<PlaylistDrawerLoader />}
-      />
-    )
 
   return (
     <RightSideEntityDrawer

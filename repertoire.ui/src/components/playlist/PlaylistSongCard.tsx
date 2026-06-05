@@ -86,13 +86,13 @@ function PlaylistSongCard({
   function handleAlbumClick(e: MouseEvent) {
     if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
-    dispatch(openAlbumDrawer(song.album.id))
+    if (song.album) dispatch(openAlbumDrawer(song.album.id))
   }
 
   function handleArtistClick(e: MouseEvent) {
     if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
-    dispatch(openArtistDrawer(song.artist.id))
+    if (song.artist) dispatch(openArtistDrawer(song.artist.id))
   }
 
   function handleViewDetails(e: MouseEvent) {
@@ -102,12 +102,12 @@ function PlaylistSongCard({
 
   function handleViewArtist(e: MouseEvent) {
     e.stopPropagation()
-    navigate(`/artist/${song.artist.id}`)
+    if (song.artist) navigate(`/artist/${song.artist.id}`)
   }
 
   function handleViewAlbum(e: MouseEvent) {
     e.stopPropagation()
-    navigate(`/album/${song.album.id}`)
+    if (song.album) navigate(`/album/${song.album.id}`)
   }
 
   function handleOpenRemoveWarning(e: MouseEvent) {

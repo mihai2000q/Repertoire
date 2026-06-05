@@ -79,7 +79,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   function handleAlbumClick(e: MouseEvent) {
     e.stopPropagation()
     if (e.ctrlKey || e.shiftKey) return
-    dispatch(openAlbumDrawer(song.album.id))
+    if (song.album) dispatch(openAlbumDrawer(song.album.id))
   }
 
   function handleViewDetails(e: MouseEvent) {
@@ -88,7 +88,7 @@ function ArtistSongCard({ song, artistId, isUnknownArtist, order }: ArtistSongCa
   }
   function handleViewAlbum(e: MouseEvent) {
     e.stopPropagation()
-    navigate(`/album/${song.album.id}`)
+    if (song.album) navigate(`/album/${song.album.id}`)
   }
   function handleOpenRemoveWarning(e: MouseEvent) {
     e.stopPropagation()

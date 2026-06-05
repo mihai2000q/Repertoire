@@ -91,6 +91,16 @@ function SongDrawer() {
     useDisclosure(false)
   const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
 
+  if (!song)
+    return (
+      <RightSideEntityDrawer
+        opened={opened}
+        onClose={onClose}
+        isLoading={true}
+        loader={<SongDrawerLoader />}
+      />
+    )
+
   function handleArtistClick() {
     onClose()
     navigate(`/artist/${song.artist.id}`)
@@ -111,16 +121,6 @@ function SongDrawer() {
     onClose()
     toast.success(`${song.title} deleted!`)
   }
-
-  if (!song)
-    return (
-      <RightSideEntityDrawer
-        opened={opened}
-        onClose={onClose}
-        isLoading={true}
-        loader={<SongDrawerLoader />}
-      />
-    )
 
   return (
     <RightSideEntityDrawer

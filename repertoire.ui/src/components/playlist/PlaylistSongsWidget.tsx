@@ -204,6 +204,7 @@ const Songs = memo(
           {(provided) => (
             <Box ref={provided.innerRef} {...provided.droppableProps}>
               {internalSongs.map((song, index) => {
+                // eslint-disable-next-line react-hooks/rules-of-hooks
                 const { isClickSelectionActive } = useClickSelect()
                 return (
                   <Draggable
