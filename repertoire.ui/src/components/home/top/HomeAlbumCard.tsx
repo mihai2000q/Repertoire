@@ -26,7 +26,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
   }
 
   function handleArtistClick() {
-    dispatch(openArtistDrawer(album.artist.id))
+    if (album.artist) dispatch(openArtistDrawer(album.artist.id))
   }
 
   function handleViewDetails() {
@@ -34,7 +34,7 @@ function HomeAlbumCard({ album }: HomeAlbumCardProps) {
   }
 
   function handleViewArtist() {
-    navigate(`/artist/${album.artist.id}`)
+    if (album.artist) navigate(`/artist/${album.artist.id}`)
   }
 
   return (
