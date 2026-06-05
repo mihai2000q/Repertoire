@@ -4,6 +4,9 @@
   "version": "0.14.1",
   "license": "MIT",
   "type": "module",
+  "compiler": {
+    "target": "19"
+  },
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -b --verbose",
@@ -25,6 +28,7 @@
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
+    "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
