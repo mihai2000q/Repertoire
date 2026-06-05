@@ -167,7 +167,7 @@ describe('Edit Song Links Modal', () => {
     // invalidate Youtube link
     await user.clear(youtubeTextBox)
     await user.type(youtubeTextBox, 'some invalid link')
-    act(() => youtubeTextBox.blur())
+    await act(async () => youtubeTextBox.blur())
     expect(youtubeTextBox).toBeInvalid()
 
     await user.clear(youtubeTextBox)
@@ -176,7 +176,7 @@ describe('Edit Song Links Modal', () => {
     // invalidate Songsterr link
     await user.clear(songsterrTextBox)
     await user.type(songsterrTextBox, 'some songsterr invalid link')
-    act(() => songsterrTextBox.blur())
+    await act(async () => songsterrTextBox.blur())
     expect(songsterrTextBox).toBeInvalid()
 
     await user.clear(songsterrTextBox)

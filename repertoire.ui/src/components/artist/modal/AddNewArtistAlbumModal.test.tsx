@@ -226,7 +226,7 @@ describe('Add New Artist Album Modal', () => {
     expect(title).not.toBeInvalid()
 
     await user.clear(title)
-    act(() => title.blur())
+    await act(async () => title.blur())
     expect(title).toBeInvalid()
   })
 })

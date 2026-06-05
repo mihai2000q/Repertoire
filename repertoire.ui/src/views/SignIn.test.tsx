@@ -36,12 +36,12 @@ describe('Sign In', () => {
     reduxRouterRender(<SignIn />)
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
-    act(() => emailInput.focus())
-    act(() => emailInput.blur())
+    await act(async () => emailInput.focus())
+    await act(async () => emailInput.blur())
 
     const passwordInput = screen.getByRole('textbox', { name: /password/i })
-    act(() => passwordInput.focus())
-    act(() => passwordInput.blur())
+    await act(async () => passwordInput.focus())
+    await act(async () => passwordInput.blur())
 
     expect(emailInput).toBeInvalid()
     expect(passwordInput).toHaveAttribute('data-invalid', 'true')
@@ -59,7 +59,7 @@ describe('Sign In', () => {
 
       const emailInput = screen.getByRole('textbox', { name: /email/i })
       await user.type(emailInput, email)
-      act(() => emailInput.blur())
+      await act(async () => emailInput.blur())
       expect(emailInput).toBeInvalid()
       expect(screen.getByText(error)).toBeInTheDocument()
     }

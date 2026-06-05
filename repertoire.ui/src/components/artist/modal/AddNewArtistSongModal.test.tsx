@@ -371,7 +371,7 @@ describe('Add New Artist Song Modal', () => {
     expect(title).not.toBeInvalid()
 
     await user.clear(title)
-    act(() => title.blur())
+    await act(async () => title.blur())
     expect(title).toBeInvalid()
   })
 
@@ -388,12 +388,12 @@ describe('Add New Artist Song Modal', () => {
     expect(songsterrButton).not.toBeInvalid()
     expect(songsterr).not.toBeInvalid()
     await user.type(songsterr, 'something')
-    act(() => songsterr.blur())
+    await act(async () => songsterr.blur())
     expect(songsterr).toBeInvalid()
     expect(songsterrButton).toBeInvalid()
 
     await user.clear(songsterr)
-    act(() => songsterr.blur())
+    await act(async () => songsterr.blur())
     expect(songsterr).not.toBeInvalid()
     expect(songsterrButton).not.toBeInvalid()
 
@@ -410,12 +410,12 @@ describe('Add New Artist Song Modal', () => {
     expect(youtube).not.toBeInvalid()
     expect(youtubeButton).not.toBeInvalid()
     await user.type(youtube, 'something')
-    act(() => youtube.blur())
+    await act(async () => youtube.blur())
     expect(youtube).toBeInvalid()
     expect(youtubeButton).toBeInvalid()
 
     await user.clear(youtube)
-    act(() => youtube.blur())
+    await act(async () => youtube.blur())
     expect(youtube).not.toBeInvalid()
     expect(youtubeButton).not.toBeInvalid()
 

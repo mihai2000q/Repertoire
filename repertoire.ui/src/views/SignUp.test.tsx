@@ -37,16 +37,16 @@ describe('Sign Up', () => {
     reduxRouterRender(<SignUp />)
 
     const nameInput = screen.getByRole('textbox', { name: /name/i })
-    act(() => nameInput.focus())
-    act(() => nameInput.blur())
+    await act(async () => nameInput.focus())
+    await act(async () => nameInput.blur())
 
     const emailInput = screen.getByRole('textbox', { name: /email/i })
-    act(() => emailInput.focus())
-    act(() => emailInput.blur())
+    await act(async () => emailInput.focus())
+    await act(async () => emailInput.blur())
 
     const passwordInput = screen.getByRole('textbox', { name: /password/i })
-    act(() => passwordInput.focus())
-    act(() => passwordInput.blur())
+    await act(async () => passwordInput.focus())
+    await act(async () => passwordInput.blur())
 
     expect(screen.getByText(nameError)).toBeInTheDocument()
     expect(screen.getByText(emailError)).toBeInTheDocument()
@@ -60,7 +60,7 @@ describe('Sign Up', () => {
 
     const nameInput = screen.getByRole('textbox', { name: /name/i })
     await user.type(nameInput, name)
-    act(() => nameInput.blur())
+    await act(async () => nameInput.blur())
     expect(nameInput).toBeInvalid()
     expect(screen.getByText(error)).toBeInTheDocument()
   })
@@ -75,7 +75,7 @@ describe('Sign Up', () => {
 
       const emailInput = screen.getByRole('textbox', { name: /email/i })
       await user.type(emailInput, email)
-      act(() => emailInput.blur())
+      await act(async () => emailInput.blur())
       expect(emailInput).toBeInvalid()
       expect(screen.getByText(error)).toBeInTheDocument()
     }
@@ -96,7 +96,7 @@ describe('Sign Up', () => {
 
     const passwordInput = screen.getByRole('textbox', { name: /password/i })
     await user.type(passwordInput, password)
-    act(() => passwordInput.blur())
+    await act(async () => passwordInput.blur())
     expect(screen.getByText(error)).toBeInTheDocument()
     expect(passwordInput).toHaveAttribute('data-invalid', 'true')
   })

@@ -185,7 +185,7 @@ describe('Add New Band Member Modal', () => {
     expect(roles).not.toBeInvalid()
 
     await user.clear(name)
-    act(() => name.blur())
+    await act(async () => name.blur())
     expect(name).toBeInvalid()
   })
 })

@@ -216,7 +216,7 @@ describe('Add New Song Modal', () => {
       expect(titleField).not.toBeInvalid()
 
       await user.clear(titleField)
-      act(() => titleField.blur())
+      await act(async () => titleField.blur())
       expect(titleField).toBeInvalid()
     })
 
@@ -317,7 +317,7 @@ describe('Add New Song Modal', () => {
       expect(nameField).not.toBeInvalid()
 
       await user.clear(nameField)
-      act(() => nameField.blur())
+      await act(async () => nameField.blur())
       expect(nameField).toBeInvalid()
     })
 
@@ -409,7 +409,7 @@ describe('Add New Song Modal', () => {
 
       // songsterr
       await user.type(songsterrField, 'something')
-      act(() => songsterrField.blur())
+      await act(async () => songsterrField.blur())
       expect(songsterrField).toBeInvalid()
 
       await user.click(songsterrField)
@@ -421,7 +421,7 @@ describe('Add New Song Modal', () => {
 
       // youtube
       await user.type(youtubeField, 'something')
-      act(() => youtubeField.blur())
+      await act(async () => youtubeField.blur())
       expect(youtubeField).toBeInvalid()
 
       await user.click(youtubeField)
