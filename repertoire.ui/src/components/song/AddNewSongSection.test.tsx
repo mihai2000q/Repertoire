@@ -78,12 +78,12 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(await screen.findByRole('textbox', { name: /name/i })).toHaveFocus()
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument()
 
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).not.toBeInvalid()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
 
     rerender(
@@ -144,7 +144,7 @@ describe('Add New Song Section', () => {
       )
     )
 
-    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
+    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
     await user.click(await screen.findByText(newSectionType.name))
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
@@ -161,7 +161,7 @@ describe('Add New Song Section', () => {
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
 
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(await screen.findByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
+    expect(await screen.findByRole('combobox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   it('should send create request when all fields are filled', async () => {
@@ -202,7 +202,7 @@ describe('Add New Song Section', () => {
     await user.click(screen.getByRole('button', { name: 'select-instrument' }))
     await user.click(await screen.findByRole('option', { name: newInstrument.name }))
 
-    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
+    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
     await user.click(await screen.findByText(newSectionType.name))
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
@@ -224,7 +224,7 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   it('should send create request when there are default settings', async () => {
@@ -266,7 +266,7 @@ describe('Add New Song Section', () => {
     await user.clear(screen.getByRole('textbox', { name: /search/i }))
     await user.click(await screen.findByRole('option', { name: newInstrument.name }))
 
-    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
+    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
     await user.click(await screen.findByText(newSectionType.name))
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
@@ -292,7 +292,7 @@ describe('Add New Song Section', () => {
       screen.getByRole('button', { name: settings.defaultInstrument.name })
     ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(await screen.findByRole('textbox', { name: /song-section-type/i })).toHaveValue('')
+    expect(await screen.findByRole('combobox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   // Validation
@@ -339,7 +339,7 @@ describe('Add New Song Section', () => {
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toBeInvalid()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
 
     expect(capturedRequest).toBeUndefined()
@@ -367,13 +367,13 @@ describe('Add New Song Section', () => {
       />
     )
 
-    await user.click(screen.getByRole('textbox', { name: /song-section-type/i }))
+    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
     await user.click(await screen.findByText(newSectionType.name))
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).not.toBeInvalid()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).not.toBeInvalid()
 
     expect(capturedRequest).toBeUndefined()
   })
@@ -405,7 +405,7 @@ describe('Add New Song Section', () => {
     await user.click(screen.getByRole('button', { name: /add/i }))
 
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toBeInvalid()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInvalid()
 
     expect(capturedRequest).toBeUndefined()
   })
@@ -426,13 +426,13 @@ describe('Add New Song Section', () => {
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).toBeInvalid()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
 
     rerender(uut(false))
     rerender(uut())
 
-    expect(screen.getByRole('textbox', { name: /song-section-type/i })).not.toBeInvalid()
+    expect(screen.getByRole('combobox', { name: /song-section-type/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
   })
 })
