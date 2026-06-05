@@ -1,10 +1,10 @@
-import { createContext, ReactNode, RefObject, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, RefObject, useContext, useEffect, useRef } from 'react'
 
 interface MainContextReturnType {
   ref: RefObject<HTMLDivElement>
   mainScroll: {
     ref: RefObject<HTMLDivElement>
-    isPositionOver0: boolean
+    topbarRef: RefObject<HTMLDivElement>
   }
 }
 
@@ -12,7 +12,7 @@ export const MainContext = createContext<MainContextReturnType>({
   ref: null,
   mainScroll: {
     ref: null,
-    isPositionOver0: false
+    topbarRef: null
   }
 })
 
@@ -23,17 +23,21 @@ interface MainContextProps {
 }
 
 export function MainProvider({ children, appRef, scrollRef }: MainContextProps) {
-  const [isTopScrollPositionOver0, setIsTopScrollPositionOver0] = useState(false)
+  const topbarRef = useRef(null)
 
   useEffect(() => {
+    const scrollEl = scrollRef.current
+    const topbarEl = topbarRef.current
+    if (!scrollEl || !topbarEl) return () => {}
+
     const handleScroll = () => {
-      setIsTopScrollPositionOver0(scrollRef.current?.scrollTop > 0)
+      const hasScrolled = scrollEl.scrollTop > 0
+      if (hasScrolled) topbarEl.classList.add('scrolled')
+      else topbarEl.classList.remove('scrolled')
     }
 
-    scrollRef.current?.addEventListener('scroll', handleScroll)
-    return () => {
-      scrollRef.current?.removeEventListener('scroll', handleScroll)
-    }
+    scrollEl.addEventListener('scroll', handleScroll)
+    return () => scrollEl.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
@@ -42,7 +46,7 @@ export function MainProvider({ children, appRef, scrollRef }: MainContextProps) 
         ref: appRef,
         mainScroll: {
           ref: scrollRef,
-          isPositionOver0: isTopScrollPositionOver0
+          topbarRef: topbarRef
         }
       }}
     >
