@@ -61,8 +61,8 @@ function AlbumDrawerSongCard({
           radius={'md'}
           size={28}
           src={song.imageUrl ?? albumImageUrl}
-          color={(song.imageUrl ?? albumImageUrl) && song.title}
-          bg={'gray.5'}
+          alt={(song.imageUrl ?? albumImageUrl) && song.title}
+          color={'gray.5'}
           sx={(theme) => ({
             transition: '0.18s',
             cursor: 'pointer',
@@ -129,7 +129,7 @@ function AlbumDrawer() {
 
   function handleArtistClick() {
     onClose()
-    navigate(`/artist/${album.artist.id}`)
+    if (album.artist) navigate(`/artist/${album.artist.id}`)
   }
 
   function handleViewDetails() {
