@@ -127,6 +127,7 @@ function ArtistSelect({ artist, setArtist, ids, ...others }: ArtistSelectProps) 
     <Combobox onOptionSubmit={handleSubmit} store={combobox}>
       <Combobox.Target>
         <TextInput
+          role={'combobox'}
           flex={1}
           maxLength={100}
           label={'Artist'}

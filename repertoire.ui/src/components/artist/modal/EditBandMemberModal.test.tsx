@@ -94,7 +94,7 @@ describe('Edit Band Member Header Modal', () => {
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const rolesField = screen.getByRole('textbox', { name: /roles/i })
+    const rolesField = screen.getByRole('combobox', { name: /roles/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     await user.clear(nameField)
@@ -270,7 +270,7 @@ describe('Edit Band Member Header Modal', () => {
     reduxRender(<EditBandMemberModal opened={true} onClose={() => {}} bandMember={bandMember} />)
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const rolesField = screen.getByRole('textbox', { name: /roles/i })
+    const rolesField = screen.getByRole('combobox', { name: /roles/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
 
     // change image
@@ -321,7 +321,7 @@ describe('Edit Band Member Header Modal', () => {
     reduxRender(<EditBandMemberModal opened={true} onClose={() => {}} bandMember={bandMember} />)
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const rolesField = screen.getByRole('textbox', { name: /roles/i })
+    const rolesField = screen.getByRole('combobox', { name: /roles/i })
 
     await user.clear(nameField)
     expect(nameField).toBeInvalid()

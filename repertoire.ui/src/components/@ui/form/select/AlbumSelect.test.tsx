@@ -55,7 +55,7 @@ describe('Album Select', () => {
 
     const [{ rerender }] = reduxRender(<AlbumSelect album={null} setAlbum={setAlbum} />)
 
-    const select = screen.getByRole('textbox', { name: /album/i })
+    const select = screen.getByRole('combobox', { name: /album/i })
     expect(select).toHaveValue('')
     await user.click(select)
 
@@ -71,6 +71,6 @@ describe('Album Select', () => {
 
     rerender(<AlbumSelect album={newAlbum} setAlbum={setAlbum} />)
 
-    expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue(newAlbum.title)
+    expect(screen.getByRole('combobox', { name: /album/i })).toHaveValue(newAlbum.title)
   })
 })

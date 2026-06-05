@@ -45,7 +45,7 @@ describe('Add New Band Member Modal', () => {
     expect(screen.getByRole('presentation', { name: 'image-dropzone' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'color-input' })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /roles/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /roles/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
   })
 
@@ -71,9 +71,9 @@ describe('Add New Band Member Modal', () => {
     )
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
-    await user.click(screen.getByRole('textbox', { name: /roles/i }))
+    await user.click(screen.getByRole('combobox', { name: /roles/i }))
     await user.click(await screen.findByRole('option', { name: role.name }))
-    act(() => screen.getByRole('textbox', { name: /roles/i }).blur())
+    act(() => screen.getByRole('combobox', { name: /roles/i }).blur())
     await user.click(screen.getByRole('button', { name: /submit/i }))
 
     await waitFor(() =>
@@ -120,9 +120,9 @@ describe('Add New Band Member Modal', () => {
 
     await user.upload(screen.getByTestId('image-dropzone-input'), newImage)
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
-    await user.click(screen.getByRole('textbox', { name: /roles/i }))
+    await user.click(screen.getByRole('combobox', { name: /roles/i }))
     await user.click(await screen.findByRole('option', { name: role.name }))
-    act(() => screen.getByRole('textbox', { name: /roles/i }).blur())
+    act(() => screen.getByRole('combobox', { name: /roles/i }).blur())
     await user.click(screen.getByRole('button', { name: /submit/i }))
 
     await waitFor(() =>
@@ -166,7 +166,7 @@ describe('Add New Band Member Modal', () => {
     reduxRender(<AddNewBandMemberModal opened={true} onClose={() => {}} artistId={''} />)
 
     const name = screen.getByRole('textbox', { name: /name/i })
-    const roles = screen.getByRole('textbox', { name: /roles/i })
+    const roles = screen.getByRole('combobox', { name: /roles/i })
 
     expect(name).not.toBeInvalid()
     expect(roles).not.toBeInvalid()

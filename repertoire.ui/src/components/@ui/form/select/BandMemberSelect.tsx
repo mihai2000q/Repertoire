@@ -125,6 +125,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
           disabled={bandMembers !== undefined}
         >
           <TextInput
+            role={'combobox'}
             flex={1}
             label={'Band Member'}
             placeholder={'Choose a member'}

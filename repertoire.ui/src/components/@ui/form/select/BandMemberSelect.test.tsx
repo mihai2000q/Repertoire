@@ -38,7 +38,7 @@ describe('Band Member Select', () => {
       <BandMemberSelect bandMember={null} setBandMember={setBandMember} bandMembers={bandMembers} />
     )
 
-    const select = screen.getByRole('textbox', { name: /band member/i })
+    const select = screen.getByRole('combobox', { name: /band member/i })
     expect(select).toHaveValue('')
     expect(select).not.toBeDisabled()
     await user.click(select)
@@ -61,7 +61,7 @@ describe('Band Member Select', () => {
       />
     )
 
-    expect(screen.getByRole('textbox', { name: /band member/i })).toHaveValue(newBandMember.name)
+    expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(newBandMember.name)
   })
 
   it('should filter by name', async () => {
@@ -73,7 +73,7 @@ describe('Band Member Select', () => {
       <BandMemberSelect bandMember={null} setBandMember={() => {}} bandMembers={bandMembers} />
     )
 
-    await user.type(screen.getByRole('textbox', { name: /band member/i }), searchValue)
+    await user.type(screen.getByRole('combobox', { name: /band member/i }), searchValue)
 
     const filteredMembers = bandMembers.filter((b) => b.name.includes(searchValue))
     expect(await screen.findAllByRole('option')).toHaveLength(filteredMembers.length)
@@ -89,7 +89,7 @@ describe('Band Member Select', () => {
       <BandMemberSelect bandMember={null} setBandMember={() => {}} bandMembers={undefined} />
     )
 
-    const button = screen.getByRole('textbox', { name: /band member/i })
+    const button = screen.getByRole('combobox', { name: /band member/i })
     expect(button).toBeDisabled()
     await user.hover(button)
     expect(await screen.findByRole('tooltip', { name: /not a band/i })).toBeInTheDocument()

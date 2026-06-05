@@ -106,6 +106,7 @@ function ArtistAutocomplete({
     >
       <Combobox.Target>
         <TextInput
+          role={'combobox'}
           flex={1}
           maxLength={100}
           label={'Artist'}

@@ -109,12 +109,12 @@ describe('Edit Song Header Modal', () => {
     expect(screen.getByRole('textbox', { name: /title/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /title/i })).toHaveValue(song.title)
 
-    expect(screen.getByRole('textbox', { name: /album/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue(song.album?.title ?? '')
+    expect(screen.getByRole('combobox', { name: /album/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /album/i })).toHaveValue(song.album?.title ?? '')
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /artist/i })).not.toBeDisabled()
-    expect(screen.getByRole('textbox', { name: /artist/i })).toHaveValue(song.artist?.name ?? '')
+    expect(screen.getByRole('combobox', { name: /artist/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /artist/i })).not.toBeDisabled()
+    expect(screen.getByRole('combobox', { name: /artist/i })).toHaveValue(song.artist?.name ?? '')
 
     expect(screen.getByRole('button', { name: /release date/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /release date/i })).toHaveTextContent(
@@ -155,7 +155,7 @@ describe('Edit Song Header Modal', () => {
     await user.click(screen.getByRole('button', { name: /release date/i }))
     await user.click(screen.getByText(newDay.toString()))
 
-    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(screen.getByRole('combobox', { name: /album/i }))
     await user.click(await screen.getByRole('option', { name: newAlbum.title }))
 
     await user.click(saveButton)
@@ -192,7 +192,7 @@ describe('Edit Song Header Modal', () => {
 
     const saveButton = screen.getByRole('button', { name: /save/i })
 
-    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('combobox', { name: /artist/i }))
     await user.click(await screen.getByRole('option', { name: newArtist.name }))
 
     await user.click(saveButton)
@@ -364,10 +364,10 @@ describe('Edit Song Header Modal', () => {
 
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
-    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(screen.getByRole('combobox', { name: /album/i }))
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
 
-    expect(screen.getByRole('textbox', { name: /artist/i })).toBeDisabled()
+    expect(screen.getByRole('combobox', { name: /artist/i })).toBeDisabled()
     expect(screen.getByLabelText('artist-info')).toBeInTheDocument()
   })
 
@@ -426,7 +426,7 @@ describe('Edit Song Header Modal', () => {
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
     // change album
-    await user.click(screen.getByRole('textbox', { name: /artist/i }))
+    await user.click(screen.getByRole('combobox', { name: /artist/i }))
     await user.click(await screen.findByRole('option', { name: newArtist.name }))
     expect(screen.getByRole('button', { name: /save/i })).not.toBeDisabled()
   })
@@ -440,7 +440,7 @@ describe('Edit Song Header Modal', () => {
     reduxRender(<EditSongHeaderModal opened={true} onClose={() => {}} song={song} />)
 
     // change album
-    await user.click(screen.getByRole('textbox', { name: /album/i }))
+    await user.click(screen.getByRole('combobox', { name: /album/i }))
     await user.click(await screen.findByRole('option', { name: newAlbum.title }))
     expect(screen.getByRole('button', { name: /save/i })).not.toBeDisabled()
   })

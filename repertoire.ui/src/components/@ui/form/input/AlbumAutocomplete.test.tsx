@@ -56,9 +56,9 @@ describe('Album Autocomplete', () => {
 
     reduxRender(<AlbumAutocomplete album={null} setAlbum={setAlbum} setValue={setValue} />)
 
-    expect(screen.getByRole('textbox', { name: /album/i })).toHaveValue('')
+    expect(screen.getByRole('combobox', { name: /album/i })).toHaveValue('')
 
-    const autocomplete = screen.getByRole('textbox', { name: /album/i })
+    const autocomplete = screen.getByRole('combobox', { name: /album/i })
     await user.click(autocomplete)
 
     for (const album of albums) {

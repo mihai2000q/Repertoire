@@ -55,12 +55,12 @@ describe('Edit Song Information Modal', () => {
     expect(screen.getByRole('dialog', { name: /edit song information/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /edit song information/i })).toBeInTheDocument()
 
-    expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toBeInTheDocument()
-    expect(await screen.findByRole('textbox', { name: /guitar tuning/i })).toHaveValue(
+    expect(await screen.findByRole('combobox', { name: /guitar tuning/i })).toBeInTheDocument()
+    expect(await screen.findByRole('combobox', { name: /guitar tuning/i })).toHaveValue(
       song.guitarTuning.name
     )
-    expect(screen.getByRole('textbox', { name: /difficulty/i })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /difficulty/i })).toHaveValue(
+    expect(screen.getByRole('combobox', { name: /difficulty/i })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: /difficulty/i })).toHaveValue(
       Difficulty[song.difficulty]
     )
     expect(screen.getByRole('textbox', { name: /bpm/i })).toBeInTheDocument()
@@ -94,8 +94,8 @@ describe('Edit Song Information Modal', () => {
       withToastify(<EditSongInformationModal opened={true} onClose={onClose} song={song} />)
     )
 
-    const guitarTuningField = await screen.findByRole('textbox', { name: /guitar tuning/i })
-    const difficultyField = screen.getByRole('textbox', { name: /difficulty/i })
+    const guitarTuningField = await screen.findByRole('combobox', { name: /guitar tuning/i })
+    const difficultyField = screen.getByRole('combobox', { name: /difficulty/i })
     const bpmField = screen.getByRole('textbox', { name: /bpm/i })
     const recordedField = screen.getByRole('checkbox', { name: /recorded/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
@@ -154,9 +154,9 @@ describe('Edit Song Information Modal', () => {
 
     reduxRender(<EditSongInformationModal opened={true} onClose={() => {}} song={song} />)
 
-    await user.click(await screen.findByRole('textbox', { name: /guitar tuning/i }))
+    await user.click(await screen.findByRole('combobox', { name: /guitar tuning/i }))
     await user.click(await screen.findByRole('option', { name: song.guitarTuning.name }))
-    await user.click(screen.getByRole('textbox', { name: /difficulty/i }))
+    await user.click(screen.getByRole('combobox', { name: /difficulty/i }))
     await user.click(await screen.findByText(new RegExp(song.difficulty, 'i')))
     await user.clear(screen.getByRole('textbox', { name: /bpm/i }))
     await user.click(screen.getByRole('checkbox', { name: /recorded/i }))
@@ -175,8 +175,8 @@ describe('Edit Song Information Modal', () => {
 
     reduxRender(<EditSongInformationModal opened={true} onClose={() => {}} song={song} />)
 
-    const guitarTuningField = await screen.findByRole('textbox', { name: /guitar tuning/i })
-    const difficultyField = screen.getByRole('textbox', { name: /difficulty/i })
+    const guitarTuningField = await screen.findByRole('combobox', { name: /guitar tuning/i })
+    const difficultyField = screen.getByRole('combobox', { name: /difficulty/i })
     const bpmField = screen.getByRole('textbox', { name: /bpm/i })
     const recordedField = screen.getByRole('checkbox', { name: /recorded/i })
     const saveButton = screen.getByRole('button', { name: /save/i })

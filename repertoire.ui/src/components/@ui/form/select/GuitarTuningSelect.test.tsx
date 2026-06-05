@@ -47,7 +47,7 @@ describe('Guitar Tuning Select', () => {
 
     const [{ rerender }] = reduxRender(<GuitarTuningSelect option={null} onChange={onChange} />)
 
-    const select = screen.getByRole('textbox', { name: /guitar tuning/i })
+    const select = screen.getByRole('combobox', { name: /guitar tuning/i })
     expect(select).toHaveValue('')
     expect(select).toBeDisabled()
     await waitFor(() => expect(select).not.toBeDisabled())
@@ -65,6 +65,6 @@ describe('Guitar Tuning Select', () => {
 
     rerender(<GuitarTuningSelect option={newOption} onChange={onChange} />)
 
-    expect(screen.getByRole('textbox', { name: /guitar tuning/i })).toHaveValue(guitarTuning.name)
+    expect(screen.getByRole('combobox', { name: /guitar tuning/i })).toHaveValue(guitarTuning.name)
   })
 })
