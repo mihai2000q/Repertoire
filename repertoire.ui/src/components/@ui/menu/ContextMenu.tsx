@@ -138,40 +138,42 @@ export const ContextMenu = (props: ContextMenuProps) => {
   }
 
   const _close = () => {
-    if (disabled) return
+    if (disabled || !_opened) return
     _setOpened(false)
-    if (_opened) onClose?.()
+    onClose?.()
     restoreOriginalRect()
   }
 
   const _open = () => {
-    if (disabled) return
+    if (disabled || _opened) return
     _setOpened(true)
-    if (!_opened) onOpen?.()
+    onOpen?.()
   }
 
   const _toggleDropdown = (e: React.MouseEvent, targetElement: HTMLElement) => {
     if (disabled) return
 
-    targetElementRef.current = targetElement
-    originalGetBoundingClientRectRef.current =
-      targetElement.getBoundingClientRect.bind(targetElement)
+    if (_opened) {
+      _close()
+    } else {
+      _open()
+      // attach menu to target element
+      targetElementRef.current = targetElement
+      originalGetBoundingClientRectRef.current =
+        targetElement.getBoundingClientRect.bind(targetElement)
 
-    targetElement.getBoundingClientRect = () => ({
-      x: e.clientX,
-      y: e.clientY,
-      width: 0,
-      height: 0,
-      top: e.clientY,
-      left: e.clientX,
-      right: e.clientX,
-      bottom: e.clientY,
-      toJSON: () => {}
-    })
-
-    _setOpened(!_opened)
-    if (!_opened) onOpen?.()
-    if (_opened) onClose?.()
+      targetElement.getBoundingClientRect = () => ({
+        x: e.clientX,
+        y: e.clientY,
+        width: 0,
+        height: 0,
+        top: e.clientY,
+        left: e.clientX,
+        right: e.clientX,
+        bottom: e.clientY,
+        toJSON: () => {}
+      })
+    }
   }
 
   const ctx: ContextMenuContext = {
