@@ -37,12 +37,7 @@ function CustomRehearsalMenuItem({
   return (
     <Menu.Sub onOpen={open} onClose={close} openDelay={100} closeDelay={250}>
       <Menu.Sub.Target>
-        <Menu.Sub.Item
-          leftSection={<IconChecklist size={14} />}
-          onClick={(e) => e.stopPropagation()} // TODO: Remove when mantine updates
-        >
-          Custom Rehearsal
-        </Menu.Sub.Item>
+        <Menu.Sub.Item leftSection={<IconChecklist size={14} />}>Custom Rehearsal</Menu.Sub.Item>
       </Menu.Sub.Target>
 
       <Menu.Sub.Dropdown>

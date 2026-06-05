@@ -359,11 +359,7 @@ function AddToPlaylistMenuItem({
     <>
       <Menu.Sub onOpen={open} onClose={close} openDelay={100} closeDelay={250}>
         <Menu.Sub.Target>
-          <Menu.Sub.Item
-            leftSection={<IconPlaylistAdd size={14} />}
-            disabled={disabled}
-            onClick={(e) => e.stopPropagation()} // TODO: Remove when mantine updates
-          >
+          <Menu.Sub.Item leftSection={<IconPlaylistAdd size={14} />} disabled={disabled}>
             Add To Playlist
           </Menu.Sub.Item>
         </Menu.Sub.Target>
