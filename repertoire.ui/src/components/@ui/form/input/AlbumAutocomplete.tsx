@@ -20,6 +20,54 @@ import SearchType from '../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../types/models/Search.ts'
 import CustomIconAlbumVinyl from '../../icons/CustomIconAlbumVinyl.tsx'
 
+const AlbumHoverCard = ({ album }: { album: AlbumSearch }) => (
+  <HoverCard openDelay={200}>
+    <HoverCard.Target>
+      <Avatar
+        radius={'md'}
+        size={23}
+        src={album.imageUrl}
+        alt={album.imageUrl && album.title}
+        color={'gray.5'}
+      >
+        <Center c={'white'}>
+          <CustomIconAlbumVinyl size={11} />
+        </Center>
+      </Avatar>
+    </HoverCard.Target>
+    <HoverCard.Dropdown>
+      <Group gap={'xs'} maw={200} wrap={'nowrap'}>
+        <Avatar
+          radius={'md'}
+          size={'lg'}
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          color={'gray.5'}
+        >
+          <Center c={'white'}>
+            <CustomIconAlbumVinyl size={25} />
+          </Center>
+        </Avatar>
+        <Stack gap={'xxs'}>
+          <Text lh={'xxs'} fw={500} lineClamp={2}>
+            {album.title}
+          </Text>
+          {album.artist && (
+            <Text inline fw={500} fz={'xs'} c={'dimmed'}>
+              {album.artist.name}
+            </Text>
+          )}
+          {album.releaseDate && (
+            <Text inline fz={'xxs'} c={'dimmed'}>
+              {dayjs(album.releaseDate).format('D MMM YYYY')}
+            </Text>
+          )}
+        </Stack>
+      </Group>
+    </HoverCard.Dropdown>
+  </HoverCard>
+)
+
 interface AlbumsAutocompleteProps {
   album: AlbumSearch | null
   setAlbum: (album: AlbumSearch | null) => void
@@ -53,54 +101,6 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
     setAlbum(null)
   }
 
-  const AlbumHoverCard = () => (
-    <HoverCard openDelay={200}>
-      <HoverCard.Target>
-        <Avatar
-          radius={'md'}
-          size={23}
-          src={album.imageUrl}
-          alt={album.imageUrl && album.title}
-          color={'gray.5'}
-        >
-          <Center c={'white'}>
-            <CustomIconAlbumVinyl size={11} />
-          </Center>
-        </Avatar>
-      </HoverCard.Target>
-      <HoverCard.Dropdown>
-        <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar
-            radius={'md'}
-            size={'lg'}
-            src={album.imageUrl}
-            alt={album.imageUrl && album.title}
-            color={'gray.5'}
-          >
-            <Center c={'white'}>
-              <CustomIconAlbumVinyl size={25} />
-            </Center>
-          </Avatar>
-          <Stack gap={'xxs'}>
-            <Text lh={'xxs'} fw={500} lineClamp={2}>
-              {album.title}
-            </Text>
-            {album.artist && (
-              <Text inline fw={500} fz={'xs'} c={'dimmed'}>
-                {album.artist.name}
-              </Text>
-            )}
-            {album.releaseDate && (
-              <Text inline fz={'xxs'} c={'dimmed'}>
-                {dayjs(album.releaseDate).format('D MMM YYYY')}
-              </Text>
-            )}
-          </Stack>
-        </Group>
-      </HoverCard.Dropdown>
-    </HoverCard>
-  )
-
   return (
     <Combobox
       onOptionSubmit={(optionValue) => {
@@ -117,7 +117,7 @@ function AlbumAutocomplete({ album, setAlbum, setValue, ...inputProps }: AlbumsA
           maxLength={100}
           label={'Album'}
           placeholder={`${totalCount > 0 ? 'Choose or Create Album' : 'Enter New Album Name'}`}
-          leftSection={album ? <AlbumHoverCard /> : <IconDiscFilled size={20} />}
+          leftSection={album ? <AlbumHoverCard album={album} /> : <IconDiscFilled size={20} />}
           rightSection={album && <Combobox.ClearButton onClear={handleClear} />}
           {...inputProps}
           onChange={(event) => {

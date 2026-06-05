@@ -29,10 +29,6 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
   const [image, setImage] = useState<FileWithPath>(null)
   const [color, setColor] = useState<string>()
   const [roleIds, setRoleIds] = useState<string[]>([])
-  useDidUpdate(() => {
-    form.setFieldValue('roleIds', roleIds)
-    if (opened) form.validateField('roleIds')
-  }, [roleIds])
 
   const onCloseWithImage = () => {
     onClose()
@@ -50,6 +46,11 @@ function AddNewBandMemberModal({ opened, onClose, artistId }: AddNewBandMemberMo
     clearInputErrorOnChange: true,
     validate: schemaResolver(addNewBandMemberSchema)
   })
+
+  useDidUpdate(() => {
+    form.setFieldValue('roleIds', roleIds)
+    if (opened) form.validateField('roleIds')
+  }, [roleIds])
 
   async function addBandMember({ name, roleIds }: AddNewBandMemberForm) {
     name = name.trim()

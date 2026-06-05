@@ -47,6 +47,7 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
   const onClick = createEventHandler(childProps.onClick, () => ctx.closeDropdown())
 
   const handleRef = useCallback(
+    // eslint-disable-next-line react-hooks/immutability
     (node: HTMLElement | null) => {
       if (!node) return
       elementRef.current = node
@@ -57,6 +58,7 @@ const RefWrapper = forwardRef<HTMLElement, RefWrapperProps>((props, ref) => {
       const childRef = childProps.ref
       if (childRef) {
         if (typeof childRef === 'function') childRef(node)
+        // eslint-disable-next-line react-hooks/immutability
         else if (childRef && 'current' in childRef) childRef.current = node
       }
     },

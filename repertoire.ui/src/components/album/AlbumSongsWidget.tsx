@@ -113,6 +113,7 @@ function AlbumSongsWidget({
                     {(provided) => (
                       <Box ref={provided.innerRef} {...provided.droppableProps}>
                         {(isUnknownAlbum ? songs : internalSongs).map((song, index) => {
+                          // eslint-disable-next-line react-hooks/rules-of-hooks
                           const { isClickSelectionActive } = useClickSelect()
                           return (
                             <Draggable

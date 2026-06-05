@@ -14,6 +14,42 @@ import { BandMember } from '../../../../types/models/Artist.ts'
 import { IconUser } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 
+const BandMemberHoverCard = ({ bandMember }: { bandMember: BandMember }) => (
+  <HoverCard openDelay={200}>
+    <HoverCard.Target>
+      <Avatar
+        size={24}
+        color={bandMember.color}
+        src={bandMember.imageUrl}
+        alt={bandMember.imageUrl && bandMember.name}
+      >
+        <IconUser size={15} />
+      </Avatar>
+    </HoverCard.Target>
+    <HoverCard.Dropdown>
+      <Group gap={'xs'} maw={200} wrap={'nowrap'}>
+        <Avatar
+          size={'lg'}
+          color={bandMember.color}
+          src={bandMember.imageUrl}
+          alt={bandMember.imageUrl && bandMember.name}
+        >
+          <IconUser size={30} />
+        </Avatar>
+        <Stack gap={0}>
+          <Text fw={500} lineClamp={2}>
+            {bandMember.name}
+          </Text>
+          <Text c={'dimmed'} fz={'xs'} lineClamp={1}>
+            {bandMember.roles[0].name}
+            {bandMember.roles.length > 1 && ' ...'}
+          </Text>
+        </Stack>
+      </Group>
+    </HoverCard.Dropdown>
+  </HoverCard>
+)
+
 interface BandMemberSelectProps {
   bandMember: BandMember | null
   setBandMember: (bandMember: BandMember | null) => void
@@ -25,14 +61,14 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
     onDropdownClose: () => combobox.resetSelectedOption()
   })
 
-  bandMember = bandMembers ? bandMember : null
+  const _bandMember = bandMembers ? bandMember : null
 
-  const [value, setValue] = useState<string>(bandMember?.name ?? '')
-  const [search, setSearch] = useState(bandMember?.name ?? '')
+  const [value, setValue] = useState<string>(_bandMember?.name ?? '')
+  const [search, setSearch] = useState(_bandMember?.name ?? '')
   useEffect(() => {
-    setValue(bandMember?.name ?? '')
-    setSearch(bandMember?.name ?? '')
-  }, [bandMember])
+    setValue(_bandMember?.name ?? '')
+    setSearch(_bandMember?.name ?? '')
+  }, [_bandMember])
 
   const filteredMembers =
     search.trim() !== ''
@@ -41,48 +77,12 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
         )
       : bandMembers
 
-  const BandMemberHoverCard = () => (
-    <HoverCard openDelay={200}>
-      <HoverCard.Target>
-        <Avatar
-          size={24}
-          color={bandMember.color}
-          src={bandMember.imageUrl}
-          alt={bandMember.imageUrl && bandMember.name}
-        >
-          <IconUser size={15} />
-        </Avatar>
-      </HoverCard.Target>
-      <HoverCard.Dropdown>
-        <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-          <Avatar
-            size={'lg'}
-            color={bandMember.color}
-            src={bandMember.imageUrl}
-            alt={bandMember.imageUrl && bandMember.name}
-          >
-            <IconUser size={30} />
-          </Avatar>
-          <Stack gap={0}>
-            <Text fw={500} lineClamp={2}>
-              {bandMember.name}
-            </Text>
-            <Text c={'dimmed'} fz={'xs'} lineClamp={1}>
-              {bandMember.roles[0].name}
-              {bandMember.roles.length > 1 && ' ...'}
-            </Text>
-          </Stack>
-        </Group>
-      </HoverCard.Dropdown>
-    </HoverCard>
-  )
-
   const BandMemberOption = ({ member }: { member: BandMember }) => (
     <Combobox.Option
       key={member.id}
       value={member.name}
       aria-label={member.name}
-      onClick={() => setBandMember(bandMember === member ? null : member)}
+      onClick={() => setBandMember(_bandMember === member ? null : member)}
     >
       <Group gap={'xs'} wrap={'nowrap'}>
         <Avatar
@@ -129,9 +129,15 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
             label={'Band Member'}
             placeholder={'Choose a member'}
             disabled={bandMembers === undefined}
-            leftSection={bandMember ? <BandMemberHoverCard /> : <IconUser size={20} />}
+            leftSection={
+              _bandMember ? (
+                <BandMemberHoverCard bandMember={_bandMember} />
+              ) : (
+                <IconUser size={20} />
+              )
+            }
             rightSection={
-              bandMember ? <Combobox.ClearButton onClear={handleClear} /> : <Combobox.Chevron />
+              _bandMember ? <Combobox.ClearButton onClear={handleClear} /> : <Combobox.Chevron />
             }
             value={search}
             onChange={(e) => {
@@ -158,9 +164,7 @@ function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMember
               ) : filteredMembers?.length === 0 ? (
                 <Combobox.Empty>No members found</Combobox.Empty>
               ) : (
-                filteredMembers?.map((bandMember) => (
-                  <BandMemberOption key={bandMember.id} member={bandMember} />
-                ))
+                filteredMembers?.map((bm) => <BandMemberOption key={bm.id} member={bm} />)
               )}
             </Stack>
           </ScrollArea.Autosize>
