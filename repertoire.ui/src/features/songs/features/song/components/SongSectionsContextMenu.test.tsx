@@ -8,7 +8,7 @@ import { BulkRehearsalsSongSectionsRequest } from '../../../../../types/requests
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 
 // Mock the context
-vi.mock('../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 

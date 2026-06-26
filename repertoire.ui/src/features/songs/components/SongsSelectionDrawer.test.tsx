@@ -8,7 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 import Song from '../../../types/models/Song.ts'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

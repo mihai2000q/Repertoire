@@ -5,7 +5,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

@@ -11,6 +11,13 @@ import artistSongsOrders from '../../data/artistSongsOrders.ts'
 import { SongSearch } from '../../../../../../types/models/Search.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../../../../../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef()
+  }))
+}))
+
 describe('Artist Songs Widget', () => {
   const songModels: Song[] = [
     {
@@ -92,20 +99,12 @@ describe('Artist Songs Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef()
-      }))
-    }))
-  })
-
   afterEach(() => {
     server.resetHandlers()
     vi.restoreAllMocks()
   })
+
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

@@ -10,7 +10,7 @@ import { RootState } from '../../../state/store.ts'
 import { useDragSelect } from '../../../context/DragSelectContext.tsx'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

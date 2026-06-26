@@ -11,6 +11,13 @@ import artistAlbumsOrders from '../../data/artistAlbumsOrders.ts'
 import { AlbumSearch } from '../../../../../../types/models/Search.ts'
 import { createRef } from 'react'
 
+// Mock Main Context
+vi.mock('../../../../../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef()
+  }))
+}))
+
 describe('Artist Albums Widget', () => {
   const albumModels: Album[] = [
     {
@@ -49,20 +56,12 @@ describe('Artist Albums Widget', () => {
 
   const server = setupServer(...handlers)
 
-  beforeAll(() => {
-    server.listen()
-    // Mock Main Context
-    vi.mock('../../../context/MainContext.tsx', () => ({
-      useMain: vi.fn(() => ({
-        ref: createRef()
-      }))
-    }))
-  })
-
   afterEach(() => {
     server.resetHandlers()
     vi.restoreAllMocks()
   })
+
+  beforeAll(() => server.listen())
 
   afterAll(() => server.close())
 

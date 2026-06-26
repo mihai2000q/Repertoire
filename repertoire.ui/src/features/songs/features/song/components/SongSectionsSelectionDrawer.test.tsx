@@ -8,7 +8,7 @@ import { http, HttpResponse } from 'msw'
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 
 // Mock the context
-vi.mock('../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 

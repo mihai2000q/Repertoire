@@ -10,7 +10,7 @@ import { BandMember } from '../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 
 // Mock Context
-vi.mock('../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 

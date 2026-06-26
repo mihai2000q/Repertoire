@@ -7,7 +7,7 @@ import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

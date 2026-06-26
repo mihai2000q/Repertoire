@@ -18,7 +18,7 @@ import Playlist from '../../../../types/models/Playlist.ts'
 import { createRef } from 'react'
 
 // Mock Main Context
-vi.mock('../context/MainContext.tsx', () => ({
+vi.mock('../../../../context/MainContext.tsx', () => ({
   useMain: vi.fn(() => ({
     ref: createRef()
   }))

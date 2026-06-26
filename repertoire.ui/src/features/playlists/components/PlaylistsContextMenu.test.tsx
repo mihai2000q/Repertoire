@@ -5,7 +5,7 @@ import { userEvent } from '@testing-library/user-event'
 import { useDragSelect } from '../../../context/DragSelectContext.tsx'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

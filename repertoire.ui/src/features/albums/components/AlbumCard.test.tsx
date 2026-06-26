@@ -11,7 +11,7 @@ import { useDragSelect } from '../../../context/DragSelectContext.tsx'
 import { expect } from 'vitest'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

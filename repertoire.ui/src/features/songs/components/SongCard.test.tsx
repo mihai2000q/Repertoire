@@ -21,7 +21,7 @@ import { useDragSelect } from '../../../context/DragSelectContext.tsx'
 import ArtistCard from '../.././../features/artists/components/ArtistCard.tsx'
 
 // Mock the context
-vi.mock('../../context/DragSelectContext', () => ({
+vi.mock('../../../context/DragSelectContext', () => ({
   useDragSelect: vi.fn()
 }))
 

@@ -7,7 +7,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 // Mock the context
-vi.mock('../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
