@@ -1,6 +1,6 @@
 import { mantineRender } from '../../../../test-utils.tsx'
 import HomeTopEntityOrderButton from './HomeTopEntityOrderButton.tsx'
-import HomeTopEntity from '../../../../types/enums/HomeTopEntity.ts'
+import HomeTopEntity from '../../types/enums/HomeTopEntity.ts'
 import Order from '../../../../types/Order.ts'
 import { userEvent } from '@testing-library/user-event'
 import { screen } from '@testing-library/react'

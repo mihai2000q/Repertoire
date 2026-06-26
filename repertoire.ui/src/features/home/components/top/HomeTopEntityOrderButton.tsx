@@ -1,6 +1,6 @@
 import { IconFilter2 } from '@tabler/icons-react'
 import { ActionIcon, Center, Menu } from '@mantine/core'
-import HomeTopEntity from '../../../../types/enums/HomeTopEntity.ts'
+import HomeTopEntity from '../../types/enums/HomeTopEntity.ts'
 import Order from '../../../../types/Order.ts'
 import { Dispatch, SetStateAction, useMemo } from 'react'
 import homeTopOrderEntities from '../../data/homeTopOrderEntities.ts'

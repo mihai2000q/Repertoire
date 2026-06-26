@@ -32,7 +32,7 @@ import HomeRecentlyPlayedAlbumCard from '../recently-played/HomeRecentlyPlayedAl
 import HomeRecentlyPlayedArtistCard from '../recently-played/HomeRecentlyPlayedArtistCard.tsx'
 import useLocalStorage from '../../../../hooks/useLocalStorage.ts'
 import LocalStorageKeys from '../../../../types/enums/keys/LocalStorageKeys.ts'
-import HomeRecentlyPlayedEntity from '../../../../types/enums/HomeRecentlyPlayedEntity.ts'
+import HomeRecentlyPlayedEntity from '../../types/enums/HomeRecentlyPlayedEntity.ts'
 
 interface TabButtonProps extends ActionIconProps {
   tabValue: HomeRecentlyPlayedEntity

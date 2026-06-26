@@ -14,7 +14,7 @@ import HomeArtistCard from './top/HomeArtistCard.tsx'
 import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../../../hooks/useLocalStorage.ts'
 import LocalStorageKeys from '../../../types/enums/keys/LocalStorageKeys.ts'
-import HomeTopEntity from '../../../types/enums/HomeTopEntity.ts'
+import HomeTopEntity from '../types/enums/HomeTopEntity.ts'
 import { defaultHomeTopOrderEntities } from '../data/homeTopOrderEntities.ts'
 import HomeTopEntityOrderButton from './top/HomeTopEntityOrderButton.tsx'
 

@@ -1,7 +1,7 @@
 import Order from '../../../types/Order.ts'
 import ArtistProperty from '../../../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../../../types/enums/OrderType.ts'
-import HomeTopEntity from '../../../types/enums/HomeTopEntity.ts'
+import HomeTopEntity from '../types/enums/HomeTopEntity.ts'
 import AlbumProperty from '../../../types/enums/properties/AlbumProperty.ts'
 import SongProperty from '../../../types/enums/properties/SongProperty.ts'
 
