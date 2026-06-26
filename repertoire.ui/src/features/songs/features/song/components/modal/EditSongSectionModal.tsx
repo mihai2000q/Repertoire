@@ -1,4 +1,4 @@
-import { useUpdateSongSectionMutation } from '../../../state/api/songsApi.ts'
+import { useUpdateSongSectionMutation } from '../../../../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import {
   Button,
@@ -13,15 +13,15 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { SongSection } from '../../../types/models/Song.ts'
+import { SongSection } from '../../../../../../types/models/Song.ts'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditSongSectionForm, editSongSectionSchema } from '../../../validation/songsForm.ts'
-import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
+import { EditSongSectionForm, editSongSectionSchema } from '../../../../../../validation/songsForm.ts'
+import SongSectionTypeSelect from '../../../../../../components/form/select/SongSectionTypeSelect.tsx'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { BandMember } from '../../../types/models/Artist.ts'
-import BandMemberSelect from '../../@ui/form/select/BandMemberSelect.tsx'
-import InstrumentSelect from '../../@ui/form/select/InstrumentSelect.tsx'
+import { BandMember } from '../../../../../../types/models/Artist.ts'
+import BandMemberSelect from '../../../../../../components/form/select/BandMemberSelect.tsx'
+import InstrumentSelect from '../../../../../../components/form/select/InstrumentSelect.tsx'
 
 interface EditSongSectionModalProps {
   opened: boolean

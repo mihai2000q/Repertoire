@@ -1,10 +1,10 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { Anchor, Button, Stack, Text } from '@mantine/core'
 import { IconBrandYoutube, IconGuitarPick } from '@tabler/icons-react'
-import EditWidget from '../../@ui/widget/EditWidget.tsx'
+import EditWidget from '../../../../../../components/widget/EditWidget.tsx'
 import EditSongLinksModal from '../modal/EditSongLinksModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import YoutubeModal from '../../@ui/modal/YoutubeModal.tsx'
+import YoutubeModal from '../../../../../../components/modal/YoutubeModal.tsx'
 
 interface SongLinksWidgetProps {
   song: Song

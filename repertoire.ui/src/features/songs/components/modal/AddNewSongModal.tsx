@@ -10,8 +10,8 @@ import {
   Text
 } from '@mantine/core'
 import { FormValidationResult, schemaResolver, useForm } from '@mantine/form'
-import { AddNewSongForm, addNewSongSchema } from '../../../validation/songsForm.ts'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../state/api/songsApi.ts'
+import { AddNewSongForm, addNewSongSchema } from '../../../../validation/songsForm.ts'
+import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
@@ -19,7 +19,7 @@ import AddNewSongModalFirstStep from './AddNewSongModalFirstStep.tsx'
 import AddNewSongModalSecondStep from './AddNewSongModalSecondStep.tsx'
 import AddNewSongModalFinalStep from './AddNewSongModalFinalStep.tsx'
 import { useListState } from '@mantine/hooks'
-import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import { AlbumSearch, ArtistSearch } from '../../../../types/models/Search.ts'
 
 export interface AddNewSongModalSongSection {
   id: string

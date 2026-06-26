@@ -25,12 +25,12 @@ import { UseFormReturnType } from '@mantine/form'
 import { AddNewSongModalSongSection } from './AddNewSongModal.tsx'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { UseListStateHandlers } from '@mantine/hooks'
-import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
-import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
-import { AddNewSongForm } from '../../../validation/songsForm.ts'
-import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
-import SongSectionTypeSelect from '../../@ui/form/select/SongSectionTypeSelect.tsx'
-import { AlbumSearch } from '../../../types/models/Search.ts'
+import GuitarTuningSelect from '../../../../components/form/select/GuitarTuningSelect.tsx'
+import DifficultySelect from '../../../../components/form/select/DifficultySelect.tsx'
+import { AddNewSongForm } from '../../../../validation/songsForm.ts'
+import CustomIconMetronome from '../../../../components/icons/CustomIconMetronome.tsx'
+import SongSectionTypeSelect from '../../../../components/form/select/SongSectionTypeSelect.tsx'
+import { AlbumSearch } from '../../../../types/models/Search.ts'
 
 interface AddNewSongModalSecondStepProps {
   form: UseFormReturnType<AddNewSongForm>

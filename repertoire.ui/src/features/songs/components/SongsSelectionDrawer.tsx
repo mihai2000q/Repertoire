@@ -1,13 +1,13 @@
 import { ActionIcon, Menu, Tooltip } from '@mantine/core'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
-import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import { useDragSelect } from '../../../context/DragSelectContext.tsx'
+import SelectionDrawer from '../../../components/drawer/SelectionDrawer.tsx'
+import PerfectRehearsalsMenuItem from '../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconChecklist, IconTrash } from '@tabler/icons-react'
-import plural from '../../utils/plural.ts'
-import DeleteSongsModal from '../@ui/modal/delete/DeleteSongsModal.tsx'
-import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
+import plural from '../../../utils/plural.ts'
+import DeleteSongsModal from '../../../components/modal/delete/DeleteSongsModal.tsx'
+import AddToPlaylistMenuItem from '../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import CustomRehearsalsModal from '../../../components/modal/CustomRehearsalsModal.tsx'
 
 function SongsSelectionDrawer() {
   const { selectedIds, clearSelection } = useDragSelect()

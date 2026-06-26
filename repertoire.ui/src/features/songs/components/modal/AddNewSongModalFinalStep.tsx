@@ -7,9 +7,9 @@ import {
 import { FileWithPath } from '@mantine/dropzone'
 import { UseFormReturnType } from '@mantine/form'
 import { Dispatch, SetStateAction } from 'react'
-import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
-import { AddNewSongForm } from '../../../validation/songsForm.ts'
-import { AlbumSearch } from '../../../types/models/Search.ts'
+import LargeImageDropzoneWithPreview from '../../../../components/image/LargeImageDropzoneWithPreview.tsx'
+import { AddNewSongForm } from '../../../../validation/songsForm.ts'
+import { AlbumSearch } from '../../../../types/models/Search.ts'
 
 interface AddNewSongModalFinalStepProps {
   form: UseFormReturnType<AddNewSongForm>

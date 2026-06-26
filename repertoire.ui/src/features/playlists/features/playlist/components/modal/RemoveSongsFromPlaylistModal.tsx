@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify'
-import { useRemoveSongsFromPlaylistMutation } from '../../../state/api/playlistsApi.ts'
-import WarningModal from '../../@ui/modal/WarningModal.tsx'
-import plural from '../../../utils/plural.ts'
+import { useRemoveSongsFromPlaylistMutation } from '../../../../../../state/api/playlistsApi.ts'
+import WarningModal from '../../../../../../components/modal/WarningModal.tsx'
+import plural from '../../../../../../utils/plural.ts'
 
 interface RemoveSongsFromPlaylistProps {
   playlistId: string

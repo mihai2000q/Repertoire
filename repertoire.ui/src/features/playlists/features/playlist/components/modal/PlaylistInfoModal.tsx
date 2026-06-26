@@ -1,4 +1,4 @@
-import Playlist from '../../../types/models/Playlist.ts'
+import Playlist from '../../../../../../types/models/Playlist.ts'
 import { Grid, Modal, Stack, Text } from '@mantine/core'
 import dayjs from 'dayjs'
 

@@ -1,11 +1,11 @@
-import { emptyPlaylist, reduxRender, withToastify } from '../../../test-utils.tsx'
+import { emptyPlaylist, reduxRender, withToastify } from '../../../../../../test-utils.tsx'
 import EditPlaylistHeaderModal from './EditPlaylistHeaderModal.tsx'
-import Playlist from '../../../types/models/Playlist.ts'
+import Playlist from '../../../../../../types/models/Playlist.ts'
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { UpdatePlaylistRequest } from '../../../types/requests/PlaylistRequests.ts'
+import { UpdatePlaylistRequest } from '../../../../../../types/requests/PlaylistRequests.ts'
 
 describe('Edit Playlist Header Modal', () => {
   const playlist: Playlist = {

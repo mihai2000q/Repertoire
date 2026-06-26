@@ -1,6 +1,6 @@
-import { emptySongArrangement, reduxRender } from '../../../test-utils.tsx'
+import { emptySongArrangement, reduxRender } from '../../../../../../test-utils.tsx'
 import SongArrangementsMenu from './SongArrangementsMenu.tsx'
-import { SongArrangement } from '../../../types/models/Song.ts'
+import { SongArrangement } from '../../../../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 

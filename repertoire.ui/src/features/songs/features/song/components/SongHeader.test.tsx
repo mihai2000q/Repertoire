@@ -4,20 +4,20 @@ import {
   emptySong,
   reduxRouterRender,
   withToastify
-} from '../../test-utils.tsx'
+} from '../../../../../test-utils.tsx'
 import SongHeader from './SongHeader.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
-import Song from '../../types/models/Song.ts'
+import Song from '../../../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
-import Artist from '../../types/models/Artist.ts'
-import { RootState } from '../../state/store.ts'
-import Album from '../../types/models/Album.ts'
+import Artist from '../../../../../types/models/Artist.ts'
+import { RootState } from '../../../../../state/store.ts'
+import Album from '../../../../../types/models/Album.ts'
 import dayjs from 'dayjs'
-import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import { SearchBase } from '../../types/models/Search.ts'
-import Playlist from '../../types/models/Playlist.ts'
+import WithTotalCountResponse from '../../../../../types/responses/WithTotalCountResponse.ts'
+import { SearchBase } from '../../../../../types/models/Search.ts'
+import Playlist from '../../../../../types/models/Playlist.ts'
 
 describe('Song Header', () => {
   const song: Song = {

@@ -1,8 +1,8 @@
-import Song from '../../types/models/Song'
+import Song from '../../../types/models/Song'
 import { Anchor, Box, Card, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../state/store.ts'
-import { openArtistDrawer, openSongDrawer } from '../../state/slice/globalSlice.ts'
+import { useAppDispatch } from '../../../state/store.ts'
+import { openArtistDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
 import { MouseEvent, ReactElement } from 'react'
 import {
   IconBoltFilled,
@@ -16,21 +16,21 @@ import {
   IconTrash,
   IconUser
 } from '@tabler/icons-react'
-import useDifficultyInfo from '../../hooks/useDifficultyInfo.ts'
+import useDifficultyInfo from '../../../hooks/useDifficultyInfo.ts'
 import { toast } from 'react-toastify'
-import { useDeleteSongMutation } from '../../state/api/songsApi.ts'
+import { useDeleteSongMutation } from '../../../state/api/songsApi.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
-import CustomIconGuitarHead from '../@ui/icons/CustomIconGuitarHead.tsx'
-import CustomIconLightningTrio from '../@ui/icons/CustomIconLightningTrio.tsx'
-import YoutubeModal from '../@ui/modal/YoutubeModal.tsx'
-import PerfectRehearsalMenuItem from '../@ui/menu/item/PerfectRehearsalMenuItem.tsx'
-import CustomIconMusicNoteEighth from '../@ui/icons/CustomIconMusicNoteEighth.tsx'
-import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
-import useDragSelectSelectable from '../../hooks/useDragSelectSelectable.ts'
-import SelectableAvatar from '../@ui/image/SelectableAvatar.tsx'
-import CustomRehearsalMenuItem from '../@ui/menu/item/song/CustomRehearsalMenuItem.tsx'
+import WarningModal from '../../../components/modal/WarningModal.tsx'
+import CustomIconGuitarHead from '../../../components/icons/CustomIconGuitarHead.tsx'
+import CustomIconLightningTrio from '../../../components/icons/CustomIconLightningTrio.tsx'
+import YoutubeModal from '../../../components/modal/YoutubeModal.tsx'
+import PerfectRehearsalMenuItem from '../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
+import CustomIconMusicNoteEighth from '../../../components/icons/CustomIconMusicNoteEighth.tsx'
+import AddToPlaylistMenuItem from '../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../../../components/menu/ContextMenu.tsx'
+import useDragSelectSelectable from '../../../hooks/useDragSelectSelectable.ts'
+import SelectableAvatar from '../../../components/image/SelectableAvatar.tsx'
+import CustomRehearsalMenuItem from '../../../components/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 const iconSize = 18
 

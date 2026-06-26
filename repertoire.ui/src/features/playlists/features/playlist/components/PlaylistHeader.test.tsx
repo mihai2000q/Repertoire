@@ -1,5 +1,5 @@
-import Playlist from '../../types/models/Playlist.ts'
-import { emptyPlaylist, reduxRouterRender, withToastify } from '../../test-utils.tsx'
+import Playlist from '../../../../../types/models/Playlist.ts'
+import { emptyPlaylist, reduxRouterRender, withToastify } from '../../../../../test-utils.tsx'
 import PlaylistHeader from './PlaylistHeader.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'

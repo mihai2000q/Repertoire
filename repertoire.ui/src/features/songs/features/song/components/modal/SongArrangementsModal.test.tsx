@@ -1,10 +1,10 @@
-import { SongArrangement, SongSectionOccurrences } from '../../../types/models/Song.ts'
+import { SongArrangement, SongSectionOccurrences } from '../../../../../../types/models/Song.ts'
 import {
   emptySongArrangement,
   emptySongSection,
   reduxRender,
   withToastify
-} from '../../../test-utils.tsx'
+} from '../../../../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import SongArrangementsModal from './SongArrangementsModal.tsx'
@@ -13,8 +13,8 @@ import { userEvent } from '@testing-library/user-event'
 import {
   BulkUpdateSongArrangementsRequest,
   UpdateDefaultSongArrangementRequest
-} from '../../../types/requests/SongRequests.ts'
-import { api } from '../../../state/api.ts'
+} from '../../../../../../types/requests/SongRequests.ts'
+import { api } from '../../../../../../state/api.ts'
 
 describe('Song Arrangements Modal', () => {
   const songId = 'song-id'

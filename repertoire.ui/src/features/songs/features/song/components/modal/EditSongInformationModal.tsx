@@ -1,4 +1,4 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import {
   Button,
   Checkbox,
@@ -11,13 +11,13 @@ import {
   Stack,
   Tooltip
 } from '@mantine/core'
-import { useUpdateSongMutation } from '../../../state/api/songsApi.ts'
-import Difficulty from '../../../types/enums/Difficulty.ts'
+import { useUpdateSongMutation } from '../../../../../../state/api/songsApi.ts'
+import Difficulty from '../../../../../../types/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useDidUpdate, useInputState } from '@mantine/hooks'
-import GuitarTuningSelect from '../../@ui/form/select/GuitarTuningSelect.tsx'
-import DifficultySelect from '../../@ui/form/select/DifficultySelect.tsx'
-import CustomIconMetronome from '../../@ui/icons/CustomIconMetronome.tsx'
+import GuitarTuningSelect from '../../../../../../components/form/select/GuitarTuningSelect.tsx'
+import DifficultySelect from '../../../../../../components/form/select/DifficultySelect.tsx'
+import CustomIconMetronome from '../../../../../../components/icons/CustomIconMetronome.tsx'
 import { toast } from 'react-toastify'
 
 interface EditSongInformationModalProps {

@@ -1,4 +1,4 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import {
   Button,
   Center,
@@ -14,19 +14,19 @@ import {
   useDeleteImageFromSongMutation,
   useSaveImageToSongMutation,
   useUpdateSongMutation
-} from '../../../state/api/songsApi.ts'
+} from '../../../../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditSongHeaderForm, editSongHeaderSchema } from '../../../validation/songsForm.ts'
+import { EditSongHeaderForm, editSongHeaderSchema } from '../../../../../../validation/songsForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
-import LargeImageDropzoneWithPreview from '../../@ui/image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import { useDidUpdate } from '@mantine/hooks'
-import ArtistSelect from '../../@ui/form/select/ArtistSelect.tsx'
-import AlbumSelect from '../../@ui/form/select/AlbumSelect.tsx'
-import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import ArtistSelect from '../../../../../../components/form/select/ArtistSelect.tsx'
+import AlbumSelect from '../../../../../../components/form/select/AlbumSelect.tsx'
+import { AlbumSearch, ArtistSearch } from '../../../../../../types/models/Search.ts'
 
 interface EditSongHeaderModalProps {
   song: Song

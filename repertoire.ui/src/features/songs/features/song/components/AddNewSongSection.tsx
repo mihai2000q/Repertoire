@@ -1,13 +1,13 @@
-import { useCreateSongSectionMutation } from '../../state/api/songsApi.ts'
+import { useCreateSongSectionMutation } from '../../../../../state/api/songsApi.ts'
 import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import SongSectionTypeSelect from '../@ui/form/select/SongSectionTypeSelect.tsx'
-import { BandMember } from '../../types/models/Artist.ts'
-import BandMemberCompactSelect from '../@ui/form/select/compact/BandMemberCompactSelect.tsx'
-import InstrumentCompactSelect from '../@ui/form/select/compact/InstrumentCompactSelect.tsx'
-import { Instrument, SongSettings } from '../../types/models/Song.ts'
+import SongSectionTypeSelect from '../../../../../components/form/select/SongSectionTypeSelect.tsx'
+import { BandMember } from '../../../../../types/models/Artist.ts'
+import BandMemberCompactSelect from '../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
+import InstrumentCompactSelect from '../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
+import { Instrument, SongSettings } from '../../../../../types/models/Song.ts'
 
 interface AddNewSongSectionProps {
   opened: boolean

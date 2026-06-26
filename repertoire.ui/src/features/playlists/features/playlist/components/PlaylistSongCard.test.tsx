@@ -5,23 +5,23 @@ import {
   emptySong,
   reduxRouterRender,
   withToastify
-} from '../../test-utils.tsx'
+} from '../../../../../test-utils.tsx'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
-import Song from '../../types/models/Song.ts'
+import Song from '../../../../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Artist from '../../types/models/Artist.ts'
-import Album from '../../types/models/Album.ts'
-import { RootState } from '../../state/store.ts'
-import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
+import Artist from '../../../../../types/models/Artist.ts'
+import Album from '../../../../../types/models/Album.ts'
+import { RootState } from '../../../../../state/store.ts'
+import { RemoveSongsFromPlaylistRequest } from '../../../../../types/requests/PlaylistRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import SongProperty from '../../types/enums/properties/SongProperty.ts'
-import Difficulty from '../../types/enums/Difficulty.ts'
+import SongProperty from '../../../../../types/enums/properties/SongProperty.ts'
+import Difficulty from '../../../../../types/enums/Difficulty.ts'
 import dayjs from 'dayjs'
-import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import Playlist from '../../types/models/Playlist.ts'
-import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+import WithTotalCountResponse from '../../../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../../../types/models/Playlist.ts'
+import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 
 // Mock the context
 vi.mock('../../context/ClickSelectContext', () => ({

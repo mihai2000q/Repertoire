@@ -1,4 +1,4 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { Grid, Modal, Stack, Text } from '@mantine/core'
 import dayjs from 'dayjs'
 

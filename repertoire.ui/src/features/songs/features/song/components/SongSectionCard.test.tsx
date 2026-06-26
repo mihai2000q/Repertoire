@@ -1,13 +1,13 @@
-import { emptySongSection, reduxRender, withToastify } from '../../test-utils.tsx'
+import { emptySongSection, reduxRender, withToastify } from '../../../../../test-utils.tsx'
 import SongSectionCard from './SongSectionCard.tsx'
-import { Instrument, SongSection } from './../../types/models/Song.ts'
+import { Instrument, SongSection } from '../../../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
-import { UpdateSongSectionRequest } from '../../types/requests/SongRequests.ts'
-import { BandMember } from '../../types/models/Artist.ts'
-import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+import { UpdateSongSectionRequest } from '../../../../../types/requests/SongRequests.ts'
+import { BandMember } from '../../../../../types/models/Artist.ts'
+import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 
 // Mock Context
 vi.mock('../../context/ClickSelectContext', () => ({

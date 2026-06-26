@@ -1,6 +1,6 @@
-import { emptyPlaylist, mantineRender } from '../../../test-utils.tsx'
+import { emptyPlaylist, mantineRender } from '../../../../../../test-utils.tsx'
 import PlaylistInfoModal from './PlaylistInfoModal.tsx'
-import Playlist from '../../../types/models/Playlist.ts'
+import Playlist from '../../../../../../types/models/Playlist.ts'
 import { screen } from '@testing-library/react'
 import dayjs from 'dayjs'
 

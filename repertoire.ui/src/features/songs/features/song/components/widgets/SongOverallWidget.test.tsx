@@ -1,6 +1,6 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
-import { emptySong, mantineRender } from '../../../test-utils.tsx'
+import { emptySong, mantineRender } from '../../../../../../test-utils.tsx'
 import SongOverallWidget from './SongOverallWidget.tsx'
 import { userEvent } from '@testing-library/user-event'
 

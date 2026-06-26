@@ -1,14 +1,14 @@
 import { ActionIcon, Group, Popover, Tooltip } from '@mantine/core'
-import PopoverConfirmation from '../../@ui/popover/PopoverConfirmation.tsx'
-import BandMemberCompactSelect from '../../@ui/form/select/compact/BandMemberCompactSelect.tsx'
-import InstrumentCompactSelect from '../../@ui/form/select/compact/InstrumentCompactSelect.tsx'
+import PopoverConfirmation from '../../../../../../components/popover/PopoverConfirmation.tsx'
+import BandMemberCompactSelect from '../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
+import InstrumentCompactSelect from '../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { useState } from 'react'
-import { Instrument, SongSection, SongSettings } from '../../../types/models/Song.ts'
-import { BandMember } from '../../../types/models/Artist.ts'
+import { Instrument, SongSection, SongSettings } from '../../../../../../types/models/Song.ts'
+import { BandMember } from '../../../../../../types/models/Artist.ts'
 import {
   useUpdateAllSongSectionsMutation,
   useUpdateSongSettingsMutation
-} from '../../../state/api/songsApi.ts'
+} from '../../../../../../state/api/songsApi.ts'
 import { IconSettings } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
 

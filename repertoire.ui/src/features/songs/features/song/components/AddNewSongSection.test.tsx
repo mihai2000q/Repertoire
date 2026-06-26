@@ -1,12 +1,12 @@
-import { emptySongSettings, reduxRender, withToastify } from '../../test-utils.tsx'
+import { emptySongSettings, reduxRender, withToastify } from '../../../../../test-utils.tsx'
 import AddNewSongSection from './AddNewSongSection.tsx'
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import { Instrument, SongSectionType } from '../../types/models/Song.ts'
-import { CreateSongSectionRequest } from '../../types/requests/SongRequests.ts'
-import { BandMember } from '../../types/models/Artist.ts'
+import { Instrument, SongSectionType } from '../../../../../types/models/Song.ts'
+import { CreateSongSectionRequest } from '../../../../../types/requests/SongRequests.ts'
+import { BandMember } from '../../../../../types/models/Artist.ts'
 
 describe('Add New Song Section', () => {
   const sectionTypes: SongSectionType[] = [

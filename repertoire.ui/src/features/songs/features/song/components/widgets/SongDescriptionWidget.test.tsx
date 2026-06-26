@@ -1,7 +1,7 @@
 import SongDescriptionWidget from './SongDescriptionWidget.tsx'
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
-import { emptySong, reduxRender } from '../../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../../../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 
 describe('Song Description Widget', () => {

@@ -1,15 +1,15 @@
 import { ActionIcon, Menu, Tooltip } from '@mantine/core'
-import SelectionDrawer from '../@ui/drawer/SelectionDrawer.tsx'
-import PerfectRehearsalsMenuItem from '../@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import SelectionDrawer from '../../../../../components/drawer/SelectionDrawer.tsx'
+import PerfectRehearsalsMenuItem from '../../../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconChecklist, IconCircleMinus } from '@tabler/icons-react'
-import plural from '../../utils/plural.ts'
-import AddToPlaylistMenuItem from '../@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+import plural from '../../../../../utils/plural.ts'
+import AddToPlaylistMenuItem from '../../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 import RemoveSongsFromPlaylistModal from './modal/RemoveSongsFromPlaylistModal.tsx'
-import Song from '../../types/models/Song.ts'
+import Song from '../../../../../types/models/Song.ts'
 import { useEffect, useState } from 'react'
-import CustomRehearsalsModal from '../@ui/modal/CustomRehearsalsModal.tsx'
+import CustomRehearsalsModal from '../../../../../components/modal/CustomRehearsalsModal.tsx'
 
 interface PlaylistSongsSelectionDrawerProps {
   playlistId: string

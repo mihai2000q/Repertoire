@@ -1,4 +1,4 @@
-import { SongSection as SongSectionModel } from '../../types/models/Song.ts'
+import { SongSection as SongSectionModel } from '../../../../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
@@ -30,15 +30,15 @@ import { toast } from 'react-toastify'
 import {
   useDeleteSongSectionMutation,
   useUpdateSongSectionMutation
-} from '../../state/api/songsApi.ts'
+} from '../../../../../state/api/songsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
-import WarningModal from '../@ui/modal/WarningModal.tsx'
-import { BandMember } from '../../types/models/Artist.ts'
-import useInstrumentIcon from '../../hooks/useInstrumentIcon.tsx'
+import WarningModal from '../../../../../components/modal/WarningModal.tsx'
+import { BandMember } from '../../../../../types/models/Artist.ts'
+import useInstrumentIcon from '../../../../../hooks/useInstrumentIcon.tsx'
 import { useEffect, useState } from 'react'
-import useDoubleMenu from '../../hooks/useDoubleMenu.ts'
-import { ContextMenu } from '../@ui/menu/ContextMenu.tsx'
-import useClickSelectSelectable from '../../hooks/useClickSelectSelectable.ts'
+import useDoubleMenu from '../../../../../hooks/useDoubleMenu.ts'
+import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
+import useClickSelectSelectable from '../../../../../hooks/useClickSelectSelectable.ts'
 
 function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
   return rehearsalsMaxLength > 4

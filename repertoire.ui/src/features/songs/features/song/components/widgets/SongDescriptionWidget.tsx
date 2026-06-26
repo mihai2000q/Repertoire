@@ -1,8 +1,8 @@
 import { Stack, Text } from '@mantine/core'
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import EditSongDescriptionModal from '../modal/EditSongDescriptionModal.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import EditWidget from '../../@ui/widget/EditWidget.tsx'
+import EditWidget from '../../../../../../components/widget/EditWidget.tsx'
 
 interface SongDescriptionWidgetProps {
   song: Song

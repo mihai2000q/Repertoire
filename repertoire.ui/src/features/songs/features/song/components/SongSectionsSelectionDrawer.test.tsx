@@ -1,11 +1,11 @@
 import { setupServer } from 'msw/node'
-import { reduxRender, withToastify } from '../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../../../test-utils.tsx'
 import SongSectionsSelectionDrawer from './SongSectionsSelectionDrawer.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { BulkRehearsalsSongSectionsRequest } from '../../types/requests/SongRequests.ts'
+import { BulkRehearsalsSongSectionsRequest } from '../../../../../types/requests/SongRequests.ts'
 import { http, HttpResponse } from 'msw'
-import { useClickSelect } from '../../context/ClickSelectContext.tsx'
+import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 
 // Mock the context
 vi.mock('../../context/ClickSelectContext', () => ({

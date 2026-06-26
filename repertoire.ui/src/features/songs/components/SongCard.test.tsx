@@ -1,24 +1,24 @@
 import { screen, within } from '@testing-library/react'
 import SongCard from './SongCard'
-import Song from '../../types/models/Song'
+import Song from '../../../types/models/Song'
 import {
   emptyAlbum,
   emptyArtist,
   emptySong,
   reduxRouterRender,
   withToastify
-} from '../../test-utils'
-import Artist from '../../types/models/Artist.ts'
+} from '../../../test-utils'
+import Artist from '../../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
-import Difficulty from '../../types/enums/Difficulty.ts'
-import { RootState } from '../../state/store.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
+import { RootState } from '../../../state/store.ts'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
-import Playlist from '../../types/models/Playlist.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 import { expect } from 'vitest'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import ArtistCard from '../../features/artists/components/ArtistCard.tsx'
+import { useDragSelect } from '../../../context/DragSelectContext.tsx'
+import ArtistCard from '../.././../features/artists/components/ArtistCard.tsx'
 
 // Mock the context
 vi.mock('../../context/DragSelectContext', () => ({

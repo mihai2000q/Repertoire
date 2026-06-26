@@ -12,11 +12,11 @@ import {
 } from '@mantine/core'
 import { IconChecklist, IconStarFilled } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import MenuItemConfirmation from '../../@ui/menu/item/MenuItemConfirmation.tsx'
+import MenuItemConfirmation from '../../../../../../components/menu/item/MenuItemConfirmation.tsx'
 import {
   useAddCustomSongRehearsalMutation,
   useGetSongArrangementsQuery
-} from '../../../state/api/songsApi.ts'
+} from '../../../../../../state/api/songsApi.ts'
 import { toast } from 'react-toastify'
 
 interface CustomRehearsalButtonProps {

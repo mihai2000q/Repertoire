@@ -1,6 +1,6 @@
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { screen, within } from '@testing-library/react'
-import { emptySong, reduxRender } from '../../../test-utils.tsx'
+import { emptySong, reduxRender } from '../../../../../../test-utils.tsx'
 import { userEvent } from '@testing-library/user-event'
 import SongLinksWidget from './SongLinksWidget.tsx'
 

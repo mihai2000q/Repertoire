@@ -1,6 +1,6 @@
-import { emptySong, mantineRender } from '../../../test-utils.tsx'
+import { emptySong, mantineRender } from '../../../../../../test-utils.tsx'
 import SongInfoModal from './SongInfoModal.tsx'
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
 import dayjs from 'dayjs'

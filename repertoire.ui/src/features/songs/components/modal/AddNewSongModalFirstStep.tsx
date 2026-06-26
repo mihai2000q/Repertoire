@@ -1,10 +1,10 @@
 import { Center, Group, Stack, Textarea, TextInput, Tooltip } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
-import ArtistAutocomplete from '../../@ui/form/input/ArtistAutocomplete.tsx'
-import AlbumAutocomplete from '../../@ui/form/input/AlbumAutocomplete.tsx'
-import { AddNewSongForm } from '../../../validation/songsForm.ts'
+import ArtistAutocomplete from '../../../../components/form/input/ArtistAutocomplete.tsx'
+import AlbumAutocomplete from '../../../../components/form/input/AlbumAutocomplete.tsx'
+import { AddNewSongForm } from '../../../../validation/songsForm.ts'
 import { IconInfoCircleFilled } from '@tabler/icons-react'
-import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
+import { AlbumSearch, ArtistSearch } from '../../../../types/models/Search.ts'
 import { useDidUpdate } from '@mantine/hooks'
 
 interface AddNewSongModalFirstStepProps {

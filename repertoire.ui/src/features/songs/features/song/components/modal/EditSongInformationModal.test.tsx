@@ -1,12 +1,12 @@
-import { emptySong, reduxRender, withToastify } from '../../../test-utils.tsx'
-import Song, { GuitarTuning } from '../../../types/models/Song.ts'
+import { emptySong, reduxRender, withToastify } from '../../../../../../test-utils.tsx'
+import Song, { GuitarTuning } from '../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
+import { UpdateSongRequest } from '../../../../../../types/requests/SongRequests.ts'
 import EditSongInformationModal from './EditSongInformationModal.tsx'
-import Difficulty from '../../../types/enums/Difficulty.ts'
+import Difficulty from '../../../../../../types/enums/Difficulty.ts'
 
 describe('Edit Song Information Modal', () => {
   const guitarTunings: GuitarTuning[] = [

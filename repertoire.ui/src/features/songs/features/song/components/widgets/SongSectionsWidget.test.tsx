@@ -4,9 +4,9 @@ import {
   emptySongSettings,
   reduxRender,
   withToastify
-} from '../../../test-utils.tsx'
+} from '../../../../../../test-utils.tsx'
 import SongSectionsWidget from './SongSectionsWidget.tsx'
-import { SongArrangement, SongSection } from '../../../types/models/Song.ts'
+import { SongArrangement, SongSection } from '../../../../../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
@@ -15,7 +15,7 @@ import { setupServer } from 'msw/node'
 import {
   AddPerfectSongRehearsalRequest,
   MoveSongSectionRequest
-} from '../../../types/requests/SongRequests.ts'
+} from '../../../../../../types/requests/SongRequests.ts'
 import { createRef } from 'react'
 
 // Mock Main Context

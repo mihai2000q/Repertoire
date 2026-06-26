@@ -1,11 +1,11 @@
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { useDragSelect } from '../../context/DragSelectContext.tsx'
-import { emptySong, reduxRender } from '../../test-utils.tsx'
+import { useDragSelect } from '../../../context/DragSelectContext.tsx'
+import { emptySong, reduxRender } from '../../../test-utils.tsx'
 import SongsSelectionDrawer from './SongsSelectionDrawer.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import Song from '../../types/models/Song.ts'
+import Song from '../../../types/models/Song.ts'
 
 // Mock the context
 vi.mock('../../context/DragSelectContext', () => ({

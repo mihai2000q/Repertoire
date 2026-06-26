@@ -4,21 +4,21 @@ import {
   emptySong,
   reduxRender,
   withToastify
-} from '../../../test-utils.tsx'
+} from '../../../../../../test-utils.tsx'
 import AddPlaylistSongsModal from './AddPlaylistSongsModal.tsx'
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
-import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import WithTotalCountResponse from '../../../../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { AddSongsToPlaylistRequest } from '../../../types/requests/PlaylistRequests.ts'
-import Artist from '../../../types/models/Artist.ts'
-import Album from '../../../types/models/Album.ts'
+import { AddSongsToPlaylistRequest } from '../../../../../../types/requests/PlaylistRequests.ts'
+import Artist from '../../../../../../types/models/Artist.ts'
+import Album from '../../../../../../types/models/Album.ts'
 import { expect } from 'vitest'
-import OrderType from '../../../types/enums/OrderType.ts'
-import SongProperty from '../../../types/enums/properties/SongProperty.ts'
-import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import OrderType from '../../../../../../types/enums/OrderType.ts'
+import SongProperty from '../../../../../../types/enums/properties/SongProperty.ts'
+import FilterOperator from '../../../../../../types/enums/FilterOperator.ts'
 
 describe('Add Playlist Songs Modal', () => {
   const album: Album = {

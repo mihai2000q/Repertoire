@@ -4,18 +4,18 @@ import {
   emptySong,
   reduxRouterRender,
   withToastify
-} from '../../test-utils.tsx'
+} from '../../../../../test-utils.tsx'
 import PlaylistSongsWidget from './PlaylistSongsWidget.tsx'
-import Song from '../../types/models/Song.ts'
-import Playlist from '../../types/models/Playlist.ts'
+import Song from '../../../../../types/models/Song.ts'
+import Playlist from '../../../../../types/models/Playlist.ts'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
+import WithTotalCountResponse from '../../../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import playlistSongsOrders from '../../data/playlist/playlistSongsOrders.ts'
-import OrderType from '../../types/enums/OrderType.ts'
-import { ShufflePlaylistSongsRequest } from '../../types/requests/PlaylistRequests.ts'
+import playlistSongsOrders from '../data/playlistSongsOrders.ts'
+import OrderType from '../../../../../types/enums/OrderType.ts'
+import { ShufflePlaylistSongsRequest } from '../../../../../types/requests/PlaylistRequests.ts'
 import { createRef } from 'react'
 import { expect } from 'vitest'
 

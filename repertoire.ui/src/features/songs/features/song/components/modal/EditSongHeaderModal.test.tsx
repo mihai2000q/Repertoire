@@ -4,18 +4,18 @@ import {
   emptySong,
   reduxRender,
   withToastify
-} from '../../../test-utils.tsx'
+} from '../../../../../../test-utils.tsx'
 import EditSongHeaderModal from './EditSongHeaderModal.tsx'
-import Song from '../../../types/models/Song.ts'
+import Song from '../../../../../../types/models/Song.ts'
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import dayjs from 'dayjs'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongRequest } from '../../../types/requests/SongRequests.ts'
-import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
-import { AlbumSearch, ArtistSearch } from '../../../types/models/Search.ts'
-import SearchType from '../../../types/enums/SearchType.ts'
+import { UpdateSongRequest } from '../../../../../../types/requests/SongRequests.ts'
+import WithTotalCountResponse from '../../../../../../types/responses/WithTotalCountResponse.ts'
+import { AlbumSearch, ArtistSearch } from '../../../../../../types/models/Search.ts'
+import SearchType from '../../../../../../types/enums/SearchType.ts'
 
 describe('Edit Song Header Modal', () => {
   const song: Song = {

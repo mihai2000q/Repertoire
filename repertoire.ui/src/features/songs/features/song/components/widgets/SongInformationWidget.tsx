@@ -1,11 +1,11 @@
 import { ActionIcon, Flex, Grid, Stack, Text, Tooltip } from '@mantine/core'
 import { IconCheck } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import EditWidget from '../../@ui/widget/EditWidget.tsx'
-import Song from '../../../types/models/Song.ts'
+import EditWidget from '../../../../../../components/widget/EditWidget.tsx'
+import Song from '../../../../../../types/models/Song.ts'
 import { useDisclosure } from '@mantine/hooks'
 import EditSongInformationModal from '../modal/EditSongInformationModal.tsx'
-import DifficultyBar from '../../@ui/bar/DifficultyBar.tsx'
+import DifficultyBar from '../../../../../../components/bar/DifficultyBar.tsx'
 
 const NotSet = ({ label }: { label?: string }) => (
   <Text fz={'sm'} c={'dimmed'} fs={'oblique'} inline>
