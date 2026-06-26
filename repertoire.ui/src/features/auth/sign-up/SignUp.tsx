@@ -18,7 +18,7 @@ import { schemaResolver, useForm } from '@mantine/form'
 import { signIn } from '../../../state/slice/authSlice.ts'
 import { SignUpForm, signUpSchema } from './validation/signUpForm.ts'
 import useFixedDocumentTitle from '../../../hooks/useFixedDocumentTitle.ts'
-import { useSignUpMutation } from '../../../state/api/usersApi.ts'
+import { useSignUpMutation } from './state/api/signUpApi.ts'
 import { api } from '../../../state/api.ts'
 import { authApi } from '../../../state/authApi.ts'
 
