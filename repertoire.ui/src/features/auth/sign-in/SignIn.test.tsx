@@ -1,12 +1,12 @@
-import { reduxRouterRender } from '../../../../test-utils.tsx'
+import { reduxRouterRender } from '../../../test-utils.tsx'
 import SignIn from './SignIn.tsx'
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { SignInRequest } from '../../../../types/requests/AuthRequests.ts'
+import { SignInRequest } from '../../../types/requests/AuthRequests.ts'
 import { expect } from 'vitest'
-import { RootState } from '../../../../state/store.ts'
+import { RootState } from '../../../state/store.ts'
 
 describe('Sign In', () => {
   const server = setupServer()

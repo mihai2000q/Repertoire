@@ -11,15 +11,15 @@ import {
   Title
 } from '@mantine/core'
 import { ReactElement } from 'react'
-import { useAppDispatch } from '../../../../state/store.ts'
-import { signIn } from '../../../../state/slice/authSlice.ts'
-import HttpErrorResponse from '../../../../types/responses/HttpErrorResponse.ts'
+import { useAppDispatch } from '../../../state/store.ts'
+import { signIn } from '../../../state/slice/authSlice.ts'
+import HttpErrorResponse from '../../../types/responses/HttpErrorResponse.ts'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { schemaResolver, useForm } from '@mantine/form'
 import { SignInForm, signInSchema } from './validation/signInForm.ts'
-import useFixedDocumentTitle from '../../../../hooks/useFixedDocumentTitle.ts'
-import { authApi, useSignInMutation } from '../../../../state/authApi.ts'
-import { api } from '../../../../state/api.ts'
+import useFixedDocumentTitle from '../../../hooks/useFixedDocumentTitle.ts'
+import { authApi, useSignInMutation } from '../../../state/authApi.ts'
+import { api } from '../../../state/api.ts'
 
 function SignIn(): ReactElement {
   const dispatch = useAppDispatch()

@@ -12,15 +12,15 @@ import {
   Title
 } from '@mantine/core'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../../../state/store.ts'
-import HttpErrorResponse from '../../../../types/responses/HttpErrorResponse.ts'
+import { useAppDispatch } from '../../../state/store.ts'
+import HttpErrorResponse from '../../../types/responses/HttpErrorResponse.ts'
 import { schemaResolver, useForm } from '@mantine/form'
-import { signIn } from '../../../../state/slice/authSlice.ts'
+import { signIn } from '../../../state/slice/authSlice.ts'
 import { SignUpForm, signUpSchema } from './validation/signUpForm.ts'
-import useFixedDocumentTitle from '../../../../hooks/useFixedDocumentTitle.ts'
-import { useSignUpMutation } from '../../../../state/api/usersApi.ts'
-import { api } from '../../../../state/api.ts'
-import { authApi } from '../../../../state/authApi.ts'
+import useFixedDocumentTitle from '../../../hooks/useFixedDocumentTitle.ts'
+import { useSignUpMutation } from '../../../state/api/usersApi.ts'
+import { api } from '../../../state/api.ts'
+import { authApi } from '../../../state/authApi.ts'
 
 function SignUp(): ReactElement {
   const dispatch = useAppDispatch()
