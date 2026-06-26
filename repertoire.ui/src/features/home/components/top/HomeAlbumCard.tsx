@@ -1,6 +1,6 @@
 import Album from '../../../../types/models/Album.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
-import { openAlbumDrawer, openArtistDrawer } from '../../../../state/slice/globalSlice.ts'
+import { openAlbumDrawer, openArtistDrawer } from '../../../../state/slice/drawersSlice.ts'
 import { useAppDispatch } from '../../../../state/store.ts'
 import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
 import { useNavigate } from 'react-router-dom'

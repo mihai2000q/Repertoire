@@ -4,7 +4,7 @@ import { IconEdit, IconInfoSquareRounded, IconQuestionMark, IconTrash } from '@t
 import dayjs from 'dayjs'
 import plural from '../../../../../utils/plural.ts'
 import HeaderPanelCard from '../../../../../components/card/HeaderPanelCard.tsx'
-import { openArtistDrawer } from '../../../../../state/slice/globalSlice.ts'
+import { openArtistDrawer } from '../../../../../state/slice/drawersSlice.ts'
 import { useDisclosure } from '@mantine/hooks'
 import { useAppDispatch } from '../../../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'

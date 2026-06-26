@@ -14,7 +14,7 @@ import Song from '../../../types/models/Song.ts'
 import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import { expect } from 'vitest'
-import { openPlaylistDrawer } from '../../../state/slice/globalSlice.ts'
+import { openPlaylistDrawer } from '../../../state/slice/drawersSlice.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 describe('Playlist Drawer', () => {
@@ -91,15 +91,15 @@ describe('Playlist Drawer', () => {
 
   const render = (id: string | null = playlist.id) =>
     reduxRouterRender(<PlaylistDrawer />, {
-      global: {
-        documentTitle: prevDocumentTitle,
-        playlistDrawer: {
+      global: { documentTitle: prevDocumentTitle },
+      drawers: {
+        playlist: {
           open: true,
           playlistId: id
         },
-        albumDrawer: undefined,
-        artistDrawer: undefined,
-        songDrawer: undefined
+        album: undefined,
+        artist: undefined,
+        song: undefined
       }
     })
 
@@ -220,7 +220,7 @@ describe('Playlist Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/playlist/${playlist.id}`)
-      expect((store.getState() as RootState).global.playlistDrawer.open).toBeFalsy()
+      expect((store.getState() as RootState).drawers.playlist.open).toBeFalsy()
     })
 
     it('should display warning modal and delete the playlist when clicking delete', async () => {
@@ -233,15 +233,15 @@ describe('Playlist Drawer', () => {
       )
 
       const [_, store] = reduxRouterRender(withToastify(<PlaylistDrawer />), {
-        global: {
-          documentTitle: prevDocumentTitle,
-          playlistDrawer: {
+        global: { documentTitle: prevDocumentTitle },
+        drawers: {
+          playlist: {
             open: true,
             playlistId: playlist.id
           },
-          albumDrawer: undefined,
-          artistDrawer: undefined,
-          songDrawer: undefined
+          album: undefined,
+          artist: undefined,
+          song: undefined
         }
       })
 
@@ -252,8 +252,8 @@ describe('Playlist Drawer', () => {
       expect(screen.getByRole('heading', { name: /delete playlist/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
-      expect((store.getState() as RootState).global.playlistDrawer.open).toBeFalsy()
-      expect((store.getState() as RootState).global.playlistDrawer.playlistId).toBeUndefined()
+      expect((store.getState() as RootState).drawers.playlist.open).toBeFalsy()
+      expect((store.getState() as RootState).drawers.playlist.playlistId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${playlist.title} deleted!`)).toBeInTheDocument()
     })
@@ -267,7 +267,7 @@ describe('Playlist Drawer', () => {
     const [_, store] = render()
 
     await user.click(await screen.findByRole('img', { name: song.title }))
-    expect((store.getState() as RootState).global.playlistDrawer.open).toBeFalsy()
+    expect((store.getState() as RootState).drawers.playlist.open).toBeFalsy()
     expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 })

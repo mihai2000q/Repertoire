@@ -14,7 +14,7 @@ import {
 } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useAppDispatch } from '../../../../../state/store.ts'
-import { openAlbumDrawer } from '../../../../../state/slice/globalSlice.ts'
+import { openAlbumDrawer } from '../../../../../state/slice/drawersSlice.ts'
 import { MouseEvent } from 'react'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'

@@ -504,8 +504,8 @@ describe('Playlist Song Card', () => {
 
     await user.click(screen.getByText(localSong.album.title))
 
-    expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(localSong.album.id)
+    expect((store.getState() as RootState).drawers.album.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.album.albumId).toBe(localSong.album.id)
   })
 
   it('should open artist drawer on artist name click', async () => {
@@ -522,8 +522,8 @@ describe('Playlist Song Card', () => {
 
     await user.click(screen.getByText(localSong.artist.name))
 
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localSong.artist.id)
   })
 
   it('should disable context menu and more menu when click selection is active', async () => {

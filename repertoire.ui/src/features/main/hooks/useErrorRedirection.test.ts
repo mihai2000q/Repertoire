@@ -7,13 +7,7 @@ describe('use Error Redirection', () => {
 
   it('should not navigate when the error path is undefined', () => {
     reduxRouterRenderHook(() => useErrorRedirection(), {
-      global: {
-        errorPath: undefined,
-        songDrawer: undefined,
-        albumDrawer: undefined,
-        artistDrawer: undefined,
-        playlistDrawer: undefined
-      }
+      global: { errorPath: undefined }
     })
 
     expect(window.location.pathname).toBe('/')
@@ -23,13 +17,7 @@ describe('use Error Redirection', () => {
     const errorPath = '404'
 
     const [_, store] = reduxRouterRenderHook(() => useErrorRedirection(), {
-      global: {
-        errorPath: errorPath,
-        songDrawer: undefined,
-        albumDrawer: undefined,
-        artistDrawer: undefined,
-        playlistDrawer: undefined
-      }
+      global: { errorPath: errorPath }
     })
 
     expect(window.location.pathname).toBe(`/${errorPath}`)

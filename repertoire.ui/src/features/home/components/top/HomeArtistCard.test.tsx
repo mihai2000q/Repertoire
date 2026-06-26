@@ -42,8 +42,8 @@ describe('Home Artist Card', () => {
     const [_, store] = reduxRouterRender(<HomeArtistCard artist={localArtist} />)
 
     await user.click(screen.getByRole('img', { name: localArtist.name }))
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localArtist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localArtist.id)
   })
 
   it('should display menu on right click', async () => {

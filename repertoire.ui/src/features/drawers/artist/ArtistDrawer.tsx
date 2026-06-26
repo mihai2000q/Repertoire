@@ -25,7 +25,7 @@ import plural from '../../../utils/plural.ts'
 import { useGetAlbumsQuery } from '../../../state/api/albumsApi.ts'
 import { useGetInfiniteSongsInfiniteQuery } from '../../../state/api/songsApi.ts'
 import dayjs from 'dayjs'
-import { closeArtistDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeArtistDrawer } from '../../../state/slice/drawersSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconAlbumVinyl from '../../../components/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../../components/icons/CustomIconMusicNoteEighth.tsx'
@@ -142,7 +142,7 @@ function ArtistDrawer() {
 
   const isDocumentTitleSet = useRef(false)
 
-  const { artistId, open: opened } = useAppSelector((state) => state.global.artistDrawer)
+  const { artistId, open: opened } = useAppSelector((state) => state.drawers.artist)
   const onClose = () => {
     dispatch(closeArtistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])

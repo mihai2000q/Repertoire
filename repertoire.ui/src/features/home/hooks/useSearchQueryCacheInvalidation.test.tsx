@@ -44,13 +44,7 @@ describe('use Search Query Cache Invalidation', () => {
     const [{ result }] = reduxRenderHook(() => useCentrifuge())
 
     reduxRenderHook(() => useSearchQueryCacheInvalidation(), {
-      global: {
-        userId: userId,
-        artistDrawer: undefined,
-        albumDrawer: undefined,
-        songDrawer: undefined,
-        playlistDrawer: undefined
-      }
+      global: { userId: userId }
     })
     await waitFor(() => expect(connected).toBeTruthy())
   })

@@ -226,7 +226,7 @@ describe('Album Header', () => {
 
     await user.click(screen.getByText(localAlbum.artist.name))
 
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localAlbum.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localAlbum.artist.id)
   })
 })

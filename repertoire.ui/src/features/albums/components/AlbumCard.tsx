@@ -1,7 +1,7 @@
 import Album from '../../../types/models/Album.ts'
 import { Center, Stack, Text } from '@mantine/core'
 import { useAppDispatch } from '../../../state/store.ts'
-import { openAlbumDrawer, openArtistDrawer } from '../../../state/slice/globalSlice.ts'
+import { openAlbumDrawer, openArtistDrawer } from '../../../state/slice/drawersSlice.ts'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'

@@ -2,7 +2,7 @@ import Song from '../../../types/models/Song'
 import { Anchor, Box, Card, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../../state/store.ts'
-import { openArtistDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
+import { openArtistDrawer, openSongDrawer } from '../../../state/slice/drawersSlice.ts'
 import { MouseEvent, ReactElement } from 'react'
 import {
   IconBoltFilled,

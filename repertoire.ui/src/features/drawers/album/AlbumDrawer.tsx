@@ -22,7 +22,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import plural from '../../../utils/plural.ts'
-import { closeAlbumDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeAlbumDrawer } from '../../../state/slice/drawersSlice.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
 import CustomIconMusicNoteEighth from '../../../components/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconAlbumVinyl from '../../../components/icons/CustomIconAlbumVinyl.tsx'
@@ -95,7 +95,7 @@ function AlbumDrawer() {
 
   const isDocumentTitleSet = useRef(false)
 
-  const { albumId, open: opened } = useAppSelector((state) => state.global.albumDrawer)
+  const { albumId, open: opened } = useAppSelector((state) => state.drawers.album)
   const onClose = () => {
     dispatch(closeAlbumDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])

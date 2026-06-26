@@ -100,8 +100,8 @@ describe('Playlist Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
 
-      expect((store.getState() as RootState).global.playlistDrawer.open).toBeTruthy()
-      expect((store.getState() as RootState).global.playlistDrawer.playlistId).toBe(playlist.id)
+      expect((store.getState() as RootState).drawers.playlist.open).toBeTruthy()
+      expect((store.getState() as RootState).drawers.playlist.playlistId).toBe(playlist.id)
     })
 
     it('should display warning modal when clicking on delete', async () => {

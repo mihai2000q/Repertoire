@@ -45,8 +45,8 @@ describe('Home Recently Played Artist Card', () => {
 
     await user.click(await screen.findByText(artist.name))
 
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(artist.id)
   })
 
   it('should display menu on artist right click', async () => {

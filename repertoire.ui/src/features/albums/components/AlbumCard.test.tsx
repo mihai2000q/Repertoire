@@ -128,8 +128,8 @@ describe('Album Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
 
-      expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
-      expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(album.id)
+      expect((store.getState() as RootState).drawers.album.open).toBeTruthy()
+      expect((store.getState() as RootState).drawers.album.albumId).toBe(album.id)
     })
 
     it('should navigate to artist when clicking on view artist', async () => {
@@ -190,8 +190,8 @@ describe('Album Card', () => {
 
     await user.click(screen.getByText(localAlbum.artist.name))
 
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localAlbum.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localAlbum.artist.id)
   })
 
   it('should disable context menu there are selected ids', async () => {

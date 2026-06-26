@@ -7,25 +7,25 @@ import {
   deleteArtistDrawer,
   deletePlaylistDrawer,
   deleteSongDrawer
-} from './slice/globalSlice.ts'
+} from './slice/drawersSlice.ts'
 import { DeleteArtistRequest } from '../types/requests/ArtistRequests.ts'
 import { DeleteAlbumRequest } from '../types/requests/AlbumRequests.ts'
 
 function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
   if (typeof args !== 'object' || args.method !== 'DELETE') return
 
-  const globalState = (api.getState() as RootState).global
+  const globalState = (api.getState() as RootState).drawers
 
   // null propagation for unit tests
   const isArtistDrawerOpenWithDeletedArtist =
-    globalState.artistDrawer?.artistId && args.url.includes(globalState.artistDrawer.artistId)
+    globalState.artist?.artistId && args.url.includes(globalState.artist.artistId)
   const isAlbumDrawerOpenWithDeletedAlbum =
-    globalState.albumDrawer?.albumId && args.url.includes(globalState.albumDrawer.albumId)
+    globalState.album?.albumId && args.url.includes(globalState.album.albumId)
   const isSongDrawerOpenWithDeletedSong =
-    globalState.songDrawer?.songId && args.url.includes(globalState.songDrawer.songId)
+    globalState.song?.songId && args.url.includes(globalState.song.songId)
   const isPlaylistDrawerOpenWithDeletedPlaylist =
-    globalState.playlistDrawer?.playlistId &&
-    args.url.includes(globalState.playlistDrawer.playlistId)
+    globalState.playlist?.playlistId &&
+    args.url.includes(globalState.playlist.playlistId)
 
   if (api.endpoint === 'deleteArtist') {
     if (isArtistDrawerOpenWithDeletedArtist) api.dispatch(deleteArtistDrawer())

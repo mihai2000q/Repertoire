@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import authReducer from './slice/authSlice.ts'
+import drawersReducer from './slice/drawersSlice.ts'
 import globalReducer from './slice/globalSlice.ts'
 import playlistReducer from './slice/playlistSlice.ts'
 import { api } from './api'
@@ -9,6 +10,7 @@ import { setupListeners } from '@reduxjs/toolkit/query'
 
 const reducer = combineReducers({
   auth: authReducer,
+  drawers: drawersReducer,
   global: globalReducer,
   playlist: playlistReducer,
   [api.reducerPath]: api.reducer,

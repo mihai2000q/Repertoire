@@ -85,8 +85,8 @@ describe('Home Recent Playlists', () => {
 
     await user.click(await screen.findByRole('img', { name: playlist.title }))
 
-    expect((store.getState() as RootState).global.playlistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.playlistDrawer.playlistId).toBe(playlist.id)
+    expect((store.getState() as RootState).drawers.playlist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.playlist.playlistId).toBe(playlist.id)
   })
 
   it('should display menu on playlist right click', async () => {

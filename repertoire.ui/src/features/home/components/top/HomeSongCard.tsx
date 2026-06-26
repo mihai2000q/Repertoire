@@ -1,6 +1,6 @@
 import Song from '../../../../types/models/Song.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
-import { openArtistDrawer, openSongDrawer } from '../../../../state/slice/globalSlice.ts'
+import { openArtistDrawer, openSongDrawer } from '../../../../state/slice/drawersSlice.ts'
 import { useAppDispatch } from '../../../../state/store.ts'
 import CustomIconMusicNote from '../../../../components/icons/CustomIconMusicNote.tsx'
 import { IconDisc, IconEye, IconUser } from '@tabler/icons-react'

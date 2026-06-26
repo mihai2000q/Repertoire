@@ -17,7 +17,7 @@ import Album from '../../../types/models/Album.ts'
 import Difficulty from '../../../types/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { closeSongDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeSongDrawer, openSongDrawer } from '../../../state/slice/drawersSlice.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../../types/models/Playlist.ts'
 
@@ -71,15 +71,15 @@ describe('Song Drawer', () => {
 
   const render = (id: string | null = song.id) =>
     reduxRouterRender(<SongDrawer />, {
-      global: {
-        documentTitle: prevDocumentTitle,
-        songDrawer: {
+      global: { documentTitle: prevDocumentTitle },
+      drawers: {
+        song: {
           open: true,
           songId: id
         },
-        artistDrawer: undefined,
-        albumDrawer: undefined,
-        playlistDrawer: undefined
+        artist: undefined,
+        album: undefined,
+        playlist: undefined
       }
     })
 
@@ -298,7 +298,7 @@ describe('Song Drawer', () => {
 
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
-      expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+      expect((store.getState() as RootState).drawers.song.open).toBeFalsy()
       expect(window.location.pathname).toBe(`/song/${song.id}`)
     })
 
@@ -312,15 +312,15 @@ describe('Song Drawer', () => {
       )
 
       const [_, store] = reduxRouterRender(withToastify(<SongDrawer />), {
-        global: {
-          documentTitle: prevDocumentTitle,
-          songDrawer: {
+        global: { documentTitle: prevDocumentTitle },
+        drawers: {
+          song: {
             open: true,
             songId: song.id
           },
-          artistDrawer: undefined,
-          albumDrawer: undefined,
-          playlistDrawer: undefined
+          artist: undefined,
+          album: undefined,
+          playlist: undefined
         }
       })
 
@@ -331,8 +331,8 @@ describe('Song Drawer', () => {
       expect(screen.getByRole('heading', { name: /delete song/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
-      expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
-      expect((store.getState() as RootState).global.songDrawer.songId).toBeUndefined()
+      expect((store.getState() as RootState).drawers.song.open).toBeFalsy()
+      expect((store.getState() as RootState).drawers.song.songId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
       expect(screen.getByText(`${song.title} deleted!`)).toBeInTheDocument()
     })
@@ -351,7 +351,7 @@ describe('Song Drawer', () => {
     const [_, store] = render()
 
     await user.click(await screen.findByText(localSong.artist.name))
-    expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+    expect((store.getState() as RootState).drawers.song.open).toBeFalsy()
     expect(window.location.pathname).toBe(`/artist/${localSong.artist.id}`)
   })
 
@@ -368,7 +368,7 @@ describe('Song Drawer', () => {
     const [_, store] = render()
 
     await user.click(await screen.findByText(localSong.album.title))
-    expect((store.getState() as RootState).global.songDrawer.open).toBeFalsy()
+    expect((store.getState() as RootState).drawers.song.open).toBeFalsy()
     expect(window.location.pathname).toBe(`/album/${localSong.album.id}`)
   })
 

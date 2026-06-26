@@ -11,13 +11,7 @@ describe('Title Bar', () => {
     const documentTitle = "Title bar's document title"
 
     reduxRender(<TitleBar />, {
-      global: {
-        documentTitle: documentTitle,
-        artistDrawer: undefined,
-        songDrawer: undefined,
-        albumDrawer: undefined,
-        playlistDrawer: undefined
-      }
+      global: { documentTitle: documentTitle }
     })
 
     expect(window.document.title).toBe(documentTitle)

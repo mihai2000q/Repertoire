@@ -57,8 +57,8 @@ describe('Home Recently Played Album Card', () => {
 
     await user.click(await screen.findByText(album.title))
 
-    expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(album.id)
+    expect((store.getState() as RootState).drawers.album.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.album.albumId).toBe(album.id)
   })
 
   it('should open artist drawer on clicking the artist', async () => {
@@ -68,8 +68,8 @@ describe('Home Recently Played Album Card', () => {
 
     await user.click(await screen.findByText(album.artist.name))
 
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(album.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(album.artist.id)
   })
 
   it('should display menu on right click', async () => {

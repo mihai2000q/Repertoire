@@ -112,8 +112,8 @@ describe('Artist Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
 
-      expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-      expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(artist.id)
+      expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+      expect((store.getState() as RootState).drawers.artist.artistId).toBe(artist.id)
     })
 
     it('should display warning modal when clicking on delete', async () => {

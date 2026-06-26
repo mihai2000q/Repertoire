@@ -505,8 +505,8 @@ describe('Artist Song Card', () => {
 
     await user.click(screen.getByText(localSong.album.title))
 
-    expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(localSong.album.id)
+    expect((store.getState() as RootState).drawers.album.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.album.albumId).toBe(localSong.album.id)
   })
 
   it('should disable context menu and more menu when click selection is active', async () => {

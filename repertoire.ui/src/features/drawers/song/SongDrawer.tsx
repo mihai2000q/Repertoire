@@ -33,7 +33,7 @@ import WarningModal from '../../../components/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import RightSideEntityDrawer from '../../../components/drawer/RightSideEntityDrawer.tsx'
-import { closeSongDrawer } from '../../../state/slice/globalSlice.ts'
+import { closeSongDrawer } from '../../../state/slice/drawersSlice.ts'
 import DifficultyBar from '../../../components/bar/DifficultyBar.tsx'
 import YoutubeModal from '../../../components/modal/YoutubeModal.tsx'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
@@ -56,7 +56,7 @@ function SongDrawer() {
 
   const isDocumentTitleSet = useRef(false)
 
-  const { songId, open: opened } = useAppSelector((state) => state.global.songDrawer)
+  const { songId, open: opened } = useAppSelector((state) => state.drawers.song)
   const onClose = () => {
     dispatch(closeSongDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])

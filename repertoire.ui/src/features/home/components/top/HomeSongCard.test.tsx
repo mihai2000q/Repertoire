@@ -53,8 +53,8 @@ describe('Home Song Card', () => {
     const [_, store] = reduxRouterRender(<HomeSongCard song={song} />)
 
     await user.click(screen.getByLabelText(`default-icon-${song.title}`))
-    expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
+    expect((store.getState() as RootState).drawers.song.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.song.songId).toBe(song.id)
   })
 
   it('should open artist drawer by clicking on artist name', async () => {
@@ -71,8 +71,8 @@ describe('Home Song Card', () => {
     const [_, store] = reduxRouterRender(<HomeSongCard song={localSong} />)
 
     await user.click(screen.getByText(localSong.artist.name))
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localSong.artist.id)
   })
 
   it('should display menu on right click', async () => {

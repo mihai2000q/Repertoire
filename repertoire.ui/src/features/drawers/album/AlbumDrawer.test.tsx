@@ -10,7 +10,7 @@ import { userEvent } from '@testing-library/user-event'
 import { RootState } from '../../../state/store.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { openAlbumDrawer } from '../../../state/slice/globalSlice.ts'
+import { openAlbumDrawer } from '../../../state/slice/drawersSlice.ts'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import Playlist from '../../../types/models/Playlist.ts'
 
@@ -79,15 +79,15 @@ describe('Album Drawer', () => {
 
   const render = (id: string | null = album.id) =>
     reduxRouterRender(<AlbumDrawer />, {
-      global: {
-        documentTitle: prevDocumentTitle,
-        albumDrawer: {
+      global: { documentTitle: prevDocumentTitle },
+      drawers: {
+        album: {
           open: true,
           albumId: id
         },
-        artistDrawer: undefined,
-        songDrawer: undefined,
-        playlistDrawer: undefined
+        artist: undefined,
+        song: undefined,
+        playlist: undefined
       }
     })
 
@@ -223,7 +223,7 @@ describe('Album Drawer', () => {
       await user.click(await screen.findByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /view details/i }))
       expect(window.location.pathname).toBe(`/album/${album.id}`)
-      expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+      expect((store.getState() as RootState).drawers.album.open).toBeFalsy()
     })
 
     it('should display warning modal and delete the album when clicking delete', async () => {
@@ -236,15 +236,15 @@ describe('Album Drawer', () => {
       )
 
       const [_, store] = reduxRouterRender(<AlbumDrawer />, {
-        global: {
-          documentTitle: prevDocumentTitle,
-          albumDrawer: {
+        global: { documentTitle: prevDocumentTitle },
+        drawers: {
+          album: {
             open: true,
             albumId: album.id
           },
-          artistDrawer: undefined,
-          songDrawer: undefined,
-          playlistDrawer: undefined
+          artist: undefined,
+          song: undefined,
+          playlist: undefined
         }
       })
 
@@ -254,8 +254,8 @@ describe('Album Drawer', () => {
       expect(await screen.findByRole('dialog', { name: /delete album/i })).toBeInTheDocument()
       await user.click(screen.getByRole('button', { name: /yes/i })) // warning modal
 
-      expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
-      expect((store.getState() as RootState).global.albumDrawer.albumId).toBeUndefined()
+      expect((store.getState() as RootState).drawers.album.open).toBeFalsy()
+      expect((store.getState() as RootState).drawers.album.albumId).toBeUndefined()
       expect((store.getState() as RootState).global.documentTitle).toBe(prevDocumentTitle)
     })
   })
@@ -273,7 +273,7 @@ describe('Album Drawer', () => {
     const [_, store] = render()
 
     await user.click(await screen.findByText(localAlbum.artist.name))
-    expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+    expect((store.getState() as RootState).drawers.album.open).toBeFalsy()
     expect(window.location.pathname).toBe(`/artist/${localAlbum.artist.id}`)
   })
 
@@ -285,7 +285,7 @@ describe('Album Drawer', () => {
     const [_, store] = render()
 
     await user.click(await screen.findByRole('img', { name: song.title }))
-    expect((store.getState() as RootState).global.albumDrawer.open).toBeFalsy()
+    expect((store.getState() as RootState).drawers.album.open).toBeFalsy()
     expect(window.location.pathname).toBe(`/song/${song.id}`)
   })
 })

@@ -231,8 +231,8 @@ describe('Song Card', () => {
       })
       await user.click(screen.getByRole('menuitem', { name: /open drawer/i }))
 
-      expect((store.getState() as RootState).global.songDrawer.open).toBeTruthy()
-      expect((store.getState() as RootState).global.songDrawer.songId).toBe(song.id)
+      expect((store.getState() as RootState).drawers.song.open).toBeTruthy()
+      expect((store.getState() as RootState).drawers.song.songId).toBe(song.id)
     })
 
     it('should navigate to artist when clicking on view artist', async () => {
@@ -311,8 +311,8 @@ describe('Song Card', () => {
 
     await user.click(screen.getByText(localSong.artist.name))
 
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localSong.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localSong.artist.id)
   })
 
   it('should open youtube modal on youtube icon click', async () => {

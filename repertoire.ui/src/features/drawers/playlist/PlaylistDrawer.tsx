@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
 import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
-import { closePlaylistDrawer } from '../../../state/slice/globalSlice.ts'
+import { closePlaylistDrawer } from '../../../state/slice/drawersSlice.ts'
 import { useEffect, useRef, useState } from 'react'
 import { useDisclosure, useIntersection } from '@mantine/hooks'
 import { toast } from 'react-toastify'
@@ -98,7 +98,7 @@ function PlaylistDrawer() {
 
   const isDocumentTitleSet = useRef(false)
 
-  const { playlistId, open: opened } = useAppSelector((state) => state.global.playlistDrawer)
+  const { playlistId, open: opened } = useAppSelector((state) => state.drawers.playlist)
   const onClose = () => {
     dispatch(closePlaylistDrawer())
     setDocumentTitle((prevTitle) => prevTitle.split(' - ')[0])

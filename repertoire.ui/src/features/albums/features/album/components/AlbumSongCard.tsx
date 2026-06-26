@@ -12,7 +12,7 @@ import {
   Tooltip
 } from '@mantine/core'
 import { useAppDispatch } from '../../../../../state/store.ts'
-import { openSongDrawer } from '../../../../../state/slice/globalSlice.ts'
+import { openSongDrawer } from '../../../../../state/slice/drawersSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'

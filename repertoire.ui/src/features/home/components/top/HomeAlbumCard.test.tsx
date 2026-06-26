@@ -48,8 +48,8 @@ describe('Home Album Card', () => {
     const [_, store] = reduxRouterRender(<HomeAlbumCard album={album} />)
 
     await user.click(screen.getByLabelText(`default-icon-${album.title}`))
-    expect((store.getState() as RootState).global.albumDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.albumDrawer.albumId).toBe(album.id)
+    expect((store.getState() as RootState).drawers.album.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.album.albumId).toBe(album.id)
   })
 
   it('should open artist drawer by clicking on artist name', async () => {
@@ -66,8 +66,8 @@ describe('Home Album Card', () => {
     const [_, store] = reduxRouterRender(<HomeAlbumCard album={localAlbum} />)
 
     await user.click(screen.getByText(localAlbum.artist.name))
-    expect((store.getState() as RootState).global.artistDrawer.open).toBeTruthy()
-    expect((store.getState() as RootState).global.artistDrawer.artistId).toBe(localAlbum.artist.id)
+    expect((store.getState() as RootState).drawers.artist.open).toBeTruthy()
+    expect((store.getState() as RootState).drawers.artist.artistId).toBe(localAlbum.artist.id)
   })
 
   it('should display menu on right click', async () => {
