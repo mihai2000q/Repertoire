@@ -1,7 +1,7 @@
 import Filter from '../../../types/Filter.ts'
 import { Stack } from '@mantine/core'
 import { useEffect, useState } from 'react'
-import FiltersDrawer from '../../../components/@ui/drawer/FiltersDrawer.tsx'
+import FiltersDrawer from '../../../components/drawer/FiltersDrawer.tsx'
 import {
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery
@@ -11,7 +11,7 @@ import { playlistsFiltersMetadataMap } from '../../../data/playlists/playlistsFi
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../../hooks/filter/useFiltersHandlers.ts'
-import NumberInputRange from '../../../components/@ui/form/input/NumberInputRange.tsx'
+import NumberInputRange from '../../../components/form/input/NumberInputRange.tsx'
 import useSearchBy from '../../../hooks/api/useSearchBy.ts'
 
 interface PlaylistFiltersProps {

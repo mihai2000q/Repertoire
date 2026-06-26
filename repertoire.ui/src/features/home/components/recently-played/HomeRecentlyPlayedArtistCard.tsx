@@ -3,10 +3,10 @@ import { useAppDispatch } from '../../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { openArtistDrawer } from '../../../../state/slice/globalSlice.ts'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 import { IconEye } from '@tabler/icons-react'
 import HomeRecentlyPlayedCard from './HomeRecentlyPlayedCard.tsx'
-import CustomIconUserAlt from '../../../../components/@ui/icons/CustomIconUserAlt.tsx'
+import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
 
 interface HomeRecentlyPlayedArtistCardProps {
   artist: Artist

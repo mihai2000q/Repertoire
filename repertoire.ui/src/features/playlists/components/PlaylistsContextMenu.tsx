@@ -1,11 +1,11 @@
 import { Menu } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
-import { ContextMenu } from '../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { useDragSelect } from '../../../context/DragSelectContext.tsx'
-import PerfectRehearsalsMenuItem from '../../../components/@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import PerfectRehearsalsMenuItem from '../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { ReactNode, useEffect } from 'react'
-import DeletePlaylistsModal from '../../../components/@ui/modal/delete/DeletePlaylistsModal.tsx'
+import DeletePlaylistsModal from '../../../components/modal/delete/DeletePlaylistsModal.tsx'
 
 function PlaylistsContextMenu({ children }: { children: ReactNode }) {
   const { selectedIds, clearSelection } = useDragSelect()

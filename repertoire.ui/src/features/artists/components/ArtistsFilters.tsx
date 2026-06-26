@@ -3,7 +3,7 @@ import { RangeSlider, Stack, Text } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarCheck } from '@tabler/icons-react'
-import FiltersDrawer from '../../../components/@ui/drawer/FiltersDrawer.tsx'
+import FiltersDrawer from '../../../components/drawer/FiltersDrawer.tsx'
 import {
   useGetArtistFiltersMetadataQuery,
   useLazyGetArtistFiltersMetadataQuery
@@ -13,8 +13,8 @@ import { artistsFiltersMetadataMap } from '../../../data/artists/artistsFilters.
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
 import useFiltersMetadata from '../../../hooks/filter/useFiltersMetadata.ts'
 import useFiltersHandlers from '../../../hooks/filter/useFiltersHandlers.ts'
-import NumberInputRange from '../../../components/@ui/form/input/NumberInputRange.tsx'
-import DoubleCheckbox from '../../../components/@ui/filter/DoubleCheckbox.tsx'
+import NumberInputRange from '../../../components/form/input/NumberInputRange.tsx'
+import DoubleCheckbox from '../../../components/filter/DoubleCheckbox.tsx'
 import useSearchBy from '../../../hooks/api/useSearchBy.ts'
 
 interface ArtistsFiltersProps {

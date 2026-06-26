@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify'
 import { useRemoveAlbumsFromArtistMutation } from '../../../../../../state/api/artistsApi.ts'
-import WarningModal from '../../../../../../components/@ui/modal/WarningModal.tsx'
+import WarningModal from '../../../../../../components/modal/WarningModal.tsx'
 import plural from '../../../../../../utils/plural.ts'
 
 interface RemoveAlbumsFromArtistProps {

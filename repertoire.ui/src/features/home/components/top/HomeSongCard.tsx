@@ -2,13 +2,13 @@ import Song from '../../../../types/models/Song.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { openArtistDrawer, openSongDrawer } from '../../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../../state/store.ts'
-import CustomIconMusicNote from '../../../../components/@ui/icons/CustomIconMusicNote.tsx'
+import CustomIconMusicNote from '../../../../components/icons/CustomIconMusicNote.tsx'
 import { IconDisc, IconEye, IconUser } from '@tabler/icons-react'
-import OpenLinksMenuItem from '../../../../components/@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import OpenLinksMenuItem from '../../../../components/menu/item/song/OpenLinksMenuItem.tsx'
 import { useDisclosure, useHover } from '@mantine/hooks'
-import YoutubeModal from '../../../../components/@ui/modal/YoutubeModal.tsx'
+import YoutubeModal from '../../../../components/modal/YoutubeModal.tsx'
 import { useNavigate } from 'react-router-dom'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 
 interface HomeSongCardProps {
   song: Song

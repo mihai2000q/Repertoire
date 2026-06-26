@@ -5,9 +5,9 @@ import { schemaResolver, useForm } from '@mantine/form'
 import { AddNewArtistSongForm, addNewArtistSongSchema } from '../../../../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../../../../state/api/songsApi.ts'
-import ImageDropzoneWithPreview from '../../../../../../components/@ui/image/ImageDropzoneWithPreview.tsx'
-import GuitarTuningSelectButton from '../../../../../../components/@ui/form/select/button/GuitarTuningSelectButton.tsx'
-import DifficultySelectButton from '../../../../../../components/@ui/form/select/button/DifficultySelectButton.tsx'
+import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
+import GuitarTuningSelectButton from '../../../../../../components/form/select/button/GuitarTuningSelectButton.tsx'
+import DifficultySelectButton from '../../../../../../components/form/select/button/DifficultySelectButton.tsx'
 import {
   IconBrandYoutubeFilled,
   IconCalendarRepeat,
@@ -15,15 +15,15 @@ import {
   IconGuitarPickFilled,
   IconInfoCircleFilled
 } from '@tabler/icons-react'
-import NumberInputButton from '../../../../../../components/@ui/form/input/button/NumberInputButton.tsx'
-import CustomIconMetronome from '../../../../../../components/@ui/icons/CustomIconMetronome.tsx'
-import TextInputButton from '../../../../../../components/@ui/form/input/button/TextInputButton.tsx'
+import NumberInputButton from '../../../../../../components/form/input/button/NumberInputButton.tsx'
+import CustomIconMetronome from '../../../../../../components/icons/CustomIconMetronome.tsx'
+import TextInputButton from '../../../../../../components/form/input/button/TextInputButton.tsx'
 import { GuitarTuning } from '../../../../../../types/models/Song.ts'
 import Difficulty from '../../../../../../types/enums/Difficulty.ts'
-import DatePickerButton from '../../../../../../components/@ui/form/date/DatePickerButton.tsx'
+import DatePickerButton from '../../../../../../components/form/date/DatePickerButton.tsx'
 import dayjs from 'dayjs'
 import { AlbumSearch } from '../../../../../../types/models/Search.ts'
-import AlbumSelectButton from '../../../../../../components/@ui/form/select/button/AlbumSelectButton.tsx'
+import AlbumSelectButton from '../../../../../../components/form/select/button/AlbumSelectButton.tsx'
 
 interface AddNewArtistSongModalProps {
   opened: boolean

@@ -21,7 +21,7 @@ import { openPlaylistDrawer } from '../../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../../state/store.ts'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { useNavigate } from 'react-router-dom'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 
 function Loader() {
   return (

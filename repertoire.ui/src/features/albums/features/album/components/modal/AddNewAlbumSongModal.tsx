@@ -4,7 +4,7 @@ import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../../../../state/api/songsApi.ts'
-import ImageDropzoneWithPreview from '../../../../../../components/@ui/image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
 import { AddNewAlbumSongForm, addNewAlbumSongSchema } from '../../../../../../validation/albumsForm.ts'
 import Album from '../../../../../../types/models/Album.ts'
 import {
@@ -12,13 +12,13 @@ import {
   IconGuitarPickFilled,
   IconInfoCircleFilled
 } from '@tabler/icons-react'
-import GuitarTuningSelectButton from '../../../../../../components/@ui/form/select/button/GuitarTuningSelectButton.tsx'
+import GuitarTuningSelectButton from '../../../../../../components/form/select/button/GuitarTuningSelectButton.tsx'
 import { GuitarTuning } from '../../../../../../types/models/Song.ts'
-import DifficultySelectButton from '../../../../../../components/@ui/form/select/button/DifficultySelectButton.tsx'
+import DifficultySelectButton from '../../../../../../components/form/select/button/DifficultySelectButton.tsx'
 import Difficulty from '../../../../../../types/enums/Difficulty.ts'
-import NumberInputButton from '../../../../../../components/@ui/form/input/button/NumberInputButton.tsx'
-import CustomIconMetronome from '../../../../../../components/@ui/icons/CustomIconMetronome.tsx'
-import TextInputButton from '../../../../../../components/@ui/form/input/button/TextInputButton.tsx'
+import NumberInputButton from '../../../../../../components/form/input/button/NumberInputButton.tsx'
+import CustomIconMetronome from '../../../../../../components/icons/CustomIconMetronome.tsx'
+import TextInputButton from '../../../../../../components/form/input/button/TextInputButton.tsx'
 
 interface AddNewAlbumSongModalProps {
   opened: boolean

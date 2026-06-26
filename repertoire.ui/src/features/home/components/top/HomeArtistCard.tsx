@@ -2,11 +2,11 @@ import Artist from '../../../../types/models/Artist.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { openArtistDrawer } from '../../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../../state/store.ts'
-import CustomIconUserAlt from '../../../../components/@ui/icons/CustomIconUserAlt.tsx'
+import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
 import { useNavigate } from 'react-router-dom'
 import { IconEye } from '@tabler/icons-react'
 import { useDisclosure, useHover } from '@mantine/hooks'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 
 interface HomeArtistCardProps {
   artist: Artist

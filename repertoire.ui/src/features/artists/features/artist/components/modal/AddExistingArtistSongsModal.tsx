@@ -31,7 +31,7 @@ import { MouseEvent, useEffect, useRef } from 'react'
 import { useGetInfiniteSearchInfiniteQuery } from '../../../../../../state/api/searchApi.ts'
 import SearchType from '../../../../../../types/enums/SearchType.ts'
 import { SongSearch } from '../../../../../../types/models/Search.ts'
-import CustomIconMusicNoteEighth from '../../../../../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconMusicNoteEighth from '../../../../../../components/icons/CustomIconMusicNoteEighth.tsx'
 
 const SongsLoader = () => (
   <Box data-testid={'songs-loader'}>

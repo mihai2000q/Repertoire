@@ -31,7 +31,7 @@ import { MouseEvent, useEffect, useRef } from 'react'
 import { useGetInfiniteSearchInfiniteQuery } from '../../../../../../state/api/searchApi.ts'
 import SearchType from '../../../../../../types/enums/SearchType.ts'
 import { AlbumSearch } from '../../../../../../types/models/Search.ts'
-import CustomIconAlbumVinyl from '../../../../../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconAlbumVinyl from '../../../../../../components/icons/CustomIconAlbumVinyl.tsx'
 
 const AlbumsLoader = () => (
   <Box data-testid={'albums-loader'}>

@@ -17,7 +17,7 @@ import BandMemberCard from '../BandMemberCard.tsx'
 import { useEffect, useRef, useState } from 'react'
 import { useMoveBandMemberMutation } from '../../../../../../state/api/artistsApi.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import LoadingOverlayDebounced from '../../../../../../components/@ui/loader/LoadingOverlayDebounced.tsx'
+import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 
 interface BandMembersWidgetProps {
   bandMembers: BandMember[]

@@ -32,11 +32,11 @@ import {
 import { useNavigate } from 'react-router-dom'
 import SearchType from '../../../../types/enums/SearchType.ts'
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
-import CustomIconAlbumVinyl from '../../../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconMusicNoteEighth from '../../../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
-import CustomIconPlaylist2 from '../../../../components/@ui/icons/CustomIconPlaylist2.tsx'
+import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNoteEighth from '../../../../components/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconPlaylist2 from '../../../../components/icons/CustomIconPlaylist2.tsx'
 import useSearchQueryCacheInvalidation from '../../../../hooks/useSearchQueryCacheInvalidation.ts'
-import CustomIconUserAlt from '../../../../components/@ui/icons/CustomIconUserAlt.tsx'
+import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 
 const optionStyle = (theme: MantineTheme) => ({

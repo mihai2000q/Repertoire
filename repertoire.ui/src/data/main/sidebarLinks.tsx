@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import { IconHomeFilled, IconUserFilled } from '@tabler/icons-react'
-import CustomIconMusicNote from '../../components/@ui/icons/CustomIconMusicNote.tsx'
-import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconPlaylist2 from '../../components/@ui/icons/CustomIconPlaylist2.tsx'
+import CustomIconMusicNote from '../../components/icons/CustomIconMusicNote.tsx'
+import CustomIconAlbumVinyl from '../../components/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconPlaylist2 from '../../components/icons/CustomIconPlaylist2.tsx'
 
 interface SidebarLink {
   icon: ReactElement

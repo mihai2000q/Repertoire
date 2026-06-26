@@ -11,7 +11,7 @@ import {
   IconTrendingUp,
   IconUser
 } from '@tabler/icons-react'
-import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconMusicNoteEighth from '../../components/icons/CustomIconMusicNoteEighth.tsx'
 import SongProperty from '../../types/enums/properties/SongProperty.ts'
 
 export const albumPropertyIcons = new Map<string, ReactElement>([

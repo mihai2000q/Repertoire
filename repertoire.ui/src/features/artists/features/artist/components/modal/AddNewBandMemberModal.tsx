@@ -4,14 +4,14 @@ import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { AddNewBandMemberForm, addNewBandMemberSchema } from '../../../../../../validation/artistsForm.ts'
 import { toast } from 'react-toastify'
-import ImageDropzoneWithPreview from '../../../../../../components/@ui/image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
 import {
   useCreateBandMemberMutation,
   useSaveImageToBandMemberMutation
 } from '../../../../../../state/api/artistsApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
-import BandMemberRoleMultiSelect from '../../../../../../components/@ui/form/select/multi/BandMemberRoleMultiSelect.tsx'
-import ColorInputButton from '../../../../../../components/@ui/form/input/button/ColorInputButton.tsx'
+import BandMemberRoleMultiSelect from '../../../../../../components/form/select/multi/BandMemberRoleMultiSelect.tsx'
+import ColorInputButton from '../../../../../../components/form/input/button/ColorInputButton.tsx'
 import bandMemberColorSwatches from '../../../../../../data/artist/bandMemberColorSwatches.ts'
 import { useDidUpdate } from '@mantine/hooks'
 

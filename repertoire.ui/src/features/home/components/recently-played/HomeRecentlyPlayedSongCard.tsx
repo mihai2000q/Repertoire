@@ -3,13 +3,13 @@ import { useAppDispatch } from '../../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { openArtistDrawer, openSongDrawer } from '../../../../state/slice/globalSlice.ts'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 import { IconDisc, IconEye, IconUser } from '@tabler/icons-react'
-import OpenLinksMenuItem from '../../../../components/@ui/menu/item/song/OpenLinksMenuItem.tsx'
-import YoutubeModal from '../../../../components/@ui/modal/YoutubeModal.tsx'
+import OpenLinksMenuItem from '../../../../components/menu/item/song/OpenLinksMenuItem.tsx'
+import YoutubeModal from '../../../../components/modal/YoutubeModal.tsx'
 import { MouseEvent } from 'react'
 import HomeRecentlyPlayedCard from './HomeRecentlyPlayedCard.tsx'
-import CustomIconMusicNoteEighth from '../../../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconMusicNoteEighth from '../../../../components/icons/CustomIconMusicNoteEighth.tsx'
 
 interface HomeRecentlyPlayedSongCardProps {
   song: Song

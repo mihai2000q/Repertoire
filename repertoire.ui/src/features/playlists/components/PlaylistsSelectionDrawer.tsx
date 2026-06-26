@@ -1,11 +1,11 @@
 import { ActionIcon, Menu, Tooltip } from '@mantine/core'
 import { useDragSelect } from '../../../context/DragSelectContext.tsx'
-import SelectionDrawer from '../../../components/@ui/drawer/SelectionDrawer.tsx'
-import PerfectRehearsalsMenuItem from '../../../components/@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import SelectionDrawer from '../../../components/drawer/SelectionDrawer.tsx'
+import PerfectRehearsalsMenuItem from '../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconTrash } from '@tabler/icons-react'
 import plural from '../../../utils/plural.ts'
-import DeletePlaylistsModal from '../../../components/@ui/modal/delete/DeletePlaylistsModal.tsx'
+import DeletePlaylistsModal from '../../../components/modal/delete/DeletePlaylistsModal.tsx'
 
 function PlaylistsSelectionDrawer() {
   const { selectedIds, clearSelection } = useDragSelect()

@@ -2,14 +2,14 @@ import { Avatar, Group, Stack, Text } from '@mantine/core'
 import { MouseEvent } from 'react'
 import { useDisclosure, useHover } from '@mantine/hooks'
 import { IconPencil, IconTrash, IconUser } from '@tabler/icons-react'
-import WarningModal from '../../../../../components/@ui/modal/WarningModal.tsx'
+import WarningModal from '../../../../../components/modal/WarningModal.tsx'
 import { BandMember } from '../../../../../types/models/Artist.ts'
 import { useDeleteBandMemberMutation } from '../../../../../state/api/artistsApi.ts'
 import { toast } from 'react-toastify'
 import BandMemberDetailsModal from './modal/BandMemberDetailsModal.tsx'
 import EditBandMemberModal from './modal/EditBandMemberModal.tsx'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import { ContextMenu } from '../../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
 
 interface BandMemberCardProps {
   bandMember: BandMember

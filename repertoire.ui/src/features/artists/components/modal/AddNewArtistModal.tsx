@@ -8,7 +8,7 @@ import {
   useCreateArtistMutation,
   useSaveImageToArtistMutation
 } from '../../../../state/api/artistsApi.ts'
-import ImageDropzoneWithPreview from '../../../../components/@ui/image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../../../components/image/ImageDropzoneWithPreview.tsx'
 import { IconUserFilled } from '@tabler/icons-react'
 
 interface AddNewArtistModalProps {

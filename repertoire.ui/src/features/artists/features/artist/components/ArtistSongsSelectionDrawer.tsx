@@ -1,14 +1,14 @@
 import { ActionIcon, Menu, Tooltip } from '@mantine/core'
-import SelectionDrawer from '../../../../../components/@ui/drawer/SelectionDrawer.tsx'
-import PerfectRehearsalsMenuItem from '../../../../../components/@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import SelectionDrawer from '../../../../../components/drawer/SelectionDrawer.tsx'
+import PerfectRehearsalsMenuItem from '../../../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconChecklist, IconCircleMinus, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../../utils/plural.ts'
-import AddToPlaylistMenuItem from '../../../../../components/@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import DeleteSongsModal from '../../../../../components/@ui/modal/delete/DeleteSongsModal.tsx'
+import AddToPlaylistMenuItem from '../../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import DeleteSongsModal from '../../../../../components/modal/delete/DeleteSongsModal.tsx'
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 import RemoveSongsFromArtistModal from './modal/RemoveSongsFromArtistModal.tsx'
-import CustomRehearsalsModal from '../../../../../components/@ui/modal/CustomRehearsalsModal.tsx'
+import CustomRehearsalsModal from '../../../../../components/modal/CustomRehearsalsModal.tsx'
 
 interface ArtistSongsSelectionDrawerProps {
   artistId: string

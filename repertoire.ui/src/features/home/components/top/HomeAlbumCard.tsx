@@ -2,11 +2,11 @@ import Album from '../../../../types/models/Album.ts'
 import { Avatar, Center, Stack, Text } from '@mantine/core'
 import { openAlbumDrawer, openArtistDrawer } from '../../../../state/slice/globalSlice.ts'
 import { useAppDispatch } from '../../../../state/store.ts'
-import CustomIconAlbumVinyl from '../../../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
 import { useNavigate } from 'react-router-dom'
 import { IconEye, IconUser } from '@tabler/icons-react'
 import { useDisclosure, useHover } from '@mantine/hooks'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 
 interface HomeAlbumCardProps {
   album: Album

@@ -17,12 +17,12 @@ import { useDisclosure, useHover, useViewportSize } from '@mantine/hooks'
 import { IconChevronLeft, IconChevronRight, IconEye } from '@tabler/icons-react'
 import { useAppDispatch } from '../../../../state/store.ts'
 import { openArtistDrawer } from '../../../../state/slice/globalSlice.ts'
-import CustomIconUserAlt from '../../../../components/@ui/icons/CustomIconUserAlt.tsx'
+import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
 import ArtistProperty from '../../../../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../../../../types/enums/OrderType.ts'
 import useOrderBy from '../../../../hooks/api/useOrderBy.ts'
 import { useNavigate } from 'react-router-dom'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 
 function Loader() {
   return (

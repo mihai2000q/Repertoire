@@ -8,9 +8,9 @@ import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
 } from '../../../../state/api/albumsApi.ts'
-import LargeImageDropzoneWithPreview from '../../../../components/@ui/image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { DatePickerInput } from '@mantine/dates'
-import ArtistAutocomplete from '../../../../components/@ui/form/input/ArtistAutocomplete.tsx'
+import ArtistAutocomplete from '../../../../components/form/input/ArtistAutocomplete.tsx'
 import { IconCalendarRepeat } from '@tabler/icons-react'
 import { ArtistSearch } from '../../../../types/models/Search.ts'
 

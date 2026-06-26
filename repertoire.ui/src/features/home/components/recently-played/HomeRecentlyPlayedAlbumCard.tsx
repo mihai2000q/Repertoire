@@ -3,11 +3,11 @@ import { useAppDispatch } from '../../../../state/store.ts'
 import { useNavigate } from 'react-router-dom'
 import { useDisclosure } from '@mantine/hooks'
 import { openAlbumDrawer, openArtistDrawer } from '../../../../state/slice/globalSlice.ts'
-import { ContextMenu } from '../../../../components/@ui/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../components/menu/ContextMenu.tsx'
 import { IconEye, IconUser } from '@tabler/icons-react'
 import { MouseEvent } from 'react'
 import HomeRecentlyPlayedCard from './HomeRecentlyPlayedCard.tsx'
-import CustomIconAlbumVinyl from '../../../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
 
 interface HomeRecentlyPlayedAlbumCardProps {
   album: Album

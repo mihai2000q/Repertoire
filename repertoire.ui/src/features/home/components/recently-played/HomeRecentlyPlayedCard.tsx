@@ -10,9 +10,9 @@ import {
   Tooltip,
   useMatches
 } from '@mantine/core'
-import ProgressBar from '../../../../components/@ui/bar/ProgressBar.tsx'
+import ProgressBar from '../../../../components/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
-import PastDate from '../../../../components/@ui/text/PastDate.tsx'
+import PastDate from '../../../../components/text/PastDate.tsx'
 import { useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent, ReactNode, RefObject } from 'react'
 

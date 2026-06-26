@@ -1,12 +1,12 @@
 import { Menu } from '@mantine/core'
 import { IconCircleMinus, IconTrash } from '@tabler/icons-react'
-import AddToPlaylistMenuItem from '../../../../../components/@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import { ContextMenu } from '../../../../../components/@ui/menu/ContextMenu.tsx'
+import AddToPlaylistMenuItem from '../../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import PerfectRehearsalsMenuItem from '../../../../../components/@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import PerfectRehearsalsMenuItem from '../../../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { ReactNode, useEffect } from 'react'
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
-import DeleteAlbumsModal from '../../../../../components/@ui/modal/delete/DeleteAlbumsModal.tsx'
+import DeleteAlbumsModal from '../../../../../components/modal/delete/DeleteAlbumsModal.tsx'
 import RemoveAlbumsFromArtistModal from './modal/RemoveAlbumsFromArtistModal.tsx'
 
 interface ArtistAlbumsContextMenuProps {

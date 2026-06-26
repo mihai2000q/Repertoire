@@ -7,9 +7,9 @@ import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation
 } from '../../../../../../state/api/albumsApi.ts'
-import ImageDropzoneWithPreview from '../../../../../../components/@ui/image/ImageDropzoneWithPreview.tsx'
+import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
 import { IconCalendarCheck, IconCalendarRepeat, IconDisc } from '@tabler/icons-react'
-import DatePickerButton from '../../../../../../components/@ui/form/date/DatePickerButton.tsx'
+import DatePickerButton from '../../../../../../components/form/date/DatePickerButton.tsx'
 import { toast } from 'react-toastify'
 import dayjs from 'dayjs'
 

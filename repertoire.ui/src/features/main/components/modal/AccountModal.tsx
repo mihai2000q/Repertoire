@@ -9,7 +9,7 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import LargeImageDropzoneWithPreview from '../../../../components/@ui/image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
 import User from '../../../../types/models/User.ts'

@@ -5,14 +5,14 @@ import { openAlbumDrawer, openArtistDrawer } from '../../../state/slice/globalSl
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash, IconUser } from '@tabler/icons-react'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
-import CustomIconAlbumVinyl from '../../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
-import AddToPlaylistMenuItem from '../../../components/@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import { ContextMenu } from '../../../components/@ui/menu/ContextMenu.tsx'
-import DeleteAlbumModal from '../../../components/@ui/modal/delete/DeleteAlbumModal.tsx'
-import PerfectRehearsalMenuItem from '../../../components/@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import CustomIconAlbumVinyl from '../../../components/icons/CustomIconAlbumVinyl.tsx'
+import AddToPlaylistMenuItem from '../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../../../components/menu/ContextMenu.tsx'
+import DeleteAlbumModal from '../../../components/modal/delete/DeleteAlbumModal.tsx'
+import PerfectRehearsalMenuItem from '../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
 import { MouseEvent } from 'react'
 import useDragSelectSelectable from '../../../hooks/useDragSelectSelectable.ts'
-import SelectableAvatar from '../../../components/@ui/image/SelectableAvatar.tsx'
+import SelectableAvatar from '../../../components/image/SelectableAvatar.tsx'
 
 interface AlbumCardProps {
   album: Album

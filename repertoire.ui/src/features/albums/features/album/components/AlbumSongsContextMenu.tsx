@@ -1,14 +1,14 @@
 import { Menu } from '@mantine/core'
 import { IconChecklist, IconCircleMinus, IconTrash } from '@tabler/icons-react'
-import AddToPlaylistMenuItem from '../../../../../components/@ui/menu/item/AddToPlaylistMenuItem.tsx'
-import { ContextMenu } from '../../../../../components/@ui/menu/ContextMenu.tsx'
+import AddToPlaylistMenuItem from '../../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import PerfectRehearsalsMenuItem from '../../../../../components/@ui/menu/item/PerfectRehearsalsMenuItem.tsx'
+import PerfectRehearsalsMenuItem from '../../../../../components/menu/item/PerfectRehearsalsMenuItem.tsx'
 import { ReactNode, useEffect } from 'react'
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
-import DeleteSongsModal from '../../../../../components/@ui/modal/delete/DeleteSongsModal.tsx'
+import DeleteSongsModal from '../../../../../components/modal/delete/DeleteSongsModal.tsx'
 import RemoveSongsFromAlbumModal from './modal/RemoveSongsFromAlbumModal.tsx'
-import CustomRehearsalsModal from '../../../../../components/@ui/modal/CustomRehearsalsModal.tsx'
+import CustomRehearsalsModal from '../../../../../components/modal/CustomRehearsalsModal.tsx'
 
 interface AlbumSongsContextMenuProps {
   children: ReactNode

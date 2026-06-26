@@ -5,7 +5,7 @@ import { closePlaylistDrawer } from '../../../../state/slice/globalSlice.ts'
 import { useEffect, useRef, useState } from 'react'
 import { useDisclosure, useIntersection } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import RightSideEntityDrawer from '../../../../components/@ui/drawer/RightSideEntityDrawer.tsx'
+import RightSideEntityDrawer from '../../../../components/drawer/RightSideEntityDrawer.tsx'
 import {
   ActionIcon,
   Avatar,
@@ -22,9 +22,9 @@ import {
 } from '@mantine/core'
 import { IconDotsVertical, IconEye, IconPlaylist, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../utils/plural.ts'
-import WarningModal from '../../../../components/@ui/modal/WarningModal.tsx'
+import WarningModal from '../../../../components/modal/WarningModal.tsx'
 import Song from '../../../../types/models/Song.ts'
-import CustomIconMusicNoteEighth from '../../../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconMusicNoteEighth from '../../../../components/icons/CustomIconMusicNoteEighth.tsx'
 import {
   useDeletePlaylistMutation,
   useGetInfinitePlaylistSongsInfiniteQuery,
@@ -33,7 +33,7 @@ import {
 import PlaylistDrawerLoader from '../loader/PlaylistDrawerLoader.tsx'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 import useTitleBarHeight from '../../../../hooks/useTitleBarHeight.ts'
-import PerfectRehearsalMenuItem from '../../../../components/@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import PerfectRehearsalMenuItem from '../../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
   const navigate = useNavigate()

@@ -1,7 +1,7 @@
 import PlaylistProperty from '../../types/enums/properties/PlaylistProperty.ts'
 import { ReactElement } from 'react'
 import { IconAbc, IconCalendarMonth, IconCalendarWeek } from '@tabler/icons-react'
-import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconMusicNoteEighth from '../../components/icons/CustomIconMusicNoteEighth.tsx'
 
 export const playlistPropertyIcons = new Map<string, ReactElement>([
   [PlaylistProperty.CreationDate, <IconCalendarWeek size={'100%'} key={'creation-date'} />],
