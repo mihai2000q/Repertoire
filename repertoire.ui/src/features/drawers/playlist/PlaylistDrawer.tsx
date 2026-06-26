@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../../state/store.ts'
-import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
-import { closePlaylistDrawer } from '../../../../state/slice/globalSlice.ts'
+import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import { closePlaylistDrawer } from '../../../state/slice/globalSlice.ts'
 import { useEffect, useRef, useState } from 'react'
 import { useDisclosure, useIntersection } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import RightSideEntityDrawer from '../../../../components/drawer/RightSideEntityDrawer.tsx'
+import RightSideEntityDrawer from '../../../components/drawer/RightSideEntityDrawer.tsx'
 import {
   ActionIcon,
   Avatar,
@@ -21,19 +21,19 @@ import {
   Title
 } from '@mantine/core'
 import { IconDotsVertical, IconEye, IconPlaylist, IconTrash } from '@tabler/icons-react'
-import plural from '../../../../utils/plural.ts'
-import WarningModal from '../../../../components/modal/WarningModal.tsx'
-import Song from '../../../../types/models/Song.ts'
-import CustomIconMusicNoteEighth from '../../../../components/icons/CustomIconMusicNoteEighth.tsx'
+import plural from '../../../utils/plural.ts'
+import WarningModal from '../../../components/modal/WarningModal.tsx'
+import Song from '../../../types/models/Song.ts'
+import CustomIconMusicNoteEighth from '../../../components/icons/CustomIconMusicNoteEighth.tsx'
 import {
   useDeletePlaylistMutation,
   useGetInfinitePlaylistSongsInfiniteQuery,
   useGetPlaylistQuery
-} from '../../../../state/api/playlistsApi.ts'
-import PlaylistDrawerLoader from '../loader/PlaylistDrawerLoader.tsx'
-import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
-import useTitleBarHeight from '../../../../hooks/useTitleBarHeight.ts'
-import PerfectRehearsalMenuItem from '../../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
+} from '../../../state/api/playlistsApi.ts'
+import PlaylistDrawerLoader from './components/PlaylistDrawerLoader.tsx'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import useTitleBarHeight from '../../../hooks/useTitleBarHeight.ts'
+import PerfectRehearsalMenuItem from '../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
 
 function PlaylistDrawerSongCard({ song, onClose }: { song: Song; onClose: () => void }) {
   const navigate = useNavigate()

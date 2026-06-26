@@ -4,18 +4,18 @@ import {
   emptySong,
   reduxRouterRender,
   withToastify
-} from '../../../../test-utils.tsx'
+} from '../../../test-utils.tsx'
 import PlaylistDrawer from './PlaylistDrawer.tsx'
-import Playlist from '../../../../types/models/Playlist.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { act, screen, waitFor } from '@testing-library/react'
-import Song from '../../../../types/models/Song.ts'
+import Song from '../../../types/models/Song.ts'
 import { userEvent } from '@testing-library/user-event'
-import { RootState } from '../../../../state/store.ts'
+import { RootState } from '../../../state/store.ts'
 import { expect } from 'vitest'
-import { openPlaylistDrawer } from '../../../../state/slice/globalSlice.ts'
-import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
+import { openPlaylistDrawer } from '../../../state/slice/globalSlice.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 
 describe('Playlist Drawer', () => {
   const songs: Song[] = [

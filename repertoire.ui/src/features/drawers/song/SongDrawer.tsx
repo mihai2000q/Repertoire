@@ -15,9 +15,9 @@ import {
   Title,
   Tooltip
 } from '@mantine/core'
-import { useDeleteSongMutation, useGetSongQuery } from '../../../../state/api/songsApi.ts'
-import { useAppDispatch, useAppSelector } from '../../../../state/store.ts'
-import SongDrawerLoader from '../loader/SongDrawerLoader.tsx'
+import { useDeleteSongMutation, useGetSongQuery } from '../../../state/api/songsApi.ts'
+import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
+import SongDrawerLoader from './components/SongDrawerLoader.tsx'
 import {
   IconBrandYoutubeFilled,
   IconCheck,
@@ -29,22 +29,22 @@ import {
 import dayjs from 'dayjs'
 import { useDisclosure } from '@mantine/hooks'
 import { useEffect, useRef, useState } from 'react'
-import WarningModal from '../../../../components/modal/WarningModal.tsx'
+import WarningModal from '../../../components/modal/WarningModal.tsx'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import RightSideEntityDrawer from '../../../../components/drawer/RightSideEntityDrawer.tsx'
-import { closeSongDrawer } from '../../../../state/slice/globalSlice.ts'
-import DifficultyBar from '../../../../components/bar/DifficultyBar.tsx'
-import YoutubeModal from '../../../../components/modal/YoutubeModal.tsx'
-import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
-import ConfidenceBar from '../../../../components/bar/ConfidenceBar.tsx'
-import ProgressBar from '../../../../components/bar/ProgressBar.tsx'
-import PerfectRehearsalMenuItem from '../../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
-import CustomIconMusicNote from '../../../../components/icons/CustomIconMusicNote.tsx'
-import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
-import AddToPlaylistMenuItem from '../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
-import CustomRehearsalMenuItem from '../../../../components/menu/item/song/CustomRehearsalMenuItem.tsx'
+import RightSideEntityDrawer from '../../../components/drawer/RightSideEntityDrawer.tsx'
+import { closeSongDrawer } from '../../../state/slice/globalSlice.ts'
+import DifficultyBar from '../../../components/bar/DifficultyBar.tsx'
+import YoutubeModal from '../../../components/modal/YoutubeModal.tsx'
+import useDynamicDocumentTitle from '../../../hooks/useDynamicDocumentTitle.ts'
+import ConfidenceBar from '../../../components/bar/ConfidenceBar.tsx'
+import ProgressBar from '../../../components/bar/ProgressBar.tsx'
+import PerfectRehearsalMenuItem from '../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
+import CustomIconMusicNote from '../../../components/icons/CustomIconMusicNote.tsx'
+import CustomIconAlbumVinyl from '../../../components/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconUserAlt from '../../../components/icons/CustomIconUserAlt.tsx'
+import AddToPlaylistMenuItem from '../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import CustomRehearsalMenuItem from '../../../components/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 const firstColumnSize = 4
 const secondColumnSize = 8

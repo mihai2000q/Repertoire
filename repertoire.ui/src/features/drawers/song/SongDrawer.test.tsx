@@ -4,22 +4,22 @@ import {
   emptySong,
   reduxRouterRender,
   withToastify
-} from '../../../../test-utils.tsx'
+} from '../../../test-utils.tsx'
 import SongDrawer from './SongDrawer.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { act, screen, waitFor, within } from '@testing-library/react'
-import Song from '../../../../types/models/Song.ts'
-import Artist from '../../../../types/models/Artist.ts'
+import Song from '../../../types/models/Song.ts'
+import Artist from '../../../types/models/Artist.ts'
 import { userEvent } from '@testing-library/user-event'
-import { RootState } from '../../../../state/store.ts'
-import Album from '../../../../types/models/Album.ts'
-import Difficulty from '../../../../types/enums/Difficulty.ts'
+import { RootState } from '../../../state/store.ts'
+import Album from '../../../types/models/Album.ts'
+import Difficulty from '../../../types/enums/Difficulty.ts'
 import dayjs from 'dayjs'
 import { expect } from 'vitest'
-import { closeSongDrawer, openSongDrawer } from '../../../../state/slice/globalSlice.ts'
-import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
-import Playlist from '../../../../types/models/Playlist.ts'
+import { closeSongDrawer, openSongDrawer } from '../../../state/slice/globalSlice.ts'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Playlist from '../../../types/models/Playlist.ts'
 
 describe('Song Drawer', () => {
   const song: Song = {
