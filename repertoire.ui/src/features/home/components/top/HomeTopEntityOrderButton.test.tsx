@@ -6,7 +6,7 @@ import { userEvent } from '@testing-library/user-event'
 import { screen } from '@testing-library/react'
 import homeTopOrderEntities, {
   defaultHomeTopOrderEntities
-} from '../../../../data/home/homeTopOrderEntities.ts'
+} from '../../data/homeTopOrderEntities.ts'
 
 describe('Home Top Entity Order Button', () => {
   it('should render', async () => {

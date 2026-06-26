@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import Order from '../../../../../../types/Order.ts'
-import artistSongsOrders from '../../../../../../data/artist/artistSongsOrders.ts'
+import artistSongsOrders from '../../data/artistSongsOrders.ts'
 import { SongSearch } from '../../../../../../types/models/Search.ts'
 import { createRef } from 'react'
 

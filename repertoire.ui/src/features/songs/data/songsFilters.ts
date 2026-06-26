@@ -1,7 +1,7 @@
-import SongProperty from '../../types/enums/properties/SongProperty.ts'
-import Filter, { FilterValue } from '../../types/Filter.ts'
-import FilterOperator from '../../types/enums/FilterOperator.ts'
-import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
+import SongProperty from '../../../types/enums/properties/SongProperty.ts'
+import Filter, { FilterValue } from '../../../types/Filter.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import { SongFiltersMetadata } from '../../../types/models/FiltersMetadata.ts'
 
 const songsFilters: Filter[] = [
   { property: SongProperty.ReleaseDate, operator: FilterOperator.GreaterThanOrEqual, isSet: false },

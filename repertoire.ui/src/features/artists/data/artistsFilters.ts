@@ -1,7 +1,7 @@
-import ArtistProperty from '../../types/enums/properties/ArtistProperty.ts'
-import Filter, { FilterValue } from '../../types/Filter.ts'
-import FilterOperator from '../../types/enums/FilterOperator.ts'
-import { ArtistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
+import ArtistProperty from '../../../types/enums/properties/ArtistProperty.ts'
+import Filter, { FilterValue } from '../../../types/Filter.ts'
+import FilterOperator from '../../../types/enums/FilterOperator.ts'
+import { ArtistFiltersMetadata } from '../../../types/models/FiltersMetadata.ts'
 
 const artistsFilters: Filter[] = [
   {

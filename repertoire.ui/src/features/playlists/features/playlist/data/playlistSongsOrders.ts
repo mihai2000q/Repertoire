@@ -1,6 +1,6 @@
-import Order from '../../types/Order.ts'
-import SongProperty from '../../types/enums/properties/SongProperty.ts'
-import OrderType from '../../types/enums/OrderType.ts'
+import Order from '../../../../../types/Order.ts'
+import SongProperty from '../../../../../types/enums/properties/SongProperty.ts'
+import OrderType from '../../../../../types/enums/OrderType.ts'
 
 const playlistSongsOrders: Order[] = [
   {

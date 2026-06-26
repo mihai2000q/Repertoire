@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { reduxRender } from '../../../test-utils.tsx'
 import PlaylistFilters from './PlaylistsFilters.tsx'
-import playlistsFilters from '../../../data/playlists/playlistsFilters.ts'
+import playlistsFilters from '../data/playlistsFilters.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { PlaylistFiltersMetadata } from '../../../types/models/FiltersMetadata.ts'

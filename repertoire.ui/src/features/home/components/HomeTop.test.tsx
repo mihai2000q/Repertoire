@@ -8,7 +8,7 @@ import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import homeTopOrderEntities from '../../../data/home/homeTopOrderEntities.ts'
+import homeTopOrderEntities from '../data/homeTopOrderEntities.ts'
 import HomeTopEntity from '../../../types/enums/HomeTopEntity.ts'
 import OrderType from '../../../types/enums/OrderType.ts'
 

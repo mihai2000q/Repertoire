@@ -15,7 +15,7 @@ import useOrderBy from '../../../hooks/api/useOrderBy.ts'
 import useLocalStorage from '../../../hooks/useLocalStorage.ts'
 import LocalStorageKeys from '../../../types/enums/keys/LocalStorageKeys.ts'
 import HomeTopEntity from '../../../types/enums/HomeTopEntity.ts'
-import { defaultHomeTopOrderEntities } from '../../../data/home/homeTopOrderEntities.ts'
+import { defaultHomeTopOrderEntities } from '../data/homeTopOrderEntities.ts'
 import HomeTopEntityOrderButton from './top/HomeTopEntityOrderButton.tsx'
 
 const TabButton = ({

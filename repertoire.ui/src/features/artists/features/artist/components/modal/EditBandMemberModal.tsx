@@ -14,7 +14,7 @@ import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../../../../../components/form/select/multi/BandMemberRoleMultiSelect.tsx'
 import { BandMember } from '../../../../../../types/models/Artist.ts'
 import ColorInputButton from '../../../../../../components/form/input/button/ColorInputButton.tsx'
-import bandMemberColorSwatches from '../../../../../../data/artist/bandMemberColorSwatches.ts'
+import bandMemberColorSwatches from '../../data/bandMemberColorSwatches.ts'
 
 interface EditBandMemberModalProps {
   opened: boolean

@@ -1,7 +1,7 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { reduxRender } from '../../../test-utils.tsx'
 import ArtistFilters from './ArtistsFilters.tsx'
-import artistsFilters from '../../../data/artists/artistsFilters.ts'
+import artistsFilters from '../data/artistsFilters.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { ArtistFiltersMetadata } from '../../../types/models/FiltersMetadata.ts'

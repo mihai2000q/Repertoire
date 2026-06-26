@@ -15,7 +15,7 @@ import {
   Stack,
   Text
 } from '@mantine/core'
-import artistSongsOrders from '../../../../../../data/artist/artistSongsOrders.ts'
+import artistSongsOrders from '../../data/artistSongsOrders.ts'
 import { IconDots, IconMusicPlus, IconPlus } from '@tabler/icons-react'
 import ArtistSongCard from '../ArtistSongCard.tsx'
 import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
