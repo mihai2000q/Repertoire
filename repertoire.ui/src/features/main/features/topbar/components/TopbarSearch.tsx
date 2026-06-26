@@ -21,23 +21,23 @@ import {
   useCombobox
 } from '@mantine/core'
 import { useDebouncedValue, useIntersection } from '@mantine/hooks'
-import { useGetInfiniteSearchInfiniteQuery } from '../../../../state/api/searchApi.ts'
+import { useGetInfiniteSearchInfiniteQuery } from '../../../../../state/api/searchApi.ts'
 import {
   AlbumSearch,
   ArtistSearch,
   PlaylistSearch,
   SearchBase,
   SongSearch
-} from '../../../../types/models/Search.ts'
+} from '../../../../../types/models/Search.ts'
 import { useNavigate } from 'react-router-dom'
-import SearchType from '../../../../types/enums/SearchType.ts'
+import SearchType from '../../../../../types/enums/SearchType.ts'
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
-import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconMusicNoteEighth from '../../../../components/icons/CustomIconMusicNoteEighth.tsx'
-import CustomIconPlaylist2 from '../../../../components/icons/CustomIconPlaylist2.tsx'
-import useSearchQueryCacheInvalidation from '../../../home/hooks/useSearchQueryCacheInvalidation.ts'
-import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
-import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
+import CustomIconAlbumVinyl from '../../../../../components/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNoteEighth from '../../../../../components/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconPlaylist2 from '../../../../../components/icons/CustomIconPlaylist2.tsx'
+import useSearchQueryCacheInvalidation from '../../../../home/hooks/useSearchQueryCacheInvalidation.ts'
+import CustomIconUserAlt from '../../../../../components/icons/CustomIconUserAlt.tsx'
+import WithTotalCountResponse from '../../../../../types/responses/WithTotalCountResponse.ts'
 
 const optionStyle = (theme: MantineTheme) => ({
   borderRadius: '12px',

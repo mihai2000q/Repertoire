@@ -1,8 +1,8 @@
-import { reduxRouterRender } from '../../../../test-utils.tsx'
+import { reduxRouterRender } from '../../../../../test-utils.tsx'
 import TopbarNavigation from './TopbarNavigation.tsx'
 import { act, screen } from '@testing-library/react'
-import { signIn } from '../../../../state/slice/authSlice.ts'
-import { RootState } from '../../../../state/store.ts'
+import { signIn } from '../../../../../state/slice/authSlice.ts'
+import { RootState } from '../../../../../state/store.ts'
 
 describe('Topbar Navigation', () => {
   afterEach(() => (location.pathname = '/'))

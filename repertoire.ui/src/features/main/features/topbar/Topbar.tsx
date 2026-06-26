@@ -2,11 +2,11 @@ import { ReactElement } from 'react'
 import { ActionIcon, AppShell, Flex, Group, Space, useMantineTheme } from '@mantine/core'
 import { IconBellFilled, IconMenu2 } from '@tabler/icons-react'
 import { useMediaQuery } from '@mantine/hooks'
-import useIsDesktop from '../../../hooks/useIsDesktop.ts'
-import TopbarSearch from './topbar/TopbarSearch.tsx'
-import TopbarUser from './topbar/TopbarUser.tsx'
-import TopbarNavigation from './topbar/TopbarNavigation.tsx'
-import { useMain } from '../../../context/MainContext.tsx'
+import useIsDesktop from '../../../../hooks/useIsDesktop.ts'
+import TopbarSearch from './components/TopbarSearch.tsx'
+import TopbarUser from './components/TopbarUser.tsx'
+import TopbarNavigation from './components/TopbarNavigation.tsx'
+import { useMain } from '../../../../context/MainContext.tsx'
 
 interface TopbarProps {
   toggleSidebar: () => void

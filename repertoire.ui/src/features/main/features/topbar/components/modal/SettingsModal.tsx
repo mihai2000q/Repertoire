@@ -2,7 +2,7 @@ import { Modal, ScrollArea, Tabs } from '@mantine/core'
 import { useState } from 'react'
 import SettingsModalAccountTab from './SettingsModalAccountTab.tsx'
 import SettingsModalCustomizationTab from './SettingsModalCustomizationTab.tsx'
-import User from '../../../../types/models/User.ts'
+import User from '../../types/models/User.ts'
 
 enum SettingsTabs {
   Account = 'account',

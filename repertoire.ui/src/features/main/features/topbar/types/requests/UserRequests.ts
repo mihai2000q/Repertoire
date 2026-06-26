@@ -11,5 +11,5 @@ export interface UpdateUserRequest {
 }
 
 export interface SaveProfilePictureRequest {
-  profile_pic: FileWithPath
+  profile_pic: FileWithPath // TODO: Why not profilePic?
 }

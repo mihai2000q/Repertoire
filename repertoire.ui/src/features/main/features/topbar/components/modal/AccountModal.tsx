@@ -9,11 +9,11 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import LargeImageDropzoneWithPreview from '../../../../components/image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
-import User from '../../../../types/models/User.ts'
-import { AccountForm, accountSchema } from '../../validation/mainForm.ts'
+import User from '../../types/models/User.ts'
+import { AccountForm, accountSchema } from '../../../../validation/mainForm.ts'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import dayjs from 'dayjs'
@@ -21,7 +21,7 @@ import {
   useDeleteProfilePictureMutation,
   useSaveProfilePictureMutation,
   useUpdateUserMutation
-} from '../../../../state/api/usersApi.ts'
+} from '../../state/api/topbarApi.ts'
 
 interface AccountModalProps {
   opened: boolean

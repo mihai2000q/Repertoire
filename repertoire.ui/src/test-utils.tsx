@@ -12,7 +12,7 @@ import Album from './types/models/Album.ts'
 import Song, { SongArrangement, SongSection, SongSettings } from './types/models/Song.ts'
 import Artist from './types/models/Artist.ts'
 import Order from './types/Order.ts'
-import User from './types/models/User.ts'
+import User from './features/main/features/topbar/types/models/User.ts'
 import Playlist from './types/models/Playlist.ts'
 import {
   AlbumFiltersMetadata,

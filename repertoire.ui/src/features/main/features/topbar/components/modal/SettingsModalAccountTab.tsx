@@ -1,7 +1,7 @@
 import { Button, Divider, Group, Stack, Text } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import DeleteAccountModal from './DeleteAccountModal.tsx'
-import User from '../../../../types/models/User.ts'
+import User from '../../types/models/User.ts'
 
 interface SettingsModalAccountTab {
   onCloseSettingsModal: () => void

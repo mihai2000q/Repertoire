@@ -1,11 +1,11 @@
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import { reduxRender, withToastify } from '../../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../../../../test-utils.tsx'
 import { act, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import AccountModal from './AccountModal.tsx'
-import User from '../../../../types/models/User.ts'
-import { UpdateUserRequest } from '../../../../types/requests/UserRequests.ts'
+import User from '../../types/models/User.ts'
+import { UpdateUserRequest } from '../../types/requests/UserRequests.ts'
 import dayjs from 'dayjs'
 
 describe('Account Modal', () => {

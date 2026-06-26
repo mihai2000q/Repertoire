@@ -1,8 +1,8 @@
 import { ActionIcon, Group } from '@mantine/core'
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../../state/store.ts'
-import { resetHistoryOnSignIn } from '../../../../state/slice/authSlice.ts'
+import { useAppDispatch, useAppSelector } from '../../../../../state/store.ts'
+import { resetHistoryOnSignIn } from '../../../../../state/slice/authSlice.ts'
 import { useDidUpdate } from '@mantine/hooks'
 
 function TopbarNavigation() {
