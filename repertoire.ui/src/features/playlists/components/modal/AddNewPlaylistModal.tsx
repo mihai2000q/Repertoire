@@ -8,7 +8,7 @@ import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core'
 import ImageDropzoneWithPreview from '../../../../components/image/ImageDropzoneWithPreview.tsx'
-import { AddNewPlaylistForm, addNewPlaylistSchema } from '../../../../validation/playlistsForm.ts'
+import { AddNewPlaylistForm, addNewPlaylistSchema } from '../../validation/playlistsForm.ts'
 import { IconPlaylist } from '@tabler/icons-react'
 
 interface AddNewPlaylistModalProps {

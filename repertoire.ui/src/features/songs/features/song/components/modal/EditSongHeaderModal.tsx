@@ -17,7 +17,7 @@ import {
 } from '../../../../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditSongHeaderForm, editSongHeaderSchema } from '../../../../../../validation/songsForm.ts'
+import { EditSongHeaderForm, editSongHeaderSchema } from '../../validation/songForm.ts'
 import { DatePickerInput } from '@mantine/dates'
 import { IconCalendarRepeat, IconInfoCircleFilled } from '@tabler/icons-react'
 import LargeImageDropzoneWithPreview from '../../../../../../components/image/LargeImageDropzoneWithPreview.tsx'

@@ -2,7 +2,7 @@ import { Button, Group, Modal, Stack, TextInput } from '@mantine/core'
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
-import { AddNewArtistAlbumForm, addNewArtistAlbumSchema } from '../../../../../../validation/artistsForm.ts'
+import { AddNewArtistAlbumForm, addNewArtistAlbumSchema } from '../../validation/artistForm.ts'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation

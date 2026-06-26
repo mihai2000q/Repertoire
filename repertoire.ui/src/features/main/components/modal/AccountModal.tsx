@@ -13,7 +13,7 @@ import LargeImageDropzoneWithPreview from '../../../../components/image/LargeIma
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
 import User from '../../../../types/models/User.ts'
-import { AccountForm, accountSchema } from '../../../../validation/mainForm.ts'
+import { AccountForm, accountSchema } from '../../validation/mainForm.ts'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 import dayjs from 'dayjs'

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
-import { AddNewAlbumForm, addNewAlbumSchema } from '../../../../validation/albumsForm.ts'
+import { AddNewAlbumForm, addNewAlbumSchema } from '../../validation/albumsForm.ts'
 import {
   useCreateAlbumMutation,
   useSaveImageToAlbumMutation

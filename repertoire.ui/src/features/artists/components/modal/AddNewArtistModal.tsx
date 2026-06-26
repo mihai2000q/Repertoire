@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
-import { AddNewArtistForm, addNewArtistSchema } from '../../../../validation/artistsForm.ts'
+import { AddNewArtistForm, addNewArtistSchema } from '../../validation/artistsForm.ts'
 import {
   useCreateArtistMutation,
   useSaveImageToArtistMutation

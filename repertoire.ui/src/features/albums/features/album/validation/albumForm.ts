@@ -1,13 +1,9 @@
 import { z } from 'zod/v4'
 import { FileWithPath } from '@mantine/dropzone'
-import { songsterrLinkValidator, youtubeLinkValidator } from './custom/validators.ts'
-
-export const addNewAlbumSchema = z.object({
-  title: z.string().trim().min(1, 'Title cannot be blank').default(''),
-  releaseDate: z.string().nullish(),
-  artistName: z.string().optional()
-})
-export type AddNewAlbumForm = z.infer<typeof addNewAlbumSchema>
+import {
+  songsterrLinkValidator,
+  youtubeLinkValidator
+} from '../../../../../validation/custom/validators.ts'
 
 export const addNewAlbumSongSchema = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank'),

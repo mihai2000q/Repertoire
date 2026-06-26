@@ -2,7 +2,7 @@ import { Button, Group, LoadingOverlay, Modal, Stack, TextInput, Tooltip } from 
 import { useEffect, useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditBandMemberForm, editBandMemberSchema } from '../../../../../../validation/artistsForm.ts'
+import { EditBandMemberForm, editBandMemberSchema } from '../../validation/artistForm.ts'
 import { toast } from 'react-toastify'
 import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
 import {

@@ -7,7 +7,7 @@ import {
 } from '../../../../../../state/api/playlistsApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditPlaylistHeaderForm, editPlaylistHeaderSchema } from '../../../../../../validation/playlistsForm.ts'
+import { EditPlaylistHeaderForm, editPlaylistHeaderSchema } from '../../validation/playlistForm.ts'
 import LargeImageDropzoneWithPreview from '../../../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'

@@ -16,7 +16,7 @@ import {
 } from '../../../../../../state/api/artistsApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../../../../../validation/artistsForm.ts'
+import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../validation/artistForm.ts'
 import LargeImageDropzoneWithPreview from '../../../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'

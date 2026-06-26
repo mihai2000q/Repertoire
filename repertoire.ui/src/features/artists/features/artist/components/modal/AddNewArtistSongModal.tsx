@@ -2,7 +2,7 @@ import { alpha, Button, Center, Group, Modal, Stack, Text, TextInput, Tooltip } 
 import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
-import { AddNewArtistSongForm, addNewArtistSongSchema } from '../../../../../../validation/artistsForm.ts'
+import { AddNewArtistSongForm, addNewArtistSongSchema } from '../../validation/artistForm.ts'
 import { toast } from 'react-toastify'
 import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'

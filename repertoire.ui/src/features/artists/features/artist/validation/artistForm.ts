@@ -1,12 +1,9 @@
 import { z } from 'zod/v4'
 import { FileWithPath } from '@mantine/dropzone'
-import { songsterrLinkValidator, youtubeLinkValidator } from './custom/validators.ts'
-
-export const addNewArtistSchema = z.object({
-  name: z.string().trim().min(1, 'Name cannot be blank'),
-  isBand: z.boolean()
-})
-export type AddNewArtistForm = z.infer<typeof addNewArtistSchema>
+import {
+  songsterrLinkValidator,
+  youtubeLinkValidator
+} from '../../../../../validation/custom/validators.ts'
 
 export const editArtistHeaderSchema = z.object({
   name: z.string().trim().min(1, 'Name cannot be blank'),

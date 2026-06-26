@@ -2,7 +2,7 @@ import { Center, Group, Stack, Textarea, TextInput, Tooltip } from '@mantine/cor
 import { UseFormReturnType } from '@mantine/form'
 import ArtistAutocomplete from '../../../../components/form/input/ArtistAutocomplete.tsx'
 import AlbumAutocomplete from '../../../../components/form/input/AlbumAutocomplete.tsx'
-import { AddNewSongForm } from '../../../../validation/songsForm.ts'
+import { AddNewSongForm } from '../../validation/songsForm.ts'
 import { IconInfoCircleFilled } from '@tabler/icons-react'
 import { AlbumSearch, ArtistSearch } from '../../../../types/models/Search.ts'
 import { useDidUpdate } from '@mantine/hooks'
