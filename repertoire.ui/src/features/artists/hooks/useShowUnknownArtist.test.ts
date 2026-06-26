@@ -1,10 +1,10 @@
 import useShowUnknownArtist from './useShowUnknownArtist.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import WithTotalCountResponse from '../types/responses/WithTotalCountResponse.ts'
-import Album from '../types/models/Album.ts'
-import Song from '../types/models/Song.ts'
-import { reduxRenderHook } from '../test-utils.tsx'
+import WithTotalCountResponse from '../../../types/responses/WithTotalCountResponse.ts'
+import Album from '../../../types/models/Album.ts'
+import Song from '../../../types/models/Song.ts'
+import { reduxRenderHook } from '../../../test-utils.tsx'
 import { waitFor } from '@testing-library/react'
 
 describe('use Show Unknown Artist', () => {

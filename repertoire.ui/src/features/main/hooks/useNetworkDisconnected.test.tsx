@@ -1,8 +1,8 @@
-import { withToastify } from '../test-utils.tsx'
+import { withToastify } from '../../../test-utils.tsx'
 import useNetworkDisconnected from './useNetworkDisconnected.tsx'
 import { act, renderHook, screen } from '@testing-library/react'
 import { ReactNode } from 'react'
-import { theme } from '../theme/theme.ts'
+import { theme } from '../../../theme/theme.ts'
 import { emotionTransform, MantineEmotionProvider } from '@mantine/emotion'
 import { MantineProvider } from '@mantine/core'
 

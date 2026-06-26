@@ -35,7 +35,7 @@ import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 import CustomIconAlbumVinyl from '../../../../components/icons/CustomIconAlbumVinyl.tsx'
 import CustomIconMusicNoteEighth from '../../../../components/icons/CustomIconMusicNoteEighth.tsx'
 import CustomIconPlaylist2 from '../../../../components/icons/CustomIconPlaylist2.tsx'
-import useSearchQueryCacheInvalidation from '../../../../hooks/useSearchQueryCacheInvalidation.ts'
+import useSearchQueryCacheInvalidation from '../../../home/hooks/useSearchQueryCacheInvalidation.ts'
 import CustomIconUserAlt from '../../../../components/icons/CustomIconUserAlt.tsx'
 import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
 

@@ -1,6 +1,6 @@
-import { reduxRouterRenderHook } from '../test-utils.tsx'
+import { reduxRouterRenderHook } from '../../../test-utils.tsx'
 import useErrorRedirection from './useErrorRedirection.ts'
-import { RootState } from '../state/store.ts'
+import { RootState } from '../../../state/store.ts'
 
 describe('use Error Redirection', () => {
   afterEach(() => (window.location.pathname = '/'))

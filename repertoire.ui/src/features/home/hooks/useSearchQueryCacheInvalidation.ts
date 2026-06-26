@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '../state/store.ts'
-import { api } from '../state/api.ts'
-import useCentrifuge from './useCentrifuge.ts'
+import { useAppDispatch, useAppSelector } from '../../../state/store.ts'
+import { api } from '../../../state/api.ts'
+import useCentrifuge from '../../../hooks/useCentrifuge.ts'
 
 export default function useSearchQueryCacheInvalidation() {
   const dispatch = useAppDispatch()

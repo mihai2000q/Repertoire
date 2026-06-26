@@ -1,9 +1,9 @@
 import { http, HttpResponse, ws } from 'msw'
 import { setupServer } from 'msw/node'
-import { reduxRenderHook } from '../test-utils.tsx'
+import { reduxRenderHook } from '../../../test-utils.tsx'
 import useSearchQueryCacheInvalidation from './useSearchQueryCacheInvalidation.ts'
 import { expect } from 'vitest'
-import useCentrifuge from './useCentrifuge.ts'
+import useCentrifuge from '../../../hooks/useCentrifuge.ts'
 import { waitFor } from '@testing-library/react'
 
 describe('use Search Query Cache Invalidation', () => {
