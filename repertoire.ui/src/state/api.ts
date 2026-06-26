@@ -14,18 +14,17 @@ import { DeleteAlbumRequest } from '../types/requests/AlbumRequests.ts'
 function cleanDrawers(args: string | FetchArgs, api: BaseQueryApi) {
   if (typeof args !== 'object' || args.method !== 'DELETE') return
 
-  const globalState = (api.getState() as RootState).drawers
+  const drawersState = (api.getState() as RootState).drawers
 
   // null propagation for unit tests
   const isArtistDrawerOpenWithDeletedArtist =
-    globalState.artist?.artistId && args.url.includes(globalState.artist.artistId)
+    drawersState.artist?.artistId && args.url.includes(drawersState.artist.artistId)
   const isAlbumDrawerOpenWithDeletedAlbum =
-    globalState.album?.albumId && args.url.includes(globalState.album.albumId)
+    drawersState.album?.albumId && args.url.includes(drawersState.album.albumId)
   const isSongDrawerOpenWithDeletedSong =
-    globalState.song?.songId && args.url.includes(globalState.song.songId)
+    drawersState.song?.songId && args.url.includes(drawersState.song.songId)
   const isPlaylistDrawerOpenWithDeletedPlaylist =
-    globalState.playlist?.playlistId &&
-    args.url.includes(globalState.playlist.playlistId)
+    drawersState.playlist?.playlistId && args.url.includes(drawersState.playlist.playlistId)
 
   if (api.endpoint === 'deleteArtist') {
     if (isArtistDrawerOpenWithDeletedArtist) api.dispatch(deleteArtistDrawer())

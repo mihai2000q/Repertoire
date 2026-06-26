@@ -3,7 +3,10 @@ import { useState } from 'react'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../../../../state/api/songsApi.ts'
+import {
+  useCreateSongMutation,
+  useSaveImageToSongMutation
+} from '../../../../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
 import { AddNewAlbumSongForm, addNewAlbumSongSchema } from '../../validation/albumForm.ts'
 import Album from '../../../../../../types/models/Album.ts'

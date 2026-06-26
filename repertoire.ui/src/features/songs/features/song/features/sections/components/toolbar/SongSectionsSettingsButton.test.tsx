@@ -1,4 +1,8 @@
-import { emptySongSection, emptySongSettings, reduxRender } from '../../../../../../../../test-utils.tsx'
+import {
+  emptySongSection,
+  emptySongSettings,
+  reduxRender
+} from '../../../../../../../../test-utils.tsx'
 import SongSectionsSettingsButton from './SongSectionsSettingsButton.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'

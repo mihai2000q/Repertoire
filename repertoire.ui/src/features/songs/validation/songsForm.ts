@@ -1,5 +1,8 @@
 import { z } from 'zod/v4'
-import { songsterrLinkValidator, youtubeLinkValidator } from '../../../validation/custom/validators.ts'
+import {
+  songsterrLinkValidator,
+  youtubeLinkValidator
+} from '../../../validation/custom/validators.ts'
 
 export const addNewSongSchema = z.object({
   title: z.string().trim().min(1, 'Title cannot be blank'),

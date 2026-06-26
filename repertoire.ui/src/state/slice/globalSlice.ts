@@ -26,10 +26,6 @@ export const globalSlice = createSlice({
   }
 })
 
-export const {
-  setUserId,
-  setDocumentTitle,
-  setErrorPath,
-} = globalSlice.actions
+export const { setUserId, setDocumentTitle, setErrorPath } = globalSlice.actions
 
 export default globalSlice.reducer

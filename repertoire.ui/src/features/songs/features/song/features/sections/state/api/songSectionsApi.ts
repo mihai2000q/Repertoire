@@ -80,5 +80,5 @@ export const {
   useUpdateAllSongSectionsMutation,
   useMoveSongSectionMutation,
   useBulkDeleteSongSectionsMutation,
-  useDeleteSongSectionMutation,
+  useDeleteSongSectionMutation
 } = songSectionsApi

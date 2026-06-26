@@ -1,5 +1,9 @@
 import { emptySongSection, reduxRender, withToastify } from '../../../../../../../../test-utils.tsx'
-import { Instrument, SongSection, SongSectionType } from '../../../../../../../../types/models/Song.ts'
+import {
+  Instrument,
+  SongSection,
+  SongSectionType
+} from '../../../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'

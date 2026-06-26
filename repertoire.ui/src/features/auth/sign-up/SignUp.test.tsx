@@ -6,7 +6,7 @@ import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { RootState } from '../../../state/store.ts'
 import { setupServer } from 'msw/node'
-import { SignUpRequest } from '../../main/features/topbar/types/requests/UserRequests.ts'
+import { SignUpRequest } from './types/requests/SignUpRequests.ts'
 
 describe('Sign Up', () => {
   const server = setupServer()

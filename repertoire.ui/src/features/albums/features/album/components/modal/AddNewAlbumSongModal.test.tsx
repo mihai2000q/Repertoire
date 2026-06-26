@@ -1,4 +1,9 @@
-import { emptyAlbum, emptyArtist, reduxRender, withToastify } from '../../../../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  reduxRender,
+  withToastify
+} from '../../../../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import AddNewAlbumSongModal from './AddNewAlbumSongModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
