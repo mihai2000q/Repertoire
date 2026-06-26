@@ -1,0 +1,352 @@
+import Song from '../../../../../types/models/Song.ts'
+import {
+  ActionIcon,
+  alpha,
+  Center,
+  Flex,
+  Grid,
+  Group,
+  Menu,
+  NumberFormatter,
+  Text,
+  Tooltip
+} from '@mantine/core'
+import { useAppDispatch } from '../../../../../state/store.ts'
+import { openSongDrawer } from '../../../../../state/slice/globalSlice.ts'
+import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
+import { MouseEvent } from 'react'
+import { IconCircleMinus, IconDots, IconEye, IconTrash } from '@tabler/icons-react'
+import WarningModal from '../../../../../components/@ui/modal/WarningModal.tsx'
+import Order from '../../../../../types/Order.ts'
+import SongProperty from '../../../../../types/enums/properties/SongProperty.ts'
+import ProgressBar from '../../../../../components/@ui/bar/ProgressBar.tsx'
+import ConfidenceBar from '../../../../../components/@ui/bar/ConfidenceBar.tsx'
+import DifficultyBar from '../../../../../components/@ui/bar/DifficultyBar.tsx'
+import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom'
+import { DraggableProvided } from '@hello-pangea/dnd'
+import PerfectRehearsalMenuItem from '../../../../../components/@ui/menu/item/PerfectRehearsalMenuItem.tsx'
+import { useDeleteSongMutation } from '../../../../../state/api/songsApi.ts'
+import { useRemoveSongsFromAlbumMutation } from '../../../../../state/api/albumsApi.ts'
+import CustomIconMusicNoteEighth from '../../../../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
+import YoutubeModal from '../../../../../components/@ui/modal/YoutubeModal.tsx'
+import OpenLinksMenuItem from '../../../../../components/@ui/menu/item/song/OpenLinksMenuItem.tsx'
+import AddToPlaylistMenuItem from '../../../../../components/@ui/menu/item/AddToPlaylistMenuItem.tsx'
+import { ContextMenu } from '../../../../../components/@ui/menu/ContextMenu.tsx'
+import useDoubleMenu from '../../../../../hooks/useDoubleMenu.ts'
+import { toast } from 'react-toastify'
+import useClickSelectSelectable from '../../../../../hooks/useClickSelectSelectable.ts'
+import SelectableAvatar from '../../../../../components/@ui/image/SelectableAvatar.tsx'
+import CustomRehearsalMenuItem from '../../../../../components/@ui/menu/item/song/CustomRehearsalMenuItem.tsx'
+
+interface AlbumSongCardProps {
+  song: Song
+  albumId: string
+  isUnknownAlbum: boolean
+  order: Order
+  isDragging: boolean
+  albumImageUrl?: string | null | undefined
+  draggableProvided?: DraggableProvided
+}
+
+function AlbumSongCard({
+  song,
+  albumId,
+  isUnknownAlbum,
+  order,
+  isDragging,
+  albumImageUrl,
+  draggableProvided
+}: AlbumSongCardProps) {
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const {
+    ref: selectableRef,
+    isClickSelected,
+    isClickSelectionActive,
+    isLastInSelection
+  } = useClickSelectSelectable(song.id)
+  const { ref: hoverRef, hovered } = useHover()
+  const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
+
+  const [removeSongsFromAlbum, { isLoading: isRemoveLoading }] = useRemoveSongsFromAlbumMutation()
+  const [deleteSong, { isLoading: isDeleteLoading }] = useDeleteSongMutation()
+
+  const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu, closeMenus } =
+    useDoubleMenu()
+
+  const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
+
+  const [openedYoutube, { open: openYoutube, close: closeYoutube }] = useDisclosure(false)
+  const [openedRemoveWarning, { open: openRemoveWarning, close: closeRemoveWarning }] =
+    useDisclosure(false)
+  const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
+    useDisclosure(false)
+
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
+    dispatch(openSongDrawer(song.id))
+  }
+
+  function handleViewDetails(e: MouseEvent) {
+    e.stopPropagation()
+    navigate(`/song/${song.id}`)
+  }
+
+  function handleOpenRemoveWarning(e: MouseEvent) {
+    e.stopPropagation()
+    openRemoveWarning()
+  }
+
+  function handleOpenDeleteWarning(e: MouseEvent) {
+    e.stopPropagation()
+    openDeleteWarning()
+  }
+
+  async function handleRemoveFromAlbum() {
+    await removeSongsFromAlbum({ songIds: [song.id], id: albumId }).unwrap()
+    toast.success(`${song.title} removed from album!`)
+  }
+
+  async function handleDelete() {
+    await deleteSong(song.id).unwrap()
+    toast.success(`${song.title} deleted!`)
+  }
+
+  const menuDropdown = (
+    <>
+      <Menu.Item leftSection={<IconEye size={14} />} onClick={handleViewDetails}>
+        View Details
+      </Menu.Item>
+      <OpenLinksMenuItem song={song} openYoutube={openYoutube} />
+
+      <Menu.Divider />
+      <AddToPlaylistMenuItem ids={[song.id]} type={'songs'} closeMenu={closeMenus} />
+      <PerfectRehearsalMenuItem
+        id={song.id}
+        closeMenu={closeMenus}
+        type={'song'}
+        defaultSongArrangementId={song.defaultArrangementId}
+      />
+      <CustomRehearsalMenuItem
+        id={song.id}
+        closeMenu={closeMenus}
+        defaultSongArrangementId={song.defaultArrangementId}
+      />
+      <Menu.Divider />
+
+      {!isUnknownAlbum && (
+        <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={handleOpenRemoveWarning}>
+          Remove from Album
+        </Menu.Item>
+      )}
+      <Menu.Item
+        leftSection={<IconTrash size={14} />}
+        c={'red.5'}
+        onClick={handleOpenDeleteWarning}
+      >
+        Delete
+      </Menu.Item>
+    </>
+  )
+
+  return (
+    <ContextMenu
+      opened={openedContextMenu}
+      onChange={toggleContextMenu}
+      disabled={isClickSelectionActive}
+    >
+      <ContextMenu.Target>
+        <Group
+          ref={ref}
+          aria-label={`song-card-${song.title}`}
+          aria-selected={isSelected}
+          wrap={'nowrap'}
+          {...draggableProvided?.draggableProps}
+          {...draggableProvided?.dragHandleProps}
+          style={{
+            ...draggableProvided?.draggableProps?.style,
+            cursor: 'default'
+          }}
+          sx={(theme) => ({
+            transition: '0.3s',
+            borderRadius: 0,
+            border: '1px solid transparent',
+            ...(isSelected && {
+              boxShadow: theme.shadows.md,
+              backgroundColor: alpha(theme.colors.primary[0], 0.15)
+            }),
+
+            ...(isClickSelected && {
+              boxShadow: 'none',
+              backgroundColor: alpha(theme.colors.primary[0], 0.15),
+              ...(hovered && {
+                boxShadow: theme.shadows.xs,
+                backgroundColor: alpha(theme.colors.primary[0], 0.35)
+              }),
+              ...(isLastInSelection && {
+                boxShadow: theme.shadows.lg
+              })
+            }),
+
+            ...(isDragging && {
+              boxShadow: theme.shadows.xl,
+              borderRadius: '16px',
+              backgroundColor: alpha(theme.white, 0.33),
+              border: `1px solid ${alpha(theme.colors.primary[9], 0.33)}`
+            })
+          })}
+          px={'md'}
+          py={'xs'}
+          onClick={handleClick}
+        >
+          <Grid columns={12} align={'center'} w={'100%'}>
+            <Grid.Col
+              span={
+                order.property === SongProperty.AlbumTrackNo ||
+                order.property === SongProperty.Title
+                  ? 'auto'
+                  : 6
+              }
+            >
+              <Group wrap={'nowrap'}>
+                {!isUnknownAlbum && (
+                  <Text fw={500} miw={25} maw={25} ta={'center'}>
+                    {song.albumTrackNo}
+                  </Text>
+                )}
+                <SelectableAvatar
+                  isSelected={isClickSelected}
+                  radius={'md'}
+                  src={song.imageUrl ?? albumImageUrl}
+                  alt={(song.imageUrl ?? albumImageUrl) && song.title}
+                  color={'gray.5'}
+                >
+                  <Center c={'white'}>
+                    <CustomIconMusicNoteEighth
+                      aria-label={`default-icon-${song.title}`}
+                      size={20}
+                    />
+                  </Center>
+                </SelectableAvatar>
+
+                <Text fw={500} lineClamp={1}>
+                  {song.title}
+                </Text>
+              </Group>
+            </Grid.Col>
+
+            <Grid.Col
+              span={
+                order.property === SongProperty.AlbumTrackNo ||
+                order.property === SongProperty.Title
+                  ? 0
+                  : 'auto'
+              }
+            >
+              <Flex px={'10%'}>
+                {order.property === SongProperty.Difficulty && (
+                  <DifficultyBar difficulty={song.difficulty} miw={'max(15vw, 120px)'} />
+                )}
+                {order.property === SongProperty.Rehearsals && (
+                  <Tooltip.Floating
+                    role={'tooltip'}
+                    label={
+                      <>
+                        Rehearsals: <NumberFormatter value={song.rehearsals} />
+                      </>
+                    }
+                  >
+                    <Text fw={500} c={'dimmed'} inline>
+                      <NumberFormatter value={song.rehearsals} />
+                    </Text>
+                  </Tooltip.Floating>
+                )}
+                {order.property === SongProperty.Confidence && (
+                  <ConfidenceBar confidence={song.confidence} flex={1} />
+                )}
+                {order.property === SongProperty.Progress && (
+                  <ProgressBar progress={song.progress} flex={1} />
+                )}
+                {order.property === SongProperty.LastPlayed && (
+                  <Tooltip
+                    label={`Song was played last time on ${dayjs(song.lastTimePlayed).format('D MMMM YYYY [at] hh:mm A')}`}
+                    openDelay={400}
+                    disabled={!song.lastTimePlayed}
+                  >
+                    <Text fw={500} c={'dimmed'} inline>
+                      {song.lastTimePlayed
+                        ? dayjs(song.lastTimePlayed).format('DD MMM YYYY')
+                        : 'never'}
+                    </Text>
+                  </Tooltip>
+                )}
+              </Flex>
+            </Grid.Col>
+
+            <Grid.Col span={'content'}>
+              <Menu opened={openedMenu} onChange={toggleMenu}>
+                <Menu.Target>
+                  <ActionIcon
+                    aria-label={'more-menu'}
+                    size={'md'}
+                    variant={'grey'}
+                    disabled={isClickSelectionActive}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      transition: '0.3s',
+                      opacity: isSelected ? 1 : 0
+                    }}
+                  >
+                    <IconDots size={15} />
+                  </ActionIcon>
+                </Menu.Target>
+
+                <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+              </Menu>
+            </Grid.Col>
+          </Grid>
+        </Group>
+      </ContextMenu.Target>
+
+      <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
+
+      <YoutubeModal
+        title={song.title}
+        link={song.youtubeLink}
+        opened={openedYoutube}
+        onClose={closeYoutube}
+      />
+      <WarningModal
+        opened={openedRemoveWarning}
+        onClose={closeRemoveWarning}
+        title={`Remove Song From Album`}
+        description={
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to remove</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>from this album?</Text>
+          </Group>
+        }
+        isLoading={isRemoveLoading}
+        onYes={handleRemoveFromAlbum}
+      />
+      <WarningModal
+        opened={openedDeleteWarning}
+        onClose={closeDeleteWarning}
+        title={`Delete Song`}
+        description={
+          <Group gap={'xxs'}>
+            <Text>Are you sure you want to delete</Text>
+            <Text fw={600}>{song.title}</Text>
+            <Text>?</Text>
+          </Group>
+        }
+        isLoading={isDeleteLoading}
+        onYes={handleDelete}
+      />
+    </ContextMenu>
+  )
+}
+
+export default AlbumSongCard

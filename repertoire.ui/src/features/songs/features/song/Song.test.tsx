@@ -1,0 +1,72 @@
+import { emptySong, reduxMemoryRouterRender } from '../../../../test-utils.tsx'
+import Song from './Song.tsx'
+import { default as SongType } from '../../../../types/models/Song.ts'
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
+import { screen } from '@testing-library/react'
+import { RootState } from '../../../../state/store.ts'
+import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
+import { SearchBase } from '../../../../types/models/Search.ts'
+import { createRef } from 'react'
+
+// Mock Main Context
+vi.mock('../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
+describe('Song', () => {
+  const song: SongType = {
+    ...emptySong,
+    id: '1',
+    title: 'Song 1'
+  }
+
+  const handlers = [
+    http.get(`/songs/${song.id}`, async () => {
+      return HttpResponse.json(song)
+    }),
+    http.get(`/songs/sections/types`, () => {
+      return HttpResponse.json([])
+    }),
+    http.get(`/songs/guitar-tunings`, () => {
+      return HttpResponse.json([])
+    }),
+    http.get(`/songs/instruments`, () => {
+      return HttpResponse.json([])
+    }),
+    http.get(`/songs/arrangements`, () => {
+      return HttpResponse.json([])
+    }),
+    http.get('/search', async () => {
+      const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
+      return HttpResponse.json(response)
+    })
+  ]
+
+  const server = setupServer(...handlers)
+
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
+  })
+
+  beforeAll(() => server.listen())
+
+  afterAll(() => server.close())
+
+  it('should render', async () => {
+    const [_, store] = reduxMemoryRouterRender(<Song />, '/song/:id', [`/song/${song.id}`])
+
+    expect(screen.getByTestId('song-loader')).toBeInTheDocument()
+    expect(await screen.findByLabelText('header-panel-card')).toBeInTheDocument()
+    expect(screen.getByLabelText('information-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('overall-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('links-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('description-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('sections-widget')).toBeInTheDocument()
+    expect((store.getState() as RootState).global.documentTitle).toBe(song.title)
+  })
+})
