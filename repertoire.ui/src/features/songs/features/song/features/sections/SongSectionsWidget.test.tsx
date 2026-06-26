@@ -12,10 +12,8 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import {
-  AddPerfectSongRehearsalRequest,
-  MoveSongSectionRequest
-} from '../../../../../../types/requests/SongRequests.ts'
+import { AddPerfectSongRehearsalRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { MoveSongSectionRequest } from './types/requests/SongSectionRequests.ts'
 import { createRef } from 'react'
 
 // Mock Main Context

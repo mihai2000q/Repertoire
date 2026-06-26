@@ -1,4 +1,4 @@
-import { mantineRender } from '../../../../../../test-utils.tsx'
+import { mantineRender } from '../../../../../../../test-utils.tsx'
 import SongArrangementsModalLoader from './SongArrangementsModalLoader.tsx'
 
 describe('Song Arrangements Modal Loader', () => {

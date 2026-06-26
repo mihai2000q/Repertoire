@@ -1,12 +1,12 @@
-import { SongArrangement } from '../../../../../../types/models/Song.ts'
-import { emptySongArrangement, reduxRender, withToastify } from '../../../../../../test-utils.tsx'
+import { SongArrangement } from '../../../../../../../../types/models/Song.ts'
+import { emptySongArrangement, reduxRender, withToastify } from '../../../../../../../../test-utils.tsx'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event/dist/cjs/index.js'
 import { expect } from 'vitest'
 import { screen } from '@testing-library/react'
 import CustomRehearsalButton from './CustomRehearsalButton.tsx'
-import { AddCustomSongRehearsalRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { AddCustomSongRehearsalRequest } from '../../../../../../../../types/requests/SongRequests.ts'
 
 describe('Custom Rehearsal Button', () => {
   const arrangements: SongArrangement[] = [

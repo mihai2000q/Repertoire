@@ -1,12 +1,12 @@
-import { SongArrangement } from '../../../../../../types/models/Song.ts'
+import { SongArrangement } from '../../../../../../../types/models/Song.ts'
 import { Dispatch, SetStateAction } from 'react'
 import { alpha, Button, Center, Menu, ScrollArea, Stack } from '@mantine/core'
 import { IconPlus, IconStarFilled } from '@tabler/icons-react'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
-import { useMoveSongArrangementMutation } from '../../../../../../state/api/songsApi.ts'
-import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
+import { useMoveSongArrangementMutation } from '../state/api/songArrangementsApi.ts'
+import LoadingOverlayDebounced from '../../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import fixDraggableInMenu from '../../../../../../utils/fixDraggableInMenu.ts'
+import fixDraggableInMenu from '../../../../../../../utils/fixDraggableInMenu.ts'
 
 const invalidArrangementName = '[Invalid Name]'
 

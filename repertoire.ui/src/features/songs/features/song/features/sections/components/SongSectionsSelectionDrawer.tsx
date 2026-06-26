@@ -1,12 +1,12 @@
 import { ActionIcon, Tooltip } from '@mantine/core'
-import SelectionDrawer from '../../../../../components/drawer/SelectionDrawer.tsx'
+import SelectionDrawer from '../../../../../../../components/drawer/SelectionDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
-import plural from '../../../../../utils/plural.ts'
-import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
-import { useBulkRehearsalsSongSectionsMutation } from '../../../../../state/api/songsApi.ts'
+import plural from '../../../../../../../utils/plural.ts'
+import DeleteSongSectionsModal from './DeleteSongSectionsModal.tsx'
+import { useBulkRehearsalsSongSectionsMutation } from '../state/api/songSectionsApi.ts'
 import { toast } from 'react-toastify'
-import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
+import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
 
 function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
   const { selectedIds, clearSelection, isClickSelectionActive } = useClickSelect()

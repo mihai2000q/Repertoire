@@ -1,27 +1,28 @@
-import {
-  useAddPerfectSongRehearsalMutation,
-  useMoveSongSectionMutation
-} from '../../../../../../state/api/songsApi.ts'
+import { useAddPerfectSongRehearsalMutation } from '../../../../../../state/api/songsApi.ts'
+import { useMoveSongSectionMutation } from './state/api/songSectionsApi.ts'
 import { ActionIcon, Box, Card, Group, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
 import { IconChecks, IconEye, IconEyeOff, IconListNumbers, IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
-import AddNewSongSection from '../AddNewSongSection.tsx'
+import AddNewSongSection from './components/AddNewSongSection.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
 import { SongSection, SongSettings } from '../../../../../../types/models/Song.ts'
-import SongSectionCard from '../SongSectionCard.tsx'
+import SongSectionCard from './components/SongSectionCard.tsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import SongArrangementsModal from '../modal/SongArrangementsModal.tsx'
+import SongArrangementsModal from './components/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../../../../../components/popover/PopoverConfirmation.tsx'
-import SongSectionsSettingsButton from '../buttons/SongSectionsSettingsButton.tsx'
+import SongSectionsSettingsButton from './components/toolbar/SongSectionsSettingsButton.tsx'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../../../../context/MainContext.tsx'
-import SongSectionsContextMenu from '../SongSectionsContextMenu.tsx'
-import SongSectionsSelectionDrawer from '../SongSectionsSelectionDrawer.tsx'
-import { ClickSelectProvider, useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
-import CustomRehearsalButton from '../buttons/CustomRehearsalButton.tsx'
+import SongSectionsContextMenu from './components/SongSectionsContextMenu.tsx'
+import SongSectionsSelectionDrawer from './components/SongSectionsSelectionDrawer.tsx'
+import {
+  ClickSelectProvider,
+  useClickSelect
+} from '../../../../../../context/ClickSelectContext.tsx'
+import CustomRehearsalButton from './components/toolbar/CustomRehearsalButton.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]

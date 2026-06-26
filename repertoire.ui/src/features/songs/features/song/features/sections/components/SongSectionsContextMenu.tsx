@@ -1,14 +1,14 @@
 import { Menu } from '@mantine/core'
 import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
-import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
+import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { ReactNode, useEffect } from 'react'
-import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
-import { useBulkRehearsalsSongSectionsMutation } from '../../../../../state/api/songsApi.ts'
+import DeleteSongSectionsModal from './DeleteSongSectionsModal.tsx'
+import { useBulkRehearsalsSongSectionsMutation } from '../state/api/songSectionsApi.ts'
 import { toast } from 'react-toastify'
-import plural from '../../../../../utils/plural.ts'
-import MenuItemConfirmation from '../../../../../components/menu/item/MenuItemConfirmation.tsx'
-import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
+import plural from '../../../../../../../utils/plural.ts'
+import MenuItemConfirmation from '../../../../../../../components/menu/item/MenuItemConfirmation.tsx'
+import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
 
 function SongSectionsContextMenu({ children, songId }: { children: ReactNode; songId: string }) {
   const { selectedIds, clearSelection } = useClickSelect()

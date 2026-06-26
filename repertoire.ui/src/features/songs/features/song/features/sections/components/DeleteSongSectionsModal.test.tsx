@@ -1,10 +1,10 @@
 import { http, HttpResponse } from 'msw'
-import { reduxRender, withToastify } from '../../../../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import DeleteSongSectionsModal from './DeleteSongSectionsModal.tsx'
-import { BulkDeleteSongSectionsRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { BulkDeleteSongSectionsRequest } from '../types/requests/SongSectionRequests.ts'
 
 describe('Delete Song Sections Modal', () => {
   const server = setupServer()

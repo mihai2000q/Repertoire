@@ -1,12 +1,12 @@
-import { emptySongSection, reduxRender, withToastify } from '../../../../../../test-utils.tsx'
-import { Instrument, SongSection, SongSectionType } from '../../../../../../types/models/Song.ts'
+import { emptySongSection, reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
+import { Instrument, SongSection, SongSectionType } from '../../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongSectionRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { UpdateSongSectionRequest } from '../types/requests/SongSectionRequests.ts'
 import EditSongSectionModal from './EditSongSectionModal.tsx'
-import { BandMember } from '../../../../../../types/models/Artist.ts'
+import { BandMember } from '../../../../../../../types/models/Artist.ts'
 
 describe('Edit Song Description Modal', () => {
   const bandMembers: BandMember[] = [

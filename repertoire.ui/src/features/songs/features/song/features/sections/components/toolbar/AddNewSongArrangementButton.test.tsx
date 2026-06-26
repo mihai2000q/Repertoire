@@ -1,10 +1,10 @@
-import { reduxRender, withToastify } from '../../../../../../test-utils.tsx'
+import { reduxRender, withToastify } from '../../../../../../../../test-utils.tsx'
 import AddNewSongArrangementButton from './AddNewSongArrangementButton.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event/dist/cjs/index.js'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { CreateSongArrangementRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { CreateSongArrangementRequest } from '../../types/requests/SongArrangementsRequests.ts'
 
 describe('Add New Song Arrangement Button', () => {
   const server = setupServer()
