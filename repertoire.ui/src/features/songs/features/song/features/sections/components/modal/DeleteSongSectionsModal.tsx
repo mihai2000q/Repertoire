@@ -1,7 +1,7 @@
-import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
-import { useBulkDeleteSongSectionsMutation } from '../state/api/songSectionsApi.ts'
+import WarningModal from '../../../../../../../../components/modal/WarningModal.tsx'
+import { useBulkDeleteSongSectionsMutation } from '../../state/api/songSectionsApi.ts'
 import { toast } from 'react-toastify'
-import plural from '../../../../../../../utils/plural.ts'
+import plural from '../../../../../../../../utils/plural.ts'
 
 interface DeleteSongSectionsModalProps {
   ids: string[]

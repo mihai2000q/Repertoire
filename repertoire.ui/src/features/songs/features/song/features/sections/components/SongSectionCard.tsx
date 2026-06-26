@@ -31,7 +31,7 @@ import {
   useDeleteSongSectionMutation,
   useUpdateSongSectionMutation
 } from '../state/api/songSectionsApi.ts'
-import EditSongSectionModal from './EditSongSectionModal.tsx'
+import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import useInstrumentIcon from '../../../../../../../hooks/useInstrumentIcon.tsx'

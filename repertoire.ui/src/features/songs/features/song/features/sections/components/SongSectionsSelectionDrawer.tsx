@@ -3,7 +3,7 @@ import SelectionDrawer from '../../../../../../../components/drawer/SelectionDra
 import { useDisclosure } from '@mantine/hooks'
 import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../../../../utils/plural.ts'
-import DeleteSongSectionsModal from './DeleteSongSectionsModal.tsx'
+import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { useBulkRehearsalsSongSectionsMutation } from '../state/api/songSectionsApi.ts'
 import { toast } from 'react-toastify'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'

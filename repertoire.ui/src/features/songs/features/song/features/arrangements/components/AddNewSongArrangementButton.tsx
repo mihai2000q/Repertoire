@@ -1,6 +1,6 @@
 import { ActionIcon, Group, Popover, Stack, Text, TextInput } from '@mantine/core'
 import { IconPlus, IconSend } from '@tabler/icons-react'
-import { useCreateSongArrangementMutation } from '../../state/api/songArrangementsApi.ts'
+import { useCreateSongArrangementMutation } from '../state/api/songArrangementsApi.ts'
 import { toast } from 'react-toastify'
 import { useEffect, useState } from 'react'
 

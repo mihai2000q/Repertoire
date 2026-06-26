@@ -11,13 +11,13 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { SongArrangement } from '../../../../../../../types/models/Song.ts'
+import { SongArrangement } from '../../../../../../types/models/Song.ts'
 import {
   useBulkUpdateSongArrangementsMutation,
   useDeleteSongArrangementMutation,
   useGetSongArrangementsQuery,
   useUpdateDefaultSongArrangementMutation
-} from '../state/api/songArrangementsApi.ts'
+} from './state/api/songArrangementsApi.ts'
 import {
   IconArrowBackUp,
   IconMinus,
@@ -27,15 +27,15 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
-import SongArrangementsMenu from './SongArrangementsMenu.tsx'
-import SongArrangementsModalLoader from './SongArrangementsModalLoader.tsx'
+import SongArrangementsMenu from './components/SongArrangementsMenu.tsx'
+import SongArrangementsModalLoader from './components/SongArrangementsModalLoader.tsx'
 import { toast } from 'react-toastify'
-import { UpdateSongArrangementRequest } from '../types/requests/SongArrangementsRequests.ts'
+import { UpdateSongArrangementRequest } from './types/requests/SongArrangementsRequests.ts'
 import { useDisclosure, useElementSize, useMap } from '@mantine/hooks'
-import AddNewSongArrangementButton from './toolbar/AddNewSongArrangementButton.tsx'
-import plural from '../../../../../../../utils/plural.ts'
-import LoadingOverlayDebounced from '../../../../../../../components/loader/LoadingOverlayDebounced.tsx'
-import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
+import AddNewSongArrangementButton from './components/AddNewSongArrangementButton.tsx'
+import plural from '../../../../../../utils/plural.ts'
+import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
+import WarningModal from '../../../../../../components/modal/WarningModal.tsx'
 
 interface SongArrangementsModalProps {
   opened: boolean
