@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify'
-import { useRemoveAlbumsFromArtistMutation } from '../../../../../../state/api/artistsApi.ts'
+import { useRemoveAlbumsFromArtistMutation } from '../../state/api/artistApi.ts'
 import WarningModal from '../../../../../../components/modal/WarningModal.tsx'
 import plural from '../../../../../../utils/plural.ts'
 

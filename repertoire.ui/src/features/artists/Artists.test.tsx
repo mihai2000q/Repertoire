@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import Artists from './Artists.tsx'
 import {
-  defaultArtistFiltersMetadata,
   emptyAlbum,
   emptyArtist,
   emptySong,
@@ -21,6 +20,7 @@ import ArtistProperty from '../../types/enums/properties/ArtistProperty.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { createRef } from 'react'
+import { ArtistFiltersMetadata } from './types/ArtistFilterMetadata.ts'
 
 // Mock Drag Select
 vi.mock('dragselect', () => ({
@@ -45,6 +45,26 @@ vi.mock('../../context/MainContext.tsx', () => ({
     mainScroll: { ref: createRef() }
   }))
 }))
+
+const defaultArtistFiltersMetadata: ArtistFiltersMetadata = {
+  minBandMembersCount: 0,
+  maxBandMembersCount: 5,
+
+  minAlbumsCount: 0,
+  maxAlbumsCount: 5,
+
+  minSongsCount: 0,
+  maxSongsCount: 12,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
 
 describe('Artists', () => {
   const artists: Artist[] = [

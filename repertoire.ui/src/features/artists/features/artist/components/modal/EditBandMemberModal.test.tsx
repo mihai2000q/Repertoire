@@ -5,7 +5,7 @@ import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { BandMember, BandMemberRole } from '../../../../../../types/models/Artist.ts'
-import { UpdateBandMemberRequest } from '../../../../../../types/requests/ArtistRequests.ts'
+import { UpdateBandMemberRequest } from '../../types/requests/ArtistRequests.ts'
 
 describe('Edit Band Member Header Modal', () => {
   const bandMemberRoles: BandMemberRole[] = [

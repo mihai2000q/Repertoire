@@ -7,7 +7,7 @@ import FiltersDrawer from '../../../components/drawer/FiltersDrawer.tsx'
 import {
   useGetArtistFiltersMetadataQuery,
   useLazyGetArtistFiltersMetadataQuery
-} from '../../../state/api/artistsApi.ts'
+} from '../state/api/artistsApi.ts'
 import ArtistProperty from '../../../types/enums/properties/ArtistProperty.ts'
 import { artistsFiltersMetadataMap } from '../data/artistsFilters.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'

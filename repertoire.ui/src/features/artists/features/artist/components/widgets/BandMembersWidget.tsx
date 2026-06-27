@@ -15,7 +15,7 @@ import { useDidUpdate, useDisclosure, useListState, useViewportSize } from '@man
 import AddNewBandMemberModal from '../modal/AddNewBandMemberModal.tsx'
 import BandMemberCard from '../BandMemberCard.tsx'
 import { useEffect, useRef, useState } from 'react'
-import { useMoveBandMemberMutation } from '../../../../../../state/api/artistsApi.ts'
+import { useMoveBandMemberMutation } from '../../state/api/artistApi.ts'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 

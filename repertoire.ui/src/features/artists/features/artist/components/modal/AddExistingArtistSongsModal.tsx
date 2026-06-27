@@ -25,7 +25,7 @@ import {
   useListState
 } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useAddSongsToArtistMutation } from '../../../../../../state/api/artistsApi.ts'
+import { useAddSongsToArtistMutation } from '../../state/api/artistApi.ts'
 import { IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect, useRef } from 'react'
 import { useGetInfiniteSearchInfiniteQuery } from '../../../../../../state/api/searchApi.ts'

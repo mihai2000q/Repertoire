@@ -11,9 +11,9 @@ import {
 } from '@mantine/core'
 import {
   useDeleteImageFromArtistMutation,
-  useSaveImageToArtistMutation,
   useUpdateArtistMutation
-} from '../../../../../../state/api/artistsApi.ts'
+} from '../../state/api/artistApi.ts'
+import { useSaveImageToArtistMutation } from '../../../../../../state/api/artistsApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
 import { EditArtistHeaderForm, editArtistHeaderSchema } from '../../validation/artistForm.ts'

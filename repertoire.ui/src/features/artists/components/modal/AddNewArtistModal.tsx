@@ -4,10 +4,8 @@ import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
 import { AddNewArtistForm, addNewArtistSchema } from '../../validation/artistsForm.ts'
-import {
-  useCreateArtistMutation,
-  useSaveImageToArtistMutation
-} from '../../../../state/api/artistsApi.ts'
+import { useSaveImageToArtistMutation } from '../../../../state/api/artistsApi.ts'
+import { useCreateArtistMutation } from '../../state/api/artistsApi.ts'
 import ImageDropzoneWithPreview from '../../../../components/image/ImageDropzoneWithPreview.tsx'
 import { IconUserFilled } from '@tabler/icons-react'
 

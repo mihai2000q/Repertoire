@@ -8,7 +8,7 @@ import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDr
 import {
   useCreateBandMemberMutation,
   useSaveImageToBandMemberMutation
-} from '../../../../../../state/api/artistsApi.ts'
+} from '../../state/api/artistApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../../../../../components/form/select/multi/BandMemberRoleMultiSelect.tsx'
 import ColorInputButton from '../../../../../../components/form/input/button/ColorInputButton.tsx'

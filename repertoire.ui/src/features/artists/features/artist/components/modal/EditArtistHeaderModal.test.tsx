@@ -5,7 +5,7 @@ import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { UpdateArtistRequest } from '../../../../../../types/requests/ArtistRequests.ts'
+import { UpdateArtistRequest } from '../../types/requests/ArtistRequests.ts'
 
 describe('Edit Artist Header Modal', () => {
   const artist: Artist = {

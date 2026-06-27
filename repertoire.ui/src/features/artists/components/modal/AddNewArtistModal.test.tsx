@@ -4,7 +4,7 @@ import AddNewArtistModal from './AddNewArtistModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { CreateArtistRequest } from '../../../../types/requests/ArtistRequests.ts'
+import { CreateArtistRequest } from '../../types/requests/ArtistsRequests.ts'
 
 describe('Add New Artist Modal', () => {
   const server = setupServer()

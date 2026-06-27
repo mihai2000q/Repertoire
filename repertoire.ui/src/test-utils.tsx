@@ -15,7 +15,6 @@ import Order from './types/Order.ts'
 import User from './features/main/features/topbar/types/models/User.ts'
 import Playlist from './types/models/Playlist.ts'
 import {
-  ArtistFiltersMetadata,
   PlaylistFiltersMetadata,
   SongFiltersMetadata
 } from './types/models/FiltersMetadata.ts'
@@ -357,26 +356,6 @@ export const emptySongSection: SongSection = {
 export const emptyOrder: Order = {
   label: '',
   property: ''
-}
-
-export const defaultArtistFiltersMetadata: ArtistFiltersMetadata = {
-  minBandMembersCount: 0,
-  maxBandMembersCount: 5,
-
-  minAlbumsCount: 0,
-  maxAlbumsCount: 5,
-
-  minSongsCount: 0,
-  maxSongsCount: 12,
-
-  minRehearsals: 0,
-  maxRehearsals: 55,
-
-  minConfidence: 0,
-  maxConfidence: 75,
-
-  minProgress: 0,
-  maxProgress: 100
 }
 
 export const defaultSongFiltersMetadata: SongFiltersMetadata = {

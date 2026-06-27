@@ -4,7 +4,7 @@ import AddNewBandMemberModal from './AddNewBandMemberModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { CreateBandMemberRequest } from '../../../../../../types/requests/ArtistRequests.ts'
+import { CreateBandMemberRequest } from '../../types/requests/ArtistRequests.ts'
 import { BandMemberRole } from '../../../../../../types/models/Artist.ts'
 
 describe('Add New Band Member Modal', () => {

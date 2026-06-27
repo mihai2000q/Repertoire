@@ -9,7 +9,7 @@ import {
   useDeleteImageFromBandMemberMutation,
   useSaveImageToBandMemberMutation,
   useUpdateBandMemberMutation
-} from '../../../../../../state/api/artistsApi.ts'
+} from '../../state/api/artistApi.ts'
 import { IconUserFilled } from '@tabler/icons-react'
 import BandMemberRoleMultiSelect from '../../../../../../components/form/select/multi/BandMemberRoleMultiSelect.tsx'
 import { BandMember } from '../../../../../../types/models/Artist.ts'

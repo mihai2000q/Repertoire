@@ -5,7 +5,7 @@ import WithTotalCountResponse from '../../../../../../types/responses/WithTotalC
 import { setupServer } from 'msw/node'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { AddAlbumsToArtistRequest } from '../../../../../../types/requests/ArtistRequests.ts'
+import { AddAlbumsToArtistRequest } from '../../types/requests/ArtistRequests.ts'
 import { AlbumSearch } from '../../../../../../types/models/Search.ts'
 import SearchType from '../../../../../../types/enums/SearchType.ts'
 
