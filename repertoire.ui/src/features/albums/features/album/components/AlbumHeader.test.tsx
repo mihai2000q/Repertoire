@@ -1,5 +1,10 @@
 import Album from '../../../../../types/models/Album.ts'
-import { emptyAlbum, emptyArtist, emptySong, reduxRouterRender } from '../../../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyArtist,
+  emptySong,
+  reduxRouterRender
+} from '../../../../../test-utils.tsx'
 import AlbumHeader from './AlbumHeader.tsx'
 import userEvent from '@testing-library/user-event'
 import { screen } from '@testing-library/react'

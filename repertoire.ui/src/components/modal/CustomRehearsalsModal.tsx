@@ -16,10 +16,7 @@ import {
 import useSearchBy from '../../hooks/api/useSearchBy.ts'
 import FilterOperator from '../../types/enums/FilterOperator.ts'
 import SongWithProperty from '../../types/enums/properties/SongWithProperty.ts'
-import {
-  useAddCustomSongRehearsalsMutation,
-  useGetSongsQuery
-} from '../../state/api/songsApi.ts'
+import { useAddCustomSongRehearsalsMutation, useGetSongsQuery } from '../../state/api/songsApi.ts'
 import Song, { SongArrangement } from '../../types/models/Song.ts'
 import { AddCustomSongRehearsalRequest } from '../../types/requests/SongRequests.ts'
 import { toast } from 'react-toastify'

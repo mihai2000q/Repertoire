@@ -201,5 +201,5 @@ export const {
   useGetSongArrangementsQuery,
   useGetGuitarTuningsQuery,
   useGetInstrumentsQuery,
-  useGetSongSectionTypesQuery // move
+  useGetSongSectionTypesQuery
 } = songsApi

@@ -1,10 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import Albums from './Albums.tsx'
-import {
-  emptyAlbum,
-  emptySong,
-  reduxRouterRender
-} from '../../test-utils.tsx'
+import { emptyAlbum, emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'

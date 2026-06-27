@@ -1,4 +1,9 @@
-import { emptyAlbum, emptyOrder, reduxRouterRender, withToastify } from '../../../../../test-utils.tsx'
+import {
+  emptyAlbum,
+  emptyOrder,
+  reduxRouterRender,
+  withToastify
+} from '../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import Album from '../../../../../types/models/Album.ts'

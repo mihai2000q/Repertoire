@@ -4,7 +4,10 @@ import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { AddNewArtistSongForm, addNewArtistSongSchema } from '../../validation/artistForm.ts'
 import { toast } from 'react-toastify'
-import { useCreateSongMutation, useSaveImageToSongMutation } from '../../../../../../state/api/songsApi.ts'
+import {
+  useCreateSongMutation,
+  useSaveImageToSongMutation
+} from '../../../../../../state/api/songsApi.ts'
 import ImageDropzoneWithPreview from '../../../../../../components/image/ImageDropzoneWithPreview.tsx'
 import GuitarTuningSelectButton from '../../../../../../components/form/select/button/GuitarTuningSelectButton.tsx'
 import DifficultySelectButton from '../../../../../../components/form/select/button/DifficultySelectButton.tsx'
