@@ -1,0 +1,178 @@
+import {
+  Avatar,
+  Combobox,
+  Group,
+  HoverCard,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip,
+  useCombobox
+} from '@mantine/core'
+import { BandMember } from '../../../types/models/Artist.ts'
+import { IconUser } from '@tabler/icons-react'
+import { useEffect, useState } from 'react'
+
+const BandMemberHoverCard = ({ bandMember }: { bandMember: BandMember }) => (
+  <HoverCard openDelay={200}>
+    <HoverCard.Target>
+      <Avatar
+        size={24}
+        color={bandMember.color}
+        src={bandMember.imageUrl}
+        alt={bandMember.imageUrl && bandMember.name}
+      >
+        <IconUser size={15} />
+      </Avatar>
+    </HoverCard.Target>
+    <HoverCard.Dropdown>
+      <Group gap={'xs'} maw={200} wrap={'nowrap'}>
+        <Avatar
+          size={'lg'}
+          color={bandMember.color}
+          src={bandMember.imageUrl}
+          alt={bandMember.imageUrl && bandMember.name}
+        >
+          <IconUser size={30} />
+        </Avatar>
+        <Stack gap={0}>
+          <Text fw={500} lineClamp={2}>
+            {bandMember.name}
+          </Text>
+          <Text c={'dimmed'} fz={'xs'} lineClamp={1}>
+            {bandMember.roles[0].name}
+            {bandMember.roles.length > 1 && ' ...'}
+          </Text>
+        </Stack>
+      </Group>
+    </HoverCard.Dropdown>
+  </HoverCard>
+)
+
+interface BandMemberSelectProps {
+  bandMember: BandMember | null
+  setBandMember: (bandMember: BandMember | null) => void
+  bandMembers: BandMember[] | undefined
+}
+
+function BandMemberSelect({ bandMember, setBandMember, bandMembers }: BandMemberSelectProps) {
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption()
+  })
+
+  const _bandMember = bandMembers ? bandMember : null
+
+  const [value, setValue] = useState<string>(_bandMember?.name ?? '')
+  const [search, setSearch] = useState(_bandMember?.name ?? '')
+  useEffect(() => {
+    setValue(_bandMember?.name ?? '')
+    setSearch(_bandMember?.name ?? '')
+  }, [_bandMember])
+
+  const filteredMembers =
+    search.trim() !== ''
+      ? bandMembers?.filter((member) =>
+          member.name.toLowerCase().includes(search.toLowerCase().trim())
+        )
+      : bandMembers
+
+  const BandMemberOption = ({ member }: { member: BandMember }) => (
+    <Combobox.Option
+      key={member.id}
+      value={member.name}
+      aria-label={member.name}
+      onClick={() => setBandMember(_bandMember === member ? null : member)}
+    >
+      <Group gap={'xs'} wrap={'nowrap'}>
+        <Avatar
+          size={'sm'}
+          variant={'light'}
+          color={member.color}
+          src={member.imageUrl}
+          alt={member.imageUrl && member.name}
+        >
+          <IconUser size={14} />
+        </Avatar>
+        <Text lh={'xxs'} fw={500} lineClamp={2}>
+          {member.name}
+        </Text>
+      </Group>
+    </Combobox.Option>
+  )
+
+  function handleSubmit(valueString: string) {
+    setValue(valueString)
+    setSearch(valueString)
+    combobox.closeDropdown()
+  }
+
+  function handleClear() {
+    setValue('')
+    setSearch('')
+    setBandMember(null)
+  }
+
+  return (
+    <Combobox onOptionSubmit={handleSubmit} store={combobox}>
+      <Combobox.Target>
+        <Tooltip
+          label={'The artist of the song is either not set or not a band'}
+          ta={'center'}
+          w={190}
+          multiline
+          position={'top'}
+          disabled={bandMembers !== undefined}
+        >
+          <TextInput
+            role={'combobox'}
+            flex={1}
+            label={'Band Member'}
+            placeholder={'Choose a member'}
+            disabled={bandMembers === undefined}
+            leftSection={
+              _bandMember ? (
+                <BandMemberHoverCard bandMember={_bandMember} />
+              ) : (
+                <IconUser size={20} />
+              )
+            }
+            rightSection={
+              _bandMember ? <Combobox.ClearButton onClear={handleClear} /> : <Combobox.Chevron />
+            }
+            value={search}
+            onChange={(e) => {
+              combobox.openDropdown()
+              combobox.updateSelectedOptionIndex()
+              setSearch(e.currentTarget.value)
+            }}
+            onClick={() => combobox.openDropdown()}
+            onFocus={() => combobox.openDropdown()}
+            onBlur={() => {
+              combobox.closeDropdown()
+              setSearch(value)
+            }}
+          />
+        </Tooltip>
+      </Combobox.Target>
+
+      <Combobox.Dropdown pb={0}>
+        <Combobox.Options>
+          <ScrollArea.Autosize mah={200} scrollbarSize={5}>
+            <Stack gap={0} pb={'xxs'}>
+              {bandMembers?.length === 0 ? (
+                <Combobox.Empty>Artist has no members</Combobox.Empty>
+              ) : filteredMembers?.length === 0 ? (
+                <Combobox.Empty>No members found</Combobox.Empty>
+              ) : (
+                filteredMembers?.map((bm) => <BandMemberOption key={bm.id} member={bm} />)
+              )}
+            </Stack>
+          </ScrollArea.Autosize>
+        </Combobox.Options>
+      </Combobox.Dropdown>
+    </Combobox>
+  )
+}
+
+export default BandMemberSelect

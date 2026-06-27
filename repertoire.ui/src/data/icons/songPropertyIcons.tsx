@@ -14,10 +14,10 @@ import {
   IconTrendingUp,
   IconUser
 } from '@tabler/icons-react'
-import CustomIconGuitarHead from '../../components/@ui/icons/CustomIconGuitarHead.tsx'
-import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
-import CustomIconLightningTrio from '../../components/@ui/icons/CustomIconLightningTrio.tsx'
-import CustomIconMetronome from '../../components/@ui/icons/CustomIconMetronome.tsx'
+import CustomIconGuitarHead from '../../components/icons/CustomIconGuitarHead.tsx'
+import CustomIconAlbumVinyl from '../../components/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconLightningTrio from '../../components/icons/CustomIconLightningTrio.tsx'
+import CustomIconMetronome from '../../components/icons/CustomIconMetronome.tsx'
 
 export const songPropertyIcons = new Map<string, ReactElement>([
   [SongProperty.AlbumTitle, <CustomIconAlbumVinyl size={'100%'} key={'album'} />],

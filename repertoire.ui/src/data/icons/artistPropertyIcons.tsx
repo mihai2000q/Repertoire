@@ -11,8 +11,8 @@ import {
   IconUsers,
   IconUsersGroup
 } from '@tabler/icons-react'
-import CustomIconMusicNoteEighth from '../../components/@ui/icons/CustomIconMusicNoteEighth.tsx'
-import CustomIconAlbumVinyl from '../../components/@ui/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNoteEighth from '../../components/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconAlbumVinyl from '../../components/icons/CustomIconAlbumVinyl.tsx'
 import SongProperty from '../../types/enums/properties/SongProperty.ts'
 
 export const artistPropertyIcons = new Map<string, ReactElement>([

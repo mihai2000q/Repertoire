@@ -11,19 +11,8 @@ export interface GetPlaylistRequest {
   id: string
 }
 
-export interface CreatePlaylistRequest {
-  title: string
-  description: string
-}
-
 export interface AddPerfectRehearsalsToPlaylistsRequest {
   ids: string[]
-}
-
-export interface UpdatePlaylistRequest {
-  id: string
-  title: string
-  description: string
 }
 
 export interface BulkDeletePlaylistsRequest {
@@ -65,19 +54,4 @@ export interface AddSongsToPlaylistRequest {
 
 export interface AddPerfectPlaylistSongRehearsalsRequest {
   ids: string[]
-}
-
-export interface ShufflePlaylistSongsRequest {
-  id: string
-}
-
-export interface MoveSongFromPlaylistRequest {
-  id: string
-  playlistSongId: string
-  overPlaylistSongId: string
-}
-
-export interface RemoveSongsFromPlaylistRequest {
-  id: string
-  playlistSongIds: string[]
 }

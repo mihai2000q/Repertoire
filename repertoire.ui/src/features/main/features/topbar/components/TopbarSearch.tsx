@@ -1,0 +1,426 @@
+import { IconPlaylist, IconSearch } from '@tabler/icons-react'
+import {
+  alpha,
+  Avatar,
+  Center,
+  Chip,
+  Combobox,
+  ComboboxProps,
+  Group,
+  Highlight,
+  Indicator,
+  Loader,
+  LoadingOverlay,
+  MantineStyleProps,
+  MantineTheme,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
+  TextInputProps,
+  useCombobox
+} from '@mantine/core'
+import { useDebouncedValue, useIntersection } from '@mantine/hooks'
+import { useGetInfiniteSearchInfiniteQuery } from '../../../../../state/api/searchApi.ts'
+import {
+  AlbumSearch,
+  ArtistSearch,
+  PlaylistSearch,
+  SearchBase,
+  SongSearch
+} from '../../../../../types/models/Search.ts'
+import { useNavigate } from 'react-router-dom'
+import SearchType from '../../../../../types/enums/SearchType.ts'
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
+import CustomIconAlbumVinyl from '../../../../../components/icons/CustomIconAlbumVinyl.tsx'
+import CustomIconMusicNoteEighth from '../../../../../components/icons/CustomIconMusicNoteEighth.tsx'
+import CustomIconPlaylist2 from '../../../../../components/icons/CustomIconPlaylist2.tsx'
+import useSearchQueryCacheInvalidation from '../../../../home/hooks/useSearchQueryCacheInvalidation.ts'
+import CustomIconUserAlt from '../../../../../components/icons/CustomIconUserAlt.tsx'
+import WithTotalCountResponse from '../../../../../types/responses/WithTotalCountResponse.ts'
+
+const optionStyle = (theme: MantineTheme) => ({
+  borderRadius: '12px',
+  transition: '0.15s',
+  '&:hover': { backgroundColor: alpha(theme.colors.gray[1], 0.7) }
+})
+
+const optionProps: MantineStyleProps = {
+  pl: 'sm',
+  pr: 0,
+  mx: 'xs'
+}
+
+const AvatarIndicator = ({
+  src,
+  alt,
+  indicatorIcon,
+  defaultIcon
+}: {
+  src: string
+  alt: string
+  indicatorIcon: ReactNode
+  defaultIcon: ReactNode
+}) => (
+  <Indicator
+    position={'bottom-end'}
+    color={'transparent'}
+    label={
+      <Center
+        bg={'gray.0'}
+        c={'primary.5'}
+        style={(theme) => ({ borderRadius: '50%', boxShadow: theme.shadows.md })}
+        p={3}
+      >
+        {indicatorIcon}
+      </Center>
+    }
+  >
+    <Avatar
+      radius={'md'}
+      src={src}
+      alt={alt}
+      color={'gray.5'}
+      style={(theme) => ({ boxShadow: theme.shadows.sm })}
+      imageProps={{ loading: 'lazy' }}
+    >
+      <Center c={'white'}>{defaultIcon}</Center>
+    </Avatar>
+  </Indicator>
+)
+
+const TypeChip = ({
+  type,
+  children,
+  onClick
+}: {
+  type: SearchType
+  children: string
+  onClick: (e: MouseEvent) => void
+}) => (
+  <Chip
+    variant={'light'}
+    size={'xs'}
+    value={type}
+    onClick={onClick}
+    styles={{ label: { transition: '0.16s' } }}
+  >
+    {children}
+  </Chip>
+)
+
+interface TopbarSearchProps extends TextInputProps {
+  comboboxProps?: ComboboxProps
+  dropdownMinHeight?: number | string
+}
+
+function TopbarSearch({ comboboxProps, dropdownMinHeight = 200, ...others }: TopbarSearchProps) {
+  useSearchQueryCacheInvalidation()
+
+  const textInputRef = useRef(null)
+
+  const navigate = useNavigate()
+  const combobox = useCombobox()
+
+  const [value, setValue] = useState('')
+  const [search] = useDebouncedValue(value, 200)
+  const [type, setType] = useState<SearchType | null>(null)
+
+  const {
+    data: dataSearchResults,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage
+  } = useGetInfiniteSearchInfiniteQuery({
+    query: search,
+    type: type === null ? undefined : type,
+    order: search.trim() !== '' ? [] : ['createdAt:desc']
+  })
+  const searchResults: WithTotalCountResponse<SearchBase> = {
+    models: dataSearchResults?.pages.flatMap((x) => x.models ?? []),
+    totalCount: dataSearchResults?.pages[0].totalCount
+  }
+
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const { ref: lastRef, entry } = useIntersection({
+    root: scrollRef.current,
+    threshold: 0.1
+  })
+  useEffect(() => {
+    if (entry?.isIntersecting === true) fetchNextPage()
+  }, [entry?.isIntersecting])
+
+  const ArtistOption = ({ artist }: { artist: ArtistSearch }) => (
+    <Combobox.Option
+      value={artist.name}
+      aria-label={artist.name}
+      onClick={() => navigate(`/artist/${artist.id}`)}
+      sx={optionStyle}
+      {...optionProps}
+    >
+      <Group gap={'xs'} wrap={'nowrap'}>
+        <Avatar
+          src={artist.imageUrl}
+          alt={artist.imageUrl && artist.name}
+          style={(theme) => ({ boxShadow: theme.shadows.sm })}
+          color={'gray.0'}
+          imageProps={{ loading: 'lazy' }}
+        >
+          <Center c={'gray.7'}>
+            <CustomIconUserAlt size={17} />
+          </Center>
+        </Avatar>
+        <Highlight
+          highlight={search}
+          highlightStyles={{ fontWeight: 800 }}
+          fw={500}
+          lineClamp={2}
+          lh={'xxs'}
+        >
+          {artist.name}
+        </Highlight>
+      </Group>
+    </Combobox.Option>
+  )
+
+  const AlbumOption = ({ album }: { album: AlbumSearch }) => (
+    <Combobox.Option
+      value={album.title}
+      aria-label={album.title}
+      onClick={() => navigate(`/album/${album.id}`)}
+      sx={optionStyle}
+      {...optionProps}
+    >
+      <Group gap={'xs'} wrap={'nowrap'}>
+        <AvatarIndicator
+          src={album.imageUrl}
+          alt={album.imageUrl && album.title}
+          indicatorIcon={<CustomIconAlbumVinyl size={12} />}
+          defaultIcon={<CustomIconAlbumVinyl size={16} />}
+        />
+        <Stack gap={0}>
+          <Highlight
+            highlight={search}
+            highlightStyles={{ fontWeight: 800 }}
+            lh={'xxs'}
+            fw={500}
+            lineClamp={1}
+          >
+            {album.title}
+          </Highlight>
+          {album.artist && (
+            <Highlight
+              highlight={search}
+              highlightStyles={{ fontWeight: 800 }}
+              lh={'xxs'}
+              c={'dimmed'}
+              fz={'xs'}
+              fw={500}
+              lineClamp={1}
+            >
+              {album.artist.name}
+            </Highlight>
+          )}
+        </Stack>
+      </Group>
+    </Combobox.Option>
+  )
+
+  const SongOption = ({ song }: { song: SongSearch }) => (
+    <Combobox.Option
+      value={song.title}
+      aria-label={song.title}
+      onClick={() => navigate(`/song/${song.id}`)}
+      sx={optionStyle}
+      {...optionProps}
+    >
+      <Group gap={'xs'} wrap={'nowrap'}>
+        <AvatarIndicator
+          src={song.imageUrl ?? song.album?.imageUrl}
+          alt={(song.imageUrl ?? song.album?.imageUrl) && song.title}
+          indicatorIcon={<CustomIconMusicNoteEighth size={12} />}
+          defaultIcon={<CustomIconMusicNoteEighth size={20} />}
+        />
+        <Stack gap={0}>
+          <Highlight
+            highlight={search}
+            highlightStyles={{ fontWeight: 800 }}
+            lh={'xxs'}
+            fw={500}
+            lineClamp={1}
+          >
+            {song.title}
+          </Highlight>
+          {song.artist && (
+            <Highlight
+              highlight={search}
+              highlightStyles={{ fontWeight: 800 }}
+              lh={'xxs'}
+              c={'dimmed'}
+              fz={'xs'}
+              fw={500}
+              lineClamp={1}
+            >
+              {song.artist.name}
+            </Highlight>
+          )}
+        </Stack>
+      </Group>
+    </Combobox.Option>
+  )
+
+  const PlaylistOption = ({ playlist }: { playlist: PlaylistSearch }) => (
+    <Combobox.Option
+      value={playlist.title}
+      aria-label={playlist.title}
+      onClick={() => navigate(`/playlist/${playlist.id}`)}
+      sx={optionStyle}
+      {...optionProps}
+    >
+      <Group gap={'xs'} wrap={'nowrap'}>
+        <AvatarIndicator
+          src={playlist.imageUrl}
+          alt={playlist.imageUrl && playlist.title}
+          indicatorIcon={<CustomIconPlaylist2 size={12} />}
+          defaultIcon={<IconPlaylist size={18} />}
+        />
+        <Highlight
+          highlight={search}
+          highlightStyles={{ fontWeight: 800 }}
+          lh={'xxs'}
+          fw={500}
+          lineClamp={2}
+        >
+          {playlist.title}
+        </Highlight>
+      </Group>
+    </Combobox.Option>
+  )
+
+  function handleSubmit() {
+    setValue('')
+    combobox.closeDropdown()
+    textInputRef.current.blur()
+    setType(null)
+  }
+
+  function handleChipClick(event: MouseEvent<HTMLInputElement>) {
+    scrollRef.current.scrollTo({ top: 0, behavior: 'instant' })
+    if (event.currentTarget.value === type) {
+      setType(null)
+    }
+  }
+
+  return (
+    <Combobox onOptionSubmit={handleSubmit} store={combobox} {...comboboxProps}>
+      <Combobox.Target>
+        <TextInput
+          ref={textInputRef}
+          role={'searchbox'}
+          aria-label={'search'}
+          placeholder={'Search'}
+          leftSection={<IconSearch size={16} stroke={2} />}
+          value={value}
+          fw={500}
+          radius={'lg'}
+          styles={(theme) => ({
+            input: {
+              transition: '0.3s',
+              backgroundColor: alpha(theme.colors.gray[0], 0.1),
+              borderWidth: 0,
+              '&:focus, &:hover': {
+                boxShadow: theme.shadows.sm,
+                backgroundColor: alpha(theme.colors.gray[0], 0.2)
+              },
+              ...(combobox.dropdownOpened && {
+                boxShadow: theme.shadows.sm,
+                backgroundColor: alpha(theme.colors.gray[0], 0.2)
+              })
+            }
+          })}
+          {...others}
+          onChange={(event) => {
+            setValue(event.currentTarget.value)
+            combobox.openDropdown()
+            combobox.updateSelectedOptionIndex()
+          }}
+          onFocus={() => combobox.openDropdown()}
+        />
+      </Combobox.Target>
+
+      <Combobox.Dropdown p={0}>
+        <LoadingOverlay visible={isFetching && !isFetchingNextPage} />
+
+        <Stack gap={'xs'}>
+          <Chip.Group multiple={false} value={type} onChange={(e) => setType(e as SearchType)}>
+            <Group px={'xs'} pt={'xs'} gap={6} wrap={'nowrap'} style={{ alignSelf: 'center' }}>
+              <TypeChip type={SearchType.Artist} onClick={handleChipClick}>
+                Artists
+              </TypeChip>
+              <TypeChip type={SearchType.Album} onClick={handleChipClick}>
+                Albums
+              </TypeChip>
+              <TypeChip type={SearchType.Song} onClick={handleChipClick}>
+                Songs
+              </TypeChip>
+              <TypeChip type={SearchType.Playlist} onClick={handleChipClick}>
+                Playlists
+              </TypeChip>
+            </Group>
+          </Chip.Group>
+
+          <Stack gap={0}>
+            {(searchResults?.totalCount !== 0 ||
+              (searchResults?.totalCount !== 0 && search.trim() !== '')) && (
+              <Text fw={500} px={'lg'} c={'dimmed'} fz={'xs'} pt={'xxs'}>
+                {search.trim() === '' ? 'Recently added' : 'Search results'}
+              </Text>
+            )}
+
+            <Combobox.Options pt={'xxs'}>
+              <ScrollArea.Autosize
+                mah={dropdownMinHeight}
+                scrollbarSize={5}
+                viewportRef={scrollRef}
+              >
+                <Stack gap={0} py={'xxs'}>
+                  {searchResults?.models?.map((result) =>
+                    result.type === SearchType.Artist ? (
+                      <ArtistOption key={result.id} artist={result as ArtistSearch} />
+                    ) : result.type === SearchType.Album ? (
+                      <AlbumOption key={result.id} album={result as AlbumSearch} />
+                    ) : result.type === SearchType.Song ? (
+                      <SongOption key={result.id} song={result as SongSearch} />
+                    ) : result.type === SearchType.Playlist ? (
+                      <PlaylistOption key={result.id} playlist={result as PlaylistSearch} />
+                    ) : (
+                      <></>
+                    )
+                  )}
+                </Stack>
+
+                {searchResults?.totalCount === 0 && search.trim() === '' && (
+                  <Combobox.Empty pb={'md'} fw={500}>
+                    There is nothing in your library
+                  </Combobox.Empty>
+                )}
+                {searchResults?.totalCount === 0 && (
+                  <Combobox.Empty pb={'md'} fw={500}>
+                    No results found
+                  </Combobox.Empty>
+                )}
+
+                <Stack gap={0} align={'center'}>
+                  <div ref={lastRef} />
+                  {isFetchingNextPage && <Loader size={25} m={'sm'} />}
+                </Stack>
+              </ScrollArea.Autosize>
+            </Combobox.Options>
+          </Stack>
+        </Stack>
+      </Combobox.Dropdown>
+    </Combobox>
+  )
+}
+
+export default TopbarSearch

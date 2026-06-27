@@ -11,30 +11,16 @@ import {
   AddCustomSongRehearsalsRequest,
   AddPerfectSongRehearsalRequest,
   AddPerfectSongRehearsalsRequest,
-  BulkDeleteSongSectionsRequest,
   BulkDeleteSongsRequest,
-  BulkRehearsalsSongSectionsRequest,
-  BulkUpdateSongArrangementsRequest,
-  CreateSongArrangementRequest,
   CreateSongRequest,
-  CreateSongSectionRequest,
-  DeleteSongArrangementRequest,
-  DeleteSongSectionRequest,
   GetSongArrangementsRequest,
   GetSongsRequest,
-  MoveSongArrangementRequest,
-  MoveSongSectionRequest,
   SaveImageToSongRequest,
-  UpdateAllSongSectionsRequest,
-  UpdateDefaultSongArrangementRequest,
-  UpdateSongRequest,
-  UpdateSongSectionRequest,
   UpdateSongSettingsRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
-import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -54,15 +40,6 @@ const songsApi = api.injectEndpoints({
               bandMembers: response.artist.bandMembers ?? []
             }
           : response.artist
-      })
-    }),
-    getSongFiltersMetadata: build.query<SongFiltersMetadata, { searchBy?: string[] }>({
-      query: (arg) => `songs/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Songs', 'Artists', 'Albums'],
-      transformResponse: (response: SongFiltersMetadata) => ({
-        ...response,
-        artistIds: response.artistIds ?? [],
-        albumIds: response.albumIds ?? []
       })
     }),
 
@@ -143,14 +120,6 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
-    updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
-      query: (body) => ({
-        url: 'songs',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
     updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
       query: (body) => ({
         url: 'songs/settings',
@@ -191,115 +160,9 @@ const songsApi = api.injectEndpoints({
       invalidatesTags: ['Songs']
     }),
 
-    // sections
-    createSongSection: build.mutation<HttpMessageResponse, CreateSongSectionRequest>({
-      query: (body) => ({
-        url: 'songs/sections',
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    bulkRehearsalsSongSections: build.mutation<
-      HttpMessageResponse,
-      BulkRehearsalsSongSectionsRequest
-    >({
-      query: (body) => ({
-        url: 'songs/sections/bulk-rehearsals',
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    updateSongSection: build.mutation<HttpMessageResponse, UpdateSongSectionRequest>({
-      query: (body) => ({
-        url: 'songs/sections',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    updateAllSongSections: build.mutation<HttpMessageResponse, UpdateAllSongSectionsRequest>({
-      query: (body) => ({
-        url: 'songs/sections/all',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    moveSongSection: build.mutation<HttpMessageResponse, MoveSongSectionRequest>({
-      query: (body) => ({
-        url: 'songs/sections/move',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    bulkDeleteSongSections: build.mutation<HttpMessageResponse, BulkDeleteSongSectionsRequest>({
-      query: (body) => ({
-        url: 'songs/sections/bulk-delete',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    deleteSongSection: build.mutation<HttpMessageResponse, DeleteSongSectionRequest>({
-      query: (arg) => ({
-        url: `songs/sections/${arg.id}/from/${arg.songId}`,
-        method: 'DELETE'
-      }),
-      invalidatesTags: ['Songs']
-    }),
-
-    // arrangements
     getSongArrangements: build.query<SongArrangement[], GetSongArrangementsRequest>({
       query: (arg) => `songs/arrangements${createQueryParams(arg)}`,
       providesTags: ['SongArrangements', 'Songs']
-    }),
-    createSongArrangement: build.mutation<{ id: string }, CreateSongArrangementRequest>({
-      query: (body) => ({
-        url: 'songs/arrangements',
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['SongArrangements']
-    }),
-    moveSongArrangement: build.mutation<HttpMessageResponse, MoveSongArrangementRequest>({
-      query: (body) => ({
-        url: 'songs/arrangements/move',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['SongArrangements']
-    }),
-    bulkUpdateSongArrangements: build.mutation<
-      HttpMessageResponse,
-      BulkUpdateSongArrangementsRequest
-    >({
-      query: (body) => ({
-        url: 'songs/arrangements/bulk',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['SongArrangements']
-    }),
-    updateDefaultSongArrangement: build.mutation<
-      HttpMessageResponse,
-      UpdateDefaultSongArrangementRequest
-    >({
-      query: (body) => ({
-        url: 'songs/arrangements/default',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['SongArrangements', 'Songs']
-    }),
-    deleteSongArrangement: build.mutation<HttpMessageResponse, DeleteSongArrangementRequest>({
-      query: (arg) => ({
-        url: `songs/arrangements/${arg.id}/from/${arg.songId}`,
-        method: 'DELETE'
-      }),
-      invalidatesTags: ['SongArrangements', 'Songs']
     }),
 
     // sections - types
@@ -325,34 +188,18 @@ const songsApi = api.injectEndpoints({
 export const {
   useGetSongsQuery,
   useGetSongQuery,
-  useGetSongFiltersMetadataQuery,
-  useLazyGetSongFiltersMetadataQuery,
   useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddCustomSongRehearsalMutation,
   useAddCustomSongRehearsalsMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPerfectSongRehearsalsMutation,
-  useUpdateSongMutation,
   useUpdateSongSettingsMutation,
   useBulkDeleteSongsMutation,
   useSaveImageToSongMutation,
-  useDeleteImageFromSongMutation,
   useDeleteSongMutation,
+  useGetSongArrangementsQuery,
   useGetGuitarTuningsQuery,
   useGetInstrumentsQuery,
-  useGetSongSectionTypesQuery,
-  useCreateSongSectionMutation,
-  useBulkRehearsalsSongSectionsMutation,
-  useUpdateSongSectionMutation,
-  useUpdateAllSongSectionsMutation,
-  useMoveSongSectionMutation,
-  useBulkDeleteSongSectionsMutation,
-  useDeleteSongSectionMutation,
-  useGetSongArrangementsQuery,
-  useCreateSongArrangementMutation,
-  useBulkUpdateSongArrangementsMutation,
-  useUpdateDefaultSongArrangementMutation,
-  useMoveSongArrangementMutation,
-  useDeleteSongArrangementMutation
+  useGetSongSectionTypesQuery
 } = songsApi
