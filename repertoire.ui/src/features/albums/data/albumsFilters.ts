@@ -1,7 +1,7 @@
 import AlbumProperty from '../../../types/enums/properties/AlbumProperty.ts'
 import Filter, { FilterValue } from '../../../types/Filter.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
-import { AlbumFiltersMetadata } from '../../../types/models/FiltersMetadata.ts'
+import { AlbumFiltersMetadata } from '../types/AlbumFiltersMetadata.ts'
 
 const albumsFilters: Filter[] = [
   {

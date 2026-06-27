@@ -3,21 +3,16 @@ import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse
 import Album from '../../types/models/Album.ts'
 import {
   AddPerfectRehearsalsToAlbumsRequest,
-  AddSongsToAlbumRequest,
   BulkDeleteAlbumsRequest,
   CreateAlbumRequest,
   DeleteAlbumRequest,
   GetAlbumRequest,
   GetAlbumsRequest,
-  MoveSongFromAlbumRequest,
-  RemoveSongsFromAlbumRequest,
-  SaveImageToAlbumRequest,
-  UpdateAlbumRequest
+  SaveImageToAlbumRequest
 } from '../../types/requests/AlbumRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
-import { AlbumFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const albumsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -28,14 +23,6 @@ const albumsApi = api.injectEndpoints({
     getAlbum: build.query<Album, GetAlbumRequest>({
       query: (arg) => `albums/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Albums', 'Artists', 'Songs']
-    }),
-    getAlbumFiltersMetadata: build.query<AlbumFiltersMetadata, { searchBy?: string[] }>({
-      query: (arg) => `albums/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Albums', 'Artists', 'Songs'],
-      transformResponse: (response: AlbumFiltersMetadata) => ({
-        ...response,
-        artistIds: response.artistIds ?? []
-      })
     }),
     createAlbum: build.mutation<{ id: string }, CreateAlbumRequest>({
       query: (body) => ({
@@ -56,14 +43,6 @@ const albumsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Albums', 'Songs']
     }),
-    updateAlbum: build.mutation<HttpMessageResponse, UpdateAlbumRequest>({
-      query: (body) => ({
-        url: 'albums',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Albums']
-    }),
     bulkDeleteAlbums: build.mutation<HttpMessageResponse, BulkDeleteAlbumsRequest>({
       query: (body) => ({
         url: `albums/bulk-delete`,
@@ -81,13 +60,6 @@ const albumsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Albums']
     }),
-    deleteImageFromAlbum: build.mutation<HttpMessageResponse, string>({
-      query: (arg) => ({
-        url: `albums/images/${arg}`,
-        method: 'DELETE'
-      }),
-      invalidatesTags: ['Albums']
-    }),
     deleteAlbum: build.mutation<HttpMessageResponse, DeleteAlbumRequest>({
       query: (arg) => ({
         url: `albums/${arg.id}`,
@@ -95,31 +67,6 @@ const albumsApi = api.injectEndpoints({
         params: { ...arg, id: undefined }
       }),
       invalidatesTags: ['Albums']
-    }),
-
-    addSongsToAlbum: build.mutation<HttpMessageResponse, AddSongsToAlbumRequest>({
-      query: (body) => ({
-        url: `albums/add-songs`,
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['Albums', 'Songs']
-    }),
-    moveSongFromAlbum: build.mutation<HttpMessageResponse, MoveSongFromAlbumRequest>({
-      query: (body) => ({
-        url: `albums/move-song`,
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Albums']
-    }),
-    removeSongsFromAlbum: build.mutation<HttpMessageResponse, RemoveSongsFromAlbumRequest>({
-      query: (body) => ({
-        url: `albums/remove-songs`,
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Albums', 'Songs']
     })
   })
 })
@@ -127,16 +74,9 @@ const albumsApi = api.injectEndpoints({
 export const {
   useGetAlbumsQuery,
   useGetAlbumQuery,
-  useGetAlbumFiltersMetadataQuery,
-  useLazyGetAlbumFiltersMetadataQuery,
   useCreateAlbumMutation,
   useAddPerfectRehearsalsToAlbumsMutation,
-  useUpdateAlbumMutation,
   useBulkDeleteAlbumsMutation,
   useSaveImageToAlbumMutation,
-  useDeleteImageFromAlbumMutation,
-  useDeleteAlbumMutation,
-  useAddSongsToAlbumMutation,
-  useMoveSongFromAlbumMutation,
-  useRemoveSongsFromAlbumMutation
+  useDeleteAlbumMutation
 } = albumsApi

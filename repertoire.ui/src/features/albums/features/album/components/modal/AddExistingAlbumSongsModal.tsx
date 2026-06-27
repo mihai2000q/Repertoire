@@ -27,7 +27,7 @@ import {
 import { toast } from 'react-toastify'
 import { IconInfoCircleFilled, IconSearch } from '@tabler/icons-react'
 import { MouseEvent, useEffect, useRef } from 'react'
-import { useAddSongsToAlbumMutation } from '../../../../../../state/api/albumsApi.ts'
+import { useAddSongsToAlbumMutation } from '../../state/api/albumApi.ts'
 import { SongSearch } from '../../../../../../types/models/Search.ts'
 import { useGetInfiniteSearchInfiniteQuery } from '../../../../../../state/api/searchApi.ts'
 import SearchType from '../../../../../../types/enums/SearchType.ts'

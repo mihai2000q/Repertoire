@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import RemoveSongsFromAlbumModal from './RemoveSongsFromAlbumModal.tsx'
-import { RemoveSongsFromAlbumRequest } from '../../../../../../types/requests/AlbumRequests.ts'
+import { RemoveSongsFromAlbumRequest } from '../../types/requests/AlbumRequests.ts'
 import { reduxRender, withToastify } from '../../../../../../test-utils.tsx'
 
 describe('Remove Songs From Album Modal', () => {

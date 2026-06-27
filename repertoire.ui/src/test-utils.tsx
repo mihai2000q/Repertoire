@@ -15,7 +15,6 @@ import Order from './types/Order.ts'
 import User from './features/main/features/topbar/types/models/User.ts'
 import Playlist from './types/models/Playlist.ts'
 import {
-  AlbumFiltersMetadata,
   ArtistFiltersMetadata,
   PlaylistFiltersMetadata,
   SongFiltersMetadata
@@ -366,22 +365,6 @@ export const defaultArtistFiltersMetadata: ArtistFiltersMetadata = {
 
   minAlbumsCount: 0,
   maxAlbumsCount: 5,
-
-  minSongsCount: 0,
-  maxSongsCount: 12,
-
-  minRehearsals: 0,
-  maxRehearsals: 55,
-
-  minConfidence: 0,
-  maxConfidence: 75,
-
-  minProgress: 0,
-  maxProgress: 100
-}
-
-export const defaultAlbumFiltersMetadata: AlbumFiltersMetadata = {
-  artistIds: [],
 
   minSongsCount: 0,
   maxSongsCount: 12,

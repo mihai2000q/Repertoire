@@ -4,12 +4,12 @@ import AlbumFilters from './AlbumsFilters.tsx'
 import albumsFilters from '../data/albumsFilters.ts'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { AlbumFiltersMetadata } from '../../../types/models/FiltersMetadata.ts'
 import AlbumProperty from '../../../types/enums/properties/AlbumProperty.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'
 import Filter from '../../../types/Filter.ts'
 import { userEvent } from '@testing-library/user-event'
 import dayjs from 'dayjs'
+import { AlbumFiltersMetadata } from '../types/AlbumFiltersMetadata.ts'
 
 describe('Albums Filters', () => {
   const filtersMetadata: AlbumFiltersMetadata = {

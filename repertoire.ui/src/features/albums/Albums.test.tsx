@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import Albums from './Albums.tsx'
 import {
-  defaultAlbumFiltersMetadata,
   emptyAlbum,
   emptySong,
   reduxRouterRender
@@ -21,6 +20,7 @@ import { expect } from 'vitest'
 import OrderType from '../../types/enums/OrderType.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { createRef } from 'react'
+import { AlbumFiltersMetadata } from './types/AlbumFiltersMetadata.ts'
 
 // Mock Drag Select
 vi.mock('dragselect', () => ({
@@ -45,6 +45,22 @@ vi.mock('../../context/MainContext.tsx', () => ({
     mainScroll: { ref: createRef() }
   }))
 }))
+
+const defaultAlbumFiltersMetadata: AlbumFiltersMetadata = {
+  artistIds: [],
+
+  minSongsCount: 0,
+  maxSongsCount: 12,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
 
 describe('Albums', () => {
   const albums: Album[] = [

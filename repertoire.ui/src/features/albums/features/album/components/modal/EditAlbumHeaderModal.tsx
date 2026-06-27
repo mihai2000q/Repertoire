@@ -10,11 +10,11 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
+import { useSaveImageToAlbumMutation } from '../../../../../../state/api/albumsApi.ts'
 import {
   useDeleteImageFromAlbumMutation,
-  useSaveImageToAlbumMutation,
   useUpdateAlbumMutation
-} from '../../../../../../state/api/albumsApi.ts'
+} from '../../state/api/albumApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
 import { EditAlbumHeaderForm, editAlbumHeaderSchema } from '../../validation/albumForm.ts'
