@@ -15,7 +15,7 @@ import WithTotalCountResponse from '../../../../../types/responses/WithTotalCoun
 import { setupServer } from 'msw/node'
 import playlistSongsOrders from '../data/playlistSongsOrders.ts'
 import OrderType from '../../../../../types/enums/OrderType.ts'
-import { ShufflePlaylistSongsRequest } from '../../../../../types/requests/PlaylistRequests.ts'
+import { ShufflePlaylistSongsRequest } from '../types/requests/PlaylistRequests.ts'
 import { createRef } from 'react'
 import { expect } from 'vitest'
 

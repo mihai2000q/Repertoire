@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import Playlists from './Playlists.tsx'
-import { defaultPlaylistFiltersMetadata, emptyPlaylist, reduxRouterRender } from '../../test-utils.tsx'
+import { emptyPlaylist, reduxRouterRender } from '../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Playlist from '../../types/models/Playlist.ts'
@@ -13,6 +13,7 @@ import FilterOperator from '../../types/enums/FilterOperator.ts'
 import OrderType from '../../types/enums/OrderType.ts'
 import { expect } from 'vitest'
 import { createRef } from 'react'
+import { PlaylistFiltersMetadata } from './types/PlaylistFilterMetadata.ts'
 
 // Mock Drag Select
 vi.mock('dragselect', () => ({
@@ -37,6 +38,11 @@ vi.mock('../../context/MainContext.tsx', () => ({
     mainScroll: { ref: createRef() }
   }))
 }))
+
+export const defaultPlaylistFiltersMetadata: PlaylistFiltersMetadata = {
+  minSongsCount: 0,
+  maxSongsCount: 12
+}
 
 describe('Playlists', () => {
   const playlists: Playlist[] = [

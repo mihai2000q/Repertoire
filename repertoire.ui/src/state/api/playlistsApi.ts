@@ -8,20 +8,14 @@ import {
   AddPerfectRehearsalsToPlaylistsRequest,
   AddSongsToPlaylistRequest,
   BulkDeletePlaylistsRequest,
-  CreatePlaylistRequest,
   GetPlaylistRequest,
   GetPlaylistSongsRequest,
   GetPlaylistsRequest,
-  MoveSongFromPlaylistRequest,
-  RemoveSongsFromPlaylistRequest,
-  SaveImageToPlaylistRequest,
-  ShufflePlaylistSongsRequest,
-  UpdatePlaylistRequest
+  SaveImageToPlaylistRequest
 } from '../../types/requests/PlaylistRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
-import { PlaylistFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 import {
   AddAlbumsToPlaylistResponse,
   AddArtistsToPlaylistResponse,
@@ -39,10 +33,6 @@ const playlistsApi = api.injectEndpoints({
     getPlaylist: build.query<Playlist, GetPlaylistRequest>({
       query: (arg) => `playlists/${arg.id}${createQueryParams({ ...arg, id: undefined })}`,
       providesTags: ['Playlists']
-    }),
-    getPlaylistFiltersMetadata: build.query<PlaylistFiltersMetadata, { searchBy?: string[] }>({
-      query: (arg) => `playlists/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Playlists', 'Songs']
     }),
 
     // Infinite queries
@@ -82,14 +72,6 @@ const playlistsApi = api.injectEndpoints({
     }),
 
     // Mutations
-    createPlaylist: build.mutation<{ id: string }, CreatePlaylistRequest>({
-      query: (body) => ({
-        url: 'playlists',
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['Playlists']
-    }),
     addPerfectRehearsalsToPlaylists: build.mutation<
       HttpMessageResponse,
       AddPerfectRehearsalsToPlaylistsRequest
@@ -100,14 +82,6 @@ const playlistsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Playlists', 'Songs']
-    }),
-    updatePlaylist: build.mutation<HttpMessageResponse, UpdatePlaylistRequest>({
-      query: (body) => ({
-        url: 'playlists',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Playlists']
     }),
     bulkDeletePlaylists: build.mutation<HttpMessageResponse, BulkDeletePlaylistsRequest>({
       query: (body) => ({
@@ -222,30 +196,6 @@ const playlistsApi = api.injectEndpoints({
         body: body
       }),
       invalidatesTags: ['Songs']
-    }),
-    shufflePlaylist: build.mutation<HttpMessageResponse, ShufflePlaylistSongsRequest>({
-      query: (body) => ({
-        url: 'playlists/songs/shuffle',
-        method: 'POST',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    moveSongFromPlaylist: build.mutation<HttpMessageResponse, MoveSongFromPlaylistRequest>({
-      query: (body) => ({
-        url: `playlists/songs/move`,
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
-    removeSongsFromPlaylist: build.mutation<HttpMessageResponse, RemoveSongsFromPlaylistRequest>({
-      query: (body) => ({
-        url: `playlists/songs/remove`,
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
     })
   })
 })
@@ -255,20 +205,12 @@ export const {
   useGetPlaylistQuery,
   useGetInfinitePlaylistsInfiniteQuery,
   useGetInfinitePlaylistSongsInfiniteQuery,
-  useGetPlaylistFiltersMetadataQuery,
-  useLazyGetPlaylistFiltersMetadataQuery,
-  useCreatePlaylistMutation,
   useAddPerfectRehearsalsToPlaylistsMutation,
-  useUpdatePlaylistMutation,
   useBulkDeletePlaylistsMutation,
   useSaveImageToPlaylistMutation,
-  useDeleteImageFromPlaylistMutation,
   useDeletePlaylistMutation,
   useAddArtistsToPlaylistMutation,
   useAddAlbumsToPlaylistMutation,
   useAddSongsToPlaylistMutation,
-  useAddPerfectPlaylistSongRehearsalsMutation,
-  useShufflePlaylistMutation,
-  useMoveSongFromPlaylistMutation,
-  useRemoveSongsFromPlaylistMutation
+  useAddPerfectPlaylistSongRehearsalsMutation
 } = playlistsApi

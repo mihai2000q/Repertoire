@@ -4,7 +4,7 @@ import AddNewPlaylistModal from './AddNewPlaylistModal.tsx'
 import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { CreatePlaylistRequest } from '../../../../types/requests/PlaylistRequests.ts'
+import { CreatePlaylistRequest } from '../../types/requests/PlaylistsRequests.ts'
 
 describe('Add New Playlist Modal', () => {
   const server = setupServer()

@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import RemoveSongsFromPlaylistModal from './RemoveSongsFromPlaylistModal.tsx'
-import { RemoveSongsFromPlaylistRequest } from '../../../../../../types/requests/PlaylistRequests.ts'
+import { RemoveSongsFromPlaylistRequest } from '../../types/requests/PlaylistRequests.ts'
 import { reduxRender, withToastify } from '../../../../../../test-utils.tsx'
 
 describe('Remove Songs From Playlist Modal', () => {

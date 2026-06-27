@@ -5,7 +5,7 @@ import FiltersDrawer from '../../../components/drawer/FiltersDrawer.tsx'
 import {
   useGetPlaylistFiltersMetadataQuery,
   useLazyGetPlaylistFiltersMetadataQuery
-} from '../../../state/api/playlistsApi.ts'
+} from '../state/api/playlistsApi.ts'
 import PlaylistProperty from '../../../types/enums/properties/PlaylistProperty.ts'
 import { playlistsFiltersMetadataMap } from '../data/playlistsFilters.ts'
 import FilterOperator from '../../../types/enums/FilterOperator.ts'

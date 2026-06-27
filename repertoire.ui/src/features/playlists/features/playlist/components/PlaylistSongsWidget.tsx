@@ -3,11 +3,11 @@ import { IconArrowsShuffle, IconDots, IconPlus } from '@tabler/icons-react'
 import playlistSongsOrders from '../data/playlistSongsOrders.ts'
 import PlaylistSongCard from './PlaylistSongCard.tsx'
 import AddPlaylistSongsModal from './modal/AddPlaylistSongsModal.tsx'
+import { useGetInfinitePlaylistSongsInfiniteQuery } from '../../../../../state/api/playlistsApi.ts'
 import {
-  useGetInfinitePlaylistSongsInfiniteQuery,
   useMoveSongFromPlaylistMutation,
   useShufflePlaylistMutation
-} from '../../../../../state/api/playlistsApi.ts'
+} from '../state/api/playlistApi.ts'
 import { useDidUpdate, useDisclosure, useIntersection, useListState } from '@mantine/hooks'
 import CompactOrderButton from '../../../../../components/button/CompactOrderButton.tsx'
 import Song from '../../../../../types/models/Song.ts'
@@ -22,7 +22,7 @@ import { memo, useEffect, useRef } from 'react'
 import { useAppDispatch } from '../../../../../state/store.ts'
 import { setSongsTotalCount } from '../../../../../state/slice/playlistSlice.ts'
 import Order from '../../../../../types/Order.ts'
-import { MoveSongFromPlaylistRequest } from '../../../../../types/requests/PlaylistRequests.ts'
+import { MoveSongFromPlaylistRequest } from '../types/requests/PlaylistRequests.ts'
 import LoadingOverlayDebounced from '../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import MenuItemConfirmation from '../../../../../components/menu/item/MenuItemConfirmation.tsx'
 import { Id, toast } from 'react-toastify'

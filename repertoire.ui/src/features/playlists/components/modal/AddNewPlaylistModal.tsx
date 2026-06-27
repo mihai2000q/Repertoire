@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import {
-  useCreatePlaylistMutation,
-  useSaveImageToPlaylistMutation
-} from '../../../../state/api/playlistsApi.ts'
+import { useCreatePlaylistMutation } from '../../state/api/playlistsApi.ts'
+import { useSaveImageToPlaylistMutation } from '../../../../state/api/playlistsApi.ts'
 import { FileWithPath } from '@mantine/dropzone'
 import { schemaResolver, useForm } from '@mantine/form'
 import { toast } from 'react-toastify'
