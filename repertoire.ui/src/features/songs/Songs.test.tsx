@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import Songs from './Songs.tsx'
-import { defaultSongFiltersMetadata, emptySong, reduxRouterRender } from '../../test-utils.tsx'
+import { emptySong, reduxRouterRender } from '../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import Song, { GuitarTuning, SongSectionType } from '../../types/models/Song.ts'
@@ -15,6 +15,7 @@ import OrderType from '../../types/enums/OrderType.ts'
 import Playlist from '../../types/models/Playlist.ts'
 import { expect } from 'vitest'
 import { createRef } from 'react'
+import { SongFiltersMetadata } from './types/SongFilterMetadata.ts'
 
 // Mock Drag Select
 vi.mock('dragselect', () => ({
@@ -39,6 +40,33 @@ vi.mock('../../context/MainContext.tsx', () => ({
     mainScroll: { ref: createRef() }
   }))
 }))
+
+const defaultSongFiltersMetadata: SongFiltersMetadata = {
+  artistIds: [],
+  albumIds: [],
+
+  difficulties: [],
+  guitarTuningIds: [],
+  instrumentIds: [],
+
+  minSectionsCount: 0,
+  maxSectionsCount: 15,
+
+  minSolosCount: 0,
+  maxSolosCount: 5,
+
+  minRiffsCount: 1,
+  maxRiffsCount: 5,
+
+  minRehearsals: 0,
+  maxRehearsals: 55,
+
+  minConfidence: 0,
+  maxConfidence: 75,
+
+  minProgress: 0,
+  maxProgress: 100
+}
 
 describe('Songs', () => {
   const songs: Song[] = [

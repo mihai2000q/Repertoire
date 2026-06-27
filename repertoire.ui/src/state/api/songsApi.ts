@@ -16,13 +16,11 @@ import {
   GetSongArrangementsRequest,
   GetSongsRequest,
   SaveImageToSongRequest,
-  UpdateSongRequest,
   UpdateSongSettingsRequest
 } from '../../types/requests/SongRequests.ts'
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
-import { SongFiltersMetadata } from '../../types/models/FiltersMetadata.ts'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -42,15 +40,6 @@ const songsApi = api.injectEndpoints({
               bandMembers: response.artist.bandMembers ?? []
             }
           : response.artist
-      })
-    }),
-    getSongFiltersMetadata: build.query<SongFiltersMetadata, { searchBy?: string[] }>({
-      query: (arg) => `songs/filters-metadata${createQueryParams(arg)}`,
-      providesTags: ['Songs', 'Artists', 'Albums'],
-      transformResponse: (response: SongFiltersMetadata) => ({
-        ...response,
-        artistIds: response.artistIds ?? [],
-        albumIds: response.albumIds ?? []
       })
     }),
 
@@ -131,14 +120,6 @@ const songsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
-    updateSong: build.mutation<HttpMessageResponse, UpdateSongRequest>({
-      query: (body) => ({
-        url: 'songs',
-        method: 'PUT',
-        body: body
-      }),
-      invalidatesTags: ['Songs']
-    }),
     updateSongSettings: build.mutation<HttpMessageResponse, UpdateSongSettingsRequest>({
       query: (body) => ({
         url: 'songs/settings',
@@ -207,22 +188,18 @@ const songsApi = api.injectEndpoints({
 export const {
   useGetSongsQuery,
   useGetSongQuery,
-  useGetSongFiltersMetadataQuery,
-  useLazyGetSongFiltersMetadataQuery,
   useGetInfiniteSongsInfiniteQuery,
   useCreateSongMutation,
   useAddCustomSongRehearsalMutation,
   useAddCustomSongRehearsalsMutation,
   useAddPerfectSongRehearsalMutation,
   useAddPerfectSongRehearsalsMutation,
-  useUpdateSongMutation,
   useUpdateSongSettingsMutation,
   useBulkDeleteSongsMutation,
   useSaveImageToSongMutation,
-  useDeleteImageFromSongMutation,
   useDeleteSongMutation,
   useGetSongArrangementsQuery,
   useGetGuitarTuningsQuery,
   useGetInstrumentsQuery,
-  useGetSongSectionTypesQuery
+  useGetSongSectionTypesQuery // move
 } = songsApi

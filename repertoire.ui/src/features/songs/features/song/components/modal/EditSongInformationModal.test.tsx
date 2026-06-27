@@ -4,7 +4,7 @@ import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { UpdateSongRequest } from '../../types/requests/SongRequests.ts'
 import EditSongInformationModal from './EditSongInformationModal.tsx'
 import Difficulty from '../../../../../../types/enums/Difficulty.ts'
 

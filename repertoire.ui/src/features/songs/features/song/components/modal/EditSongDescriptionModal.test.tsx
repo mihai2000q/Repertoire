@@ -5,7 +5,7 @@ import { screen } from '@testing-library/react'
 import EditSongDescriptionModal from './EditSongDescriptionModal.tsx'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { UpdateSongRequest } from '../../types/requests/SongRequests.ts'
 
 describe('Edit Song Description Modal', () => {
   const song: Song = {

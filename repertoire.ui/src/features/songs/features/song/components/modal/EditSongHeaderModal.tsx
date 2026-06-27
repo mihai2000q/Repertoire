@@ -10,11 +10,8 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import {
-  useDeleteImageFromSongMutation,
-  useSaveImageToSongMutation,
-  useUpdateSongMutation
-} from '../../../../../../state/api/songsApi.ts'
+import { useDeleteImageFromSongMutation, useUpdateSongMutation } from '../../state/api/songApi.ts'
+import { useSaveImageToSongMutation } from '../../../../../../state/api/songsApi.ts'
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
 import { EditSongHeaderForm, editSongHeaderSchema } from '../../validation/songForm.ts'

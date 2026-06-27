@@ -11,7 +11,7 @@ import {
   Stack,
   Tooltip
 } from '@mantine/core'
-import { useUpdateSongMutation } from '../../../../../../state/api/songsApi.ts'
+import { useUpdateSongMutation } from '../../state/api/songApi.ts'
 import Difficulty from '../../../../../../types/enums/Difficulty.ts'
 import { MouseEvent, useState } from 'react'
 import { useDidUpdate, useInputState } from '@mantine/hooks'

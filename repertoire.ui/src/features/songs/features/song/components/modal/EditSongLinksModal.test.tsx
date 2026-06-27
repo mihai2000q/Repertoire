@@ -4,7 +4,7 @@ import { setupServer } from 'msw/node'
 import { act, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongRequest } from '../../../../../../types/requests/SongRequests.ts'
+import { UpdateSongRequest } from '../../types/requests/SongRequests.ts'
 import EditSongLinksModal from './EditSongLinksModal.tsx'
 
 describe('Edit Song Links Modal', () => {
