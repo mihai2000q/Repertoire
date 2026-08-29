@@ -140,6 +140,7 @@ func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongReq
 		ArtistID:    song.ArtistID,    // album inherits the artist from song
 		ReleaseDate: song.ReleaseDate, // also the release date
 	}
+	song.AlbumID = &song.Album.ID
 	song.AlbumTrackNo = &[]uint{1}[0]
 }
 
