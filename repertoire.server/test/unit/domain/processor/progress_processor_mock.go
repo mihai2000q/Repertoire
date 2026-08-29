@@ -10,17 +10,17 @@ type ProgressProcessorMock struct {
 	mock.Mock
 }
 
-func (p *ProgressProcessorMock) ComputeRehearsalsScore(history []model.SongSectionHistory) uint64 {
+func (p *ProgressProcessorMock) ComputeRehearsalsScore(history []model.SongPartHistory) uint64 {
 	args := p.Called(history)
 	return args.Get(0).(uint64)
 }
 
-func (p *ProgressProcessorMock) ComputeConfidenceScore(history []model.SongSectionHistory) uint {
+func (p *ProgressProcessorMock) ComputeConfidenceScore(history []model.SongPartHistory) uint {
 	args := p.Called(history)
 	return args.Get(0).(uint)
 }
 
-func (p *ProgressProcessorMock) ComputeProgress(section model.SongSection) uint64 {
-	args := p.Called(section)
+func (p *ProgressProcessorMock) ComputeProgress(part model.SongPart) uint64 {
+	args := p.Called(part)
 	return args.Get(0).(uint64)
 }

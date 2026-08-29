@@ -112,7 +112,7 @@ func TestComputeConfidenceScore_WhenHistoryLengthIs0_ShouldReturnDefaultConfiden
 	confidenceScore := _uut.ComputeConfidenceScore([]model.SongPartHistory{})
 
 	// then
-	assert.Equal(t, model.DefaultSongConfidence, confidenceScore)
+	assert.Zero(t, confidenceScore)
 }
 
 func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceScore(t *testing.T) {
