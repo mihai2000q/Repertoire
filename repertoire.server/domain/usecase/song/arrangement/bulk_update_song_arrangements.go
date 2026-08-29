@@ -28,7 +28,7 @@ func (b BulkUpdateSongArrangements) Handle(request requests.BulkUpdateSongArrang
 	}
 
 	var arrangements []model.SongArrangement
-	err := b.songArrangementRepository.GetAllBySongWithSectionOccurrences(&arrangements, ids, request.SongID)
+	err := b.songArrangementRepository.GetAllBySongWithPartOccurrences(&arrangements, ids, request.SongID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -40,16 +40,16 @@ func (b BulkUpdateSongArrangements) Handle(request requests.BulkUpdateSongArrang
 		arrangements[i].Name = requestsMap[arrangement.ID].Name
 
 		// in case the sections in the request and from repository are not in the same order
-		sectionsOccurrencesMap := make(map[uuid.UUID]uint)
+		partsOccurrencesMap := make(map[uuid.UUID]uint)
 		for _, s := range requestsMap[arrangement.ID].Occurrences {
-			sectionsOccurrencesMap[s.SectionID] = s.Occurrences
+			partsOccurrencesMap[s.PartID] = s.Occurrences
 		}
 
 		// propagate the occurrences on the arrangement
-		for j := range arrangement.SectionOccurrences {
-			occurrences, ok := sectionsOccurrencesMap[arrangement.SectionOccurrences[j].SectionID]
+		for j := range arrangement.PartOccurrences {
+			occurrences, ok := partsOccurrencesMap[arrangement.PartOccurrences[j].PartID]
 			if ok {
-				arrangements[i].SectionOccurrences[j].Occurrences = occurrences
+				arrangements[i].PartOccurrences[j].Occurrences = occurrences
 			}
 		}
 	}

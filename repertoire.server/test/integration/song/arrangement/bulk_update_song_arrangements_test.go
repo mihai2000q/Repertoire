@@ -50,17 +50,17 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 			{
 				ID:   songData.SongArrangements[1].ID,
 				Name: "New Chorus Name",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
+				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
 					{
-						SectionID:   songData.SongSections[5].ID,
+						PartID:      songData.SongSections[5].ID,
 						Occurrences: 1,
 					},
 					{
-						SectionID:   songData.SongSections[4].ID,
+						PartID:      songData.SongSections[4].ID,
 						Occurrences: 7,
 					},
 					{
-						SectionID:   songData.SongSections[6].ID,
+						PartID:      songData.SongSections[6].ID,
 						Occurrences: 2,
 					},
 				},
@@ -68,17 +68,17 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 			{
 				ID:   songData.SongArrangements[2].ID,
 				Name: "New Chorus Name",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
+				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
 					{
-						SectionID:   songData.SongSections[5].ID,
+						PartID:      songData.SongSections[5].ID,
 						Occurrences: 5,
 					},
 					{
-						SectionID:   songData.SongSections[4].ID,
+						PartID:      songData.SongSections[4].ID,
 						Occurrences: 0,
 					},
 					{
-						SectionID:   songData.SongSections[6].ID,
+						PartID:      songData.SongSections[6].ID,
 						Occurrences: 1,
 					},
 				},
@@ -103,7 +103,7 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 	db := utils.GetDatabase(t)
 
 	var arrangements []model.SongArrangement
-	db.Preload("SectionOccurrences").Find(&arrangements, ids)
+	db.Preload("PartOccurrences").Find(&arrangements, ids)
 
 	for _, a := range arrangements {
 		assertUpdatedSongArrangement(t, a, requestsMap[a.ID])
@@ -119,10 +119,10 @@ func assertUpdatedSongArrangement(
 
 	sectionsOccurrencesMap := make(map[uuid.UUID]uint)
 	for _, s := range request.Occurrences {
-		sectionsOccurrencesMap[s.SectionID] = s.Occurrences
+		sectionsOccurrencesMap[s.PartID] = s.Occurrences
 	}
-	for i := range songArrangement.SectionOccurrences {
-		occurrences := sectionsOccurrencesMap[songArrangement.SectionOccurrences[i].SectionID]
-		assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, occurrences)
+	for i := range songArrangement.PartOccurrences {
+		occurrences := sectionsOccurrencesMap[songArrangement.PartOccurrences[i].PartID]
+		assert.Equal(t, songArrangement.PartOccurrences[i].Occurrences, occurrences)
 	}
 }
