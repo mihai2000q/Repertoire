@@ -183,20 +183,3 @@ func (u userDataRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSect
 func (u userDataRepository) DeleteSectionType(id uuid.UUID) error {
 	return u.client.Delete(&model.SongSectionType{}, id).Error
 }
-
-// Song Section History
-
-func (u userDataRepository) GetSongSectionHistory(
-	history *[]model.SongSectionHistory,
-	sectionID uuid.UUID,
-	property model.SongSectionProperty,
-) error {
-	return u.client.
-		Order("created_at").
-		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
-		Error
-}
-
-func (u userDataRepository) CreateSongSectionHistory(history *model.SongSectionHistory) error {
-	return u.client.Create(&history).Error
-}
