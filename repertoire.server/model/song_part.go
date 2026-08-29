@@ -51,4 +51,4 @@ const (
 	RehearsalsProperty SongPartProperty = "Rehearsals"
 )
 
-var DefaultSongSectionConfidence uint = 0
+var DefaultSongPartConfidence uint = 0

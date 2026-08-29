@@ -42,7 +42,7 @@ func (progressProcessor) ComputeRehearsalsScore(history []model.SongPartHistory)
 func (progressProcessor) ComputeConfidenceScore(history []model.SongPartHistory) uint {
 	historyLength := len(history)
 	if historyLength == 0 {
-		return model.DefaultSongConfidence
+		return model.DefaultSongPartConfidence
 	}
 
 	overallConfidence := int(history[historyLength-1].To - history[0].From)

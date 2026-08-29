@@ -69,7 +69,7 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 		part := model.SongPart{
 			ID:           uuid.New(),
 			Name:         request.Name,
-			Confidence:   model.DefaultSongSectionConfidence,
+			Confidence:   model.DefaultSongPartConfidence,
 			SongOrder:    uint(songPartsCount),
 			SectionOrder: sectionPartsCount,
 			SongID:       request.SongID,
@@ -161,7 +161,7 @@ func (c CreateSongPart) updateSection(part model.SongPart) *wrapper.ErrorCode {
 	return nil
 }
 
-// Add one new instrumentPart occurrence on each song arrangement
+// Add one new part occurrence on each song arrangement
 func (c CreateSongPart) updateArrangements(partID uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
 	var arrangements []model.SongArrangement
 	err := c.txSongArrangementRepository.GetAllBySong(&arrangements, songID)
