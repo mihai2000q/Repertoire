@@ -72,6 +72,7 @@ function AddNewSongModalSecondStep({
         <NumberInput
           flex={0.75}
           min={1}
+          max={999}
           allowNegative={false}
           allowDecimal={false}
           leftSection={<CustomIconMetronome size={20} />}

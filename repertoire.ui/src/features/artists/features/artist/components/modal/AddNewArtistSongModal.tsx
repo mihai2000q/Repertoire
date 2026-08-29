@@ -159,6 +159,10 @@ function AddNewArtistSongModal({ opened, onClose, artistId }: AddNewArtistSongMo
                       'aria-label': 'bpm',
                       placeholder: 'Enter bpm',
                       leftSection: <CustomIconMetronome size={15} />,
+                      min: 1,
+                      max: 999,
+                      allowNegative: false,
+                      allowDecimal: false,
                       value: bpm,
                       onChange: setBpm
                     }}
