@@ -34,7 +34,7 @@ func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequ
 	}
 
 	var song model.Song
-	err = c.songRepository.GetWithSections(&song, request.SongID)
+	err = c.songRepository.GetWithParts(&song, request.SongID)
 	if err != nil {
 		return uuid.Nil, wrapper.InternalServerError(err)
 	}
@@ -49,7 +49,7 @@ func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequ
 		SongID: request.SongID,
 	}
 
-	c.CreateSectionOccurrences(&arrangement, song.Sections)
+	c.CreatePartOccurrences(&arrangement, song.Parts)
 
 	err = c.songArrangementRepository.Create(&arrangement)
 	if err != nil {
@@ -59,15 +59,15 @@ func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequ
 	return arrangement.ID, nil
 }
 
-func (c CreateSongArrangement) CreateSectionOccurrences(arrangement *model.SongArrangement, sections []model.SongSection) {
-	var occurrences []model.SongSectionOccurrences
-	for _, section := range sections {
-		occurrence := model.SongSectionOccurrences{
+func (c CreateSongArrangement) CreatePartOccurrences(arrangement *model.SongArrangement, parts []model.SongPart) {
+	var occurrences []model.SongPartOccurrences
+	for _, part := range parts {
+		occurrence := model.SongPartOccurrences{
 			Occurrences:   0,
-			SectionID:     section.ID,
+			PartID:        part.ID,
 			ArrangementID: arrangement.ID,
 		}
 		occurrences = append(occurrences, occurrence)
 	}
-	arrangement.SectionOccurrences = occurrences
+	arrangement.PartOccurrences = occurrences
 }
