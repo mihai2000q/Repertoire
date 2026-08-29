@@ -187,7 +187,7 @@ function Playlists() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'md'}>
+      <Box style={{ alignSelf: 'center' }} pb={'lg'} pt={'md'}>
         <Pagination
           data-testid={'playlists-pagination'}
           value={currentPage}

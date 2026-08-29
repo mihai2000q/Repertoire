@@ -193,7 +193,7 @@ function Artists() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'md'}>
+      <Box style={{ alignSelf: 'center' }} pb={'lg'} pt={'sm'}>
         <Pagination
           data-testid={'artists-pagination'}
           value={currentPage}

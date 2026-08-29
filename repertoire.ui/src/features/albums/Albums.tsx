@@ -183,7 +183,7 @@ function Albums() {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'md'}>
+      <Box style={{ alignSelf: 'center' }} pb={'lg'} pt={'md'}>
         <Pagination
           data-testid={'albums-pagination'}
           value={currentPage}
