@@ -175,7 +175,7 @@ function Songs(): ReactElement {
 
       <Space flex={1} />
 
-      <Box style={{ alignSelf: 'center' }} pb={'md'}>
+      <Box style={{ alignSelf: 'center' }} p={'lg'}>
         <Pagination
           data-testid={'songs-pagination'}
           value={currentPage}
