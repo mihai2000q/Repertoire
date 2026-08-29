@@ -159,10 +159,10 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenIsValid_ShouldReturnNil(t
 					{
 						ID:   uuid.New(),
 						Name: validArrangementName,
-						Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
-							{SectionID: uuid.New(), Occurrences: 1},
-							{SectionID: uuid.New(), Occurrences: 0},
-							{SectionID: uuid.New(), Occurrences: 3},
+						Occurrences: []requests.UpdateSongPartOccurrencesRequest{
+							{PartID: uuid.New(), Occurrences: 1},
+							{PartID: uuid.New(), Occurrences: 0},
+							{PartID: uuid.New(), Occurrences: 3},
 						},
 					},
 				},
@@ -269,7 +269,7 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 					{
 						ID:          uuid.New(),
 						Name:        validArrangementName,
-						Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.Nil, Occurrences: 1}},
+						Occurrences: []requests.UpdateSongPartOccurrencesRequest{{PartID: uuid.Nil, Occurrences: 1}},
 					},
 				},
 			},
