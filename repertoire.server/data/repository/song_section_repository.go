@@ -5,23 +5,19 @@ import (
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type SongSectionRepository interface {
 	Get(section *model.SongSection, id uuid.UUID) error
+	GetWithParts(section *model.SongSection, id uuid.UUID) error
 	CountAllBySong(count *int64, songID uuid.UUID) error
 	Create(section *model.SongSection) error
 	Update(section *model.SongSection) error
+	UpdateWithAssociations(section *model.SongSection) error
 	Delete(ids []uuid.UUID) error
 
 	GetTypes(types *[]model.SongSectionType, userID uuid.UUID) error
-
-	GetHistory(
-		history *[]model.SongSectionHistory,
-		sectionID uuid.UUID,
-		property model.SongSectionProperty,
-	) error
-	CreateHistory(history *model.SongSectionHistory) error
 }
 
 type songSectionRepository struct {
@@ -36,6 +32,15 @@ func NewSongSectionRepository(client database.Client) SongSectionRepository {
 
 func (s songSectionRepository) Get(section *model.SongSection, id uuid.UUID) error {
 	return s.client.Find(&section, model.SongSection{ID: id}).Error
+}
+
+func (s songSectionRepository) GetWithParts(section *model.SongSection, id uuid.UUID) error {
+	return s.client.
+		Preload("Parts", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_parts.section_order")
+		}).
+		Find(&section, model.Song{ID: id}).
+		Error
 }
 
 func (s songSectionRepository) CountAllBySong(count *int64, songID uuid.UUID) error {
@@ -53,6 +58,13 @@ func (s songSectionRepository) Update(section *model.SongSection) error {
 	return s.client.Save(&section).Error
 }
 
+func (s songSectionRepository) UpdateWithAssociations(section *model.SongSection) error {
+	return s.client.
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Updates(&section).
+		Error
+}
+
 func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 	return s.client.Delete(&model.SongSection{}, ids).Error
 }
@@ -65,21 +77,4 @@ func (s songSectionRepository) GetTypes(types *[]model.SongSectionType, userID u
 		Order("\"order\"").
 		Find(&types).
 		Error
-}
-
-// History
-
-func (s songSectionRepository) GetHistory(
-	history *[]model.SongSectionHistory,
-	sectionID uuid.UUID,
-	property model.SongSectionProperty,
-) error {
-	return s.client.
-		Order("created_at").
-		Find(&history, model.SongSectionHistory{SongSectionID: sectionID, Property: property}).
-		Error
-}
-
-func (s songSectionRepository) CreateHistory(history *model.SongSectionHistory) error {
-	return s.client.Create(&history).Error
 }
