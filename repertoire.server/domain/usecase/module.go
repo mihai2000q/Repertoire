@@ -119,7 +119,7 @@ var songUseCases = fx.Options(
 	fx.Provide(arrangement.NewMoveSongArrangement),
 	fx.Provide(arrangement.NewUpdateDefaultSongArrangement),
 
-	// Sections
+	// Parts
 	fx.Provide(part.NewBulkRehearsalsSongParts),
 	fx.Provide(part.NewBulkDeleteSongParts),
 	fx.Provide(part.NewCreateSongPart),
@@ -129,12 +129,10 @@ var songUseCases = fx.Options(
 	fx.Provide(part.NewUpdateSongPart),
 
 	// Sections
-	fx.Provide(section.NewBulkRehearsalsSongSections),
 	fx.Provide(section.NewBulkDeleteSongSections),
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
 	fx.Provide(section.NewMoveSongSection),
-	fx.Provide(section.NewUpdateAllSongSections),
 	fx.Provide(section.NewUpdateSongSection),
 )
 
