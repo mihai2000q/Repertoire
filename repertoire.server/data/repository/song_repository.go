@@ -121,7 +121,7 @@ func (s songRepository) GetWithSectionsAndArrangementOccurrences(
 			return db.Order("song_sections.order")
 		}).
 		Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Where(model.SongSectionOccurrences{ArrangementID: arrangementID})
+			return db.Where(model.SongPartOccurrences{ArrangementID: arrangementID})
 		}).
 		Find(&song, model.Song{ID: id}).
 		Error

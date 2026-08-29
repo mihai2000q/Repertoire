@@ -8,16 +8,16 @@ import (
 )
 
 type SongPartRepository interface {
-	Get(instrumentPart *model.SongPart, id uuid.UUID) error
+	Get(part *model.SongPart, id uuid.UUID) error
 	CountAllBySection(count *int64, sectionID uuid.UUID) error
 	CountAllBySong(count *int64, songID uuid.UUID) error
-	Create(instrumentPart *model.SongPart) error
-	Update(instrumentPart *model.SongPart) error
+	Create(part *model.SongPart) error
+	Update(part *model.SongPart) error
 	Delete(ids []uuid.UUID) error
 
 	GetHistory(
 		history *[]model.SongPartHistory,
-		instrumentPartID uuid.UUID,
+		partID uuid.UUID,
 		property model.SongPartProperty,
 	) error
 	CreateHistory(history *model.SongPartHistory) error
@@ -33,8 +33,8 @@ func NewSongPartRepository(client database.Client) SongPartRepository {
 	}
 }
 
-func (s songPartRepository) Get(instrumentPart *model.SongPart, id uuid.UUID) error {
-	return s.client.Find(&instrumentPart, model.SongPart{ID: id}).Error
+func (s songPartRepository) Get(part *model.SongPart, id uuid.UUID) error {
+	return s.client.Find(&part, model.SongPart{ID: id}).Error
 }
 
 func (s songPartRepository) CountAllBySection(count *int64, sectionID uuid.UUID) error {
@@ -51,12 +51,12 @@ func (s songPartRepository) CountAllBySong(count *int64, songID uuid.UUID) error
 		Error
 }
 
-func (s songPartRepository) Create(instrumentPart *model.SongPart) error {
-	return s.client.Create(&instrumentPart).Error
+func (s songPartRepository) Create(part *model.SongPart) error {
+	return s.client.Create(&part).Error
 }
 
-func (s songPartRepository) Update(instrumentPart *model.SongPart) error {
-	return s.client.Save(&instrumentPart).Error
+func (s songPartRepository) Update(part *model.SongPart) error {
+	return s.client.Save(&part).Error
 }
 
 func (s songPartRepository) Delete(ids []uuid.UUID) error {
@@ -67,12 +67,12 @@ func (s songPartRepository) Delete(ids []uuid.UUID) error {
 
 func (s songPartRepository) GetHistory(
 	history *[]model.SongPartHistory,
-	instrumentPartID uuid.UUID,
+	partID uuid.UUID,
 	property model.SongPartProperty,
 ) error {
 	return s.client.
 		Order("created_at").
-		Find(&history, model.SongPartHistory{SongPartID: instrumentPartID, Property: property}).
+		Find(&history, model.SongPartHistory{SongPartID: partID, Property: property}).
 		Error
 }
 

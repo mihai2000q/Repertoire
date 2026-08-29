@@ -9,7 +9,7 @@ import (
 )
 
 type SongArrangementRepository interface {
-	GetAllBySongWithSectionOccurrences(
+	GetAllBySongWithPartOccurrences(
 		arrangements *[]model.SongArrangement,
 		ids []uuid.UUID,
 		songID uuid.UUID,
@@ -31,13 +31,13 @@ func NewSongArrangementRepository(client database.Client) SongArrangementReposit
 	}
 }
 
-func (s songArrangementRepository) GetAllBySongWithSectionOccurrences(
+func (s songArrangementRepository) GetAllBySongWithPartOccurrences(
 	arrangements *[]model.SongArrangement,
 	ids []uuid.UUID,
 	songID uuid.UUID,
 ) error {
 	return s.client.
-		Preload("SectionOccurrences").
+		Preload("PartOccurrences").
 		Where("song_id = ?", songID).
 		Find(&arrangements, ids).
 		Error
@@ -45,11 +45,10 @@ func (s songArrangementRepository) GetAllBySongWithSectionOccurrences(
 
 func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrangement, songID uuid.UUID) error {
 	return s.client.Model(&model.SongArrangement{}).
-		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
+		Preload("PartOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("Section").
-				Joins("Section.SongSectionType").
-				Order("\"Section\".order")
+				Joins("Part").
+				Order("\"Part\".song_order")
 		}).
 		Where(model.SongArrangement{SongID: songID}).
 		Order("\"order\"").
