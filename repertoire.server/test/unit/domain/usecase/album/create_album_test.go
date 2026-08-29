@@ -195,11 +195,14 @@ func assertCreatedAlbum(
 	assert.Equal(t, request.Title, album.Title)
 	assert.Equal(t, request.ReleaseDate, album.ReleaseDate)
 	assert.Nil(t, album.ImageURL)
-	assert.Equal(t, request.ArtistID, album.ArtistID)
 	assert.Equal(t, userID, album.UserID)
 	if request.ArtistName != nil {
 		assert.NotEmpty(t, album.Artist.ID)
+		assert.Equal(t, album.ArtistID, &album.Artist.ID)
 		assert.Equal(t, request.ArtistName, album.Artist.Name)
 		assert.Equal(t, userID, album.Artist.UserID)
+	}
+	if request.ArtistID != nil {
+		assert.Equal(t, request.ArtistID, album.ArtistID)
 	}
 }
