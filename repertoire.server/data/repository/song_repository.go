@@ -14,6 +14,7 @@ import (
 type SongRepository interface {
 	Get(song *model.Song, id uuid.UUID) error
 	GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error
+	GetWithParts(song *model.Song, id uuid.UUID) error
 	GetWithSections(song *model.Song, id uuid.UUID) error
 	GetWithSectionsAndDefaultOccurrences(song *model.Song, id uuid.UUID) error
 	GetWithSectionsAndArrangementOccurrences(song *model.Song, id uuid.UUID, arrangementID uuid.UUID) error
@@ -73,6 +74,15 @@ func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID)
 		Preload("Playlists").
 		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_track_no")
+		}).
+		Find(&song, model.Song{ID: id}).
+		Error
+}
+
+func (s songRepository) GetWithParts(song *model.Song, id uuid.UUID) error {
+	return s.client.
+		Preload("Parts", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_parts.song_order")
 		}).
 		Find(&song, model.Song{ID: id}).
 		Error
