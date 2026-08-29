@@ -30,7 +30,7 @@ func NewAddPerfectSongRehearsals(
 
 func (a AddPerfectSongRehearsals) Handle(request requests.AddPerfectSongRehearsalsRequest) *wrapper.ErrorCode {
 	var songs []model.Song
-	err := a.repository.GetAllByIDsWithSectionsAndDefaultOccurrences(&songs, request.IDs)
+	err := a.repository.GetAllByIDsWithPartsAndDefaultOccurrences(&songs, request.IDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -40,12 +40,12 @@ func (a AddPerfectSongRehearsals) Handle(request requests.AddPerfectSongRehearsa
 
 	var errCode *wrapper.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		transactionSongSectionRepository := factory.NewSongSectionRepository()
-		transactionSongRepository := factory.NewSongRepository()
+		txSongPartRepository := factory.NewSongPartRepository()
+		txSongRepository := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, song := range songs {
-			errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongSectionRepository)
+			errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, txSongPartRepository)
 			if errC != nil {
 				errCode = errC
 				return errCode.Error
@@ -56,7 +56,7 @@ func (a AddPerfectSongRehearsals) Handle(request requests.AddPerfectSongRehearsa
 		}
 
 		if len(newSongs) > 0 {
-			err = transactionSongRepository.UpdateAllWithAssociations(&newSongs)
+			err = txSongRepository.UpdateAllWithAssociations(&newSongs)
 			if err != nil {
 				errCode = wrapper.InternalServerError(err)
 				return err

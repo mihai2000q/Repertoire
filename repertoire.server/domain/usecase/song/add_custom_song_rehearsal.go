@@ -31,30 +31,30 @@ func NewAddCustomSongRehearsal(
 
 func (a AddCustomSongRehearsal) Handle(request requests.AddCustomSongRehearsalRequest) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.GetWithSectionsAndArrangementOccurrences(&song, request.ID, request.ArrangementID)
+	err := a.repository.GetWithPartsAndArrangementOccurrences(&song, request.ID, request.ArrangementID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
-	if len(song.Sections[0].ArrangementOccurrences) == 0 {
+	if len(song.Parts[0].ArrangementOccurrences) == 0 {
 		return wrapper.NotFoundError(errors.New("song arrangement not found"))
 	}
 
 	var errCode *wrapper.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		transactionSongSectionRepository := factory.NewSongSectionRepository()
-		transactionSongRepository := factory.NewSongRepository()
+		txSongPartRepository := factory.NewSongPartRepository()
+		txSongRepository := factory.NewSongRepository()
 
-		errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, transactionSongSectionRepository, nil)
+		errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, txSongPartRepository, nil)
 		if errC != nil {
 			errCode = errC
 			return errCode.Error
 		}
 
 		if isUpdated {
-			err := transactionSongRepository.UpdateWithAssociations(&song)
+			err := txSongRepository.UpdateWithAssociations(&song)
 			if err != nil {
 				errCode = wrapper.InternalServerError(err)
 				return err

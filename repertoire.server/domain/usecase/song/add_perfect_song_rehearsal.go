@@ -31,7 +31,7 @@ func NewAddPerfectSongRehearsal(
 
 func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsalRequest) *wrapper.ErrorCode {
 	var song model.Song
-	err := a.repository.GetWithSectionsAndDefaultOccurrences(&song, request.ID)
+	err := a.repository.GetWithPartsAndDefaultOccurrences(&song, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
@@ -44,17 +44,17 @@ func (a AddPerfectSongRehearsal) Handle(request requests.AddPerfectSongRehearsal
 
 	var errCode *wrapper.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		transactionSongSectionRepository := factory.NewSongSectionRepository()
-		transactionSongRepository := factory.NewSongRepository()
+		txSongPartRepository := factory.NewSongPartRepository()
+		txSongRepository := factory.NewSongRepository()
 
-		errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongSectionRepository)
+		errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, txSongPartRepository)
 		if errC != nil {
 			errCode = errC
 			return errCode.Error
 		}
 
 		if isUpdated {
-			err := transactionSongRepository.UpdateWithAssociations(&song)
+			err := txSongRepository.UpdateWithAssociations(&song)
 			if err != nil {
 				errCode = wrapper.InternalServerError(err)
 				return err
