@@ -14,7 +14,7 @@ func TestComputeRehearsalsScore_WhenHistoryLengthIs0_ShouldReturn0(t *testing.T)
 	_uut := processor.NewProgressProcessor()
 
 	// when
-	rehearsalsScore := _uut.ComputeRehearsalsScore([]model.SongSectionHistory{})
+	rehearsalsScore := _uut.ComputeRehearsalsScore([]model.SongPartHistory{})
 
 	// then
 	assert.Zero(t, rehearsalsScore)
@@ -23,7 +23,7 @@ func TestComputeRehearsalsScore_WhenHistoryLengthIs0_ShouldReturn0(t *testing.T)
 func TestComputeRehearsalsScore_WhenHistoryLengthIs1_ShouldReturnLatestRehearsalsValue(t *testing.T) {
 	// given
 	_uut := processor.NewProgressProcessor()
-	history := []model.SongSectionHistory{
+	history := []model.SongPartHistory{
 		{To: 1},
 	}
 
@@ -37,12 +37,12 @@ func TestComputeRehearsalsScore_WhenHistoryLengthIs1_ShouldReturnLatestRehearsal
 func TestComputeRehearsalsScore_WhenSuccessful_ShouldComputeAndReturnRehearsalsScore(t *testing.T) {
 	tests := []struct {
 		name           string
-		history        []model.SongSectionHistory
+		history        []model.SongPartHistory
 		expectedResult uint64
 	}{
 		{
 			"Use Case 1",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:      0,
 					To:        1,
@@ -66,7 +66,7 @@ func TestComputeRehearsalsScore_WhenSuccessful_ShouldComputeAndReturnRehearsalsS
 		},
 		{
 			"Use Case 2",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:      0,
 					To:        1,
@@ -109,21 +109,21 @@ func TestComputeConfidenceScore_WhenHistoryLengthIs0_ShouldReturnDefaultConfiden
 	_uut := processor.NewProgressProcessor()
 
 	// when
-	confidenceScore := _uut.ComputeConfidenceScore([]model.SongSectionHistory{})
+	confidenceScore := _uut.ComputeConfidenceScore([]model.SongPartHistory{})
 
 	// then
-	assert.Equal(t, model.DefaultSongSectionConfidence, confidenceScore)
+	assert.Equal(t, model.DefaultSongConfidence, confidenceScore)
 }
 
 func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceScore(t *testing.T) {
 	tests := []struct {
 		name           string
-		history        []model.SongSectionHistory
+		history        []model.SongPartHistory
 		expectedResult uint
 	}{
 		{
 			"1 - Smooth Increase",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:     0,
 					To:       10,
@@ -149,7 +149,7 @@ func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceS
 		},
 		{
 			"2 - Fluctuations with final high",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:     0,
 					To:       10,
@@ -190,7 +190,7 @@ func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceS
 		},
 		{
 			"3 - Fluctuations with low final result",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:     0,
 					To:       10,
@@ -231,7 +231,7 @@ func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceS
 		},
 		{
 			"4 - Extreme Increasing Jumps",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:     0,
 					To:       50,
@@ -247,7 +247,7 @@ func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceS
 		},
 		{
 			"5 - Extreme Decreasing Jumps",
-			[]model.SongSectionHistory{
+			[]model.SongPartHistory{
 				{
 					From:     0,
 					To:       50,
@@ -285,12 +285,12 @@ func TestComputeConfidenceScore_WhenSuccessful_ShouldComputeAndReturnConfidenceS
 func TestComputeProgress_WhenSuccessful_ShouldComputeAndReturnProgress(t *testing.T) {
 	tests := []struct {
 		name             string
-		section          model.SongSection
+		section          model.SongPart
 		expectedProgress uint64
 	}{
 		{
 			"Use Case 1",
-			model.SongSection{
+			model.SongPart{
 				ConfidenceScore: 60,
 				RehearsalsScore: 50,
 			},
@@ -298,7 +298,7 @@ func TestComputeProgress_WhenSuccessful_ShouldComputeAndReturnProgress(t *testin
 		},
 		{
 			"Use Case 2",
-			model.SongSection{
+			model.SongPart{
 				ConfidenceScore: 15,
 				RehearsalsScore: 5,
 			},
@@ -306,7 +306,7 @@ func TestComputeProgress_WhenSuccessful_ShouldComputeAndReturnProgress(t *testin
 		},
 		{
 			"Use Case 3",
-			model.SongSection{
+			model.SongPart{
 				ConfidenceScore: 15,
 				RehearsalsScore: 15,
 			},
