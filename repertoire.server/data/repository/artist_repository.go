@@ -16,7 +16,7 @@ type ArtistRepository interface {
 	GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error
 	GetAllByIDs(artists *[]model.Artist, ids []uuid.UUID, withSongs bool, withAlbums bool) error
 	GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error
-	GetAllByIDsWithSongSectionsAndDefaultOccurrences(artists *[]model.Artist, ids []uuid.UUID) error
+	GetAllByIDsWithSongPartsAndDefaultOccurrences(artists *[]model.Artist, ids []uuid.UUID) error
 	GetAllByUser(
 		artists *[]model.EnhancedArtist,
 		userID uuid.UUID,
@@ -149,17 +149,17 @@ func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uu
 		Error
 }
 
-func (a artistRepository) GetAllByIDsWithSongSectionsAndDefaultOccurrences(artists *[]model.Artist, ids []uuid.UUID) error {
+func (a artistRepository) GetAllByIDsWithSongPartsAndDefaultOccurrences(artists *[]model.Artist, ids []uuid.UUID) error {
 	return a.client.Model(&model.Artist{}).
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
-		Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_sections.order")
+		Preload("Songs.Parts", func(db *gorm.DB) *gorm.DB {
+			return db.Order("song_parts.song_order")
 		}).
-		Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
-			return db.Joins("LEFT JOIN song_sections ON song_sections.id = section_id").
-				Joins("LEFT JOIN songs ON songs.id = song_sections.song_id").
+		Preload("Songs.Parts.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("LEFT JOIN song_parts ON song_parts.id = part_id").
+				Joins("LEFT JOIN songs ON songs.id = song_parts.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
 		Find(&artists, ids).
