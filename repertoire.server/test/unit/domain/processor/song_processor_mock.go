@@ -15,10 +15,10 @@ type SongProcessorMock struct {
 
 func (s *SongProcessorMock) AddCustomRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
+	songPartRepository repository.SongPartRepository,
 	arrangementID *uuid.UUID,
 ) (*wrapper.ErrorCode, bool) {
-	args := s.Called(song, songSectionRepository, arrangementID)
+	args := s.Called(song, songPartRepository, arrangementID)
 
 	var errCode *wrapper.ErrorCode
 	if e := args.Get(0); e != nil {
@@ -30,9 +30,9 @@ func (s *SongProcessorMock) AddCustomRehearsal(
 
 func (s *SongProcessorMock) AddPerfectRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
+	songPartRepository repository.SongPartRepository,
 ) (*wrapper.ErrorCode, bool) {
-	args := s.Called(song, songSectionRepository)
+	args := s.Called(song, songPartRepository)
 
 	var errCode *wrapper.ErrorCode
 	if e := args.Get(0); e != nil {
