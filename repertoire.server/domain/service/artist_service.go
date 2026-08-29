@@ -4,7 +4,7 @@ import (
 	"mime/multipart"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -53,14 +53,14 @@ type artistService struct {
 	saveImageToArtist             artist.SaveImageToArtist
 	updateArtist                  artist.UpdateArtist
 
-	createBandMember          member.CreateBandMember
-	deleteBandMember          member.DeleteBandMember
-	deleteImageFromBandMember member.DeleteImageFromBandMember
-	moveBandMember            member.MoveBandMember
-	updateBandMember          member.UpdateBandMember
-	saveImageToBandMember     member.SaveImageToBandMember
+	createBandMember          bandmember.CreateBandMember
+	deleteBandMember          bandmember.DeleteBandMember
+	deleteImageFromBandMember bandmember.DeleteImageFromBandMember
+	moveBandMember            bandmember.MoveBandMember
+	updateBandMember          bandmember.UpdateBandMember
+	saveImageToBandMember     bandmember.SaveImageToBandMember
 
-	getBandMemberRoles member.GetBandMemberRoles
+	getBandMemberRoles bandmember.GetBandMemberRoles
 }
 
 func NewArtistService(
@@ -79,14 +79,14 @@ func NewArtistService(
 	saveImageToArtist artist.SaveImageToArtist,
 	updateArtist artist.UpdateArtist,
 
-	createBandMember member.CreateBandMember,
-	deleteBandMember member.DeleteBandMember,
-	deleteImageFromBandMember member.DeleteImageFromBandMember,
-	moveBandMember member.MoveBandMember,
-	saveImageToBandMember member.SaveImageToBandMember,
-	updateBandMember member.UpdateBandMember,
+	createBandMember bandmember.CreateBandMember,
+	deleteBandMember bandmember.DeleteBandMember,
+	deleteImageFromBandMember bandmember.DeleteImageFromBandMember,
+	moveBandMember bandmember.MoveBandMember,
+	saveImageToBandMember bandmember.SaveImageToBandMember,
+	updateBandMember bandmember.UpdateBandMember,
 
-	getBandMemberRoles member.GetBandMemberRoles,
+	getBandMemberRoles bandmember.GetBandMemberRoles,
 ) ArtistService {
 	return &artistService{
 		addAlbumsToArtist:             addAlbumsToArtist,
