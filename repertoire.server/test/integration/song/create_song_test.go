@@ -203,7 +203,7 @@ func assertCreatedSong(
 
 	if request.ArtistName != nil {
 		assert.NotNil(t, song.Artist)
-		assert.Equal(t, *song.ArtistID, song.Artist.ID)
+		assert.Equal(t, song.ArtistID, &song.Artist.ID)
 		assert.NotEmpty(t, song.Artist.ID)
 		assert.Equal(t, *request.ArtistName, song.Artist.Name)
 		assert.Equal(t, song.UserID, song.Artist.UserID)
@@ -211,7 +211,7 @@ func assertCreatedSong(
 
 	if request.AlbumTitle != nil {
 		assert.NotEmpty(t, song.Album.ID)
-		assert.Equal(t, *song.AlbumID, song.Album.ID)
+		assert.Equal(t, song.AlbumID, &song.Album.ID)
 		assert.Equal(t, *request.AlbumTitle, song.Album.Title)
 		assert.Equal(t, song.ArtistID, song.Album.ArtistID)
 		assert.Equal(t, song.UserID, song.Album.UserID)
