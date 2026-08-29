@@ -37,19 +37,14 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	// reorder the other sections and gather total values from deleted sections
+	// reorder the other sections
+	// TODO: REMOVE PARTS TOO?
 	sectionsFound := uint(0)
-	totalConfidence := uint(0)
-	totalRehearsals := uint(0)
-	totalProgress := uint64(0)
 	for i, section := range song.Sections {
 		if slices.ContainsFunc(request.IDs, func(id uuid.UUID) bool {
 			return id == section.ID
 		}) {
 			sectionsFound++
-			totalConfidence += section.Confidence
-			totalRehearsals += section.Rehearsals
-			totalProgress += section.Progress
 			continue
 		}
 		song.Sections[i].Order = song.Sections[i].Order - sectionsFound
@@ -57,19 +52,6 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 
 	if int(sectionsFound) != len(request.IDs) {
 		return wrapper.NotFoundError(errors.New("song sections not found"))
-	}
-
-	// update song's new confidence, rehearsals and progress medians
-	sectionsLength := len(song.Sections)
-	sectionsDeletedLength := len(request.IDs)
-	if sectionsLength == sectionsDeletedLength {
-		song.Confidence = 0
-		song.Rehearsals = 0
-		song.Progress = 0
-	} else {
-		song.Confidence = (song.Confidence*float64(sectionsLength) - float64(totalConfidence)) / float64(sectionsLength-sectionsDeletedLength)
-		song.Rehearsals = (song.Rehearsals*float64(sectionsLength) - float64(totalRehearsals)) / float64(sectionsLength-sectionsDeletedLength)
-		song.Progress = (song.Progress*float64(sectionsLength) - float64(totalProgress)) / float64(sectionsLength-sectionsDeletedLength)
 	}
 
 	err = b.songRepository.UpdateWithAssociations(&song)

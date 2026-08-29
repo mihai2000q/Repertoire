@@ -82,13 +82,6 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 			return err
 		}
 
-		if request.SectionID != nil {
-			errCode = c.updateSection(part)
-			if errCode != nil {
-				return errCode.Error
-			}
-		}
-
 		errCode = c.updateSong(part)
 		if errCode != nil {
 			return errCode.Error
@@ -129,31 +122,6 @@ func (c CreateSongPart) updateSong(part model.SongPart) *wrapper.ErrorCode {
 	song.Progress = (song.Progress*float64(songPartsCount) + float64(part.Progress)) / float64(songPartsCount+1)
 
 	err = c.txSongRepository.Update(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	return nil
-}
-
-// Update song section's new confidence, rehearsals and progress medians
-func (c CreateSongPart) updateSection(part model.SongPart) *wrapper.ErrorCode {
-	var section model.SongSection
-	err := c.txSongSectionRepository.Get(&section, *part.SectionID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	if reflect.ValueOf(section).IsZero() {
-		return wrapper.NotFoundError(errors.New("song section not found"))
-	}
-
-	sectionPartsCount := *part.SectionOrder
-
-	section.Confidence = (section.Confidence*float64(sectionPartsCount) + float64(part.Confidence)) / float64(sectionPartsCount+1)
-	section.Rehearsals = (section.Rehearsals*float64(sectionPartsCount) + float64(part.Rehearsals)) / float64(sectionPartsCount+1)
-	section.Progress = (section.Progress*float64(sectionPartsCount) + float64(part.Progress)) / float64(sectionPartsCount+1)
-
-	err = c.txSongSectionRepository.Update(&section)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

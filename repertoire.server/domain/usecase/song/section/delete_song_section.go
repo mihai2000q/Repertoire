@@ -49,17 +49,6 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.Error
 		song.Sections[i].Order = song.Sections[i].Order - 1
 	}
 
-	// update song's new confidence, rehearsals and progress medians
-	if sectionsLength == 1 {
-		song.Confidence = 0
-		song.Rehearsals = 0
-		song.Progress = 0
-	} else {
-		song.Confidence = (song.Confidence*float64(sectionsLength) - float64(song.Sections[index].Confidence)) / float64(sectionsLength-1)
-		song.Rehearsals = (song.Rehearsals*float64(sectionsLength) - float64(song.Sections[index].Rehearsals)) / float64(sectionsLength-1)
-		song.Progress = (song.Progress*float64(sectionsLength) - float64(song.Sections[index].Progress)) / float64(sectionsLength-1)
-	}
-
 	err = d.songRepository.UpdateWithAssociations(&song)
 	if err != nil {
 		return wrapper.InternalServerError(err)

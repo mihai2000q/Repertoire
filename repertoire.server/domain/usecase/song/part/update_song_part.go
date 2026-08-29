@@ -73,7 +73,6 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *wrapper.
 	var song model.Song
 	var songPartsCount int64
 	var section *model.SongSection
-	var sectionPartsCount int64
 	if hasRehearsalsChanged || hasConfidenceChanged {
 		err = u.songRepository.Get(&song, part.SongID)
 		if err != nil {
@@ -82,17 +81,6 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *wrapper.
 		err = u.songPartRepository.CountAllBySong(&songPartsCount, part.SongID)
 		if err != nil {
 			return wrapper.InternalServerError(err)
-		}
-
-		if part.SectionID != nil {
-			err = u.songSectionRepository.Get(section, *part.SectionID)
-			if err != nil {
-				return wrapper.InternalServerError(err)
-			}
-			err = u.songPartRepository.CountAllBySection(&sectionPartsCount, *part.SectionID)
-			if err != nil {
-				return wrapper.InternalServerError(err)
-			}
 		}
 	}
 
@@ -108,8 +96,6 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *wrapper.
 				request.Rehearsals,
 				&song,
 				songPartsCount,
-				section,
-				sectionPartsCount,
 			)
 			if errCode != nil {
 				return errCode.Error
@@ -122,8 +108,6 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *wrapper.
 				request.Confidence,
 				&song,
 				songPartsCount,
-				section,
-				sectionPartsCount,
 			)
 			if errCode != nil {
 				return errCode.Error
@@ -171,8 +155,6 @@ func (u UpdateSongPart) rehearsalsHasChanged(
 	newRehearsals uint,
 	song *model.Song,
 	songPartsCount int64,
-	section *model.SongSection,
-	sectionPartsCount int64,
 ) *wrapper.ErrorCode {
 	// add history of the rehearsals change
 	newHistory := model.SongPartHistory{
@@ -203,12 +185,6 @@ func (u UpdateSongPart) rehearsalsHasChanged(
 	// update part's progress (depends on the rehearsals score)
 	part.Progress = u.progressProcessor.ComputeProgress(*part)
 
-	if section != nil {
-		// update the section's rehearsals and progress median with new part values
-		section.Rehearsals = (section.Rehearsals + float64(newRehearsals)) / float64(sectionPartsCount)
-		section.Progress = (section.Progress + float64(part.Progress)) / float64(sectionPartsCount)
-	}
-
 	// update the song's rehearsals and progress median with new part values
 	song.Rehearsals = (song.Rehearsals + float64(newRehearsals)) / float64(songPartsCount)
 	song.Progress = (song.Progress + float64(part.Progress)) / float64(songPartsCount)
@@ -224,8 +200,6 @@ func (u UpdateSongPart) confidenceHasChanged(
 	newConfidence uint,
 	song *model.Song,
 	songPartsCount int64,
-	section *model.SongSection,
-	sectionPartsCount int64,
 ) *wrapper.ErrorCode {
 	// add history of the confidence change
 	newHistory := model.SongPartHistory{
@@ -255,12 +229,6 @@ func (u UpdateSongPart) confidenceHasChanged(
 
 	// update part's progress (depends on the confidence score)
 	part.Progress = u.progressProcessor.ComputeProgress(*part)
-
-	if section != nil {
-		// update the section's rehearsals and progress median with new part values
-		section.Confidence = (section.Confidence + float64(newConfidence)) / float64(sectionPartsCount)
-		section.Progress = (section.Progress + float64(part.Progress)) / float64(sectionPartsCount)
-	}
 
 	// update the song's confidence and progress median with new part values
 	song.Confidence = (song.Confidence + float64(newConfidence)) / float64(songPartsCount)

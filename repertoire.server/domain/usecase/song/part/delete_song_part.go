@@ -120,16 +120,5 @@ func (d DeleteSongPart) updateSection(section *model.SongSection, id uuid.UUID, 
 		section.Parts[i].SongOrder = section.Parts[i].SongOrder - 1
 	}
 
-	// update section's new confidence, rehearsals and progress medians
-	if partsLength == 1 {
-		section.Confidence = 0
-		section.Rehearsals = 0
-		section.Progress = 0
-	} else {
-		section.Confidence = (section.Confidence*float64(partsLength) - float64(section.Parts[index].Confidence)) / float64(partsLength-1)
-		section.Rehearsals = (section.Rehearsals*float64(partsLength) - float64(section.Parts[index].Rehearsals)) / float64(partsLength-1)
-		section.Progress = (section.Progress*float64(partsLength) - float64(section.Parts[index].Progress)) / float64(partsLength-1)
-	}
-
 	return nil
 }
