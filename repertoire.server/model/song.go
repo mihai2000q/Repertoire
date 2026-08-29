@@ -45,6 +45,7 @@ type Song struct {
 	Settings     SongSettings  `json:"settings"`
 
 	Sections      []SongSection     `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
+	Parts         []SongPart        `gorm:"constraint:OnDelete:CASCADE" json:"parts"`
 	Arrangements  []SongArrangement `gorm:"constraint:OnDelete:CASCADE" json:"arrangements"`
 	Playlists     []Playlist        `gorm:"many2many:playlist_songs" json:"playlists"`
 	PlaylistSongs []PlaylistSong    `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"-"`
