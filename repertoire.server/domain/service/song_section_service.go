@@ -10,7 +10,6 @@ import (
 )
 
 type SongSectionService interface {
-	BulkRehearsals(request requests.BulkRehearsalsSongSectionsRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongSectionsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
@@ -21,17 +20,15 @@ type SongSectionService interface {
 }
 
 type songSectionService struct {
-	bulkRehearsalsSongSections section.BulkRehearsalsSongSections
-	bulkDeleteSongSections     section.BulkDeleteSongSections
-	createSongSection          section.CreateSongSection
-	deleteSongSection          section.DeleteSongSection
-	moveSongSection            section.MoveSongSection
-	updateSongSection          section.UpdateSongSection
-	getSongSectionTypes        section.GetSongSectionTypes
+	bulkDeleteSongSections section.BulkDeleteSongSections
+	createSongSection      section.CreateSongSection
+	deleteSongSection      section.DeleteSongSection
+	moveSongSection        section.MoveSongSection
+	updateSongSection      section.UpdateSongSection
+	getSongSectionTypes    section.GetSongSectionTypes
 }
 
 func NewSongSectionService(
-	bulkRehearsalsSongSections section.BulkRehearsalsSongSections,
 	bulkDeleteSongSections section.BulkDeleteSongSections,
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
@@ -41,19 +38,14 @@ func NewSongSectionService(
 	getSongSectionTypes section.GetSongSectionTypes,
 ) SongSectionService {
 	return &songSectionService{
-		bulkRehearsalsSongSections: bulkRehearsalsSongSections,
-		bulkDeleteSongSections:     bulkDeleteSongSections,
-		createSongSection:          createSongSection,
-		deleteSongSection:          deleteSongSection,
-		moveSongSection:            moveSongSection,
-		updateSongSection:          updateSongSection,
+		bulkDeleteSongSections: bulkDeleteSongSections,
+		createSongSection:      createSongSection,
+		deleteSongSection:      deleteSongSection,
+		moveSongSection:        moveSongSection,
+		updateSongSection:      updateSongSection,
 
 		getSongSectionTypes: getSongSectionTypes,
 	}
-}
-
-func (s *songSectionService) BulkRehearsals(request requests.BulkRehearsalsSongSectionsRequest) *wrapper.ErrorCode {
-	return s.bulkRehearsalsSongSections.Handle(request)
 }
 
 func (s *songSectionService) BulkDelete(request requests.BulkDeleteSongSectionsRequest) *wrapper.ErrorCode {

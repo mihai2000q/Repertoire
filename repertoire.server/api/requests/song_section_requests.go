@@ -26,17 +26,7 @@ type MoveSongSectionRequest struct {
 	SongID uuid.UUID `validate:"required"`
 }
 
-type BulkRehearsalsSongSectionsRequest struct {
-	Sections []BulkRehearsalsSongSectionRequest `validate:"min=1,dive"`
-	SongID   uuid.UUID                          `validate:"required"`
-}
-
 type BulkDeleteSongSectionsRequest struct {
 	IDs    []uuid.UUID `validate:"min=1"`
 	SongID uuid.UUID   `validate:"required"`
-}
-
-type BulkRehearsalsSongSectionRequest struct {
-	ID         uuid.UUID `validate:"required"`
-	Rehearsals uint
 }
