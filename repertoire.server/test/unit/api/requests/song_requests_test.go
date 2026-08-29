@@ -306,7 +306,17 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			[]string{"Difficulty"},
 			[]string{"difficulty_enum"},
 		},
-		// Album ID
+		// Bpm Test Cases
+		{
+			"Bpm is invalid because it is greater than 999",
+			requests.CreateSongRequest{
+				Title: validSongTitle,
+				Bpm:   &[]uint{1000}[0],
+			},
+			[]string{"Bpm"},
+			[]string{"max"},
+		},
+		// Album ID Test Cases
 		{
 			"Album ID is invalid because the Artist Id is also set",
 			requests.CreateSongRequest{
@@ -785,6 +795,17 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			},
 			"Difficulty",
 			"difficulty_enum",
+		},
+		// Bpm Test Cases
+		{
+			"Bpm is invalid because it is greater than 999",
+			requests.UpdateSongRequest{
+				ID:    uuid.New(),
+				Title: validSongTitle,
+				Bpm:   &[]uint{1000}[0],
+			},
+			"Bpm",
+			"max",
 		},
 	}
 	for _, tt := range tests {
