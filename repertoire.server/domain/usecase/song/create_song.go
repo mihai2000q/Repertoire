@@ -85,7 +85,6 @@ func (c CreateSong) createSections(song *model.Song, request requests.CreateSong
 		sections = append(sections, model.SongSection{
 			ID:                uuid.New(),
 			Name:              sectionRequest.Name,
-			Confidence:        model.DefaultSongSectionConfidence,
 			SongSectionTypeID: sectionRequest.TypeID,
 			Order:             uint(i),
 			SongID:            song.ID,
@@ -101,15 +100,6 @@ func (c CreateSong) createArrangement(song *model.Song) {
 		Order:       0,
 		SongID:      song.ID,
 		DefaultSong: song,
-	}
-
-	for _, section := range song.Sections {
-		occurrences := model.SongSectionOccurrences{
-			Occurrences:   0,
-			SectionID:     section.ID,
-			ArrangementID: arrangement.ID,
-		}
-		arrangement.SectionOccurrences = append(arrangement.SectionOccurrences, occurrences)
 	}
 
 	song.Arrangements = []model.SongArrangement{arrangement}

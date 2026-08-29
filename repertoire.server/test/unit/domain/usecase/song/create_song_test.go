@@ -362,19 +362,13 @@ func assertCreatedSong(
 		assert.NotEmpty(t, song.Sections[i].ID)
 		assert.Equal(t, section.Name, song.Sections[i].Name)
 		assert.Zero(t, song.Sections[i].Rehearsals)
-		assert.Equal(t, model.DefaultSongSectionConfidence, song.Sections[i].Confidence)
-		assert.Zero(t, song.Sections[i].RehearsalsScore)
-		assert.Zero(t, song.Sections[i].ConfidenceScore)
+		assert.Zero(t, song.Sections[i].Confidence)
 		assert.Zero(t, song.Sections[i].Progress)
 		assert.Equal(t, uint(i), song.Sections[i].Order)
 		assert.Equal(t, section.TypeID, song.Sections[i].SongSectionTypeID)
 		assert.Equal(t, song.ID, song.Sections[i].SongID)
-
-		// assert section occurrences on arrangement
-		assert.Zero(t, song.Arrangements[0].SectionOccurrences[i].Occurrences)
-		assert.Equal(t, song.Sections[i].ID, song.Arrangements[0].SectionOccurrences[i].SectionID)
-		assert.Equal(t, song.Arrangements[0].ID, song.Arrangements[0].SectionOccurrences[i].ArrangementID)
 	}
+	assert.Empty(t, song.Parts)
 	if request.AlbumTitle != nil {
 		assert.NotNil(t, song.Album)
 		assert.Equal(t, *song.AlbumID, song.Album.ID)
