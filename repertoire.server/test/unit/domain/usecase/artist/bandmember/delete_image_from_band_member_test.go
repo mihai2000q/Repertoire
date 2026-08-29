@@ -1,9 +1,9 @@
-package member
+package bandmember
 
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -19,7 +19,7 @@ import (
 func TestDeleteImageFromBandMember_WhenGetBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteImageFromBandMember(artistRepository, nil)
+	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, nil)
 
 	id := uuid.New()
 
@@ -43,7 +43,7 @@ func TestDeleteImageFromBandMember_WhenGetBandMemberFails_ShouldReturnInternalSe
 func TestDeleteImageFromBandMember_WhenMemberIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteImageFromBandMember(artistRepository, nil)
+	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, nil)
 
 	id := uuid.New()
 
@@ -66,7 +66,7 @@ func TestDeleteImageFromBandMember_WhenMemberIsEmpty_ShouldReturnNotFoundError(t
 func TestDeleteImageFromBandMember_WhenMemberHasNoImage_ShouldReturnConflictError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteImageFromBandMember(artistRepository, nil)
+	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, nil)
 
 	id := uuid.New()
 
@@ -91,7 +91,7 @@ func TestDeleteImageFromBandMember_WhenDeleteImageFails_ShouldReturnInternalServ
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewDeleteImageFromBandMember(artistRepository, storageService)
+	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, storageService)
 
 	id := uuid.New()
 
@@ -122,7 +122,7 @@ func TestDeleteImageFromBandMember_WhenUpdateBandMemberFails_ShouldReturnInterna
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewDeleteImageFromBandMember(artistRepository, storageService)
+	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, storageService)
 
 	id := uuid.New()
 
@@ -155,7 +155,7 @@ func TestDeleteImageFromBandMember_WhenIsValid_ShouldNotReturnAnyError(t *testin
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewDeleteImageFromBandMember(artistRepository, storageService)
+	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, storageService)
 
 	id := uuid.New()
 

@@ -1,10 +1,10 @@
-package member
+package bandmember
 
 import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -17,7 +17,7 @@ import (
 func TestCreateBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewCreateBandMember(artistRepository)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
 
 	request := requests.CreateBandMemberRequest{
 		ArtistID: uuid.New(),
@@ -45,7 +45,7 @@ func TestCreateBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *
 func TestCreateBandMember_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewCreateBandMember(artistRepository)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
 
 	request := requests.CreateBandMemberRequest{
 		ArtistID: uuid.New(),
@@ -72,7 +72,7 @@ func TestCreateBandMember_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing
 func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnConflictError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewCreateBandMember(artistRepository)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
 
 	request := requests.CreateBandMemberRequest{
 		ArtistID: uuid.New(),
@@ -100,7 +100,7 @@ func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnConflictError(t *testi
 func TestCreateBandMember_WhenGetBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewCreateBandMember(artistRepository)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
 
 	request := requests.CreateBandMemberRequest{
 		ArtistID: uuid.New(),
@@ -133,7 +133,7 @@ func TestCreateBandMember_WhenGetBandMemberRolesFails_ShouldReturnInternalServer
 func TestCreateBandMember_WhenCreateBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewCreateBandMember(artistRepository)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
 
 	request := requests.CreateBandMemberRequest{
 		ArtistID: uuid.New(),
@@ -173,7 +173,7 @@ func TestCreateBandMember_WhenCreateBandMemberFails_ShouldReturnInternalServerEr
 func TestCreateBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewCreateBandMember(artistRepository)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
 
 	request := requests.CreateBandMemberRequest{
 		ArtistID: uuid.New(),

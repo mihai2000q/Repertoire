@@ -1,10 +1,10 @@
-package member
+package bandmember
 
 import (
 	"errors"
 	"mime/multipart"
 	"net/http"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/internal"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -22,7 +22,7 @@ import (
 func TestSaveImageToBandMember_WhenGetBandMemberFails_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, nil, nil)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -47,7 +47,7 @@ func TestSaveImageToBandMember_WhenGetBandMemberFails_ShouldReturnNotFoundError(
 func TestSaveImageToBandMember_WhenMEmberIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, nil, nil)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, nil, nil)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -72,7 +72,7 @@ func TestSaveImageToBandMember_WhenStorageDeleteFileFails_ShouldReturnInternalSe
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, nil, storageService)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, nil, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -102,7 +102,7 @@ func TestSaveImageToBandMember_WhenStorageUploadFails_ShouldReturnInternalServer
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -139,7 +139,7 @@ func TestSaveImageToBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalSer
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -180,7 +180,7 @@ func TestSaveImageToBandMember_WhenWithoutOldImage_ShouldSaveNewOneAndNotReturnA
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()
@@ -227,7 +227,7 @@ func TestSaveImageToBandMember_WhenWithOldImage_ShouldDeleteOldImageSaveNewOneAn
 	artistRepository := new(repository.ArtistRepositoryMock)
 	storageFilePathProvider := new(provider.StorageFilePathProviderMock)
 	storageService := new(service.StorageServiceMock)
-	_uut := member.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
+	_uut := bandmember.NewSaveImageToBandMember(artistRepository, storageFilePathProvider, storageService)
 
 	file := new(multipart.FileHeader)
 	id := uuid.New()

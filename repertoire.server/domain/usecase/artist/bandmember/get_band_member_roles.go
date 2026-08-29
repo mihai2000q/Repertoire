@@ -1,4 +1,4 @@
-package member
+package bandmember
 
 import (
 	"repertoire/server/data/repository"

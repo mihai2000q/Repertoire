@@ -1,9 +1,9 @@
-package member
+package bandmember
 
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -17,7 +17,7 @@ import (
 func TestDeleteBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteBandMember(artistRepository)
+	_uut := bandmember.NewDeleteBandMember(artistRepository)
 
 	id := uuid.New()
 	artistID := uuid.New()
@@ -41,7 +41,7 @@ func TestDeleteBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *
 func TestDeleteBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteBandMember(artistRepository)
+	_uut := bandmember.NewDeleteBandMember(artistRepository)
 
 	id := uuid.New()
 	artistID := uuid.New()
@@ -64,7 +64,7 @@ func TestDeleteBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *test
 func TestDeleteBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteBandMember(artistRepository)
+	_uut := bandmember.NewDeleteBandMember(artistRepository)
 
 	id := uuid.New()
 	artistID := uuid.New()
@@ -94,7 +94,7 @@ func TestDeleteBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *
 func TestDeleteBandMember_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteBandMember(artistRepository)
+	_uut := bandmember.NewDeleteBandMember(artistRepository)
 
 	id := uuid.New()
 	artistID := uuid.New()
@@ -129,7 +129,7 @@ func TestDeleteBandMember_WhenUpdateArtistFails_ShouldReturnInternalServerError(
 func TestDeleteBandMember_WhenDeleteBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewDeleteBandMember(artistRepository)
+	_uut := bandmember.NewDeleteBandMember(artistRepository)
 
 	id := uuid.New()
 	artistID := uuid.New()
@@ -197,7 +197,7 @@ func TestDeleteBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			artistRepository := new(repository.ArtistRepositoryMock)
-			_uut := member.NewDeleteBandMember(artistRepository)
+			_uut := bandmember.NewDeleteBandMember(artistRepository)
 
 			id := tt.artist.BandMembers[tt.memberIndex].ID
 			artistID := tt.artist.ID

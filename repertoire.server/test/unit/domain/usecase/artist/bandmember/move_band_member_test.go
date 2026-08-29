@@ -1,11 +1,11 @@
-package member
+package bandmember
 
 import (
 	"cmp"
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
@@ -19,7 +19,7 @@ import (
 func TestMoveBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewMoveBandMember(artistRepository)
+	_uut := bandmember.NewMoveBandMember(artistRepository)
 
 	request := requests.MoveBandMemberRequest{
 		ID:       uuid.New(),
@@ -47,7 +47,7 @@ func TestMoveBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *te
 func TestMoveBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewMoveBandMember(artistRepository)
+	_uut := bandmember.NewMoveBandMember(artistRepository)
 
 	request := requests.MoveBandMemberRequest{
 		ID:       uuid.New(),
@@ -74,7 +74,7 @@ func TestMoveBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testin
 func TestMoveBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewMoveBandMember(artistRepository)
+	_uut := bandmember.NewMoveBandMember(artistRepository)
 
 	artist := &model.Artist{ID: uuid.New()}
 
@@ -103,7 +103,7 @@ func TestMoveBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *te
 func TestMoveBandMember_WhenOverBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewMoveBandMember(artistRepository)
+	_uut := bandmember.NewMoveBandMember(artistRepository)
 
 	artist := &model.Artist{
 		ID: uuid.New(),
@@ -137,7 +137,7 @@ func TestMoveBandMember_WhenOverBandMemberIsNotFound_ShouldReturnNotFoundError(t
 func TestMoveBandMember_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := member.NewMoveBandMember(artistRepository)
+	_uut := bandmember.NewMoveBandMember(artistRepository)
 
 	artist := &model.Artist{
 		ID: uuid.New(),
@@ -217,7 +217,7 @@ func TestMoveBandMember_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			artistRepository := new(repository.ArtistRepositoryMock)
-			_uut := member.NewMoveBandMember(artistRepository)
+			_uut := bandmember.NewMoveBandMember(artistRepository)
 
 			request := requests.MoveBandMemberRequest{
 				ID:       tt.artist.BandMembers[tt.index].ID,
