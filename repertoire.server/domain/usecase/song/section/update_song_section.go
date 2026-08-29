@@ -30,7 +30,7 @@ func NewUpdateSongSection(
 
 func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
 	var section model.SongSection
-	err := u.songSectionRepository.GetWithParts(&section, request.ID)
+	err := u.songSectionRepository.Get(&section, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
