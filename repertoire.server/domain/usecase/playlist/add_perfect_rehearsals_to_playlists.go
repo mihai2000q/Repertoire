@@ -40,13 +40,13 @@ func (a AddPerfectRehearsalsToPlaylists) Handle(request requests.AddPerfectRehea
 
 	var errCode *wrapper.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		transactionSongSectionRepository := factory.NewSongSectionRepository()
-		transactionSongRepository := factory.NewSongRepository()
+		txSongPartRepository := factory.NewSongPartRepository()
+		txSongRepository := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, playlist := range playlists {
 			for _, playlistSong := range playlist.PlaylistSongs {
-				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&playlistSong.Song, transactionSongSectionRepository)
+				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&playlistSong.Song, txSongPartRepository)
 				if errC != nil {
 					errCode = errC
 					return errCode.Error
@@ -58,7 +58,7 @@ func (a AddPerfectRehearsalsToPlaylists) Handle(request requests.AddPerfectRehea
 		}
 
 		if len(newSongs) > 0 {
-			err = transactionSongRepository.UpdateAllWithAssociations(&newSongs)
+			err = txSongRepository.UpdateAllWithAssociations(&newSongs)
 			if err != nil {
 				errCode = wrapper.InternalServerError(err)
 				return err
