@@ -1,10 +1,10 @@
-package section
+package part
 
 import (
 	"errors"
 	"net/http"
 	"repertoire/server/api/requests"
-	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/domain/usecase/song/part"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
@@ -14,17 +14,17 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestUpdateAllSongSections_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateAllSongParts_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateAllSongSections(songRepository)
+	_uut := part.NewUpdateAllSongParts(songRepository)
 
-	request := requests.UpdateAllSongSectionsRequest{
+	request := requests.UpdateAllSongPartsRequest{
 		SongID: uuid.New(),
 	}
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(internalError).
 		Once()
 
@@ -39,16 +39,16 @@ func TestUpdateAllSongSections_WhenGetSongFails_ShouldReturnInternalServerError(
 	songRepository.AssertExpectations(t)
 }
 
-func TestUpdateAllSongSections_WhenSettingsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestUpdateAllSongParts_WhenSettingsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateAllSongSections(songRepository)
+	_uut := part.NewUpdateAllSongParts(songRepository)
 
-	request := requests.UpdateAllSongSectionsRequest{
+	request := requests.UpdateAllSongPartsRequest{
 		SongID: uuid.New(),
 	}
 
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil).
 		Once()
 
@@ -63,19 +63,19 @@ func TestUpdateAllSongSections_WhenSettingsAreEmpty_ShouldReturnNotFoundError(t 
 	songRepository.AssertExpectations(t)
 }
 
-func TestUpdateAllSongSections_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateAllSongParts_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateAllSongSections(songRepository)
+	_uut := part.NewUpdateAllSongParts(songRepository)
 
-	request := requests.UpdateAllSongSectionsRequest{
+	request := requests.UpdateAllSongPartsRequest{
 		SongID: uuid.New(),
 	}
 
 	mockSong := &model.Song{
 		ID: request.SongID,
 	}
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).
 		Once()
 
@@ -94,12 +94,12 @@ func TestUpdateAllSongSections_WhenUpdateFails_ShouldReturnInternalServerError(t
 	songRepository.AssertExpectations(t)
 }
 
-func TestUpdateAllSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
+func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := section.NewUpdateAllSongSections(songRepository)
+	_uut := part.NewUpdateAllSongParts(songRepository)
 
-	request := requests.UpdateAllSongSectionsRequest{
+	request := requests.UpdateAllSongPartsRequest{
 		SongID:       uuid.New(),
 		InstrumentID: &[]uuid.UUID{uuid.New()}[0],
 		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
@@ -107,26 +107,26 @@ func TestUpdateAllSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 
 	mockSong := &model.Song{
 		ID: request.SongID,
-		Sections: []model.SongSection{
+		Parts: []model.SongPart{
 			{ID: uuid.New()},
 			{ID: uuid.New()},
 			{ID: uuid.New()},
 		},
 	}
 
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).
 		Once()
 
 	songRepository.On("UpdateWithAssociations", mock.IsType(mockSong)).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
-			for _, songSection := range newSong.Sections {
+			for _, songPart := range newSong.Parts {
 				if request.InstrumentID != nil {
-					assert.Equal(t, request.InstrumentID, songSection.InstrumentID)
+					assert.Equal(t, request.InstrumentID, songPart.InstrumentID)
 				}
 				if request.BandMemberID != nil {
-					assert.Equal(t, request.BandMemberID, songSection.BandMemberID)
+					assert.Equal(t, request.BandMemberID, songPart.BandMemberID)
 				}
 			}
 		}).

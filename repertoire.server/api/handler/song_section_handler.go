@@ -79,23 +79,6 @@ func (s SongSectionHandler) Update(c *gin.Context) {
 	s.SendMessage(c, "song section has been updated successfully!")
 }
 
-func (s SongSectionHandler) UpdateAll(c *gin.Context) {
-	var request requests.UpdateAllSongSectionsRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	errorCode = s.service.UpdateAll(request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song's sections have been updated successfully based on settings!")
-}
-
 func (s SongSectionHandler) Move(c *gin.Context) {
 	var request requests.MoveSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)

@@ -15,21 +15,19 @@ type SongSectionService interface {
 	Create(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	Move(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
-	UpdateAll(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode
 	Update(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 
 	GetTypes(token string) ([]model.SongSectionType, *wrapper.ErrorCode)
 }
 
 type songSectionService struct {
-	bulkRehearsalsSongSections           section.BulkRehearsalsSongSections
-	bulkDeleteSongSections               section.BulkDeleteSongSections
-	createSongSection                    section.CreateSongSection
-	deleteSongSection                    section.DeleteSongSection
-	moveSongSection                      section.MoveSongSection
-	updateAllSongSections                section.UpdateAllSongSections
-	updateSongSection                    section.UpdateSongSection
-	getSongSectionTypes                  section.GetSongSectionTypes
+	bulkRehearsalsSongSections section.BulkRehearsalsSongSections
+	bulkDeleteSongSections     section.BulkDeleteSongSections
+	createSongSection          section.CreateSongSection
+	deleteSongSection          section.DeleteSongSection
+	moveSongSection            section.MoveSongSection
+	updateSongSection          section.UpdateSongSection
+	getSongSectionTypes        section.GetSongSectionTypes
 }
 
 func NewSongSectionService(
@@ -38,19 +36,17 @@ func NewSongSectionService(
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
 	moveSongSection section.MoveSongSection,
-	updateAllSongSections section.UpdateAllSongSections,
 	updateSongSection section.UpdateSongSection,
 
 	getSongSectionTypes section.GetSongSectionTypes,
 ) SongSectionService {
 	return &songSectionService{
-		bulkRehearsalsSongSections:           bulkRehearsalsSongSections,
-		bulkDeleteSongSections:               bulkDeleteSongSections,
-		createSongSection:                    createSongSection,
-		deleteSongSection:                    deleteSongSection,
-		moveSongSection:                      moveSongSection,
-		updateAllSongSections:                updateAllSongSections,
-		updateSongSection:                    updateSongSection,
+		bulkRehearsalsSongSections: bulkRehearsalsSongSections,
+		bulkDeleteSongSections:     bulkDeleteSongSections,
+		createSongSection:          createSongSection,
+		deleteSongSection:          deleteSongSection,
+		moveSongSection:            moveSongSection,
+		updateSongSection:          updateSongSection,
 
 		getSongSectionTypes: getSongSectionTypes,
 	}
@@ -74,10 +70,6 @@ func (s *songSectionService) Delete(id uuid.UUID, songID uuid.UUID) *wrapper.Err
 
 func (s *songSectionService) Move(request requests.MoveSongSectionRequest) *wrapper.ErrorCode {
 	return s.moveSongSection.Handle(request)
-}
-
-func (s *songSectionService) UpdateAll(request requests.UpdateAllSongSectionsRequest) *wrapper.ErrorCode {
-	return s.updateAllSongSections.Handle(request)
 }
 
 func (s *songSectionService) Update(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {

@@ -1,4 +1,4 @@
-package section
+package part
 
 import (
 	"net/http"
@@ -14,28 +14,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUpdateAllSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestUpdateAllSongParts_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-	request := requests.UpdateAllSongSectionsRequest{
+	request := requests.UpdateAllSongPartsRequest{
 		SongID: uuid.New(),
 	}
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/all", request)
+	core.NewTestHandler().PUT(w, "/api/songs/parts/all", request)
 
 	// then
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestUpdateAllSongSections_WhenSuccessful_ShouldUpdateAllSongSections(t *testing.T) {
+func TestUpdateAllSongParts_WhenSuccessful_ShouldUpdateAllSongParts(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	song := songData.Songs[0]
-	request := requests.UpdateAllSongSectionsRequest{
+	request := requests.UpdateAllSongPartsRequest{
 		SongID:       song.ID,
 		InstrumentID: &songData.Users[0].Instruments[0].ID,
 		BandMemberID: &songData.Artists[0].BandMembers[0].ID,
@@ -43,21 +43,21 @@ func TestUpdateAllSongSections_WhenSuccessful_ShouldUpdateAllSongSections(t *tes
 
 	// when
 	w := httptest.NewRecorder()
-	core.NewTestHandler().PUT(w, "/api/songs/sections/all", request)
+	core.NewTestHandler().PUT(w, "/api/songs/parts/all", request)
 
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var updatedSong model.Song
 	db := utils.GetDatabase(t)
-	db.Preload("Sections").Find(&updatedSong, request.SongID)
+	db.Preload("Parts").Find(&updatedSong, request.SongID)
 
-	for _, section := range updatedSong.Sections {
+	for _, part := range updatedSong.Parts {
 		if request.InstrumentID != nil {
-			assert.Equal(t, request.InstrumentID, section.InstrumentID)
+			assert.Equal(t, request.InstrumentID, part.InstrumentID)
 		}
 		if request.BandMemberID != nil {
-			assert.Equal(t, request.BandMemberID, section.BandMemberID)
+			assert.Equal(t, request.BandMemberID, part.BandMemberID)
 		}
 	}
 }

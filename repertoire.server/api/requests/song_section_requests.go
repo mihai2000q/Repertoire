@@ -20,12 +20,6 @@ type UpdateSongSectionRequest struct {
 	InstrumentID *uuid.UUID
 }
 
-type UpdateAllSongSectionsRequest struct {
-	SongID       uuid.UUID `validate:"required"`
-	InstrumentID *uuid.UUID
-	BandMemberID *uuid.UUID
-}
-
 type MoveSongSectionRequest struct {
 	ID     uuid.UUID `validate:"required"`
 	OverID uuid.UUID `validate:"required"`
