@@ -1,8 +1,6 @@
 package section
 
 import (
-	"errors"
-	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
@@ -12,20 +10,14 @@ import (
 )
 
 type CreateSongSection struct {
-	songSectionRepository     repository.SongSectionRepository
-	songRepository            repository.SongRepository
-	songArrangementRepository repository.SongArrangementRepository
+	songSectionRepository repository.SongSectionRepository
 }
 
 func NewCreateSongSection(
 	songSectionRepository repository.SongSectionRepository,
-	songRepository repository.SongRepository,
-	songArrangementRepository repository.SongArrangementRepository,
 ) CreateSongSection {
 	return CreateSongSection{
-		songSectionRepository:     songSectionRepository,
-		songRepository:            songRepository,
-		songArrangementRepository: songArrangementRepository,
+		songSectionRepository: songSectionRepository,
 	}
 }
 
@@ -36,76 +28,14 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 		return wrapper.InternalServerError(err)
 	}
 
-	var song model.Song
-	err = c.songRepository.Get(&song, request.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
-	}
-
-	if request.BandMemberID != nil {
-		res, err := c.songRepository.IsBandMemberAssociatedWithSong(request.SongID, *request.BandMemberID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		if !res {
-			return wrapper.ConflictError(errors.New("band member is not part of the artist associated with this song"))
-		}
-	}
-
 	section := model.SongSection{
 		ID:                uuid.New(),
 		Name:              request.Name,
-		Confidence:        model.DefaultSongSectionConfidence,
 		SongSectionTypeID: request.TypeID,
 		Order:             uint(sectionsCount),
 		SongID:            request.SongID,
-		BandMemberID:      request.BandMemberID,
-		InstrumentID:      request.InstrumentID,
 	}
 	err = c.songSectionRepository.Create(&section)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	// update song's new confidence, rehearsals and progress medians
-	song.Confidence = (song.Confidence*float64(sectionsCount) + float64(section.Confidence)) / float64(sectionsCount+1)
-	song.Rehearsals = (song.Rehearsals*float64(sectionsCount) + float64(section.Rehearsals)) / float64(sectionsCount+1)
-	song.Progress = (song.Progress*float64(sectionsCount) + float64(section.Progress)) / float64(sectionsCount+1)
-
-	err = c.songRepository.Update(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	errCode := c.updateArrangements(section.ID, request.SongID)
-	if errCode != nil {
-		return errCode
-	}
-
-	return nil
-}
-
-// Add one new section occurrence on each song arrangement
-func (c CreateSongSection) updateArrangements(sectionID uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	var arrangements []model.SongArrangement
-	err := c.songArrangementRepository.GetAllBySong(&arrangements, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	for i := range arrangements {
-		occurrence := model.SongSectionOccurrences{
-			SectionID:     sectionID,
-			Occurrences:   0,
-			ArrangementID: arrangements[i].ID,
-		}
-		arrangements[i].SectionOccurrences = append(arrangements[i].SectionOccurrences, occurrence)
-	}
-
-	err = c.songArrangementRepository.UpdateAllWithAssociations(&arrangements)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}
