@@ -22,7 +22,7 @@ type GetSongFiltersMetadataRequest struct {
 type CreateSongRequest struct {
 	Title          string `validate:"required,max=100"`
 	Description    string
-	Bpm            *uint `validate:"omitempty,max=999"`
+	Bpm            *uint   `validate:"omitempty,min=1,max=999"`
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
 	ReleaseDate    *internal.Date
@@ -57,7 +57,7 @@ type UpdateSongRequest struct {
 	Title          string    `validate:"required,max=100"`
 	Description    string
 	IsRecorded     bool
-	Bpm            *uint `validate:"omitempty,max=999"`
+	Bpm            *uint   `validate:"omitempty,min=1,max=999"`
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
 	ReleaseDate    *internal.Date

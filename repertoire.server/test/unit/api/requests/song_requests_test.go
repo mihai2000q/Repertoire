@@ -308,6 +308,15 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 		},
 		// Bpm Test Cases
 		{
+			"Bpm is invalid because it is lower than 1",
+			requests.CreateSongRequest{
+				Title: validSongTitle,
+				Bpm:   &[]uint{0}[0],
+			},
+			[]string{"Bpm"},
+			[]string{"min"},
+		},
+		{
 			"Bpm is invalid because it is greater than 999",
 			requests.CreateSongRequest{
 				Title: validSongTitle,
@@ -797,6 +806,16 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"difficulty_enum",
 		},
 		// Bpm Test Cases
+		{
+			"Bpm is invalid because it is lower than 1",
+			requests.UpdateSongRequest{
+				ID:    uuid.New(),
+				Title: validSongTitle,
+				Bpm:   &[]uint{0}[0],
+			},
+			"Bpm",
+			"min",
+		},
 		{
 			"Bpm is invalid because it is greater than 999",
 			requests.UpdateSongRequest{
