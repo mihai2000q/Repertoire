@@ -77,7 +77,12 @@ func TestMoveBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *te
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := bandmember.NewMoveBandMember(artistRepository)
 
-	artist := &model.Artist{ID: uuid.New()}
+	artist := &model.Artist{
+		ID: uuid.New(),
+		BandMembers: []model.BandMember{
+			{ID: uuid.New(), Order: 0},
+		},
+	}
 
 	request := requests.MoveBandMemberRequest{
 		ID:       uuid.New(),

@@ -84,7 +84,12 @@ func TestMoveSongFromAlbum_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testi
 	}
 
 	// given - mocking
-	mockAlbum := &model.Album{ID: uuid.New()}
+	mockAlbum := &model.Album{
+		ID: uuid.New(),
+		Songs: []model.Song{
+			{ID: uuid.New(), AlbumTrackNo: &[]uint{1}[0]},
+		},
+	}
 	albumRepository.On("GetWithSongs", new(model.Album), request.ID).
 		Return(nil, mockAlbum).
 		Once()
