@@ -20,7 +20,6 @@ func (s SongPartRouter) RegisterRoutes() {
 		api.PUT("/move-in-song", s.handler.MoveInSong)
 		api.PUT("/bulk-delete", s.handler.BulkDelete)
 		api.DELETE("/:id/from/:songID", s.handler.Delete)
-		api.DELETE("/:id/from/:songID/and/:sectionID", s.handler.Delete)
 	}
 }
 

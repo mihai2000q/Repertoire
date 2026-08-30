@@ -3,30 +3,19 @@ package repository
 import (
 	"repertoire/server/model"
 
-	"github.com/stretchr/testify/mock"
-
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 )
 
 type SongPartRepositoryMock struct {
 	mock.Mock
 }
 
-func (s *SongPartRepositoryMock) Get(section *model.SongPart, id uuid.UUID) error {
-	args := s.Called(section, id)
+func (s *SongPartRepositoryMock) Get(part *model.SongPart, id uuid.UUID) error {
+	args := s.Called(part, id)
 
 	if len(args) > 1 {
-		*section = *args.Get(1).(*model.SongPart)
-	}
-
-	return args.Error(0)
-}
-
-func (s *SongPartRepositoryMock) CountAllBySection(count *int64, songID uuid.UUID) error {
-	args := s.Called(count, songID)
-
-	if len(args) > 1 {
-		*count = *args.Get(1).(*int64)
+		*part = *args.Get(1).(*model.SongPart)
 	}
 
 	return args.Error(0)
@@ -42,18 +31,28 @@ func (s *SongPartRepositoryMock) CountAllBySong(count *int64, songID uuid.UUID) 
 	return args.Error(0)
 }
 
-func (s *SongPartRepositoryMock) Create(section *model.SongPart) error {
-	args := s.Called(section)
+func (s *SongPartRepositoryMock) CountBySectionIDs(partIDs []uuid.UUID) (map[uuid.UUID]int64, error) {
+	args := s.Called(partIDs)
+	return args.Get(0).(map[uuid.UUID]int64), args.Error(1)
+}
+
+func (s *SongPartRepositoryMock) Create(part *model.SongPart) error {
+	args := s.Called(part)
 	return args.Error(0)
 }
 
-func (s *SongPartRepositoryMock) Update(section *model.SongPart) error {
-	args := s.Called(section)
+func (s *SongPartRepositoryMock) Update(part *model.SongPart) error {
+	args := s.Called(part)
 	return args.Error(0)
 }
 
-func (s *SongPartRepositoryMock) UpdateWithAssociations(section *model.SongPart) error {
-	args := s.Called(section)
+func (s *SongPartRepositoryMock) UpdateAll(parts *[]model.SongPart) error {
+	args := s.Called(parts)
+	return args.Error(0)
+}
+
+func (s *SongPartRepositoryMock) UpdateWithAssociations(part *model.SongPart) error {
+	args := s.Called(part)
 	return args.Error(0)
 }
 

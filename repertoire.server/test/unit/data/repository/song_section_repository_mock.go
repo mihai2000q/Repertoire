@@ -22,11 +22,41 @@ func (s *SongSectionRepositoryMock) Get(section *model.SongSection, id uuid.UUID
 	return args.Error(0)
 }
 
+func (s *SongSectionRepositoryMock) GetAllByIDs(sections *[]model.SongSection, ids []uuid.UUID) error {
+	args := s.Called(sections, ids)
+
+	if len(args) > 1 {
+		*sections = *args.Get(1).(*[]model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongSectionRepositoryMock) GetWithParts(section *model.SongSection, id uuid.UUID) error {
 	args := s.Called(section, id)
 
 	if len(args) > 1 {
 		*section = *args.Get(1).(*model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) GetAllByPartWithSectionParts(sections *[]model.SongSection, partID uuid.UUID) error {
+	args := s.Called(sections, partID)
+
+	if len(args) > 1 {
+		*sections = *args.Get(1).(*[]model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) GetAllByPartIDsWithSectionParts(sections *[]model.SongSection, partIDs []uuid.UUID) error {
+	args := s.Called(sections, partIDs)
+
+	if len(args) > 1 {
+		*sections = *args.Get(1).(*[]model.SongSection)
 	}
 
 	return args.Error(0)
@@ -57,8 +87,25 @@ func (s *SongSectionRepositoryMock) UpdateWithAssociations(section *model.SongSe
 	return args.Error(0)
 }
 
+func (s *SongSectionRepositoryMock) UpdateAllWithAssociations(sections *[]model.SongSection) error {
+	args := s.Called(sections)
+	return args.Error(0)
+}
+
 func (s *SongSectionRepositoryMock) Delete(ids []uuid.UUID) error {
 	args := s.Called(ids)
+	return args.Error(0)
+}
+
+// Section Parts
+
+func (s *SongSectionRepositoryMock) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
+	args := s.Called(sectionParts)
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
+	args := s.Called(sectionParts)
 	return args.Error(0)
 }
 

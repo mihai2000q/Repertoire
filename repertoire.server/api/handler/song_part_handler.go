@@ -46,7 +46,7 @@ func (s SongPartHandler) Create(c *gin.Context) {
 }
 
 func (s SongPartHandler) BulkRehearsals(c *gin.Context) {
-	var request requests.BulkRehearsalsSongPartsRequest
+	var request requests.BulkUpdateSongPartsRequest
 	errorCode := s.BindAndValidate(c, &request)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
@@ -143,13 +143,7 @@ func (s SongPartHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	sectionID, err := uuid.Parse(c.Param("sectionID"))
-	if err != nil {
-		_ = c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	errorCode := s.service.Delete(id, songID, sectionID)
+	errorCode := s.service.Delete(id, songID)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

@@ -9,17 +9,17 @@ import (
 )
 
 type SongPartService interface {
-	BulkRehearsals(request requests.BulkRehearsalsSongPartsRequest) *wrapper.ErrorCode
+	BulkRehearsals(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongPartsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongPartRequest) *wrapper.ErrorCode
-	Delete(id uuid.UUID, songID uuid.UUID, sectionID uuid.UUID) *wrapper.ErrorCode
+	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
 	MoveInSong(request requests.MoveSongPartInSongRequest) *wrapper.ErrorCode
 	UpdateAll(request requests.UpdateAllSongPartsRequest) *wrapper.ErrorCode
 	Update(request requests.UpdateSongPartRequest) *wrapper.ErrorCode
 }
 
 type songPartService struct {
-	bulkRehearsalsSongParts part.BulkRehearsalsSongParts
+	bulkRehearsalsSongParts part.BulkUpdateSongParts
 	bulkDeleteSongParts     part.BulkDeleteSongParts
 	createSongPart          part.CreateSongPart
 	deleteSongPart          part.DeleteSongPart
@@ -29,7 +29,7 @@ type songPartService struct {
 }
 
 func NewSongPartService(
-	bulkRehearsalsSongParts part.BulkRehearsalsSongParts,
+	bulkRehearsalsSongParts part.BulkUpdateSongParts,
 	bulkDeleteSongParts part.BulkDeleteSongParts,
 	createSongPart part.CreateSongPart,
 	deleteSongPart part.DeleteSongPart,
@@ -48,7 +48,7 @@ func NewSongPartService(
 	}
 }
 
-func (s *songPartService) BulkRehearsals(request requests.BulkRehearsalsSongPartsRequest) *wrapper.ErrorCode {
+func (s *songPartService) BulkRehearsals(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode {
 	return s.bulkRehearsalsSongParts.Handle(request)
 }
 
@@ -60,8 +60,8 @@ func (s *songPartService) Create(request requests.CreateSongPartRequest) *wrappe
 	return s.createSongPart.Handle(request)
 }
 
-func (s *songPartService) Delete(id uuid.UUID, songID uuid.UUID, sectionID uuid.UUID) *wrapper.ErrorCode {
-	return s.deleteSongPart.Handle(id, songID, sectionID)
+func (s *songPartService) Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+	return s.deleteSongPart.Handle(id, songID)
 }
 
 func (s *songPartService) MoveInSong(request requests.MoveSongPartInSongRequest) *wrapper.ErrorCode {

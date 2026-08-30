@@ -120,7 +120,7 @@ var songUseCases = fx.Options(
 	fx.Provide(arrangement.NewUpdateDefaultSongArrangement),
 
 	// Parts
-	fx.Provide(part.NewBulkRehearsalsSongParts),
+	fx.Provide(part.NewBulkUpdateSongParts),
 	fx.Provide(part.NewBulkDeleteSongParts),
 	fx.Provide(part.NewCreateSongPart),
 	fx.Provide(part.NewDeleteSongPart),

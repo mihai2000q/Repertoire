@@ -13,27 +13,46 @@ import (
 )
 
 type CreateSongPart struct {
-	songPartRepository          repository.SongPartRepository
-	songRepository              repository.SongRepository
-	transactionManager          transaction.Manager
+	songSectionRepository repository.SongSectionRepository
+	songRepository        repository.SongRepository
+	transactionManager    transaction.Manager
+
 	txSongRepository            repository.SongRepository
 	txSongSectionRepository     repository.SongSectionRepository
+	txSongPartRepository        repository.SongPartRepository
 	txSongArrangementRepository repository.SongArrangementRepository
 }
 
 func NewCreateSongPart(
-	songPartRepository repository.SongPartRepository,
+	songSectionRepository repository.SongSectionRepository,
 	songRepository repository.SongRepository,
 	transactionManager transaction.Manager,
 ) CreateSongPart {
 	return CreateSongPart{
-		songPartRepository: songPartRepository,
-		songRepository:     songRepository,
-		transactionManager: transactionManager,
+		songSectionRepository: songSectionRepository,
+		songRepository:        songRepository,
+		transactionManager:    transactionManager,
 	}
 }
 
 func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.ErrorCode {
+	// Validate sections
+	if len(request.SectionIDs) > 0 {
+		var sections []model.SongSection
+		if err := c.songSectionRepository.GetAllByIDs(&sections, request.SectionIDs); err != nil {
+			return wrapper.InternalServerError(err)
+		}
+		if len(sections) != len(request.SectionIDs) {
+			return wrapper.NotFoundError(errors.New("sections not found"))
+		}
+		for _, section := range sections {
+			if section.SongID != request.SongID {
+				return wrapper.ConflictError(errors.New("section does not belong to the same song"))
+			}
+		}
+	}
+
+	// Validate band member
 	if request.BandMemberID != nil {
 		res, err := c.songRepository.IsBandMemberAssociatedWithSong(request.SongID, *request.BandMemberID)
 		if err != nil {
@@ -47,21 +66,11 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 	var errCode *wrapper.ErrorCode
 	err := c.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		c.txSongRepository = factory.NewSongRepository()
-		c.txSongSectionRepository = factory.NewSongSectionRepository()
+		c.txSongPartRepository = factory.NewSongPartRepository()
 		c.txSongArrangementRepository = factory.NewSongArrangementRepository()
 
-		var sectionPartsCount *uint
-		if request.SectionID != nil {
-			var count int64
-			err := c.songPartRepository.CountAllBySection(&count, *request.SectionID)
-			if err != nil {
-				return err
-			}
-			sectionPartsCount = &[]uint{uint(count)}[0]
-		}
-
 		var songPartsCount int64
-		err := c.songPartRepository.CountAllBySong(&songPartsCount, request.SongID)
+		err := c.txSongPartRepository.CountAllBySong(&songPartsCount, request.SongID)
 		if err != nil {
 			return err
 		}
@@ -71,15 +80,19 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 			Name:         request.Name,
 			Confidence:   model.DefaultSongPartConfidence,
 			SongOrder:    uint(songPartsCount),
-			SectionOrder: sectionPartsCount,
 			SongID:       request.SongID,
-			SectionID:    request.SectionID,
 			BandMemberID: request.BandMemberID,
 			InstrumentID: request.InstrumentID,
 		}
-		err = c.songPartRepository.Create(&part)
-		if err != nil {
+		if err = c.txSongPartRepository.Create(&part); err != nil {
 			return err
+		}
+
+		if len(request.SectionIDs) > 0 {
+			c.txSongSectionRepository = factory.NewSongSectionRepository()
+			if err = c.createSectionParts(request, part); err != nil {
+				return err
+			}
 		}
 
 		errCode = c.updateSong(part)
@@ -99,6 +112,30 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 			return errCode
 		}
 		return wrapper.InternalServerError(err)
+	}
+
+	return nil
+}
+
+// Compute the part's order for each section: current count of parts in that section
+func (c CreateSongPart) createSectionParts(request requests.CreateSongPartRequest, part model.SongPart) error {
+	counts, err := c.txSongPartRepository.CountBySectionIDs(request.SectionIDs)
+	if err != nil {
+		return err
+	}
+
+	sectionParts := make([]model.SongSectionPart, len(request.SectionIDs))
+	for i, sectionID := range request.SectionIDs {
+		order := uint(counts[sectionID])
+		sectionParts[i] = model.SongSectionPart{
+			PartID:    part.ID,
+			SectionID: sectionID,
+			Order:     order,
+		}
+	}
+
+	if err = c.txSongSectionRepository.CreateAllSectionParts(&sectionParts); err != nil {
+		return err
 	}
 
 	return nil

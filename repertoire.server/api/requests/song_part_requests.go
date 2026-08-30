@@ -5,7 +5,7 @@ import "github.com/google/uuid"
 type CreateSongPartRequest struct {
 	SongID       uuid.UUID `validate:"required"`
 	Name         string    `validate:"required,max=30"`
-	SectionID    *uuid.UUID
+	SectionIDs   []uuid.UUID
 	BandMemberID *uuid.UUID
 	InstrumentID *uuid.UUID
 }
@@ -38,9 +38,9 @@ type MoveSongPartInSectionRequest struct {
 	OverSectionID *uuid.UUID
 }
 
-type BulkRehearsalsSongPartsRequest struct {
-	Requests []BulkRehearsalsSongPartRequest `validate:"min=1,dive"`
-	SongID   uuid.UUID                       `validate:"required"`
+type BulkUpdateSongPartsRequest struct {
+	Requests []BulkUpdateSongPartRequest `validate:"min=1,dive"`
+	SongID   uuid.UUID                   `validate:"required"`
 }
 
 type BulkDeleteSongPartsRequest struct {
@@ -48,7 +48,8 @@ type BulkDeleteSongPartsRequest struct {
 	SongID uuid.UUID   `validate:"required"`
 }
 
-type BulkRehearsalsSongPartRequest struct {
+type BulkUpdateSongPartRequest struct {
 	ID         uuid.UUID `validate:"required"`
+	Confidence uint      `validate:"max=100"`
 	Rehearsals uint
 }
