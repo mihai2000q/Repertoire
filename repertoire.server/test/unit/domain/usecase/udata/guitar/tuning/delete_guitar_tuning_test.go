@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
@@ -31,7 +32,7 @@ func TestDeleteGuitarTuning_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testi
 	errCode := _uut.Handle(id, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -58,7 +59,7 @@ func TestDeleteGuitarTuning_WhenGetGuitarTuningsFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(id, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -89,7 +90,7 @@ func TestDeleteGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError
 	errCode := _uut.Handle(id, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "guitar tuning not found", errCode.Error.Error())
 
@@ -125,7 +126,7 @@ func TestDeleteGuitarTuning_WhenUpdateAllGuitarTuningsFails_ShouldReturnInternal
 	errCode := _uut.Handle(id, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -165,7 +166,7 @@ func TestDeleteGuitarTuning_WhenDeleteGuitarTuningFails_ShouldReturnInternalServ
 	errCode := _uut.Handle(id, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

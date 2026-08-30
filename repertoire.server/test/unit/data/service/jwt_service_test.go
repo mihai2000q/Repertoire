@@ -11,6 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var privateKey = `-----BEGIN RSA PRIVATE KEY-----
@@ -192,7 +193,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 			errCode := _uut.Authorize(token)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Equal(t, http.StatusUnauthorized, errCode.Code)
 			assert.Error(t, errCode.Error)
 		})
@@ -254,7 +255,7 @@ func TestJwtService_GetUserIdFromJwt_WhenKeysAreNotMatching_ShouldReturnForbidde
 
 			// then
 			assert.Empty(t, userID)
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Equal(t, http.StatusForbidden, errCode.Code)
 			assert.Error(t, errCode.Error)
 		})
@@ -277,7 +278,7 @@ func TestJwtService_GetUserIdFromJwt_WhenSubIsMissing_ShouldReturnForbiddenError
 
 	// then
 	assert.Empty(t, userID)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusForbidden, errCode.Code)
 	assert.Error(t, errCode.Error)
 }
@@ -300,7 +301,7 @@ func TestJwtService_GetUserIdFromJwt_WhenSubIsNotUUID_ShouldReturnForbiddenError
 
 	// then
 	assert.Empty(t, userID)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusForbidden, errCode.Code)
 	assert.Error(t, errCode.Error)
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidateGetSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
@@ -113,7 +114,7 @@ func TestValidateGetSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetSongsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -177,7 +178,7 @@ func TestValidateGetSongFiltersMetadataRequest_WhenSingleFieldIsInvalid_ShouldRe
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetSongFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -434,7 +435,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, tt.expectedFailedTags, len(tt.expectedInvalidFields))
 			assert.Len(t, errCode.Error, len(tt.expectedFailedTags))
 			for _, expectedInvalidField := range tt.expectedInvalidFields {
@@ -502,7 +503,7 @@ func TestValidateAddCustomSongRehearsalRequest_WhenSingleFieldIsInvalid_ShouldRe
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddCustomSongRehearsalRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -584,7 +585,7 @@ func TestValidateAddCustomSongRehearsalsRequest_WhenSingleFieldIsInvalid_ShouldR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddCustomSongRehearsalsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -633,7 +634,7 @@ func TestValidateAddPerfectSongRehearsalRequest_WhenSingleFieldIsInvalid_ShouldR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddPerfectSongRehearsalRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -682,7 +683,7 @@ func TestValidateAddPerfectSongRehearsalsRequest_WhenSingleFieldIsInvalid_Should
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddPerfectSongRehearsalsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -836,7 +837,7 @@ func TestValidateUpdateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -903,7 +904,7 @@ func TestValidateUpdateSongSettingsRequest_WhenSingleFieldIsInvalid_ShouldReturn
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongSettingsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -951,7 +952,7 @@ func TestValidateBulkDeleteSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkDeleteSongsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

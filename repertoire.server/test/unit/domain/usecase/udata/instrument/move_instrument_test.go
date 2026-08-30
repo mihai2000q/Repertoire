@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMoveInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
@@ -36,7 +37,7 @@ func TestMoveInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -66,7 +67,7 @@ func TestMoveInstrument_WhenGetInstrumentsFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -98,7 +99,7 @@ func TestMoveInstrument_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *te
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "instrument not found", errCode.Error.Error())
 
@@ -132,7 +133,7 @@ func TestMoveInstrument_WhenOverInstrumentIsNotFound_ShouldReturnNotFoundError(t
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "over instrument not found", errCode.Error.Error())
 
@@ -172,7 +173,7 @@ func TestMoveInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

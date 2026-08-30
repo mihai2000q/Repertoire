@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
@@ -32,7 +33,7 @@ func TestGetAll_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.
 
 	// then
 	assert.Empty(t, res)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -69,7 +70,7 @@ func TestGetAll_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T)
 
 	// then
 	assert.Empty(t, res)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -123,7 +124,7 @@ func TestGetAll_WhenGetAlbumsCountFails_ShouldReturnInternalServerError(t *testi
 	// then
 	assert.Equal(t, expectedAlbums, &res.Models)
 	assert.Empty(t, res.TotalCount)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

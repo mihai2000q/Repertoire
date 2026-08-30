@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -66,7 +67,7 @@ func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnConflic
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" is not owned by this artist", errCode.Error.Error())
 
@@ -102,7 +103,7 @@ func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -143,7 +144,7 @@ func TestRemoveSongsFromArtist_WhenPublishFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -15,6 +15,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSearchGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {
@@ -35,7 +36,7 @@ func TestSearchGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {
 
 	// then
 	assert.Empty(t, result)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, errorCode, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -75,7 +76,7 @@ func TestSearchGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) 
 
 	// then
 	assert.Empty(t, result)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, errorCode, errCode)
 
 	jwtService.AssertExpectations(t)

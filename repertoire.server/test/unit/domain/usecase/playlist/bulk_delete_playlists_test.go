@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBulkDeletePlaylists_WhenGetPlaylistsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -34,7 +35,7 @@ func TestBulkDeletePlaylists_WhenGetPlaylistsFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -58,7 +59,7 @@ func TestBulkDeletePlaylists_WhenPlaylistsAreEmpty_ShouldReturnNotFoundError(t *
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "playlists not found", errCode.Error.Error())
 
@@ -86,7 +87,7 @@ func TestBulkDeletePlaylists_WhenDeletePlaylistsFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -119,7 +120,7 @@ func TestBulkDeletePlaylists_WhenPublishFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

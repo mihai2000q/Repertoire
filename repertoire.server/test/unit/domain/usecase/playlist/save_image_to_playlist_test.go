@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSaveImageToPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(t *testing.T) {
@@ -41,7 +42,7 @@ func TestSaveImageToPlaylist_WhenGetPlaylistFails_ShouldReturnNotFoundError(t *t
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -68,7 +69,7 @@ func TestSaveImageToPlaylist_WhenPlaylistIsEmpty_ShouldReturnNotFoundError(t *te
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "playlist not found", errCode.Error.Error())
 
@@ -100,7 +101,7 @@ func TestSaveImageToPlaylist_WhenStorageDeleteFileFails_ShouldReturnError(t *tes
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	playlistRepository.AssertExpectations(t)
@@ -138,7 +139,7 @@ func TestSaveImageToPlaylist_WhenStorageUploadFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -182,7 +183,7 @@ func TestSaveImageToPlaylist_WhenUpdatePlaylistFails_ShouldReturnInternalServerE
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -231,7 +232,7 @@ func TestSaveImageToPlaylist_WhenPublishFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMoveSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
@@ -36,7 +37,7 @@ func TestMoveSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *test
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -66,7 +67,7 @@ func TestMoveSongSectionType_WhenGetSectionTypesFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -98,7 +99,7 @@ func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "type not found", errCode.Error.Error())
 
@@ -132,7 +133,7 @@ func TestMoveSongSectionType_WhenOverSectionTypeIsNotFound_ShouldReturnNotFoundE
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "over type not found", errCode.Error.Error())
 
@@ -172,7 +173,7 @@ func TestMoveSongSectionType_WhenUpdateAllSectionTypesFails_ShouldReturnInternal
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -40,7 +41,7 @@ func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, err, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -71,7 +72,7 @@ func TestSaveProfilePictureToUser_WhenGetUserFails_ShouldReturnNotFoundError(t *
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -102,7 +103,7 @@ func TestSaveProfilePictureToUser_WhenUserIsEmpty_ShouldReturnNotFoundError(t *t
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "user not found", errCode.Error.Error())
 
@@ -139,7 +140,7 @@ func TestSaveProfilePictureToUser_WhenStorageDeleteFileFails_ShouldReturnError(t
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -182,7 +183,7 @@ func TestSaveProfilePictureToUser_WhenStorageUploadFails_ShouldReturnInternalSer
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -231,7 +232,7 @@ func TestSaveProfilePictureToUser_WhenUpdateUserFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

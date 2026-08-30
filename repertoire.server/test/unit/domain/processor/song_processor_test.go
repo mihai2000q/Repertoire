@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 // Add Custom Rehearsal
@@ -74,7 +75,7 @@ func TestAddCustomRehearsal_WhenArrangementIsNotFound_ShouldReturnNotFoundError(
 
 	// then
 	assert.False(t, updated)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song arrangement not found", errCode.Error.Error())
 
@@ -107,7 +108,7 @@ func TestAddCustomRehearsal_WhenCreateHistoryFails_ShouldReturnInternalServerErr
 
 	// then
 	assert.False(t, updated)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -150,7 +151,7 @@ func TestAddCustomRehearsal_WhenGetHistoryFails_ShouldReturnInternalServerError(
 
 	// then
 	assert.False(t, updated)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -479,7 +480,7 @@ func TestAddPerfectRehearsal_WhenCreateHistoryFails_ShouldReturnInternalServerEr
 
 	// then
 	assert.False(t, updated)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -523,7 +524,7 @@ func TestAddPerfectRehearsal_WhenGetHistoryFails_ShouldReturnInternalServerError
 
 	// then
 	assert.False(t, updated)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

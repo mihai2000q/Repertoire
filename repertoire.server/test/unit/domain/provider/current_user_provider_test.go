@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Get
@@ -30,7 +31,7 @@ func TestCurrentUserProvider_Get_WhenJwtServiceReturnsAnErrorCode_ShouldReturnEr
 
 	// then
 	assert.Empty(t, user)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalErrorCode, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -55,7 +56,7 @@ func TestCurrentUserProvider_Get_WhenGetUserFails_ShouldReturnInternalServerErro
 
 	// then
 	assert.Empty(t, user)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -81,7 +82,7 @@ func TestCurrentUserProvider_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *te
 
 	// then
 	assert.Empty(t, user)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "user not found", errCode.Error.Error())
 

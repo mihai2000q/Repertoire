@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateBandMember_WhenGetBandMembersFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -34,7 +35,7 @@ func TestUpdateBandMember_WhenGetBandMembersFails_ShouldReturnInternalServerErro
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -60,7 +61,7 @@ func TestUpdateBandMember_WhenBandMembersIsEmpty_ShouldReturnNotFoundError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "band member not found", errCode.Error.Error())
 
@@ -93,7 +94,7 @@ func TestUpdateBandMember_WhenGetRolesFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -135,7 +136,7 @@ func TestUpdateBandMember_WhenReplaceRolesFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -181,7 +182,7 @@ func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

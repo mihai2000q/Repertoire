@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -38,7 +39,7 @@ func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -64,7 +65,7 @@ func TestAddSongsToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -96,7 +97,7 @@ func TestAddSongsToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -130,7 +131,7 @@ func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnConflict
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" and album do not share the same artist", errCode.Error.Error())
 
@@ -164,7 +165,7 @@ func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturn
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" and album do not share the same artist", errCode.Error.Error())
 
@@ -198,7 +199,7 @@ func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnConflictError(t *testin
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" already has an album", errCode.Error.Error())
 
@@ -237,7 +238,7 @@ func TestAddSongsToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -281,7 +282,7 @@ func TestAddSongsToAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

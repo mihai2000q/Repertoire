@@ -11,6 +11,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturnError(t *testing.T) {
@@ -32,6 +33,7 @@ func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturn
 
 	// then
 	assert.Error(t, err)
+	require.NotNil(t, err)
 	assert.Equal(t, err.Error(), internalError.Error())
 
 	storageService.AssertExpectations(t)

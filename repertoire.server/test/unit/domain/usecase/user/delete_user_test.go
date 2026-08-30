@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -28,7 +29,7 @@ func TestDeleteUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T)
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -52,7 +53,7 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -83,7 +84,7 @@ func TestDeleteUser_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

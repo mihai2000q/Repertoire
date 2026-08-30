@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var validSectionName = "James Solo"
@@ -90,7 +91,7 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateSongSectionRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -188,7 +189,7 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongSectionRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -252,7 +253,7 @@ func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveSongSectionRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -308,7 +309,7 @@ func TestValidateBulkDeleteSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldRe
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkDeleteSongSectionsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

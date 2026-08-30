@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -37,7 +38,7 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -60,7 +61,7 @@ func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -94,7 +95,7 @@ func TestUpdateSong_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -128,7 +129,7 @@ func TestUpdateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -189,7 +190,7 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnConfli
 			errCode := _uut.Handle(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Equal(t, http.StatusConflict, errCode.Code)
 			assert.Equal(t, "album's artist does not match the request's artist", errCode.Error.Error())
 
@@ -232,7 +233,7 @@ func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -276,7 +277,7 @@ func TestUpdateSong_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -315,7 +316,7 @@ func TestUpdateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -350,6 +351,7 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -388,6 +390,7 @@ func TestUpdateSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

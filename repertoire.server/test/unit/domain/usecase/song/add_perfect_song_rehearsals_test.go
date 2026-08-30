@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddPerfectSongRehearsals_WhenGetSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestAddPerfectSongRehearsals_WhenGetSongsFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -59,7 +60,7 @@ func TestAddPerfectSongRehearsals_WhenSongsLenIsNotTheSameAsRequest_ShouldReturn
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "songs not found", errCode.Error.Error())
 
@@ -89,7 +90,7 @@ func TestAddPerfectSongRehearsals_WhenTransactionExecuteFails_ShouldReturnError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -131,7 +132,7 @@ func TestAddPerfectSongRehearsals_WhenProcessorFails_ShouldReturnInternalServerE
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	songRepository.AssertExpectations(t)
@@ -179,7 +180,7 @@ func TestAddPerfectSongRehearsals_WhenUpdateFails_ShouldReturnInternalServerErro
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -31,7 +32,7 @@ func TestDeleteBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *
 	errCode := _uut.Handle(id, artistID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -54,7 +55,7 @@ func TestDeleteBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *test
 	errCode := _uut.Handle(id, artistID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artist not found", errCode.Error.Error())
 
@@ -84,7 +85,7 @@ func TestDeleteBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *
 	errCode := _uut.Handle(id, artistID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "band member not found", errCode.Error.Error())
 
@@ -119,7 +120,7 @@ func TestDeleteBandMember_WhenUpdateArtistFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(id, artistID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -156,7 +157,7 @@ func TestDeleteBandMember_WhenDeleteBandMemberFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(id, artistID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

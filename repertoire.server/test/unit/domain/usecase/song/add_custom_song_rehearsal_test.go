@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddCustomSongRehearsal_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -42,7 +43,7 @@ func TestAddCustomSongRehearsal_WhenGetSongFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -72,7 +73,7 @@ func TestAddCustomSongRehearsal_WhenSongIsEmpty_ShouldReturnNotFoundError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -106,7 +107,7 @@ func TestAddCustomSongRehearsal_WhenSongHasArrangement_ShouldReturnBadRequestErr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song arrangement not found", errCode.Error.Error())
 
@@ -147,7 +148,7 @@ func TestAddCustomSongRehearsal_WhenTransactionExecuteFails_ShouldReturnError(t 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -200,7 +201,7 @@ func TestAddCustomSongRehearsal_WhenProcessorFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	songRepository.AssertExpectations(t)
@@ -259,7 +260,7 @@ func TestAddCustomSongRehearsal_WhenUpdateFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

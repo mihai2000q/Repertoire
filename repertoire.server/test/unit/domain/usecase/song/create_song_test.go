@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
@@ -37,7 +38,7 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -68,7 +69,7 @@ func TestCreateSong_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -100,7 +101,7 @@ func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -132,7 +133,7 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -169,7 +170,7 @@ func TestCreateSong_WhenPublishFails_ShouldReturnBadRequestError(t *testing.T) {
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

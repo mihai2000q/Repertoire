@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -33,7 +34,7 @@ func TestUpdateArtist_WhenGetArtistFails_ShouldReturnInternalServerError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -56,7 +57,7 @@ func TestUpdateArtist_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing.T) 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artist not found", errCode.Error.Error())
 
@@ -88,6 +89,7 @@ func TestUpdateArtist_WhenUpdateArtistFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -125,6 +127,7 @@ func TestUpdateArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testin
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

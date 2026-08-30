@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -66,7 +67,7 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnConflictError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+songs[0].ID.String()+"already has an artist", errCode.Error.Error())
 
@@ -102,7 +103,7 @@ func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerErro
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -143,7 +144,7 @@ func TestAddSongsToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

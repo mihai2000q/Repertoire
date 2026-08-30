@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddArtistToPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -36,7 +37,7 @@ func TestAddArtistToPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServe
 
 	// then
 	assert.Nil(t, res)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -70,7 +71,7 @@ func TestAddArtistsToPlaylist_WhenGetArtistsFails_ShouldReturnInternalServerErro
 
 	// then
 	assert.Nil(t, res)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -110,7 +111,7 @@ func TestAddArtistsToPlaylist_WhenAddSongsFails_ShouldReturnInternalServerError(
 
 	// then
 	assert.Nil(t, res)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

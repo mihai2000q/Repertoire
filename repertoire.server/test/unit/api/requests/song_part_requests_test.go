@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var validPartName = "James Solo"
@@ -97,7 +98,7 @@ func TestValidateCreateSongPartRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateSongPartRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -204,7 +205,7 @@ func TestValidateUpdateSongPartRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongPartRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -271,7 +272,7 @@ func TestValidateUpdateAllSongPartsRequest_WhenSingleFieldIsInvalid_ShouldReturn
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateAllSongPartsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -335,7 +336,7 @@ func TestValidateMoveSongPartInSongRequest_WhenSingleFieldIsInvalid_ShouldReturn
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveSongPartInSongRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -420,7 +421,7 @@ func TestValidateMoveSongPartInSectionRequest_WhenSingleFieldIsInvalid_ShouldRet
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveSongPartInSectionRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -491,7 +492,7 @@ func TestValidateBulkRehearsalsSongPartsRequest_WhenSingleFieldIsInvalid_ShouldR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkRehearsalsSongPartsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -547,7 +548,7 @@ func TestValidateBulkDeleteSongPartsRequest_WhenSingleFieldIsInvalid_ShouldRetur
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkDeleteSongPartsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

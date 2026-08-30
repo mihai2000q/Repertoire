@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateSongArrangement_WhenCountSectionsBySongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -34,7 +35,7 @@ func TestCreateSongArrangement_WhenCountSectionsBySongFails_ShouldReturnInternal
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -66,7 +67,7 @@ func TestCreateSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -98,7 +99,7 @@ func TestCreateSongArrangement_WhenSongIsEmpty_ShouldReturnNotFoundError(t *test
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -138,7 +139,7 @@ func TestCreateSongArrangement_WhenCreateFails_ShouldReturnInternalServerError(t
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

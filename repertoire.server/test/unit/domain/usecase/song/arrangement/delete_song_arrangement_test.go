@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -31,7 +32,7 @@ func TestDeleteSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -54,7 +55,7 @@ func TestDeleteSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundError(t *t
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -84,7 +85,7 @@ func TestDeleteSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundErr
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song arrangement not found", errCode.Error.Error())
 
@@ -119,7 +120,7 @@ func TestDeleteSongArrangement_WhenUpdateSongFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -157,7 +158,7 @@ func TestDeleteSongArrangement_WhenDeleteArrangementFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

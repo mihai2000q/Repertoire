@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestCreateBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -62,7 +63,7 @@ func TestCreateBandMember_WhenArtistIsEmpty_ShouldReturnNotFoundError(t *testing
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artist not found", errCode.Error.Error())
 
@@ -90,7 +91,7 @@ func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnConflictError(t *testi
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "artist is not band", errCode.Error.Error())
 
@@ -123,7 +124,7 @@ func TestCreateBandMember_WhenGetBandMemberRolesFails_ShouldReturnInternalServer
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -163,7 +164,7 @@ func TestCreateBandMember_WhenCreateBandMemberFails_ShouldReturnInternalServerEr
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

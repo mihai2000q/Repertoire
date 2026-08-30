@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
@@ -33,7 +34,7 @@ func TestCreateSongSectionType_WhenGetUserIdFromJwtFails_ShouldReturnError(t *te
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -60,7 +61,7 @@ func TestCreateSongSectionType_WhenCountSectionTypesFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -93,7 +94,7 @@ func TestCreateSongSectionType_WhenCreateSectionTypeFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteProfilePictureFromUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -31,7 +32,7 @@ func TestDeleteProfilePictureFromUser_WhenGetUserIdFromJwtFails_ShouldReturnTheE
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, err, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -56,7 +57,7 @@ func TestDeleteProfilePictureFromUser_WhenGetUserFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -82,7 +83,7 @@ func TestDeleteProfilePictureFromUser_WhenUserIsEmpty_ShouldReturnNotFoundError(
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "user not found", errCode.Error.Error())
 
@@ -109,7 +110,7 @@ func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnCo
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "user does not have a profile picture", errCode.Error.Error())
 
@@ -140,7 +141,7 @@ func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturn
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -175,7 +176,7 @@ func TestDeleteProfilePictureFromUser_WhenUpdateUserFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSaveImageToBandMember_WhenGetBandMemberFails_ShouldReturnNotFoundError(t *testing.T) {
@@ -37,7 +38,7 @@ func TestSaveImageToBandMember_WhenGetBandMemberFails_ShouldReturnNotFoundError(
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -61,7 +62,7 @@ func TestSaveImageToBandMember_WhenMEmberIsEmpty_ShouldReturnNotFoundError(t *te
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "band member not found", errCode.Error.Error())
 
@@ -90,7 +91,7 @@ func TestSaveImageToBandMember_WhenStorageDeleteFileFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	artistRepository.AssertExpectations(t)
@@ -125,7 +126,7 @@ func TestSaveImageToBandMember_WhenStorageUploadFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -166,7 +167,7 @@ func TestSaveImageToBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalSer
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

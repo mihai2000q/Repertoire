@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteImageFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -32,7 +33,7 @@ func TestDeleteImageFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -53,7 +54,7 @@ func TestDeleteImageFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *test
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -75,7 +76,7 @@ func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnConflictError(t *t
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "album does not have an image", errCode.Error.Error())
 
@@ -101,7 +102,7 @@ func TestDeleteImageFromAlbum_WhenDeleteImageFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	albumRepository.AssertExpectations(t)
@@ -131,7 +132,7 @@ func TestDeleteImageFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -167,7 +168,7 @@ func TestDeleteImageFromAlbum_WhenPublishFails_ShouldReturnInternalServerError(t
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

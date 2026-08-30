@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestShufflePlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -36,7 +37,7 @@ func TestShufflePlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServ
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -65,7 +66,7 @@ func TestShufflePlaylistSongs_WhenUpdateAllPlaylistSongsFails_ShouldReturnIntern
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

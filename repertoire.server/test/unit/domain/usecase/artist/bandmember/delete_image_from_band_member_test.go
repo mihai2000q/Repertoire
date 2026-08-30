@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteImageFromBandMember_WhenGetBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -33,7 +34,7 @@ func TestDeleteImageFromBandMember_WhenGetBandMemberFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -56,7 +57,7 @@ func TestDeleteImageFromBandMember_WhenMemberIsEmpty_ShouldReturnNotFoundError(t
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "band member not found", errCode.Error.Error())
 
@@ -80,7 +81,7 @@ func TestDeleteImageFromBandMember_WhenMemberHasNoImage_ShouldReturnConflictErro
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "band member does not have an image", errCode.Error.Error())
 
@@ -110,7 +111,7 @@ func TestDeleteImageFromBandMember_WhenDeleteImageFails_ShouldReturnInternalServ
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode)
 
@@ -143,7 +144,7 @@ func TestDeleteImageFromBandMember_WhenUpdateBandMemberFails_ShouldReturnInterna
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

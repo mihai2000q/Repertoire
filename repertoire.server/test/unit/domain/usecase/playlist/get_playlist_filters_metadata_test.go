@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetPlaylistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnInternalServerErrorError(t *testing.T) {
@@ -32,7 +33,7 @@ func TestGetPlaylistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnIntern
 
 	// then
 	assert.Empty(t, result)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -61,7 +62,7 @@ func TestGetPlaylistFiltersMetadata_WhenGetFails_ShouldReturnInternalServerError
 
 	// then
 	assert.Empty(t, result)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

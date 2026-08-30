@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -43,7 +44,7 @@ func TestBulkDeleteArtists_WhenGetArtistsFails_ShouldReturnInternalServerError(t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -74,7 +75,7 @@ func TestBulkDeleteArtists_WhenArtistsAreEmpty_ShouldReturnNotFoundError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artists not found", errCode.Error.Error())
 
@@ -119,7 +120,7 @@ func TestBulkDeleteArtists_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -167,7 +168,7 @@ func TestBulkDeleteArtists_WhenDeleteArtistSongsFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -214,7 +215,7 @@ func TestBulkDeleteArtists_WhenDeleteArtistFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -266,7 +267,7 @@ func TestBulkDeleteArtists_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

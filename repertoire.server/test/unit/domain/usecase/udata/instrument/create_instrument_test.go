@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
@@ -33,7 +34,7 @@ func TestCreateInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -62,7 +63,7 @@ func TestCreateInstrument_WhenGetInstrumentsCountFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -98,7 +99,7 @@ func TestCreateInstrument_WhenCreateInstrumentFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

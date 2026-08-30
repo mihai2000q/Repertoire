@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestUpdateUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T)
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.NotNil(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -64,7 +65,7 @@ func TestUpdateUser_WhenGetUserFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.NotNil(t, http.StatusInternalServerError, errCode.Code)
 	assert.NotNil(t, internalError, errCode.Error)
 
@@ -94,7 +95,7 @@ func TestUpdateUser_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.NotNil(t, http.StatusNotFound, errCode.Code)
 	assert.NotNil(t, "user not found", errCode.Error.Error())
 
@@ -128,7 +129,7 @@ func TestUpdateUser_WhenUpdateUserFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(request, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.NotNil(t, http.StatusInternalServerError, errCode.Code)
 	assert.NotNil(t, internalError, errCode.Error)
 

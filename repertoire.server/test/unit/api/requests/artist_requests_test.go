@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
@@ -102,7 +103,7 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -166,7 +167,7 @@ func TestValidateGetArtistFiltersMetadataRequest_WhenSingleFieldIsInvalid_Should
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetArtistFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -223,7 +224,7 @@ func TestValidateCreateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -279,7 +280,7 @@ func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddAlbumsToArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -335,7 +336,7 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddSongsToArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -383,7 +384,7 @@ func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldRet
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddPerfectRehearsalsToArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -465,7 +466,7 @@ func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -521,7 +522,7 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRe
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveAlbumsFromArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -577,7 +578,7 @@ func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRet
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveSongsFromArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -627,7 +628,7 @@ func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkDeleteArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -693,7 +694,7 @@ func TestValidateDeleteArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "DeleteArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -850,7 +851,7 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateBandMemberRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -936,7 +937,7 @@ func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateBandMemberRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -1012,7 +1013,7 @@ func TestValidateMoveBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveBandMemberRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

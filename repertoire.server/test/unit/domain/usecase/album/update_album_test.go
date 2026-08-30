@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestUpdateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -58,7 +59,7 @@ func TestUpdateAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -91,6 +92,7 @@ func TestUpdateAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -126,6 +128,7 @@ func TestUpdateAlbum_WhenGetSongsFails_ShouldReturnInternalServerError(t *testin
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -168,6 +171,7 @@ func TestUpdateAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -203,6 +207,7 @@ func TestUpdateAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

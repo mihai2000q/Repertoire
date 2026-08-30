@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMoveBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -37,7 +38,7 @@ func TestMoveBandMember_WhenGetArtistFails_ShouldReturnInternalServerError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -64,7 +65,7 @@ func TestMoveBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testin
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artist not found", errCode.Error.Error())
 
@@ -93,7 +94,7 @@ func TestMoveBandMember_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "band member not found", errCode.Error.Error())
 
@@ -127,7 +128,7 @@ func TestMoveBandMember_WhenOverBandMemberIsNotFound_ShouldReturnNotFoundError(t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "over band member not found", errCode.Error.Error())
 
@@ -167,7 +168,7 @@ func TestMoveBandMember_WhenUpdateFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
