@@ -5,10 +5,9 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/reorder"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
-
-	"github.com/google/uuid"
 )
 
 type MoveSongSection struct {
@@ -31,11 +30,19 @@ func (c MoveSongSection) Handle(request requests.MoveSongSectionRequest) *wrappe
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	index, overIndex, err := c.getIndexes(song.Sections, request.ID, request.OverID)
-	if err != nil {
-		return wrapper.NotFoundError(err)
+	updatedSections, errCode := reorder.MoveEntity(
+		song.Sections,
+		request.ID,
+		request.OverID,
+		&reorder.Config{
+			EntityNotFoundMsg:     "section not found",
+			OverEntityNotFoundMsg: "over section not found",
+		},
+	)
+	if errCode != nil {
+		return errCode
 	}
-	song.Sections = c.move(song.Sections, index, overIndex)
+	song.Sections = updatedSections
 
 	err = c.songRepository.UpdateWithAssociations(&song)
 	if err != nil {
@@ -43,41 +50,4 @@ func (c MoveSongSection) Handle(request requests.MoveSongSectionRequest) *wrappe
 	}
 
 	return nil
-}
-
-func (c MoveSongSection) getIndexes(sections []model.SongSection, id uuid.UUID, overID uuid.UUID) (int, int, error) {
-	var index *int
-	var overIndex *int
-	for i := 0; i < len(sections); i++ {
-		if sections[i].ID == id {
-			index = &i
-		} else if sections[i].ID == overID {
-			overIndex = &i
-		}
-	}
-
-	if index == nil {
-		return -1, -1, errors.New("section not found")
-	}
-	if overIndex == nil {
-		return -1, -1, errors.New("over section not found")
-	}
-
-	return *index, *overIndex, nil
-}
-
-func (c MoveSongSection) move(sections []model.SongSection, index int, overIndex int) []model.SongSection {
-	if index < overIndex {
-		for i := index + 1; i <= overIndex; i++ {
-			sections[i].Order = uint(i - 1)
-		}
-	} else {
-		for i := overIndex; i <= index; i++ {
-			sections[i].Order = uint(i + 1)
-		}
-	}
-
-	sections[index].Order = uint(overIndex)
-
-	return sections
 }
