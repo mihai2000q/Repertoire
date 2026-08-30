@@ -21,8 +21,18 @@ type SongSection struct {
 	Song            Song            `json:"-"`
 	SongSectionType SongSectionType `json:"songSectionType"`
 
-	Parts []SongPart `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE" json:"-"`
+	SectionParts []SongSectionPart `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"default:current_timestamp; not null" json:"updatedAt"`
+}
+
+type SongSectionPart struct {
+	PartID    uuid.UUID `gorm:"primaryKey; type:uuid"`
+	SectionID uuid.UUID `gorm:"primaryKey; type:uuid"`
+	Order     uint      `gorm:"not null"`
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
+
+	Part    SongPart    `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE"`
+	Section SongSection `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE"`
 }
