@@ -30,7 +30,7 @@ func (c MoveSongSection) Handle(request requests.MoveSongSectionRequest) *wrappe
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	updatedSections, errCode := reorder.MoveEntity(
+	errCode := reorder.MoveEntity(
 		song.Sections,
 		request.ID,
 		request.OverID,
@@ -42,7 +42,6 @@ func (c MoveSongSection) Handle(request requests.MoveSongSectionRequest) *wrappe
 	if errCode != nil {
 		return errCode
 	}
-	song.Sections = updatedSections
 
 	err = c.songRepository.UpdateWithAssociations(&song)
 	if err != nil {
