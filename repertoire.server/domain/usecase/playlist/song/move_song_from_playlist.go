@@ -1,6 +1,7 @@
 package song
 
 import (
+	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/reorder"
@@ -21,6 +22,9 @@ func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistReques
 	err := m.repository.GetPlaylistSongs(&playlistSongs, request.ID)
 	if err != nil {
 		return wrapper.InternalServerError(err)
+	}
+	if len(playlistSongs) == 0 {
+		return wrapper.NotFoundError(errors.New("playlist not found"))
 	}
 
 	errCode := reorder.MoveEntity(
