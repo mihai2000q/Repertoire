@@ -49,14 +49,14 @@ func assertSongRehearsal(t *testing.T, song model.Song, newSong model.Song, dupl
 
 	totalOccurrences := uint(0)
 	arrangementOccurrencesMap := make(map[uuid.UUID]uint)
-	for _, section := range newSong.Sections {
+	for _, part := range newSong.Parts {
 		arrangementIndex := slices.IndexFunc(
-			section.ArrangementOccurrences,
-			func(occ model.SongSectionOccurrences) bool {
+			part.ArrangementOccurrences,
+			func(occ model.SongPartOccurrences) bool {
 				return occ.ArrangementID == *arrangementID
 			})
-		totalOccurrences += section.ArrangementOccurrences[arrangementIndex].Occurrences
-		arrangementOccurrencesMap[section.ID] = section.ArrangementOccurrences[arrangementIndex].Occurrences
+		totalOccurrences += part.ArrangementOccurrences[arrangementIndex].Occurrences
+		arrangementOccurrencesMap[part.ID] = part.ArrangementOccurrences[arrangementIndex].Occurrences
 	}
 
 	if totalOccurrences == 0 { // also nothing changed
@@ -64,24 +64,24 @@ func assertSongRehearsal(t *testing.T, song model.Song, newSong model.Song, dupl
 		return
 	}
 
-	for i, newSection := range newSong.Sections {
-		oldSection := song.Sections[i]
+	for i, newPart := range newSong.Parts {
+		oldPart := song.Parts[i]
 
-		if arrangementOccurrencesMap[newSection.ID] == 0 { // nothing changed on this section
-			assert.Equal(t, oldSection, newSection)
+		if arrangementOccurrencesMap[newPart.ID] == 0 { // nothing changed on this section
+			assert.Equal(t, oldPart, newPart)
 			continue
 		}
 
-		newRehearsals := oldSection.Rehearsals + arrangementOccurrencesMap[newSection.ID]*uint(duplicates+1)
-		assert.Equal(t, newRehearsals, newSection.Rehearsals)
-		assert.Greater(t, newSection.RehearsalsScore, oldSection.RehearsalsScore)
-		assert.GreaterOrEqual(t, newSection.Progress, oldSection.Progress)
+		newRehearsals := oldPart.Rehearsals + arrangementOccurrencesMap[newPart.ID]*uint(duplicates+1)
+		assert.Equal(t, newRehearsals, newPart.Rehearsals)
+		assert.Greater(t, newPart.RehearsalsScore, oldPart.RehearsalsScore)
+		assert.GreaterOrEqual(t, newPart.Progress, oldPart.Progress)
 
 		for j := 0; j <= duplicates; j++ {
-			fromDiff := arrangementOccurrencesMap[newSection.ID] * uint(duplicates-j)
-			toDiff := arrangementOccurrencesMap[newSection.ID] * uint(j)
-			assert.Equal(t, oldSection.Rehearsals+fromDiff, newSection.History[j].From)
-			assert.Equal(t, newSection.Rehearsals-toDiff, newSection.History[j].To)
+			fromDiff := arrangementOccurrencesMap[newPart.ID] * uint(duplicates-j)
+			toDiff := arrangementOccurrencesMap[newPart.ID] * uint(j)
+			assert.Equal(t, oldPart.Rehearsals+fromDiff, newPart.History[j].From)
+			assert.Equal(t, newPart.Rehearsals-toDiff, newPart.History[j].To)
 		}
 	}
 
