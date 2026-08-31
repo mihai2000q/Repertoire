@@ -217,12 +217,9 @@ func ResponseEnhancedSong(
 	solos := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
 		return section.SongSectionType.Name != "Solo"
 	}))
-	riffs := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
-		return section.SongSectionType.Name != "Riff"
-	}))
+	assert.Equal(t, len(song.Parts), response.PartsCount)
 	assert.Equal(t, len(song.Sections), response.SectionsCount)
 	assert.Equal(t, solos, response.SolosCount)
-	assert.Equal(t, riffs, response.RiffsCount)
 
 	for _, w := range with {
 		if w == "Arrangements" {

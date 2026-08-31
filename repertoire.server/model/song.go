@@ -12,9 +12,9 @@ import (
 
 type EnhancedSong struct {
 	Song
+	PartsCount    float64 `gorm:"->" json:"partsCount"`
 	SectionsCount float64 `gorm:"->" json:"sectionsCount"`
 	SolosCount    float64 `gorm:"->" json:"solosCount"`
-	RiffsCount    float64 `gorm:"->" json:"riffsCount"`
 }
 
 type Song struct {
@@ -44,8 +44,8 @@ type Song struct {
 	GuitarTuning *GuitarTuning `json:"guitarTuning"`
 	Settings     SongSettings  `json:"settings"`
 
-	Sections      []SongSection     `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Parts         []SongPart        `gorm:"constraint:OnDelete:CASCADE" json:"parts"`
+	Sections      []SongSection     `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Arrangements  []SongArrangement `gorm:"constraint:OnDelete:CASCADE" json:"arrangements"`
 	Playlists     []Playlist        `gorm:"many2many:playlist_songs" json:"playlists"`
 	PlaylistSongs []PlaylistSong    `gorm:"foreignKey:SongID; constraint:OnDelete:CASCADE" json:"-"`

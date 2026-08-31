@@ -259,6 +259,7 @@ func (s songRepository) GetAllByUser(
 		},
 	)
 
+	s.addSongPartsSubQuery(tx, userID)
 	s.addSongSectionsSubQuery(tx, userID)
 	searchBy = s.addPlaylistsFilter(tx, searchBy)
 	searchBy = s.addInstrumentsFilter(tx, searchBy)
@@ -276,6 +277,7 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 	tx := s.client.Model(&model.Song{}).
 		Where(model.Song{UserID: userID})
 
+	s.addSongPartsSubQuery(tx, userID)
 	s.addSongSectionsSubQuery(tx, userID)
 	searchBy = s.addPlaylistsFilter(tx, searchBy)
 	searchBy = s.addInstrumentsFilter(tx, searchBy)
@@ -472,6 +474,14 @@ func (s songRepository) getSongSectionsSubQuery(userID uuid.UUID) *gorm.DB {
 		Joins("JOIN songs ON songs.id = song_sections.song_id").
 		Where("songs.user_id = ?", userID).
 		Group("song_id")
+}
+
+func (s songRepository) addSongPartsSubQuery(tx *gorm.DB, userID uuid.UUID) {
+	tx.Joins("LEFT JOIN (?) AS sp ON sp.song_id = songs.id", s.getSongPartsSubQuery(userID)).
+		Select(
+			"songs.*",
+			"COALESCE(ss.sections_count, 0) as parts_count",
+		)
 }
 
 func (s songRepository) getSongPartsSubQuery(userID uuid.UUID) *gorm.DB {
