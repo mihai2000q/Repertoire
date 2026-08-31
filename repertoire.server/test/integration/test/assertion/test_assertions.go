@@ -356,6 +356,14 @@ func ResponseSongSection(
 
 	// derived fields
 	if withParts {
+		if len(songSection.SectionParts) == 0 {
+			assert.Empty(t, response.Parts)
+			assert.Zero(t, response.Rehearsals)
+			assert.Zero(t, response.Confidence)
+			assert.Zero(t, response.Progress)
+			return
+		}
+
 		var parts []model.SongPart
 		var rehearsals, confidence, progress float64
 		var totalRehearsals, totalConfidence uint
@@ -372,7 +380,9 @@ func ResponseSongSection(
 		confidence = float64(totalConfidence) / partsLen
 		progress = float64(totalProgress) / partsLen
 
-		assert.Equal(t, parts, response.Parts)
+		for i := range response.Parts {
+			ResponseSongPart(t, parts[i], response.Parts[i], true)
+		}
 		assert.Equal(t, rehearsals, response.Rehearsals)
 		assert.Equal(t, confidence, response.Confidence)
 		assert.Equal(t, progress, response.Progress)
