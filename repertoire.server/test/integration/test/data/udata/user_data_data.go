@@ -134,21 +134,33 @@ var Songs = []model.Song{
 		Title:          "Test Song 1",
 		GuitarTuningID: &[]uuid.UUID{Users[0].GuitarTunings[0].ID}[0],
 		ArtistID:       &[]uuid.UUID{Artists[0].ID}[0],
+		Parts: []model.SongPart{
+			{
+				ID:           uuid.New(),
+				Name:         "Verse 1 Riff",
+				BandMemberID: &Artists[0].BandMembers[0].ID,
+				InstrumentID: &Users[0].Instruments[1].ID,
+				SongOrder:    0,
+			},
+			{
+				ID:           uuid.New(),
+				Name:         "Chorus 1 Riff",
+				BandMemberID: &Artists[0].BandMembers[1].ID,
+				InstrumentID: &Users[0].Instruments[0].ID,
+				SongOrder:    1,
+			},
+		},
 		Sections: []model.SongSection{
 			{
 				ID:                uuid.New(),
 				Name:              "Verse 1 - used on update",
 				SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
-				BandMemberID:      &Artists[0].BandMembers[0].ID,
-				InstrumentID:      &Users[0].Instruments[1].ID,
 				Order:             0,
 			},
 			{
 				ID:                uuid.New(),
 				Name:              "Chorus 1 - used on delete",
 				SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-				BandMemberID:      &Artists[0].BandMembers[1].ID,
-				InstrumentID:      &Users[0].Instruments[0].ID,
 				Order:             1,
 			},
 		},
