@@ -73,7 +73,7 @@ func TestAddCustomSongRehearsals_WhenArrangementsAreNotFound_ShouldReturnNotFoun
 }
 
 // Test case does not cover the usage of the duplicate songs with different arrangements
-func TestAddCustomSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTheyHaveOccurrences(t *testing.T) {
+func TestAddCustomSongRehearsals_WhenSuccessful_ShouldUpdateSongAndPartsIfTheyHaveOccurrences(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
@@ -92,13 +92,13 @@ func TestAddCustomSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfThe
 	}
 
 	getSongsQuery := func(db *gorm.DB, songs *[]model.Song) {
-		db.Preload("Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-			Preload("Sections.History", func(db *gorm.DB) *gorm.DB {
+		db.Preload("Parts", func(db *gorm.DB) *gorm.DB { return db.Order("song_parts.song_order") }).
+			Preload("Parts.History", func(db *gorm.DB) *gorm.DB {
 				return db.
-					Where(&model.SongSectionHistory{Property: model.RehearsalsProperty}).
+					Where(&model.SongPartHistory{Property: model.RehearsalsProperty}).
 					Order("created_at desc")
 			}).
-			Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			Preload("Parts.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
 				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).
 			Find(&songs, ids)

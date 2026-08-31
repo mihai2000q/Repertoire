@@ -35,7 +35,7 @@ func TestAddPerfectSongRehearsals_WhenSongsAreNotFound_ShouldReturnNotFoundError
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTheyHaveOccurrences(t *testing.T) {
+func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndPartsIfTheyHaveOccurrences(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
@@ -49,13 +49,13 @@ func TestAddPerfectSongRehearsals_WhenSuccessful_ShouldUpdateSongAndSectionsIfTh
 	}
 
 	getSongsQuery := func(db *gorm.DB, songs *[]model.Song) {
-		db.Preload("Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-			Preload("Sections.History", func(db *gorm.DB) *gorm.DB {
+		db.Preload("Parts", func(db *gorm.DB) *gorm.DB { return db.Order("song_parts.song_order") }).
+			Preload("Parts.History", func(db *gorm.DB) *gorm.DB {
 				return db.
-					Where(&model.SongSectionHistory{Property: model.RehearsalsProperty}).
+					Where(&model.SongPartHistory{Property: model.RehearsalsProperty}).
 					Order("created_at desc")
 			}).
-			Preload("Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			Preload("Parts.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
 				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).
 			Find(&songs, request.IDs)
