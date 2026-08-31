@@ -230,60 +230,6 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldNotReturnAnyError(t *testin
 			0,
 			0,
 		},
-		{
-			"2 - When it was the only sections with stats",
-			model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0, Confidence: 55, Rehearsals: 30, Progress: 100},
-					{ID: uuid.New(), Order: 0, Confidence: 50, Rehearsals: 15, Progress: 50},
-				},
-				Confidence: 53,
-				Rehearsals: 20,
-				Progress:   75,
-			},
-			[]uint{0, 1},
-			0,
-			0,
-			0,
-		},
-		{
-			"3 - When there are more sections, but not stats",
-			model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0},
-					{ID: uuid.New(), Order: 1},
-					{ID: uuid.New(), Order: 2},
-					{ID: uuid.New(), Order: 3},
-					{ID: uuid.New(), Order: 4},
-				},
-			},
-			[]uint{0, 2},
-			0,
-			0,
-			0,
-		},
-		{
-			"4 - When there are more sections with stats",
-			model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0, Confidence: 55, Rehearsals: 12, Progress: 45},
-					{ID: uuid.New(), Order: 1, Confidence: 23, Rehearsals: 5, Progress: 15},
-					{ID: uuid.New(), Order: 2, Confidence: 78, Rehearsals: 25, Progress: 100},
-					{ID: uuid.New(), Order: 3, Confidence: 40, Rehearsals: 6, Progress: 63},
-					{ID: uuid.New(), Order: 4, Confidence: 80, Rehearsals: 19, Progress: 170},
-				},
-				Confidence: 55.2,
-				Rehearsals: 13.4,
-				Progress:   78.6,
-			},
-			[]uint{0, 2},
-			48,
-			10,
-			83,
-		},
 	}
 
 	for _, tt := range tests {

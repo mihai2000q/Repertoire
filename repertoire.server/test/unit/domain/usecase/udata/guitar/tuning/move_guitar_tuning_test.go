@@ -90,7 +90,9 @@ func TestMoveGuitarTuning_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	tunings := &[]model.GuitarTuning{}
+	tunings := &[]model.GuitarTuning{
+		{ID: uuid.New()},
+	}
 	userDataRepository.On("GetGuitarTunings", new([]model.GuitarTuning), userID).
 		Return(nil, tunings).
 		Once()

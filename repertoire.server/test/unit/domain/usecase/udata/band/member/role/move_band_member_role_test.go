@@ -90,7 +90,9 @@ func TestMoveBandMemberRole_WhenBandMemberRoleIsNotFound_ShouldReturnNotFoundErr
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedRoles := &[]model.BandMemberRole{}
+	expectedRoles := &[]model.BandMemberRole{
+		{ID: uuid.New()},
+	}
 	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
 		Return(nil, expectedRoles).
 		Once()

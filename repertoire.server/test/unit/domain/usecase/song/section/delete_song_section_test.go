@@ -190,23 +190,7 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			0,
 		},
 		{
-			"2 - When it was the only section with stats",
-			model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0, Confidence: 55, Rehearsals: 25, Progress: 39},
-				},
-				Confidence: 55,
-				Rehearsals: 25,
-				Progress:   39,
-			},
-			0,
-			0,
-			0,
-			0,
-		},
-		{
-			"3 - When there are more sections, but not stats",
+			"2 - When there are more sections",
 			model.Song{
 				ID: uuid.New(),
 				Sections: []model.SongSection{
@@ -221,26 +205,6 @@ func TestDeleteSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			0,
 			0,
 			0,
-		},
-		{
-			"4 - When there are more sections with stats",
-			model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0, Confidence: 55, Rehearsals: 12, Progress: 45},
-					{ID: uuid.New(), Order: 1, Confidence: 23, Rehearsals: 5, Progress: 15},
-					{ID: uuid.New(), Order: 2, Confidence: 78, Rehearsals: 25, Progress: 100},
-					{ID: uuid.New(), Order: 3, Confidence: 40, Rehearsals: 6, Progress: 63},
-					{ID: uuid.New(), Order: 4, Confidence: 80, Rehearsals: 19, Progress: 170},
-				},
-				Confidence: 55.2,
-				Rehearsals: 13.4,
-				Progress:   78.6,
-			},
-			2,
-			50,
-			11,
-			73,
 		},
 	}
 

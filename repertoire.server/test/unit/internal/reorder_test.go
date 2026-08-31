@@ -3,7 +3,6 @@ package internal
 import (
 	"net/http"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"testing"
 
 	"github.com/google/uuid"
@@ -304,7 +303,7 @@ func TestMoveEntity_WithInvalidField_ShouldReturnInternalServerError(t *testing.
 
 	// then
 	require.NotNil(t, errCode)
-	assert.Equal(t, wrapper.InternalServerError, errCode.Code)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Contains(t, errCode.Error.Error(), "order field must be of type uint or *uint")
 }
 

@@ -77,7 +77,12 @@ func TestMoveSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundError
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := arrangement.NewMoveSongArrangement(songRepository)
 
-	song := &model.Song{ID: uuid.New()}
+	song := &model.Song{
+		ID: uuid.New(),
+		Arrangements: []model.SongArrangement{
+			{ID: uuid.New()},
+		},
+	}
 
 	request := requests.MoveSongArrangementRequest{
 		ID:     uuid.New(),

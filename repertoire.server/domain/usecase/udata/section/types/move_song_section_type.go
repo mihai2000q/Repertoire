@@ -41,8 +41,8 @@ func (m MoveSongSectionType) Handle(request requests.MoveSongSectionTypeRequest,
 		request.ID,
 		request.OverID,
 		&reorder.Config{
-			EntityNotFoundMsg:     "band member not found",
-			OverEntityNotFoundMsg: "over band member not found",
+			EntityNotFoundMsg:     "type not found",
+			OverEntityNotFoundMsg: "over type not found",
 		},
 	)
 	if errCode != nil {

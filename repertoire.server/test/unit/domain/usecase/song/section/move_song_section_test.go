@@ -77,7 +77,12 @@ func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *test
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := section.NewMoveSongSection(songRepository)
 
-	song := &model.Song{ID: uuid.New()}
+	song := &model.Song{
+		ID: uuid.New(),
+		Sections: []model.SongSection{
+			{ID: uuid.New()},
+		},
+	}
 
 	request := requests.MoveSongSectionRequest{
 		ID:     uuid.New(),

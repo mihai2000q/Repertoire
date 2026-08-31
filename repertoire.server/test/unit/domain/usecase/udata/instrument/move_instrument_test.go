@@ -90,7 +90,9 @@ func TestMoveInstrument_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *te
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	instruments := &[]model.Instrument{}
+	instruments := &[]model.Instrument{
+		{ID: uuid.New()},
+	}
 	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
 		Return(nil, instruments).
 		Once()

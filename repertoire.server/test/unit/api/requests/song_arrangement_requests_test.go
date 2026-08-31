@@ -263,7 +263,7 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 		},
 		// Requests - Occurrences - ID Test Cases
 		{
-			"Occurrences are invalid because the first element has an empty SectionID",
+			"Occurrences are invalid because the first element has an empty PartID",
 			requests.BulkUpdateSongArrangementsRequest{
 				SongID: uuid.New(),
 				Requests: []requests.UpdateSongArrangementRequest{
@@ -274,7 +274,7 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 					},
 				},
 			},
-			"Requests[0].Occurrences[0].SectionID",
+			"Requests[0].Occurrences[0].PartID",
 			"required",
 		},
 	}

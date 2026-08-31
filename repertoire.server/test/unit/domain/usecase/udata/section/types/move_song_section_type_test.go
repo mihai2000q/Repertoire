@@ -90,7 +90,9 @@ func TestMoveSongSectionType_WhenSectionTypeIsNotFound_ShouldReturnNotFoundError
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	expectedTypes := &[]model.SongSectionType{}
+	expectedTypes := &[]model.SongSectionType{
+		{ID: uuid.New()},
+	}
 	userDataRepository.On("GetSectionTypes", new([]model.SongSectionType), userID).
 		Return(nil, expectedTypes).
 		Once()
