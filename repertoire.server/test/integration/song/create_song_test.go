@@ -132,7 +132,6 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Preload("Sections").
 				Preload("Sections.SongSectionType").
 				Preload("Arrangements").
-				Preload("Arrangements.SectionOccurrences").
 				Find(&song, response.ID)
 			assertCreatedSong(t, test.request, song, user.ID)
 

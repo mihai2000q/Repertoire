@@ -115,7 +115,7 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			db := utils.GetDatabase(t)
 			var oldArrangements []model.SongArrangement
 			var sectionsCount int64
-			db.Preload("SectionOccurrences").
+			db.Preload("PartOccurrences").
 				Where(&model.SongArrangement{SongID: song.ID}).
 				Order("\"order\"").
 				Find(&oldArrangements)
@@ -133,12 +133,12 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			var section model.SongSection
 			db.Preload("Song").
 				Preload("Song.Arrangements", func(db *gorm.DB) *gorm.DB { return db.Order("\"order\"") }).
-				Preload("Song.Arrangements.SectionOccurrences", func(db *gorm.DB) *gorm.DB {
+				Preload("Song.Arrangements.PartOccurrences", func(db *gorm.DB) *gorm.DB {
 					return db.
 						Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
 						Order("song_sections.order DESC")
 				}).
-				Preload("Song.Arrangements.SectionOccurrences.Section").
+				Preload("Song.Arrangements.PartOccurrences.Section").
 				Find(&section, &model.SongSection{Name: request.Name})
 
 			assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
@@ -146,9 +146,9 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			assert.LessOrEqual(t, section.Song.Progress, song.Progress)
 
 			for i, arrangement := range section.Song.Arrangements {
-				assert.Len(t, arrangement.SectionOccurrences, len(oldArrangements[i].SectionOccurrences)+1)
-				newOccurrence := arrangement.SectionOccurrences[0]
-				assert.Equal(t, section.ID, newOccurrence.SectionID)
+				assert.Len(t, arrangement.PartOccurrences, len(oldArrangements[i].PartOccurrences)+1)
+				newOccurrence := arrangement.PartOccurrences[0]
+				assert.Equal(t, section.ID, newOccurrence.PartID)
 				assert.Equal(t, arrangement.ID, newOccurrence.ArrangementID)
 				assert.Zero(t, newOccurrence.Occurrences)
 			}
@@ -171,7 +171,7 @@ func assertCreatedSongSection(
 	assert.Equal(t, request.BandMemberID, songSection.BandMemberID)
 	assert.Equal(t, request.InstrumentID, songSection.InstrumentID)
 	assert.Zero(t, songSection.Rehearsals)
-	assert.Equal(t, model.DefaultSongSectionConfidence, songSection.Confidence)
+	assert.Equal(t, model.DefaultSongPartConfidence, songSection.Confidence)
 	assert.Zero(t, songSection.RehearsalsScore)
 	assert.Zero(t, songSection.ConfidenceScore)
 	assert.Zero(t, songSection.Progress)
