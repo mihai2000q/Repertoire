@@ -165,11 +165,11 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsals uint) *wrapper.ErrorCode {
 	// add history of the rehearsals change
 	newHistory := model.SongPartHistory{
-		ID:         uuid.New(),
-		Property:   model.RehearsalsProperty,
-		From:       part.Rehearsals,
-		To:         newRehearsals,
-		SongPartID: part.ID,
+		ID:       uuid.New(),
+		Property: model.RehearsalsProperty,
+		From:     part.Rehearsals,
+		To:       newRehearsals,
+		PartID:   part.ID,
 	}
 	err := b.txSongPartRepository.CreateHistory(&newHistory)
 	if err != nil {
@@ -190,11 +190,11 @@ func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsal
 func (b BulkUpdateSongParts) updateConfidence(part *model.SongPart, newConfidence uint) *wrapper.ErrorCode {
 	// add history of the confidence change
 	newHistory := model.SongPartHistory{
-		ID:         uuid.New(),
-		Property:   model.ConfidenceProperty,
-		From:       part.Confidence,
-		To:         newConfidence,
-		SongPartID: part.ID,
+		ID:       uuid.New(),
+		Property: model.ConfidenceProperty,
+		From:     part.Confidence,
+		To:       newConfidence,
+		PartID:   part.ID,
 	}
 	if err := b.txSongPartRepository.CreateHistory(&newHistory); err != nil {
 		return wrapper.InternalServerError(err)

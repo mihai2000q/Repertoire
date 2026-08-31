@@ -25,7 +25,7 @@ type SongPart struct {
 	Instrument *Instrument `json:"instrument"`
 
 	SectionParts           []SongSectionPart     `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE" json:"-"`
-	History                []SongPartHistory     `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	History                []SongPartHistory     `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE" json:"-"`
 	ArrangementOccurrences []SongPartOccurrences `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE" json:"-"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create" json:"createdAt"`
@@ -33,11 +33,11 @@ type SongPart struct {
 }
 
 type SongPartHistory struct {
-	ID         uuid.UUID        `gorm:"primaryKey; type:uuid; <-:create"`
-	Property   SongPartProperty `gorm:"size:255; not null"`
-	From       uint             `gorm:"not null"`
-	To         uint             `gorm:"not null"`
-	SongPartID uuid.UUID        `gorm:"not null; index:idx_song_instrument_part_histories_song_instrument_part_id"`
+	ID       uuid.UUID        `gorm:"primaryKey; type:uuid; <-:create"`
+	Property SongPartProperty `gorm:"size:255; not null"`
+	From     uint             `gorm:"not null"`
+	To       uint             `gorm:"not null"`
+	PartID   uuid.UUID        `gorm:"not null; index:idx_song_part_histories_part_id"`
 
 	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 }

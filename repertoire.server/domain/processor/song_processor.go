@@ -86,12 +86,12 @@ func (s *songProcessor) addRehearsal(
 		newRehearsals := part.Rehearsals + arrangementOccurrence.Occurrences
 		// add history of the rehearsals change
 		newHistory := model.SongPartHistory{
-			ID:         uuid.New(),
-			Property:   model.RehearsalsProperty,
-			From:       part.Rehearsals,
-			To:         newRehearsals,
-			SongPartID: part.ID,
-			CreatedAt:  time.Now().UTC(),
+			ID:        uuid.New(),
+			Property:  model.RehearsalsProperty,
+			From:      part.Rehearsals,
+			To:        newRehearsals,
+			PartID:    part.ID,
+			CreatedAt: time.Now().UTC(),
 		}
 		err := songPartRepository.CreateHistory(&newHistory)
 		if err != nil {

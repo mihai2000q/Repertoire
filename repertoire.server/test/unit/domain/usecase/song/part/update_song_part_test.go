@@ -754,7 +754,7 @@ func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 					Run(func(args mock.Arguments) {
 						h := args.Get(0).(*model.SongPartHistory)
 						assert.NotEmpty(t, h.ID)
-						assert.Equal(t, tt.part.ID, h.SongPartID)
+						assert.Equal(t, tt.part.ID, h.PartID)
 						switch h.Property {
 						case model.ConfidenceProperty:
 							assert.Equal(t, tt.part.Confidence, h.From)

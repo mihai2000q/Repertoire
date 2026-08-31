@@ -131,11 +131,11 @@ func (u UpdateSongPart) updateRehearsals(
 ) *wrapper.ErrorCode {
 	// add history of the rehearsals change
 	newHistory := model.SongPartHistory{
-		ID:         uuid.New(),
-		Property:   model.RehearsalsProperty,
-		From:       part.Rehearsals,
-		To:         newRehearsals,
-		SongPartID: part.ID,
+		ID:       uuid.New(),
+		Property: model.RehearsalsProperty,
+		From:     part.Rehearsals,
+		To:       newRehearsals,
+		PartID:   part.ID,
 	}
 	err := u.txSongPartRepository.CreateHistory(&newHistory)
 	if err != nil {
@@ -159,11 +159,11 @@ func (u UpdateSongPart) updateConfidence(
 ) *wrapper.ErrorCode {
 	// add history of the confidence change
 	newHistory := model.SongPartHistory{
-		ID:         uuid.New(),
-		Property:   model.ConfidenceProperty,
-		From:       part.Confidence,
-		To:         newConfidence,
-		SongPartID: part.ID,
+		ID:       uuid.New(),
+		Property: model.ConfidenceProperty,
+		From:     part.Confidence,
+		To:       newConfidence,
+		PartID:   part.ID,
 	}
 	if err := u.txSongPartRepository.CreateHistory(&newHistory); err != nil {
 		return wrapper.InternalServerError(err)

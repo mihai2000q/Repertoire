@@ -100,7 +100,7 @@ func (s songPartRepository) GetHistory(
 ) error {
 	return s.client.
 		Order("created_at").
-		Find(&history, model.SongPartHistory{SongPartID: partID, Property: property}).
+		Find(&history, model.SongPartHistory{PartID: partID, Property: property}).
 		Error
 }
 

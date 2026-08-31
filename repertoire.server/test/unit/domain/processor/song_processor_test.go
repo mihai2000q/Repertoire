@@ -229,7 +229,7 @@ func TestAddCustomRehearsal_WhenSuccessfulWithoutArrangementID_ShouldUpdateSongA
 
 			parts := slices.Clone(mockSong.Parts)
 			parts = slices.DeleteFunc(parts, func(part model.SongPart) bool {
-				return part.ID != newHistory.SongPartID
+				return part.ID != newHistory.PartID
 			})
 
 			assert.Equal(t, parts[0].Rehearsals, newHistory.From)
@@ -354,7 +354,7 @@ func TestAddCustomRehearsal_WhenSuccessfulWithArrangementID_ShouldUpdateSongAndP
 
 			parts := slices.Clone(mockSong.Parts)
 			parts = slices.DeleteFunc(parts, func(part model.SongPart) bool {
-				return part.ID != newHistory.SongPartID
+				return part.ID != newHistory.PartID
 			})
 			part := parts[0]
 
@@ -604,7 +604,7 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndParts(t *testing.
 
 			parts := slices.Clone(mockSong.Parts)
 			parts = slices.DeleteFunc(parts, func(part model.SongPart) bool {
-				return part.ID != newHistory.SongPartID
+				return part.ID != newHistory.PartID
 			})
 
 			assert.Equal(t, parts[0].Rehearsals, newHistory.From)
