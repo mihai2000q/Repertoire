@@ -84,11 +84,11 @@ type SongFiltersMetadata struct {
 	MinSectionsCount int64 `gorm:"->" json:"minSectionsCount"`
 	MaxSectionsCount int64 `gorm:"->" json:"maxSectionsCount"`
 
+	MinPartsCount int64 `gorm:"->" json:"minPartsCount"`
+	MaxPartsCount int64 `gorm:"->" json:"maxPartsCount"`
+
 	MinSolosCount int64 `gorm:"->" json:"minSolosCount"`
 	MaxSolosCount int64 `gorm:"->" json:"maxSolosCount"`
-
-	MinRiffsCount int64 `gorm:"->" json:"minRiffsCount"`
-	MaxRiffsCount int64 `gorm:"->" json:"maxRiffsCount"`
 
 	MinRehearsals float64 `gorm:"->" json:"minRehearsals"`
 	MaxRehearsals float64 `gorm:"->" json:"maxRehearsals"`

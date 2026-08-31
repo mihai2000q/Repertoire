@@ -344,11 +344,11 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	var minSectionsCount *int64
 	var maxSectionsCount int64 = 0
 
+	var minPartsCount *int64
+	var maxPartsCount int64 = 0
+
 	var minSolosCount *int64
 	var maxSolosCount int64 = 0
-
-	var minRiffsCount *int64
-	var maxRiffsCount int64 = 0
 
 	var minRehearsals *float64
 	var maxRehearsals float64 = 0
@@ -426,17 +426,10 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 
 		var sectionsCount int64 = 0
 		var solosCount int64 = 0
-		var riffsCount int64 = 0
 		for _, section := range song.Sections {
 			sectionsCount++
 			if section.SongSectionType.Name == "Solo" {
 				solosCount++
-			}
-			if section.SongSectionType.Name == "Riff" {
-				riffsCount++
-			}
-			if section.InstrumentID != nil {
-				instrumentIDsMap[*section.InstrumentID] = true
 			}
 		}
 
@@ -452,11 +445,20 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 		if solosCount > maxSolosCount {
 			maxSolosCount = solosCount
 		}
-		if minRiffsCount == nil || *minRiffsCount > riffsCount {
-			minRiffsCount = &riffsCount
+
+		var partsCount int64 = 0
+		for _, part := range song.Parts {
+			if part.InstrumentID != nil {
+				instrumentIDsMap[*part.InstrumentID] = true
+			}
+			partsCount++
 		}
-		if riffsCount > maxRiffsCount {
-			maxRiffsCount = riffsCount
+
+		if minPartsCount == nil || *minPartsCount > partsCount {
+			minPartsCount = &partsCount
+		}
+		if partsCount > maxPartsCount {
+			maxPartsCount = partsCount
 		}
 	}
 
@@ -500,19 +502,19 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	}
 	assert.Equal(t, maxSectionsCount, metadata.MaxSectionsCount)
 
+	if minPartsCount == nil {
+		assert.Zero(t, metadata.MinPartsCount)
+	} else {
+		assert.Equal(t, *minPartsCount, metadata.MinPartsCount)
+	}
+	assert.Equal(t, maxPartsCount, metadata.MaxPartsCount)
+
 	if minSolosCount == nil {
 		assert.Zero(t, metadata.MinSolosCount)
 	} else {
 		assert.Equal(t, *minSolosCount, metadata.MinSolosCount)
 	}
 	assert.Equal(t, maxSolosCount, metadata.MaxSolosCount)
-
-	if minRiffsCount == nil {
-		assert.Zero(t, metadata.MinRiffsCount)
-	} else {
-		assert.Equal(t, *minRiffsCount, metadata.MinRiffsCount)
-	}
-	assert.Equal(t, maxRiffsCount, metadata.MaxRiffsCount)
 
 	if minRehearsals == nil {
 		assert.Zero(t, metadata.MinRehearsals)

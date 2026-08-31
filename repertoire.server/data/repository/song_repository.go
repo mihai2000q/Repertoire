@@ -172,13 +172,13 @@ func (s songRepository) GetFiltersMetadata(
 			"MAX(bpm) AS max_bpm",
 			"JSON_AGG(DISTINCT difficulty) filter (WHERE difficulty IS NOT NULL) as difficulties",
 			"JSON_AGG(DISTINCT guitar_tuning_id) filter (WHERE guitar_tuning_id IS NOT NULL) as guitar_tuning_ids",
-			"JSON_AGG(DISTINCT song_sections.instrument_id) filter (WHERE instrument_id IS NOT NULL) as instrument_ids",
+			"JSON_AGG(DISTINCT song_parts.instrument_id) filter (WHERE instrument_id IS NOT NULL) as instrument_ids",
 			"MIN(COALESCE(ss.sections_count, 0)) AS min_sections_count",
 			"MAX(COALESCE(ss.sections_count, 0)) AS max_sections_count",
 			"MIN(COALESCE(ss.solos_count, 0)) AS min_solos_count",
 			"MAX(COALESCE(ss.solos_count, 0)) AS max_solos_count",
-			"MIN(COALESCE(ss.riffs_count, 0)) AS min_riffs_count",
-			"MAX(COALESCE(ss.riffs_count, 0)) AS max_riffs_count",
+			"MIN(COALESCE(sp.parts_count, 0)) AS min_parts_count",
+			"MAX(COALESCE(sp.parts_count, 0)) AS max_parts_count",
 			"MIN(songs.rehearsals) as min_rehearsals",
 			"MAX(songs.rehearsals) as max_rehearsals",
 			"MIN(songs.confidence) as min_confidence",
@@ -190,7 +190,9 @@ func (s songRepository) GetFiltersMetadata(
 		).
 		Table("songs").
 		Joins("LEFT JOIN (?) AS ss ON ss.song_id = songs.id", s.getSongSectionsSubQuery(userID)).
+		Joins("LEFT JOIN (?) AS sp ON sp.song_id = songs.id", s.getSongPartsSubQuery(userID)).
 		Joins("LEFT JOIN song_sections ON song_sections.song_id = songs.id").
+		Joins("LEFT JOIN song_parts ON song_parts.song_id = songs.id").
 		Where("user_id = ?", userID)
 
 	searchBy = s.addInstrumentsFilter(tx, searchBy)
@@ -201,32 +203,27 @@ func (s songRepository) GetFiltersMetadata(
 		return err
 	}
 	if metadata.ArtistIDsAgg != "" {
-		err := json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs)
-		if err != nil {
+		if err := json.Unmarshal([]byte(metadata.ArtistIDsAgg), &metadata.ArtistIDs); err != nil {
 			return err
 		}
 	}
 	if metadata.AlbumIDsAgg != "" {
-		err := json.Unmarshal([]byte(metadata.AlbumIDsAgg), &metadata.AlbumIDs)
-		if err != nil {
+		if err := json.Unmarshal([]byte(metadata.AlbumIDsAgg), &metadata.AlbumIDs); err != nil {
 			return err
 		}
 	}
 	if metadata.DifficultiesAgg != "" {
-		err := json.Unmarshal([]byte(metadata.DifficultiesAgg), &metadata.Difficulties)
-		if err != nil {
+		if err := json.Unmarshal([]byte(metadata.DifficultiesAgg), &metadata.Difficulties); err != nil {
 			return err
 		}
 	}
 	if metadata.GuitarTuningIDsAgg != "" {
-		err := json.Unmarshal([]byte(metadata.GuitarTuningIDsAgg), &metadata.GuitarTuningIDs)
-		if err != nil {
+		if err := json.Unmarshal([]byte(metadata.GuitarTuningIDsAgg), &metadata.GuitarTuningIDs); err != nil {
 			return err
 		}
 	}
 	if metadata.InstrumentIDsAgg != "" {
-		err := json.Unmarshal([]byte(metadata.InstrumentIDsAgg), &metadata.InstrumentIDs)
-		if err != nil {
+		if err := json.Unmarshal([]byte(metadata.InstrumentIDsAgg), &metadata.InstrumentIDs); err != nil {
 			return err
 		}
 	}
@@ -462,7 +459,6 @@ func (s songRepository) addSongSectionsSubQuery(tx *gorm.DB, userID uuid.UUID) {
 			"songs.*",
 			"COALESCE(ss.sections_count, 0) as sections_count",
 			"COALESCE(ss.solos_count, 0) as solos_count",
-			"COALESCE(ss.riffs_count, 0) as riffs_count",
 		)
 }
 
@@ -471,10 +467,19 @@ func (s songRepository) getSongSectionsSubQuery(userID uuid.UUID) *gorm.DB {
 		Select("song_id",
 			"COUNT(*) as sections_count",
 			"COUNT(*) filter (where song_section_types.name = 'Solo') as solos_count",
-			"COUNT(*) filter (where song_section_types.name = 'Riff') as riffs_count",
 		).
 		Joins("LEFT JOIN song_section_types ON song_section_types.id = song_sections.song_section_type_id").
 		Joins("JOIN songs ON songs.id = song_sections.song_id").
+		Where("songs.user_id = ?", userID).
+		Group("song_id")
+}
+
+func (s songRepository) getSongPartsSubQuery(userID uuid.UUID) *gorm.DB {
+	return s.client.Model(&model.SongPart{}).
+		Select("song_id",
+			"COUNT(*) as parts_count",
+		).
+		Joins("JOIN songs ON songs.id = song_parts.song_id").
 		Where("songs.user_id = ?", userID).
 		Group("song_id")
 }
@@ -509,7 +514,7 @@ func (s songRepository) addInstrumentsFilter(tx *gorm.DB, searchBy []string) []s
 			}
 			instrumentsSubQuery := s.client.
 				Select("1").
-				Table("song_sections").
+				Table("song_parts").
 				Where("song_id = songs.id").
 				Where("instrument_id IN (?)", instrumentIds)
 			tx.Where(`EXISTS (?)`, instrumentsSubQuery)
