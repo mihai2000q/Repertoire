@@ -1,11 +1,10 @@
 package part
 
 import (
-	"errors"
-	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
+	"repertoire/server/domain/processor"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
@@ -14,6 +13,7 @@ import (
 
 type BulkDeleteSongParts struct {
 	transactionManager transaction.Manager
+	songProcessor      processor.SongProcessor
 
 	txSongRepository        repository.SongRepository
 	txSongSectionRepository repository.SongSectionRepository
@@ -21,17 +21,19 @@ type BulkDeleteSongParts struct {
 
 func NewBulkDeleteSongParts(
 	transactionManager transaction.Manager,
+	songProcessor processor.SongProcessor,
 ) BulkDeleteSongParts {
 	return BulkDeleteSongParts{
 		transactionManager: transactionManager,
+		songProcessor:      songProcessor,
 	}
 }
 
 func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest) *wrapper.ErrorCode {
 	var errCode *wrapper.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		b.txSongRepository = factory.NewSongRepository()
 		b.txSongSectionRepository = factory.NewSongSectionRepository()
+		txSongRepository := factory.NewSongRepository()
 		txSongPartRepository := factory.NewSongPartRepository()
 
 		idsSet := make(map[uuid.UUID]bool, len(request.IDs))
@@ -39,10 +41,11 @@ func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest)
 			idsSet[id] = true
 		}
 
-		if errCode = b.updateSong(idsSet, request); errCode != nil {
+		errCode = b.songProcessor.UpdateSongAfterPartsDeletion(txSongRepository, request.SongID, request.IDs)
+		if errCode != nil {
 			return errCode.Error
 		}
-		if errCode = b.reorderSections(idsSet, request); errCode != nil {
+		if errCode = b.reorderSectionParts(idsSet, request); errCode != nil {
 			return errCode.Error
 		}
 		if err := txSongPartRepository.Delete(request.IDs); err != nil {
@@ -60,61 +63,7 @@ func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest)
 	return nil
 }
 
-func (b BulkDeleteSongParts) updateSong(
-	idsSet map[uuid.UUID]bool,
-	request requests.BulkDeleteSongPartsRequest,
-) *wrapper.ErrorCode {
-	var song model.Song
-	if err := b.txSongRepository.GetWithParts(&song, request.SongID); err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
-	}
-
-	var remainingParts []model.SongPart
-	var totalConfidence, totalRehearsals uint
-	var totalProgress uint64
-	var partsFound uint
-
-	for _, part := range song.Parts {
-		if idsSet[part.ID] {
-			partsFound++
-			totalConfidence += part.Confidence
-			totalRehearsals += part.Rehearsals
-			totalProgress += part.Progress
-			continue
-		}
-		part.SongOrder -= partsFound
-		remainingParts = append(remainingParts, part)
-	}
-
-	if int(partsFound) != len(request.IDs) {
-		return wrapper.NotFoundError(errors.New("song parts not found"))
-	}
-
-	song.Parts = remainingParts
-
-	partsLength := len(song.Parts) + int(partsFound)
-	deletedCount := int(partsFound)
-	if partsLength == deletedCount {
-		song.Confidence = 0
-		song.Rehearsals = 0
-		song.Progress = 0
-	} else {
-		newPartsLength := float64(partsLength - deletedCount)
-		song.Confidence = (song.Confidence*float64(partsLength) - float64(totalConfidence)) / newPartsLength
-		song.Rehearsals = (song.Rehearsals*float64(partsLength) - float64(totalRehearsals)) / newPartsLength
-		song.Progress = (song.Progress*float64(partsLength) - float64(totalProgress)) / newPartsLength
-	}
-
-	if err := b.txSongRepository.UpdateWithAssociations(&song); err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	return nil
-}
-
-func (b BulkDeleteSongParts) reorderSections(
+func (b BulkDeleteSongParts) reorderSectionParts(
 	idsSet map[uuid.UUID]bool,
 	request requests.BulkDeleteSongPartsRequest,
 ) *wrapper.ErrorCode {

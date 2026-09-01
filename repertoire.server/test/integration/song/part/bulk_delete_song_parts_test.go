@@ -91,9 +91,9 @@ func TestBulkDeleteSongParts_WhenSuccessful_ShouldDeleteParts(t *testing.T) {
 		)
 	}
 
-	assert.LessOrEqual(t, newSong.Confidence, song.Confidence)
-	assert.LessOrEqual(t, newSong.Rehearsals, song.Rehearsals)
-	assert.LessOrEqual(t, newSong.Progress, song.Progress)
+	assert.Less(t, newSong.Confidence, song.Confidence)
+	assert.Less(t, newSong.Rehearsals, song.Rehearsals)
+	assert.Less(t, newSong.Progress, song.Progress)
 
 	for _, sec := range newSong.Sections {
 		for i, sp := range sec.SectionParts {
