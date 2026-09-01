@@ -17,10 +17,11 @@ type SongPart struct {
 	ConfidenceScore uint   `gorm:"not null" json:"confidenceScore"`
 	Progress        uint64 `gorm:"not null" json:"progress"`
 
-	SongID       uuid.UUID  `gorm:"not null; index: idx_song_instrument_parts_song_id" json:"-"`
+	SongID       uuid.UUID  `gorm:"not null; index: idx_song_parts_song_id" json:"-"`
 	BandMemberID *uuid.UUID `json:"-"`
 	InstrumentID *uuid.UUID `json:"-"`
 
+	Song       Song        `json:"-"`
 	BandMember *BandMember `json:"bandMember"`
 	Instrument *Instrument `json:"instrument"`
 
