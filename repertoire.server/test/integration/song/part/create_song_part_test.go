@@ -201,9 +201,9 @@ func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {
 			assertCreatedSongPart(t, part, request, partsCount)
 
 			// updateSong
-			assert.LessOrEqual(t, part.Song.Confidence, song.Confidence)
-			assert.LessOrEqual(t, part.Song.Rehearsals, song.Rehearsals)
-			assert.LessOrEqual(t, part.Song.Progress, song.Progress)
+			assert.Less(t, part.Song.Confidence, song.Confidence)
+			assert.Less(t, part.Song.Rehearsals, song.Rehearsals)
+			assert.Less(t, part.Song.Progress, song.Progress)
 
 			// updateArrangements
 			for i, arrangement := range part.Song.Arrangements {
@@ -226,7 +226,7 @@ func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {
 			// Verify that we have exactly the requested sections and their orders match expectations
 			for _, sectionID := range request.SectionIDs {
 				sp, ok := sectionPartsMap[sectionID]
-				assert.True(t, ok, "section %v missing from SectionParts", sectionID)
+				assert.True(t, ok, "song section %v missing from SectionParts", sectionID)
 				expectedOrder := expectedOrders[sectionID]
 				assert.Equal(t, expectedOrder, sp.Order)
 			}
