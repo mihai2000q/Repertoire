@@ -9,7 +9,6 @@ import (
 
 type Date time.Time
 
-// Scan implements the sql.Scanner interface for database deserialization
 func (d *Date) Scan(value interface{}) error {
 	var t time.Time
 	switch v := value.(type) {
@@ -33,7 +32,11 @@ func (d *Date) Scan(value interface{}) error {
 		return fmt.Errorf("unsupported type for Date: %T", value)
 	}
 
-	*d = Date(t.UTC().Truncate(24 * time.Hour))
+	// Extract the calendar date in t's own location, then rebuild as UTC
+	// midnight — mirrors Value(), and avoids shifting the date when t
+	// carries a non-UTC location.
+	y, m, day := t.Date()
+	*d = Date(time.Date(y, m, day, 0, 0, 0, 0, time.UTC))
 	return nil
 }
 
@@ -61,6 +64,11 @@ func (d Date) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements custom JSON unmarshaling
 func (d *Date) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		*d = Date(time.Time{})
+		return nil
+	}
+
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -77,7 +85,7 @@ func (d *Date) UnmarshalJSON(data []byte) error {
 
 // String returns the date in ISO8601 format
 func (d Date) String() string {
-	return time.Time(d).Format("2006-01-02")
+	return time.Time(d).UTC().Format("2006-01-02")
 }
 
 // GobEncode implements the gob.GobEncoder interface
