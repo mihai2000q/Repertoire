@@ -675,3 +675,235 @@ func TestAddPerfectRehearsal_WhenSuccessful_ShouldUpdateSongAndParts(t *testing.
 	songPartRepository.AssertExpectations(t)
 	progressProcessor.AssertExpectations(t)
 }
+
+// UpdateSongAfterPartsDeletion
+
+func TestUpdateSongAfterPartsDeletion_WhenGetWithPartsFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	songProcessor := processor.NewSongProcessor(nil)
+
+	songID := uuid.New()
+	partIDs := []uuid.UUID{uuid.New()}
+
+	internalError := errors.New("get error")
+	songRepository.On("GetWithParts", new(model.Song), songID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := songProcessor.UpdateSongAfterPartsDeletion(songRepository, songID, partIDs)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestUpdateSongAfterPartsDeletion_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	songProcessor := processor.NewSongProcessor(nil)
+
+	songID := uuid.New()
+	partIDs := []uuid.UUID{uuid.New()}
+
+	songRepository.On("GetWithParts", new(model.Song), songID).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := songProcessor.UpdateSongAfterPartsDeletion(songRepository, songID, partIDs)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "song not found", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestUpdateSongAfterPartsDeletion_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	songProcessor := processor.NewSongProcessor(nil)
+
+	songID := uuid.New()
+	partID := uuid.New()
+	partIDs := []uuid.UUID{partID}
+
+	mockSong := &model.Song{
+		ID:         songID,
+		Parts:      []model.SongPart{{ID: partID, Confidence: 10, Rehearsals: 5, Progress: 20}},
+		Confidence: 10,
+		Rehearsals: 5,
+		Progress:   20,
+	}
+
+	songRepository.On("GetWithParts", new(model.Song), songID).
+		Return(nil, mockSong).
+		Once()
+
+	internalError := errors.New("update error")
+	songRepository.On("UpdateWithAssociations", mock.IsType(mockSong)).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := songProcessor.UpdateSongAfterPartsDeletion(songRepository, songID, partIDs)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestSongProcessor_UpdateSongAfterPartsDeletion_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
+	tests := []struct {
+		name                   string
+		song                   model.Song
+		deleteIndices          []int
+		expectedSongConfidence float64
+		expectedSongRehearsals float64
+		expectedSongProgress   float64
+	}{
+		{
+			name: "Delete single part, no stats",
+			song: model.Song{
+				ID: uuid.New(),
+				Parts: []model.SongPart{
+					{ID: uuid.New(), SongOrder: 0, Confidence: 0, Rehearsals: 0, Progress: 0},
+					{ID: uuid.New(), SongOrder: 1, Confidence: 0, Rehearsals: 0, Progress: 0},
+				},
+				Confidence: 0,
+				Rehearsals: 0,
+				Progress:   0,
+			},
+			deleteIndices:          []int{0},
+			expectedSongConfidence: 0,
+			expectedSongRehearsals: 0,
+			expectedSongProgress:   0,
+		},
+		{
+			name: "Delete single part with stats",
+			song: model.Song{
+				ID: uuid.New(),
+				Parts: []model.SongPart{
+					{ID: uuid.New(), SongOrder: 0, Confidence: 55, Rehearsals: 12, Progress: 45},
+					{ID: uuid.New(), SongOrder: 1, Confidence: 23, Rehearsals: 5, Progress: 15},
+				},
+				Confidence: 39,
+				Rehearsals: 8.5,
+				Progress:   30,
+			},
+			deleteIndices:          []int{0},
+			expectedSongConfidence: 23,
+			expectedSongRehearsals: 5,
+			expectedSongProgress:   15,
+		},
+		{
+			name: "Delete multiple parts, no stats",
+			song: model.Song{
+				ID: uuid.New(),
+				Parts: []model.SongPart{
+					{ID: uuid.New(), SongOrder: 0, Confidence: 0, Rehearsals: 0, Progress: 0},
+					{ID: uuid.New(), SongOrder: 1, Confidence: 0, Rehearsals: 0, Progress: 0},
+					{ID: uuid.New(), SongOrder: 2, Confidence: 0, Rehearsals: 0, Progress: 0},
+					{ID: uuid.New(), SongOrder: 3, Confidence: 0, Rehearsals: 0, Progress: 0},
+				},
+				Confidence: 0,
+				Rehearsals: 0,
+				Progress:   0,
+			},
+			deleteIndices:          []int{1, 3},
+			expectedSongConfidence: 0,
+			expectedSongRehearsals: 0,
+			expectedSongProgress:   0,
+		},
+		{
+			name: "Delete multiple parts with stats",
+			song: model.Song{
+				ID: uuid.New(),
+				Parts: []model.SongPart{
+					{ID: uuid.New(), SongOrder: 0, Confidence: 55, Rehearsals: 12, Progress: 45},
+					{ID: uuid.New(), SongOrder: 1, Confidence: 23, Rehearsals: 5, Progress: 15},
+					{ID: uuid.New(), SongOrder: 2, Confidence: 78, Rehearsals: 25, Progress: 100},
+					{ID: uuid.New(), SongOrder: 3, Confidence: 40, Rehearsals: 6, Progress: 63},
+					{ID: uuid.New(), SongOrder: 4, Confidence: 80, Rehearsals: 19, Progress: 170},
+				},
+				Confidence: 55.2,
+				Rehearsals: 13.4,
+				Progress:   78.6,
+			},
+			deleteIndices:          []int{1, 3},
+			expectedSongConfidence: 71,
+			expectedSongRehearsals: 18.666666666666668,
+			expectedSongProgress:   105,
+		},
+		{
+			name: "Delete all parts, stats reset",
+			song: model.Song{
+				ID: uuid.New(),
+				Parts: []model.SongPart{
+					{ID: uuid.New(), SongOrder: 0, Confidence: 55, Rehearsals: 12, Progress: 45},
+				},
+				Confidence: 55,
+				Rehearsals: 12,
+				Progress:   45,
+			},
+			deleteIndices:          []int{0},
+			expectedSongConfidence: 0,
+			expectedSongRehearsals: 0,
+			expectedSongProgress:   0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			songRepository := new(repository.SongRepositoryMock)
+			songProcessor := processor.NewSongProcessor(nil)
+
+			partIDsMap := make(map[uuid.UUID]bool)
+			partIDsToDelete := make([]uuid.UUID, len(tt.deleteIndices))
+			for i, idx := range tt.deleteIndices {
+				partIDsToDelete[i] = tt.song.Parts[idx].ID
+				partIDsMap[partIDsToDelete[i]] = true
+			}
+			oldParts := slices.Clone(tt.song.Parts)
+
+			songRepository.On("GetWithParts", new(model.Song), tt.song.ID).Return(nil, &tt.song).Once()
+			songRepository.On("UpdateWithAssociations", mock.IsType(&tt.song)).
+				Run(func(args mock.Arguments) {
+					updatedSong := args.Get(0).(*model.Song)
+					for i, updatedPart := range updatedSong.Parts {
+						if !partIDsMap[updatedPart.ID] {
+							continue
+						}
+						assert.Equal(t, oldParts[i].ID, updatedPart.ID)
+						assert.Equal(t, oldParts[i].SongOrder, updatedPart.SongOrder)
+						assert.Equal(t, oldParts[i].Confidence, updatedPart.Confidence)
+						assert.Equal(t, oldParts[i].Rehearsals, updatedPart.Rehearsals)
+						assert.Equal(t, oldParts[i].Progress, updatedPart.Progress)
+					}
+					assert.Equal(t, tt.expectedSongConfidence, updatedSong.Confidence)
+					assert.Equal(t, tt.expectedSongRehearsals, updatedSong.Rehearsals)
+					assert.Equal(t, tt.expectedSongProgress, updatedSong.Progress)
+				}).
+				Return(nil).
+				Once()
+
+			// when
+			errCode := songProcessor.UpdateSongAfterPartsDeletion(songRepository, tt.song.ID, partIDsToDelete)
+
+			// then
+			assert.Nil(t, errCode)
+
+			songRepository.AssertExpectations(t)
+		})
+	}
+}

@@ -2,6 +2,7 @@ package processor
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
@@ -21,6 +22,11 @@ type SongProcessor interface {
 		song *model.Song,
 		songPartRepository repository.SongPartRepository,
 	) (errCode *wrapper.ErrorCode, updatedSong bool)
+	UpdateSongAfterPartsDeletion(
+		songRepository repository.SongRepository,
+		songID uuid.UUID,
+		partIDs []uuid.UUID,
+	) *wrapper.ErrorCode
 }
 
 type songProcessor struct {
@@ -126,4 +132,66 @@ func (s *songProcessor) addRehearsal(
 	song.LastTimePlayed = &[]time.Time{time.Now().UTC()}[0]
 
 	return nil, true
+}
+
+func (s *songProcessor) UpdateSongAfterPartsDeletion(
+	songRepository repository.SongRepository,
+	songID uuid.UUID,
+	partIDs []uuid.UUID,
+) *wrapper.ErrorCode {
+	// Fetch the song with its parts
+	var song model.Song
+	if err := songRepository.GetWithParts(&song, songID); err != nil {
+		return wrapper.InternalServerError(err)
+	}
+	if reflect.ValueOf(song).IsZero() {
+		return wrapper.NotFoundError(errors.New("song not found"))
+	}
+
+	// Build a set for quick existence check
+	idsSet := make(map[uuid.UUID]bool, len(partIDs))
+	for _, pid := range partIDs {
+		idsSet[pid] = true
+	}
+
+	// Reorder remaining parts and accumulate deleted stats
+	var remainingParts []model.SongPart
+	var totalConfidence, totalRehearsals uint
+	var totalProgress uint64
+	var partsFound uint
+
+	for _, part := range song.Parts {
+		if idsSet[part.ID] {
+			partsFound++
+			totalConfidence += part.Confidence
+			totalRehearsals += part.Rehearsals
+			totalProgress += part.Progress
+			continue
+		}
+		part.SongOrder -= partsFound
+		remainingParts = append(remainingParts, part)
+	}
+
+	song.Parts = remainingParts
+
+	// Recalculate song stats
+	partsLength := len(song.Parts) + int(partsFound)
+	deletedCount := int(partsFound)
+	if partsLength == deletedCount {
+		song.Confidence = 0
+		song.Rehearsals = 0
+		song.Progress = 0
+	} else {
+		newPartsLength := float64(partsLength - deletedCount)
+		song.Confidence = (song.Confidence*float64(partsLength) - float64(totalConfidence)) / newPartsLength
+		song.Rehearsals = (song.Rehearsals*float64(partsLength) - float64(totalRehearsals)) / newPartsLength
+		song.Progress = (song.Progress*float64(partsLength) - float64(totalProgress)) / newPartsLength
+	}
+
+	// Update the song
+	if err := songRepository.UpdateWithAssociations(&song); err != nil {
+		return wrapper.InternalServerError(err)
+	}
+
+	return nil
 }
