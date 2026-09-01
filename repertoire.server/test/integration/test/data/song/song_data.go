@@ -1,4 +1,4 @@
-package album
+package song
 
 import (
 	"repertoire/server/internal"

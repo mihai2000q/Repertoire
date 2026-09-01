@@ -1,4 +1,4 @@
-package album
+package udata
 
 import (
 	"repertoire/server/internal"
