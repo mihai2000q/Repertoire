@@ -9,7 +9,7 @@ import (
 )
 
 type SongPartService interface {
-	BulkRehearsals(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode
+	BulkUpdate(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode
 	BulkDelete(request requests.BulkDeleteSongPartsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongPartRequest) *wrapper.ErrorCode
 	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
@@ -48,7 +48,7 @@ func NewSongPartService(
 	}
 }
 
-func (s *songPartService) BulkRehearsals(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode {
+func (s *songPartService) BulkUpdate(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode {
 	return s.bulkRehearsalsSongParts.Handle(request)
 }
 

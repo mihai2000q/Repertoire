@@ -45,23 +45,6 @@ func (s SongPartHandler) Create(c *gin.Context) {
 	s.SendMessage(c, "song part has been created successfully!")
 }
 
-func (s SongPartHandler) BulkRehearsals(c *gin.Context) {
-	var request requests.BulkUpdateSongPartsRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	errorCode = s.service.BulkRehearsals(request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song parts' rehearsals have been updated successfully!")
-}
-
 func (s SongPartHandler) Update(c *gin.Context) {
 	var request requests.UpdateSongPartRequest
 	errorCode := s.BindAndValidate(c, &request)
@@ -111,6 +94,23 @@ func (s SongPartHandler) MoveInSong(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "song part has been moved successfully!")
+}
+
+func (s SongPartHandler) BulkUpdate(c *gin.Context) {
+	var request requests.BulkUpdateSongPartsRequest
+	errorCode := s.BindAndValidate(c, &request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	errorCode = s.service.BulkUpdate(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	s.SendMessage(c, "song parts have been updated successfully!")
 }
 
 func (s SongPartHandler) BulkDelete(c *gin.Context) {
