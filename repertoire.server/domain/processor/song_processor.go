@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"slices"
@@ -148,45 +149,42 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	// Build a set to check for duplicates
-	idsSet := make(map[uuid.UUID]bool)
-	for _, pid := range partIDs {
-		idsSet[pid] = true
-	}
-
 	// Reorder remaining parts and accumulate deleted stats
 	var totalConfidence, totalRehearsals uint
 	var totalProgress uint64
-	var partsFound uint
+	idsSet := deduplicate.Deduplicate(partIDs)
+	partsToDeleteCount := 0
+	remainingPartsCount := 0
 
 	for i, part := range song.Parts {
 		if idsSet[part.ID] {
-			partsFound++
+			partsToDeleteCount++
 			totalConfidence += part.Confidence
 			totalRehearsals += part.Rehearsals
 			totalProgress += part.Progress
 			continue
 		}
-		song.Parts[i].SongOrder -= partsFound
+		// Shift SongOrder down by the number of deleted parts before it
+		song.Parts[i].SongOrder -= uint(partsToDeleteCount)
+		remainingPartsCount++
 	}
 
 	// Validate that all unique part IDs were found
-	if int(partsFound) != len(idsSet) {
+	if partsToDeleteCount != len(idsSet) {
 		return wrapper.NotFoundError(errors.New("song parts not found"))
 	}
 
 	// Recalculate song stats
-	partsLength := len(song.Parts) + int(partsFound)
-	deletedCount := int(partsFound)
-	if partsLength == deletedCount {
+	if remainingPartsCount == 0 {
 		song.Confidence = 0
 		song.Rehearsals = 0
 		song.Progress = 0
 	} else {
-		newPartsLength := float64(partsLength - deletedCount)
-		song.Confidence = (song.Confidence*float64(partsLength) - float64(totalConfidence)) / newPartsLength
-		song.Rehearsals = (song.Rehearsals*float64(partsLength) - float64(totalRehearsals)) / newPartsLength
-		song.Progress = (song.Progress*float64(partsLength) - float64(totalProgress)) / newPartsLength
+		oldPartsLen := remainingPartsCount + partsToDeleteCount
+		newPartsLen := float64(remainingPartsCount)
+		song.Confidence = (song.Confidence*float64(oldPartsLen) - float64(totalConfidence)) / newPartsLen
+		song.Rehearsals = (song.Rehearsals*float64(oldPartsLen) - float64(totalRehearsals)) / newPartsLen
+		song.Progress = (song.Progress*float64(oldPartsLen) - float64(totalProgress)) / newPartsLen
 	}
 
 	if err := songRepository.UpdateWithAssociations(&song); err != nil {
