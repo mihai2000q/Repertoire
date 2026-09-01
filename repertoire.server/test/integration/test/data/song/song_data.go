@@ -407,6 +407,23 @@ var SongSectionParts = []model.SongSectionPart{
 		PartID:    SongParts[0].ID,
 		Order:     0,
 	},
+	{
+		SectionID: SongSections[0].ID,
+		PartID:    SongParts[1].ID,
+		Order:     1,
+	},
+
+	{
+		SectionID: SongSections[1].ID,
+		PartID:    SongParts[0].ID,
+		Order:     0,
+	},
+
+	{
+		SectionID: SongSections[2].ID,
+		PartID:    SongParts[2].ID,
+		Order:     0,
+	},
 }
 
 var SongArrangements = []model.SongArrangement{
