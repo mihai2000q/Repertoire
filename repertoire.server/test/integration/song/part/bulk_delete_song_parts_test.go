@@ -72,11 +72,11 @@ func TestBulkDeleteSongParts_WhenSuccessful_ShouldDeleteParts(t *testing.T) {
 
 	var newSong model.Song
 	db.
-		Preload("Parts", func(db gorm.DB) *gorm.DB {
+		Preload("Parts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("\"song_order\"")
 		}).
 		Preload("Sections").
-		Preload("Sections.SectionParts", func(db gorm.DB) *gorm.DB {
+		Preload("Sections.SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("\"order\"")
 		}).
 		Find(&song, song.ID)
