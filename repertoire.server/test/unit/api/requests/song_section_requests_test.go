@@ -15,20 +15,40 @@ import (
 var validSectionName = "James Solo"
 
 func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.CreateSongSectionRequest{
-		SongID: uuid.New(),
-		Name:   validSectionName,
-		TypeID: uuid.New(),
+	tests := []struct {
+		name    string
+		request requests.CreateSongSectionRequest
+	}{
+		{
+			"Minimal",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -106,11 +126,20 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 		request requests.UpdateSongSectionRequest
 	}{
 		{
-			"Common",
+			"Minimal",
 			requests.UpdateSongSectionRequest{
 				ID:     uuid.New(),
 				Name:   validSectionName,
 				TypeID: uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.UpdateSongSectionRequest{
+				ID:      uuid.New(),
+				Name:    validSectionName,
+				TypeID:  uuid.New(),
+				PartIDs: []uuid.UUID{uuid.New()},
 			},
 		},
 	}

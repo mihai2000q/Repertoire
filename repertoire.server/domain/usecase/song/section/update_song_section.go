@@ -4,46 +4,148 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
+	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type UpdateSongSection struct {
 	songSectionRepository repository.SongSectionRepository
-	songRepository        repository.SongRepository
+	songPartRepository    repository.SongPartRepository
 	progressProcessor     processor.ProgressProcessor
+	transactionManager    transaction.Manager
 }
 
 func NewUpdateSongSection(
 	songSectionRepository repository.SongSectionRepository,
-	songRepository repository.SongRepository,
+	songPartRepository repository.SongPartRepository,
 	progressProcessor processor.ProgressProcessor,
+	transactionManager transaction.Manager,
 ) UpdateSongSection {
 	return UpdateSongSection{
 		songSectionRepository: songSectionRepository,
-		songRepository:        songRepository,
+		songPartRepository:    songPartRepository,
 		progressProcessor:     progressProcessor,
+		transactionManager:    transactionManager,
 	}
 }
 
 func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
 	var section model.SongSection
-	err := u.songSectionRepository.Get(&section, request.ID)
-	if err != nil {
+	if err := u.songSectionRepository.GetWithSectionParts(&section, request.ID); err != nil {
 		return wrapper.InternalServerError(err)
 	}
 	if reflect.ValueOf(section).IsZero() {
 		return wrapper.NotFoundError(errors.New("song section not found"))
 	}
 
-	section.Name = request.Name
-	section.SongSectionTypeID = request.TypeID
+	if len(request.PartIDs) > 0 {
+		errCode := u.ensurePartsBelongToSameSong(request, section.SongID)
+		if errCode != nil {
+			return errCode
+		}
+	}
 
-	err = u.songSectionRepository.Update(&section)
+	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txSongSectionRepository := factory.NewSongSectionRepository()
+
+		section.Name = request.Name
+		section.SongSectionTypeID = request.TypeID
+		if err := txSongSectionRepository.Update(&section); err != nil {
+			return err
+		}
+
+		if err := u.updateSectionParts(txSongSectionRepository, &section, request.PartIDs); err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
 		return wrapper.InternalServerError(err)
+	}
+
+	return nil
+}
+
+func (u UpdateSongSection) ensurePartsBelongToSameSong(
+	request requests.UpdateSongSectionRequest,
+	songID uuid.UUID,
+) *wrapper.ErrorCode {
+	var parts []model.SongPart
+	if err := u.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
+		return wrapper.InternalServerError(err)
+	}
+	partIDSet := deduplicate.Deduplicate(request.PartIDs)
+	if len(parts) != len(partIDSet) {
+		return wrapper.NotFoundError(errors.New("some parts not found"))
+	}
+	for _, p := range parts {
+		if p.SongID != songID {
+			return wrapper.ConflictError(errors.New("song part does not belong to the same song as the section"))
+		}
+	}
+	return nil
+}
+
+func (u UpdateSongSection) updateSectionParts(
+	txSongSectionRepository repository.SongSectionRepository,
+	section *model.SongSection,
+	partIDs []uuid.UUID,
+) error {
+	// Build maps for lookup
+	oldParts := make(map[uuid.UUID]model.SongSectionPart)
+	for _, sp := range section.SectionParts {
+		oldParts[sp.PartID] = sp
+	}
+	newParts := deduplicate.Deduplicate(partIDs)
+
+	// Identify parts to delete: those in oldMap but not in newSet
+	var partsToDelete []model.SongSectionPart
+	for pid, sp := range oldParts {
+		if !newParts[pid] {
+			partsToDelete = append(partsToDelete, sp)
+		}
+	}
+	if len(partsToDelete) > 0 {
+		if err := txSongSectionRepository.DeleteSectionParts(&partsToDelete); err != nil {
+			return err
+		}
+	}
+
+	// Identify parts to update (existing) and parts to create (new)
+	var partsToUpdate []model.SongSectionPart
+	var partsToCreate []model.SongSectionPart
+	order := 0
+	for pid := range newParts {
+		if sp, exists := oldParts[pid]; exists {
+			sp.Order = uint(order)
+			partsToUpdate = append(partsToUpdate, sp)
+		} else {
+			partsToCreate = append(partsToCreate, model.SongSectionPart{
+				PartID:    pid,
+				SectionID: section.ID,
+				Order:     uint(order),
+			})
+		}
+		order++
+	}
+
+	if len(partsToUpdate) > 0 {
+		if err := txSongSectionRepository.UpdateAllSectionParts(&partsToUpdate); err != nil {
+			return err
+		}
+	}
+
+	if len(partsToCreate) > 0 {
+		if err := txSongSectionRepository.CreateAllSectionParts(&partsToCreate); err != nil {
+			return err
+		}
 	}
 
 	return nil

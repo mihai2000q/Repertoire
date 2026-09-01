@@ -22,7 +22,9 @@ type SongSectionRepository interface {
 	UpdateAllWithAssociations(sections *[]model.SongSection) error
 	Delete(ids []uuid.UUID) error
 
+	CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error
 	UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error
+	DeleteSectionParts(sectionParts *[]model.SongSectionPart) error
 
 	GetTypes(types *[]model.SongSectionType, userID uuid.UUID) error
 }
@@ -124,6 +126,17 @@ func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 
 // Section Parts
 
+func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
+	return s.client.Transaction(func(tx *gorm.DB) error {
+		for _, sectionPart := range *sectionParts {
+			if err := tx.Create(&sectionPart).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionPart := range *sectionParts {
@@ -133,6 +146,10 @@ func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongS
 		}
 		return nil
 	})
+}
+
+func (s songSectionRepository) DeleteSectionParts(sectionParts *[]model.SongSectionPart) error {
+	return s.client.Delete(&sectionParts).Error
 }
 
 // Types

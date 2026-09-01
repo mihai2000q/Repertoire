@@ -3,15 +3,17 @@ package requests
 import "github.com/google/uuid"
 
 type CreateSongSectionRequest struct {
-	SongID uuid.UUID `validate:"required"`
-	Name   string    `validate:"required,max=30"`
-	TypeID uuid.UUID `validate:"required"`
+	SongID  uuid.UUID `validate:"required"`
+	Name    string    `validate:"required,max=30"`
+	TypeID  uuid.UUID `validate:"required"`
+	PartIDs []uuid.UUID
 }
 
 type UpdateSongSectionRequest struct {
-	ID     uuid.UUID `validate:"required"`
-	Name   string    `validate:"required,max=30"`
-	TypeID uuid.UUID `validate:"required"`
+	ID      uuid.UUID `validate:"required"`
+	Name    string    `validate:"required,max=30"`
+	TypeID  uuid.UUID `validate:"required"`
+	PartIDs []uuid.UUID
 }
 
 type MoveSongSectionRequest struct {

@@ -10,6 +10,7 @@ import (
 
 type SongPartRepository interface {
 	Get(part *model.SongPart, id uuid.UUID) error
+	GetAllByIDs(parts *[]model.SongPart, ids []uuid.UUID) error
 	CountAllBySong(count *int64, songID uuid.UUID) error
 	CountBySectionIDs(sectionIDs []uuid.UUID) (map[uuid.UUID]int64, error)
 	Create(part *model.SongPart) error
@@ -37,6 +38,10 @@ func NewSongPartRepository(client database.Client) SongPartRepository {
 
 func (s songPartRepository) Get(part *model.SongPart, id uuid.UUID) error {
 	return s.client.Find(&part, model.SongPart{ID: id}).Error
+}
+
+func (s songPartRepository) GetAllByIDs(parts *[]model.SongPart, ids []uuid.UUID) error {
+	return s.client.Find(&parts, ids).Error
 }
 
 func (s songPartRepository) CountAllBySong(count *int64, songID uuid.UUID) error {
