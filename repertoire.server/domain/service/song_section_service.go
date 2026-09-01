@@ -12,7 +12,7 @@ import (
 type SongSectionService interface {
 	BulkDelete(request requests.BulkDeleteSongSectionsRequest) *wrapper.ErrorCode
 	Create(request requests.CreateSongSectionRequest) *wrapper.ErrorCode
-	Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode
+	Delete(id uuid.UUID, songID uuid.UUID, withParts bool) *wrapper.ErrorCode
 	Move(request requests.MoveSongSectionRequest) *wrapper.ErrorCode
 	Update(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode
 
@@ -56,8 +56,8 @@ func (s *songSectionService) Create(request requests.CreateSongSectionRequest) *
 	return s.createSongSection.Handle(request)
 }
 
-func (s *songSectionService) Delete(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	return s.deleteSongSection.Handle(id, songID)
+func (s *songSectionService) Delete(id uuid.UUID, songID uuid.UUID, withParts bool) *wrapper.ErrorCode {
+	return s.deleteSongSection.Handle(id, songID, withParts)
 }
 
 func (s *songSectionService) Move(request requests.MoveSongSectionRequest) *wrapper.ErrorCode {

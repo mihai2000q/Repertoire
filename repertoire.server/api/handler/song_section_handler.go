@@ -109,7 +109,9 @@ func (s SongSectionHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errorCode := s.service.Delete(id, songID)
+	withParts := c.Query("withParts") == "true"
+
+	errorCode := s.service.Delete(id, songID, withParts)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

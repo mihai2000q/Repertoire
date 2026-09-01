@@ -22,7 +22,27 @@ func (s *SongSectionRepositoryMock) Get(section *model.SongSection, id uuid.UUID
 	return args.Error(0)
 }
 
+func (s *SongSectionRepositoryMock) GetWithSectionParts(section *model.SongSection, id uuid.UUID) error {
+	args := s.Called(section, id)
+
+	if len(args) > 1 {
+		*section = *args.Get(1).(*model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongSectionRepositoryMock) GetAllByIDs(sections *[]model.SongSection, ids []uuid.UUID) error {
+	args := s.Called(sections, ids)
+
+	if len(args) > 1 {
+		*sections = *args.Get(1).(*[]model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) GetAllByIDsWithSectionParts(sections *[]model.SongSection, ids []uuid.UUID) error {
 	args := s.Called(sections, ids)
 
 	if len(args) > 1 {

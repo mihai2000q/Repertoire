@@ -148,19 +148,18 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 		return wrapper.NotFoundError(errors.New("song not found"))
 	}
 
-	// Build a set for quick existence check
-	idsSet := make(map[uuid.UUID]bool, len(partIDs))
+	// Build a set to check for duplicates
+	idsSet := make(map[uuid.UUID]bool)
 	for _, pid := range partIDs {
 		idsSet[pid] = true
 	}
 
 	// Reorder remaining parts and accumulate deleted stats
-	var remainingParts []model.SongPart
 	var totalConfidence, totalRehearsals uint
 	var totalProgress uint64
 	var partsFound uint
 
-	for _, part := range song.Parts {
+	for i, part := range song.Parts {
 		if idsSet[part.ID] {
 			partsFound++
 			totalConfidence += part.Confidence
@@ -168,11 +167,13 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 			totalProgress += part.Progress
 			continue
 		}
-		part.SongOrder -= partsFound
-		remainingParts = append(remainingParts, part)
+		song.Parts[i].SongOrder -= partsFound
 	}
 
-	song.Parts = remainingParts
+	// Validate that all unique part IDs were found
+	if int(partsFound) != len(idsSet) {
+		return wrapper.NotFoundError(errors.New("song parts not found"))
+	}
 
 	// Recalculate song stats
 	partsLength := len(song.Parts) + int(partsFound)
@@ -188,7 +189,6 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 		song.Progress = (song.Progress*float64(partsLength) - float64(totalProgress)) / newPartsLength
 	}
 
-	// Update the song
 	if err := songRepository.UpdateWithAssociations(&song); err != nil {
 		return wrapper.InternalServerError(err)
 	}

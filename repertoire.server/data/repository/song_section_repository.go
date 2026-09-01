@@ -10,7 +10,9 @@ import (
 
 type SongSectionRepository interface {
 	Get(section *model.SongSection, id uuid.UUID) error
+	GetWithSectionParts(section *model.SongSection, id uuid.UUID) error
 	GetAllByIDs(sections *[]model.SongSection, ids []uuid.UUID) error
+	GetAllByIDsWithSectionParts(sections *[]model.SongSection, ids []uuid.UUID) error
 	GetAllByPartWithSectionParts(sections *[]model.SongSection, partID uuid.UUID) error
 	GetAllByPartIDsWithSectionParts(sections *[]model.SongSection, partIDs []uuid.UUID) error
 	CountAllBySong(count *int64, songID uuid.UUID) error
@@ -38,9 +40,26 @@ func NewSongSectionRepository(client database.Client) SongSectionRepository {
 func (s songSectionRepository) Get(section *model.SongSection, id uuid.UUID) error {
 	return s.client.Find(&section, model.SongSection{ID: id}).Error
 }
+func (s songSectionRepository) GetWithSectionParts(section *model.SongSection, id uuid.UUID) error {
+	return s.client.
+		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
+			return db.Order("\"order\"")
+		}).
+		Find(&section, model.SongSection{ID: id}).
+		Error
+}
 
 func (s songSectionRepository) GetAllByIDs(sections *[]model.SongSection, ids []uuid.UUID) error {
 	return s.client.Find(&sections, ids).Error
+}
+
+func (s songSectionRepository) GetAllByIDsWithSectionParts(sections *[]model.SongSection, ids []uuid.UUID) error {
+	return s.client.
+		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
+			return db.Order("\"order\"")
+		}).
+		Find(&sections, ids).
+		Error
 }
 
 func (s songSectionRepository) GetAllByPartWithSectionParts(sections *[]model.SongSection, partID uuid.UUID) error {

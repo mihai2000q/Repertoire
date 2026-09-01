@@ -41,3 +41,18 @@ func (s *SongProcessorMock) AddPerfectRehearsal(
 
 	return errCode, args.Bool(1)
 }
+
+func (s *SongProcessorMock) UpdateSongAfterPartsDeletion(
+	songRepository repository.SongRepository,
+	songID uuid.UUID,
+	partIDs []uuid.UUID,
+) *wrapper.ErrorCode {
+	args := s.Called(songRepository, songID, partIDs)
+
+	var errCode *wrapper.ErrorCode
+	if e := args.Get(0); e != nil {
+		errCode = e.(*wrapper.ErrorCode)
+	}
+
+	return errCode
+}

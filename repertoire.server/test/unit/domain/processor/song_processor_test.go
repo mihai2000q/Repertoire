@@ -725,6 +725,37 @@ func TestUpdateSongAfterPartsDeletion_WhenSongNotFound_ShouldReturnNotFoundError
 	songRepository.AssertExpectations(t)
 }
 
+func TestUpdateSongAfterPartsDeletion_WhenPartNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	songProcessor := processor.NewSongProcessor(nil)
+
+	songID := uuid.New()
+
+	mockSong := &model.Song{
+		ID: songID,
+		Parts: []model.SongPart{
+			{ID: uuid.New(), Confidence: 10, Rehearsals: 5, Progress: 20},
+		},
+		Confidence: 10,
+		Rehearsals: 5,
+		Progress:   20,
+	}
+	partIDs := []uuid.UUID{mockSong.Parts[0].ID, uuid.New()}
+
+	songRepository.On("GetWithParts", new(model.Song), songID).Return(nil, mockSong).Once()
+
+	// when
+	errCode := songProcessor.UpdateSongAfterPartsDeletion(songRepository, songID, partIDs)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "song parts not found", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestUpdateSongAfterPartsDeletion_WhenUpdateFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
@@ -859,6 +890,23 @@ func TestSongProcessor_UpdateSongAfterPartsDeletion_WhenSuccessful_ShouldUpdateS
 			expectedSongConfidence: 0,
 			expectedSongRehearsals: 0,
 			expectedSongProgress:   0,
+		},
+		{
+			name: "Delete duplicate parts (should deduplicate)",
+			song: model.Song{
+				ID: uuid.New(),
+				Parts: []model.SongPart{
+					{ID: uuid.New(), SongOrder: 0, Confidence: 55, Rehearsals: 12, Progress: 45},
+					{ID: uuid.New(), SongOrder: 1, Confidence: 23, Rehearsals: 5, Progress: 15},
+				},
+				Confidence: 39,
+				Rehearsals: 8.5,
+				Progress:   30,
+			},
+			deleteIndices:          []int{0, 0}, // duplicate of index 0
+			expectedSongConfidence: 23,
+			expectedSongRehearsals: 5,
+			expectedSongProgress:   15,
 		},
 	}
 

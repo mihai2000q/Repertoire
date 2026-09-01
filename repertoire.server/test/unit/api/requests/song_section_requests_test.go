@@ -263,19 +263,39 @@ func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 }
 
 func TestValidateBulkDeleteSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.BulkDeleteSongSectionsRequest{
-		IDs:    []uuid.UUID{uuid.New()},
-		SongID: uuid.New(),
+	tests := []struct {
+		name    string
+		request requests.BulkDeleteSongSectionsRequest
+	}{
+		{
+			"Minimal",
+			requests.BulkDeleteSongSectionsRequest{
+				IDs:    []uuid.UUID{uuid.New()},
+				SongID: uuid.New(),
+			},
+		},
+		{
+			"Maximal",
+			requests.BulkDeleteSongSectionsRequest{
+				IDs:       []uuid.UUID{uuid.New()},
+				SongID:    uuid.New(),
+				WithParts: true,
+			},
+		},
 	}
 
-	// when
-	errCode := _uut.Validate(request)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
 
-	// then
-	assert.Nil(t, errCode)
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			assert.Nil(t, errCode)
+		})
+	}
 }
 
 func TestValidateBulkDeleteSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
