@@ -29,7 +29,8 @@ CREATE TABLE public.song_section_parts
     part_id    uuid                                               not null
         constraint fk_song_section_part_song_parts references public.song_parts on delete cascade,
     "order"    bigint                                             not null,
-    created_at timestamp with time zone default CURRENT_TIMESTAMP not null
+    created_at timestamp with time zone default CURRENT_TIMESTAMP not null,
+    PRIMARY KEY (part_id, section_id)
 );
 
 -- Rename Section History and Occurrences to Part History and Occurrences
@@ -63,19 +64,7 @@ $$
     BEGIN
         -- Loop through each section
         FOR sec IN
-            SELECT ss.id,
-                   ss.name,
-                   ss.song_id,
-                   ss.rehearsals,
-                   ss.confidence,
-                   ss.rehearsals_score,
-                   ss.confidence_score,
-                   ss.progress,
-                   ss.band_member_id,
-                   ss.instrument_id,
-                   ss.created_at,
-                   ss.updated_at,
-                   ss.song_section_type_id,
+            SELECT ss.*,
                    s.user_id
             FROM public.song_sections ss
                      JOIN public.songs s ON ss.song_id = s.id
@@ -316,21 +305,20 @@ WHERE name = 'Solo';
 DO
 $$
     DECLARE
-        part_record RECORD;
-        sec_id uuid;
-        next_order bigint;
-        user_id uuid;
+        part_record  RECORD;
+        sec_id       uuid;
+        next_order   bigint;
+        user_id      uuid;
         riff_type_id uuid;
     BEGIN
         -- Loop over all parts
         FOR part_record IN
-            SELECT p.id, p.name, p.song_id, p.band_member_id, p.instrument_id,
-                   p.rehearsals, p.rehearsals_score, p.confidence,
-                   p.confidence_score, p.progress, p.created_at, p.updated_at
+            SELECT p.*
             FROM public.song_parts p
             LOOP
                 -- Step 1: Find section via song_section_parts (linked part)
-                SELECT section_id INTO sec_id
+                SELECT section_id
+                INTO sec_id
                 FROM public.song_section_parts
                 WHERE part_id = part_record.id
                 ORDER BY "order"
@@ -339,7 +327,8 @@ $$
                 -- Step 2: If not linked, try to find a section with same name and type 'Riff'
                 -- (For estranged parts that were already converted back to sections earlier)
                 IF sec_id IS NULL THEN
-                    SELECT s.id INTO sec_id
+                    SELECT s.id
+                    INTO sec_id
                     FROM public.song_sections s
                              JOIN public.song_section_types t ON t.id = s.song_section_type_id
                     WHERE s.song_id = part_record.song_id
@@ -351,43 +340,43 @@ $$
                 -- Step 3: Still NULL? Create a new section for this part (estrangement)
                 IF sec_id IS NULL THEN
                     -- Get user_id and riff_type_id for this song
-                    SELECT s.user_id INTO user_id
+                    SELECT s.user_id
+                    INTO user_id
                     FROM public.songs s
                     WHERE s.id = part_record.song_id;
 
-                    SELECT id INTO riff_type_id
+                    SELECT id
+                    INTO riff_type_id
                     FROM public.song_section_types
-                    WHERE name = 'Riff' AND user_id = user_id;
+                    WHERE name = 'Riff'
+                      AND user_id = user_id;
 
                     -- Compute next order for this song
-                    SELECT COALESCE(MAX("order"), -1) + 1 INTO next_order
+                    SELECT COALESCE(MAX("order"), -1) + 1
+                    INTO next_order
                     FROM public.song_sections
                     WHERE song_id = part_record.song_id;
 
                     -- Insert new section
-                    INSERT INTO public.song_sections (
-                        id, name, "order", song_id, song_section_type_id,
-                        band_member_id, instrument_id,
-                        rehearsals, rehearsals_score, confidence, confidence_score,
-                        progress,
-                        created_at, updated_at
-                    )
-                    VALUES (
-                               gen_random_uuid(),
-                               part_record.name,
-                               next_order,
-                               part_record.song_id,
-                               riff_type_id,
-                               part_record.band_member_id,
-                               part_record.instrument_id,
-                               part_record.rehearsals,
-                               part_record.rehearsals_score,
-                               part_record.confidence,
-                               part_record.confidence_score,
-                               part_record.progress,
-                               part_record.created_at,
-                               part_record.updated_at
-                           )
+                    INSERT INTO public.song_sections (id, name, "order", song_id, song_section_type_id,
+                                                      band_member_id, instrument_id,
+                                                      rehearsals, rehearsals_score, confidence, confidence_score,
+                                                      progress,
+                                                      created_at, updated_at)
+                    VALUES (gen_random_uuid(),
+                            part_record.name,
+                            next_order,
+                            part_record.song_id,
+                            riff_type_id,
+                            part_record.band_member_id,
+                            part_record.instrument_id,
+                            part_record.rehearsals,
+                            part_record.rehearsals_score,
+                            part_record.confidence,
+                            part_record.confidence_score,
+                            part_record.progress,
+                            part_record.created_at,
+                            part_record.updated_at)
                     RETURNING id INTO sec_id;
                 END IF;
 
