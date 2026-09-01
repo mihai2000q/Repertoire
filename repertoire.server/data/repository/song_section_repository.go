@@ -20,7 +20,6 @@ type SongSectionRepository interface {
 	UpdateAllWithAssociations(sections *[]model.SongSection) error
 	Delete(ids []uuid.UUID) error
 
-	CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error
 	UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error
 
 	GetTypes(types *[]model.SongSectionType, userID uuid.UUID) error
@@ -49,7 +48,7 @@ func (s songSectionRepository) GetAllByPartWithSectionParts(sections *[]model.So
 		Joins("LEFT JOIN song_section_parts ON song_sections.id = song_section_parts.section_id").
 		Where("song_section_parts.part_id = ?", partID).
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_section_parts.section_order")
+			return db.Order("song_section_parts.order")
 		}).
 		Find(&sections).
 		Error
@@ -60,7 +59,7 @@ func (s songSectionRepository) GetAllByPartIDsWithSectionParts(sections *[]model
 		Joins("LEFT JOIN song_section_parts ON song_sections.id = song_section_parts.section_id").
 		Where("song_section_parts.part_id IN ?", partIDs).
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_section_parts.section_order")
+			return db.Order("song_section_parts.order")
 		}).
 		Find(&sections).
 		Error
@@ -105,17 +104,6 @@ func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 }
 
 // Section Parts
-
-func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
-	return s.client.Transaction(func(tx *gorm.DB) error {
-		for _, sectionPart := range *sectionParts {
-			if err := tx.Save(&sectionPart).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
 
 func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {

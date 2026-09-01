@@ -18,7 +18,6 @@ type CreateSongPart struct {
 	transactionManager    transaction.Manager
 
 	txSongRepository            repository.SongRepository
-	txSongSectionRepository     repository.SongSectionRepository
 	txSongPartRepository        repository.SongPartRepository
 	txSongArrangementRepository repository.SongArrangementRepository
 }
@@ -69,9 +68,17 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 		c.txSongPartRepository = factory.NewSongPartRepository()
 		c.txSongArrangementRepository = factory.NewSongArrangementRepository()
 
+		var song model.Song
+		if err := c.txSongRepository.Get(&song, request.SongID); err != nil {
+			return err
+		}
+		if reflect.ValueOf(song).IsZero() {
+			errCode = wrapper.NotFoundError(errors.New("song not found"))
+			return errCode.Error
+		}
+
 		var songPartsCount int64
-		err := c.txSongPartRepository.CountAllBySong(&songPartsCount, request.SongID)
-		if err != nil {
+		if err := c.txSongPartRepository.CountAllBySong(&songPartsCount, request.SongID); err != nil {
 			return err
 		}
 
@@ -84,24 +91,20 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 			BandMemberID: request.BandMemberID,
 			InstrumentID: request.InstrumentID,
 		}
-		if err = c.txSongPartRepository.Create(&part); err != nil {
-			return err
-		}
-
 		if len(request.SectionIDs) > 0 {
-			c.txSongSectionRepository = factory.NewSongSectionRepository()
-			if err = c.createSectionParts(request, part); err != nil {
+			if err := c.createSectionParts(request, &part); err != nil {
 				return err
 			}
 		}
+		if err := c.txSongPartRepository.Create(&part); err != nil {
+			return err
+		}
 
-		errCode = c.updateSong(part)
-		if errCode != nil {
+		if errCode = c.updateSong(&song, part); errCode != nil {
 			return errCode.Error
 		}
 
-		errCode = c.updateArrangements(part.ID, request.SongID)
-		if errCode != nil {
+		if errCode = c.updateArrangements(part.ID, request.SongID); errCode != nil {
 			return errCode.Error
 		}
 
@@ -118,7 +121,7 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 }
 
 // Compute the part's order for each section: current count of parts in that section
-func (c CreateSongPart) createSectionParts(request requests.CreateSongPartRequest, part model.SongPart) error {
+func (c CreateSongPart) createSectionParts(request requests.CreateSongPartRequest, part *model.SongPart) error {
 	counts, err := c.txSongPartRepository.CountBySectionIDs(request.SectionIDs)
 	if err != nil {
 		return err
@@ -134,32 +137,20 @@ func (c CreateSongPart) createSectionParts(request requests.CreateSongPartReques
 		}
 	}
 
-	if err = c.txSongSectionRepository.CreateAllSectionParts(&sectionParts); err != nil {
-		return err
-	}
+	part.SectionParts = sectionParts
 
 	return nil
 }
 
 // Update song's new confidence, rehearsals and progress medians
-func (c CreateSongPart) updateSong(part model.SongPart) *wrapper.ErrorCode {
-	var song model.Song
-	err := c.txSongRepository.Get(&song, part.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
-	}
-
+func (c CreateSongPart) updateSong(song *model.Song, part model.SongPart) *wrapper.ErrorCode {
 	songPartsCount := part.SongOrder
 
 	song.Confidence = (song.Confidence*float64(songPartsCount) + float64(part.Confidence)) / float64(songPartsCount+1)
 	song.Rehearsals = (song.Rehearsals*float64(songPartsCount) + float64(part.Rehearsals)) / float64(songPartsCount+1)
 	song.Progress = (song.Progress*float64(songPartsCount) + float64(part.Progress)) / float64(songPartsCount+1)
 
-	err = c.txSongRepository.Update(&song)
-	if err != nil {
+	if err := c.txSongRepository.Update(song); err != nil {
 		return wrapper.InternalServerError(err)
 	}
 

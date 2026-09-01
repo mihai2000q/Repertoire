@@ -99,11 +99,6 @@ func (s *SongSectionRepositoryMock) Delete(ids []uuid.UUID) error {
 
 // Section Parts
 
-func (s *SongSectionRepositoryMock) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
-	args := s.Called(sectionParts)
-	return args.Error(0)
-}
-
 func (s *SongSectionRepositoryMock) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	args := s.Called(sectionParts)
 	return args.Error(0)

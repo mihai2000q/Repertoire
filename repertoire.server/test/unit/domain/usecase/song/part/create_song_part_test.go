@@ -181,236 +181,6 @@ func TestCreateSongPart_WhenTransactionExecuteFails_ShouldReturnInternalServerEr
 	transactionManager.AssertExpectations(t)
 }
 
-func TestCreateSongPart_WhenCountAllBySongFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
-
-	request := requests.CreateSongPartRequest{
-		SongID: uuid.New(),
-		Name:   "Some Part",
-	}
-
-	// given - mocking
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
-
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	internalError := errors.New("count error")
-	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
-		Return(internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	songSectionRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongArrangementRepository.AssertExpectations(t)
-}
-
-func TestCreateSongPart_WhenCreatePartFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
-
-	request := requests.CreateSongPartRequest{
-		SongID: uuid.New(),
-		Name:   "Some Part",
-	}
-
-	// given - mocking
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
-
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
-		Return(nil, &[]int64{0}[0]).
-		Once()
-
-	internalError := errors.New("create error")
-	txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
-		Return(internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	songSectionRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongArrangementRepository.AssertExpectations(t)
-}
-
-func TestCreateSongPart_WhenCountBySectionIDsFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
-
-	sectionID := uuid.New()
-	request := requests.CreateSongPartRequest{
-		SongID:     uuid.New(),
-		Name:       "Some Part",
-		SectionIDs: []uuid.UUID{sectionID},
-	}
-
-	// given - mocking
-	mockSections := []model.SongSection{
-		{ID: sectionID, SongID: request.SongID},
-	}
-	songSectionRepository.On("GetAllByIDs", new([]model.SongSection), request.SectionIDs).
-		Return(nil, &mockSections).
-		Once()
-
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
-
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
-		Return(nil, &[]int64{0}[0]).
-		Once()
-
-	txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
-		Return(nil).
-		Once()
-
-	internalError := errors.New("count sections error")
-	txSongPartRepository.On("CountBySectionIDs", request.SectionIDs).
-		Return(make(map[uuid.UUID]int64), internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	songSectionRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongArrangementRepository.AssertExpectations(t)
-}
-
-func TestCreateSongPart_WhenCreateAllSectionPartsFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songRepository := new(repository.SongRepositoryMock)
-	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
-
-	sectionID := uuid.New()
-	request := requests.CreateSongPartRequest{
-		SongID:     uuid.New(),
-		Name:       "Some Part",
-		SectionIDs: []uuid.UUID{sectionID},
-	}
-
-	// given - mocking
-	mockSections := []model.SongSection{
-		{ID: sectionID, SongID: request.SongID},
-	}
-	songSectionRepository.On("GetAllByIDs", new([]model.SongSection), request.SectionIDs).
-		Return(nil, &mockSections).
-		Once()
-
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
-
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
-		Return(nil, &[]int64{0}[0]).
-		Once()
-
-	txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
-		Return(nil).
-		Once()
-
-	// createSectionParts
-	counts := map[uuid.UUID]int64{sectionID: 0}
-	txSongPartRepository.On("CountBySectionIDs", request.SectionIDs).
-		Return(counts, nil).
-		Once()
-
-	internalError := errors.New("create section parts error")
-	txSongSectionRepository.On("CreateAllSectionParts", mock.IsType(new([]model.SongSectionPart))).
-		Return(internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	songSectionRepository.AssertExpectations(t)
-	songRepository.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	repositoryFactory.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongArrangementRepository.AssertExpectations(t)
-}
-
 func TestCreateSongPart_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songSectionRepository := new(repository.SongSectionRepositoryMock)
@@ -433,14 +203,6 @@ func TestCreateSongPart_WhenGetSongFails_ShouldReturnInternalServerError(t *test
 	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
 	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
-		Return(nil, &[]int64{0}[0]).
-		Once()
-
-	txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
-		Return(nil).
-		Once()
 
 	internalError := errors.New("get song error")
 	txSongRepository.On("Get", new(model.Song), request.SongID).
@@ -487,14 +249,6 @@ func TestCreateSongPart_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T)
 	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
-		Return(nil, &[]int64{0}[0]).
-		Once()
-
-	txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
-		Return(nil).
-		Once()
-
 	txSongRepository.On("Get", new(model.Song), request.SongID).
 		Return(nil).
 		Once()
@@ -506,6 +260,173 @@ func TestCreateSongPart_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T)
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
+
+	songSectionRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongPartRepository.AssertExpectations(t)
+	txSongRepository.AssertExpectations(t)
+	txSongArrangementRepository.AssertExpectations(t)
+}
+
+func TestCreateSongPart_WhenCountAllBySongFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
+
+	request := requests.CreateSongPartRequest{
+		SongID: uuid.New(),
+		Name:   "Some Part",
+	}
+
+	// given - mocking
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepository := new(repository.SongRepositoryMock)
+	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
+
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
+	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	mockSong := &model.Song{ID: uuid.New()}
+	txSongRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	internalError := errors.New("count error")
+	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songSectionRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongPartRepository.AssertExpectations(t)
+	txSongRepository.AssertExpectations(t)
+	txSongArrangementRepository.AssertExpectations(t)
+}
+
+func TestCreateSongPart_WhenCountBySectionIDsFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
+
+	sectionID := uuid.New()
+	request := requests.CreateSongPartRequest{
+		SongID:     uuid.New(),
+		Name:       "Some Part",
+		SectionIDs: []uuid.UUID{sectionID},
+	}
+
+	// given - mocking
+	mockSections := []model.SongSection{
+		{ID: sectionID, SongID: request.SongID},
+	}
+	songSectionRepository.On("GetAllByIDs", new([]model.SongSection), request.SectionIDs).
+		Return(nil, &mockSections).
+		Once()
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepository := new(repository.SongRepositoryMock)
+	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
+
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
+	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	mockSong := &model.Song{ID: uuid.New()}
+	txSongRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
+		Return(nil, &[]int64{0}[0]).
+		Once()
+
+	internalError := errors.New("count sections error")
+	txSongPartRepository.On("CountBySectionIDs", request.SectionIDs).
+		Return(make(map[uuid.UUID]int64), internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songSectionRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongPartRepository.AssertExpectations(t)
+	txSongRepository.AssertExpectations(t)
+	txSongArrangementRepository.AssertExpectations(t)
+}
+
+func TestCreateSongPart_WhenCreatePartFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songSectionRepository := new(repository.SongSectionRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := part.NewCreateSongPart(songSectionRepository, songRepository, transactionManager)
+
+	request := requests.CreateSongPartRequest{
+		SongID: uuid.New(),
+		Name:   "Some Part",
+	}
+
+	// given - mocking
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepository := new(repository.SongRepositoryMock)
+	txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
+
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
+	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	mockSong := &model.Song{ID: uuid.New()}
+	txSongRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
+		Return(nil, &[]int64{0}[0]).
+		Once()
+
+	internalError := errors.New("create error")
+	txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
 
 	songSectionRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
@@ -539,6 +460,11 @@ func TestCreateSongPart_WhenUpdateSongFails_ShouldReturnInternalServerError(t *t
 	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
+	mockSong := &model.Song{ID: uuid.New()}
+	txSongRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
 	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
 		Return(nil, &[]int64{2}[0]).
 		Once()
@@ -548,16 +474,6 @@ func TestCreateSongPart_WhenUpdateSongFails_ShouldReturnInternalServerError(t *t
 		Once()
 
 	// updateSong
-	mockSong := &model.Song{
-		ID:         request.SongID,
-		Confidence: 50,
-		Rehearsals: 10,
-		Progress:   55,
-	}
-	txSongRepository.On("Get", new(model.Song), request.SongID).
-		Return(nil, mockSong).
-		Once()
-
 	internalError := errors.New("update error")
 	txSongRepository.On("Update", mock.IsType(mockSong)).
 		Return(internalError).
@@ -603,6 +519,11 @@ func TestCreateSongPart_WhenGetArrangementsFails_ShouldReturnInternalServerError
 	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
+	mockSong := &model.Song{ID: uuid.New()}
+	txSongRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
 	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
 		Return(nil, &[]int64{0}[0]).
 		Once()
@@ -612,11 +533,6 @@ func TestCreateSongPart_WhenGetArrangementsFails_ShouldReturnInternalServerError
 		Once()
 
 	// updateSong
-	mockSong := &model.Song{ID: request.SongID}
-	txSongRepository.On("Get", new(model.Song), request.SongID).
-		Return(nil, mockSong).
-		Once()
-
 	txSongRepository.On("Update", mock.IsType(mockSong)).
 		Return(nil).
 		Once()
@@ -666,6 +582,11 @@ func TestCreateSongPart_WhenUpdateArrangementsFails_ShouldReturnInternalServerEr
 	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
+	mockSong := &model.Song{ID: uuid.New()}
+	txSongRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
 	txSongPartRepository.On("CountAllBySong", new(int64), request.SongID).
 		Return(nil, &[]int64{0}[0]).
 		Once()
@@ -675,11 +596,6 @@ func TestCreateSongPart_WhenUpdateArrangementsFails_ShouldReturnInternalServerEr
 		Once()
 
 	// updateSong
-	mockSong := &model.Song{ID: request.SongID}
-	txSongRepository.On("Get", new(model.Song), request.SongID).
-		Return(nil, mockSong).
-		Once()
-
 	txSongRepository.On("Update", mock.IsType(mockSong)).
 		Return(nil).
 		Once()
@@ -888,64 +804,47 @@ func TestCreateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			repositoryFactory := new(transaction.RepositoryFactoryMock)
 			txSongPartRepository := new(repository.SongPartRepositoryMock)
 			txSongRepository := new(repository.SongRepositoryMock)
-			txSongSectionRepository := new(repository.SongSectionRepositoryMock)
 			txSongArrangementRepository := new(repository.SongArrangementRepositoryMock)
 
 			repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
 			repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-			if len(tt.request.SectionIDs) > 0 {
-				repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-			}
 			repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepository).Once()
 			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+			txSongRepository.On("Get", new(model.Song), tt.request.SongID).
+				Return(nil, &tt.song).
+				Once()
 
 			txSongPartRepository.On("CountAllBySong", new(int64), tt.request.SongID).
 				Return(nil, &tt.partsCount).
 				Once()
+
+			// Build sectionCounts with the actual section IDs from the request
+			sectionCounts := make(map[uuid.UUID]int64, len(tt.request.SectionIDs))
+			for _, secID := range tt.request.SectionIDs {
+				// Use the provided count from tt.sectionCounts
+				if count, ok := tt.sectionCounts[secID]; ok {
+					sectionCounts[secID] = count
+				}
+			}
+
+			// createSectionParts
+			if len(tt.request.SectionIDs) > 0 {
+				txSongPartRepository.On("CountBySectionIDs", tt.request.SectionIDs).
+					Return(sectionCounts, nil).
+					Once()
+			}
 
 			var newPartID uuid.UUID
 			txSongPartRepository.On("Create", mock.IsType(new(model.SongPart))).
 				Run(func(args mock.Arguments) {
 					newPart := args.Get(0).(*model.SongPart)
 					newPartID = newPart.ID
-					assertCreatedSongPart(t, tt.request, *newPart, tt.partsCount)
+					assertCreatedSongPart(t, tt.request, *newPart, tt.partsCount, sectionCounts)
 				}).
 				Return(nil).Once()
 
-			// createSectionParts
-			if len(tt.request.SectionIDs) > 0 {
-				// Build sectionCounts with the actual section IDs from the request
-				sectionCounts := make(map[uuid.UUID]int64)
-				for _, secID := range tt.request.SectionIDs {
-					// Use the provided count from tt.sectionCounts
-					if count, ok := tt.sectionCounts[secID]; ok {
-						sectionCounts[secID] = count
-					}
-				}
-
-				txSongPartRepository.On("CountBySectionIDs", tt.request.SectionIDs).
-					Return(sectionCounts, nil).
-					Once()
-
-				txSongSectionRepository.On("CreateAllSectionParts", mock.IsType(new([]model.SongSectionPart))).
-					Run(func(args mock.Arguments) {
-						sectionParts := args.Get(0).(*[]model.SongSectionPart)
-						assert.Len(t, *sectionParts, len(tt.request.SectionIDs))
-						for i, sp := range *sectionParts {
-							assert.Equal(t, newPartID, sp.PartID)
-							assert.Equal(t, tt.request.SectionIDs[i], sp.SectionID)
-							assert.Equal(t, uint(sectionCounts[tt.request.SectionIDs[i]]), sp.Order)
-						}
-					}).
-					Return(nil).
-					Once()
-			}
-
 			// updateSong
-			txSongRepository.On("Get", new(model.Song), tt.request.SongID).
-				Return(nil, &tt.song).
-				Once()
-
 			txSongRepository.On("Update", mock.IsType(&tt.song)).
 				Run(func(args mock.Arguments) {
 					updatedSong := args.Get(0).(*model.Song)
@@ -997,9 +896,6 @@ func TestCreateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			repositoryFactory.AssertExpectations(t)
 			txSongPartRepository.AssertExpectations(t)
 			txSongRepository.AssertExpectations(t)
-			if len(tt.request.SectionIDs) > 0 {
-				txSongSectionRepository.AssertExpectations(t)
-			}
 			txSongArrangementRepository.AssertExpectations(t)
 		})
 	}
@@ -1010,6 +906,7 @@ func assertCreatedSongPart(
 	request requests.CreateSongPartRequest,
 	part model.SongPart,
 	partsCount int64,
+	sectionCounts map[uuid.UUID]int64,
 ) {
 	assert.NotEmpty(t, part.ID)
 	assert.Equal(t, request.Name, part.Name)
@@ -1022,4 +919,11 @@ func assertCreatedSongPart(
 	assert.Equal(t, request.BandMemberID, part.BandMemberID)
 	assert.Equal(t, request.InstrumentID, part.InstrumentID)
 	assert.Equal(t, request.SongID, part.SongID)
+
+	assert.Len(t, part.SectionParts, len(request.SectionIDs))
+	for i, sp := range part.SectionParts {
+		assert.Equal(t, part.ID, sp.PartID)
+		assert.Equal(t, request.SectionIDs[i], sp.SectionID)
+		assert.Equal(t, uint(sectionCounts[request.SectionIDs[i]]), sp.Order)
+	}
 }
