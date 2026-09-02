@@ -52,15 +52,15 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 				Name: "New Chorus Name",
 				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
 					{
-						PartID:      songData.SongSections[5].ID,
+						PartID:      songData.SongParts[5].ID,
 						Occurrences: 1,
 					},
 					{
-						PartID:      songData.SongSections[4].ID,
+						PartID:      songData.SongParts[4].ID,
 						Occurrences: 7,
 					},
 					{
-						PartID:      songData.SongSections[6].ID,
+						PartID:      songData.SongParts[6].ID,
 						Occurrences: 2,
 					},
 				},
@@ -70,15 +70,15 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 				Name: "New Chorus Name",
 				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
 					{
-						PartID:      songData.SongSections[5].ID,
+						PartID:      songData.SongParts[5].ID,
 						Occurrences: 5,
 					},
 					{
-						PartID:      songData.SongSections[4].ID,
+						PartID:      songData.SongParts[4].ID,
 						Occurrences: 0,
 					},
 					{
-						PartID:      songData.SongSections[6].ID,
+						PartID:      songData.SongParts[6].ID,
 						Occurrences: 1,
 					},
 				},
@@ -117,12 +117,12 @@ func assertUpdatedSongArrangement(
 ) {
 	assert.Equal(t, request.Name, songArrangement.Name)
 
-	sectionsOccurrencesMap := make(map[uuid.UUID]uint)
-	for _, s := range request.Occurrences {
-		sectionsOccurrencesMap[s.PartID] = s.Occurrences
+	partsOccurrencesMap := make(map[uuid.UUID]uint)
+	for _, o := range request.Occurrences {
+		partsOccurrencesMap[o.PartID] = o.Occurrences
 	}
-	for i := range songArrangement.PartOccurrences {
-		occurrences := sectionsOccurrencesMap[songArrangement.PartOccurrences[i].PartID]
-		assert.Equal(t, songArrangement.PartOccurrences[i].Occurrences, occurrences)
+	for _, po := range songArrangement.PartOccurrences {
+		occurrences := partsOccurrencesMap[po.PartID]
+		assert.Equal(t, po.Occurrences, occurrences)
 	}
 }

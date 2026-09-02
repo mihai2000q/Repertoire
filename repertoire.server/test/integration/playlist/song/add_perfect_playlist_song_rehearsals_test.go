@@ -75,7 +75,7 @@ func TestAddPerfectPlaylistSongRehearsals_WhenSuccessful_ShouldUpdateSongsAndPar
 		db.
 			Preload("Song").
 			Preload("Song.Parts", func(db *gorm.DB) *gorm.DB {
-				return db.Order("song_sections.order")
+				return db.Order("song_parts.song_order")
 			}).
 			Preload("Song.Parts.History", func(db *gorm.DB) *gorm.DB {
 				return db.

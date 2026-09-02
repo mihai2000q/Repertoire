@@ -217,12 +217,12 @@ func assertUpdatedSongArrangement(
 ) {
 	assert.Equal(t, request.Name, arrangement.Name)
 
-	sectionsOccurrencesMap := make(map[uuid.UUID]uint)
-	for _, s := range request.Occurrences {
-		sectionsOccurrencesMap[s.PartID] = s.Occurrences
+	partsOccurrencesMap := make(map[uuid.UUID]uint)
+	for _, o := range request.Occurrences {
+		partsOccurrencesMap[o.PartID] = o.Occurrences
 	}
-	for i := range arrangement.PartOccurrences {
-		occurrences := sectionsOccurrencesMap[arrangement.PartOccurrences[i].PartID]
-		assert.Equal(t, arrangement.PartOccurrences[i].Occurrences, occurrences)
+	for _, po := range arrangement.PartOccurrences {
+		occurrences := partsOccurrencesMap[po.PartID]
+		assert.Equal(t, po.Occurrences, occurrences)
 	}
 }
