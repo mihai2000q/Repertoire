@@ -27,7 +27,7 @@ func NewAddSongsToArtist(
 
 func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode {
 	var songs []model.Song
-	err := a.songRepository.GetAllByIDsWithSongs(&songs, request.SongIDs)
+	err := a.songRepository.GetAllByIDsWithAlbumSongs(&songs, request.SongIDs)
 	if err != nil {
 		return wrapper.InternalServerError(err)
 	}

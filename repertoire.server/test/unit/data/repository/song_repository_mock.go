@@ -140,7 +140,7 @@ func (s *SongRepositoryMock) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) e
 	return args.Error(0)
 }
 
-func (s *SongRepositoryMock) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
+func (s *SongRepositoryMock) GetAllByIDsWithAlbumSongs(songs *[]model.Song, ids []uuid.UUID) error {
 	args := s.Called(songs, ids)
 
 	if len(args) > 1 {

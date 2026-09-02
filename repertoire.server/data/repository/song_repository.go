@@ -34,7 +34,7 @@ type SongRepository interface {
 	GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error
 	GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uuid.UUID, trackNo uint) error
 	GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error
-	GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error
+	GetAllByIDsWithAlbumSongs(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithPartsAndDefaultOccurrences(songs *[]model.Song, ids []uuid.UUID) error
@@ -316,7 +316,7 @@ func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uui
 		Error
 }
 
-func (s songRepository) GetAllByIDsWithSongs(songs *[]model.Song, ids []uuid.UUID) error {
+func (s songRepository) GetAllByIDsWithAlbumSongs(songs *[]model.Song, ids []uuid.UUID) error {
 	return s.client.Model(&model.Song{}).
 		Preload("Album").
 		Preload("Album.Songs").

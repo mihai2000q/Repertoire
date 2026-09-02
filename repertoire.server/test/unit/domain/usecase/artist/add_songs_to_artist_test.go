@@ -28,7 +28,7 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 	}
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetAllByIDsWithSongs", mock.Anything, request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.Anything, request.SongIDs).
 		Return(internalError).
 		Once()
 
@@ -59,7 +59,7 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnConflictError(t *test
 			ArtistID: &[]uuid.UUID{uuid.New()}[0],
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(&songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(&songs), request.SongIDs).
 		Return(nil, &songs).
 		Once()
 
@@ -90,7 +90,7 @@ func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerErro
 			ArtistID: nil,
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(songs), request.SongIDs).
 		Return(nil, songs).
 		Once()
 
@@ -127,7 +127,7 @@ func TestAddSongsToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *te
 			ArtistID: nil,
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(songs), request.SongIDs).
 		Return(nil, songs).
 		Once()
 
@@ -182,7 +182,7 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			},
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(&songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(&songs), request.SongIDs).
 		Return(nil, &songs).
 		Once()
 
