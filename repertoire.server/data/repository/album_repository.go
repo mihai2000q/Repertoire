@@ -63,8 +63,9 @@ func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
 func (a albumRepository) GetWithSongsAndArtist(album *model.Album, id uuid.UUID) error {
 	return a.client.
 		Joins("Artist").
-		Preload("Songs").
-		Preload("Songs.Artist").
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("Artist")
+		}).
 		Find(&album, model.Album{ID: id}).
 		Error
 }
@@ -128,8 +129,9 @@ func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.
 func (a albumRepository) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, ids []uuid.UUID) error {
 	return a.client.Model(&model.Album{}).
 		Joins("Artist").
-		Preload("Songs").
-		Preload("Songs.Artist").
+		Preload("Songs", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("Artist")
+		}).
 		Find(&albums, ids).
 		Error
 }

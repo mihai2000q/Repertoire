@@ -147,21 +147,24 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Preload("Artist.BandMembers").
 		Preload("Artist.BandMembers.Roles").
 		Preload("Parts", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_parts.song_order")
+			return db.
+				Joins("Instrument").
+				Joins("BandMember").
+				Preload("BandMember.Roles").
+				Order("song_parts.song_order")
 		}).
-		Preload("Parts.Instrument").
-		Preload("Parts.BandMember").
-		Preload("Parts.BandMember.Roles").
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_sections.order")
+			return db.
+				Joins("SongSectionType").
+				Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
+					return db.
+						Joins("Part").
+						Joins("Part.Instrument").
+						Preload("Part.BandMember.Roles").
+						Order("song_section_parts.order")
+				}).
+				Order("song_sections.order")
 		}).
-		Preload("Sections.SongSectionType").
-		Preload("Sections.SectionParts", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_section_parts.order")
-		}).
-		Preload("Sections.SectionParts.Part").
-		Preload("Sections.SectionParts.Part.Instrument").
-		Preload("Sections.SectionParts.Part.BandMember.Roles").
 		Find(&song, model.Song{ID: id}).
 		Error
 }
@@ -318,7 +321,7 @@ func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uui
 
 func (s songRepository) GetAllByIDsWithAlbumSongs(songs *[]model.Song, ids []uuid.UUID) error {
 	return s.client.Model(&model.Song{}).
-		Preload("Album").
+		Joins("Album").
 		Preload("Album.Songs").
 		Find(&songs, ids).
 		Error
@@ -334,7 +337,7 @@ func (s songRepository) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids [
 
 func (s songRepository) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, ids []uuid.UUID) error {
 	return s.client.
-		Preload("Album").
+		Joins("Album").
 		Preload("Album.Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("album_track_no")
 		}).
@@ -376,8 +379,6 @@ func (s songRepository) CountByAlbum(count *int64, albumID uuid.UUID) error {
 		Count(count).
 		Error
 }
-
-// TODO: Isn't this authorization basically? (therefore, it might need to be deleted)
 
 func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error) {
 	var count int64
