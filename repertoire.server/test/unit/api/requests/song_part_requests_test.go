@@ -346,41 +346,20 @@ func TestValidateMoveSongPartInSongRequest_WhenSingleFieldIsInvalid_ShouldReturn
 }
 
 func TestValidateMoveSongPartInSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	tests := []struct {
-		name    string
-		request requests.MoveSongPartInSectionRequest
-	}{
-		{
-			"Minimal",
-			requests.MoveSongPartInSectionRequest{
-				ID:        uuid.New(),
-				OverID:    uuid.New(),
-				SectionID: uuid.New(),
-			},
-		},
-		{
-			"Maximal",
-			requests.MoveSongPartInSectionRequest{
-				ID:            uuid.New(),
-				OverID:        uuid.New(),
-				SectionID:     uuid.New(),
-				OverSectionID: &[]uuid.UUID{uuid.New()}[0],
-			},
-		},
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.MoveSongPartInSectionRequest{
+		ID:        uuid.New(),
+		OverID:    uuid.New(),
+		SectionID: uuid.New(),
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := validation.NewValidator(nil)
+	// when
+	errCode := _uut.Validate(request)
 
-			// when
-			errCode := _uut.Validate(tt.request)
-
-			// then
-			assert.Nil(t, errCode)
-		})
-	}
+	// then
+	assert.Nil(t, errCode)
 }
 
 func TestValidateMoveSongPartInSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {

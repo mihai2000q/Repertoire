@@ -32,10 +32,9 @@ type MoveSongPartInSongRequest struct {
 }
 
 type MoveSongPartInSectionRequest struct {
-	ID            uuid.UUID `validate:"required"`
-	OverID        uuid.UUID `validate:"required"`
-	SectionID     uuid.UUID `validate:"required"`
-	OverSectionID *uuid.UUID
+	ID        uuid.UUID `validate:"required"`
+	OverID    uuid.UUID `validate:"required"`
+	SectionID uuid.UUID `validate:"required"`
 }
 
 type BulkUpdateSongPartsRequest struct {
